@@ -34,18 +34,26 @@ export default function TxSearchResults(props: propsIF) {
     return (
         <div>
             <div className={styles.card_title}>My Recent Transactions</div>
-            <div className={styles.header}>
-                <div>Pool</div>
-                <div>Type</div>
-                <div>Value</div>
-            </div>
-            {searchedTxs.slice(0, 4).map((tx: TransactionIF) => (
-                <TxLI
-                    key={`tx-sidebar-search-result-${JSON.stringify(tx)}`}
-                    tx={tx}
-                    handleClick={handleClick}
-                />
-            ))}
+            {searchedTxs.length ? (
+                <>
+                    <div className={styles.header}>
+                        <div>Pool</div>
+                        <div>Type</div>
+                        <div>Value</div>
+                    </div>
+                    <div className={styles.main_result_container}>
+                        {searchedTxs.slice(0, 4).map((tx: TransactionIF) => (
+                            <TxLI
+                                key={`tx-sidebar-search-result-${JSON.stringify(tx)}`}
+                                tx={tx}
+                                handleClick={handleClick}
+                            />
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <h5 className={styles.not_found_text}>No Transactions Found</h5>
+            )}
         </div>
     );
 }
