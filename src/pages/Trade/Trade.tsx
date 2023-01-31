@@ -144,7 +144,6 @@ export default function Trade(props: propsIF) {
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
-        setIsCandleDataNull,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
