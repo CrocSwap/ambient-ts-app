@@ -4,7 +4,7 @@ import {
     PositionIF,
     TokenIF,
     TempPoolIF,
-    TransactionIF
+    TransactionIF,
 } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
@@ -15,14 +15,14 @@ export const useSidebarSearch = (
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
     verifyToken: (addr: string, chn: string) => boolean,
-    shouldRecheckLocalStorage: boolean
+    shouldRecheckLocalStorage: boolean,
 ): [
     Dispatch<SetStateAction<string>>,
     boolean,
     TempPoolIF[],
     PositionIF[],
     TransactionIF[],
-    LimitOrderIF[]
+    LimitOrderIF[],
 ] => {
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
@@ -287,9 +287,9 @@ export const useSidebarSearch = (
             limitOrderList.filter((limitOrder: LimitOrderIF) =>
                 symb.length === 2
                     ? limitOrder.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                    limitOrder.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                      limitOrder.quoteSymbol.toLowerCase() === symb.toLowerCase()
                     : limitOrder.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
-                    limitOrder.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
+                      limitOrder.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return array of txs with no search filtering
         const noSearch = (): LimitOrderIF[] => limitOrderList;
@@ -311,12 +311,5 @@ export const useSidebarSearch = (
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
 
-    return [
-        setRawInput,
-        !!searchAs,
-        outputPools,
-        outputPositions,
-        outputTxs,
-        outputLimits
-    ];
+    return [setRawInput, !!searchAs, outputPools, outputPositions, outputTxs, outputLimits];
 };

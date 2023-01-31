@@ -8,10 +8,10 @@ interface propsIF {
     chainId: string;
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>,
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>,
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function OrdersSearchResults(props: propsIF) {
@@ -22,7 +22,7 @@ export default function OrdersSearchResults(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         setCurrentPositionActive,
-        setIsShowAllEnabled
+        setIsShowAllEnabled,
     } = props;
 
     const navigate = useNavigate();
@@ -50,16 +50,14 @@ export default function OrdersSearchResults(props: propsIF) {
                 <div>Price</div>
                 <div>Value</div>
             </div>
-            {
-                searchedLimitOrders.slice(0,4).map((limitOrder: LimitOrderIF) => (
-                    <LimitOrderLI
-                        key={`order-search-result-${JSON.stringify(limitOrder)}`}
-                        limitOrder={limitOrder}
-                        isDenomBase={isDenomBase}
-                        handleClick={handleClick}
-                    />
-                ))
-            }
+            {searchedLimitOrders.slice(0, 4).map((limitOrder: LimitOrderIF) => (
+                <LimitOrderLI
+                    key={`order-search-result-${JSON.stringify(limitOrder)}`}
+                    limitOrder={limitOrder}
+                    isDenomBase={isDenomBase}
+                    handleClick={handleClick}
+                />
+            ))}
         </div>
     );
 }

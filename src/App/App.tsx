@@ -328,6 +328,7 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
@@ -1267,6 +1268,8 @@ export default function App() {
 
     useEffect(() => {
         setCandleData(undefined);
+        setIsCandleDataNull(false);
+        setExpandTradeTable(false);
         fetchCandles();
     }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
 
@@ -1331,6 +1334,9 @@ export default function App() {
             } catch (error) {
                 console.log({ error });
             }
+        } else {
+            setIsCandleDataNull(true);
+            setExpandTradeTable(true);
         }
     };
 
@@ -2793,6 +2799,8 @@ export default function App() {
                                     setFullScreenChart={setFullScreenChart}
                                     fetchingCandle={fetchingCandle}
                                     setFetchingCandle={setFetchingCandle}
+                                    isCandleDataNull={isCandleDataNull}
+                                    setIsCandleDataNull={setIsCandleDataNull}
                                 />
                             }
                         >

@@ -48,7 +48,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         searchedTxs,
-        searchedLimitOrders
+        searchedLimitOrders,
     } = props;
 
     return (
