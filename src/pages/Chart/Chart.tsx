@@ -949,14 +949,13 @@ export default function Chart(props: ChartData) {
                         : element.toString().length;
             }
         });
-
         if (result) {
             if (yTickValueLenght > 4 && yTickValueLenght < 8) setYaxisWidth('6rem');
-            if (yTickValueLenght > 8) setYaxisWidth(yTickValueLenght / 1.5 + 'rem');
-            if (yTickValueLenght >= 15) setYaxisWidth('9rem');
-            if (yTickValueLenght >= 20) setYaxisWidth('10rem');
+            if (yTickValueLenght >= 8) setYaxisWidth('7rem');
+            if (yTickValueLenght >= 15) setYaxisWidth('10rem');
+            if (yTickValueLenght >= 20) setYaxisWidth('11rem');
         }
-        if (yTickValueLenght <= 4) setYaxisWidth('4rem');
+        if (yTickValueLenght <= 4) setYaxisWidth('5rem');
     }
     useEffect(() => {
         if (scaleData && yAxis) {
