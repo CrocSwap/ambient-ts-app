@@ -1,44 +1,32 @@
 import styles from './FavoritePoolsCard.module.css';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useMemo, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     pool: PoolIF;
+    chainId: string;
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function FavoritePoolsCard(props: propsIF) {
-    const { pool, cachedPoolStatsFetch, lastBlockNumber } = props;
+    const { pool, chainId, cachedPoolStatsFetch, lastBlockNumber } = props;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
-    const { pathname } = useLocation();
+    const [addrTokenA, addrTokenB] =
+    tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+        ? [pool.quote.address, pool.base.address]
+        : [pool.base.address, pool.quote.address];
 
-    const linkPath = useMemo(() => {
-        let locationSlug = '';
-        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
-            locationSlug = '/trade/market';
-        } else if (pathname.startsWith('/trade/limit')) {
-            locationSlug = '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            locationSlug = '/trade/range';
-        } else if (pathname.startsWith('/swap')) {
-            locationSlug = '/swap';
-        }
-        const [addrTokenA, addrTokenB] =
-            tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-                ? [pool.quote.address, pool.base.address]
-                : [pool.base.address, pool.quote.address];
-        return locationSlug + '/chain=0x5&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB;
-    }, [pathname]);
+    const linkPath = '/trade/market/chain=' + chainId + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB
 
     const fetchPoolStats = () => {
         (async () => {
