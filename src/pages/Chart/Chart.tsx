@@ -1600,6 +1600,7 @@ export default function Chart(props: ChartData) {
 
                     if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
                         const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
 
                         const liqAllBidPrices = liquidityData.liqBidData.map(
@@ -2462,9 +2463,27 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isUserLoggedIn]);
 
     useEffect(() => {
-        if (scaleData !== undefined && reset) {
+        if (scaleData !== undefined && reset && poolPriceDisplay !== undefined) {
             scaleData.xScale.domain(scaleData.xScaleCopy.domain());
-            scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+
+            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+            const filtered = parsedChartData?.chartData.filter(
+                (data: any) => data.date >= xmin && data.date <= xmax,
+            );
+
+            if (filtered !== undefined) {
+                const minYBoundary = d3.min(filtered, (d) => d.low);
+                const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
+                    const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+
+                    scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
+                }
+            }
+
             setReset(false);
             setShowLatest(false);
         }
@@ -4102,7 +4121,8 @@ export default function Chart(props: ChartData) {
                                 ]).call(liqAskSeries);
                                 areaBidJoin(svg, [
                                     liqMode === 'Curve'
-                                        ? isAdvancedModeActive
+                                        ? isAdvancedModeActive &&
+                                          location.pathname.includes('range')
                                             ? liquidityData.liqBidData
                                             : liquidityData.liqBidData.filter(
                                                   (d: any) =>
@@ -4606,7 +4626,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges],
+        [candlestick, bandwidth, limit, ranges, location.pathname],
     );
 
     function showCrosshairVertical() {
