@@ -23,7 +23,7 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
     const {
         tx,
         // coinGeckoTokenMap,
-        // chainId,
+        chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         setSelectedOutsideTab,
@@ -134,7 +134,14 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(linkPath);
+        navigate(
+            '/trade/market/chain=' +
+            chainId +
+            '&tokenA=' +
+            tx.base +
+            '&tokenB=' +
+            tx.quote
+        );
     }
 
     const transactionTypeSide =
