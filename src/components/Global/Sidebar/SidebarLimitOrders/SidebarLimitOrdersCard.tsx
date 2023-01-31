@@ -1,9 +1,9 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { SetStateAction, Dispatch, useState, useEffect } from 'react';
+import { SetStateAction, Dispatch } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../utils/numbers';
+import { getLimitPrice } from './functions/getLimitPrice';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -29,46 +29,7 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         isDenomBase,
     } = props;
 
-    const baseId = order.base + '_' + order.chainId;
-    const quoteId = order.quote + '_' + order.chainId;
-
-    const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
-    const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
-
-    const [priceDisplay, setPriceDisplay] = useState<string | undefined>(undefined);
-
-    const baseTokenCharacter = baseToken?.symbol ? getUnicodeCharacter(baseToken?.symbol) : '';
-    const quoteTokenCharacter = quoteToken?.symbol ? getUnicodeCharacter(quoteToken?.symbol) : '';
-
-    useEffect(() => {
-        if (isDenomBase) {
-            const nonTruncatedPrice = order.invLimitPriceDecimalCorrected;
-            const truncatedPrice =
-                nonTruncatedPrice < 2
-                    ? nonTruncatedPrice.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                    })
-                    : nonTruncatedPrice.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    });
-            setPriceDisplay(quoteTokenCharacter + truncatedPrice);
-        } else {
-            const nonTruncatedPrice = order.limitPriceDecimalCorrected;
-            const truncatedPrice =
-                nonTruncatedPrice < 2
-                    ? nonTruncatedPrice.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                    })
-                    : nonTruncatedPrice.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setPriceDisplay(baseTokenCharacter + truncatedPrice);
-        }
-    }, [JSON.stringify(order), isDenomBase]);
+    const price = getLimitPrice(order, tokenMap, isDenomBase);
 
     const usdValueNum = order.totalValueUSD;
     const usdValueTruncated = !usdValueNum
@@ -108,7 +69,7 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
                     ? `${order?.baseSymbol}/${order?.quoteSymbol}`
                     : `${order?.quoteSymbol}/${order?.baseSymbol}`}
             </div>
-            <div>{priceDisplay}</div>
+            <div>{price}</div>
             <div className={styles.status_display}>
                 {usdValueTruncated ? '$' + usdValueTruncated : '…'}
             </div>
