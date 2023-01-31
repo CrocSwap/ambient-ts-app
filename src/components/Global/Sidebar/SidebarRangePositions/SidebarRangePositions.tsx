@@ -5,6 +5,7 @@ import { SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface propsIF {
+    chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
     selectedOutsideTab: number;
@@ -29,15 +30,17 @@ export default function SidebarRangePositions(props: propsIF) {
     const navigate = useNavigate();
 
     const {
-        tokenMap,
+        chainId,
         isDenomBase,
         userPositions,
-        currentPositionActive,
         setCurrentPositionActive,
         // expandTradeTable,
         isUserLoggedIn,
 
         setShowSidebar,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setIsShowAllEnabled
     } = props;
 
     const onTradeRoute = location.pathname.includes('trade');
@@ -64,19 +67,20 @@ export default function SidebarRangePositions(props: propsIF) {
         // props.setExpandTradeTable(true);
     };
 
-    const sidebarRangePositionCardProps = {
-        tokenMap: tokenMap,
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        isShowAllEnabled: props.isShowAllEnabled,
-        setIsShowAllEnabled: props.setIsShowAllEnabled,
-        isUserLoggedIn: isUserLoggedIn,
-        tabToSwitchToBasedOnRoute: tabToSwitchToBasedOnRoute,
-    };
+    const handleRangePositionClick = (pos: PositionIF): void => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setCurrentPositionActive(pos.positionStorageSlot);
+        setIsShowAllEnabled(false);
+        navigate(
+            '/trade/range/chain=' +
+            chainId +
+            '&tokenA=' +
+            pos.base +
+            '&tokenB=' +
+            pos.quote
+        );
+    }
 
     // TODO:   @Junior please refactor the header <div> as a <header> element
 
@@ -94,7 +98,7 @@ export default function SidebarRangePositions(props: propsIF) {
                             key={idx}
                             position={position}
                             isDenomBase={isDenomBase}
-                            {...sidebarRangePositionCardProps}
+                            handleClick={handleRangePositionClick}
                         />
                     ))}
             </div>

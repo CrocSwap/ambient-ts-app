@@ -209,6 +209,7 @@ export default function Sidebar(props: propsIF) {
             icon: rangePositionsImage,
             data: (
                 <SidebarRangePositions
+                    chainId={chainId}
                     userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
                     {...sidebarRangePositionProps}
