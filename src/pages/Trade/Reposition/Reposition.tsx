@@ -12,12 +12,61 @@ import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import { useLocation, Link } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useState } from 'react';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 export default function Reposition() {
     const location = useLocation();
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const isDenomBase = tradeData.isDenomBase;
     const position = tradeData.positionToBeRepositioned;
+
+    const currentPoolPriceTick = position?.poolPriceInTicks || 0;
+    const baseTokenDecimals = position?.baseDecimals || 18;
+    const quoteTokenDecimals = position?.quoteDecimals || 18;
+
+    const currentPoolPriceNonDisplay = tickToPrice(currentPoolPriceTick);
+
+    const currentPoolDisplayPriceInBase =
+        1 / toDisplayPrice(currentPoolPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+
+    const currentPoolDisplayPriceInQuote = toDisplayPrice(
+        currentPoolPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    const truncatedCurrentPoolDisplayPriceInBase = currentPoolDisplayPriceInBase
+        ? currentPoolDisplayPriceInBase < 2
+            ? currentPoolDisplayPriceInBase.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : currentPoolDisplayPriceInBase.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : '0.00';
+
+    const truncatedCurrentPoolDisplayPriceInQuote = currentPoolDisplayPriceInQuote
+        ? currentPoolDisplayPriceInQuote < 2
+            ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : '0.00';
+
+    const currentPoolPriceDisplay =
+        currentPoolPriceNonDisplay === 0
+            ? '0'
+            : isDenomBase
+            ? truncatedCurrentPoolDisplayPriceInBase
+            : truncatedCurrentPoolDisplayPriceInQuote;
 
     const currentLocation = location.pathname;
     const [
@@ -61,6 +110,8 @@ export default function Reposition() {
         console.log({ position });
     };
 
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader />
@@ -68,9 +119,20 @@ export default function Reposition() {
             <div className={styles.reposition_content}>
                 {repositionAddToggle}
                 {/* <DividerDark /> */}
-                <RepositionRangeWidth />
-                <RepositionDenominationSwitch />
-                <RepositionPriceInfo position={position} />
+                <RepositionRangeWidth
+                    rangeWidthPercentage={rangeWidthPercentage}
+                    setRangeWidthPercentage={setRangeWidthPercentage}
+                />
+                <RepositionDenominationSwitch
+                    baseTokenSymbol={position?.baseSymbol || 'ETH'}
+                    quoteTokenSymbol={position?.quoteSymbol || 'USDC'}
+                />
+                <RepositionPriceInfo
+                    position={position}
+                    currentPoolPriceDisplay={currentPoolPriceDisplay}
+                    currentPoolPriceTick={currentPoolPriceTick}
+                    rangeWidthPercentage={rangeWidthPercentage}
+                />
                 <RepositionButton onClickFn={sendRepositionTransaction} />
                 {/* <RepositionButton onClickFn={openModal} /> */}
             </div>

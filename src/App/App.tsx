@@ -2636,6 +2636,7 @@ export default function App() {
     useEffect(() => {
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
+            // if (isDenomBase !== undefined && !tradeData.didUserFlipDenom) {
             if (tradeData.isDenomBase !== isDenomBase) {
                 console.log('denomination changed');
                 dispatch(setDenomInBase(isDenomBase));

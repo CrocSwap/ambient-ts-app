@@ -153,7 +153,6 @@ export default function RangesMenu(props: propsIF) {
             className={styles.reposition_button}
             to={'/trade/reposition'}
             onClick={() => {
-                console.log({ positionData });
                 dispatch(setPositionToBeRepositioned(positionData));
             }}
         >
