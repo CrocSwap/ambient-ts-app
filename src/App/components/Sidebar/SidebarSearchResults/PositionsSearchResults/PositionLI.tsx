@@ -9,11 +9,7 @@ interface propsIF {
 }
 
 export default function PositionLI(props: propsIF) {
-    const {
-        position,
-        isDenomBase,
-        handleClick
-    } = props;
+    const { position, isDenomBase, handleClick } = props;
 
     // fn to generate human-readable range output (from X to Y)
     const rangeDisplay = getRangeDisplay(position, isDenomBase);

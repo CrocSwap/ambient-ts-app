@@ -6,8 +6,8 @@ export const useClick = (
     setOutsideControl: Dispatch<SetStateAction<boolean>>,
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
     setCurrentPositionActive: Dispatch<SetStateAction<string>>,
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
-): (position: PositionIF) => void => {
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>,
+): ((position: PositionIF) => void) => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
@@ -26,13 +26,7 @@ export const useClick = (
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            position.base +
-            '&tokenB=' +
-            position.quote
-        );
+        navigate(locationSlug + '/chain=0x5&tokenA=' + position.base + '&tokenB=' + position.quote);
     }
     return handleClick;
-}
+};

@@ -27,7 +27,7 @@ export default function PositionsSearchResults(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         setCurrentPositionActive,
-        setIsShowAllEnabled
+        setIsShowAllEnabled,
     );
 
     return (

@@ -6,10 +6,8 @@ export const useClick = (
     setOutsideControl: Dispatch<SetStateAction<boolean>>,
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
     setCurrentPositionActive: Dispatch<SetStateAction<string>>,
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
-): (
-    (limitOrder: LimitOrderIF) => void
-) => {
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>,
+): ((limitOrder: LimitOrderIF) => void) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
 
@@ -29,13 +27,9 @@ export const useClick = (
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
         navigate(
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            limitOrder.base +
-            '&tokenB=' +
-            limitOrder.quote
+            locationSlug + '/chain=0x5&tokenA=' + limitOrder.base + '&tokenB=' + limitOrder.quote,
         );
-    }
+    };
 
     return handleClick;
-}
+};

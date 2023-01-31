@@ -250,12 +250,12 @@ export default function Trade(props: propsIF) {
     );
 
     useEffect(() => {
-        setLiquidityData(activePoolLiquidityData?.liquidityData);
-    }, [activePoolLiquidityData]);
+        setLiquidityData(undefined);
+    }, [pool?.baseToken, pool?.quoteToken]);
 
     useEffect(() => {
-        setLiquidityData(undefined);
-    }, [pool]);
+        setLiquidityData(activePoolLiquidityData?.liquidityData);
+    }, [activePoolLiquidityData]);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (

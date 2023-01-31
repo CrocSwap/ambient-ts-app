@@ -7,10 +7,10 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 interface OrdersSearchResultPropsIF {
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>,
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>,
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
@@ -20,14 +20,14 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         setCurrentPositionActive,
-        setIsShowAllEnabled
+        setIsShowAllEnabled,
     } = props;
 
     const handleClick = useClick(
         setOutsideControl,
         setSelectedOutsideTab,
         setCurrentPositionActive,
-        setIsShowAllEnabled
+        setIsShowAllEnabled,
     );
 
     return (
@@ -38,16 +38,14 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
                 <div>Price</div>
                 <div>Value</div>
             </div>
-            {
-                searchedLimitOrders.slice(0,4).map((limitOrder: LimitOrderIF) => (
-                    <LimitOrderLI
-                        key={`order-search-result-${JSON.stringify(limitOrder)}`}
-                        limitOrder={limitOrder}
-                        isDenomBase={isDenomBase}
-                        handleClick={handleClick}
-                    />
-                ))
-            }
+            {searchedLimitOrders.slice(0, 4).map((limitOrder: LimitOrderIF) => (
+                <LimitOrderLI
+                    key={`order-search-result-${JSON.stringify(limitOrder)}`}
+                    limitOrder={limitOrder}
+                    isDenomBase={isDenomBase}
+                    handleClick={handleClick}
+                />
+            ))}
         </div>
     );
 }

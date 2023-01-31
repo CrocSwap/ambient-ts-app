@@ -131,7 +131,7 @@ export default function Sidebar(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         txsByUser,
-        limitsByUser
+        limitsByUser,
     } = props;
 
     const location = useLocation();
@@ -286,14 +286,14 @@ export default function Sidebar(props: propsIF) {
         searchedPools,
         searchedPositions,
         searchedTxs,
-        searchedLimitOrders
+        searchedLimitOrders,
     ] = useSidebarSearch(
         poolList,
         positionsByUser,
         txsByUser,
         limitsByUser,
         verifyToken,
-        shouldRecheckLocalStorage
+        shouldRecheckLocalStorage,
     );
 
     const [searchInput, setSearchInput] = useState<string[][]>();

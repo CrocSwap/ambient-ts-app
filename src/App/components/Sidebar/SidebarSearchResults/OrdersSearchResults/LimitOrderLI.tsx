@@ -25,7 +25,9 @@ export default function OrderSearchResult(props: propsIF) {
 
     return (
         <div className={styles.card_container} onClick={() => handleClick(limitOrder)}>
-            <div>{limitOrder.baseSymbol} / {limitOrder.quoteSymbol}</div>
+            <div>
+                {limitOrder.baseSymbol} / {limitOrder.quoteSymbol}
+            </div>
             <div>{displayPrice}</div>
             <div>{valueUSD}</div>
         </div>
