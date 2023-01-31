@@ -10,8 +10,8 @@ export const getValueUSD = (value: number): string => {
         : value >= 10000
         ? formatAmountOld(value, 1)
         : value.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
     return usdValueTruncated ? '$' + usdValueTruncated : '…';
-}
+};
