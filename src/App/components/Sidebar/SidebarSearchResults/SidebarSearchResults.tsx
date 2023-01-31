@@ -73,6 +73,7 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <OrdersSearchResults
+                        chainId={chainId}
                         searchedLimitOrders={searchedLimitOrders}
                         isDenomBase={isDenomBase}
                         setOutsideControl={setOutsideControl}
