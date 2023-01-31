@@ -33,7 +33,7 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
 
     const navigate = useNavigate();
 
-    function handleRecentTransactionClick(tx: TransactionIF) {
+    function handleClick(tx: TransactionIF) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
@@ -55,7 +55,7 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
     const txValue = getTxValue(tx);
 
     return (
-        <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
+        <div className={styles.container} onClick={() => handleClick(tx)}>
             <div>
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </div>
