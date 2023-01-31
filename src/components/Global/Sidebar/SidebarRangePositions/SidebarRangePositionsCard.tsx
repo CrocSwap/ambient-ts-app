@@ -79,14 +79,6 @@ export default function SidebarRangePositionsCard(props: propsIF) {
             ? styles.inner_circle_positive
             : styles.inner_circle_negative;
 
-    const rangeStatusDisplay = (
-        <div className={styles.range_status_container}>
-            <div className={rangeStatusStyle}>
-                <div className={styles.inner_circle_2}></div>
-            </div>
-        </div>
-    );
-
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
         : '';
@@ -110,7 +102,11 @@ export default function SidebarRangePositionsCard(props: propsIF) {
             </div>
             <div>
                 {rangeDisplay}
-                {rangeStatusDisplay}
+            <div className={styles.range_status_container}>
+                <div className={rangeStatusStyle}>
+                    <div className={styles.inner_circle_2}></div>
+                </div>
+            </div>
             </div>
             <div className={styles.status_display}>{value}</div>
         </div>
