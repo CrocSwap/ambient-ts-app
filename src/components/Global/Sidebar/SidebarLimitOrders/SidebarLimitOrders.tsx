@@ -27,6 +27,8 @@ export default function SidebarLimitOrders(props: propsIF) {
         tokenMap,
         chainId,
         isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
@@ -59,6 +61,21 @@ export default function SidebarLimitOrders(props: propsIF) {
         navigate('/account');
     }
 
+    const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
+        setCurrentPositionActive(limitOrder.limitOrderIdentifier);
+        setIsShowAllEnabled(false);
+        navigate(
+            '/trade/limit/chain=' +
+            chainId +
+            '&tokenA=' +
+            limitOrder.base +
+            '&tokenB=' +
+            limitOrder.quote
+        );
+    }
+
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
         props.setOutsideControl(true);
@@ -86,6 +103,7 @@ export default function SidebarLimitOrders(props: propsIF) {
                             key={idx}
                             isDenomBase={isDenomBase}
                             order={order}
+                            handleClick={handleLimitOrderClick}
                             {...sidebarLimitOrderCardProps}
                         />
                     ))}
