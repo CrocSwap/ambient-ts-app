@@ -1,11 +1,15 @@
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
-import styles from './SidebarRecentTransactions.module.css';
-import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+// START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// START: Import Local Files
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import styles from './SidebarRecentTransactions.module.css';
+
+// START: Import JSX Components
+import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+
 interface propsIF {
-    // showSidebar: boolean;
     mostRecentTransactions: TransactionIF[];
     coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
@@ -13,10 +17,8 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -26,8 +28,6 @@ interface propsIF {
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
-    const location = useLocation();
-    const navigate = useNavigate();
     const {
         mostRecentTransactions,
         chainId,
@@ -39,15 +39,15 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setShowSidebar,
     } = props;
 
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 0 : 0;
 
     function redirectBasedOnRoute() {
-        // if (onTradeRoute || onAccountRoute) return;
-        // navigate('/trade');
-
         if (onAccountRoute) return;
         navigate('/account');
     }
@@ -56,11 +56,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         redirectBasedOnRoute();
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
         setShowSidebar(false);
-
-        // props.setIsShowAllEnabled(false);
-        // props.setExpandTradeTable(true);
     };
 
     // TODO:   @Junior please refactor the header <div> as a <header> element
