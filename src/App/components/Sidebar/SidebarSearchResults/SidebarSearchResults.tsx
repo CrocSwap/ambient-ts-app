@@ -63,12 +63,11 @@ export default function SidebarSearchResults(props: propsIF) {
             />
             {isConnected && (
                 <>
-                    <PositionsSearchResults
-                        searchedPositions={searchedPositions}
-                        isDenomBase={isDenomBase}
+                    <TxSearchResults
+                        searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}
                         setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentPositionActive={setCurrentPositionActive}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <OrdersSearchResults
@@ -79,11 +78,12 @@ export default function SidebarSearchResults(props: propsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
-                    <TxSearchResults
-                        searchedTxs={searchedTxs}
+                    <PositionsSearchResults
+                        searchedPositions={searchedPositions}
+                        isDenomBase={isDenomBase}
                         setOutsideControl={setOutsideControl}
                         setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                 </>
