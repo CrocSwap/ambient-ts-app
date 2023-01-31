@@ -1,7 +1,6 @@
 import styles from './SidebarLimitOrdersCard.module.css';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { getLimitPrice } from './functions/getLimitPrice';
-import { getLimitValue } from './functions/getLimitValue';
+import { getLimitPrice, getLimitValue } from './functions/exports';
 
 interface propsIF {
     isDenomBase: boolean;
