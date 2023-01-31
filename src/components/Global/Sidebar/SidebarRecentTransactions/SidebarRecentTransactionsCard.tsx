@@ -2,8 +2,8 @@ import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction } from 'react';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { getTxType } from './functions/getTxType';
+import { getTxValue } from './functions/getTxValue'
 
 interface propsIF {
     tx: TransactionIF;
@@ -32,56 +32,6 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
         tabToSwitchToBasedOnRoute,
     } = props;
 
-    const usdValueNum = tx.valueUSD;
-    const totalValueUSD = tx.totalValueUSD;
-    const totalFlowUSD = tx.totalFlowUSD;
-    const totalFlowAbsNum = totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
-
-    const usdValueTruncated = !usdValueNum
-        ? undefined
-        : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2)
-        : usdValueNum < 2
-        ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 10000
-        ? formatAmountOld(usdValueNum, 1)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const totalValueUSDTruncated = !totalValueUSD
-        ? undefined
-        : totalValueUSD < 0.001
-        ? totalValueUSD.toExponential(2)
-        : totalValueUSD < 2
-        ? totalValueUSD.toPrecision(3)
-        : totalValueUSD >= 10000
-        ? formatAmountOld(totalValueUSD, 1)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          totalValueUSD.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const totalFlowUSDTruncated =
-        totalFlowAbsNum === undefined
-            ? undefined
-            : totalFlowAbsNum === 0
-            ? '0.00'
-            : totalFlowAbsNum < 0.001
-            ? totalFlowAbsNum.toExponential(2)
-            : totalFlowAbsNum < 2
-            ? totalFlowAbsNum.toPrecision(3)
-            : totalFlowAbsNum >= 10000
-            ? formatAmountOld(totalFlowAbsNum, 1)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              totalFlowAbsNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
     const navigate = useNavigate();
 
     function handleRecentTransactionClick(tx: TransactionIF) {
@@ -102,21 +52,16 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
     // human-readable form of transaction type to display in DOM
     const txType = getTxType(tx.entityType);
 
+    // human-readable form of transaction value to display in DOM
+    const txValue = getTxValue(tx);
+
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </div>
             <div>{txType}</div>
-            <div className={styles.status_display}>
-                {totalFlowUSDTruncated !== undefined
-                    ? '$' + totalFlowUSDTruncated
-                    : totalValueUSDTruncated
-                    ? '$' + totalValueUSDTruncated
-                    : usdValueTruncated
-                    ? '$' + usdValueTruncated
-                    : '…'}
-            </div>
+            <div className={styles.status_display}>{txValue}</div>
         </div>
     );
 }
