@@ -4,6 +4,7 @@ import { useMemo, SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { getPositionValue } from './functions/getPositionValue';
+import { getSymbols } from './functions/getSymbols';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -69,6 +70,9 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     //         maximumFractionDigits: 2,
     //     });
 
+    // human-readable string showing the tokens in the pool
+    const pair = getSymbols(isDenomBase, position.baseSymbol, position.quoteSymbol);
+
     // human-readable string showing total value of the position
     const value = getPositionValue(position.totalValueUSD);
 
@@ -95,11 +99,7 @@ export default function SidebarRangePositionsCard(props: propsIF) {
 
     return (
         <div className={styles.container} onClick={() => handleRangePositionClick(position)}>
-            <div>
-                {isDenomBase
-                    ? `${position?.baseSymbol}/${position?.quoteSymbol}`
-                    : `${position?.quoteSymbol}/${position?.baseSymbol}`}
-            </div>
+            <div>{pair}</div>
             <div>
                 {rangeDisplay}
             <div className={styles.range_status_container}>
