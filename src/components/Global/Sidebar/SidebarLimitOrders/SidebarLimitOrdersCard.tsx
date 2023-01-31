@@ -29,18 +29,11 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         isDenomBase,
     } = props;
 
-    // if (order.positionLiq === '0') return null;
-
     const baseId = order.base + '_' + order.chainId;
     const quoteId = order.quote + '_' + order.chainId;
 
     const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
-
-    // const onTradeRoute = location.pathname.includes('trade');
-    // const onAccountRoute = location.pathname.includes('account');
-
-    // const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 0;
 
     const [priceDisplay, setPriceDisplay] = useState<string | undefined>(undefined);
 
@@ -53,22 +46,22 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
             const truncatedPrice =
                 nonTruncatedPrice < 2
                     ? nonTruncatedPrice.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                    })
                     : nonTruncatedPrice.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
             setPriceDisplay(quoteTokenCharacter + truncatedPrice);
         } else {
             const nonTruncatedPrice = order.limitPriceDecimalCorrected;
             const truncatedPrice =
                 nonTruncatedPrice < 2
                     ? nonTruncatedPrice.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 6,
+                    })
                     : nonTruncatedPrice.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -76,15 +69,6 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
             setPriceDisplay(baseTokenCharacter + truncatedPrice);
         }
     }, [JSON.stringify(order), isDenomBase]);
-
-    // const liqTotalUSD =
-    //     order.positionLiqTotalUSD !== undefined
-    //         ? '$' +
-    //           order.positionLiqTotalUSD?.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //         : '…';
 
     const usdValueNum = order.totalValueUSD;
     const usdValueTruncated = !usdValueNum
@@ -95,11 +79,10 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
         ? formatAmountOld(usdValueNum, 1)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+        : usdValueNum.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
 
     const navigate = useNavigate();
 
