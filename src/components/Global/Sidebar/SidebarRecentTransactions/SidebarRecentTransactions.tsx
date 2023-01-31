@@ -67,7 +67,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         );
     }
 
-    const handleViewMoreClick = () => {
+    const handleViewMoreClick = (): void => {
         redirectBasedOnRoute();
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
@@ -84,9 +84,9 @@ export default function SidebarRecentTransactions(props: propsIF) {
                 <div>Value</div>
             </div>
             <div className={styles.content}>
-                {mostRecentTransactions.map((tx, idx) => (
+                {mostRecentTransactions.map((tx: TransactionIF) => (
                     <SidebarRecentTransactionsCard
-                        key={idx}
+                        key={'Sidebar-Recent-Transactions-Card-' + JSON.stringify(tx)}
                         tx={tx}
                         handleClick={handleCardClick}
                     />
