@@ -27,7 +27,7 @@ export default function PositionsSearchResults(props: propsIF) {
 
     const navigate = useNavigate();
 
-    const handleClick = (position: PositionIF) => {
+    const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.positionStorageSlot);
