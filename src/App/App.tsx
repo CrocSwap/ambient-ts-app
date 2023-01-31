@@ -1769,9 +1769,9 @@ export default function App() {
                 // );
                 if (spotPrice) {
                     const newDisplayPrice = getDisplayPrice(spotPrice);
-                    console.log({ newDisplayPrice });
+                    // console.log({ newDisplayPrice });
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        console.log('setting display pool price');
+                        console.log('setting new display pool price to: ' + newDisplayPrice);
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
