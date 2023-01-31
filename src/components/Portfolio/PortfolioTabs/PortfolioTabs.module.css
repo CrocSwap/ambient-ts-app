@@ -23,3 +23,12 @@
     height: 30px;
     border-radius: 50%;
 }
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 850px) and (-webkit-min-device-pixel-ratio: 2) {
+    .tabs_container {
+        margin: 0 auto;
+        width: 90%;
+        margin-left: 30px;
+    }
+}

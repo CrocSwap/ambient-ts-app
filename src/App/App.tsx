@@ -2116,7 +2116,11 @@ export default function App() {
             setSelectedOutsideTab(0);
         } else if (currentLocation.includes('/limit')) {
             setSelectedOutsideTab(1);
-        } else if (currentLocation.includes('/range')) {
+        } else if (
+            currentLocation.includes('/range') ||
+            currentLocation.includes('reposition') ||
+            currentLocation.includes('add')
+        ) {
             setSelectedOutsideTab(2);
         }
     }
@@ -2590,7 +2594,7 @@ export default function App() {
         removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
-        limitsByUser: graphData.limitOrdersByUser.limitOrders
+        limitsByUser: graphData.limitOrdersByUser.limitOrders,
     };
 
     const analyticsProps = {
