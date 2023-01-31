@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import PositionLI from './PositionLI';
-import { useClick } from './hooks/useClick';
 
 interface propsIF {
+    chainId: string;
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
@@ -15,6 +16,7 @@ interface propsIF {
 
 export default function PositionsSearchResults(props: propsIF) {
     const {
+        chainId,
         searchedPositions,
         isDenomBase,
         setOutsideControl,
@@ -23,12 +25,22 @@ export default function PositionsSearchResults(props: propsIF) {
         setIsShowAllEnabled,
     } = props;
 
-    const handleClick = useClick(
-        setOutsideControl,
-        setSelectedOutsideTab,
-        setCurrentPositionActive,
-        setIsShowAllEnabled
-    );
+    const navigate = useNavigate();
+
+    const handleClick = (position: PositionIF) => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(2);
+        setCurrentPositionActive(position.positionStorageSlot);
+        setIsShowAllEnabled(false);
+        navigate(
+            '/trade/range/chain=' +
+            chainId +
+            '&tokenA=' +
+            position.base +
+            '&tokenB=' +
+            position.quote
+        );
+    }
 
     return (
         <div>

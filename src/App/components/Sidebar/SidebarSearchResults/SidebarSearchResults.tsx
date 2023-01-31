@@ -64,6 +64,7 @@ export default function SidebarSearchResults(props: propsIF) {
             {isConnected && (
                 <>
                     <PositionsSearchResults
+                        chainId={chainId}
                         searchedPositions={searchedPositions}
                         isDenomBase={isDenomBase}
                         setOutsideControl={setOutsideControl}
