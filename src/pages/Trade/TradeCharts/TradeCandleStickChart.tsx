@@ -268,7 +268,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             volumeData.map((data: any) => {
                 volumeTempData.push({
                     time: data.time,
-                    value: data.value ? volumeLogScale(data.value) : 0,
+                    value: data.value ? data.value : 0,
                     volume: data.value ? data.value : 0,
                     color: data.color,
                 });
