@@ -2017,7 +2017,7 @@ export default function App() {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 500, // fetch last 500 changes,
+                    n: 100, // fetch last 100 changes,
                 })
                     .then((updatedTransactions) => {
                         dispatch(

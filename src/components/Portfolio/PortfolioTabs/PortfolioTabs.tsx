@@ -234,7 +234,7 @@ export default function PortfolioTabs(props: propsIF) {
             simpleCalc: true,
             annotateMEV: false,
             ensResolution: true,
-            n: 500, // fetch last 500 changes,
+            n: 100, // fetch last 500 changes,
         })
             .then((updatedTransactions) => {
                 if (updatedTransactions) {
@@ -259,6 +259,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
+            console.log('querying user tx/order/positions because address changed');
             if (!connectedAccountActive) {
                 if (resolvedAddress) {
                     dispatch(resetLookupUserDataLoadingStatus());

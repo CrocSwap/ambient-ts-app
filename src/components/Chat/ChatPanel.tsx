@@ -16,7 +16,7 @@ import { Link, useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
-import { useAccount } from 'wagmi';
+import { useAccount, useEnsName } from 'wagmi';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -57,8 +57,10 @@ export default function ChatPanel(props: ChatProps) {
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
     const { address } = useAccount();
+    const { data: ens } = useEnsName({ address });
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
+    const [walletID, setWalletID] = useState('');
     const [scrollDirection, setScrollDirection] = useState(String);
     const wrapperStyleFull = styles.chat_wrapper_full;
     const [notification, setNotification] = useState(0);
@@ -115,15 +117,19 @@ export default function ChatPanel(props: ChatProps) {
     }, [lastMessage]);
 
     useEffect(() => {
+        console.log('name is: ', ens);
         if (address) {
+            console.log('name is: ', ens);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                if (props.ensName !== '') {
+                setWalletID(result.userData.walletID);
+                if (ens !== null) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    updateUser(currentUser as string, props.ensName).then((result: any) => {
+                    updateUser(currentUser as string, ens as string).then((result: any) => {
                         if (result.status === 'OK') {
-                            setName(props.ensName);
+                            setName(ens as string);
+                            console.log('set name: ', name);
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             updateMessageUser(currentUser as string, name).then((result: any) => {
                                 console.log(result);
@@ -131,10 +137,12 @@ export default function ChatPanel(props: ChatProps) {
                         }
                     });
                 } else {
-                    setName(props.ensName !== '' ? props.ensName : result.userData.walletID);
+                    setName(ens !== null ? ens : result.userData.walletID);
+                    console.log('set name: ', name);
                 }
             });
         }
+        console.log('name is after if: ', ens);
     }, [address, props.chatStatus, props.isFullScreen]);
 
     // useEffect(() => {
@@ -250,11 +258,12 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                if (props.ensName !== '') {
+                setWalletID(result.userData.walletID);
+                if (ens !== null) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    updateUser(currentUser as string, props.ensName).then((result: any) => {
+                    updateUser(currentUser as string, ens as string).then((result: any) => {
                         if (result.status === 'OK') {
-                            setName(props.ensName);
+                            setName(ens as string);
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             updateMessageUser(currentUser as string, name).then((result: any) => {
                                 console.log(result);
@@ -262,7 +271,8 @@ export default function ChatPanel(props: ChatProps) {
                         }
                     });
                 } else {
-                    setName(props.ensName === '' ? result.userData.walletID : props.ensName);
+                    setName(ens === null ? result.userData.walletID : ens);
+                    console.log('set name: ', name);
                 }
             });
             return currentUser;
@@ -276,7 +286,7 @@ export default function ChatPanel(props: ChatProps) {
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         <SentMessagePanel
                             message={item}
-                            name={name}
+                            name={ens === null || ens === '' ? walletID : (ens as string)}
                             isCurrentUser={item.sender === currentUser}
                             currentUser={currentUser}
                             userImageData={
@@ -376,7 +386,7 @@ export default function ChatPanel(props: ChatProps) {
                                           currentPool.quoteToken.symbol
                                         : room
                                 }
-                                ensName={name}
+                                ensName={ens === null || ens === '' ? walletID : (ens as string)}
                             />
                             <div id='thelastmessage'></div>
                         </div>
