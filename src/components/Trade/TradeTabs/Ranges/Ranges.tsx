@@ -64,7 +64,6 @@ interface propsIF {
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
-    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 // react functional component
@@ -94,7 +93,6 @@ export default function Ranges(props: propsIF) {
         setIsShowAllEnabled,
         showSidebar,
         cachedQuerySpotPrice,
-        setRepositionData
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -484,7 +482,6 @@ export default function Ranges(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
-            setRepositionData={setRepositionData}
             />
     ));
 

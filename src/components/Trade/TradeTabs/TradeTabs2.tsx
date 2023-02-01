@@ -7,7 +7,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import { PoolIF, PositionIF, TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
 
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -100,7 +100,6 @@ interface propsIF {
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -163,7 +162,6 @@ export default function TradeTabs2(props: propsIF) {
         isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
-        setRepositionData
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -413,7 +411,6 @@ export default function TradeTabs2(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         // handleRangeCopiedClick: handleRangeCopiedClick,
         setIsShowAllEnabled: setIsShowAllEnabled,
-        setRepositionData: setRepositionData
     };
     // Props for <Ranges/> React Element
     // const poolInfoProps = {

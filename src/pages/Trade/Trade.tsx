@@ -15,7 +15,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
-import { PoolIF, PositionIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
@@ -89,7 +89,6 @@ interface propsIF {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     isCandleDataNull: boolean;
     setIsCandleDataNull: React.Dispatch<React.SetStateAction<boolean>>;
-    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 // React functional component
@@ -145,7 +144,6 @@ export default function Trade(props: propsIF) {
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
-        setRepositionData
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -567,7 +565,6 @@ export default function Trade(props: propsIF) {
                             isCandleDataNull={isCandleDataNull}
                             isCandleArrived={isCandleArrived}
                             setIsCandleDataArrived={setIsCandleDataArrived}
-                            setRepositionData={setRepositionData}
                         />
                     </div>
                 </motion.div>

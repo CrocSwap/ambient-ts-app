@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -21,7 +21,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setPositionToBeRepositioned,
     setRangeModuleTriggered,
     setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
@@ -44,7 +43,6 @@ interface propsIF {
     isOnPortfolioPage: boolean;
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
-    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>
 }
 
 // React functional component
@@ -61,7 +59,6 @@ export default function RangesMenu(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         showHighlightedButton,
-        setRepositionData
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -159,10 +156,6 @@ export default function RangesMenu(props: propsIF) {
                     position.quote
             }
             state={{position: position}}
-            onClick={() => {
-                dispatch(setPositionToBeRepositioned(position));
-                setRepositionData(position);
-            }}
         >
             Reposition!!!!
         </Link>

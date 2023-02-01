@@ -2714,9 +2714,6 @@ export default function App() {
         range: '/trade/range/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
     };
 
-    const [repositionData, setRepositionData] = useState<PositionIF|null>(null);
-    false && repositionData;
-
     return (
         <>
             <div className={containerStyle} data-theme={theme}>
@@ -2811,7 +2808,6 @@ export default function App() {
                                     setFetchingCandle={setFetchingCandle}
                                     isCandleDataNull={isCandleDataNull}
                                     setIsCandleDataNull={setIsCandleDataNull}
-                                    setRepositionData={setRepositionData}
                                 />
                             }
                         >
@@ -3006,7 +3002,6 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
-                                    setRepositionData={setRepositionData}
                                 />
                             }
                         />
@@ -3065,7 +3060,6 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
-                                    setRepositionData={setRepositionData}
                                 />
                             }
                         />
@@ -3142,7 +3136,6 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
-                                    setRepositionData={setRepositionData}
                                 />
                             }
                         />
