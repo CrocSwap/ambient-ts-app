@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
-import { useClick } from './hooks/useClick';
 
 interface propsIF {
+    chainId: string;
     searchedTxs: TransactionIF[];
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -14,6 +15,7 @@ interface propsIF {
 
 export default function TxSearchResults(props: propsIF) {
     const {
+        chainId,
         searchedTxs,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -21,12 +23,22 @@ export default function TxSearchResults(props: propsIF) {
         setIsShowAllEnabled,
     } = props;
 
-    const handleClick = useClick(
-        setOutsideControl,
-        setSelectedOutsideTab,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    );
+    const navigate = useNavigate();
+
+    const handleClick = (tx: TransactionIF): void => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
+        setIsShowAllEnabled(false);
+        setCurrentTxActiveInTransactions(tx.id);
+        navigate(
+            '/trade/market/chain=' +
+            chainId +
+            '&tokenA=' +
+            tx.base +
+            '&tokenB=' +
+            tx.quote
+        );
+    }
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
     // TODO:   @Junior  also make the <div> elems inside it into <hX> elements

@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LimitOrderLI from './LimitOrderLI';
 import styles from '../SidebarSearchResults.module.css';
-import { useClick } from './hooks/useClick';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
-interface OrdersSearchResultPropsIF {
+interface propsIF {
+    chainId: string;
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
@@ -13,8 +14,9 @@ interface OrdersSearchResultPropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
+export default function OrdersSearchResults(props: propsIF) {
     const {
+        chainId,
         searchedLimitOrders,
         isDenomBase,
         setOutsideControl,
@@ -23,12 +25,22 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
         setIsShowAllEnabled,
     } = props;
 
-    const handleClick = useClick(
-        setOutsideControl,
-        setSelectedOutsideTab,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    );
+    const navigate = useNavigate();
+
+    const handleClick = (limitOrder: LimitOrderIF): void => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
+        setCurrentPositionActive(limitOrder.limitOrderIdentifier);
+        setIsShowAllEnabled(false);
+        navigate(
+            '/trade/limit/chain=' +
+            chainId +
+            '&tokenA=' +
+            limitOrder.base +
+            '&tokenB=' +
+            limitOrder.quote
+        );
+    }
 
     return (
         <div>

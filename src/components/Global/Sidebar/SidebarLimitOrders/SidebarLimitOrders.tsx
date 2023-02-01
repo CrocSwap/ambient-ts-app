@@ -6,6 +6,7 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 
 interface propsIF {
     tokenMap: Map<string, TokenIF>;
+    chainId: string;
     isDenomBase: boolean;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -24,7 +25,10 @@ export default function SidebarLimitOrders(props: propsIF) {
     const {
         limitOrderByUser,
         tokenMap,
+        chainId,
         isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
@@ -32,16 +36,6 @@ export default function SidebarLimitOrders(props: propsIF) {
     } = props;
     const location = useLocation();
     const navigate = useNavigate();
-
-    const sidebarLimitOrderCardProps = {
-        tokenMap: tokenMap,
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
-        setCurrentPositionActive: setCurrentPositionActive,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-    };
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -54,6 +48,21 @@ export default function SidebarLimitOrders(props: propsIF) {
 
         if (onAccountRoute) return;
         navigate('/account');
+    }
+
+    const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
+        setCurrentPositionActive(limitOrder.limitOrderIdentifier);
+        setIsShowAllEnabled(false);
+        navigate(
+            '/trade/limit/chain=' +
+            chainId +
+            '&tokenA=' +
+            limitOrder.base +
+            '&tokenB=' +
+            limitOrder.quote
+        );
     }
 
     const handleViewMoreClick = () => {
@@ -78,12 +87,13 @@ export default function SidebarLimitOrders(props: propsIF) {
             </div>
             <div className={styles.content}>
                 {limitOrderByUser &&
-                    limitOrderByUser.map((order, idx) => (
+                    limitOrderByUser.map((order: LimitOrderIF) => (
                         <SidebarLimitOrdersCard
-                            key={idx}
+                            key={'Sidebar-Limit-Orders-Card-' + JSON.stringify(order)}
                             isDenomBase={isDenomBase}
                             order={order}
-                            {...sidebarLimitOrderCardProps}
+                            handleClick={handleLimitOrderClick}
+                            tokenMap={tokenMap}
                         />
                     ))}
             </div>

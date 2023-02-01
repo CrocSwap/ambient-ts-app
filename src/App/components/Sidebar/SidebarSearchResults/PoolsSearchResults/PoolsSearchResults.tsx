@@ -1,7 +1,8 @@
+import { useNavigate } from 'react-router-dom';
+
 // START: Import Local Files
 import PoolLI from './PoolLI';
 import styles from '../SidebarSearchResults.module.css';
-import { useClick } from './useClick';
 import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
@@ -16,15 +17,26 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
-    // fn to handle programmatic navigation when user clicks a pool in the DOM
-    // this is a hook because it needs the useLocation() and useNavigate() hooks
-    const handleClick = useClick(chainId, tokenPair);
+    const navigate = useNavigate();
+    const handleClick = (baseAddr: string, quoteAddr: string): void => {
+        const { dataTokenA } = tokenPair;
+        const tokenAString: string =
+            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase() ? baseAddr : quoteAddr;
+        const tokenBString: string =
+            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase() ? quoteAddr : baseAddr;
+        navigate(
+            '/trade/market/chain=' +
+            chainId +
+            '&tokenA=' +
+            tokenAString +
+            '&tokenB=' +
+            tokenBString,
+        );
+    };
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
-
     // TODO:  @Junior make the header <div> into a <header> element
-
     // TODO: @Junior also change `Initialized Pools` to an `<h1-6>` elem
 
     return (
