@@ -1131,7 +1131,7 @@ export default function App() {
                                 chainId: chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                // omitKnockout: 'true',
+                                omitKnockout: 'true',
                                 addValue: 'true',
                                 sortByAPY: 'true',
                                 n: '50',
@@ -1156,7 +1156,10 @@ export default function App() {
                                     .then((updatedPositions) => {
                                         const top10Positions = updatedPositions
                                             .filter((updatedPosition: PositionIF) => {
-                                                return updatedPosition.isPositionInRange;
+                                                return (
+                                                    updatedPosition.isPositionInRange &&
+                                                    updatedPosition.apy !== 0
+                                                );
                                             })
                                             .slice(0, 10);
 
