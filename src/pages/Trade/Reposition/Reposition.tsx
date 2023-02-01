@@ -11,7 +11,6 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useEffect, useState } from 'react';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
@@ -33,8 +32,7 @@ export default function Reposition(props: propsIF) {
 
     useEffect(() => console.log({location}), [location.pathname]);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const position = tradeData.positionToBeRepositioned;
+    const { position } = location.state;
 
     const currentPoolPriceTick = position?.poolPriceInTicks || 0;
     const baseTokenDecimals = position?.baseDecimals || 18;
