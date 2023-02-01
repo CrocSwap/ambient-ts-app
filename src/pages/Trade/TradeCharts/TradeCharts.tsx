@@ -525,7 +525,7 @@ export default function TradeCharts(props: propsIF) {
             className={styles.main_container_chart}
             style={{
                 padding: fullScreenChart ? '1rem' : '0',
-                background: fullScreenChart ? 'var(--chart-gradient)' : '',
+                background: fullScreenChart ? 'var(--dark2)' : '',
             }}
             ref={canvasRef}
         >
