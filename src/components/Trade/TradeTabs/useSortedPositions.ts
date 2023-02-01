@@ -46,8 +46,8 @@ export const useSortedPositions = (
     const sortByValue = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
             (a, b) =>
-                (b.positionLiqTotalUSD || b.timeFirstMint / 1000000000000000) -
-                (a.positionLiqTotalUSD || a.timeFirstMint / 1000000000000000),
+                (b.positionLiqTotalUSD || b.timeFirstMint * 0.00000000000000000000001) -
+                (a.positionLiqTotalUSD || a.timeFirstMint * 0.00000000000000000000001),
         );
 
     // column the user wants the table sorted by
