@@ -313,7 +313,7 @@ export default function TradeTabs2(props: propsIF) {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 500, // fetch last 500 changes,
+                    n: 200, // fetch last 500 changes,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {

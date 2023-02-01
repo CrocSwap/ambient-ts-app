@@ -419,7 +419,7 @@ export default function InitPool(props: propsIF) {
                                                     setInitialPrice(undefined);
                                                 }
                                             }}
-                                            value={initialPrice}
+                                            value={initialPrice || ''}
                                             inputMode='decimal'
                                             autoComplete='off'
                                             autoCorrect='off'
