@@ -57,9 +57,6 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
                 <div className={styles.current_data_info}>
-                    {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
-                {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
-                {activeTimeFrame} ·{' '} */}
                     {'O: ' +
                         formattedCurrentData(currentData?.open) +
                         ' H: ' +
@@ -72,30 +69,19 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                         formatDollarAmountAxis(currentVolumeData)}
                 </div>
             ) : (
-                <div className={styles.current_data_info}></div>
+                <div className={styles.current_data_info} />
             )}
 
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    alignItems: 'end',
-                }}
-                className={styles.chart_overlay_container}
-            >
+            <div className={styles.chart_overlay_container}>
                 {showLatest && (
                     <div className={styles.settings_container}>
                         <button
                             onClick={() => {
                                 setLatest(true);
                             }}
-                            style={{
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                            }}
                             className={styles.non_active_selected_button}
                         >
-                            LATEST
+                            Latest
                         </button>
                     </div>
                 )}
@@ -106,10 +92,6 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                             setReset(true);
                             setRescale(true);
                         }}
-                        // style={{
-                        //     fontSize: '12px',
-                        //     fontWeight: 'bold',
-                        // }}
                         className={
                             reset
                                 ? styles.active_selected_button
@@ -127,11 +109,6 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                                 return !prevState;
                             });
                         }}
-                        // style={{
-                        //     color: rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                        //     fontSize: '12px',
-                        //     fontWeight: 'bold',
-                        // }}
                         className={
                             rescale
                                 ? styles.active_selected_button
