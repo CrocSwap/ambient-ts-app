@@ -175,6 +175,8 @@ export default function Chart(props: ChartData) {
 
     const parsedChartData = props.candleData;
 
+    const position = tradeData.positionToBeRepositioned;
+
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Canvas = useRef(null);
@@ -1712,7 +1714,21 @@ export default function Chart(props: ChartData) {
     }, [denomInBase]);
 
     const setBalancedLines = () => {
-        if (simpleRangeWidth === 100 || rangeModuleTriggered) {
+        if (location.pathname.includes('reposition') && position !== undefined) {
+            setRanges((prevState) => {
+                const newTargets = [...prevState];
+
+                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                    position.askTickInvPriceDecimalCorrected;
+
+                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                    position.bidTickInvPriceDecimalCorrected;
+
+                setLiqHighlightedLinesAndArea(newTargets);
+
+                return newTargets;
+            });
+        } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
             } else {
@@ -1849,6 +1865,12 @@ export default function Chart(props: ChartData) {
         simpleRangeWidth,
         rangeModuleTriggered,
     ]);
+
+    useEffect(() => {
+        if (location.pathname.includes('reposition')) {
+            setBalancedLines();
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         if (isAdvancedModeActive && scaleData && liquidityData && denomInBase === boundaries) {
