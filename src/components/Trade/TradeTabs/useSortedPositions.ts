@@ -33,7 +33,11 @@ export const useSortedPositions = (
             return usernameA.localeCompare(usernameB);
         });
     const sortByApy = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => b.apy - a.apy);
+        [...unsortedData].sort(
+            (a, b) =>
+                (b.apy * 1000000000000 || b.bidTickInvPriceDecimalCorrected * 0.000001) -
+                (a.apy * 1000000000000 || a.bidTickInvPriceDecimalCorrected * 0.000001),
+        );
     // TODO: for some reason sortByMin() is leaving the final value out of sequence?
     const sortByMin = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
@@ -44,7 +48,13 @@ export const useSortedPositions = (
             (a, b) => parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase),
         );
     const sortByValue = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
+        [...unsortedData].sort(
+            (a, b) =>
+                (b.positionLiqTotalUSD * 1000000000000 ||
+                    b.bidTickInvPriceDecimalCorrected * 0.000001) -
+                (a.positionLiqTotalUSD * 1000000000000 ||
+                    a.bidTickInvPriceDecimalCorrected * 0.000001),
+        );
 
     // column the user wants the table sorted by
     const [sortBy, setSortBy] = useState(defaultSort);

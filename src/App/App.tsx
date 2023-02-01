@@ -160,6 +160,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
+import { checkBlacklist } from '../utils/data/blacklist';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -193,6 +194,12 @@ export default function App() {
     const { disconnect } = useDisconnect();
 
     const { address: account, isConnected } = useAccount();
+
+    useEffect(() => {
+        if (account && checkBlacklist(account)) {
+            disconnect();
+        }
+    }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
@@ -1131,7 +1138,7 @@ export default function App() {
                                 chainId: chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                // omitKnockout: 'true',
+                                omitKnockout: 'true',
                                 addValue: 'true',
                                 sortByAPY: 'true',
                                 n: '50',
@@ -1156,7 +1163,10 @@ export default function App() {
                                     .then((updatedPositions) => {
                                         const top10Positions = updatedPositions
                                             .filter((updatedPosition: PositionIF) => {
-                                                return updatedPosition.isPositionInRange;
+                                                return (
+                                                    updatedPosition.isPositionInRange &&
+                                                    updatedPosition.apy !== 0
+                                                );
                                             })
                                             .slice(0, 10);
 
@@ -1923,7 +1933,7 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
-                            omitEmpty: 'true',
+                            // omitEmpty: 'true',
                             omitKnockout: 'true',
                             addValue: 'true',
                         }),
@@ -2830,7 +2840,14 @@ export default function App() {
                             />
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
-                            <Route path='reposition' element={<Reposition />} />
+                            <Route
+                                path='reposition'
+                                element={<Navigate to={defaultUrlParams.range} replace />}
+                            />
+                            <Route
+                                path='reposition/:params'
+                                element={<Reposition isDenomBase={tradeData.isDenomBase} />}
+                            />
                             <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>

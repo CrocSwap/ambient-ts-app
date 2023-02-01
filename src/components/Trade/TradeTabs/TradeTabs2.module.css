@@ -5,14 +5,14 @@
 }
 
 .show_tx_message{
-    /* background: var(--dark1); */
+    width: 100%;
+    background: var(--dark1);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 4px;
 padding: 4px 0;
-margin: 0 4px;
-
+margin-left: -5px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-light)
