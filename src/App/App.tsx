@@ -160,6 +160,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
+import { checkBlacklist } from '../utils/data/blacklist';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -193,6 +194,12 @@ export default function App() {
     const { disconnect } = useDisconnect();
 
     const { address: account, isConnected } = useAccount();
+
+    useEffect(() => {
+        if (account && checkBlacklist(account)) {
+            disconnect();
+        }
+    }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
