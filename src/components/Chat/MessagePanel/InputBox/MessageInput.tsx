@@ -100,6 +100,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         messageInputText();
     }, [isConnected, address]);
 
+    useEffect(() => {
+        console.log('Ens name in message input: ', props.ensName);
+    }, []);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const handleSendMessageButton = () => {
