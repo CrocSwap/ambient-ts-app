@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
@@ -34,6 +34,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
         return strTime;
     };
 
+    // useEffect(() => {
+    //     console.log('sent message panel name: ',props.name,props.message.ensName)
+    // }, [props.message]);
+
     function getName() {
         if (props.message.ensName.startsWith('0x')) {
             return props.message.walletID.slice(0, 6) + '...';
@@ -59,7 +63,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
     }
 
     function mentionedMessage() {
-        console.log('message: ', props.message);
         const messagesArray = props.message.message.split(' ');
         if (props.message.isMentionMessage === true) {
             return (
