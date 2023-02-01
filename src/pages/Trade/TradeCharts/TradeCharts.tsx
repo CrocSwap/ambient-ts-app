@@ -14,7 +14,7 @@ import {
     // AiOutlineCopy,
     // AiOutlineLink,
     // AiOutlineTwitter,
-    AiOutlineSetting,
+    // AiOutlineSetting,
 } from 'react-icons/ai';
 import { VscClose } from 'react-icons/vsc';
 
@@ -371,9 +371,9 @@ export default function TradeCharts(props: propsIF) {
                     <AiOutlineCamera size={20} />
                 </div>
             </DefaultTooltip>
-            <div onClick={() => setShowChartSettings(!showChartSettings)}>
+            {/* <div onClick={() => setShowChartSettings(!showChartSettings)}>
                 <AiOutlineSetting size={20} />
-            </div>
+            </div> */}
         </div>
     );
 
