@@ -97,12 +97,6 @@ export default function Reposition(props: propsIF) {
         closeModal,
     ] = useModal();
 
-    const confirmRepositionModal = isModalOpen ? (
-        <Modal onClose={closeModal} title=' Confirm Reposition'>
-            <ConfirmRepositionModal onClose={closeModal} />
-        </Modal>
-    ) : null;
-
     const sendRepositionTransaction = () => {
         console.log({ position });
     };
@@ -154,7 +148,12 @@ export default function Reposition(props: propsIF) {
                 />
                 <RepositionButton onClickFn={sendRepositionTransaction} />
             </div>
-            {confirmRepositionModal}
+            {
+                isModalOpen &&
+                <Modal onClose={closeModal} title=' Confirm Reposition'>
+                    <ConfirmRepositionModal onClose={closeModal} />
+                </Modal>
+            }
         </div>
     );
 }
