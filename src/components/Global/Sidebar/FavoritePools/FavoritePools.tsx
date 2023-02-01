@@ -61,6 +61,7 @@ export default function FavoritePools(props: propsIF) {
                 {favePools.map((pool, idx) => (
                     <FavoritePoolsCard
                         key={idx}
+                        chainId={chainId}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         lastBlockNumber={lastBlockNumber}

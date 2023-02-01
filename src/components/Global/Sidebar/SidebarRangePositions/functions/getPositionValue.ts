@@ -1,6 +1,6 @@
-import { formatAmountOld } from '../../../../../../utils/numbers';
+import { formatAmountOld } from '../../../../../utils/numbers';
 
-export const getValueUSD = (value: number): string => {
+export const getPositionValue = (value: number): string => {
     const usdValueTruncated = !value
         ? '0.00'
         : value < 0.0001
@@ -10,9 +10,9 @@ export const getValueUSD = (value: number): string => {
         : value >= 10000
         ? formatAmountOld(value, 1)
         : value.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    return usdValueTruncated;
-};
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    
+    return '$' + usdValueTruncated;
+}

@@ -22,11 +22,13 @@ export default function TxLI(props: propsIF) {
 
     return (
         <div className={styles.card_container} onClick={() => handleClick(tx)}>
-            <div>
+            <p>
                 {tx.baseSymbol} / {tx.quoteSymbol}
-            </div>
-            <div>{txType}</div>
-            <div className={styles.status_display}>{txValue}</div>
+            </p>
+            <p style={{ textAlign: 'center' }}>{txType}</p>
+            <p style={{ textAlign: 'center' }} className={styles.status_display}>
+                {txValue}
+            </p>
         </div>
     );
 }

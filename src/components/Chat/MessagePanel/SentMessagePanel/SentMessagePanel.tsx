@@ -59,6 +59,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
     }
 
     function mentionedMessage() {
+        console.log('message: ', props.message);
         const messagesArray = props.message.message.split(' ');
         if (props.message.isMentionMessage === true) {
             return (
@@ -67,7 +68,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         <span
                             key={index}
                             className={` ${
-                                word === props.message.mentionedName
+                                word.slice(1) === props.name
                                     ? styles.mention_message
                                     : styles.message
                             }`}

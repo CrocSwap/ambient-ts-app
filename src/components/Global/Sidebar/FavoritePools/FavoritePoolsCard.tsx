@@ -1,74 +1,39 @@
 import styles from './FavoritePoolsCard.module.css';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useMemo, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { formatAmountOld } from '../../../../utils/numbers';
+import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { usePoolStats } from './hooks/usePoolStats';
 
 interface propsIF {
     pool: PoolIF;
+    chainId: string;
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function FavoritePoolsCard(props: propsIF) {
-    const { pool, cachedPoolStatsFetch, lastBlockNumber } = props;
+    const { pool, chainId, cachedPoolStatsFetch, lastBlockNumber } = props;
 
-    const [poolVolume, setPoolVolume] = useState<string | undefined>();
-    const [poolTvl, setPoolTvl] = useState<string | undefined>();
+    // hook to get human-readable values for pool volume and TVL
+    const [volume, tvl] = usePoolStats(pool, lastBlockNumber, cachedPoolStatsFetch);
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
-    const { pathname } = useLocation();
+    const [addrTokenA, addrTokenB] =
+    tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+        ? [pool.quote.address, pool.base.address]
+        : [pool.base.address, pool.quote.address];
 
-    const linkPath = useMemo(() => {
-        let locationSlug = '';
-        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
-            locationSlug = '/trade/market';
-        } else if (pathname.startsWith('/trade/limit')) {
-            locationSlug = '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            locationSlug = '/trade/range';
-        } else if (pathname.startsWith('/swap')) {
-            locationSlug = '/swap';
-        }
-        const [addrTokenA, addrTokenB] =
-            tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-                ? [pool.quote.address, pool.base.address]
-                : [pool.base.address, pool.quote.address];
-        return locationSlug + '/chain=0x5&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB;
-    }, [pathname]);
-
-    const fetchPoolStats = () => {
-        (async () => {
-            const poolStatsFresh = await cachedPoolStatsFetch(
-                pool.chainId,
-                pool.base.address,
-                pool.quote.address,
-                pool.poolId,
-                Math.floor(lastBlockNumber / 4),
-            );
-            const volume = poolStatsFresh?.volume;
-            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
-            setPoolVolume(volumeString);
-            const tvl = poolStatsFresh?.tvl;
-            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
-            setPoolTvl(tvlString);
-        })();
-    };
-
-    useEffect(() => {
-        fetchPoolStats();
-    }, [lastBlockNumber]);
+    const linkPath = '/trade/market/chain=' + chainId + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB
 
     return (
         <Link className={styles.container} to={linkPath}>
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
             </div>
-            <div>{poolVolume ?? '…'}</div>
-            <div>{poolTvl ?? '…'}</div>
+            <div>{volume}</div>
+            <div>{tvl}</div>
         </Link>
     );
 }

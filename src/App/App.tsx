@@ -328,6 +328,7 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
@@ -1267,6 +1268,8 @@ export default function App() {
 
     useEffect(() => {
         setCandleData(undefined);
+        setIsCandleDataNull(false);
+        setExpandTradeTable(false);
         fetchCandles();
     }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
 
@@ -1331,6 +1334,9 @@ export default function App() {
             } catch (error) {
                 console.log({ error });
             }
+        } else {
+            setIsCandleDataNull(true);
+            setExpandTradeTable(true);
         }
     };
 
@@ -1728,6 +1734,21 @@ export default function App() {
         // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
+    const getDisplayPrice = (spotPrice: number) => {
+        return toDisplayPrice(spotPrice, baseTokenDecimals, quoteTokenDecimals);
+    };
+
+    const getSpotPrice = async (baseTokenAddress: string, quoteTokenAddress: string) => {
+        if (!crocEnv) return;
+        return await cachedQuerySpotPrice(
+            crocEnv,
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData.chainId,
+            lastBlockNumber,
+        );
+    };
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1735,31 +1756,26 @@ export default function App() {
             crocEnv &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            baseTokenDecimals &&
-            quoteTokenDecimals &&
             lastBlockNumber !== 0
         ) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    chainData.chainId,
-                    lastBlockNumber,
-                );
-
+                const spotPrice = await getSpotPrice(baseTokenAddress, quoteTokenAddress);
+                // const spotPrice = await cachedQuerySpotPrice(
+                //     crocEnv,
+                //     baseTokenAddress,
+                //     quoteTokenAddress,
+                //     chainData.chainId,
+                //     lastBlockNumber,
+                // );
                 if (spotPrice) {
-                    const newDisplayPrice = toDisplayPrice(
-                        spotPrice,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                    );
+                    const newDisplayPrice = getDisplayPrice(spotPrice);
+                    // console.log({ newDisplayPrice });
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        console.log('setting display pool price');
+                        console.log('setting new display pool price to: ' + newDisplayPrice);
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
-                if (spotPrice !== poolPriceNonDisplay) {
+                if (spotPrice && spotPrice !== poolPriceNonDisplay) {
                     console.log('dispatching new non-display spot price');
                     dispatch(setPoolPriceNonDisplay(spotPrice));
                 }
@@ -1768,11 +1784,7 @@ export default function App() {
     }, [
         isUserIdle,
         lastBlockNumber,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        chainData.chainId,
+        JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress }),
         crocEnv,
         poolPriceNonDisplay === 0,
     ]);
@@ -2630,6 +2642,7 @@ export default function App() {
     useEffect(() => {
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
+            // if (isDenomBase !== undefined && !tradeData.didUserFlipDenom) {
             if (tradeData.isDenomBase !== isDenomBase) {
                 console.log('denomination changed');
                 dispatch(setDenomInBase(isDenomBase));
@@ -2793,6 +2806,8 @@ export default function App() {
                                     setFullScreenChart={setFullScreenChart}
                                     fetchingCandle={fetchingCandle}
                                     setFetchingCandle={setFetchingCandle}
+                                    isCandleDataNull={isCandleDataNull}
+                                    setIsCandleDataNull={setIsCandleDataNull}
                                 />
                             }
                         >

@@ -949,14 +949,13 @@ export default function Chart(props: ChartData) {
                         : element.toString().length;
             }
         });
-
         if (result) {
             if (yTickValueLenght > 4 && yTickValueLenght < 8) setYaxisWidth('6rem');
-            if (yTickValueLenght > 8) setYaxisWidth(yTickValueLenght / 1.5 + 'rem');
-            if (yTickValueLenght >= 15) setYaxisWidth('9rem');
-            if (yTickValueLenght >= 20) setYaxisWidth('10rem');
+            if (yTickValueLenght >= 8) setYaxisWidth('7rem');
+            if (yTickValueLenght >= 15) setYaxisWidth('10rem');
+            if (yTickValueLenght >= 20) setYaxisWidth('11rem');
         }
-        if (yTickValueLenght <= 4) setYaxisWidth('4rem');
+        if (yTickValueLenght <= 4) setYaxisWidth('5rem');
     }
     useEffect(() => {
         if (scaleData && yAxis) {
@@ -1602,6 +1601,7 @@ export default function Chart(props: ChartData) {
 
                     if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
                         const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
 
                         const liqAllBidPrices = liquidityData.liqBidData.map(
@@ -2203,6 +2203,20 @@ export default function Chart(props: ChartData) {
                         );
                     }
 
+                    const low = scaleData.yScale.domain()[0];
+                    const high = scaleData.yScale.domain()[1];
+
+                    const min = newRangeValue.filter((target: any) => target.name === 'Min')[0]
+                        .value;
+                    const max = newRangeValue.filter((target: any) => target.name === 'Max')[0]
+                        .value;
+
+                    if (low > min || high < max) {
+                        const buffer = poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
+
+                        scaleData.yScale.domain([min - buffer, max + buffer]);
+                    }
+
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved, dragSwitched);
                     dragSwitched = false;
                 });
@@ -2456,9 +2470,27 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isUserLoggedIn]);
 
     useEffect(() => {
-        if (scaleData !== undefined && reset) {
+        if (scaleData !== undefined && reset && poolPriceDisplay !== undefined) {
             scaleData.xScale.domain(scaleData.xScaleCopy.domain());
-            scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+
+            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+            const filtered = parsedChartData?.chartData.filter(
+                (data: any) => data.date >= xmin && data.date <= xmax,
+            );
+
+            if (filtered !== undefined) {
+                const minYBoundary = d3.min(filtered, (d) => d.low);
+                const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
+                    const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+
+                    scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
+                }
+            }
+
             setReset(false);
             setShowLatest(false);
         }
@@ -3637,12 +3669,17 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (isRangeScaleSet === 'reScale' && poolPriceDisplay && simpleRangeWidth !== 100) {
             if (location.pathname.includes('range')) {
-                const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-                const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
                 const buffer = poolPriceDisplay / 50;
 
-                scaleData.yScale.domain([low - buffer, high + buffer]);
+                const min = ranges.filter((target: any) => target.name === 'Min')[0].value - buffer;
+                const max = ranges.filter((target: any) => target.name === 'Max')[0].value + buffer;
+
+                const low =
+                    scaleData.yScaleCopy.domain()[0] < min ? scaleData.yScaleCopy.domain()[0] : min;
+                const high =
+                    scaleData.yScaleCopy.domain()[1] > max ? scaleData.yScaleCopy.domain()[1] : max;
+
+                scaleData.yScale.domain([low, high]);
             } else if (location.pathname.includes('limit')) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
             } else if (location.pathname.includes('market')) {
@@ -4111,7 +4148,8 @@ export default function Chart(props: ChartData) {
                                 ]).call(liqAskSeries);
                                 areaBidJoin(svg, [
                                     liqMode === 'Curve'
-                                        ? isAdvancedModeActive
+                                        ? isAdvancedModeActive &&
+                                          location.pathname.includes('range')
                                             ? liquidityData.liqBidData
                                             : liquidityData.liqBidData.filter(
                                                   (d: any) =>
@@ -4615,7 +4653,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges],
+        [candlestick, bandwidth, limit, ranges, location.pathname],
     );
 
     function showCrosshairVertical() {
