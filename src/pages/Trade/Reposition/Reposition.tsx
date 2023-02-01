@@ -1,4 +1,3 @@
-// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
 import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
@@ -7,7 +6,6 @@ import RepositionRangeWidth from '../../../components/Trade/Reposition/Repositio
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
-// import { useState, useEffect } from 'react';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
@@ -142,7 +140,6 @@ export default function Reposition(props: propsIF) {
                     rangeWidthPercentage={rangeWidthPercentage}
                 />
                 <RepositionButton onClickFn={sendRepositionTransaction} />
-                {/* <RepositionButton onClickFn={openModal} /> */}
             </div>
             {confirmRepositionModal}
         </div>
