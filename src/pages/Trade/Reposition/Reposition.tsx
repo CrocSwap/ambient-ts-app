@@ -43,7 +43,7 @@ export default function Reposition(props: propsIF) {
     // navigate the user to the redirect URL path if location.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link
     // ... inside the app, but will be empty if they navigated manually to the path
-    location.state || navigate(redirectPath);
+    location.state || navigate(redirectPath, { replace: true });
 
     // position data from the location object
     const { position } = location.state;
