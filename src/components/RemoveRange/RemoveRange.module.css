@@ -104,3 +104,15 @@
     cursor: pointer;
     background: linear-gradient(90deg, #6361d7 0%, #b0a6db 49.48%, #6361d7 100%);
 }
+
+
+.confirmation_container header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.confirmation_container header div{
+    cursor: pointer;
+}
