@@ -1,44 +1,36 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface propsIF {
+    chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
-    selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
-
-    currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
-    const location = useLocation();
-    const navigate = useNavigate();
-
     const {
-        tokenMap,
+        chainId,
         isDenomBase,
         userPositions,
-        currentPositionActive,
         setCurrentPositionActive,
-        // expandTradeTable,
         isUserLoggedIn,
-
         setShowSidebar,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setIsShowAllEnabled
     } = props;
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -46,36 +38,30 @@ export default function SidebarRangePositions(props: propsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 2;
 
     function redirectBasedOnRoute() {
-        // if (onTradeRoute || onAccountRoute) return;
-        // navigate('/trade');
-
         if (onAccountRoute) return;
         navigate('/account');
     }
 
+    const handleRangePositionClick = (pos: PositionIF): void => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setCurrentPositionActive(pos.positionStorageSlot);
+        setIsShowAllEnabled(false);
+        navigate(
+            '/trade/range/chain=' +
+            chainId +
+            '&tokenA=' +
+            pos.base +
+            '&tokenB=' +
+            pos.quote
+        );
+    }
+
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setShowSidebar(false);
-
-        // props.setIsShowAllEnabled(false);
-        // props.setExpandTradeTable(true);
-    };
-
-    const sidebarRangePositionCardProps = {
-        tokenMap: tokenMap,
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        isShowAllEnabled: props.isShowAllEnabled,
-        setIsShowAllEnabled: props.setIsShowAllEnabled,
-        isUserLoggedIn: isUserLoggedIn,
-        tabToSwitchToBasedOnRoute: tabToSwitchToBasedOnRoute,
     };
 
     // TODO:   @Junior please refactor the header <div> as a <header> element
@@ -94,7 +80,7 @@ export default function SidebarRangePositions(props: propsIF) {
                             key={idx}
                             position={position}
                             isDenomBase={isDenomBase}
-                            {...sidebarRangePositionCardProps}
+                            handleClick={handleRangePositionClick}
                         />
                     ))}
             </div>
