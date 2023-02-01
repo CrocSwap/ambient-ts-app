@@ -1,5 +1,5 @@
 import Divider from '../../../Global/Divider/Divider';
-import RepositionPriceInfo from '../RepositionPriceInfo/RepositionPriceInfo';
+// import RepositionPriceInfo from '../RepositionPriceInfo/RepositionPriceInfo';
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 
@@ -14,7 +14,7 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         <div>
             <h1>confirm reposition token content here</h1>
             <Divider />
-            <RepositionPriceInfo />
+            {/* <RepositionPriceInfo /> */}
         </div>
     );
 

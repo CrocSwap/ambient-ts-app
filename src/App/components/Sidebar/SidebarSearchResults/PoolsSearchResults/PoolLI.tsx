@@ -80,11 +80,11 @@ export default function PoolLI(props: propsIF) {
 
     return (
         <div className={styles.card_container} onClick={() => handleClick(pool.base, pool.quote)}>
-            <div>
+            <p>
                 {baseToken?.symbol ?? '--'} / {quoteToken?.symbol ?? '--'}
-            </div>
-            <div>{poolVolume ?? '--'}</div>
-            <div>{poolTvl ?? '--'}</div>
+            </p>
+            <p style={{ textAlign: 'center' }}>{poolVolume ?? '--'}</p>
+            <p style={{ textAlign: 'center' }}>{poolTvl ?? '--'}</p>
         </div>
     );
 }

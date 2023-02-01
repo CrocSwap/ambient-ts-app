@@ -6,7 +6,6 @@ import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
-// import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
 import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
@@ -22,7 +21,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-// import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     LimitOrderIF,
@@ -34,7 +32,6 @@ import {
     TransactionIF,
 } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
-// import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
@@ -104,19 +101,15 @@ export default function Sidebar(props: propsIF) {
         chainId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-
-        currentPositionActive,
         setCurrentPositionActive,
         isShowAllEnabled,
         setIsShowAllEnabled,
-
         expandTradeTable,
         setExpandTradeTable,
         tokenMap,
         lastBlockNumber,
         favePools,
         setShowSidebar,
-        // analyticsSearchInput,
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
@@ -187,21 +180,6 @@ export default function Sidebar(props: propsIF) {
 
         setShowSidebar: setShowSidebar,
     };
-    const sidebarRangePositionProps = {
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: setOutsideControl,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        tokenMap: tokenMap,
-        isShowAllEnabled: props.isShowAllEnabled,
-        setIsShowAllEnabled: props.setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isConnected,
-        setShowSidebar: setShowSidebar,
-    };
 
     const rangePositions = [
         {
@@ -209,9 +187,15 @@ export default function Sidebar(props: propsIF) {
             icon: rangePositionsImage,
             data: (
                 <SidebarRangePositions
+                    chainId={chainId}
                     userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
-                    {...sidebarRangePositionProps}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
+                    setCurrentPositionActive={setCurrentPositionActive}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
+                    setShowSidebar={setShowSidebar}
+                    isUserLoggedIn={isConnected}
                 />
             ),
         },
@@ -225,6 +209,7 @@ export default function Sidebar(props: propsIF) {
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
                     tokenMap={tokenMap}
+                    chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
                     {...sidebarLimitOrderProps}
                 />
@@ -338,7 +323,7 @@ export default function Sidebar(props: propsIF) {
                 // onBlur={() => setSearchMode(false)}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
-            {searchInput && searchInput.length > 0 && (
+            {searchInput !== undefined && (
                 <div onClick={handleInputClearAnalytics} className={styles.close_icon}>
                     <MdClose size={18} color='#ebebeb66' />{' '}
                 </div>
@@ -346,6 +331,9 @@ export default function Sidebar(props: propsIF) {
         </div>
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
+
+    const inputContent = document.getElementById('search_input') as HTMLInputElement;
+    // console.log(searchInput);
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
@@ -362,9 +350,9 @@ export default function Sidebar(props: propsIF) {
                 onChange={(e) => setRawInput(e.target.value)}
                 spellCheck='false'
             />
-            {searchInput && searchInput.length > 0 && (
+            {inputContent?.value && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
-                    <MdClose size={18} color='#ebebeb66' />{' '}
+                    <MdClose size={20} color='#ebebeb66' />{' '}
                 </div>
             )}
         </div>
@@ -412,7 +400,7 @@ export default function Sidebar(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div style={!showSidebar ? { cursor: 'pointer' } : { cursor: 'pointer' }}>
+                    <div style={{ cursor: 'pointer', display: 'flex' }}>
                         <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
                     </div>
                 </DefaultTooltip>
