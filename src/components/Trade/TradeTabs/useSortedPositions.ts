@@ -33,7 +33,11 @@ export const useSortedPositions = (
             return usernameA.localeCompare(usernameB);
         });
     const sortByApy = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => b.apy - a.apy);
+        [...unsortedData].sort(
+            (a, b) =>
+                (b.apy * 1000000000000 || b.bidTickInvPriceDecimalCorrected * 0.000001) -
+                (a.apy * 1000000000000 || a.bidTickInvPriceDecimalCorrected * 0.000001),
+        );
     // TODO: for some reason sortByMin() is leaving the final value out of sequence?
     const sortByMin = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
