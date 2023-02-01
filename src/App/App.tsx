@@ -2830,7 +2830,14 @@ export default function App() {
                             />
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
-                            <Route path='reposition' element={<Reposition />} />
+                            <Route
+                                path='reposition'
+                                element={<Navigate to={defaultUrlParams.range} replace />}
+                            />
+                            <Route
+                                path='reposition/:params'
+                                element={<Reposition isDenomBase={tradeData.isDenomBase} />}
+                            />
                             <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>

@@ -492,8 +492,6 @@ export default function Ranges(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
-
-            // blockExplorer={blockExplorer}
         />
     ));
 

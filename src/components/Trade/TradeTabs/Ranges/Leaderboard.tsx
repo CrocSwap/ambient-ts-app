@@ -347,7 +347,6 @@ export default function Leaderboard(props: propsIF) {
             isLeaderboard={true}
             idx={idx + 1}
             handlePulseAnimation={handlePulseAnimation}
-
             // blockExplorer={blockExplorer}
         />
     ));
