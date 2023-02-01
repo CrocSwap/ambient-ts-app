@@ -3,11 +3,15 @@ import { RiCloseFill } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import trimString from '../../../../utils/functions/trimString';
 import styles from './RepositionHeader.module.css';
-// interface RepositionHeaderPropsIF {
-//     positionHash?: string;
-// }
-export default function RepositionHeader() {
-    const positionHash = '0xFD054234fds34fffeA3FF';
+import { PositionIF } from '../../../../utils/interfaces/exports';
+interface RepositionHeaderPropsIF {
+    position: PositionIF | undefined;
+}
+export default function RepositionHeader(props: RepositionHeaderPropsIF) {
+    const { position } = props;
+
+    const positionHash = position?.positionStorageSlot || '';
+
     const navigate = useNavigate();
 
     return (

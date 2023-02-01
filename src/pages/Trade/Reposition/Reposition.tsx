@@ -114,7 +114,7 @@ export default function Reposition() {
 
     return (
         <div className={styles.repositionContainer}>
-            <RepositionHeader />
+            <RepositionHeader position={position} />
 
             <div className={styles.reposition_content}>
                 {repositionAddToggle}
