@@ -42,7 +42,7 @@ interface propsIF {
     posHash: string;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
-
+    isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
 }
@@ -54,6 +54,7 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         // chainData,
+        isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
@@ -227,7 +228,10 @@ export default function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {!isPositionInRange && userMatchesConnectedAccount && repositionButton}
+            {!isPositionInRange &&
+                !isPositionEmpty &&
+                userMatchesConnectedAccount &&
+                repositionButton}
             {/* {view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view1 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && harvestButton}

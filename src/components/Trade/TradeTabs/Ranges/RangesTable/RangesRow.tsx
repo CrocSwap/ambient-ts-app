@@ -99,6 +99,7 @@ export default function RangesRow(props: propsIF) {
         apyClassname,
 
         isPositionInRange,
+        isPositionEmpty,
         isAmbient,
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -151,6 +152,7 @@ export default function RangesRow(props: propsIF) {
         posHash: posHash as string,
         rangeDetailsProps: rangeDetailsProps,
         userMatchesConnectedAccount: userMatchesConnectedAccount,
+        isPositionEmpty: isPositionEmpty,
         positionData: position,
         baseTokenBalance: props.baseTokenBalance,
         quoteTokenBalance: props.quoteTokenBalance,

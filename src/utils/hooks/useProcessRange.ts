@@ -160,6 +160,8 @@ export const useProcessRange = (position: PositionIF, account: string) => {
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
+    const isPositionEmpty = position.positionLiq === '0';
+
     // if (!position) return null;
 
     return {
@@ -202,7 +204,7 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         isPositionInRange,
         isAmbient,
         isOwnerActiveAccount,
-
+        isPositionEmpty,
         // position matches select token data
         positionMatchesSelectedTokens,
         isDenomBase,

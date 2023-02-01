@@ -1923,7 +1923,7 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
-                            omitEmpty: 'true',
+                            // omitEmpty: 'true',
                             omitKnockout: 'true',
                             addValue: 'true',
                         }),

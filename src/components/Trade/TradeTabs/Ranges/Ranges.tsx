@@ -137,6 +137,16 @@ export default function Ranges(props: propsIF) {
         },
     );
 
+    const userPositionsToDisplayOnTrade = positionsByUserMatchingSelectedTokens.filter(
+        (position) => {
+            if (position.positionLiq !== '0') {
+                return true;
+            } else {
+                return false;
+            }
+        },
+    );
+
     const [rangeData, setRangeData] = useState(
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
@@ -162,8 +172,8 @@ export default function Ranges(props: propsIF) {
             // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            // console.log({ positionsByUserMatchingSelectedTokens });
-            setRangeData(positionsByUserMatchingSelectedTokens);
+            console.log({ userPositionsToDisplayOnTrade });
+            setRangeData(userPositionsToDisplayOnTrade);
         } else if (positionsByPool && !isOnPortfolioPage) {
             // console.log({ positionsByPool });
             setRangeData(positionsByPool);
@@ -173,7 +183,7 @@ export default function Ranges(props: propsIF) {
         isShowAllEnabled,
         connectedAccountActive,
         JSON.stringify(activeAccountPositionData),
-        JSON.stringify(positionsByUserMatchingSelectedTokens),
+        JSON.stringify(userPositionsToDisplayOnTrade),
         JSON.stringify(positionsByPool),
     ]);
 
