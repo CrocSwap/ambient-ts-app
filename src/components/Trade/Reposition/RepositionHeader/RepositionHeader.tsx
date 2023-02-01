@@ -19,7 +19,10 @@ export default function RepositionHeader(props: propsIF) {
             <div className={styles.title}>
                 Reposition: {trimString(positionHash, 4, 4, '…')}
             </div>
-            <div onClick={() => navigate(redirectPath)}>
+            <div
+                onClick={() => navigate(redirectPath)}
+                style={{ cursor: 'pointer' }}
+            >
                 <RiCloseFill />
             </div>
         </ContentHeader>
