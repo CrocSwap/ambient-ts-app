@@ -1,7 +1,7 @@
 import styles from './RangeAdd.module.css';
 import { useLocation, Link } from 'react-router-dom';
 import RangeAddHeader from '../../../components/Trade/RangeAdd/RangeAddHeader/RangeAddHeader';
-import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
+// import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 
 export default function RangeAdd() {
@@ -39,7 +39,7 @@ export default function RangeAdd() {
             <RangeAddHeader />
             <div className={styles.content}>
                 {repositionAddToggle}
-                <RepositionDenominationSwitch />
+                {/* <RepositionDenominationSwitch /> */}
                 <DividerDark />
                 this is the add component
             </div>

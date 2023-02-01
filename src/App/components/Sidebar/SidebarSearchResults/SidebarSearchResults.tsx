@@ -61,9 +61,8 @@ export default function SidebarSearchResults(props: propsIF) {
                 chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
             />
-            {isConnected && (
-                <>
-                    <PositionsSearchResults
+            {isConnected && (<>
+                <PositionsSearchResults
                         chainId={chainId}
                         searchedPositions={searchedPositions}
                         isDenomBase={isDenomBase}
@@ -89,7 +88,7 @@ export default function SidebarSearchResults(props: propsIF) {
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
-                </>
+            </>
             )}
         </div>
     );
