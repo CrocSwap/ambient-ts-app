@@ -157,7 +157,7 @@ export default function RangesMenu(props: propsIF) {
             }
             state={{position: position}}
         >
-            Reposition!!!!
+            Reposition
         </Link>
     );
     //  : null;
