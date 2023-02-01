@@ -775,7 +775,7 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickValues([
             ...scale.ticks(),
-            ...(simpleRangeWidth === 100
+            ...(simpleRangeWidth === 100 && !isAdvancedModeActive
                 ? [market[0].value]
                 : [
                       isSameLocationMin ? sameLocationDataMin : low,
@@ -786,7 +786,7 @@ export default function Chart(props: ChartData) {
         ]);
 
         yAxis.tickFormat((d: any) => {
-            if (simpleRangeWidth !== 100) {
+            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
                 if (isSameLocationMin && d === sameLocationDataMin) {
                     return formatAmountChartData(low);
                 }
@@ -807,7 +807,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     if (
-                        simpleRangeWidth !== 100 &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive) &&
                         ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
                             (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
@@ -826,7 +826,7 @@ export default function Chart(props: ChartData) {
                         return 'crossHairText';
                     }
                     if (
-                        simpleRangeWidth !== 100 &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive) &&
                         ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
                             (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
@@ -3183,9 +3183,15 @@ export default function Chart(props: ChartData) {
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-            const minBoudnary = d3.min(liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const minBoudnary = d3.min(
+                liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData,
+                (d: any) => d.liqPrices,
+            );
 
-            const maxBoudnary = d3.max(liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const maxBoudnary = d3.max(
+                liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData,
+                (d: any) => d.liqPrices,
+            );
 
             const liqData =
                 liqMode === 'Depth' ? liquidityData.depthLiqAskData : liquidityData.liqAskData;
