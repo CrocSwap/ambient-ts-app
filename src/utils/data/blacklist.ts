@@ -1,5 +1,4 @@
 export const blacklist = [
-    '0xdb6c7a24a208e47d2f7e615040d3ca88e19ab206', // ben's test account #10
     '0x01e2919679362dfbc9ee1644ba9c6da6d6245bb1',
     '0x03893a7c7463ae47d46bc7f091665f1893656003',
     '0x04dba1194ee10112fe6c3207c0687def0e78bacf',
