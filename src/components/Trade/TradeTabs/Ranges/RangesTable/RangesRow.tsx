@@ -585,11 +585,19 @@ export default function RangesRow(props: propsIF) {
                 >
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMin}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {isOnPortfolioPage
+                                ? minRangeDenomByMoneyness || '…'
+                                : ambientOrMin || '…'}
+                        </span>
                     </p>
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMax}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {isOnPortfolioPage
+                                ? maxRangeDenomByMoneyness || '…'
+                                : ambientOrMax || '…'}
+                        </span>
                     </p>
                 </li>
             )}
