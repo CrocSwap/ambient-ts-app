@@ -280,21 +280,21 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
-        console.log('parsing liquidity data');
-        const liqAskData: LiquidityData[] = [];
-        const liqBidData: LiquidityData[] = [];
-        const depthLiqBidData: LiquidityData[] = [];
-        const depthLiqAskData: LiquidityData[] = [];
-
-        const liqSnapData: LiqSnap[] = [];
-        let topBoundary = 0;
-        let lowBoundary = 0;
-
         if (
             props.liquidityData &&
             props.poolPriceDisplay !== undefined &&
             props.poolPriceDisplay > 0
         ) {
+            console.log('parsing liquidity data');
+            const liqAskData: LiquidityData[] = [];
+            const liqBidData: LiquidityData[] = [];
+            const depthLiqBidData: LiquidityData[] = [];
+            const depthLiqAskData: LiquidityData[] = [];
+
+            const liqSnapData: LiqSnap[] = [];
+            let topBoundary = 0;
+            let lowBoundary = 0;
+
             const lowTick = currentPoolPriceTick - 100 * 101;
             const highTick = currentPoolPriceTick + 100 * 101;
 
@@ -553,27 +553,30 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
             topBoundary = limitBoundary;
             lowBoundary = parseFloat(rangeBoundary.pinnedMinPriceDisplay);
+
+            liqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+            liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+            depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+            depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+
+            return {
+                liqAskData: liqAskData,
+                liqBidData: liqBidData,
+                depthLiqBidData: depthLiqBidData,
+                depthLiqAskData: depthLiqAskData,
+                liqSnapData: liqSnapData,
+                liqHighligtedAskSeries: [],
+                liqHighligtedBidSeries: [],
+                lineBidSeries: [],
+                lineAskSeries: [],
+                totalLiq: props.liquidityData?.totals?.totalLiq,
+                topBoundary: topBoundary,
+                lowBoundary: lowBoundary,
+            };
+        } else {
+            setIsLoading(true);
+            return undefined;
         }
-
-        liqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
-        liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
-        depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
-        depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
-
-        return {
-            liqAskData: liqAskData,
-            liqBidData: liqBidData,
-            depthLiqBidData: depthLiqBidData,
-            depthLiqAskData: depthLiqAskData,
-            liqSnapData: liqSnapData,
-            liqHighligtedAskSeries: [],
-            liqHighligtedBidSeries: [],
-            lineBidSeries: [],
-            lineAskSeries: [],
-            totalLiq: props.liquidityData?.totals?.totalLiq,
-            topBoundary: topBoundary,
-            lowBoundary: lowBoundary,
-        };
     }, [JSON.stringify(props.liquidityData), props.poolPriceDisplay]);
 
     useEffect(() => {
@@ -582,7 +585,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChart(parsedChartData);
-    }, [parsedChartData?.period]);
+    }, [parsedChartData?.period, liquidityData]);
 
     // Liq Scale
     useEffect(() => {
@@ -611,7 +614,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Scale
     const setScaleForChart = (parsedChartData: any) => {
-        if (parsedChartData !== undefined) {
+        if (parsedChartData !== undefined && liquidityData !== undefined) {
             const temp = [...parsedChartData.chartData];
             const boundaryCandles = temp.splice(0, 99);
 
@@ -699,9 +702,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                 // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
                 props.poolPriceDisplay === 0 ||
-                liquidityData.liqAskData.length === 0 ||
-                liquidityData.liqBidData.length === 0 ||
-                poolPriceNonDisplay === 0;
+                liquidityData?.liqAskData.length === 0 ||
+                liquidityData?.liqBidData.length === 0 ||
+                poolPriceNonDisplay === 0 ||
+                liquidityData === undefined;
 
             if (isLoading !== shouldReload) {
                 console.log('setting isLoading to ' + shouldReload);
