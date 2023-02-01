@@ -1,16 +1,20 @@
+// START: Import React and Dongles
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+
+// START: Import JSX Components
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
 import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
+import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
+import Modal from '../../../components/Global/Modal/Modal';
+
+// START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
-
-import Modal from '../../../components/Global/Modal/Modal';
-import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -19,16 +23,25 @@ interface propsIF {
 export default function Reposition(props: propsIF) {
     const { isDenomBase } = props;
 
+    // current URL parameter string
     const { params } = useParams();
+
+    // location object (we need this mainly for position data)
     const location = useLocation();
+
+    // fn to conditionally navigate the user
     const navigate = useNavigate();
 
+    // redirect path to use in this module
+    // will try to preserve current params, will use default path otherwise
     const redirectPath = '/trade/range/' + (params ?? '');
 
-    location.state ?? navigate(redirectPath);
+    // navigate the user to the redirect URL path if location.state has no data
+    // ... this value will be truthy if the user arrived here by clicking a link
+    // ... inside the app, but will be empty if they navigated manually to the path
+    location.state || navigate(redirectPath);
 
-    useEffect(() => console.log({location}), [location.pathname]);
-
+    // position data from the location object
     const { position } = location.state;
 
     const currentPoolPriceTick = position.poolPriceInTicks || 0;
