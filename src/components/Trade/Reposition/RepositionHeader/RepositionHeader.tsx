@@ -3,20 +3,23 @@ import { RiCloseFill } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import trimString from '../../../../utils/functions/trimString';
 import styles from './RepositionHeader.module.css';
-// interface RepositionHeaderPropsIF {
-//     positionHash?: string;
-// }
-export default function RepositionHeader() {
-    const positionHash = '0xFD054234fds34fffeA3FF';
+
+interface propsIF {
+    positionHash: string;
+    redirectPath: string;
+}
+
+export default function RepositionHeader(props: propsIF) {
+    const { positionHash, redirectPath } = props;
     const navigate = useNavigate();
 
     return (
         <ContentHeader>
             <div />
             <div className={styles.title}>
-                Reposition: {positionHash ? trimString(positionHash, 4, 4, '…') : ' 0xFD05...A3FF'}
+                Reposition: {trimString(positionHash, 4, 4, '…')}
             </div>
-            <div onClick={() => navigate(-1)}>
+            <div onClick={() => navigate(redirectPath)}>
                 <RiCloseFill />
             </div>
         </ContentHeader>

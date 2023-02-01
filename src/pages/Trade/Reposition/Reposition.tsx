@@ -25,10 +25,9 @@ export default function Reposition(props: propsIF) {
     const location = useLocation();
     const navigate = useNavigate();
 
-    if (!location.state) {
-        const redirectParams = params ?? '';
-        navigate('/trade/range/' + redirectParams);
-    }
+    const redirectPath = '/trade/range/' + (params ?? '');
+
+    location.state ?? navigate(redirectPath);
 
     useEffect(() => console.log({location}), [location.pathname]);
 
@@ -126,7 +125,10 @@ export default function Reposition(props: propsIF) {
 
     return (
         <div className={styles.repositionContainer}>
-            <RepositionHeader />
+            <RepositionHeader
+                positionHash={position.positionStorageSlot}
+                redirectPath={redirectPath}
+            />
 
             <div className={styles.reposition_content}>
                 {repositionAddToggle}
