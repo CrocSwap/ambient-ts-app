@@ -1,10 +1,9 @@
-
 .main_container_chart {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    position: relative;
+    position: static;
     /* padding: 1rem; */
 }
 
@@ -26,16 +25,22 @@
 
 
 
-.curve_depth_container, .volume_tvl_container, .main_time_frame_container, .chart_overlay_container{
+.curve_depth_container,
+.volume_tvl_container,
+.main_time_frame_container,
+.chart_overlay_container {
 
 
     display: flex;
     flex-direction: row;
-    align-items: center;;
+    align-items: center;
+    ;
     gap: 4px;
 }
 
-.curve_depth_container:not(:last-child), .volume_tvl_container:not(:last-child), .main_time_frame_container:not(:last-child){
+.curve_depth_container:not(:last-child),
+.volume_tvl_container:not(:last-child),
+.main_time_frame_container:not(:last-child) {
     border-right: 1px solid var(--text-grey-light);
 }
 
@@ -61,9 +66,9 @@
 
 
 
-.settings_container:last-of-type{
+.settings_container:last-of-type {
     border-right: 1px solid transparent;
-    
+
 }
 
 
@@ -71,7 +76,7 @@
 .non_active_selected_button:hover {
     /* background: var(--title-gradient); */
     color: var(--text-grey-white);
-    
+
     /* box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
     0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
     0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2); */
@@ -124,9 +129,10 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-gap: 4px;    /*     gap: 1rem;; */
+    gap: 4px;
+    /*     gap: 1rem;; */
 
-display: none;
+    display: none;
 }
 
 .save_image_container,
@@ -172,7 +178,7 @@ display: none;
     padding: 1rem;
 }
 
-.chart_ite_container input[type='checkbox'] + label {
+.chart_ite_container input[type='checkbox']+label {
     display: block;
     margin: 0.2em;
     cursor: pointer;
@@ -183,7 +189,7 @@ display: none;
     display: none;
 }
 
-.chart_item_container input[type='checkbox'] + label:before {
+.chart_item_container input[type='checkbox']+label:before {
     content: '\2714';
     border: 0.1em solid var(--text-grey-light);
     border-radius: 0.2em;
@@ -198,11 +204,11 @@ display: none;
     transition: 0.2s;
 }
 
-.chart_item_container input[type='checkbox'] + label:active:before {
+.chart_item_container input[type='checkbox']+label:active:before {
     transform: scale(0);
 }
 
-.chart_item_container input[type='checkbox']:checked + label:before {
+.chart_item_container input[type='checkbox']:checked+label:before {
     background: var(--title-gradient);
     border-color: #7371fc;
     color: #fff;
@@ -243,24 +249,26 @@ display: none;
   }
    */
 
-.main_settings_container, .main_settings_container_active{
+.main_settings_container,
+.main_settings_container_active {
     max-width: 700px;
-  padding: 20px 0;
-  width: 100%;
-height: auto;
-  position: absolute;
-  background: var(--dark1);
-  border-radius: 4px;
-  box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  right: 10px;
-top: 0;
+    padding: 20px 0;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    background: var(--dark1);
+    border-radius: 4px;
+    box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    right: 10px;
+    top: 0;
 
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
-.main_settings_container header{
+
+.main_settings_container header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -268,36 +276,40 @@ top: 0;
     padding: 0 4px;
     border-bottom: 1px solid var(--text-grey-dark);
 }
-.main_settings_container header div{
+
+.main_settings_container header div {
     cursor: pointer;
 }
-.main_settings_container header h2{
+
+.main_settings_container header h2 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-light)
 }
-.chart_settings_inner{
+
+.chart_settings_inner {
     display: grid;
     grid-template-columns: 60px 1fr;
     gap: 1rem;
 }
 
-.main_settings_container{
+.main_settings_container {
     bottom: 0px;
 
     opacity: 0;
 }
-.main_settings_container_active{
+
+.main_settings_container_active {
     opacity: 1;
-width: 100%;
-max-height: 90%;
-   top: 30px;
-   right: 10px;
+    width: 100%;
+    max-height: 90%;
+    top: 30px;
+    right: 10px;
 
     z-index: 5;
 }
 
-.chart_settings_nav{
+.chart_settings_nav {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -305,32 +317,33 @@ max-height: 90%;
     list-style: none;
     border-right: 1px solid var(--text-grey-dark);
     transition: all var(--animation-speed) ease-in-out
-
 }
-.chart_settings_nav li{
+
+.chart_settings_nav li {
     cursor: pointer;
- padding: 1rem;
+    padding: 1rem;
 }
 
-.setting_active{
+.setting_active {
     background: var(--dark2)
 }
 
-.main_chart_settings_content{
+.main_chart_settings_content {
     width: 100%;
     display: flex;
     flex-direction: column;
-   /* justify-content: center; */
-   align-items: center;
-   transition: all var(--animation-speed) ease-in-out
-    
+    /* justify-content: center; */
+    align-items: center;
+    transition: all var(--animation-speed) ease-in-out
 }
-@media only screen and (min-device-width: 320px) and (max-device-width: 850px) and (-webkit-min-device-pixel-ratio: 2) {    .graph_container {
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 850px) and (-webkit-min-device-pixel-ratio: 2) {
+    .graph_container {
         /* display: none; */
         margin-bottom: 15px;
     }
 
-    .main_container_chart{
+    .main_container_chart {
         height: 75vh;
         overflow: hidden;
     }
@@ -352,6 +365,7 @@ max-height: 90%;
     .graph_style {
         width: 100%;
     }
+
     /* .full_screen_gradient{
 
     background: red;
@@ -383,6 +397,3 @@ max-height: 90%;
     }
 
 }
-
-
-
