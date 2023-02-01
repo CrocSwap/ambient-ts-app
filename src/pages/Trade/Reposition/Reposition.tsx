@@ -10,14 +10,22 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 // import { useState, useEffect } from 'react';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 export default function Reposition() {
-
+    const { params } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
+
+    if (!location.state) {
+        const redirectParams = params ?? '';
+        navigate('/trade/range/' + redirectParams);
+    }
+
+    useEffect(() => console.log({location}), [location.pathname]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const isDenomBase = tradeData.isDenomBase;

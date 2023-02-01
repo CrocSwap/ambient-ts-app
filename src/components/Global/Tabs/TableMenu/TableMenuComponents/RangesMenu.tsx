@@ -158,6 +158,7 @@ export default function RangesMenu(props: propsIF) {
                     '&tokenB=' +
                     position.quote
             }
+            state={{position: position}}
             onClick={() => {
                 dispatch(setPositionToBeRepositioned(position));
                 setRepositionData(position);
