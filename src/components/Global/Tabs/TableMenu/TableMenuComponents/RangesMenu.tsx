@@ -38,7 +38,7 @@ interface propsIF {
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
     rangeDetailsProps: any;
-    positionData: PositionIF;
+    position: PositionIF;
     posHash: string;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
@@ -57,7 +57,7 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
-        positionData,
+        position,
         isOnPortfolioPage,
         handlePulseAnimation,
         showHighlightedButton,
@@ -89,18 +89,18 @@ export default function RangesMenu(props: propsIF) {
 
     const openRemoveModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
+        openGlobalModal(<RemoveRange position={position} {...rangeDetailsProps} />);
     };
 
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+        openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
     };
 
     const openHarvestModal = () => {
         setShowDropdownMenu(false);
         openGlobalModal(
-            <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />,
+            <HarvestPosition crocEnv={crocEnv} position={position} {...rangeDetailsProps} />,
         );
     };
 
@@ -116,12 +116,12 @@ export default function RangesMenu(props: propsIF) {
             handlePulseAnimation ? handlePulseAnimation('range') : null;
         }
 
-        if (positionData.positionType === 'ambient') {
+        if (position.positionType === 'ambient') {
             dispatch(setSimpleRangeWidth(100));
             dispatch(setAdvancedMode(false));
         } else {
-            dispatch(setAdvancedLowTick(positionData.bidTick));
-            dispatch(setAdvancedHighTick(positionData.askTick));
+            dispatch(setAdvancedLowTick(position.bidTick));
+            dispatch(setAdvancedHighTick(position.askTick));
             dispatch(setAdvancedMode(true));
         }
         setShowDropdownMenu(false);
@@ -150,10 +150,17 @@ export default function RangesMenu(props: propsIF) {
         // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
         <Link
             className={styles.reposition_button}
-            to={'/trade/reposition'}
+            to={
+                '/trade/reposition/chain=' +
+                    position.chainId +
+                    '&tokenA=' +
+                    position.base +
+                    '&tokenB=' +
+                    position.quote
+            }
             onClick={() => {
-                dispatch(setPositionToBeRepositioned(positionData));
-                setRepositionData(positionData);
+                dispatch(setPositionToBeRepositioned(position));
+                setRepositionData(position);
             }}
         >
             Reposition!!!!
@@ -175,11 +182,11 @@ export default function RangesMenu(props: propsIF) {
                 '/trade/range/' +
                 (isOnPortfolioPage
                     ? 'chain=' +
-                      positionData.chainId +
-                      '&tokenA=' +
-                      positionData.base +
-                      '&tokenB=' +
-                      positionData.quote
+                        position.chainId +
+                        '&tokenA=' +
+                        position.base +
+                        '&tokenB=' +
+                        position.quote
                     : currentLocation.slice(currentLocation.indexOf('chain')))
             }
             onClick={handleCopyClick}

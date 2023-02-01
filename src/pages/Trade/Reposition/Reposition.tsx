@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 export default function Reposition() {
+
     const location = useLocation();
 
     const tradeData = useAppSelector((state) => state.tradeData);

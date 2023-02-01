@@ -59,6 +59,7 @@ interface propsIF {
 
 export default function RangesRow(props: propsIF) {
     const {
+        chainId,
         cachedQuerySpotPrice,
         showSidebar,
         account,
@@ -117,7 +118,7 @@ export default function RangesRow(props: propsIF) {
         crocEnv: props.crocEnv,
         provider: props.provider,
         chainData: props.chainData,
-        chainId: props.chainId,
+        chainId: chainId,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: isAmbient,
@@ -152,7 +153,7 @@ export default function RangesRow(props: propsIF) {
         posHash: posHash as string,
         rangeDetailsProps: rangeDetailsProps,
         userMatchesConnectedAccount: userMatchesConnectedAccount,
-        positionData: position,
+        position: position,
         baseTokenBalance: props.baseTokenBalance,
         quoteTokenBalance: props.quoteTokenBalance,
         baseTokenDexBalance: props.baseTokenDexBalance,

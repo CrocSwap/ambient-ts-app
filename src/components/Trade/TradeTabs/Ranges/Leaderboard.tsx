@@ -57,6 +57,7 @@ interface propsIF {
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 // react functional component
@@ -83,6 +84,7 @@ export default function Leaderboard(props: propsIF) {
         // setLeaderOwnerId,
         cachedQuerySpotPrice,
         showSidebar,
+        setRepositionData
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -347,7 +349,7 @@ export default function Leaderboard(props: propsIF) {
             isLeaderboard={true}
             idx={idx + 1}
             handlePulseAnimation={handlePulseAnimation}
-
+            setRepositionData={setRepositionData}
             // blockExplorer={blockExplorer}
         />
     ));
