@@ -63,31 +63,31 @@ export default function SidebarSearchResults(props: propsIF) {
             />
             {isConnected && (<>
                 <PositionsSearchResults
-                        chainId={chainId}
-                        searchedPositions={searchedPositions}
-                        isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
-                    />
-                    <OrdersSearchResults
-                        chainId={chainId}
-                        searchedLimitOrders={searchedLimitOrders}
-                        isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
-                    />
-                    <TxSearchResults
-                        chainId={chainId}
-                        searchedTxs={searchedTxs}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
-                    />
+                    chainId={chainId}
+                    searchedPositions={searchedPositions}
+                    isDenomBase={isDenomBase}
+                    setOutsideControl={setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setCurrentPositionActive={setCurrentPositionActive}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
+                />
+                <OrdersSearchResults
+                    chainId={chainId}
+                    searchedLimitOrders={searchedLimitOrders}
+                    isDenomBase={isDenomBase}
+                    setOutsideControl={setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setCurrentPositionActive={setCurrentPositionActive}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
+                />
+                <TxSearchResults
+                    chainId={chainId}
+                    searchedTxs={searchedTxs}
+                    setOutsideControl={setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
+                />
             </>
             )}
         </div>
