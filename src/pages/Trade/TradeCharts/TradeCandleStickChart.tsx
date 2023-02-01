@@ -253,17 +253,17 @@ export default function TradeCandleStickChart(props: ChartData) {
         const volumeData = parsedChartData?.volumeChartData;
         const volumeTempData: any = [];
         if (volumeData) {
-            const volumeLogScale = d3
-                .scaleLog()
-                .domain([
-                    d3.min(volumeData, function (d: any) {
-                        return d.value;
-                    }),
-                    d3.max(parsedChartData?.volumeChartData, function (d: any) {
-                        return d.value;
-                    }),
-                ])
-                .range([30, 1000]);
+            // const volumeLogScale = d3
+            //     .scaleLog()
+            //     .domain([
+            //         d3.min(volumeData, function (d: any) {
+            //             return d.value;
+            //         }),
+            //         d3.max(parsedChartData?.volumeChartData, function (d: any) {
+            //             return d.value;
+            //         }),
+            //     ])
+            //     .range([30, 1000]);
 
             volumeData.map((data: any) => {
                 volumeTempData.push({
