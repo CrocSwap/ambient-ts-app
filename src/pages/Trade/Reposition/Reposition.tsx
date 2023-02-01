@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
