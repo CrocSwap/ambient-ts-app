@@ -99,6 +99,7 @@ export default function RangesRow(props: propsIF) {
         apyClassname,
 
         isPositionInRange,
+        isPositionEmpty,
         isAmbient,
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -151,6 +152,8 @@ export default function RangesRow(props: propsIF) {
         posHash: posHash as string,
         rangeDetailsProps: rangeDetailsProps,
         userMatchesConnectedAccount: userMatchesConnectedAccount,
+        isPositionEmpty: isPositionEmpty,
+        positionData: position,
         position: position,
         baseTokenBalance: props.baseTokenBalance,
         quoteTokenBalance: props.quoteTokenBalance,
@@ -583,11 +586,19 @@ export default function RangesRow(props: propsIF) {
                 >
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMin}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {isOnPortfolioPage
+                                ? minRangeDenomByMoneyness || '…'
+                                : ambientOrMin || '…'}
+                        </span>
                     </p>
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMax}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {isOnPortfolioPage
+                                ? maxRangeDenomByMoneyness || '…'
+                                : ambientOrMax || '…'}
+                        </span>
                     </p>
                 </li>
             )}

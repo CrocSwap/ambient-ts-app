@@ -38,7 +38,10 @@ export default function Reposition(props: propsIF) {
 
     // log in console if conditions are such to trigger an automatic URL redirect
     // this will help troubleshoot if we ever break functionality to link this page
-    console.assert(location.state, `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in location.state as returned by the useLocation() hook. Actual value received is <<${location.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`);
+    console.assert(
+        location.state,
+        `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in location.state as returned by the useLocation() hook. Actual value received is <<${location.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
+    );
 
     // navigate the user to the redirect URL path if location.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link
@@ -152,12 +155,11 @@ export default function Reposition(props: propsIF) {
                 />
                 <RepositionButton onClickFn={sendRepositionTransaction} />
             </div>
-            {
-                isModalOpen &&
+            {isModalOpen && (
                 <Modal onClose={closeModal} title=' Confirm Reposition'>
                     <ConfirmRepositionModal onClose={closeModal} />
                 </Modal>
-            }
+            )}
         </div>
     );
 }

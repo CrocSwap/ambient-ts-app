@@ -16,9 +16,7 @@ export default function RepositionHeader(props: propsIF) {
     return (
         <ContentHeader>
             <div />
-            <div className={styles.title}>
-                Reposition: {trimString(positionHash, 4, 4, '…')}
-            </div>
+            <div className={styles.title}>Reposition: {trimString(positionHash, 4, 4, '…')}</div>
             <div
                 onClick={() => navigate(redirectPath, { replace: true })}
                 style={{ cursor: 'pointer' }}
