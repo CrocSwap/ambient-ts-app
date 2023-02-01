@@ -15,7 +15,13 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useEffect, useState } from 'react';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
-export default function Reposition() {
+interface propsIF {
+    isDenomBase: boolean;
+}
+
+export default function Reposition(props: propsIF) {
+    const { isDenomBase } = props;
+
     const { params } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -28,7 +34,6 @@ export default function Reposition() {
     useEffect(() => console.log({location}), [location.pathname]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const isDenomBase = tradeData.isDenomBase;
     const position = tradeData.positionToBeRepositioned;
 
     const currentPoolPriceTick = position?.poolPriceInTicks || 0;
