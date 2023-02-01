@@ -986,7 +986,6 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (location.pathname.includes('range')) {
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                console.log('useEffect 1');
                 d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
                 d3.select(d3PlotArea.current)
                     .select('.targets')
@@ -1298,8 +1297,6 @@ export default function Chart(props: ChartData) {
                                 if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                                     const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
 
-                                    console.log('7');
-
                                     scaleData.yScale.domain([
                                         minYBoundary - buffer,
                                         maxYBoundary + buffer,
@@ -1601,8 +1598,6 @@ export default function Chart(props: ChartData) {
 
                     if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
                         const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
-
-                        console.log('1');
 
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
 
@@ -2215,23 +2210,7 @@ export default function Chart(props: ChartData) {
                         );
                     }
 
-                    console.log('inat');
-
-                    const low = scaleData.yScale.domain()[0];
-                    const high = scaleData.yScale.domain()[1];
-
-                    const min = newRangeValue.filter((target: any) => target.name === 'Min')[0]
-                        .value;
-                    const max = newRangeValue.filter((target: any) => target.name === 'Max')[0]
-                        .value;
-
-                    if (low > min || high < max) {
-                        const buffer = poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
-
-                        console.log('3');
-
-                        scaleData.yScale.domain([min - buffer, max + buffer]);
-                    }
+                    setLiqHighlightedLinesAndArea(newRangeValue, true);
 
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved, dragSwitched);
                     dragSwitched = false;
@@ -2497,8 +2476,6 @@ export default function Chart(props: ChartData) {
                 if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
-                    console.log('4');
-
                     scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                 }
             }
@@ -2534,8 +2511,6 @@ export default function Chart(props: ChartData) {
                             parsedChartData?.chartData[latestCandleIndex].high,
                     ) /
                         2;
-
-                console.log('5');
 
                 scaleData.yScale.domain([centerY - diffY / 2, centerY + diffY / 2]);
 
@@ -3174,7 +3149,7 @@ export default function Chart(props: ChartData) {
     }, [liqMode]);
 
     // line gradient
-    const setLiqHighlightedLinesAndArea = (ranges: any) => {
+    const setLiqHighlightedLinesAndArea = (ranges: any, autoScale = false) => {
         if (ranges !== undefined && location.pathname.includes('range') && poolPriceDisplay) {
             setHorizontalBandData([
                 [
@@ -3418,6 +3393,16 @@ export default function Chart(props: ChartData) {
                 setLineGradient(() => {
                     return lineGradient;
                 });
+            }
+
+            if (autoScale) {
+                const min = scaleData.yScale.domain()[0];
+                const max = scaleData.yScale.domain()[1];
+
+                if (min > low || max < high) {
+                    const buffer = poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
+                    scaleData.yScale.domain([low - buffer, high + buffer]);
+                }
             }
         }
     };
@@ -3666,8 +3651,6 @@ export default function Chart(props: ChartData) {
             if (location.pathname.includes('range')) {
                 const buffer = poolPriceDisplay / 50;
 
-                console.log('covenant');
-
                 const min = ranges.filter((target: any) => target.name === 'Min')[0].value - buffer;
                 const max = ranges.filter((target: any) => target.name === 'Max')[0].value + buffer;
 
@@ -3675,8 +3658,6 @@ export default function Chart(props: ChartData) {
                     scaleData.yScaleCopy.domain()[0] < min ? scaleData.yScaleCopy.domain()[0] : min;
                 const high =
                     scaleData.yScaleCopy.domain()[1] > max ? scaleData.yScaleCopy.domain()[1] : max;
-
-                console.log('6');
 
                 scaleData.yScale.domain([low, high]);
             } else if (location.pathname.includes('limit')) {
