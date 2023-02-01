@@ -34,9 +34,9 @@ export default function Reposition(props: propsIF) {
 
     const { position } = location.state;
 
-    const currentPoolPriceTick = position?.poolPriceInTicks || 0;
-    const baseTokenDecimals = position?.baseDecimals || 18;
-    const quoteTokenDecimals = position?.quoteDecimals || 18;
+    const currentPoolPriceTick = position.poolPriceInTicks || 0;
+    const baseTokenDecimals = position.baseDecimals || 18;
+    const quoteTokenDecimals = position.quoteDecimals || 18;
 
     const currentPoolPriceNonDisplay = tickToPrice(currentPoolPriceTick);
 
@@ -136,8 +136,8 @@ export default function Reposition(props: propsIF) {
                     setRangeWidthPercentage={setRangeWidthPercentage}
                 />
                 <RepositionDenominationSwitch
-                    baseTokenSymbol={position?.baseSymbol || 'ETH'}
-                    quoteTokenSymbol={position?.quoteSymbol || 'USDC'}
+                    baseTokenSymbol={position.baseSymbol || 'ETH'}
+                    quoteTokenSymbol={position.quoteSymbol || 'USDC'}
                 />
                 <RepositionPriceInfo
                     position={position}
