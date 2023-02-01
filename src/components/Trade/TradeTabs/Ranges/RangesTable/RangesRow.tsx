@@ -54,6 +54,7 @@ interface propsIF {
     idx: number;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 export default function RangesRow(props: propsIF) {
@@ -71,7 +72,7 @@ export default function RangesRow(props: propsIF) {
         isOnPortfolioPage,
         isLeaderboard,
         handlePulseAnimation,
-        // idx,
+        setRepositionData
     } = props;
 
     const {
@@ -647,6 +648,7 @@ export default function RangesRow(props: propsIF) {
                     {...rangeMenuProps}
                     showSidebar={props.showSidebar}
                     showHighlightedButton={showHighlightedButton}
+                    setRepositionData={setRepositionData}
                 />
             </li>
         </ul>

@@ -79,6 +79,7 @@ interface propsIF {
 
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
+    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 // React functional component
@@ -111,6 +112,7 @@ export default function PortfolioTabs(props: propsIF) {
         // fullLayoutToggle,
         handlePulseAnimation,
         account,
+        setRepositionData
     } = props;
 
     const dispatch = useAppDispatch();
@@ -373,6 +375,7 @@ export default function PortfolioTabs(props: propsIF) {
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         handlePulseAnimation: handlePulseAnimation,
+        setRepositionData: setRepositionData
     };
 
     // props for <Transactions/> React Element

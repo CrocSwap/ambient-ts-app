@@ -10,7 +10,7 @@ import { BigNumber, ethers } from 'ethers';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import Button from '../../components/Global/Button/Button';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -86,6 +86,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
+    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -133,6 +134,7 @@ export default function Portfolio(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
+        setRepositionData
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -622,6 +624,7 @@ export default function Portfolio(props: propsIF) {
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                         fullLayoutToggle={fullLayerToggle}
                         handlePulseAnimation={handlePulseAnimation}
+                        setRepositionData={setRepositionData}
                     />
                 ) : (
                     !hideTabs && (

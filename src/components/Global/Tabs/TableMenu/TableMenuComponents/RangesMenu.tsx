@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -42,9 +42,9 @@ interface propsIF {
     posHash: string;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
-
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
+    setRepositionData: Dispatch<SetStateAction<PositionIF|null>>
 }
 
 // React functional component
@@ -61,8 +61,7 @@ export default function RangesMenu(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         showHighlightedButton,
-        // showSidebar,
-        // eslint-disable-next-line
+        setRepositionData
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -154,9 +153,10 @@ export default function RangesMenu(props: propsIF) {
             to={'/trade/reposition'}
             onClick={() => {
                 dispatch(setPositionToBeRepositioned(positionData));
+                setRepositionData(positionData);
             }}
         >
-            Reposition
+            Reposition!!!!
         </Link>
     );
     //  : null;
