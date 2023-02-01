@@ -3183,9 +3183,15 @@ export default function Chart(props: ChartData) {
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-            const minBoudnary = d3.min(liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const minBoudnary = d3.min(
+                liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData,
+                (d: any) => d.liqPrices,
+            );
 
-            const maxBoudnary = d3.max(liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const maxBoudnary = d3.max(
+                liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData,
+                (d: any) => d.liqPrices,
+            );
 
             const liqData =
                 liqMode === 'Depth' ? liquidityData.depthLiqAskData : liquidityData.liqAskData;
