@@ -251,6 +251,7 @@ export default function Chart(props: ChartData) {
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
     const [isRangeScaleSet, setIsRangeScaleSet] = useState<string>('noChange');
+    const [isRepositionLinesSet, setIsRepositionLinesSet] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -1296,16 +1297,40 @@ export default function Chart(props: ChartData) {
 
                         if (rescale && filtered && filtered?.length > 10) {
                             if (filtered !== undefined) {
+                                const low = ranges.filter((target: any) => target.name === 'Min')[0]
+                                    .value;
+                                const high = ranges.filter(
+                                    (target: any) => target.name === 'Max',
+                                )[0].value;
+
                                 const minYBoundary = d3.min(filtered, (d) => d.low);
                                 const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-                                if (maxYBoundary !== undefined && minYBoundary !== undefined) {
-                                    const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
+                                if (
+                                    location.pathname.includes('range') ||
+                                    location.pathname.includes('reposition')
+                                ) {
+                                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                        const buffer =
+                                            poolPriceDisplay !== undefined
+                                                ? poolPriceDisplay / 50
+                                                : 0;
+                                        scaleData.yScale.domain([
+                                            Math.min(low, minYBoundary) - buffer,
+                                            Math.max(high, maxYBoundary) + buffer,
+                                        ]);
+                                    }
+                                } else {
+                                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                        const buffer = Math.floor(
+                                            (maxYBoundary - minYBoundary) * 0.1,
+                                        );
 
-                                    scaleData.yScale.domain([
-                                        minYBoundary - buffer,
-                                        maxYBoundary + buffer,
-                                    ]);
+                                        scaleData.yScale.domain([
+                                            minYBoundary - buffer,
+                                            maxYBoundary + buffer,
+                                        ]);
+                                    }
                                 }
                             }
                         }
@@ -1572,7 +1597,6 @@ export default function Chart(props: ChartData) {
         location,
         candlestick,
         isZoomForSubChart,
-        location,
         JSON.stringify(scaleData?.xScale.domain()[0]),
         JSON.stringify(scaleData?.xScale?.domain()[1]),
         transformX,
@@ -1601,37 +1625,63 @@ export default function Chart(props: ChartData) {
                     const minYBoundary = d3.min(filtered, (d) => d.low);
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-                    if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
-                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                    if (
+                        location.pathname.includes('range') ||
+                        location.pathname.includes('reposition')
+                    ) {
+                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-                        scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
-
-                        const liqAllBidPrices = liquidityData.liqBidData.map(
-                            (liqPrices: any) => liqPrices.liqPrices,
-                        );
-                        const liqBidDeviation = standardDeviation(liqAllBidPrices);
-
-                        while (
-                            scaleData.yScale.domain()[1] + liqBidDeviation >=
-                            liquidityData?.liqBidData[0]?.liqPrices
-                        ) {
-                            liquidityData.liqBidData.unshift({
-                                activeLiq: 30,
-                                liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
-                                deltaAverageUSD: 0,
-                                cumAverageUSD: 0,
-                            });
-
-                            liquidityData.depthLiqBidData.unshift({
-                                activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
-                                liqPrices:
-                                    liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
-                                deltaAverageUSD: 0,
-                                cumAverageUSD: 0,
-                            });
+                        if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                            const buffer =
+                                poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
+                            scaleData.yScale.domain([
+                                Math.min(low, minYBoundary) - buffer,
+                                Math.max(high, maxYBoundary) + buffer,
+                            ]);
                         }
+                    } else {
+                        if (
+                            maxYBoundary !== undefined &&
+                            minYBoundary !== undefined &&
+                            liquidityData
+                        ) {
+                            const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
-                        setLiqHighlightedLinesAndArea(ranges);
+                            scaleData.yScale.domain([
+                                minYBoundary - buffer,
+                                maxYBoundary + buffer / 2,
+                            ]);
+
+                            const liqAllBidPrices = liquidityData.liqBidData.map(
+                                (liqPrices: any) => liqPrices.liqPrices,
+                            );
+                            const liqBidDeviation = standardDeviation(liqAllBidPrices);
+
+                            while (
+                                scaleData.yScale.domain()[1] + liqBidDeviation >=
+                                liquidityData?.liqBidData[0]?.liqPrices
+                            ) {
+                                liquidityData.liqBidData.unshift({
+                                    activeLiq: 30,
+                                    liqPrices:
+                                        liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
+                                    deltaAverageUSD: 0,
+                                    cumAverageUSD: 0,
+                                });
+
+                                liquidityData.depthLiqBidData.unshift({
+                                    activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                                    liqPrices:
+                                        liquidityData.depthLiqBidData[0].liqPrices +
+                                        liqBidDeviation,
+                                    deltaAverageUSD: 0,
+                                    cumAverageUSD: 0,
+                                });
+                            }
+
+                            setLiqHighlightedLinesAndArea(ranges);
+                        }
                     }
                 }
             }
@@ -1714,20 +1764,43 @@ export default function Chart(props: ChartData) {
     }, [denomInBase]);
 
     const setBalancedLines = () => {
-        if (location.pathname.includes('reposition') && position !== undefined) {
+        if (
+            location.pathname.includes('reposition') &&
+            position !== undefined &&
+            !isRepositionLinesSet
+        ) {
+            const lowTick = currentPoolPriceTick - 10 * 100;
+            const highTick = currentPoolPriceTick + 10 * 100;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                position?.baseDecimals || 18,
+                position?.quoteDecimals || 18,
+                lowTick,
+                highTick,
+                lookupChain(position?.chainId || '0x5').gridSize,
+            );
+
+            const pinnedMinPriceDisplayTruncated =
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+            const pinnedMaxPriceDisplayTruncated =
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+
             setRanges((prevState) => {
                 const newTargets = [...prevState];
 
                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                    position.askTickInvPriceDecimalCorrected;
+                    parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
 
                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                    position.bidTickInvPriceDecimalCorrected;
+                    parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
-                setLiqHighlightedLinesAndArea(newTargets);
+                setLiqHighlightedLinesAndArea(newTargets, true);
 
                 return newTargets;
             });
+
+            setIsRepositionLinesSet(true);
         } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
@@ -1771,9 +1844,6 @@ export default function Chart(props: ChartData) {
                         scaleData.yScale.domain([min, max]);
 
                         dispatch(setRescaleRangeBoundaries(false));
-                        setRescale(() => {
-                            return false;
-                        });
                     }
 
                     return newTargets;
@@ -2006,7 +2076,7 @@ export default function Chart(props: ChartData) {
 
                     let pinnedDisplayPrices: any;
 
-                    if (!isAdvancedModeActive) {
+                    if (!isAdvancedModeActive || location.pathname.includes('reposition')) {
                         if (
                             dragedValue === 0 ||
                             dragedValue === liquidityData.topBoundary ||
@@ -2221,7 +2291,10 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    if (!isAdvancedModeActive && rangeWidthPercentage) {
+                    if (
+                        (!isAdvancedModeActive || location.pathname.includes('reposition')) &&
+                        rangeWidthPercentage
+                    ) {
                         dispatch(
                             setSimpleRangeWidth(
                                 Math.floor(
@@ -2787,7 +2860,10 @@ export default function Chart(props: ChartData) {
                     .selectAll('.horizontal')
                     .style(
                         'visibility',
-                        simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
+                        simpleRangeWidth === 100 &&
+                            (!isAdvancedModeActive || location.pathname.includes('reposition'))
+                            ? 'hidden'
+                            : 'visible',
                     );
             }
 
@@ -2835,7 +2911,7 @@ export default function Chart(props: ChartData) {
             lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
         }
 
-        if (!isAdvancedModeActive) {
+        if (!isAdvancedModeActive || location.pathname.includes('reposition')) {
             let rangeWidthPercentage;
             let tickValue;
             let pinnedDisplayPrices: any;
@@ -3191,20 +3267,24 @@ export default function Chart(props: ChartData) {
         ) {
             setHorizontalBandData([
                 [
-                    simpleRangeWidth === 100 && !isAdvancedModeActive
+                    simpleRangeWidth === 100 &&
+                    (!isAdvancedModeActive || location.pathname.includes('reposition'))
                         ? 0
                         : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                    simpleRangeWidth === 100 && !isAdvancedModeActive
+                    simpleRangeWidth === 100 &&
+                    (!isAdvancedModeActive || location.pathname.includes('reposition'))
                         ? 0
                         : ranges.filter((item: any) => item.name === 'Max')[0].value,
                 ],
             ]);
 
             horizontalBandData[0] = [
-                simpleRangeWidth === 100 && !isAdvancedModeActive
+                simpleRangeWidth === 100 &&
+                (!isAdvancedModeActive || location.pathname.includes('reposition'))
                     ? 0
                     : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                simpleRangeWidth === 100 && !isAdvancedModeActive
+                simpleRangeWidth === 100 &&
+                (!isAdvancedModeActive || location.pathname.includes('reposition'))
                     ? 0
                     : ranges.filter((item: any) => item.name === 'Max')[0].value,
             ];
@@ -3215,7 +3295,10 @@ export default function Chart(props: ChartData) {
                 .selectAll('.horizontal')
                 .style(
                     'visibility',
-                    simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
+                    simpleRangeWidth === 100 &&
+                        (!isAdvancedModeActive || location.pathname.includes('reposition'))
+                        ? 'hidden'
+                        : 'visible',
                 );
 
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;

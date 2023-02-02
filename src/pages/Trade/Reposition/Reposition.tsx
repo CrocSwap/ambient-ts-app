@@ -12,7 +12,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import { useLocation, Link } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 export default function Reposition() {
@@ -21,6 +21,7 @@ export default function Reposition() {
     const tradeData = useAppSelector((state) => state.tradeData);
     const isDenomBase = tradeData.isDenomBase;
     const position = tradeData.positionToBeRepositioned;
+    const simpleRangeWidth = tradeData.simpleRangeWidth;
 
     const currentPoolPriceTick = position?.poolPriceInTicks || 0;
     const baseTokenDecimals = position?.baseDecimals || 18;
@@ -74,6 +75,10 @@ export default function Reposition() {
         // openModal,
         closeModal,
     ] = useModal();
+
+    useEffect(() => {
+        setRangeWidthPercentage(() => simpleRangeWidth);
+    }, [simpleRangeWidth]);
 
     const confirmRepositionModal = isModalOpen ? (
         <Modal onClose={closeModal} title=' Confirm Reposition'>
