@@ -167,8 +167,6 @@ export default function Chart(props: ChartData) {
 
     const parsedChartData = props.candleData;
 
-    const position = tradeData.positionToBeRepositioned;
-
     const d3Container = useRef<HTMLInputElement | null>(null);
     const d3PlotArea = useRef(null);
     const d3Canvas = useRef(null);
@@ -178,6 +176,7 @@ export default function Chart(props: ChartData) {
     const dispatch = useAppDispatch();
 
     const location = useLocation();
+    const position = location?.state?.position;
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -242,7 +241,6 @@ export default function Chart(props: ChartData) {
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
     const [isRangeScaleSet, setIsRangeScaleSet] = useState<string>('noChange');
-    const [isRepositionLinesSet, setIsRepositionLinesSet] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -1304,13 +1302,11 @@ export default function Chart(props: ChartData) {
                                     }
                                 } else {
                                     if (maxYBoundary !== undefined && minYBoundary !== undefined) {
-                                        const buffer = Math.floor(
-                                            (maxYBoundary - minYBoundary) * 0.1,
-                                        );
+                                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
                                         scaleData.yScale.domain([
                                             minYBoundary - buffer,
-                                            maxYBoundary + buffer,
+                                            maxYBoundary + buffer / 2,
                                         ]);
                                     }
                                 }
@@ -1427,7 +1423,6 @@ export default function Chart(props: ChartData) {
                     ) {
                         setShowLatest(false);
                     }
-                    setIsRangeScaleSet('scaleOver');
 
                     d3.select(d3PlotArea.current)
                         .select('svg')
@@ -1745,19 +1740,25 @@ export default function Chart(props: ChartData) {
         });
     }, [denomInBase]);
 
-    const setBalancedLines = () => {
+    useEffect(() => {
+        if (position !== undefined) {
+            setBalancedLines(true);
+        }
+    }, [position?.positionId]);
+
+    const setBalancedLines = (isRepositionLinesSet = false) => {
         if (
             location.pathname.includes('reposition') &&
             position !== undefined &&
-            !isRepositionLinesSet
+            isRepositionLinesSet
         ) {
             const lowTick = currentPoolPriceTick - 10 * 100;
             const highTick = currentPoolPriceTick + 10 * 100;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
-                position?.baseDecimals || 18,
-                position?.quoteDecimals || 18,
+                position.baseDecimals || 18,
+                position.quoteDecimals || 18,
                 lowTick,
                 highTick,
                 lookupChain(position?.chainId || '0x5').gridSize,
@@ -1782,7 +1783,7 @@ export default function Chart(props: ChartData) {
                 return newTargets;
             });
 
-            setIsRepositionLinesSet(true);
+            dispatch(setSimpleRangeWidth(10));
         } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
@@ -3809,7 +3810,7 @@ export default function Chart(props: ChartData) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
             }
         }
-    }, [location, isRangeScaleSet, ranges]);
+    }, [location.pathname, isRangeScaleSet, ranges]);
 
     // Call drawChart()
     useEffect(() => {

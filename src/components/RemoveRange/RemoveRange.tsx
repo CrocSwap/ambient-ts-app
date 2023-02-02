@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
+import { VscClose } from 'react-icons/vsc';
 
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
@@ -512,9 +513,16 @@ export default function RemoveRange(props: propsIF) {
         <div className={styles.confirmation_container}>
             {showConfirmation && (
                 // {showConfirmation && !removalDenied && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
-                </div>
+                <header>
+                    <div className={styles.button} onClick={resetConfirmation}>
+                        {newRemovalTransactionHash == '' && <BsArrowLeft size={30} />}
+                    </div>
+                    {newRemovalTransactionHash !== '' && (
+                        <div onClick={closeGlobalModal}>
+                            <VscClose size={30} />
+                        </div>
+                    )}
+                </header>
             )}
             <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>

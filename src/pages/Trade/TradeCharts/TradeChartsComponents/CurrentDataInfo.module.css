@@ -1,3 +1,8 @@
+.chart_overlay_container{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
 .chart_tooltips {
     display: flex;
     flex-direction: row;
@@ -31,10 +36,11 @@
     color: rgba(235, 235, 255, 0.4);
 }
 
-.settings_container:last-of-type{
-    border-right: 1px solid transparent;
-    
+
+.settings_container:not(:last-child) {
+    border-right: 1px solid var(--text-grey-light);
 }
+
 
 .active_selected_button,
 .non_active_selected_button {

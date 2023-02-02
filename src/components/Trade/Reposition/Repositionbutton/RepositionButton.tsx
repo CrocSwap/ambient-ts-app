@@ -1,31 +1,26 @@
 import styles from './RepositionButton.module.css';
-// import { useState } from 'react';
 import Button from '../../../Global/Button/Button';
 
-interface IRepostionButtonProps {
+interface propsIF {
     onClickFn: () => void;
-    // rangeAllowed: boolean;
-    // rangeButtonErrorMessage: string;
 }
 
-export default function RepositionButton(props: IRepostionButtonProps) {
+export default function RepositionButton(props: propsIF) {
+    const { onClickFn } = props;
     // ----------------------------TEMPORARY DATA------------------------
     const repositionAllowed = true;
     // const onClickFn = () => console.log('clicked');
     const rangeButtonErrorMessage = 'Enter an amount';
     // ----------------------------TEMPORARY DATA------------------------
 
-    const ButtonDisplay = (
+    return (
         <div className={styles.button_container}>
             <Button
                 title={repositionAllowed ? 'Open Confirmation' : rangeButtonErrorMessage}
-                // action={() => console.log('clicked')}
-                action={props.onClickFn}
+                action={onClickFn}
                 disabled={!repositionAllowed}
                 flat={true}
             />
         </div>
     );
-
-    return <div>{ButtonDisplay}</div>;
 }
