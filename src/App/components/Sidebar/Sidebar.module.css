@@ -7,10 +7,7 @@
     padding: 0 4px;
 
     z-index: 9999;
-
- 
 }
-
 
 .sidebar::-webkit-scrollbar {
     width: 0.25rem;
@@ -45,7 +42,7 @@
     width: 100%;
 }
 
-.close_icon{
+.close_icon {
     display: flex;
 }
 .bottom_elements {
@@ -188,7 +185,6 @@
         0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
-
 /* SEARCH CONTAINER */
 
 .search_container {
@@ -200,15 +196,14 @@
     padding: 10px;
 }
 
-
-.search_container input:-webkit-autofill{
+.search_container input:-webkit-autofill {
     background: black;
 }
 
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active{
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px var(--dark3) inset !important;
     -webkit-text-fill-color: var(--text-grey-white) !important;
 }
@@ -234,101 +229,92 @@ input:-webkit-autofill:active{
 
 /* END OF SEARCH CONTAINER */
 
-
-
-
 /* Large screens */
 /* THIS CODE WAS ORIGINALLY FOR DESKTOP DEVICES ONLY */
 /* @media only screen and (min-width: 500px) { */
-    .sidebar {
-        top: 0;
-        width: 1.938rem;
-        height: 100vh;
-        margin-top: 56px;
-        border-top: 1px solid var(--dark3);
-        padding-top: 4px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-        background: transparent;
-    }
-
-    .sidebar_active {
-        width: 296px;
-        padding-top: 4px;
-        border-top: 1px solid var(--dark3);
-    }
-
-    .sidebar_active .search_container {
-        background-color: var(--dark3);
-        border-radius: var(--border-radius);
-        height: 28px;
-    }
-    .sidebar_active .search__box {
-        width: 100%;
-        padding: 0 1rem;
-    }
-
-    .sidebar_active .search__icon {
-        display: flex;
-
-        justify-content: center;
-        align-items: center;
-    }
-
-    .sidebar_active .link_text {
-        display: inline;
-    }
-
-    .sidebar:hover .search_container {
-        background-color: var(--dark3);
-    }
-
-    .search_container:hover .search__icon {
-        /* transform: scale(1.03); */
-        transition: all var(--animation-speed) ease-in-out;
-    }
-
-
-    .sidebar_nav {
-        height: calc(100% - 56px);
-    }
-    .main_search_container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .sidebar_active .search_container {
-        display: flex;
-
-        justify-content: center;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .sidebar_item_content {
-        width: 100%;
-    }
-
-
-@media only screen and (max-width: 1180px) {
-
-.sidebar_active{
-    box-shadow:  20px 20px 65px #0b0e13,
-    -20px -20px 65px #0f141b;
+.sidebar {
+    top: 0;
+    width: 1.938rem;
+    height: 100vh;
+    margin-top: 56px;
+    border-top: 1px solid var(--dark3);
+    padding-top: 4px;
 }
 
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+.sidebar_active {
+    width: 296px;
+    padding-top: 4px;
+    border-top: 1px solid var(--dark3);
+}
+
+.sidebar_active .search_container {
+    background-color: var(--dark3);
+    border-radius: var(--border-radius);
+    height: 28px;
+}
+.sidebar_active .search__box {
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.sidebar_active .search__icon {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar_active .link_text {
+    display: inline;
+}
+
+.sidebar:hover .search_container {
+    background-color: var(--dark3);
+}
+
+.search_container:hover .search__icon {
+    /* transform: scale(1.03); */
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+.sidebar_nav {
+    height: calc(100% - 56px);
+}
+.main_search_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.sidebar_active .search_container {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.sidebar_item_content {
+    width: 100%;
+}
+
+@media only screen and (max-width: 1280px) {
+    .sidebar_active {
+        box-shadow: 20px 20px 65px #0b0e13, -20px -20px 65px #0f141b;
+    }
 }
 
 @media only screen and (max-width: 600px) {
-.sidebar_nav{
-    height: auto;
-}
-
+    .sidebar_nav {
+        height: auto;
+    }
 }

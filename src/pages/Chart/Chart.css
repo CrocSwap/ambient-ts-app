@@ -15,7 +15,8 @@ text.market {
     fill: black;
 }
 
-d3fc-canvas, d3fc-svg {
+d3fc-canvas,
+d3fc-svg {
     overflow: hidden;
     grid-column: 2;
     grid-row: 3;
@@ -32,8 +33,8 @@ d3fc-canvas, d3fc-svg {
     height: 100%;
     overflow: hidden;
     display: grid;
-    grid-template-columns: auto 1fr auto minmax(1em,max-content);
-    grid-template-rows: minmax(1em,max-content) auto 1fr auto;
+    grid-template-columns: auto 1fr auto minmax(1em, max-content);
+    grid-template-rows: minmax(1em, max-content) auto 1fr auto;
 }
 
 text.crossHairText {
@@ -62,18 +63,17 @@ text.y_axis {
 }
 
 .annotation-line > .order_sell {
-    stroke:var(--accent-secondary);
+    stroke: var(--accent-secondary);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed var(--accent-secondary);
-
 }
 
 .annotation-line > .order_buy {
-    stroke: #7371FC;
+    stroke: #7371fc;
     stroke-width: 3;
     stroke-dasharray: 16 16;
-    border: 2px dashed #7371FC;
+    border: 2px dashed #7371fc;
 }
 .annotation-line > .marketLine {
     stroke: rgba(235, 235, 255, 0.4);
@@ -138,7 +138,6 @@ div.liqTooltip {
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--border-radius);
 }
-
 
 div.tooltip {
     position: absolute;
@@ -276,16 +275,14 @@ label {
     }
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 580px) {
     #d3fc_group {
         height: 85%;
         padding: 0px 5% 0px 0px;
     }
 }
 
-
 #d3fc_group > .y-axis-svg {
     grid-column: 4;
     grid-row: 3;
-
 }

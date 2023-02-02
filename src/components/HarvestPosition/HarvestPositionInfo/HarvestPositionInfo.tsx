@@ -37,7 +37,7 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
     // const quoteTokenSymbol = 'USDC';
 
     // const baseTokenLogoURI =
-    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
+    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/580px-Ethereum-icon-purple.svg.png';
 
     // const quoteTokenLogoURI = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
 
