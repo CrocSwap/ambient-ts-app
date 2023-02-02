@@ -29,7 +29,7 @@
 }
 
 /* Mobile Landscape Screen Sizes */
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 580px) {
     .tokens_container {
         display: flex;
     }

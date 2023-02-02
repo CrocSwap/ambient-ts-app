@@ -428,7 +428,8 @@ export default function Sidebar(props: propsIF) {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1500px)');
+    // const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
 
     useEffect(() => {
         if (overflowSidebarMQ) {

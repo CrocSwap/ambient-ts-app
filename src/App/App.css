@@ -30,16 +30,13 @@ body::-webkit-scrollbar-thumb {
 
     box-shadow: 0px 0px 0px 100000vh black;
 }
-body{
+body {
     background: var(--body-bg);
-
-    
-     
 }
 
 html {
     background: var(--body-bg);
-    
+
     color: var(--text-grey-white);
     height: 100%;
 }
@@ -51,11 +48,12 @@ svg {
 
 svg:hover {
     color: var(--text-grey-white);
- 
 }
 
-button, svg, a{
-    transition: all var(--animation-speed) ease-in-out
+button,
+svg,
+a {
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 a {
@@ -113,12 +111,9 @@ footer {
     /* height: 100vh; */
     /* background: var(--dark3); */
     height: calc(100vh - (var(--footer-height) + 2rem));
-
-   
 }
 
 .footer_container {
-
     color: white;
 
     position: fixed;
@@ -129,7 +124,6 @@ footer {
     right: 0;
     bottom: 0px;
     z-index: 2;
-
 }
 
 .primary_apr {
@@ -242,22 +236,18 @@ footer {
     bottom: 0;
 }
 
-
-
 @media only screen and (max-width: 600px) {
     .main-layout {
         margin: 0;
         overflow: scroll;
     }
 
-    .swap-body{
+    .swap-body {
         /* max-height: 86.5vh; */
         overflow-y: hidden;
 
-        max-height: calc(100vh - 7.5rem)
+        max-height: calc(100vh - 7.5rem);
     }
-
-   
 }
 
 /* @media only screen and (min-width: 800px) {
@@ -275,7 +265,7 @@ footer {
     }
 } */
 
-@media only screen and (min-width: 1180px) {
+@media only screen and (min-width: 1280px) {
     .sidebar_content_layout {
         transition: all var(--animation-speed) ease-in-out;
         display: grid;
@@ -286,7 +276,6 @@ footer {
 
         display: grid;
         grid-template-columns: 31px auto;
-
     }
 
     .content-container {

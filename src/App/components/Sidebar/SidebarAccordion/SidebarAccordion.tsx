@@ -45,7 +45,7 @@ export default function SidebarAccordion(props: propsIF) {
 
     const [isOpen, setIsOpen] = useState(false);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
 
     const openStateContent = (
         <motion.div

@@ -413,7 +413,7 @@ export default function TransactionsMenu(props: propsIF) {
     // const view3 = useMediaQuery('(min-width: 2300px)');
     // eslint-disable-next-line
     const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    const desktopView = useMediaQuery('(min-width: 768px)');
 
     // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
     // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
@@ -439,7 +439,7 @@ export default function TransactionsMenu(props: propsIF) {
             {/* {harvestButton} */}
             {detailsButton}
             {explorerButton}
-            {/* {copyButton} */}
+            {!desktopView && copyButton}
         </div>
     );
 
@@ -474,7 +474,7 @@ export default function TransactionsMenu(props: propsIF) {
 
     return (
         <div className={styles.main_container}>
-            {!desktopView && transactionsMenu}
+            {desktopView && transactionsMenu}
 
             {dropdownTransactionsMenu}
 

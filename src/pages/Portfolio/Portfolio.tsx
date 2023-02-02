@@ -522,8 +522,8 @@ export default function Portfolio(props: propsIF) {
     // console.log({ secondaryEnsName });
     // console.log({ ensName });
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
-    const hideTabs = useMediaQuery('(max-width: 850px)') && showTabsAndNotExchange;
-    const hideExchange = useMediaQuery('(max-width: 850px)') && !showTabsAndNotExchange;
+    const hideTabs = useMediaQuery('(max-width: 1200px)') && showTabsAndNotExchange;
+    const hideExchange = useMediaQuery('(max-width: 1200px)') && !showTabsAndNotExchange;
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
