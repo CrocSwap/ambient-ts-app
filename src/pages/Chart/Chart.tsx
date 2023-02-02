@@ -1803,6 +1803,8 @@ export default function Chart(props: ChartData) {
 
                 return newTargets;
             });
+
+            dispatch(setSimpleRangeWidth(10));
         } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
