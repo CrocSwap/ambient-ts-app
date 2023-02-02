@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
@@ -15,6 +15,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -50,6 +51,9 @@ export default function Reposition(props: propsIF) {
 
     // position data from the location object
     const { position } = location.state;
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const simpleRangeWidth = tradeData.simpleRangeWidth;
 
     const currentPoolPriceTick = position.poolPriceInTicks || 0;
     const baseTokenDecimals = position.baseDecimals || 18;
@@ -103,6 +107,41 @@ export default function Reposition(props: propsIF) {
         // openModal,
         closeModal,
     ] = useModal();
+
+    useEffect(() => {
+        setRangeWidthPercentage(() => simpleRangeWidth);
+    }, [simpleRangeWidth]);
+
+    const confirmRepositionModal = isModalOpen ? (
+        <Modal onClose={closeModal} title=' Confirm Reposition'>
+            <ConfirmRepositionModal onClose={closeModal} />
+        </Modal>
+    ) : null;
+
+    const repositionAddToggle = (
+        <div className={styles.reposition_toggle_container}>
+            <Link
+                to='/trade/reposition'
+                className={
+                    currentLocation.includes('reposition')
+                        ? styles.active_button_toggle
+                        : styles.non_active_button_toggle
+                }
+            >
+                Reposition
+            </Link>
+            <Link
+                to='/trade/add'
+                className={
+                    currentLocation.includes('add')
+                        ? styles.active_button_toggle
+                        : styles.non_active_button_toggle
+                }
+            >
+                Add
+            </Link>
+        </div>
+    );
 
     const sendRepositionTransaction = () => {
         console.log({ position });
