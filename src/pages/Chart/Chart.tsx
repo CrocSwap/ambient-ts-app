@@ -2577,10 +2577,26 @@ export default function Chart(props: ChartData) {
                 const minYBoundary = d3.min(filtered, (d) => d.low);
                 const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-                if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
-                    const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                if (
+                    location.pathname.includes('range') ||
+                    location.pathname.includes('reposition')
+                ) {
+                    const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                    const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-                    scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
+                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                        scaleData.yScale.domain([
+                            Math.min(low, minYBoundary) - buffer,
+                            Math.max(high, maxYBoundary) + buffer,
+                        ]);
+                    }
+                } else {
+                    if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
+                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+
+                        scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
+                    }
                 }
             }
 
