@@ -1320,13 +1320,11 @@ export default function Chart(props: ChartData) {
                                     }
                                 } else {
                                     if (maxYBoundary !== undefined && minYBoundary !== undefined) {
-                                        const buffer = Math.floor(
-                                            (maxYBoundary - minYBoundary) * 0.1,
-                                        );
+                                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
                                         scaleData.yScale.domain([
                                             minYBoundary - buffer,
-                                            maxYBoundary + buffer,
+                                            maxYBoundary + buffer / 2,
                                         ]);
                                     }
                                 }
@@ -3825,7 +3823,7 @@ export default function Chart(props: ChartData) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
             }
         }
-    }, [location, isRangeScaleSet, ranges]);
+    }, [location.pathname, isRangeScaleSet, ranges]);
 
     // Call drawChart()
     useEffect(() => {
