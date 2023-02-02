@@ -307,24 +307,24 @@ export default function HarvestPosition(props: propsIF) {
 
     // confirmation modal
     const removalDenied = (
-        <div className={styles.removal_pending}>
-            <CircleLoaderFailed />
+        <div className={styles.removal_denied}>
+            <CircleLoaderFailed size='10rem' />
             <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={resetConfirmation} />
+            <Button title='Try Again' action={resetConfirmation} flat />
         </div>
     );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
 
     const removalSuccess = (
-        <div className={styles.removal_pending}>
+        <div className={styles.removal_denied}>
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
+                <p>Harvest Transaction Successfully Submitted!</p>
             </div>
-            <p>Harvest Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -339,7 +339,7 @@ export default function HarvestPosition(props: propsIF) {
 
     const removalPending = (
         <div className={styles.removal_pending}>
-            <CircleLoader size='5rem' borderColor='#171d27' />
+            <CircleLoader size='10rem' borderColor='#171d27' />
             <p>Check the Metamask extension in your browser for notifications.</p>
         </div>
     );
@@ -391,7 +391,7 @@ export default function HarvestPosition(props: propsIF) {
     const buttonToDisplay = (
         <div style={{ padding: '0 1rem' }}>
             {showSettings ? (
-                <Button title='Confirm' action={() => setShowSettings(false)} />
+                <Button title='Confirm' action={() => setShowSettings(false)} flat />
             ) : (
                 harvestButtonOrNull
             )}
