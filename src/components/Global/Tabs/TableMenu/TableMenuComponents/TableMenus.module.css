@@ -12,8 +12,6 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-
-    
 }
 
 .option_button {
@@ -22,7 +20,7 @@
     border: none;
     outline: none;
     display: flex;
-    /* justify-content: center; */
+    justify-content: center;
     align-items: center;
     /* border: 1px solid #242f3f; */
     box-shadow: 2px 1000px 1px var(--dark3) inset;
@@ -75,7 +73,6 @@
     justify-content: flex-end;
     position: relative;
     cursor: pointer;
-
 }
 
 .dropdown_menu button {
@@ -103,7 +100,6 @@
     flex-direction: row;
     gap: 4px;
 }
-
 
 .example_menu {
     position: relative;

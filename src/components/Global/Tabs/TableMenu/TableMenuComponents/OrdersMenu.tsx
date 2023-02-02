@@ -257,7 +257,7 @@ export default function OrdersMenu(props: propsIF) {
             </button>
         ) : null;
     const copyButton =
-        limitOrder && isShowAllEnabled ? (
+        limitOrder && isShowAllEnabled && !isOwnerActiveAccount ? (
             <button
                 style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
                 className={styles.option_button}
