@@ -1441,7 +1441,6 @@ export default function Chart(props: ChartData) {
                     ) {
                         setShowLatest(false);
                     }
-                    setIsRangeScaleSet('scaleOver');
 
                     d3.select(d3PlotArea.current)
                         .select('svg')
