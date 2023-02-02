@@ -113,14 +113,6 @@ interface ChartData {
     liquidityScale: any;
 }
 
-function getWindowDimensions() {
-    const { innerWidth: width, innerHeight: height } = window;
-    return {
-        width,
-        height,
-    };
-}
-
 export default function Chart(props: ChartData) {
     const {
         isUserLoggedIn,
@@ -177,7 +169,7 @@ export default function Chart(props: ChartData) {
 
     const position = tradeData.positionToBeRepositioned;
 
-    const d3Container = useRef(null);
+    const d3Container = useRef<HTMLInputElement | null>(null);
     const d3PlotArea = useRef(null);
     const d3Canvas = useRef(null);
 
@@ -248,7 +240,6 @@ export default function Chart(props: ChartData) {
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
-    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
     const [isRangeScaleSet, setIsRangeScaleSet] = useState<string>('noChange');
     const [isRepositionLinesSet, setIsRepositionLinesSet] = useState<boolean>(false);
@@ -383,15 +374,6 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         setRescale(true);
     }, [denomInBase]);
-
-    useEffect(() => {
-        function handleResize() {
-            setWindowDimensions(getWindowDimensions());
-        }
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
@@ -932,7 +914,7 @@ export default function Chart(props: ChartData) {
         zoomAndYdragControl,
         scaleData,
         xAxis,
-        windowDimensions,
+        JSON.stringify(d3Container.current?.offsetWidth),
         mouseMoveEventCharts,
         activeTimeFrame,
         rescale,
@@ -3799,7 +3781,13 @@ export default function Chart(props: ChartData) {
                 return depthLiqAskSeriesJoin;
             });
         }
-    }, [scaleData, liquidityData, location, lineGradient]);
+    }, [
+        scaleData,
+        liquidityData,
+        location,
+        lineGradient,
+        JSON.stringify(d3Container.current?.offsetWidth),
+    ]);
 
     useEffect(() => {
         if (isRangeScaleSet === 'reScale' && poolPriceDisplay && simpleRangeWidth !== 100) {
