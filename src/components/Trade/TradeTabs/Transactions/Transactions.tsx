@@ -440,7 +440,7 @@ export default function Transactions(props: propsIF) {
             show: showColumns,
             slug: 'walletid',
             sortable: false,
-            alignCenter: true,
+            alignCenter: false,
         },
         {
             name: 'Price',

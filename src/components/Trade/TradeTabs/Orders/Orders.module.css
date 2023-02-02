@@ -181,3 +181,17 @@
     gap: 4px;
 }
 
+
+@media only screen and (max-width: 768px) {
+    .header li {
+        font-weight: 300;
+        font-size: 8px;
+        line-height: 10px;
+    
+    }
+
+    .row_container li{
+        font-size: 10px;
+        
+    }
+  }
