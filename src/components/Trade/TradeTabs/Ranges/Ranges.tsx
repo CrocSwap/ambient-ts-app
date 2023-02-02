@@ -436,7 +436,7 @@ export default function Ranges(props: propsIF) {
         {
             name: ' ',
             className: 'status',
-            show: !ipadView,
+            show: true,
             slug: 'status',
             sortable: false,
         },
