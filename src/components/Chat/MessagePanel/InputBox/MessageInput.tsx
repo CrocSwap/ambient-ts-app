@@ -100,10 +100,6 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         messageInputText();
     }, [isConnected, address]);
 
-    useEffect(() => {
-        console.log('Ens name in message input: ', props.ensName);
-    }, []);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const handleSendMessageButton = () => {
@@ -202,10 +198,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     {isInfoPressed ? (
                         <ul>
                             Keyboard Shortcuts
-                            <li>Escape will close all chat panel</li>
-                            <li>Escape will close all chat panel</li>
-                            <li>Escape will close all chat panel</li>
-                            <li>Escape will close all chat panel</li>
+                            <li>Ctrl + Alt + C - opens chat</li>
+                            <li>Ctrl + E - opens emoji panel when chat is open</li>
+                            <li>Ctrl + Esc - close emoji panel</li>
+                            <li>Enter - sends message directly</li>
                         </ul>
                     ) : (
                         <Picker
