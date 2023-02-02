@@ -219,28 +219,28 @@ export default function RangesMenu(props: propsIF) {
 
     // const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
-    // const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
+    const view1 = useMediaQuery('(min-width: 720px)');
+    const view2 = useMediaQuery('(min-width: 1280px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
     // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
-
+    const showRepositionButton =
+        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount && view1;
     // ----------------------
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {!isPositionInRange &&
-                !isPositionEmpty &&
-                userMatchesConnectedAccount &&
-                repositionButton}
-            {/* {view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
-            {/* {view1 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
+            {!showRepositionButton && view2 && detailsButton}
+            {showRepositionButton && repositionButton}
+            {view2 && removeButton}
+            {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
+            {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && harvestButton}
             {/* {view2 && removeButton} */}
-            {view3 && detailsButton}
-            {!userMatchesConnectedAccount && copyButton}
-            {/* {view1 && !props.showSidebar && copyButton} */}
+            {/* {view3 && detailsButton} */}
+            {!userMatchesConnectedAccount && view2 && copyButton}
+            {/* {view2 && !props.showSidebar && copyButton} */}
         </div>
     );
 
