@@ -429,7 +429,8 @@ export default function TradeCandleStickChart(props: ChartData) {
 
                     if (
                         data.cumBidLiq !== undefined &&
-                        !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
+                        !Number.isNaN(depthLiquidityScale(data.cumBidLiq)) &&
+                        liqLowerPrices > liqBoundary / 10
                     ) {
                         depthLiqAskData.push({
                             activeLiq: depthLiquidityScale(data.cumBidLiq),
@@ -457,7 +458,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
                         !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
-                        liqUpperPrices <= limitBoundary
+                        liqUpperPrices <= limitBoundary &&
+                        liqUpperPrices > liqBoundary / 10
                     ) {
                         depthLiqAskData.push({
                             activeLiq: depthLiquidityScale(data.cumAskLiq),
