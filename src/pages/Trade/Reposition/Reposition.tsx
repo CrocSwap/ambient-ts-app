@@ -112,37 +112,6 @@ export default function Reposition(props: propsIF) {
         setRangeWidthPercentage(() => simpleRangeWidth);
     }, [simpleRangeWidth]);
 
-    const confirmRepositionModal = isModalOpen ? (
-        <Modal onClose={closeModal} title=' Confirm Reposition'>
-            <ConfirmRepositionModal onClose={closeModal} />
-        </Modal>
-    ) : null;
-
-    const repositionAddToggle = (
-        <div className={styles.reposition_toggle_container}>
-            <Link
-                to='/trade/reposition'
-                className={
-                    currentLocation.includes('reposition')
-                        ? styles.active_button_toggle
-                        : styles.non_active_button_toggle
-                }
-            >
-                Reposition
-            </Link>
-            <Link
-                to='/trade/add'
-                className={
-                    currentLocation.includes('add')
-                        ? styles.active_button_toggle
-                        : styles.non_active_button_toggle
-                }
-            >
-                Add
-            </Link>
-        </div>
-    );
-
     const sendRepositionTransaction = () => {
         console.log({ position });
     };
