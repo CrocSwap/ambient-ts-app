@@ -777,7 +777,7 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickValues([
             ...scale.ticks(),
-            ...(simpleRangeWidth === 100
+            ...(simpleRangeWidth === 100 && !isAdvancedModeActive
                 ? [market[0].value]
                 : [
                       isSameLocationMin ? sameLocationDataMin : low,
@@ -788,7 +788,7 @@ export default function Chart(props: ChartData) {
         ]);
 
         yAxis.tickFormat((d: any) => {
-            if (simpleRangeWidth !== 100) {
+            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
                 if (isSameLocationMin && d === sameLocationDataMin) {
                     return formatAmountChartData(low);
                 }
@@ -809,7 +809,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     if (
-                        simpleRangeWidth !== 100 &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive) &&
                         ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
                             (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
@@ -828,7 +828,7 @@ export default function Chart(props: ChartData) {
                         return 'crossHairText';
                     }
                     if (
-                        simpleRangeWidth !== 100 &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive) &&
                         ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
                             (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
@@ -1748,17 +1748,27 @@ export default function Chart(props: ChartData) {
                     setLiqHighlightedLinesAndArea(newTargets);
 
                     if (poolPriceDisplay !== undefined && rescaleRangeBoundaries) {
+                        const buffer = poolPriceDisplay / 50;
+
                         const low =
                             pinnedMinPriceDisplayTruncated !== undefined
-                                ? pinnedMinPriceDisplayTruncated
+                                ? pinnedMinPriceDisplayTruncated - buffer
                                 : 0;
                         const high =
                             pinnedMaxPriceDisplayTruncated !== undefined
-                                ? pinnedMaxPriceDisplayTruncated
+                                ? pinnedMaxPriceDisplayTruncated + buffer
                                 : 0;
 
-                        const buffer = poolPriceDisplay / 50;
-                        scaleData.yScale.domain([low - buffer, high + buffer]);
+                        const min =
+                            scaleData.yScaleCopy.domain()[0] < low
+                                ? scaleData.yScaleCopy.domain()[0]
+                                : low;
+                        const max =
+                            scaleData.yScaleCopy.domain()[1] > high
+                                ? scaleData.yScaleCopy.domain()[1]
+                                : high;
+
+                        scaleData.yScale.domain([min, max]);
 
                         dispatch(setRescaleRangeBoundaries(false));
                         setRescale(() => {
@@ -2225,19 +2235,7 @@ export default function Chart(props: ChartData) {
                         );
                     }
 
-                    const low = scaleData.yScale.domain()[0];
-                    const high = scaleData.yScale.domain()[1];
-
-                    const min = newRangeValue.filter((target: any) => target.name === 'Min')[0]
-                        .value;
-                    const max = newRangeValue.filter((target: any) => target.name === 'Max')[0]
-                        .value;
-
-                    if (low > min || high < max) {
-                        const buffer = poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
-
-                        scaleData.yScale.domain([min - buffer, max + buffer]);
-                    }
+                    setLiqHighlightedLinesAndArea(newRangeValue, true);
 
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved, dragSwitched);
                     dragSwitched = false;
@@ -3185,7 +3183,7 @@ export default function Chart(props: ChartData) {
     }, [liqMode]);
 
     // line gradient
-    const setLiqHighlightedLinesAndArea = (ranges: any) => {
+    const setLiqHighlightedLinesAndArea = (ranges: any, autoScale = false) => {
         if (
             ranges !== undefined &&
             (location.pathname.includes('range') || location.pathname.includes('reposition')) &&
@@ -3223,9 +3221,15 @@ export default function Chart(props: ChartData) {
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-            const minBoudnary = d3.min(liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const minBoudnary = d3.min(
+                liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData,
+                (d: any) => d.liqPrices,
+            );
 
-            const maxBoudnary = d3.max(liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const maxBoudnary = d3.max(
+                liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData,
+                (d: any) => d.liqPrices,
+            );
 
             const liqData =
                 liqMode === 'Depth' ? liquidityData.depthLiqAskData : liquidityData.liqAskData;
@@ -3433,6 +3437,16 @@ export default function Chart(props: ChartData) {
                 setLineGradient(() => {
                     return lineGradient;
                 });
+            }
+
+            if (autoScale) {
+                const min = scaleData.yScale.domain()[0];
+                const max = scaleData.yScale.domain()[1];
+
+                if (min > low || max < high) {
+                    const buffer = poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
+                    scaleData.yScale.domain([low - buffer, high + buffer]);
+                }
             }
         }
     };
