@@ -175,8 +175,6 @@ export default function Chart(props: ChartData) {
 
     const parsedChartData = props.candleData;
 
-    const position = tradeData.positionToBeRepositioned;
-
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
     const d3Canvas = useRef(null);
@@ -186,6 +184,7 @@ export default function Chart(props: ChartData) {
     const dispatch = useAppDispatch();
 
     const location = useLocation();
+    const position = location?.state?.position;
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -251,7 +250,6 @@ export default function Chart(props: ChartData) {
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
     const [isRangeScaleSet, setIsRangeScaleSet] = useState<string>('noChange');
-    const [isRepositionLinesSet, setIsRepositionLinesSet] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -1763,19 +1761,25 @@ export default function Chart(props: ChartData) {
         });
     }, [denomInBase]);
 
-    const setBalancedLines = () => {
+    useEffect(() => {
+        if (position !== undefined) {
+            setBalancedLines(true);
+        }
+    }, [position?.positionId]);
+
+    const setBalancedLines = (isRepositionLinesSet = false) => {
         if (
             location.pathname.includes('reposition') &&
             position !== undefined &&
-            !isRepositionLinesSet
+            isRepositionLinesSet
         ) {
             const lowTick = currentPoolPriceTick - 10 * 100;
             const highTick = currentPoolPriceTick + 10 * 100;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
-                position?.baseDecimals || 18,
-                position?.quoteDecimals || 18,
+                position.baseDecimals || 18,
+                position.quoteDecimals || 18,
                 lowTick,
                 highTick,
                 lookupChain(position?.chainId || '0x5').gridSize,
@@ -1799,8 +1803,6 @@ export default function Chart(props: ChartData) {
 
                 return newTargets;
             });
-
-            setIsRepositionLinesSet(true);
         } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
