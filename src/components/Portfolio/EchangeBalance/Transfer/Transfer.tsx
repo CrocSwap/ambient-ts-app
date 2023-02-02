@@ -19,6 +19,7 @@ import {
     TransactionError,
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
+import { checkBlacklist } from '../../../../utils/data/blacklist';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -107,10 +108,18 @@ export default function Transfer(props: propsIF) {
               })
         : undefined;
 
-    const isResolvedAddressValid = useMemo(
-        () => resolvedAddress?.length === 42 && resolvedAddress.startsWith('0x'),
-        [resolvedAddress],
-    );
+    const isResolvedAddressValid = useMemo(() => {
+        if (!resolvedAddress) return false;
+
+        const isResolvedAddressBlacklisted = checkBlacklist(resolvedAddress);
+
+        return (
+            !isResolvedAddressBlacklisted &&
+            resolvedAddress?.length === 42 &&
+            resolvedAddress.startsWith('0x')
+        );
+    }, [resolvedAddress]);
+
     useEffect(() => {
         if (crocEnv && selectedToken.address && resolvedAddress && isResolvedAddressValid) {
             crocEnv

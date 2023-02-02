@@ -18,6 +18,6 @@ export const getMoneynessRank = (addr: string): number => {
         ],
     ]);
 
-    const rank = moneynessMap.get(addr) || 0;
+    const rank = moneynessMap.get(addr.toLowerCase()) || 0;
     return rank;
 };

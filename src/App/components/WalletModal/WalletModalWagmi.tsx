@@ -24,6 +24,7 @@ import {
     CircleLoaderFailed,
 } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
+import { checkBlacklist } from '../../../utils/data/blacklist';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -31,10 +32,20 @@ interface WalletModalPropsIF {
 
 export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const { closeModalWallet } = props;
-
-    const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
-    const { address, connector, isConnected } = useAccount();
     const { disconnect } = useDisconnect();
+
+    const { connect, connectors, error, isLoading, pendingConnector } = useConnect({
+        onSettled(data, error) {
+            if (error) console.log({ error });
+            // console.log('Settled', { data, error });
+            const connectedAddress = data?.account;
+            // console.log({ connectedAddress });
+            const isBlacklisted = connectedAddress ? checkBlacklist(connectedAddress) : false;
+            // console.log({ isBlacklisted });
+            if (isBlacklisted) disconnect();
+        },
+    });
+    const { address, connector, isConnected } = useAccount();
 
     // const { data: ensAvatar } = useEnsAvatar({ address });
 
