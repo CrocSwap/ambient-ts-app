@@ -22,13 +22,15 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
 
     return (
         <div className={styles.removal_pending}>
-            <h2>Transaction Denied in Wallet</h2>
-            <CircleLoaderFailed />
+            <div className={styles.animation_container}>
+                <CircleLoaderFailed size='8rem' />
+                <h2>Transaction Denied in Wallet</h2>
+            </div>
             {/* <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;.
             </p> */}
-            <Button title='Try Again' action={resetConfirmation} />
+            <Button title='Try Again' action={resetConfirmation} flat />
         </div>
     );
 }
