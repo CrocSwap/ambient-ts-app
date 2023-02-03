@@ -59,7 +59,7 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                 {/* ----------------------------LIQUIDITY------------------------------ */}
                 <div className={styles.info_container}>
                     <Row>
-                        <span>Token Quantity</span>
+                        <span>Token Quantities</span>
                         <div className={styles.align_center}>
                             <p className={styles.info_text}>{baseDisplay}</p>
                             <img src={baseTokenLogoURI} alt='' width='15px' />
@@ -67,7 +67,8 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                     </Row>
                     {/*  */}
                     <Row>
-                        <span>Limit Order Price</span>
+                        <span></span>
+                        {/* <span>Limit Order Price</span> */}
                         <div className={styles.align_center}>
                             <div className={styles.info_text}>{quoteDisplay}</div>
                             <img src={quoteTokenLogoURI} alt='' width='15px' />

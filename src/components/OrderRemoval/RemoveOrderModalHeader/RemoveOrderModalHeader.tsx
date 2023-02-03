@@ -2,7 +2,7 @@ import styles from './RemoveOrderModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BsArrowLeft } from 'react-icons/bs';
 import { Dispatch, SetStateAction } from 'react';
-import { RiListSettingsLine } from 'react-icons/ri';
+// import { RiListSettingsLine } from 'react-icons/ri';
 interface RemoveOrderModalHeaderPropsIF {
     title: string;
     onClose: () => void;
@@ -19,21 +19,21 @@ export default function RemoveOrderModalHeader(props: RemoveOrderModalHeaderProp
         </div>
     );
 
-    const settingsIcon = (
-        <div
-            onClick={() => props.setShowSettings(!props.showSettings)}
-            className={styles.settings_icon}
-        >
-            {props.showSettings ? null : <RiListSettingsLine size={18} />}
-        </div>
-    );
+    // const settingsIcon = (
+    //     <div
+    //         onClick={() => props.setShowSettings(!props.showSettings)}
+    //         className={styles.settings_icon}
+    //     >
+    //         {props.showSettings ? null : <RiListSettingsLine size={18} />}
+    //     </div>
+    // );
     return (
         <header className={styles.header_container}>
             {props.onGoBack ? goBackButton : <div />}
             <h2>{props.title}</h2>
 
             <div className={styles.align_center}>
-                {settingsIcon}
+                {/* {settingsIcon} */}
                 <div onClick={props.onClose}>
                     <VscClose size={22} />
                 </div>
