@@ -220,7 +220,7 @@ export default function RangesMenu(props: propsIF) {
     // const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
     const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = useMediaQuery('(min-width: 1280px)');
+    const view2 = useMediaQuery('(min-width: 1380px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;

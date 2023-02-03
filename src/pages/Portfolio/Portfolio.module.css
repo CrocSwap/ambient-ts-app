@@ -12,8 +12,6 @@
     gap: 1rem;
     /* overflow-y: hidden; */
     /* height: 100%; */
-
-
 }
 
 /* layouts */
@@ -65,19 +63,18 @@
     background: var(--title-gradient);
 }
 
-.non_connected_content{
+.non_connected_content {
     width: 100%;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-gap: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
 }
 
-.non_connected_content button{
+.non_connected_content button {
     width: 30%;
 }
-
 
 /* Switch buttons */
 .mobile_toggle_container {
@@ -116,8 +113,7 @@ gap: 8px;
     background-color: transparent;
 }
 
-
-@media (min-width: 850px) {
+@media (min-width: 1200px) {
     .tabs_exchange_balance_container,
     .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
@@ -133,10 +129,8 @@ gap: 8px;
         grid-template-columns: auto auto; */
         /* grid-template-columns: auto 380px; */
         transition: all var(--animation-speed) ease-in-out;
-
     }
 
-    
     .tabs_exchange_balance_container {
         width: 100%;
         grid-template-columns: auto auto;
@@ -144,33 +138,28 @@ gap: 8px;
         gap: 1rem;
         /* max-height: calc(100vh - 20rem); */
         /* padding: 1rem 0; */
-      
+
         /* max-height: 80%; */
         /* overflow-y: hidden; */
     }
-    .full_layout_container{
-
+    .full_layout_container {
         display: grid;
         grid-template-columns: auto 50px;
     }
 
-    .tabs_exchange_balance_container{
+    .tabs_exchange_balance_container {
         grid-template-columns: auto 380px;
     }
 
     .mobile_toggle_container {
         display: none;
     }
-   
 }
-
 
 @media only screen and (max-width: 600px) {
+    .portfolio_container {
+        overflow-y: hidden;
 
-.portfolio_container{
-    overflow-y: hidden;
-
-    max-height: calc(100vh - 7.5rem)
-}
-
+        max-height: calc(100vh - 7.5rem);
+    }
 }

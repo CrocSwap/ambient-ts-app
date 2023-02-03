@@ -34,15 +34,12 @@
     display: none;
 }
 
-
-
 /* Mobile Landscape Screen Sizes */
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 580px) {
     .main_container {
         grid-template-columns: 50px auto 50px;
     }
 
- 
     .token_logos {
         display: flex;
     }
@@ -50,7 +47,8 @@
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
-    .wallet, .pool {
+    .wallet,
+    .pool {
         display: flex;
     }
 }
@@ -63,9 +61,9 @@
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-    .tokens, .range {
+    .tokens,
+    .range {
         display: none;
-        
     }
 
     .token,
@@ -84,6 +82,6 @@
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1600px) {
     .main_container {
-        grid-template-columns:100px 1fr 0.6fr;
+        grid-template-columns: 100px 1fr 0.6fr;
     }
 }

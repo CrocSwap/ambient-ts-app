@@ -55,7 +55,9 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
     const quoteTokenSymbol = tx.quoteSymbol;
 
     const baseTokenAddress = tx.base;
+    const baseTokenAddressTruncated = trimString(baseTokenAddress, 6, 0, '…');
     const quoteTokenAddress = tx.quote;
+    const quoteTokenAddressTruncated = trimString(quoteTokenAddress, 6, 0, '…');
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
@@ -552,8 +554,11 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
         quoteFlowDisplay,
         baseTokenSymbol,
         baseTokenAddress,
+        baseTokenAddressTruncated,
         quoteTokenSymbol,
         quoteTokenAddress,
+        quoteTokenAddressTruncated,
+
         baseDisplayFrontend,
         quoteDisplayFrontend,
         quoteTokenLogo,

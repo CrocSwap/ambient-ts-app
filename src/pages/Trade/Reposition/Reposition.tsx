@@ -19,10 +19,11 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     isDenomBase: boolean;
+    ambientApy: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
-    const { isDenomBase } = props;
+    const { isDenomBase, ambientApy } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -157,6 +158,7 @@ export default function Reposition(props: propsIF) {
                 />
                 <RepositionPriceInfo
                     position={position}
+                    ambientApy={ambientApy}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
