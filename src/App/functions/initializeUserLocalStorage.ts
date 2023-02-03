@@ -92,7 +92,7 @@ export default function initializeUserLocalStorage() {
     }
 
     if (!user.dontWarn) {
-        user.dontWarn = {};
+        user.dontWarn = false;
         userUpdated = true;
     }
 
