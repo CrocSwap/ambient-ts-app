@@ -84,8 +84,16 @@ export default function ChatPanel(props: ChatProps) {
         if ((e.charCode || e.keyCode) === 27) setChatStatus(false);
     }
 
+    // eslint-disable-next-line
+    function openChatPanel(e: any) {
+        if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
+            setChatStatus(!props.chatStatus);
+        }
+    }
+
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        document.body.addEventListener('keydown', openChatPanel);
         return function cleanUp() {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
@@ -252,6 +260,7 @@ export default function ChatPanel(props: ChatProps) {
                 messages.map((item) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         <SentMessagePanel
+                            isUserLoggedIn={isUserLoggedIn as boolean}
                             message={item}
                             name={ens === null || ens === '' ? walletID : (ens as string)}
                             isCurrentUser={item.sender === currentUser}
