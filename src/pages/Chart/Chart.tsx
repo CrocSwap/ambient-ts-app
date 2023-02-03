@@ -1103,9 +1103,14 @@ export default function Chart(props: ChartData) {
             let date: any | undefined = undefined;
             let clickedForLine = false;
             let zoomTimeout: any | undefined = undefined;
+            let previousTouch: any | undefined = undefined;
             const zoom = d3
                 .zoom()
                 .on('start', (event: any) => {
+                    if (event.sourceEvent.type.includes('touch')) {
+                        // mobile
+                        previousTouch = event.sourceEvent.changedTouches[0];
+                    }
                     zoomTimeout = event.sourceEvent.timeStamp;
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                         clickedForLine = false;
@@ -1261,13 +1266,22 @@ export default function Chart(props: ChartData) {
                                 .domain(scaleData.xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(-event.sourceEvent.movementX);
-                            scaleData.xScale.domain([
-                                new Date(domainX[0].getTime() + deltaX),
-                                new Date(domainX[1].getTime() + deltaX),
-                            ]);
-                        }
+                            let deltaX;
+                            if (event.sourceEvent.type === 'touchmove') {
+                                // mobile
+                                const touch = event.sourceEvent.changedTouches[0];
+                                deltaX = linearX(-(touch.pageX - previousTouch.pageX) / 5);
+                            } else {
+                                deltaX = linearX(-event.sourceEvent.movementX);
+                            }
 
+                            if (deltaX) {
+                                scaleData.xScale.domain([
+                                    new Date(domainX[0].getTime() + deltaX),
+                                    new Date(domainX[1].getTime() + deltaX),
+                                ]);
+                            }
+                        }
                         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                         const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
