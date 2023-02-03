@@ -295,7 +295,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const confirmSwapButton = (
         <Button
-            title='Send Swap Transaction'
+            title='Send Swap'
             action={() => {
                 console.log(
                     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
