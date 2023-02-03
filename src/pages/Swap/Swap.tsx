@@ -527,7 +527,7 @@ export default function Swap(props: propsIF) {
         </div>
     );
 
-    const [isSwapConfirmationBypassEnabled] = useState(true);
+    const [isSwapConfirmationBypassEnabled] = useState(false);
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
