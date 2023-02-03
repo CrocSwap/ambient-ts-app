@@ -527,6 +527,8 @@ export default function Swap(props: propsIF) {
         </div>
     );
 
+    const [isSwapConfirmationBypassEnabled] = useState(true);
+
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     // const denominationSwitchOrNull = priceImpact ? (
@@ -630,7 +632,10 @@ export default function Swap(props: propsIF) {
                             approvalButton
                         ) : (
                             <SwapButton
-                                onClickFn={openModal}
+                                onClickFn={
+                                    isSwapConfirmationBypassEnabled ? initiateSwap : openModal
+                                }
+                                isSwapConfirmationBypassEnabled={isSwapConfirmationBypassEnabled}
                                 swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />
