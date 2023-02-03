@@ -96,7 +96,7 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                 {/* ----------------------VALUE------------------------ */}
                 <Row>
                     <span>Total Value</span>
-                    <div className={styles.token_price}>{usdValue}</div>
+                    <div className={styles.token_price}>{'$' + usdValue}</div>
                 </Row>
                 <DividerDark />
 
