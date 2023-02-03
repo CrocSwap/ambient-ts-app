@@ -7,7 +7,7 @@ import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import Toggle2 from '../Global/Toggle/Toggle2';
+// import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
 import ClaimOrderModalHeader from './ClaimOrderModalHeader/ClaimOrderModalHeader';
@@ -279,18 +279,18 @@ export default function ClaimOrder(props: propsIF) {
 
     // ----------------------------- GASLESS TRANSACTION-----------------------
 
-    const gaslesssTransactionControl = (
-        <section className={styles.gasless_container}>
-            <h3>Enable Gasless Transaction</h3>
+    // const gaslesssTransactionControl = (
+    //     <section className={styles.gasless_container}>
+    //         <h3>Enable Gasless Transaction</h3>
 
-            <Toggle2
-                isOn={false}
-                handleToggle={() => console.log('toggled')}
-                id='gasless_transaction_toggle_claim_order'
-                disabled={true}
-            />
-        </section>
-    );
+    //         <Toggle2
+    //             isOn={false}
+    //             handleToggle={() => console.log('toggled')}
+    //             id='gasless_transaction_toggle_claim_order'
+    //             disabled={true}
+    //         />
+    //     </section>
+    // );
 
     // ----------------------------- END OF GASLESS TRANSACTION-----------------------
 
@@ -370,7 +370,7 @@ export default function ClaimOrder(props: propsIF) {
                 quoteClaimString={'4543'}
                 truncatedDisplayPrice={truncatedDisplayPrice}
             />
-            {gaslesssTransactionControl}
+            {/* {gaslesssTransactionControl} */}
             {tooltipExplanationDataDisplay}
             <ClaimOrderButton claimFn={claimFn} disabled={false} title='Claim Limit Order' />
         </div>

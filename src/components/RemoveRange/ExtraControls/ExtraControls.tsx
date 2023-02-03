@@ -1,5 +1,5 @@
 import styles from './ExtraControls.module.css';
-import Toggle2 from '../../Global/Toggle/Toggle2';
+// import Toggle2 from '../../Global/Toggle/Toggle2';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { Dispatch, SetStateAction } from 'react';
@@ -20,7 +20,7 @@ interface CurrencyConverterPropsIF {
 export default function ExtraControls(props: CurrencyConverterPropsIF) {
     const {
         isSaveAsDexSurplusChecked,
-        setIsSaveAsDexSurplusChecked,
+        // setIsSaveAsDexSurplusChecked,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -124,7 +124,6 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
                     }`}
                     style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
-                    <img src={ambientLogo} width='25' alt='' />
                     <div className={styles.wallet_amounts}>
                         <div>
                             {isSaveAsDexSurplusChecked
@@ -137,15 +136,16 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
                                 : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
                         </div>
                     </div>
+                    <img src={ambientLogo} width='25' alt='' />
                 </div>
             </div>
-
+            {/* 
             <Toggle2
                 isOn={isSaveAsDexSurplusChecked}
                 handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
                 id='remove_range_exchange_balance'
                 disabled={false}
-            />
+            /> */}
         </section>
     );
     // const gaslesssTransactionControl = (

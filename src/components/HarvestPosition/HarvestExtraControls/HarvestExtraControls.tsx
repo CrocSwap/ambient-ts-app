@@ -1,5 +1,5 @@
 import styles from './HarvestExtraControls.module.css';
-import Toggle2 from '../../Global/Toggle/Toggle2';
+// import Toggle2 from '../../Global/Toggle/Toggle2';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { Dispatch, SetStateAction } from 'react';
@@ -20,7 +20,7 @@ interface HarvestExtraControlsPropsIF {
 export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF) {
     const {
         isSaveAsDexSurplusChecked,
-        setIsSaveAsDexSurplusChecked,
+        // setIsSaveAsDexSurplusChecked,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenBalance,

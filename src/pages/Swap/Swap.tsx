@@ -227,6 +227,7 @@ export default function Swap(props: propsIF) {
             action={async () => {
                 await approve(tokenA.address);
             }}
+            flat
         />
     );
 
