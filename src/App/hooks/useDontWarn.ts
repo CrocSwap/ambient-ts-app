@@ -4,8 +4,10 @@ export const useDontWarn = (): [
     boolean,
     Dispatch<SetStateAction<boolean>>
 ] => {
+    // hold user preference (bool) in local state
     const [dontWarn, setDontWarn] = useState<boolean>(false);
 
+    // hook to get persisted value from local storage and update local state
     useEffect(() => {
         const getPreference = (recursiveCounter=0): void => {
             try {
@@ -25,8 +27,10 @@ export const useDontWarn = (): [
 
     useEffect(() => {
         const {user} = JSON.parse(localStorage.getItem('user') as string);
-        user.dontWarn = dontWarn;
-        localStorage.set(JSON.stringify(user));
+        if (user.dontWarn !== dontWarn) {
+            user.dontWarn = dontWarn;
+            localStorage.set(JSON.stringify(user));
+        }
     }, [dontWarn]);
 
     return [dontWarn, setDontWarn];
