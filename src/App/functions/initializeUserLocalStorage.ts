@@ -91,6 +91,11 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    if (!user.dontWarn) {
+        user.dontWarn = {};
+        userUpdated = true;
+    }
+
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }
