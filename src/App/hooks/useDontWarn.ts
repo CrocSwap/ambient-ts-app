@@ -17,11 +17,8 @@ export const useDontWarn = (): [
                 console.warn(err);
                 if (recursiveCounter < 50)
                     setTimeout(() => getPreference(recursiveCounter+1), 200);
-                else {
-                    ;
                 }
             }
-        };
         getPreference();
     }, []);
 
