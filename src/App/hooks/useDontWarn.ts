@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
-export const useDontWarn = () => {
+export const useDontWarn = (): [
+    boolean,
+    Dispatch<SetStateAction<boolean>>
+] => {
     const [dontWarn, setDontWarn] = useState<boolean>(false);
 
     useEffect(() => {
@@ -26,7 +29,5 @@ export const useDontWarn = () => {
         localStorage.set(JSON.stringify(user));
     }, [dontWarn]);
 
-    const updateDontWarn = (newVal: boolean): void => setDontWarn(newVal);
-
-    return [dontWarn, updateDontWarn];
+    return [dontWarn, setDontWarn];
 }
