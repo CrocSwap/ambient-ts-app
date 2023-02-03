@@ -4,6 +4,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 interface ItemRowPropsIF {
     title: string;
@@ -68,13 +69,16 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     }
     function handleOpenBaseAddress() {
         if (txHash && blockExplorer) {
-            const adressUrl = `https://etherscan.io/address/${baseTokenAddress}`;
+            const adressUrl =
+                baseTokenAddress === ZERO_ADDRESS
+                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    : `${blockExplorer}address/${baseTokenAddress}`;
             window.open(adressUrl);
         }
     }
     function handleOpenQuoteAddress() {
         if (txHash && blockExplorer) {
-            const adressUrl = `https://etherscan.io/address/${quoteTokenAddress}`;
+            const adressUrl = `${blockExplorer}address/${quoteTokenAddress}`;
             window.open(adressUrl);
         }
     }
