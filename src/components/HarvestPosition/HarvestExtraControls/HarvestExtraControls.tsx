@@ -1,5 +1,5 @@
 import styles from './HarvestExtraControls.module.css';
-import Toggle2 from '../../Global/Toggle/Toggle2';
+// import Toggle2 from '../../Global/Toggle/Toggle2';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { Dispatch, SetStateAction } from 'react';
@@ -20,7 +20,7 @@ interface HarvestExtraControlsPropsIF {
 export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF) {
     const {
         isSaveAsDexSurplusChecked,
-        setIsSaveAsDexSurplusChecked,
+        // setIsSaveAsDexSurplusChecked,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenBalance,
@@ -117,10 +117,6 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                                 : `${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
                         </div>
                     </div>
-
-                    {/* {isSaveAsDexSurplusChecked
-                        ? `${truncatedWalletBaseQty} ${baseTokenSymbol} / ${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
-                        : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol} / ${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`} */}
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
@@ -128,7 +124,6 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                     }`}
                     style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
                 >
-                    <img src={ambientLogo} width='25' alt='' />
                     <div className={styles.wallet_amounts}>
                         <div>
                             {isSaveAsDexSurplusChecked
@@ -141,15 +136,16 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                                 : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
                         </div>
                     </div>
+                    <img src={ambientLogo} width='25' alt='' />
                 </div>
             </div>
-
+            {/* 
             <Toggle2
                 isOn={isSaveAsDexSurplusChecked}
                 handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
                 id='harvest_position_exchange_balance'
                 disabled={false}
-            />
+            /> */}
         </section>
     );
     // const gaslesssTransactionControl = (
