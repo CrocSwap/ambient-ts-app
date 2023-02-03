@@ -301,63 +301,49 @@ export default function ChatPanel(props: ChatProps) {
         </div>
     );
 
+    const messageInput = (
+        <MessageInput
+            currentUser={currentUser as string}
+            message={messages[0]}
+            room={
+                room === 'Current Pool'
+                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+                    : room
+            }
+            ensName={ens === null || ens === '' ? walletID : (ens as string)}
+        />
+    );
+
     return (
-        <>
-            {props.isFullScreen ? (
-                <></>
-            ) : (
-                <ChatButton chatStatus={props.chatStatus} setChatStatus={props.setChatStatus} />
-            )}
+        <div
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClick={(e: any) => e.stopPropagation()}
+        >
+            <div className={`${props.isFullScreen ? wrapperStyleFull : styles.modal_body}`}>
+                <div className={styles.chat_body}>
+                    {header}
 
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className={`
-                    ${styles.main_body}
-                    `}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onClick={(e: any) => e.stopPropagation()}
-            >
-                <div
-                    className={`
-                            ${props.isFullScreen ? wrapperStyleFull : styles.modal_body}
-                        `}
-                >
-                    <div className={styles.chat_body}>
-                        {header}
+                    <Room
+                        favePools={favePools}
+                        selectedRoom={room}
+                        setRoom={setRoom}
+                        currentPool={currentPool}
+                        isFullScreen={props.isFullScreen}
+                        room={room}
+                    />
 
-                        <Room
-                            favePools={favePools}
-                            selectedRoom={room}
-                            setRoom={setRoom}
-                            currentPool={currentPool}
-                            isFullScreen={props.isFullScreen}
-                            room={room}
-                        />
-
-                        <div style={{ width: '90%' }}>
-                            <DividerDark changeColor addMarginTop addMarginBottom />
-                        </div>
-
-                        {messageList}
-
-                        {chatNotification}
-
-                        <MessageInput
-                            currentUser={currentUser as string}
-                            message={messages[0]}
-                            room={
-                                room === 'Current Pool'
-                                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
-                                    : room
-                            }
-                            ensName={ens === null || ens === '' ? walletID : (ens as string)}
-                        />
-                        <div id='thelastmessage'></div>
+                    <div style={{ width: '90%' }}>
+                        <DividerDark changeColor addMarginTop addMarginBottom />
                     </div>
+
+                    {messageList}
+
+                    {chatNotification}
+
+                    {messageInput}
+                    <div id='thelastmessage'></div>
                 </div>
-            </motion.div>
-        </>
+            </div>
+        </div>
     );
 }
