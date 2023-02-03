@@ -281,7 +281,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const confirmLimitButton = (
         <Button
-            title='Send Limit Order to Metamask'
+            title='Send Limit Transaction'
             action={() => {
                 // console.log(
                 //     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
