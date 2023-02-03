@@ -25,6 +25,7 @@ export const useDontWarn = (): [
         getPreference();
     }, []);
 
+    // hook to append new value to local storage when user updates preference manually
     useEffect(() => {
         const {user} = JSON.parse(localStorage.getItem('user') as string);
         if (user.dontWarn !== dontWarn) {
