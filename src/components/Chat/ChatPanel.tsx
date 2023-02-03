@@ -247,7 +247,13 @@ export default function ChatPanel(props: ChatProps) {
     }
 
     const messageList = (
-        <>
+        <div
+            ref={messageEnd}
+            className={styles.scrollable_div}
+            onScroll={handleScroll}
+            onWheel={handleWheel}
+            id='chatmessage'
+        >
             {messages &&
                 messages.map((item) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
@@ -265,7 +271,34 @@ export default function ChatPanel(props: ChatProps) {
                         <hr></hr>
                     </div>
                 ))}
-        </>
+        </div>
+    );
+
+    const chatNotification = (
+        <div className={styles.chat_notification}>
+            {notification > 0 && scrollDirection === 'Scroll Up' ? (
+                <div className={styles.chat_notification}>
+                    <span onClick={() => scrollToBottomButton()}>
+                        <BsChatLeftFill size={25} color='#7371fc' />
+                        <span className={styles.text}>{notification}</span>
+                    </span>
+                    <RiArrowDownSLine
+                        role='button'
+                        size={27}
+                        color='#7371fc'
+                        onClick={() => scrollToBottomButton()}
+                    />
+                </div>
+            ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
+                <RiArrowDownSLine
+                    size={27}
+                    color='#7371fc'
+                    onClick={() => scrollToBottomButton()}
+                />
+            ) : (
+                ''
+            )}
+        </div>
     );
 
     return (
@@ -276,93 +309,55 @@ export default function ChatPanel(props: ChatProps) {
                 <ChatButton chatStatus={props.chatStatus} setChatStatus={props.setChatStatus} />
             )}
 
-            {props.chatStatus ? (
-                //  <div className={styles.outside_modal}>
-
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className={`
+            <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className={`
                     ${styles.main_body}
                     `}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onClick={(e: any) => e.stopPropagation()}
-                >
-                    <div
-                        className={`
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onClick={(e: any) => e.stopPropagation()}
+            >
+                <div
+                    className={`
                             ${props.isFullScreen ? wrapperStyleFull : styles.modal_body}
                         `}
-                    >
-                        <div className={styles.chat_body}>
-                            {header}
+                >
+                    <div className={styles.chat_body}>
+                        {header}
 
-                            <Room
-                                favePools={favePools}
-                                selectedRoom={room}
-                                setRoom={setRoom}
-                                currentPool={currentPool}
-                                isFullScreen={props.isFullScreen}
-                                room={room}
-                            />
+                        <Room
+                            favePools={favePools}
+                            selectedRoom={room}
+                            setRoom={setRoom}
+                            currentPool={currentPool}
+                            isFullScreen={props.isFullScreen}
+                            room={room}
+                        />
 
-                            <div style={{ width: '90%' }}>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                            </div>
-
-                            <div
-                                ref={messageEnd}
-                                className={styles.scrollable_div}
-                                onScroll={handleScroll}
-                                onWheel={handleWheel}
-                                id='chatmessage'
-                            >
-                                {messageList}
-                            </div>
-                            <div className={styles.chat_notification}>
-                                {notification > 0 && scrollDirection === 'Scroll Up' ? (
-                                    <div className={styles.chat_notification}>
-                                        <span onClick={() => scrollToBottomButton()}>
-                                            <BsChatLeftFill size={25} color='#7371fc' />
-                                            <span className={styles.text}>{notification}</span>
-                                        </span>
-                                        <RiArrowDownSLine
-                                            role='button'
-                                            size={27}
-                                            color='#7371fc'
-                                            onClick={() => scrollToBottomButton()}
-                                        />
-                                    </div>
-                                ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
-                                    <RiArrowDownSLine
-                                        size={27}
-                                        color='#7371fc'
-                                        onClick={() => scrollToBottomButton()}
-                                    />
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-
-                            <MessageInput
-                                currentUser={currentUser as string}
-                                message={messages[0]}
-                                room={
-                                    room === 'Current Pool'
-                                        ? currentPool.baseToken.symbol +
-                                          currentPool.quoteToken.symbol
-                                        : room
-                                }
-                                ensName={ens === null || ens === '' ? walletID : (ens as string)}
-                            />
-                            <div id='thelastmessage'></div>
+                        <div style={{ width: '90%' }}>
+                            <DividerDark changeColor addMarginTop addMarginBottom />
                         </div>
+
+                        {messageList}
+
+                        {chatNotification}
+
+                        <MessageInput
+                            currentUser={currentUser as string}
+                            message={messages[0]}
+                            room={
+                                room === 'Current Pool'
+                                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+                                    : room
+                            }
+                            ensName={ens === null || ens === '' ? walletID : (ens as string)}
+                        />
+                        <div id='thelastmessage'></div>
                     </div>
-                </motion.div>
-            ) : (
-                // </div>
-                <></>
-            )}
+                </div>
+            </motion.div>
         </>
     );
 }
