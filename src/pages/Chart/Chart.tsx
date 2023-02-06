@@ -2406,19 +2406,9 @@ export default function Chart(props: ChartData) {
                         if (minYBoundary && maxYBoundary) {
                             const value = newLimitValue;
 
-                            const low =
-                                minYBoundary < value
-                                    ? minYBoundary
-                                    : value !== 0 && value !== 1000000000000
-                                    ? value
-                                    : minYBoundary;
+                            const low = minYBoundary < value ? minYBoundary : value;
 
-                            const high =
-                                maxYBoundary > value
-                                    ? maxYBoundary
-                                    : value !== 0 && value !== 1000000000000
-                                    ? value
-                                    : maxYBoundary;
+                            const high = maxYBoundary > value ? maxYBoundary : value;
 
                             const min = scaleData.yScale.domain()[0];
                             const max = scaleData.yScale.domain()[1];
@@ -3894,7 +3884,7 @@ export default function Chart(props: ChartData) {
                 const minYBoundary = d3.min(filtered, (d) => d.low);
                 const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-                if (minYBoundary && maxYBoundary && pinnedMinPriceDisplayTruncated) {
+                if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
                     if (location.pathname.includes('range') && simpleRangeWidth !== 100) {
@@ -3920,22 +3910,23 @@ export default function Chart(props: ChartData) {
                     } else if (location.pathname.includes('limit')) {
                         const value = limit[0].value;
 
-                        const low =
-                            minYBoundary < value
-                                ? minYBoundary
-                                : value !== 0 && value !== 1000000000000
-                                ? value
-                                : minYBoundary;
+                        if (
+                            value > 0 &&
+                            !(value < poolPriceDisplay / 10) &&
+                            !(value > poolPriceDisplay * 100)
+                        ) {
+                            const low = minYBoundary < value ? minYBoundary : value;
 
-                        const high =
-                            maxYBoundary > value
-                                ? maxYBoundary
-                                : value !== 0 && value !== 1000000000000
-                                ? value
-                                : maxYBoundary;
+                            const high = maxYBoundary > value ? maxYBoundary : value;
 
-                        scaleData.yScale.domain([low - buffer, high + buffer / 2]);
-                        setRescale(true);
+                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                            setRescale(true);
+                        } else {
+                            scaleData.yScale.domain([
+                                minYBoundary - buffer,
+                                maxYBoundary + buffer / 2,
+                            ]);
+                        }
                     } else if (location.pathname.includes('market')) {
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                     }
@@ -3959,7 +3950,7 @@ export default function Chart(props: ChartData) {
             const minYBoundary = d3.min(filtered, (d) => d.low);
             const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-            if (minYBoundary && maxYBoundary && min && max) {
+            if (minYBoundary && maxYBoundary && min && max && poolPriceDisplay) {
                 const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
                 if (location.pathname.includes('range') && simpleRangeWidth !== 100) {
@@ -3982,21 +3973,19 @@ export default function Chart(props: ChartData) {
                 } else if (location.pathname.includes('limit')) {
                     const value = limit[0].value;
 
-                    const low =
-                        minYBoundary < value
-                            ? minYBoundary
-                            : value !== 0 && value !== 1000000000000
-                            ? value
-                            : minYBoundary;
+                    if (
+                        value > 0 &&
+                        !(value < poolPriceDisplay / 10) &&
+                        !(value > poolPriceDisplay * 100)
+                    ) {
+                        const low = minYBoundary < value ? minYBoundary : value;
 
-                    const high =
-                        maxYBoundary > value
-                            ? maxYBoundary
-                            : value !== 0 && value !== 1000000000000
-                            ? value
-                            : maxYBoundary;
+                        const high = maxYBoundary > value ? maxYBoundary : value;
 
-                    scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                        scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                    } else {
+                        scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
+                    }
                 }
             }
         }
