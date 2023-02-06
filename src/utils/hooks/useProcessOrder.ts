@@ -8,6 +8,8 @@ import { getMoneynessRank } from '../functions/getMoneynessRank';
 
 export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
     const tradeData = useAppSelector((state) => state.tradeData);
+    const blockExplorer = 'https://goerli.etherscan.io/';
+
     // eslint-disable-next-line
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
 
@@ -174,6 +176,9 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
 
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
+
+    const baseTokenAddressTruncated = trimString(baseTokenAddressLowerCase, 6, 0, '…');
+    const quoteTokenAddressTruncated = trimString(quoteTokenAddressLowerCase, 6, 0, '…');
 
     const orderMatchesSelectedTokens =
         selectedBaseToken === baseTokenAddressLowerCase &&
@@ -386,6 +391,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
         isDenomBase,
         baseTokenAddressLowerCase,
         quoteTokenAddressLowerCase,
+        baseTokenAddressTruncated,
+        quoteTokenAddressTruncated,
 
         // open order status
         isOrderFilled,
@@ -407,5 +414,6 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
         // transaction matches selected token
         orderMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
+        blockExplorer,
     };
 };

@@ -10,7 +10,7 @@ import { BsBook, BsMedium } from 'react-icons/bs';
 import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
 import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { GoRequestChanges } from 'react-icons/go';
-import { HiOutlineDocumentText } from 'react-icons/hi';
+import { HiOutlineDocumentText, HiDocumentDuplicate } from 'react-icons/hi';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
 import { RiErrorWarningLine } from 'react-icons/ri';
 
@@ -109,6 +109,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             <NavbarDropdownItem leftIcon={<FaDiscord size={20} />}>Discord</NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<BsMedium size={20} />}>Medium</NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<FaGithub size={20} />}>Github</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<HiDocumentDuplicate size={20} />}>
+                Docs
+            </NavbarDropdownItem>
         </>
     );
 

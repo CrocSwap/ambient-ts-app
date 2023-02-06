@@ -1,11 +1,9 @@
-import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import styles from './OrderDetailsSimplify.module.css';
+import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import { ZERO_ADDRESS } from '../../../constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
-
-import styles from './TransactionDetailsSimplify.module.css';
-import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../constants';
-import moment from 'moment';
+import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
+import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
 interface ItemRowPropsIF {
     title: string;
@@ -14,17 +12,18 @@ interface ItemRowPropsIF {
     explanation: string;
 }
 
-interface TransactionDetailsSimplifyPropsIF {
-    tx: TransactionIF;
+interface OrderDetailsSimplifyPropsIF {
+    limitOrder: LimitOrderIF;
     account: string;
 }
-export default function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { account, tx } = props;
+export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
+    const { account, limitOrder } = props;
+
     const {
         userNameToDisplay,
-        txHashTruncated,
-        txHash,
-        blockExplorer,
+        posHashTruncated,
+        posHash,
+        // blockExplorer,
         isOwnerActiveAccount,
         ownerId,
         usdValue,
@@ -32,6 +31,7 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
+        isOrderFilled,
 
         // isDenomBase,
         // baseTokenLogo,
@@ -44,50 +44,49 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
 
         // baseDisplay,
         // quoteDisplay,
-        baseTokenAddress,
-        quoteTokenAddress,
+        blockExplorer,
+        baseTokenAddressLowerCase,
+        quoteTokenAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
         // truncatedLowDisplayPrice,
         // truncatedHighDisplayPrice,
-        truncatedDisplayPrice,
+        // truncatedDisplayPrice,
         // truncatedLowDisplayPriceDenomByMoneyness,
         // truncatedHighDisplayPriceDenomByMoneyness,
         // truncatedDisplayPriceDenomByMoneyness,
         // isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessTransaction(tx, account);
-
-    console.log({ tx });
+    } = useProcessOrder(limitOrder, account);
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
         window.open(walletUrl);
     }
     function handleOpenExplorer() {
-        if (txHash && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${txHash}`;
+        if (posHash && blockExplorer) {
+            const explorerUrl = `${blockExplorer}tx/${posHash}`;
             window.open(explorerUrl);
         }
     }
     function handleOpenBaseAddress() {
-        if (txHash && blockExplorer) {
+        if (posHash && blockExplorer) {
             const adressUrl =
-                baseTokenAddress === ZERO_ADDRESS
+                baseTokenAddressLowerCase === ZERO_ADDRESS
                     ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
-                    : `${blockExplorer}address/${baseTokenAddress}`;
+                    : `${blockExplorer}address/${baseTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
     }
     function handleOpenQuoteAddress() {
-        if (txHash && blockExplorer) {
-            const adressUrl = `${blockExplorer}address/${quoteTokenAddress}`;
+        if (posHash && blockExplorer) {
+            const adressUrl = `${blockExplorer}address/${quoteTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
     }
     const txContent = (
         <div className={styles.link_row} onClick={handleOpenExplorer}>
-            <p>{txHashTruncated}</p>
+            <p>{posHashTruncated}</p>
             <RiExternalLinkLine />
         </div>
     );
@@ -111,19 +110,20 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             <RiExternalLinkLine />
         </div>
     );
-    // Create a data array for the info and map through it here
+
+    const status = isOrderFilled ? 'Filled' : 'Not Filled';
+
     const infoContent = [
         { title: 'Position Type ', content: 'Market', explanation: 'this is explanation' },
 
         { title: 'Wallet ', content: walletContent, explanation: 'this is explanation' },
 
-        { title: 'Transaction ', content: txContent, explanation: 'this is explanation' },
+        { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
+        { title: 'Claim Transaction ', content: txContent, explanation: 'this is explanation' },
 
-        {
-            title: 'Time ',
-            content: moment(tx.time * 1000).format('MM/DD/YYYY HH:mm'),
-            explanation: 'this is explanation',
-        },
+        { title: 'Submit Time ', content: 'this is time', explanation: 'this is explanation' },
+        { title: 'Fill Time ', content: 'this is time', explanation: 'this is explanation' },
+        { title: 'Status ', content: status, explanation: 'this is explanation' },
 
         { title: 'From Token ', content: baseTokenSymbol, explanation: 'this is explanation' },
 
@@ -145,16 +145,18 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             explanation: 'this is explanation',
         },
 
-        { title: 'Price ', content: truncatedDisplayPrice, explanation: 'this is explanation' },
+        { title: 'Realized Price ', content: 'price', explanation: 'this is explanation' },
+        { title: 'Fill Start ', content: 'price', explanation: 'this is explanation' },
+        { title: 'Fill End ', content: 'price', explanation: 'this is explanation' },
         { title: 'Value ', content: usdValue, explanation: 'this is explanation' },
 
-        // {
-        //     title: 'Liquidity Provider Fee ',
-        //     content: 'liquidity fee',
-        //     explanation: 'this is explanation',
-        // },
+        {
+            title: 'Rebate Rate ',
+            content: 'rebate rate',
+            explanation: 'this is explanation',
+        },
 
-        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
+        { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
     function InfoRow(props: ItemRowPropsIF) {
@@ -175,14 +177,27 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     return (
         <div className={styles.tx_details_container}>
             <div className={styles.main_container}>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
+                <section>
+                    {infoContent.slice(0, 10).map((info, idx) => (
+                        <InfoRow
+                            key={info.title + idx}
+                            title={info.title}
+                            content={info.content}
+                            explanation={info.explanation}
+                        />
+                    ))}
+                </section>
+
+                <section>
+                    {infoContent.slice(10, infoContent.length).map((info, idx) => (
+                        <InfoRow
+                            key={info.title + idx}
+                            title={info.title}
+                            content={info.content}
+                            explanation={info.explanation}
+                        />
+                    ))}
+                </section>
             </div>
         </div>
     );

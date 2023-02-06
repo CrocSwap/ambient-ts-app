@@ -4,13 +4,12 @@ import styles from './OrderDetails.module.css';
 import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
-import OrderGraphDisplay from './OrderGraphDisplay/OrderGraphDisplay';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import OrderDetailsControl from './OderDetailsControl/OrderDetailsControl';
-import OrderDetailsActions from '../RangeDetails/OrderDetailsActions/OrderDetailsActions';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
+import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 
 interface propsIF {
     account: string;
@@ -20,9 +19,13 @@ interface propsIF {
 }
 
 export default function OrderDetails(props: propsIF) {
+    const [showShareComponent, setShowShareComponent] = useState(false);
+
     const { limitOrder, account } = props;
-    const { isOrderFilled, userNameToDisplay, baseDisplayFrontend, quoteDisplayFrontend } =
-        useProcessOrder(limitOrder, account);
+    const { isOrderFilled, baseDisplayFrontend, quoteDisplayFrontend } = useProcessOrder(
+        limitOrder,
+        account,
+    );
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
@@ -223,63 +226,69 @@ export default function OrderDetails(props: propsIF) {
             printDomToImage(detailsRef.current);
         }
     };
-
+    // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         { slug: 'ticks', name: 'Show ticks', checked: true },
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
 
-    const handleChange = (slug: string) => {
-        const copyControlItems = [...controlItems];
-        const modifiedControlItems = copyControlItems.map((item) => {
-            if (slug === item.slug) item.checked = !item.checked;
-            return item;
-        });
+    // const handleChange = (slug: string) => {
+    //     const copyControlItems = [...controlItems];
+    //     const modifiedControlItems = copyControlItems.map((item) => {
+    //         if (slug === item.slug) item.checked = !item.checked;
+    //         return item;
+    //     });
 
-        setControlItems(modifiedControlItems);
-    };
+    //     setControlItems(modifiedControlItems);
+    // };
 
-    const controlDisplay = showSettings ? (
-        <div className={styles.control_display_container}>
-            {controlItems.map((item, idx) => (
-                <OrderDetailsControl key={idx} item={item} handleChange={handleChange} />
-            ))}
+    // const controlDisplay = showSettings ? (
+    //     <div className={styles.control_display_container}>
+    //         {controlItems.map((item, idx) => (
+    //             <OrderDetailsControl key={idx} item={item} handleChange={handleChange} />
+    //         ))}
+    //     </div>
+    // ) : null;
+
+    const shareComponent = (
+        <div ref={detailsRef}>
+            <div className={styles.main_content}>
+                <div className={styles.left_container}>
+                    <PriceInfo
+                        account={account}
+                        limitOrder={limitOrder}
+                        controlItems={controlItems}
+                        usdValue={usdValue}
+                        baseCollateralDisplay={baseCollateralDisplay}
+                        quoteCollateralDisplay={quoteCollateralDisplay}
+                        isOrderFilled={isClaimable}
+                    />
+                </div>
+                <div className={styles.right_container}>
+                    <TransactionDetailsGraph tx={limitOrder} transactionType={'limitOrder'} />
+                </div>
+            </div>
+            <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
-    ) : null;
+    );
 
     return (
-        <div className={styles.range_details_container}>
+        <div className={styles.order_details_container}>
             <OrderDetailsHeader
                 onClose={props.closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
+                showShareComponent={showShareComponent}
+                setShowShareComponent={setShowShareComponent}
             />
-            {controlDisplay}
-            <div ref={detailsRef}>
-                <div className={styles.main_content}>
-                    <div className={styles.left_container}>
-                        <PriceInfo
-                            account={account}
-                            limitOrder={limitOrder}
-                            controlItems={controlItems}
-                            usdValue={usdValue}
-                            baseCollateralDisplay={baseCollateralDisplay}
-                            quoteCollateralDisplay={quoteCollateralDisplay}
-                            isOrderFilled={isClaimable}
-                        />
-                    </div>
-                    <div className={styles.right_container}>
-                        <OrderGraphDisplay
-                            isOrderFilled={isClaimable}
-                            user={userNameToDisplay}
-                            limitOrder={limitOrder}
-                        />
-                    </div>
-                    <OrderDetailsActions />
-                </div>
-            </div>
+
+            {showShareComponent ? (
+                shareComponent
+            ) : (
+                <OrderDetailsSimplify account={account} limitOrder={limitOrder} />
+            )}
         </div>
     );
 }
