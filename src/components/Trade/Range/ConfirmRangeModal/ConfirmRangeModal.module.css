@@ -1,10 +1,9 @@
 .confirm_range_modal_container {
-    max-width: 400px;
+    width: 400px;
     display: flex;
     flex-direction: column;
 
-   
-    gap: 8px;
+
    
 }
 

@@ -15,8 +15,8 @@ import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmountOld } from '../../utils/numbers';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
-import Toggle2 from '../Global/Toggle/Toggle2';
-import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
+// import Toggle2 from '../Global/Toggle/Toggle2';
+// import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
@@ -326,52 +326,52 @@ export default function OrderRemoval(props: propsIF) {
 
     // ----------------------------- GASLESS TRANSACTION-----------------------
 
-    const gaslesssTransactionControl = (
-        <section className={styles.gasless_container}>
-            <h3>Enable Gasless Transaction</h3>
+    // const gaslesssTransactionControl = (
+    //     <section className={styles.gasless_container}>
+    //         <h3>Enable Gasless Transaction</h3>
 
-            <Toggle2
-                isOn={false}
-                handleToggle={() => console.log('toggled')}
-                id='gasless_transaction_toggle_remove_order'
-                disabled={true}
-            />
-        </section>
-    );
+    //         <Toggle2
+    //             isOn={false}
+    //             handleToggle={() => console.log('toggled')}
+    //             id='gasless_transaction_toggle_remove_order'
+    //             disabled={true}
+    //         />
+    //     </section>
+    // );
 
     // ----------------------------- END OF GASLESS TRANSACTION-----------------------
 
     // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
 
-    const tooltipExplanationData = [
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'something here',
-            data: '0.5%',
-        },
-        {
-            title: 'Network Fee',
-            tooltipTitle: 'something here about network fee',
-            data: '-$3.69',
-            // data: isDenomBase
-            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
-    ];
+    // const tooltipExplanationData = [
+    //     // {
+    //     //     title: 'Slippage Tolerance',
+    //     //     tooltipTitle: 'something here',
+    //     //     data: '0.5%',
+    //     // },
+    //     {
+    //         title: 'Network Fee',
+    //         tooltipTitle: 'something here about network fee',
+    //         data: '-$3.69',
+    //         // data: isDenomBase
+    //         //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+    //         //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+    //     },
+    // ];
 
-    const tooltipExplanationDataDisplay = (
-        <div className={styles.explanation_details}>
-            {tooltipExplanationData.map((item, idx) => (
-                <div className={styles.extra_row} key={idx}>
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
-                    </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
-        </div>
-    );
+    // const tooltipExplanationDataDisplay = (
+    //     <div className={styles.explanation_details}>
+    //         {tooltipExplanationData.map((item, idx) => (
+    //             <div className={styles.extra_row} key={idx}>
+    //                 <div className={styles.align_center}>
+    //                     <div>{item.title}</div>
+    //                     <TooltipComponent title={item.tooltipTitle} />
+    //                 </div>
+    //                 <div className={styles.data}>{item.data}</div>
+    //             </div>
+    //         ))}
+    //     </div>
+    // );
 
     // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
 
@@ -423,8 +423,8 @@ export default function OrderRemoval(props: propsIF) {
                 baseRemovalString={baseQtyToBeRemoved}
                 quoteRemovalString={quoteQtyToBeRemoved}
             />
-            {gaslesssTransactionControl}
-            {tooltipExplanationDataDisplay}
+            {/* {gaslesssTransactionControl} */}
+            {/* {tooltipExplanationDataDisplay} */}
             <RemoveOrderButton removeFn={removeFn} disabled={false} title='Remove Limit Order' />
         </div>
     );

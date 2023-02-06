@@ -58,7 +58,7 @@ export default function RemoveOrderWidth(props: RemoveOrderWidthPropsIF) {
             </div>
         </>
     );
-    const [showPartial, setShowPartial] = useState(true);
+    const [showPartial] = useState(true);
 
     const partialRemove = (
         <>
@@ -86,7 +86,7 @@ export default function RemoveOrderWidth(props: RemoveOrderWidthPropsIF) {
 
     return (
         <div className={styles.order_width_container}>
-            <p
+            {/* <p
                 onClick={() => setShowPartial(!showPartial)}
                 style={{
                     fontSize: '10px',
@@ -97,7 +97,7 @@ export default function RemoveOrderWidth(props: RemoveOrderWidthPropsIF) {
                 }}
             >
                 Product Meeting Demo: Click to toggle partial control
-            </p>
+            </p> */}
             {showPartial ? partialRemove : null}
             {/* <span className={styles.title}>Removal Percentage</span>
             <div className={styles.order_width_content}>

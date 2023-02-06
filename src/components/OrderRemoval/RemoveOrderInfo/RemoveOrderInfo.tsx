@@ -40,11 +40,55 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
 
         // baseDisplayFrontend,
         // quoteDisplayFrontend,
-        // baseRemovalString,
-        // quoteRemovalString,
+        baseRemovalString,
+        quoteRemovalString,
         // positionLiqTotalUSD,
         // positionLiquidity,
     } = props;
+
+    const baseCurrentQtyRow =
+        baseDisplay !== '0' ? (
+            <Row>
+                <span>Token Quantity</span>
+                <div className={styles.align_center}>
+                    <p className={styles.info_text}>{baseDisplay}</p>
+                    <img src={baseTokenLogoURI} alt='' width='15px' />
+                </div>
+            </Row>
+        ) : null;
+
+    const baseReturnQtyRow =
+        baseRemovalString !== '0.00' ? (
+            <Row>
+                <span>Return Quantity</span>
+                <div className={styles.align_center}>
+                    <p className={styles.info_text}>{baseRemovalString}</p>
+                    <img src={baseTokenLogoURI} alt='' width='15px' />
+                </div>
+            </Row>
+        ) : null;
+
+    const quoteCurrentQtyRow =
+        quoteDisplay !== '0' ? (
+            <Row>
+                <span>Current Quantity</span>
+                <div className={styles.align_center}>
+                    <p className={styles.info_text}>{quoteDisplay}</p>
+                    <img src={quoteTokenLogoURI} alt='' width='15px' />
+                </div>
+            </Row>
+        ) : null;
+
+    const quoteReturnQtyRow =
+        quoteRemovalString !== '0.00' ? (
+            <Row>
+                <span>Return Quantity</span>
+                <div className={styles.align_center}>
+                    <p className={styles.info_text}>{quoteRemovalString}</p>
+                    <img src={quoteTokenLogoURI} alt='' width='15px' />
+                </div>
+            </Row>
+        ) : null;
 
     return (
         <div className={styles.row}>
@@ -52,40 +96,27 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                 {/* ----------------------VALUE------------------------ */}
                 <Row>
                     <span>Total Value</span>
-                    <div className={styles.token_price}>{usdValue}</div>
+                    <div className={styles.token_price}>{'$' + usdValue}</div>
                 </Row>
                 <DividerDark />
 
                 {/* ----------------------------LIQUIDITY------------------------------ */}
                 <div className={styles.info_container}>
-                    <Row>
-                        <span>Token Quantity</span>
-                        <div className={styles.align_center}>
-                            <p className={styles.info_text}>{baseDisplay}</p>
-                            <img src={baseTokenLogoURI} alt='' width='15px' />
-                        </div>
-                    </Row>
-                    {/*  */}
-                    <Row>
-                        <span>Limit Order Price</span>
-                        <div className={styles.align_center}>
-                            <div className={styles.info_text}>{quoteDisplay}</div>
-                            <img src={quoteTokenLogoURI} alt='' width='15px' />
-                        </div>
-                    </Row>
-                    {/*  */}
+                    {baseCurrentQtyRow}
+                    {quoteCurrentQtyRow}
                 </div>
                 <DividerDark />
 
                 {/* ---------------------------REMOVAL SUMMARY--------------------------------- */}
-
-                <Row>
+                {baseReturnQtyRow}
+                {quoteReturnQtyRow}
+                {/* <Row>
                     <span> Return Quantity</span>
                     <div className={styles.token_price}>
                         4,200.00
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
-                </Row>
+                </Row> */}
             </div>
         </div>
     );

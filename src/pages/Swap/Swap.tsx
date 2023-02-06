@@ -227,6 +227,7 @@ export default function Swap(props: propsIF) {
             action={async () => {
                 await approve(tokenA.address);
             }}
+            flat
         />
     );
 
@@ -526,6 +527,8 @@ export default function Swap(props: propsIF) {
         </div>
     );
 
+    const [isSwapConfirmationBypassEnabled] = useState(false);
+
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     // const denominationSwitchOrNull = priceImpact ? (
@@ -629,7 +632,10 @@ export default function Swap(props: propsIF) {
                             approvalButton
                         ) : (
                             <SwapButton
-                                onClickFn={openModal}
+                                onClickFn={
+                                    isSwapConfirmationBypassEnabled ? initiateSwap : openModal
+                                }
+                                isSwapConfirmationBypassEnabled={isSwapConfirmationBypassEnabled}
                                 swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />

@@ -48,7 +48,7 @@
 } */
 
 /* Mobile Landscape Screen Sizes */
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 580px) {
     .main_container {
         grid-template-columns: 50px auto 50px;
     }

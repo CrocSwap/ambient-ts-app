@@ -200,7 +200,7 @@ export default function ExchangeBalance(props: propsIF) {
 
     // const titleOpacity = fullLayoutActive ? '0' : '1';
 
-    const columnView = useMediaQuery('(max-width: 850px)');
+    const columnView = useMediaQuery('(max-width: 1200px)');
     return (
         <motion.main
             animate={columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'}

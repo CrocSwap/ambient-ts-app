@@ -69,9 +69,13 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                 <li
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     onClick={() => handleClick(slug.toLowerCase())}
-                    className={`${activeSortStyle} ${alignRight && styles.align_right} ${
-                        alignCenter && styles.align_center
-                    }`}
+                    className={`
+                    ${activeSortStyle} 
+                    ${alignRight && styles.align_right} 
+                    ${alignCenter && styles.align_center}
+                   
+                    
+                    `}
                 >
                     {name} {arrow}
                 </li>

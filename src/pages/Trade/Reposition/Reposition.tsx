@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -19,10 +19,11 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     isDenomBase: boolean;
+    ambientApy: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
-    const { isDenomBase } = props;
+    const { isDenomBase, ambientApy } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -101,7 +102,7 @@ export default function Reposition(props: propsIF) {
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
 
-    const currentLocation = location.pathname;
+    // const currentLocation = location.pathname;
     const [
         isModalOpen,
         // openModal,
@@ -125,7 +126,7 @@ export default function Reposition(props: propsIF) {
                 redirectPath={redirectPath}
             />
             <div className={styles.reposition_content}>
-                <div className={styles.reposition_toggle_container}>
+                {/* <div className={styles.reposition_toggle_container}>
                     <Link
                         to='/trade/reposition'
                         className={
@@ -146,7 +147,7 @@ export default function Reposition(props: propsIF) {
                     >
                         Add
                     </Link>
-                </div>
+                </div> */}
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
@@ -157,6 +158,7 @@ export default function Reposition(props: propsIF) {
                 />
                 <RepositionPriceInfo
                     position={position}
+                    ambientApy={ambientApy}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
