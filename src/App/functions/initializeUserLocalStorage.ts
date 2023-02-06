@@ -96,6 +96,19 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    if (!user.dontWarn) {
+        const initialMap = new Map();
+        const initialPairs = [
+            ['global', false],
+            ['swap', false],
+            ['limit', false],
+            ['range', false],
+        ];
+        initialPairs.forEach((pair) => initialMap.set(pair[0], pair[1]));
+        user.dontWarn = JSON.stringify(Array.from(initialMap.entries()));
+        userUpdated = true;
+    }
+
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }

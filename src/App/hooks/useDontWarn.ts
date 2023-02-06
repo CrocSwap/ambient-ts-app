@@ -1,11 +1,16 @@
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useDontWarn = (): [
-    boolean,
-    Dispatch<SetStateAction<boolean>>
+    (item: string) => boolean,
+    (item: string, pref: boolean) => void
 ] => {
     // hold user preference (bool) in local state
-    const [dontWarn, setDontWarn] = useState<boolean>(false);
+    const [dontWarn, setDontWarn] = useState<Map<string, boolean>|null>(null);
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user') as string);
+        setDontWarn(new Map(JSON.parse(user.dontWarn)));
+    }, []);
 
     // hook to get persisted value from local storage and update local state
     useEffect(() => {
@@ -22,14 +27,19 @@ export const useDontWarn = (): [
         getPreference();
     }, []);
 
-    // hook to append new value to local storage when user updates preference manually
-    useEffect(() => {
-        const {user} = JSON.parse(localStorage.getItem('user') as string);
-        if (user.dontWarn !== dontWarn) {
-            user.dontWarn = dontWarn;
-            localStorage.set(JSON.stringify(user));
-        }
-    }, [dontWarn]);
+    const checkDontWarn = (
+        item: string
+    ): boolean => dontWarn?.get(item) ?? false;
 
-    return [dontWarn, setDontWarn];
+    const updateDontWarn = (
+        item: string,
+        pref: boolean
+    ): void => {
+        dontWarn?.set(item, pref);
+    };
+
+    return [
+        checkDontWarn,
+        updateDontWarn
+    ];
 }

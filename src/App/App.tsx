@@ -518,8 +518,9 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
-    const warningPreferences = useDontWarn();
-    false && warningPreferences;
+    const [checkDontWarn, updateDontWarn] = useDontWarn();
+    false && checkDontWarn;
+    false && updateDontWarn;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
