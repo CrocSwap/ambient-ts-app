@@ -44,7 +44,14 @@ export const useDontWarn = (): [
         item: string,
         pref: boolean
     ): void => {
-        dontWarn?.set(item, pref);
+        if (dontWarn) {
+            const stateCopy = dontWarn;
+            stateCopy?.set(item, pref);
+            setDontWarn(stateCopy);
+            const user = JSON.parse(localStorage.getItem('user') as string);
+            user.dontWarn = JSON.stringify(Array.from(stateCopy.entries()));
+            localStorage.setItem('user', JSON.stringify(user));
+        }
     };
 
     return [
