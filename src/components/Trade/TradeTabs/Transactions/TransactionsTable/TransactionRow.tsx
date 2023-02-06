@@ -545,7 +545,7 @@ export default function TransactionRow(props: propsIF) {
                             className={`${priceStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedLowDisplayPrice ? sideCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
@@ -553,7 +553,7 @@ export default function TransactionRow(props: propsIF) {
                                 </span>
                             </p>
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? sideCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -564,7 +564,7 @@ export default function TransactionRow(props: propsIF) {
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
                             <div className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? sideCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -575,14 +575,20 @@ export default function TransactionRow(props: propsIF) {
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage ? (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPriceDenomByMoneyness
+                                                    ? sideCharacter
+                                                    : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPriceDenomByMoneyness}
                                             </span>
                                         </p>
                                     ) : (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPrice ? sideCharacter : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPrice}
                                             </span>
@@ -602,7 +608,11 @@ export default function TransactionRow(props: propsIF) {
                         {isOnPortfolioPage
                             ? (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>
+                                          {truncatedDisplayPriceDenomByMoneyness
+                                              ? sideCharacter
+                                              : '…'}
+                                      </span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPriceDenomByMoneyness}
                                       </span>
@@ -610,7 +620,7 @@ export default function TransactionRow(props: propsIF) {
                               ) || '…'
                             : (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>{truncatedDisplayPrice ? sideCharacter : '…'}</span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPrice}
                                       </span>
