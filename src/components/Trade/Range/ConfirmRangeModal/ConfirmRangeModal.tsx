@@ -45,6 +45,8 @@ interface propsIF {
     txErrorCode: string;
     txErrorMessage: string;
     resetConfirmation: () => void;
+    dontConfirm: boolean;
+    toggleDontConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmRangeModal(props: propsIF) {
@@ -69,6 +71,8 @@ export default function ConfirmRangeModal(props: propsIF) {
         showConfirmation,
         setShowConfirmation,
         resetConfirmation,
+        dontConfirm,
+        toggleDontConfirm
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -181,7 +185,10 @@ export default function ConfirmRangeModal(props: propsIF) {
             {rangeHeader}
             {tokenAmountDisplay}
             {selectedRangeOrNull}
-            <ConfirmationModalControl />
+            <ConfirmationModalControl
+                dontConfirm={dontConfirm}
+                toggleDontConfirm={toggleDontConfirm}
+            />
         </>
     );
 

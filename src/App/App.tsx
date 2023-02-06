@@ -2407,6 +2407,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        dontConfirm: checkDontWarn('swap'),
+        toggleDontConfirm: updateDontWarn
     };
 
     // props for <Swap/> React element on trade route
@@ -2454,6 +2456,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        dontConfirm: checkDontWarn('swap'),
+        toggleDontConfirm: updateDontWarn
     };
 
     // props for <Limit/> React element on trade route
@@ -2508,6 +2512,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        dontConfirm: checkDontWarn('limit'),
+        toggleDontConfirm: updateDontWarn
     };
 
     // props for <Range/> React element
@@ -2566,6 +2572,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        dontConfirm: checkDontWarn('range'),
+        toggleDontConfirm: updateDontWarn
     };
 
     function toggleSidebar() {

@@ -87,6 +87,8 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+    dontConfirm: boolean;
+    toggleDontConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function Swap(props: propsIF) {
@@ -131,6 +133,8 @@ export default function Swap(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        dontConfirm,
+        toggleDontConfirm
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -415,6 +419,8 @@ export default function Swap(props: propsIF) {
                 slippageTolerancePercentage={slippageTolerancePercentage}
                 effectivePrice={effectivePrice}
                 isSellTokenBase={isSellTokenBase}
+                dontConfirm={dontConfirm}
+                toggleDontConfirm={toggleDontConfirm}
             />
         </Modal>
     ) : null;
@@ -527,9 +533,6 @@ export default function Swap(props: propsIF) {
         </div>
     );
 
-    // @Emily remove this as part of current effort
-    const [isSwapConfirmationBypassEnabled] = useState(false);
-
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     // const denominationSwitchOrNull = priceImpact ? (
@@ -634,9 +637,9 @@ export default function Swap(props: propsIF) {
                         ) : (
                             <SwapButton
                                 onClickFn={
-                                    isSwapConfirmationBypassEnabled ? initiateSwap : openModal
+                                    dontConfirm ? initiateSwap : openModal
                                 }
-                                isSwapConfirmationBypassEnabled={isSwapConfirmationBypassEnabled}
+                                isSwapConfirmationBypassEnabled={dontConfirm}
                                 swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />

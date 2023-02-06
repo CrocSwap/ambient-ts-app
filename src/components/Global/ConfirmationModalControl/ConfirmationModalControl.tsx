@@ -1,20 +1,28 @@
+import { useId } from 'react';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
-import { useState } from 'react';
 
-export default function ConfirmationModalControl() {
-    // This state will be replaced by either a variable stored in RTK or local storage
+interface propsIF {
+    dontConfirm: boolean;
+    toggleDontConfirm: (item: string, pref: boolean) => void;
+}
 
-    const [disableConfirmationModal, setDisableConfirmationModal] = useState(false);
+export default function ConfirmationModalControl(props: propsIF) {
+    const { dontConfirm, toggleDontConfirm } = props;
+    const compKey = useId();
 
-    // If we want every modal to have their own toggle, we can simply pass an id as a prop and replace the id of the toggle with that id.
+    // TODO:   @Junior  unless the `id` field is being used for DOM manipulation
+    // TODO:   @Junior  ... or for CSS targeting, just take it out and use the
+    // TODO:   @Junior  ... `compKey` value instead (also delete this TODO note)
+
     return (
         <div className={styles.main_container}>
-            <p>Don&apos;t show this confirmation modal again</p>
+            <p>Do not show this confirmation modal again</p>
             <Toggle2
-                isOn={disableConfirmationModal}
+                key={compKey}
+                isOn={dontConfirm}
                 disabled={false}
-                handleToggle={() => setDisableConfirmationModal(!disableConfirmationModal)}
+                handleToggle={() => toggleDontConfirm('swap', !dontConfirm)}
                 id='disabled_confirmation_modal_toggle'
             />
         </div>

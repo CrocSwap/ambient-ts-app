@@ -13,6 +13,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 // import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
+import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -32,6 +33,8 @@ interface propsIF {
     slippageTolerancePercentage: number;
     effectivePrice: number;
     isSellTokenBase: boolean;
+    dontConfirm: boolean;
+    toggleDontConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -53,6 +56,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         slippageTolerancePercentage,
         effectivePrice,
         isSellTokenBase,
+        dontConfirm,
+        toggleDontConfirm
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -224,7 +229,10 @@ export default function ConfirmSwapModal(props: propsIF) {
 
             {extraInfoData}
             {/* {explanationText} */}
-            {/* <ConfirmationModalControl /> */}
+            <ConfirmationModalControl
+                dontConfirm={dontConfirm}
+                toggleDontConfirm={toggleDontConfirm}
+            />
         </div>
     );
 

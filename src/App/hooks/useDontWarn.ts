@@ -17,7 +17,7 @@ export const useDontWarn = (): [
         const getPreference = (recursiveCounter=0): void => {
             try {
                 const persistedValue = JSON.parse(localStorage.getItem('user') as string).dontWarn;
-                setDontWarn(persistedValue);
+                persistedValue && setDontWarn(new Map(persistedValue));
             } catch (err) {
                 console.warn(err);
                 if (recursiveCounter < 50)
@@ -29,7 +29,16 @@ export const useDontWarn = (): [
 
     const checkDontWarn = (
         item: string
-    ): boolean => dontWarn?.get(item) ?? false;
+    ): boolean => {
+        if (dontWarn === null) {
+            return false;
+        } else {
+            console.log(dontWarn);
+            const val = dontWarn?.get(item) ?? false;
+            const output = dontWarn ? val : false;
+            return dontWarn ? output : false;
+        }
+    };
 
     const updateDontWarn = (
         item: string,
