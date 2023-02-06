@@ -93,7 +93,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             className={
                 props.message.isMentionMessage === false
                     ? styles.sent_message_body
-                    : props.message.mentionedName.trim() === props.name.trim()
+                    : props.message.mentionedName?.trim() === props.name?.trim()
                     ? styles.sent_message_body_with_mention
                     : styles.sent_message_body
             }
