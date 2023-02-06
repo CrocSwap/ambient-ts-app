@@ -129,7 +129,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 1px);
+    font-size: var(--body-size);
     line-height: 15px;
     display: flex;
     align-items: center;

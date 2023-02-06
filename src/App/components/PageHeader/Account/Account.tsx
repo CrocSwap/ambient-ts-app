@@ -33,6 +33,8 @@ interface AccountPropsIF {
 
     switchTheme: () => void;
     theme: string;
+
+    lastBlockNumber: number;
 }
 
 export default function Account(props: AccountPropsIF) {
@@ -47,6 +49,7 @@ export default function Account(props: AccountPropsIF) {
         setIsAppOverlayActive,
         switchTheme,
         theme,
+        lastBlockNumber,
     } = props;
 
     const { connector, isConnected } = useAccount();
@@ -186,9 +189,17 @@ export default function Account(props: AccountPropsIF) {
             </div>
         </section>
     );
+
+    const blockNumberDisplay = (
+        <div className={styles.block_number_div}>
+            <div className={styles.page_block_sign} />
+            <span>{lastBlockNumber}</span>
+        </div>
+    );
     return (
         <div className={styles.account_container}>
             {isUserLoggedIn && walletDisplay}
+            {isUserLoggedIn && blockNumberDisplay}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
