@@ -2850,7 +2850,12 @@ export default function App() {
                             />
                             <Route
                                 path='reposition/:params'
-                                element={<Reposition isDenomBase={tradeData.isDenomBase} />}
+                                element={
+                                    <Reposition
+                                        ambientApy={ambientApy}
+                                        isDenomBase={tradeData.isDenomBase}
+                                    />
+                                }
                             />
                             <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
