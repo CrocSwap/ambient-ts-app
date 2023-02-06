@@ -3162,7 +3162,7 @@ export default function App() {
             </div>
 
             <div className='footer_container'>
-                {currentLocation !== '/' && (
+                {/* {currentLocation !== '/' && (
                     <PageFooter
                         isUserIdle={isUserIdle}
                         lastBlockNumber={lastBlockNumber}
@@ -3172,7 +3172,7 @@ export default function App() {
                         setChatStatus={setChatStatus}
                         chatStatus={chatStatus}
                     />
-                )}
+                )} */}
                 {/* {currentLocation !== '/app/chat' && (
                     <Chat
                         ensName={ensName}

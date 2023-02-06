@@ -1,22 +1,21 @@
 import styles from './ChatPanel.module.css';
-import { motion } from 'framer-motion';
 import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
-import { RiCloseFill, RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
-import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
 import { MdOpenInFull } from 'react-icons/md';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
+import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -54,6 +53,8 @@ interface ChatProps {
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const navigate = useNavigate();
+    // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
     const { address } = useAccount();
@@ -192,29 +193,35 @@ export default function ChatPanel(props: ChatProps) {
         }
     };
 
+    const handleFullScreenRedirect = () => {
+        navigate('/app/chat');
+        props.setChatStatus(true);
+    };
+
     const header = (
-        <div className={styles.modal_header}>
-            <h2 className={styles.modal_title}>Chat</h2>
-            {props.isFullScreen ? (
-                <></>
-            ) : (
-                <Link target='_blank' to='/app/chat'>
+        <div className={styles.chat_header} onClick={() => setChatStatus(!props.chatStatus)}>
+            <h2 className={styles.chat_title}>Chat</h2>
+            <section>
+                {props.isFullScreen || !props.chatStatus ? (
+                    <></>
+                ) : (
                     <MdOpenInFull
-                        size={18}
+                        size={16}
                         className={styles.open_full_button}
-                        onClick={() => props.setChatStatus(true)}
+                        onClick={handleFullScreenRedirect}
                     />
-                </Link>
-            )}
-            {props.isFullScreen ? (
-                <></>
-            ) : (
-                <RiCloseFill
-                    size={27}
-                    className={styles.close_button}
-                    onClick={() => handleCloseChatPanel()}
-                />
-            )}
+                )}
+                {props.isFullScreen || !props.chatStatus ? (
+                    <></>
+                ) : (
+                    <IoIosArrowDown
+                        size={22}
+                        className={styles.close_button}
+                        onClick={() => handleCloseChatPanel()}
+                    />
+                )}
+                {!props.chatStatus && <IoIosArrowUp size={22} />}
+            </section>
         </div>
     );
 
@@ -268,7 +275,7 @@ export default function ChatPanel(props: ChatProps) {
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
                         />
-                        <hr></hr>
+                        <hr />
                     </div>
                 ))}
         </div>
@@ -314,12 +321,19 @@ export default function ChatPanel(props: ChatProps) {
         />
     );
 
+    const contentHeight = props.isFullScreen ? '100%' : props.chatStatus ? '479px' : '40px';
+    const contentWidth = props.isFullScreen ? '100%' : props.chatStatus ? '320px' : '300px';
+
     return (
         <div
+            className={props.isFullScreen ? styles.full_screen_wrapper : styles.example}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
-            <div className={`${props.isFullScreen ? wrapperStyleFull : styles.modal_body}`}>
+            <div
+                className={`${props.isFullScreen ? wrapperStyleFull : styles.modal_body}`}
+                style={{ height: contentHeight, width: contentWidth }}
+            >
                 <div className={styles.chat_body}>
                     {header}
 
@@ -332,16 +346,14 @@ export default function ChatPanel(props: ChatProps) {
                         room={room}
                     />
 
-                    <div style={{ width: '90%' }}>
-                        <DividerDark changeColor addMarginTop addMarginBottom />
-                    </div>
+                    <DividerDark changeColor addMarginTop addMarginBottom />
 
                     {messageList}
 
                     {chatNotification}
 
                     {messageInput}
-                    <div id='thelastmessage'></div>
+                    <div id='thelastmessage' />
                 </div>
             </div>
         </div>
