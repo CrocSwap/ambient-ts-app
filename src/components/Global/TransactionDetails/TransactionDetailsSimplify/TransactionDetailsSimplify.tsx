@@ -58,7 +58,9 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
 
-    console.log({ tx });
+    // console.log({ tx });
+
+    const isBuy = tx.isBid || tx.isBuy;
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
@@ -125,23 +127,43 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             explanation: 'this is explanation',
         },
 
-        { title: 'From Token ', content: baseTokenSymbol, explanation: 'this is explanation' },
-
-        { title: 'From Address ', content: baseAddressContent, explanation: 'this is explanation' },
-
         {
-            title: 'From Qty ',
-            content: baseDisplayFrontend + baseTokenSymbol,
+            title: 'From Token ',
+            content: isBuy ? baseTokenSymbol : quoteTokenSymbol,
             explanation: 'this is explanation',
         },
 
-        { title: 'To Token ', content: quoteTokenSymbol, explanation: 'this is explanation' },
+        {
+            title: 'From Address ',
+            content: isBuy ? baseAddressContent : quoteAddressContent,
+            explanation: 'this is explanation',
+        },
 
-        { title: 'To Address ', content: quoteAddressContent, explanation: 'this is explanation' },
+        {
+            title: 'From Qty ',
+            content: isBuy
+                ? `${baseDisplayFrontend} ${baseTokenSymbol}`
+                : `${quoteDisplayFrontend} ${quoteTokenSymbol}`,
+            explanation: 'this is explanation',
+        },
+
+        {
+            title: 'To Token ',
+            content: !isBuy ? baseTokenSymbol : quoteTokenSymbol,
+            explanation: 'this is explanation',
+        },
+
+        {
+            title: 'To Address ',
+            content: !isBuy ? baseAddressContent : quoteAddressContent,
+            explanation: 'this is explanation',
+        },
 
         {
             title: 'To Qty ',
-            content: quoteDisplayFrontend + quoteTokenSymbol,
+            content: !isBuy
+                ? `${baseDisplayFrontend} ${baseTokenSymbol}`
+                : `${quoteDisplayFrontend} ${quoteTokenSymbol}`,
             explanation: 'this is explanation',
         },
 

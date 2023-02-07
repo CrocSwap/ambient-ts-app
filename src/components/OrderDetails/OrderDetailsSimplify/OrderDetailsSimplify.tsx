@@ -4,6 +4,7 @@ import { ZERO_ADDRESS } from '../../../constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
+import moment from 'moment';
 
 interface ItemRowPropsIF {
     title: string;
@@ -59,6 +60,8 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
         // positionLiquidity,
     } = useProcessOrder(limitOrder, account);
 
+    // console.log({ limitOrder });
+
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
         window.open(walletUrl);
@@ -111,18 +114,21 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
         </div>
     );
 
+    const submissionTime = moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm');
+    const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
+
     const status = isOrderFilled ? 'Filled' : 'Not Filled';
 
     const infoContent = [
-        { title: 'Position Type ', content: 'Market', explanation: 'this is explanation' },
+        { title: 'Position Type ', content: 'Limit', explanation: 'this is explanation' },
 
         { title: 'Wallet ', content: walletContent, explanation: 'this is explanation' },
 
         { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
         { title: 'Claim Transaction ', content: txContent, explanation: 'this is explanation' },
 
-        { title: 'Submit Time ', content: 'this is time', explanation: 'this is explanation' },
-        { title: 'Fill Time ', content: 'this is time', explanation: 'this is explanation' },
+        { title: 'Submit Time ', content: submissionTime, explanation: 'this is explanation' },
+        { title: 'Fill Time ', content: fillTime, explanation: 'this is explanation' },
         { title: 'Status ', content: status, explanation: 'this is explanation' },
 
         { title: 'From Token ', content: baseTokenSymbol, explanation: 'this is explanation' },

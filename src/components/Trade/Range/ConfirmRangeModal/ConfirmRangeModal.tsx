@@ -198,7 +198,7 @@ export default function ConfirmRangeModal(props: propsIF) {
 
     const confirmTradeButton = (
         <Button
-            title='Send Range Transaction'
+            title={isAmbient ? 'Send Ambient Transaction' : 'Send Range Transaction'}
             action={() => {
                 console.log(`Sell Token Full name: ${tokenA.symbol} and quantity: ${tokenAQty}`);
                 console.log(
