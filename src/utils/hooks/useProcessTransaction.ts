@@ -359,8 +359,8 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
                 ? 'claim'
                 : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
-            ? 'buy'
-            : 'sell';
+            ? 'sell'
+            : 'buy';
     // const sideType =
     //     tx.entityType === 'swap' || tx.entityType === 'limitOrder'
     //         ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
