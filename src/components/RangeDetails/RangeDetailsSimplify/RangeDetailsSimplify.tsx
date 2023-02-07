@@ -5,6 +5,7 @@ import { ZERO_ADDRESS } from '../../../constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import moment from 'moment';
 import Apy from '../../Global/Tabs/Apy/Apy';
+import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
 interface ItemRowPropsIF {
     title: string;
@@ -182,5 +183,48 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
-    return <div></div>;
+    function InfoRow(props: ItemRowPropsIF) {
+        const { title, content, explanation } = props;
+
+        return (
+            <div className={styles.info_row_container}>
+                <div className={styles.title_container}>
+                    <p>{title}</p>
+                    <TooltipComponent title={explanation} placement={'right'} />
+                </div>
+
+                <div>{content}</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.tx_details_container}>
+            <div className={styles.main_container}>
+                <section>
+                    {infoContent.slice(0, infoContent.length / 2).map((info, idx) => (
+                        <InfoRow
+                            key={info.title + idx}
+                            title={info.title}
+                            content={info.content}
+                            explanation={info.explanation}
+                        />
+                    ))}
+                </section>
+
+                <section>
+                    {infoContent
+                        .slice(infoContent.length / 2, infoContent.length)
+                        .map((info, idx) => (
+                            <InfoRow
+                                key={info.title + idx}
+                                title={info.title}
+                                content={info.content}
+                                explanation={info.explanation}
+                            />
+                        ))}
+                </section>
+            </div>
+        </div>
+    );
 }
