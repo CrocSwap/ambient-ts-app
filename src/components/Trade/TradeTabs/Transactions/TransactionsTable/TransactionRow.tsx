@@ -98,11 +98,19 @@ export default function TransactionRow(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
 
     const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    const priceCharacter = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -545,7 +553,7 @@ export default function TransactionRow(props: propsIF) {
                             className={`${priceStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
@@ -553,7 +561,7 @@ export default function TransactionRow(props: propsIF) {
                                 </span>
                             </p>
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -564,7 +572,7 @@ export default function TransactionRow(props: propsIF) {
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
                             <div className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -575,14 +583,20 @@ export default function TransactionRow(props: propsIF) {
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage ? (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPriceDenomByMoneyness
+                                                    ? priceCharacter
+                                                    : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPriceDenomByMoneyness}
                                             </span>
                                         </p>
                                     ) : (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPrice ? priceCharacter : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPrice}
                                             </span>
@@ -602,7 +616,11 @@ export default function TransactionRow(props: propsIF) {
                         {isOnPortfolioPage
                             ? (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>
+                                          {truncatedDisplayPriceDenomByMoneyness
+                                              ? priceCharacter
+                                              : '…'}
+                                      </span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPriceDenomByMoneyness}
                                       </span>
@@ -610,7 +628,7 @@ export default function TransactionRow(props: propsIF) {
                               ) || '…'
                             : (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>{truncatedDisplayPrice ? priceCharacter : '…'}</span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPrice}
                                       </span>
@@ -648,7 +666,11 @@ export default function TransactionRow(props: propsIF) {
                     onClick={openDetailsModal}
                 >
                     <p>{type}</p>
-                    <p>{`${sideType} ${sideCharacter}`}</p>
+                    <p>
+                        {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                            ? `${sideType}`
+                            : `${sideType} ${sideCharacter}`}
+                    </p>
                 </li>
             )}
             {usdValueWithTooltip}
@@ -675,7 +697,6 @@ export default function TransactionRow(props: propsIF) {
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {' '}
                         {isBuy
                             ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
                             : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
