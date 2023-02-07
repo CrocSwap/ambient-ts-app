@@ -530,99 +530,6 @@ export default function Chart(props: ChartData) {
         });
     }
 
-    function rangeLabelDecimal(
-        longerValue: number,
-        shorterValue: number,
-        isSameLocationMin: boolean,
-        sameLocationDataMin: any,
-        isSameLocationMax: boolean,
-        sameLocationDataMax: any,
-        simpleRangeWidth: any,
-        digit: number,
-        data: number,
-        d: any,
-    ) {
-        console.log(
-            longerValue,
-            shorterValue,
-            isSameLocationMin,
-            sameLocationDataMin,
-            isSameLocationMax,
-            sameLocationDataMax,
-            simpleRangeWidth,
-            digit,
-            data,
-            d,
-        );
-        /* 1607.5
-         1659.77 
-         false 
-         false 
-         true 
-         1680.7370046290475 
-         1 
-         2 
-         1646.9151200878928 
-         1646.9151200878928 */
-        if (simpleRangeWidth !== 100) {
-            if (isSameLocationMin && d === sameLocationDataMin) {
-                console.log('if');
-
-                return formatAmountChartData(
-                    isSameLocationMin && d === sameLocationDataMin ? data : d,
-                    d === sameLocationDataMin ||
-                        d === longerValue ||
-                        d === shorterValue ||
-                        d === market[0].value ||
-                        d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value
-                            ? undefined
-                            : digit
-                        : d.toString().split('.')[1]?.length,
-                );
-            } else if (isSameLocationMax && d === sameLocationDataMax) {
-                console.log('else if');
-                return formatAmountChartData(
-                    isSameLocationMax && d === sameLocationDataMax ? data : d,
-                    d === sameLocationDataMax ||
-                        d === longerValue ||
-                        d === shorterValue ||
-                        d === market[0].value ||
-                        d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value
-                            ? undefined
-                            : digit
-                        : d.toString().split('.')[1]?.length,
-                );
-            } else {
-                console.log('else');
-                return formatAmountChartData(
-                    d,
-                    d === shorterValue ||
-                        d === longerValue ||
-                        d === market[0].value ||
-                        d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value
-                            ? undefined
-                            : digit
-                        : d.toString().split('.')[1]?.length,
-                );
-            }
-        } else {
-            return formatAmountChartData(
-                d,
-                d === shorterValue ||
-                    d === longerValue ||
-                    d === market[0].value ||
-                    d === crosshairData[0].y
-                    ? d === longerValue || d === market[0].value
-                        ? undefined
-                        : digit
-                    : d.toString().split('.')[1]?.length,
-            );
-        }
-    }
-
     function addTextRange(scale: any) {
         let isSameLocationMin = false;
         let sameLocationDataMin = false;
@@ -893,14 +800,6 @@ export default function Chart(props: ChartData) {
         ]);
 
         yAxis.tickFormat((d: any) => {
-            const digit =
-                formatAmountChartData(low).length >= formatAmountChartData(high).length
-                    ? formatAmountChartData(low).length -
-                      formatAmountChartData(high).length +
-                      formatAmountChartData(high).toString().split('.')[1]?.length
-                    : formatAmountChartData(high).length -
-                      formatAmountChartData(low).length +
-                      formatAmountChartData(low).toString().split('.')[1]?.length;
             const data =
                 (isSameLocationMin && d === sameLocationDataMin) ||
                 (isSameLocationMax && d === sameLocationDataMax)
@@ -909,33 +808,40 @@ export default function Chart(props: ChartData) {
                         : high
                     : d;
 
-            if (formatAmountChartData(low).length >= formatAmountChartData(high).length) {
-                return rangeLabelDecimal(
-                    low,
-                    high,
-                    isSameLocationMin,
-                    sameLocationDataMin,
-                    isSameLocationMax,
-                    sameLocationDataMax,
-                    simpleRangeWidth,
-                    digit,
-                    data,
-                    d,
-                );
-            } else {
-                return rangeLabelDecimal(
-                    high,
-                    low,
-                    isSameLocationMin,
-                    sameLocationDataMin,
-                    isSameLocationMax,
-                    sameLocationDataMax,
-                    simpleRangeWidth,
-                    digit,
-                    data,
-                    d,
-                );
-            }
+            const longerValue =
+                formatAmountChartData(low).length > formatAmountChartData(high).length ? low : high;
+            const shorterValue =
+                formatAmountChartData(low).length > formatAmountChartData(high).length ? high : low;
+
+            const isSameLocation =
+                isSameLocationMin && d === sameLocationDataMin
+                    ? isSameLocationMin
+                    : isSameLocationMax;
+            const sameLocationData =
+                isSameLocationMin && d === sameLocationDataMin
+                    ? sameLocationDataMin
+                    : sameLocationDataMax;
+
+            const digit =
+                formatAmountChartData(low).length >= formatAmountChartData(high).length
+                    ? formatAmountChartData(low).length -
+                      formatAmountChartData(high).length +
+                      formatAmountChartData(high).toString().split('.')[1]?.length
+                    : formatAmountChartData(high).length -
+                      formatAmountChartData(low).length +
+                      formatAmountChartData(low).toString().split('.')[1]?.length;
+
+            return formatAmountChartData(
+                isSameLocation && d === sameLocationData ? data : d,
+                d === shorterValue ||
+                    d === longerValue ||
+                    d === market[0].value ||
+                    d === crosshairData[0].y
+                    ? d === longerValue || d === market[0].value
+                        ? undefined
+                        : digit
+                    : d.toString().split('.')[1]?.length,
+            );
         });
 
         yAxis.decorate((selection: any) => {
