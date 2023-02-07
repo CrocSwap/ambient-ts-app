@@ -611,7 +611,11 @@ export default function TransactionRow(props: propsIF) {
                     )
                 ) : (
                     <li
-                        onClick={openDetailsModal}
+                        onClick={() => {
+                            console.log({ isOnPortfolioPage });
+                            console.log({ truncatedDisplayPriceDenomByMoneyness });
+                            openDetailsModal();
+                        }}
                         data-label='price'
                         className={`${styles.align_right}  ${priceStyle}`}
                         style={{ fontFamily: 'monospace' }}
