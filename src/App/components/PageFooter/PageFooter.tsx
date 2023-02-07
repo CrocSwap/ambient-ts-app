@@ -6,7 +6,6 @@ import { Dispatch, SetStateAction } from 'react';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { targetData } from '../../../utils/state/tradeDataSlice';
 // import { useLocation} from 'react-router-dom'
-
 interface currentPoolInfo {
     tokenA: TokenIF;
     tokenB: TokenIF;

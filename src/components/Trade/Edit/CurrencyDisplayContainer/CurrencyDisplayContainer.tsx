@@ -13,7 +13,7 @@ interface CurrencyDisplayProps {
 
 export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
     // const ethereumIcon =
-    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png';
+    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/580px-Ethereum-icon-purple.svg.png';
 
     // const diaIcon = 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png';
 

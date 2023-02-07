@@ -1,22 +1,21 @@
 import styles from './ChatPanel.module.css';
-import { motion } from 'framer-motion';
 import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
-import { RiCloseFill, RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
-import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
 import { MdOpenInFull } from 'react-icons/md';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
+import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -54,6 +53,8 @@ interface ChatProps {
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const navigate = useNavigate();
+    // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
     const { address } = useAccount();
@@ -84,8 +85,16 @@ export default function ChatPanel(props: ChatProps) {
         if ((e.charCode || e.keyCode) === 27) setChatStatus(false);
     }
 
+    // eslint-disable-next-line
+    function openChatPanel(e: any) {
+        if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
+            setChatStatus(!props.chatStatus);
+        }
+    }
+
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        document.body.addEventListener('keydown', openChatPanel);
         return function cleanUp() {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
@@ -192,29 +201,35 @@ export default function ChatPanel(props: ChatProps) {
         }
     };
 
+    const handleFullScreenRedirect = () => {
+        navigate('/app/chat');
+        props.setChatStatus(true);
+    };
+
     const header = (
-        <div className={styles.modal_header}>
-            <h2 className={styles.modal_title}>Chat</h2>
-            {props.isFullScreen ? (
-                <></>
-            ) : (
-                <Link target='_blank' to='/app/chat'>
+        <div className={styles.chat_header} onClick={() => setChatStatus(!props.chatStatus)}>
+            <h2 className={styles.chat_title}>Chat</h2>
+            <section>
+                {props.isFullScreen || !props.chatStatus ? (
+                    <></>
+                ) : (
                     <MdOpenInFull
-                        size={18}
+                        size={16}
                         className={styles.open_full_button}
-                        onClick={() => props.setChatStatus(true)}
+                        onClick={handleFullScreenRedirect}
                     />
-                </Link>
-            )}
-            {props.isFullScreen ? (
-                <></>
-            ) : (
-                <RiCloseFill
-                    size={27}
-                    className={styles.close_button}
-                    onClick={() => handleCloseChatPanel()}
-                />
-            )}
+                )}
+                {props.isFullScreen || !props.chatStatus ? (
+                    <></>
+                ) : (
+                    <IoIosArrowDown
+                        size={22}
+                        className={styles.close_button}
+                        onClick={() => handleCloseChatPanel()}
+                    />
+                )}
+                {!props.chatStatus && <IoIosArrowUp size={22} />}
+            </section>
         </div>
     );
 
@@ -247,11 +262,18 @@ export default function ChatPanel(props: ChatProps) {
     }
 
     const messageList = (
-        <>
+        <div
+            ref={messageEnd}
+            className={styles.scrollable_div}
+            onScroll={handleScroll}
+            onWheel={handleWheel}
+            id='chatmessage'
+        >
             {messages &&
                 messages.map((item) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         <SentMessagePanel
+                            isUserLoggedIn={isUserLoggedIn as boolean}
                             message={item}
                             name={ens === null || ens === '' ? walletID : (ens as string)}
                             isCurrentUser={item.sender === currentUser}
@@ -262,107 +284,87 @@ export default function ChatPanel(props: ChatProps) {
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
                         />
-                        <hr></hr>
+                        <hr />
                     </div>
                 ))}
-        </>
+        </div>
     );
 
+    const chatNotification = (
+        <div className={styles.chat_notification}>
+            {notification > 0 && scrollDirection === 'Scroll Up' ? (
+                <div className={styles.chat_notification}>
+                    <span onClick={() => scrollToBottomButton()}>
+                        <BsChatLeftFill size={25} color='#7371fc' />
+                        <span className={styles.text}>{notification}</span>
+                    </span>
+                    <RiArrowDownSLine
+                        role='button'
+                        size={27}
+                        color='#7371fc'
+                        onClick={() => scrollToBottomButton()}
+                    />
+                </div>
+            ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
+                <RiArrowDownSLine
+                    size={27}
+                    color='#7371fc'
+                    onClick={() => scrollToBottomButton()}
+                />
+            ) : (
+                ''
+            )}
+        </div>
+    );
+
+    const messageInput = (
+        <MessageInput
+            currentUser={currentUser as string}
+            message={messages[0]}
+            room={
+                room === 'Current Pool'
+                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+                    : room
+            }
+            ensName={ens === null || ens === '' ? walletID : (ens as string)}
+        />
+    );
+
+    const contentHeight = props.isFullScreen ? '100%' : props.chatStatus ? '479px' : '40px';
+    const contentWidth = props.isFullScreen ? '100%' : props.chatStatus ? '320px' : '300px';
+
     return (
-        <>
-            {props.isFullScreen ? (
-                <></>
-            ) : (
-                <ChatButton chatStatus={props.chatStatus} setChatStatus={props.setChatStatus} />
-            )}
+        <div
+            className={props.isFullScreen ? styles.full_screen_wrapper : styles.example}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClick={(e: any) => e.stopPropagation()}
+        >
+            <div
+                className={`${props.isFullScreen ? wrapperStyleFull : styles.modal_body}`}
+                style={{ height: contentHeight, width: contentWidth }}
+            >
+                <div className={styles.chat_body}>
+                    {header}
 
-            {props.chatStatus ? (
-                //  <div className={styles.outside_modal}>
+                    <Room
+                        favePools={favePools}
+                        selectedRoom={room}
+                        setRoom={setRoom}
+                        currentPool={currentPool}
+                        isFullScreen={props.isFullScreen}
+                        room={room}
+                    />
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className={`
-                    ${styles.main_body}
-                    `}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    onClick={(e: any) => e.stopPropagation()}
-                >
-                    <div
-                        className={`
-                            ${props.isFullScreen ? wrapperStyleFull : styles.modal_body}
-                        `}
-                    >
-                        <div className={styles.chat_body}>
-                            {header}
+                    <DividerDark changeColor addMarginTop addMarginBottom />
 
-                            <Room
-                                favePools={favePools}
-                                selectedRoom={room}
-                                setRoom={setRoom}
-                                currentPool={currentPool}
-                                isFullScreen={props.isFullScreen}
-                                room={room}
-                            />
+                    {messageList}
 
-                            <div style={{ width: '90%' }}>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                            </div>
+                    {chatNotification}
 
-                            <div
-                                ref={messageEnd}
-                                className={styles.scrollable_div}
-                                onScroll={handleScroll}
-                                onWheel={handleWheel}
-                                id='chatmessage'
-                            >
-                                {messageList}
-                            </div>
-                            <div className={styles.chat_notification}>
-                                {notification > 0 && scrollDirection === 'Scroll Up' ? (
-                                    <div className={styles.chat_notification}>
-                                        <span onClick={() => scrollToBottomButton()}>
-                                            <BsChatLeftFill size={25} color='#7371fc' />
-                                            <span className={styles.text}>{notification}</span>
-                                        </span>
-                                        <RiArrowDownSLine
-                                            role='button'
-                                            size={27}
-                                            color='#7371fc'
-                                            onClick={() => scrollToBottomButton()}
-                                        />
-                                    </div>
-                                ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
-                                    <RiArrowDownSLine
-                                        size={27}
-                                        color='#7371fc'
-                                        onClick={() => scrollToBottomButton()}
-                                    />
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-
-                            <MessageInput
-                                currentUser={currentUser as string}
-                                message={messages[0]}
-                                room={
-                                    room === 'Current Pool'
-                                        ? currentPool.baseToken.symbol +
-                                          currentPool.quoteToken.symbol
-                                        : room
-                                }
-                                ensName={ens === null || ens === '' ? walletID : (ens as string)}
-                            />
-                            <div id='thelastmessage'></div>
-                        </div>
-                    </div>
-                </motion.div>
-            ) : (
-                // </div>
-                <></>
-            )}
-        </>
+                    {messageInput}
+                    <div id='thelastmessage' />
+                </div>
+            </div>
+        </div>
     );
 }

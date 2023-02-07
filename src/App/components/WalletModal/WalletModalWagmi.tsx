@@ -107,7 +107,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div className={styles.wall_buttons_container}>
             {connectors.map((connector) => (
                 <WalletButton
-                    title={`${connector.name} ${!connector.ready ? ' (unsupported)' : ''}  ${
+                    title={`${connector.name} ${!connector.ready ? ' (unavailable)' : ''}  ${
                         isLoading && connector.id === pendingConnector?.id ? ' (connecting)' : ''
                     }`}
                     disabled={!connector.ready}

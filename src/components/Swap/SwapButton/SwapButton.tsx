@@ -6,13 +6,20 @@ interface propsIF {
     onClickFn: () => void;
     swapAllowed: boolean;
     swapButtonErrorMessage: string;
+    isSwapConfirmationBypassEnabled: boolean;
 }
 
 export default function SwapButton(props: propsIF) {
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={props.swapAllowed ? 'Open Confirmation' : props.swapButtonErrorMessage}
+                title={
+                    props.isSwapConfirmationBypassEnabled
+                        ? 'Send Swap'
+                        : props.swapAllowed
+                        ? 'Open Confirmation'
+                        : props.swapButtonErrorMessage
+                }
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.swapAllowed}

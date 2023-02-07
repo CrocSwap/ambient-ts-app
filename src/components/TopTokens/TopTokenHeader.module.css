@@ -39,9 +39,9 @@
 }
 
 /* Mobile Landscape Screen Sizes */
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 580px) {
     .main_container {
-        grid-template-columns: 50px auto ;
+        grid-template-columns: 50px auto;
     }
     .token_logos {
         display: flex;
@@ -54,7 +54,7 @@
         display: none;
     }
     .header_container {
-        grid-template-columns: 100px auto ;
+        grid-template-columns: 100px auto;
     }
 
     .row {

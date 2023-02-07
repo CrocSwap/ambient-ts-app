@@ -149,7 +149,7 @@
     opacity: 0.2;
   } */
 }
-@media (min-width: 850px) {
+@media (min-width: 1200px) {
     .container {
         max-width: 420px;
     }
@@ -166,7 +166,7 @@
     }
 }
 
-@media only screen and (max-width: 850px) {
+@media only screen and (max-width: 1200px) {
     .main_content {
         background-color: var(--dark1);
 
@@ -181,14 +181,12 @@
     }
 }
 
-@media only screen and (max-width: 600px){
-    .main_content{
+@media only screen and (max-width: 600px) {
+    .main_content {
         overflow-y: scroll;
-      
+
         max-height: 75vh;
     }
-
-
 }
 
 /* @keyframes gradient {

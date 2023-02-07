@@ -15,6 +15,7 @@ interface SentMessageProps {
     resolvedAddress: string | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
+    isUserLoggedIn: boolean;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -71,8 +72,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         <span
                             key={index}
                             className={` ${
-                                word.slice(1) === props.name
-                                    ? styles.mention_message
+                                props.isUserLoggedIn
+                                    ? word.slice(1) === props.name
+                                        ? styles.mention_message
+                                        : styles.message
                                     : styles.message
                             }`}
                         >
@@ -91,10 +94,12 @@ export default function SentMessagePanel(props: SentMessageProps) {
     return (
         <div
             className={
-                props.message.isMentionMessage === false
-                    ? styles.sent_message_body
-                    : props.message.mentionedName.trim() === props.name.trim()
-                    ? styles.sent_message_body_with_mention
+                props.isUserLoggedIn
+                    ? props.message.isMentionMessage === false
+                        ? styles.sent_message_body
+                        : props.message.mentionedName?.trim() === props.name?.trim()
+                        ? styles.sent_message_body_with_mention
+                        : styles.sent_message_body
                     : styles.sent_message_body
             }
         >

@@ -40,7 +40,7 @@ export default function RoomDropdown(props: RoomProps) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray, setRoomArray] = useState<string[]>([]);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
-    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(false);
+    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
 
     const defaultRooms = [
@@ -75,11 +75,11 @@ export default function RoomDropdown(props: RoomProps) {
 
     useEffect(() => {
         if (isCurrentPool) {
-            setShowCurrentPoolButton(true);
-        } else {
             setShowCurrentPoolButton(false);
+        } else {
+            setShowCurrentPoolButton(true);
         }
-    }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
+    }, [isCurrentPool, currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
 
     useEffect(() => {
         const roomArr: string[] = [];
@@ -146,6 +146,7 @@ export default function RoomDropdown(props: RoomProps) {
             }
         } else {
             setIsCurrentPool(false);
+            setShowCurrentPoolButton(true);
         }
 
         handleDropdownMenu();
@@ -255,7 +256,7 @@ export default function RoomDropdown(props: RoomProps) {
                     {handleShowSelectedRoom(props.selectedRoom)}
                 </div>
                 <div onClick={() => handleDropdownMenu()}>
-                    <RiArrowDownSLine className={styles.star_icon} />
+                    <RiArrowDownSLine className={styles.star_icon} id='room dropdown' />
                 </div>
             </div>
             {isActive && (

@@ -116,6 +116,38 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         }
     };
 
+    // eslint-disable-next-line
+    function openEmojiPanel(e: any) {
+        if (e.keyCode === 88 && e.altKey) {
+            setShowEmojiPicker(true);
+        }
+    }
+
+    // eslint-disable-next-line
+    function closeEmojiPanel(e: any) {
+        if (e.keyCode === 81 && e.altKey) {
+            setShowEmojiPicker(false);
+        }
+    }
+
+    // eslint-disable-next-line
+    function openInfo(e: any) {
+        if (e.keyCode === 77 && e.ctrlKey) {
+            setShowEmojiPicker(true);
+            setIsInfoPressed(true);
+        }
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', openEmojiPanel);
+        document.body.addEventListener('keydown', closeEmojiPanel);
+        document.body.addEventListener('keydown', openInfo);
+
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', openEmojiPanel);
+        };
+    });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMsg = async (msg: string, roomId: any) => {
         if (msg === '' || !address) {
@@ -175,6 +207,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                             strokeLinecap='round'
                             strokeLinejoin='round'
                             className={styles.svgButton}
+                            id='send message button'
                         />
                         <title>Send Message</title>
                     </svg>
@@ -187,20 +220,24 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                             size={20}
                             title='Close Emoji Picker'
                             onClick={() => setShowEmojiPicker(false)}
+                            id='close emoji panel button'
                         />
                     </span>
                     <span
                         className={styles.emoji_close_button}
                         onClick={() => setIsInfoPressed(!isInfoPressed)}
                     >
-                        <RiInformationLine />
+                        <RiInformationLine title='Info' id='info' />
                     </span>
                     {isInfoPressed ? (
                         <ul>
-                            Keyboard Shortcuts
-                            <li>Ctrl + Alt + C - opens chat</li>
-                            <li>Ctrl + E - opens emoji panel when chat is open</li>
-                            <li>Ctrl + Esc - close emoji panel</li>
+                            <h5>Keyboard Shortcuts</h5>
+                            <hr></hr>
+                            <li>Ctrl + Alt + C - opens/closes chat</li>
+                            <li>Esc- closes chat</li>
+                            <li>Alt + X - opens emoji panel when chat is open</li>
+                            <li>Alt+ Q - close emoji panel</li>
+                            <li>Ctrl + M - opens info</li>
                             <li>Enter - sends message directly</li>
                         </ul>
                     ) : (
