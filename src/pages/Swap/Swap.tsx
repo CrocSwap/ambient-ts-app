@@ -87,8 +87,8 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
-    dontConfirm: boolean;
-    toggleDontConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function Swap(props: propsIF) {
@@ -133,8 +133,8 @@ export default function Swap(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        dontConfirm,
-        toggleDontConfirm
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -419,8 +419,8 @@ export default function Swap(props: propsIF) {
                 slippageTolerancePercentage={slippageTolerancePercentage}
                 effectivePrice={effectivePrice}
                 isSellTokenBase={isSellTokenBase}
-                dontConfirm={dontConfirm}
-                toggleDontConfirm={toggleDontConfirm}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </Modal>
     ) : null;
@@ -636,10 +636,8 @@ export default function Swap(props: propsIF) {
                             approvalButton
                         ) : (
                             <SwapButton
-                                onClickFn={
-                                    dontConfirm ? initiateSwap : openModal
-                                }
-                                isSwapConfirmationBypassEnabled={dontConfirm}
+                                onClickFn={bypassConfirm ? initiateSwap : openModal}
+                                isSwapConfirmationBypassEnabled={bypassConfirm}
                                 swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />

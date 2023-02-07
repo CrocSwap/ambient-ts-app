@@ -31,8 +31,8 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    dontConfirm: boolean;
-    toggleDontConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -52,8 +52,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
-        dontConfirm,
-        toggleDontConfirm
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
     // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
@@ -246,8 +246,8 @@ export default function ConfirmLimitModal(props: propsIF) {
             {extraInfoData}
             {explanationText}
             <ConfirmationModalControl
-                dontConfirm={dontConfirm}
-                toggleDontConfirm={toggleDontConfirm}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </div>
     );

@@ -15,7 +15,9 @@ export default function SwapButton(props: propsIF) {
             <Button
                 title={
                     props.isSwapConfirmationBypassEnabled
-                        ? 'Send Swap'
+                        ? props.swapAllowed
+                            ? 'Send Swap'
+                            : props.swapButtonErrorMessage
                         : props.swapAllowed
                         ? 'Open Confirmation'
                         : props.swapButtonErrorMessage

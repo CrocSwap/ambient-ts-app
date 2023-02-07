@@ -91,12 +91,12 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    if (!user.dontWarn) {
-        user.dontWarn = false;
+    if (!user.bypassConfirm) {
+        user.bypassConfirm = false;
         userUpdated = true;
     }
 
-    if (!user.dontWarn) {
+    if (!user.bypassConfirm) {
         const initialMap = new Map();
         const initialPairs = [
             ['global', false],
@@ -105,7 +105,7 @@ export default function initializeUserLocalStorage() {
             ['range', false],
         ];
         initialPairs.forEach((pair) => initialMap.set(pair[0], pair[1]));
-        user.dontWarn = JSON.stringify(Array.from(initialMap.entries()));
+        user.bypassConfirm = JSON.stringify(Array.from(initialMap.entries()));
         userUpdated = true;
     }
 

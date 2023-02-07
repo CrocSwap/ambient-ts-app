@@ -161,7 +161,7 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
-import { useDontWarn } from './hooks/useDontWarn';
+import { useBypassConfirm } from './hooks/useBypassConfirm';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -519,9 +519,9 @@ export default function App() {
         getImportedTokens();
     }, [tokenListsReceived]);
 
-    const [checkDontWarn, updateDontWarn] = useDontWarn();
-    false && checkDontWarn;
-    false && updateDontWarn;
+    const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
+    false && checkBypassConfirm;
+    false && updateBypassConfirm;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -2408,8 +2408,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
-        dontConfirm: checkDontWarn('swap'),
-        toggleDontConfirm: updateDontWarn
+        bypassConfirm: checkBypassConfirm('swap'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     // props for <Swap/> React element on trade route
@@ -2457,8 +2457,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
-        dontConfirm: checkDontWarn('swap'),
-        toggleDontConfirm: updateDontWarn
+        bypassConfirm: checkBypassConfirm('swap'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     // props for <Limit/> React element on trade route
@@ -2513,8 +2513,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
-        dontConfirm: checkDontWarn('limit'),
-        toggleDontConfirm: updateDontWarn
+        bypassConfirm: checkBypassConfirm('limit'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     // props for <Range/> React element
@@ -2573,8 +2573,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
-        dontConfirm: checkDontWarn('range'),
-        toggleDontConfirm: updateDontWarn
+        bypassConfirm: checkBypassConfirm('range'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     function toggleSidebar() {

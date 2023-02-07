@@ -1,15 +1,17 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
 
 interface propsIF {
-    dontConfirm: boolean;
-    toggleDontConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const { dontConfirm, toggleDontConfirm } = props;
+    const { bypassConfirm, toggleBypassConfirm } = props;
     const compKey = useId();
+
+    const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] = useState(bypassConfirm);
 
     // TODO:   @Junior  unless the `id` field is being used for DOM manipulation
     // TODO:   @Junior  ... or for CSS targeting, just take it out and use the
@@ -20,9 +22,13 @@ export default function ConfirmationModalControl(props: propsIF) {
             <p>Do not show this confirmation modal again</p>
             <Toggle2
                 key={compKey}
-                isOn={dontConfirm}
+                isOn={isBypassToggleEnabledLocal}
                 disabled={false}
-                handleToggle={() => toggleDontConfirm('swap', !dontConfirm)}
+                handleToggle={() => {
+                    console.log('setting to: ' + !isBypassToggleEnabledLocal);
+                    setIsBypassToggleEnabledLocal(!isBypassToggleEnabledLocal);
+                    toggleBypassConfirm('swap', !isBypassToggleEnabledLocal);
+                }}
                 id='disabled_confirmation_modal_toggle'
             />
         </div>

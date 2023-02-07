@@ -33,8 +33,8 @@ interface propsIF {
     slippageTolerancePercentage: number;
     effectivePrice: number;
     isSellTokenBase: boolean;
-    dontConfirm: boolean;
-    toggleDontConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -56,8 +56,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         slippageTolerancePercentage,
         effectivePrice,
         isSellTokenBase,
-        dontConfirm,
-        toggleDontConfirm
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -230,8 +230,8 @@ export default function ConfirmSwapModal(props: propsIF) {
             {extraInfoData}
             {/* {explanationText} */}
             <ConfirmationModalControl
-                dontConfirm={dontConfirm}
-                toggleDontConfirm={toggleDontConfirm}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </div>
     );
