@@ -1165,246 +1165,296 @@ export default function Chart(props: ChartData) {
                         .style('visibility', 'hidden');
                 })
                 .on('zoom', (event: any) => {
-                    if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
-                        getNewCandleData(event, date, scaleData.xScale);
+                    async function newDomains(parsedChartData: any) {
+                        if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
+                            getNewCandleData(event, date, scaleData.xScale);
 
-                        if (event.sourceEvent.type === 'wheel') {
-                            const dx = event.sourceEvent.deltaY / 2;
+                            if (event.sourceEvent.type === 'wheel') {
+                                const dx = event.sourceEvent.deltaY / 2;
 
-                            const domainX = scaleData.xScale.domain();
-                            const linearX = d3
-                                .scaleTime()
-                                .domain(scaleData.xScale.range())
-                                .range([0, domainX[1] - domainX[0]]);
+                                const domainX = scaleData.xScale.domain();
+                                const linearX = d3
+                                    .scaleTime()
+                                    .domain(scaleData.xScale.range())
+                                    .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(dx);
+                                const deltaX = linearX(dx);
 
-                            if (event.sourceEvent.shiftKey) {
-                                scaleData.xScale.domain([
-                                    new Date(domainX[0].getTime() + deltaX),
-                                    new Date(domainX[1].getTime() + deltaX),
-                                ]);
-                            } else {
-                                if (
-                                    (deltaX < 0 ||
-                                        Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
-                                            parsedChartData.period * 1000 * 300) &&
-                                    (deltaX > 0 ||
-                                        Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
-                                            parsedChartData.period * 1000 * 2)
-                                ) {
+                                if (event.sourceEvent.shiftKey) {
+                                    scaleData.xScale.domain([
+                                        new Date(domainX[0].getTime() + deltaX),
+                                        new Date(domainX[1].getTime() + deltaX),
+                                    ]);
+                                } else {
                                     if (
-                                        (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
-                                        (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
+                                        (deltaX < 0 ||
+                                            Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
+                                                parsedChartData.period * 1000 * 300) &&
+                                        (deltaX > 0 ||
+                                            Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
+                                                parsedChartData.period * 1000 * 2)
                                     ) {
-                                        const newBoundary = new Date(domainX[0].getTime() - deltaX);
-                                        const lastXIndex = parsedChartData.chartData.findIndex(
-                                            (d) =>
-                                                d.date ===
-                                                d3.max(
-                                                    parsedChartData.chartData,
-                                                    (d: any) => d.date,
-                                                ),
-                                        );
-
                                         if (
-                                            newBoundary.getTime() >
-                                            parsedChartData.chartData[lastXIndex].date.getTime() -
-                                                parsedChartData.period * 1000 * 2
+                                            (!event.sourceEvent.ctrlKey ||
+                                                event.sourceEvent.metaKey) &&
+                                            (event.sourceEvent.ctrlKey ||
+                                                !event.sourceEvent.metaKey)
                                         ) {
-                                            scaleData.xScale.domain([
-                                                new Date(
-                                                    parsedChartData.chartData[
-                                                        lastXIndex + 1
-                                                    ].date.getTime() -
-                                                        parsedChartData.period * 500,
-                                                ),
-                                                new Date(domainX[1].getTime() + deltaX),
-                                            ]);
+                                            const newBoundary = new Date(
+                                                domainX[0].getTime() - deltaX,
+                                            );
+                                            const lastXIndex = parsedChartData.chartData.findIndex(
+                                                (d: any) =>
+                                                    d.date ===
+                                                    d3.max(
+                                                        parsedChartData.chartData,
+                                                        (d: any) => d.date,
+                                                    ),
+                                            );
+
+                                            if (
+                                                newBoundary.getTime() >
+                                                parsedChartData.chartData[
+                                                    lastXIndex
+                                                ].date.getTime() -
+                                                    parsedChartData.period * 1000 * 2
+                                            ) {
+                                                scaleData.xScale.domain([
+                                                    new Date(
+                                                        parsedChartData.chartData[
+                                                            lastXIndex + 1
+                                                        ].date.getTime() -
+                                                            parsedChartData.period * 500,
+                                                    ),
+                                                    new Date(domainX[1].getTime() + deltaX),
+                                                ]);
+                                            } else {
+                                                scaleData.xScale.domain([newBoundary, domainX[1]]);
+                                            }
                                         } else {
-                                            scaleData.xScale.domain([newBoundary, domainX[1]]);
+                                            const gapTop =
+                                                domainX[1].getTime() -
+                                                scaleData.xScale
+                                                    .invert(event.sourceEvent.offsetX)
+                                                    .getTime();
+                                            const gapBot =
+                                                scaleData.xScale
+                                                    .invert(event.sourceEvent.offsetX)
+                                                    .getTime() - domainX[0].getTime();
+
+                                            const minGap = Math.min(gapTop, gapBot);
+                                            const maxGap = Math.max(gapTop, gapBot);
+                                            const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                                            if (gapBot < gapTop) {
+                                                scaleData.xScale.domain([
+                                                    new Date(domainX[0].getTime() - baseMovement),
+                                                    new Date(
+                                                        domainX[1].getTime() +
+                                                            baseMovement * (maxGap / minGap),
+                                                    ),
+                                                ]);
+                                            } else {
+                                                scaleData.xScale.domain([
+                                                    new Date(
+                                                        domainX[0].getTime() -
+                                                            baseMovement * (maxGap / minGap),
+                                                    ),
+                                                    new Date(domainX[1].getTime() + baseMovement),
+                                                ]);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                const domainX = scaleData.xScale.domain();
+                                const linearX = d3
+                                    .scaleTime()
+                                    .domain(scaleData.xScale.range())
+                                    .range([0, domainX[1] - domainX[0]]);
+
+                                let deltaX;
+                                if (event.sourceEvent.type === 'touchmove') {
+                                    // mobile
+                                    const touch = event.sourceEvent.changedTouches[0];
+                                    const _currentPageX = touch.pageX;
+                                    const previousTouchPageX = previousTouch.pageX;
+                                    const _movementX = _currentPageX - previousTouchPageX;
+
+                                    deltaX = linearX(-_movementX);
+                                } else {
+                                    deltaX = linearX(-event.sourceEvent.movementX);
+                                }
+
+                                if (deltaX) {
+                                    scaleData.xScale.domain([
+                                        new Date(domainX[0].getTime() + deltaX),
+                                        new Date(domainX[1].getTime() + deltaX),
+                                    ]);
+                                }
+                            }
+                            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+                            const filtered = parsedChartData?.chartData.filter(
+                                (data: any) => data.date >= xmin && data.date <= xmax,
+                            );
+
+                            if (rescale && filtered && filtered?.length > 10) {
+                                if (filtered !== undefined) {
+                                    const low = ranges.filter(
+                                        (target: any) => target.name === 'Min',
+                                    )[0].value;
+                                    const high = ranges.filter(
+                                        (target: any) => target.name === 'Max',
+                                    )[0].value;
+
+                                    const minYBoundary: any = d3.min(filtered, (d: any) => d.low);
+                                    const maxYBoundary: any = d3.max(filtered, (d: any) => d.high);
+
+                                    if (
+                                        location.pathname.includes('range') ||
+                                        location.pathname.includes('reposition')
+                                    ) {
+                                        if (
+                                            maxYBoundary !== undefined &&
+                                            minYBoundary !== undefined
+                                        ) {
+                                            const buffer =
+                                                poolPriceDisplay !== undefined
+                                                    ? poolPriceDisplay / 50
+                                                    : 0;
+                                            scaleData.yScale.domain([
+                                                Math.min(low, minYBoundary) - buffer,
+                                                Math.max(high, maxYBoundary) + buffer,
+                                            ]);
                                         }
                                     } else {
-                                        const gapTop =
-                                            domainX[1].getTime() -
-                                            scaleData.xScale
-                                                .invert(event.sourceEvent.offsetX)
-                                                .getTime();
-                                        const gapBot =
-                                            scaleData.xScale
-                                                .invert(event.sourceEvent.offsetX)
-                                                .getTime() - domainX[0].getTime();
+                                        if (
+                                            maxYBoundary !== undefined &&
+                                            minYBoundary !== undefined
+                                        ) {
+                                            const buffer = Math.abs(
+                                                (maxYBoundary - minYBoundary) / 6,
+                                            );
 
-                                        const minGap = Math.min(gapTop, gapBot);
-                                        const maxGap = Math.max(gapTop, gapBot);
-                                        const baseMovement = deltaX / (maxGap / minGap + 1);
-
-                                        if (gapBot < gapTop) {
-                                            scaleData.xScale.domain([
-                                                new Date(domainX[0].getTime() - baseMovement),
-                                                new Date(
-                                                    domainX[1].getTime() +
-                                                        baseMovement * (maxGap / minGap),
-                                                ),
-                                            ]);
-                                        } else {
-                                            scaleData.xScale.domain([
-                                                new Date(
-                                                    domainX[0].getTime() -
-                                                        baseMovement * (maxGap / minGap),
-                                                ),
-                                                new Date(domainX[1].getTime() + baseMovement),
+                                            scaleData.yScale.domain([
+                                                minYBoundary - buffer,
+                                                maxYBoundary + buffer / 2,
                                             ]);
                                         }
                                     }
                                 }
                             }
-                        } else {
-                            const domainX = scaleData.xScale.domain();
-                            const linearX = d3
-                                .scaleTime()
-                                .domain(scaleData.xScale.range())
-                                .range([0, domainX[1] - domainX[0]]);
 
-                            let deltaX;
-                            if (event.sourceEvent.type === 'touchmove') {
-                                // mobile
-                                const touch = event.sourceEvent.changedTouches[0];
-                                deltaX = linearX(-(touch.pageX - previousTouch.pageX) / 5);
-                            } else {
-                                deltaX = linearX(-event.sourceEvent.movementX);
-                            }
+                            // PANNING
+                            if (
+                                !rescale &&
+                                event.sourceEvent &&
+                                event.sourceEvent.type != 'wheel'
+                            ) {
+                                const domainY = scaleData.yScale.domain();
+                                const linearY = d3
+                                    .scaleLinear()
+                                    .domain(scaleData.yScale.range())
+                                    .range([domainY[1] - domainY[0], 0]);
+                                let deltaY;
+                                if (event.sourceEvent.type === 'touchmove') {
+                                    const touch = event.sourceEvent.changedTouches[0];
 
-                            if (deltaX) {
-                                scaleData.xScale.domain([
-                                    new Date(domainX[0].getTime() + deltaX),
-                                    new Date(domainX[1].getTime() + deltaX),
-                                ]);
-                            }
-                        }
-                        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                                    const _currentPageY = touch.pageY;
+                                    const previousTouchPageY = previousTouch.pageY;
+                                    const _movementY = _currentPageY - previousTouchPageY;
 
-                        const filtered = parsedChartData?.chartData.filter(
-                            (data: any) => data.date >= xmin && data.date <= xmax,
-                        );
-
-                        if (rescale && filtered && filtered?.length > 10) {
-                            if (filtered !== undefined) {
-                                const low = ranges.filter((target: any) => target.name === 'Min')[0]
-                                    .value;
-                                const high = ranges.filter(
-                                    (target: any) => target.name === 'Max',
-                                )[0].value;
-
-                                const minYBoundary = d3.min(filtered, (d) => d.low);
-                                const maxYBoundary = d3.max(filtered, (d) => d.high);
-
-                                if (
-                                    location.pathname.includes('range') ||
-                                    location.pathname.includes('reposition')
-                                ) {
-                                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
-                                        const buffer =
-                                            poolPriceDisplay !== undefined
-                                                ? poolPriceDisplay / 50
-                                                : 0;
-                                        scaleData.yScale.domain([
-                                            Math.min(low, minYBoundary) - buffer,
-                                            Math.max(high, maxYBoundary) + buffer,
-                                        ]);
-                                    }
+                                    deltaY = linearY(_movementY);
                                 } else {
-                                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
-                                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                                    deltaY = linearY(event.sourceEvent.movementY);
+                                }
 
-                                        scaleData.yScale.domain([
-                                            minYBoundary - buffer,
-                                            maxYBoundary + buffer / 2,
-                                        ]);
+                                if (deltaY) {
+                                    scaleData.yScale.domain([
+                                        domainY[0] + deltaY,
+                                        domainY[1] + deltaY,
+                                    ]);
+
+                                    scaleData.yScaleIndicator.range([
+                                        event.sourceEvent.offsetY,
+                                        scaleData.yScale(poolPriceDisplay),
+                                    ]);
+                                }
+
+                                const topPlacement =
+                                    event.sourceEvent.y -
+                                    80 -
+                                    (event.sourceEvent.offsetY -
+                                        scaleData.yScale(poolPriceDisplay)) /
+                                        2;
+
+                                liqTooltip
+                                    .style(
+                                        'top',
+                                        topPlacement > 500
+                                            ? 500
+                                            : (topPlacement < 115 ? 115 : topPlacement) + 'px',
+                                    )
+                                    .style('left', event.sourceEvent.offsetX - 80 + 'px');
+
+                                if (isAdvancedModeActive && liquidityData) {
+                                    const liqAllBidPrices = liquidityData.liqBidData.map(
+                                        (liqPrices: any) => liqPrices.liqPrices,
+                                    );
+                                    const liqBidDeviation = standardDeviation(liqAllBidPrices);
+
+                                    while (
+                                        scaleData.yScale.domain()[1] + liqBidDeviation >=
+                                        liquidityData.liqBidData[0].liqPrices
+                                    ) {
+                                        liquidityData.liqBidData.unshift({
+                                            activeLiq: 30,
+                                            liqPrices:
+                                                liquidityData.liqBidData[0].liqPrices +
+                                                liqBidDeviation,
+                                            deltaAverageUSD: 0,
+                                            cumAverageUSD: 0,
+                                        });
+
+                                        liquidityData.depthLiqBidData.unshift({
+                                            activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                                            liqPrices:
+                                                liquidityData.depthLiqBidData[0].liqPrices +
+                                                liqBidDeviation,
+                                            deltaAverageUSD: 0,
+                                            cumAverageUSD: 0,
+                                        });
                                     }
+                                    setLiqHighlightedLinesAndArea(ranges);
                                 }
                             }
+
+                            clickedForLine = true;
+                            setBandwidth(candlestick.bandwidth());
+                            render();
+                            renderCanvas();
+
+                            const nearest = snapForCandle(event.sourceEvent);
+                            setCrosshairForSubChart((prevState) => {
+                                const newData = [...prevState];
+
+                                newData[0].x = nearest?.date;
+
+                                return newData;
+                            });
+
+                            setZoomAndYdragControl(event);
                         }
-
-                        // PANNING
-                        if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                            const domainY = scaleData.yScale.domain();
-                            const linearY = d3
-                                .scaleLinear()
-                                .domain(scaleData.yScale.range())
-                                .range([domainY[1] - domainY[0], 0]);
-
-                            const deltaY = linearY(event.sourceEvent.movementY);
-                            scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
-
-                            scaleData.yScaleIndicator.range([
-                                event.sourceEvent.offsetY,
-                                scaleData.yScale(poolPriceDisplay),
-                            ]);
-
-                            const topPlacement =
-                                event.sourceEvent.y -
-                                80 -
-                                (event.sourceEvent.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                    2;
-
-                            liqTooltip
-                                .style(
-                                    'top',
-                                    topPlacement > 500
-                                        ? 500
-                                        : (topPlacement < 115 ? 115 : topPlacement) + 'px',
-                                )
-                                .style('left', event.sourceEvent.offsetX - 80 + 'px');
-
-                            if (isAdvancedModeActive && liquidityData) {
-                                const liqAllBidPrices = liquidityData.liqBidData.map(
-                                    (liqPrices: any) => liqPrices.liqPrices,
-                                );
-                                const liqBidDeviation = standardDeviation(liqAllBidPrices);
-
-                                while (
-                                    scaleData.yScale.domain()[1] + liqBidDeviation >=
-                                    liquidityData.liqBidData[0].liqPrices
-                                ) {
-                                    liquidityData.liqBidData.unshift({
-                                        activeLiq: 30,
-                                        liqPrices:
-                                            liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
-                                        deltaAverageUSD: 0,
-                                        cumAverageUSD: 0,
-                                    });
-
-                                    liquidityData.depthLiqBidData.unshift({
-                                        activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
-                                        liqPrices:
-                                            liquidityData.depthLiqBidData[0].liqPrices +
-                                            liqBidDeviation,
-                                        deltaAverageUSD: 0,
-                                        cumAverageUSD: 0,
-                                    });
-                                }
-                                setLiqHighlightedLinesAndArea(ranges);
-                            }
-                        }
-
-                        clickedForLine = true;
-                        setBandwidth(candlestick.bandwidth());
-                        render();
-                        renderCanvas();
-
-                        const nearest = snapForCandle(event.sourceEvent);
-                        setCrosshairForSubChart((prevState) => {
-                            const newData = [...prevState];
-
-                            newData[0].x = nearest?.date;
-
-                            return newData;
-                        });
-
-                        setZoomAndYdragControl(event);
                     }
+
+                    newDomains(parsedChartData).then(() => {
+                        // mobile
+                        if (event.sourceEvent.type.includes('touch')) {
+                            previousTouch = event.sourceEvent.changedTouches[0];
+                        }
+                    });
                 })
                 .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -1479,7 +1529,11 @@ export default function Chart(props: ChartData) {
 
             const yAxisZoom = d3
                 .zoom()
-                .on('start', () => {
+                .on('start', (event) => {
+                    if (event.sourceEvent.type.includes('touch')) {
+                        // mobile
+                        previousTouch = event.sourceEvent.changedTouches[0];
+                    }
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
@@ -1518,9 +1572,20 @@ export default function Chart(props: ChartData) {
                 })
                 .on('zoom', async (event: any) => {
                     const domainY = scaleData.yScale.domain();
-                    const center = (domainY[1] + domainY[0]) / 2;
+                    const center =
+                        domainY[1] !== domainY[0] ? (domainY[1] + domainY[0]) / 2 : domainY[0] / 2;
+                    let deltaY;
+                    if (event.sourceEvent.type === 'touchmove') {
+                        const touch = event.sourceEvent.changedTouches[0];
 
-                    const deltaY = event.sourceEvent.movementY / 1.5;
+                        const _currentPageY = touch.pageY;
+                        const previousTouchPageY = previousTouch.pageY;
+                        const _movementY = _currentPageY - previousTouchPageY;
+                        deltaY = _movementY;
+                    } else {
+                        deltaY = event.sourceEvent.movementY / 1.5;
+                    }
+
                     const dy = event.sourceEvent.deltaY / 3;
 
                     const factor = Math.pow(
@@ -1529,13 +1594,17 @@ export default function Chart(props: ChartData) {
                             ? -dy * 0.003
                             : event.sourceEvent.type === 'mousemove'
                             ? -deltaY * 0.003
+                            : event.sourceEvent.type === 'touchmove'
+                            ? -deltaY * 0.005
                             : 1,
                     );
 
                     const size = (domainY[1] - domainY[0]) / 2 / factor;
-
                     await scaleData.yScale.domain([center - size, center + size]);
-
+                    if (event.sourceEvent.type.includes('touch')) {
+                        // mobile
+                        previousTouch = event.sourceEvent.changedTouches[0];
+                    }
                     if (isAdvancedModeActive && liquidityData) {
                         const liqAllBidPrices = liquidityData.liqBidData.map(
                             (liqPrices: any) => liqPrices.liqPrices,
