@@ -666,7 +666,11 @@ export default function TransactionRow(props: propsIF) {
                     onClick={openDetailsModal}
                 >
                     <p>{type}</p>
-                    <p>{`${sideType} ${sideCharacter}`}</p>
+                    <p>
+                        {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                            ? `${sideType}`
+                            : `${sideType} ${sideCharacter}`}
+                    </p>
                 </li>
             )}
             {usdValueWithTooltip}

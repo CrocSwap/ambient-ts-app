@@ -365,7 +365,11 @@ export const useProcessTransaction = (
                 ? 'claim'
                 : 'remove'
             : isOnPortfolioPage
-            ? isBuy
+            ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBuy
+                    ? 'sell'
+                    : 'buy'
+                : isBuy
                 ? 'buy'
                 : 'sell'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
