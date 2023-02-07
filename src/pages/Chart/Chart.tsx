@@ -1184,7 +1184,10 @@ export default function Chart(props: ChartData) {
                                             (!event.sourceEvent.ctrlKey ||
                                                 event.sourceEvent.metaKey) &&
                                             (event.sourceEvent.ctrlKey ||
-                                                !event.sourceEvent.metaKey)
+                                                !event.sourceEvent.metaKey) &&
+                                            (event.sourceEvent.type === 'touchmove'
+                                                ? event.sourceEvent.changedTouches.length > 1
+                                                : true)
                                         ) {
                                             const newBoundary = new Date(
                                                 domainX[0].getTime() - deltaX,
