@@ -1,11 +1,9 @@
 import styles from './PriceInfo.module.css';
-import Row from '../../Global/Row/Row';
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import Divider from '../../Global/Divider/Divider';
-import { motion } from 'framer-motion';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 type ItemIF = {
@@ -35,25 +33,19 @@ interface propsIF {
 }
 
 export default function PriceInfo(props: propsIF) {
-    const {
-        account,
-        limitOrder,
-        isOrderFilled,
-        controlItems,
-        usdValue,
-        baseCollateralDisplay,
-        quoteCollateralDisplay,
-    } = props;
+    const { account, limitOrder, isOrderFilled } = props;
     // const dispatch = useAppDispatch();
     const {
         // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        startPriceDisplay,
-        finishPriceDisplay,
+
+        usdValue,
 
         // bidTick,
         // askTick,
@@ -64,84 +56,6 @@ export default function PriceInfo(props: propsIF) {
         // positionLiquidity,
     } = useProcessOrder(limitOrder, account);
 
-    const liquidityContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <p>{isOrderFilled ? 'Claimable Liquidity' : 'Removable Liquidity'}</p>
-            <Row>
-                <div className={styles.align_center}>
-                    <img src={baseTokenLogo} alt='' width='20px' />
-                    {baseTokenSymbol}
-                </div>
-
-                <div className={styles.info_text}>{baseCollateralDisplay}</div>
-            </Row>
-            <Row>
-                <div className={styles.align_center}>
-                    <img src={quoteTokenLogo} alt='' width='20px' />
-                    {quoteTokenSymbol}
-                </div>
-                <div className={styles.info_text}>{quoteCollateralDisplay}</div>
-            </Row>
-            {/*  */}
-            {/* <Divider /> */}
-            {/* <div className={styles.divider}></div> */}
-            {/* <Row>
-                <span> Total Liquidity</span>
-                <div className={styles.info_text}>
-                    {positionLiqTotalUSD ? positionLiqTotalUSD.toFixed(2) : '...'}
-                </div>
-            </Row>
-            <Row>
-                <span> Liquidity Wei </span>
-                <div className={styles.info_text}>
-                    {positionLiquidity ? parseFloat(positionLiquidity).toFixed(2) : '...'}
-                </div>
-            </Row> */}
-            {/*  */}
-        </motion.div>
-    );
-
-    // const tickContent = (
-    //     <motion.div
-    //         layout
-    //         initial={{ opacity: 0 }}
-    //         animate={{ opacity: 1 }}
-    //         exit={{ opacity: 0 }}
-    //         className={styles.info_container}
-    //     >
-    //         <Row>
-    //             <span>Bid Tick</span>
-    //             <div className={styles.info_text}>{bidTick}</div>
-    //         </Row>
-
-    //         <Row>
-    //             <span>Ask Tick</span>
-    //             <div className={styles.info_text}>{askTick}</div>
-    //         </Row>
-    //     </motion.div>
-    // );
-
-    const totalValueContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <span>Current Value</span>
-                <div className={styles.info_text}>${usdValue}</div>
-            </Row>
-        </motion.div>
-    );
-
     const tokenPairDetails = (
         <div
             className={styles.token_pair_details_container}
@@ -149,31 +63,6 @@ export default function PriceInfo(props: propsIF) {
                 // dispatch(toggleDidUserFlipDenom());
             }}
         >
-            <div className={styles.token_pair_images}>
-                <div>
-                    {isDenomBase && baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                    ) : isDenomBase && !baseTokenLogo ? (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
-                    ) : !isDenomBase && quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
-                    )}
-                </div>
-                <div>
-                    {isDenomBase && quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                    ) : isDenomBase && !quoteTokenLogo ? (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
-                    ) : !isDenomBase && baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
-                    )}
-                </div>
-                {/* <img src={isDenomBase ? quoteTokenLogo : baseTokenLogo} alt={quoteTokenSymbol} /> */}
-            </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
@@ -181,77 +70,68 @@ export default function PriceInfo(props: propsIF) {
         </div>
     );
 
-    const startFinishPriceDisplay = (
-        <div className={styles.min_max_price}>
-            <div className={styles.min_max_content}>
-                Start Price
-                <span className={styles.min_price}>
-                    {startPriceDisplay ? startPriceDisplay : '...'}
-                    {/* {lowPriceDisplay ? parseFloat(lowPriceDisplay).toFixed(2) : 0} */}
-                </span>
-            </div>
-            <div className={styles.min_max_content}>
-                Finish Price
-                <span className={styles.max_price}>
-                    {finishPriceDisplay ? finishPriceDisplay : '...'}
-                    {/* {highPriceDisplay ? parseFloat(highPriceDisplay).toFixed(2) : 'Infinity'} */}
-                </span>
-            </div>
+    const orderType = (
+        <div className={styles.order_type}>
+            <p>Order Type:</p>
+            <p>Limit</p>
         </div>
     );
-    // console.log(controlItems);
+    const totalValue = (
+        <div className={styles.order_type}>
+            <p>Total Value:</p>
+            <p>${usdValue}</p>
+        </div>
+    );
+    const buyContent = (
+        <div className={styles.buy_content}>
+            <p>Buy:</p>
+            <p>
+                {baseDisplayFrontend}
+                {baseTokenLogo ? (
+                    <img src={baseTokenLogo} alt='base token' />
+                ) : (
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
+                )}
+            </p>
+        </div>
+    );
+    const sellContent = (
+        <div className={styles.sell_content}>
+            <p>Sell:</p>
+            <p>
+                {quoteDisplayFrontend}
+                {quoteTokenLogo ? (
+                    <img src={quoteTokenLogo} alt='quote token' />
+                ) : (
+                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                )}
+            </p>
+        </div>
+    );
 
-    const isBid = limitOrder.isBid;
+    const priceStatusContent = (
+        <div className={styles.price_status_content}>
+            <section>
+                <p>Price:</p>
+                <h2>$1,571.90</h2>
+            </section>
 
-    const descriptionContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <span>
-                {`This limit order ${
-                    isOrderFilled ? 'completed' : 'will complete'
-                }  execution and  ${
-                    isOrderFilled ? 'became' : 'become'
-                } claimable when the price of ${isDenomBase ? baseTokenSymbol : quoteTokenSymbol}
-                ${
-                    isDenomBase
-                        ? isOrderFilled
-                            ? isBid
-                                ? 'increased'
-                                : 'decreased'
-                            : isBid
-                            ? 'increases'
-                            : 'decreases'
-                        : isOrderFilled
-                        ? isBid
-                            ? 'decreased'
-                            : 'increased'
-                        : isBid
-                        ? 'decreases'
-                        : 'increases'
-                } to  ${finishPriceDisplay} ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}.`}
-            </span>
-        </motion.div>
+            <section>
+                <p>Status:</p>
+                <OpenOrderStatus isFilled={isOrderFilled} />
+            </section>
+        </div>
     );
 
     return (
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
-                <Divider />
-                {controlItems[2] && totalValueContent}
-                {/* {controlItems[0] && tickContent} */}
-                <Divider />
-                {controlItems[1] && liquidityContent}
-                <Divider />
-                {startFinishPriceDisplay}
-                <Divider />
-                {descriptionContent}
-                <Divider />
+                {orderType}
+                {totalValue}
+                {buyContent}
+                {sellContent}
+                {priceStatusContent}
             </div>
         </div>
     );
