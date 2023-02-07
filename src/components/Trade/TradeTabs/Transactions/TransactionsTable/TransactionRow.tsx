@@ -104,8 +104,8 @@ export default function TransactionRow(props: propsIF) {
 
     const sideCharacter = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
-            ? baseTokenCharacter
-            : quoteTokenCharacter
+            ? quoteTokenCharacter
+            : baseTokenCharacter
         : isDenomBase
         ? baseTokenCharacter
         : quoteTokenCharacter;

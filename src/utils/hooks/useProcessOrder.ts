@@ -6,7 +6,11 @@ import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
-export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
+export const useProcessOrder = (
+    limitOrder: LimitOrderIF,
+    account: string,
+    isOnPortfolioPage = false,
+) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = 'https://goerli.etherscan.io/';
 
@@ -164,13 +168,21 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
         }
     }, [JSON.stringify(limitOrder), isDenomBase]);
 
-    const priceType =
-        (isDenomBase && !limitOrder.isBid) || (!isDenomBase && limitOrder.isBid)
-            ? 'priceBuy'
-            : 'priceSell';
+    const isBid = limitOrder.isBid;
 
-    const side =
-        (isDenomBase && !limitOrder.isBid) || (!isDenomBase && limitOrder.isBid) ? 'buy' : 'sell';
+    const priceType = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'priceBuy' : 'priceSell';
+
+    const sideType = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? isBid
+                ? 'buy'
+                : 'sell'
+            : isBid
+            ? 'sell'
+            : 'buy'
+        : (isDenomBase && isBid) || (!isDenomBase && !isBid)
+        ? 'sell'
+        : 'buy';
 
     const type = 'order';
 
@@ -368,7 +380,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
         truncatedDisplayPriceDenomByMoneyness,
 
         // Order type and side data
-        side,
+        sideType,
         type,
 
         // Value data
