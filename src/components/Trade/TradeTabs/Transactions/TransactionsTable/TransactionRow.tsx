@@ -98,7 +98,7 @@ export default function TransactionRow(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
 
@@ -693,7 +693,6 @@ export default function TransactionRow(props: propsIF) {
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {' '}
                         {isBuy
                             ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
                             : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
