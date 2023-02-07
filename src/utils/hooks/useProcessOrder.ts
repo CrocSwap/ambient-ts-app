@@ -166,7 +166,7 @@ export const useProcessOrder = (
             setStartPriceDisplay(startPriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
-    }, [JSON.stringify(limitOrder), isDenomBase]);
+    }, [JSON.stringify(limitOrder), isDenomBase, isOnPortfolioPage]);
 
     const isBid = limitOrder.isBid;
 
