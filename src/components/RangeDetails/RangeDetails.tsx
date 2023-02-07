@@ -15,6 +15,7 @@ import RangeStatus from '../Global/RangeStatus/RangeStatus';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -39,11 +40,14 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     positionApy: number;
+    account: string;
 
     closeGlobalModal: () => void;
 }
 
 export default function RangeDetails(props: propsIF) {
+    const [showShareComponent, setShowShareComponent] = useState(false);
+
     const {
         crocEnv,
         baseTokenAddress,
@@ -64,6 +68,7 @@ export default function RangeDetails(props: propsIF) {
         isPositionInRange,
         isAmbient,
         cachedQuerySpotPrice,
+        account,
     } = props;
 
     const detailsRef = useRef(null);
@@ -281,6 +286,35 @@ export default function RangeDetails(props: propsIF) {
         </div>
     ) : null;
 
+    const shareComponent = (
+        <div className={styles.main_content}>
+            <div className={styles.left_container}>
+                <PriceInfo
+                    poolPriceDisplay={poolPriceDisplay}
+                    usdValue={usdValue ?? '…'}
+                    lowRangeDisplay={lowRangeDisplay}
+                    highRangeDisplay={highRangeDisplay}
+                    baseCollateralDisplay={baseCollateralDisplay}
+                    quoteCollateralDisplay={quoteCollateralDisplay}
+                    baseFeesDisplay={baseFeesDisplay}
+                    quoteFeesDisplay={quoteFeesDisplay}
+                    baseTokenLogoURI={baseTokenLogoURI}
+                    quoteTokenLogoURI={quoteTokenLogoURI}
+                    baseTokenSymbol={props.baseTokenSymbol}
+                    quoteTokenSymbol={props.quoteTokenSymbol}
+                    isDenomBase={props.isDenomBase}
+                    controlItems={controlItems}
+                    isAmbient={isAmbient}
+                />
+            </div>
+            <div className={styles.right_container}>
+                <APYGraphDisplay updatedPositionApy={updatedPositionApy} position={position} />
+            </div>
+            <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} fullText />
+            <RangeDetailsActions />
+        </div>
+    );
+
     return (
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
@@ -288,39 +322,14 @@ export default function RangeDetails(props: propsIF) {
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
+                showShareComponent={showShareComponent}
+                setShowShareComponent={setShowShareComponent}
             />
-            {controlDisplay}
-            <div ref={detailsRef}>
-                <div className={styles.main_content}>
-                    <div className={styles.left_container}>
-                        <PriceInfo
-                            poolPriceDisplay={poolPriceDisplay}
-                            usdValue={usdValue ?? '…'}
-                            lowRangeDisplay={lowRangeDisplay}
-                            highRangeDisplay={highRangeDisplay}
-                            baseCollateralDisplay={baseCollateralDisplay}
-                            quoteCollateralDisplay={quoteCollateralDisplay}
-                            baseFeesDisplay={baseFeesDisplay}
-                            quoteFeesDisplay={quoteFeesDisplay}
-                            baseTokenLogoURI={baseTokenLogoURI}
-                            quoteTokenLogoURI={quoteTokenLogoURI}
-                            baseTokenSymbol={props.baseTokenSymbol}
-                            quoteTokenSymbol={props.quoteTokenSymbol}
-                            isDenomBase={props.isDenomBase}
-                            controlItems={controlItems}
-                            isAmbient={isAmbient}
-                        />
-                    </div>
-                    <div className={styles.right_container}>
-                        <APYGraphDisplay
-                            updatedPositionApy={updatedPositionApy}
-                            position={position}
-                        />
-                    </div>
-                    <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} fullText />
-                    <RangeDetailsActions />
-                </div>
-            </div>
+            {showShareComponent ? (
+                shareComponent
+            ) : (
+                <RangeDetailsSimplify account={account} position={position} />
+            )}
         </div>
     );
 }

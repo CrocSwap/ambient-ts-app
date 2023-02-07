@@ -11,10 +11,20 @@ interface RangeDetailsPropsIF {
     downloadAsImage: () => void;
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
+    showShareComponent: boolean;
+    setShowShareComponent: Dispatch<SetStateAction<boolean>>;
 }
 export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
-    const { onClose, showSettings, setShowSettings, downloadAsImage } = props;
+    const {
+        onClose,
+        showSettings,
+        setShowSettings,
+        downloadAsImage,
+        showShareComponent,
+        setShowShareComponent,
+    } = props;
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
 
     const [value, copy] = useCopyToClipboard();
 
@@ -34,29 +44,40 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     );
 
     return (
-        <div className={styles.container} style={{ padding: !showSettings ? '1rem 0' : '0' }}>
-            <section>
+        <div className={styles.container}>
+            <section className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' width='35px' />
                 <span className={styles.ambient_title}>ambient</span>
             </section>
 
-            <section className={styles.ambient_text}>ambient.finance</section>
-
             <section className={styles.settings_control}>
-                <div onClick={() => setShowSettings(!showSettings)}>
-                    <FiSettings />
-                </div>
-                <div onClick={handleCopyAddress}>
-                    <FiCopy />
-                </div>
-                <div onClick={downloadAsImage}>
-                    <FiDownload />
-                </div>
+                <button
+                    className={styles.info_button}
+                    onClick={() => setShowShareComponent(!showShareComponent)}
+                >
+                    {showShareComponent ? 'Info' : 'Share'}
+                </button>
+
+                {showShareComponent ? (
+                    <div onClick={handleCopyAddress}>
+                        <FiCopy size={25} color='var(--text-grey-dark)' />
+                    </div>
+                ) : (
+                    phIcon
+                )}
+
+                {showShareComponent ? (
+                    <div onClick={downloadAsImage}>
+                        <FiDownload size={25} color='var(--text-grey-dark)' />
+                    </div>
+                ) : (
+                    phIcon
+                )}
+
                 <div onClick={onClose}>
-                    <CgClose size={25} />
+                    <CgClose size={28} color='var(--text-grey-dark)' />
                 </div>
             </section>
-            {snackbarContent}
         </div>
     );
 }

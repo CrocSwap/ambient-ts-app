@@ -37,6 +37,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         isAmbient,
         ambientOrMax,
         ambientOrMin,
+        apyString,
 
         blockExplorer,
         tokenAAddressLowerCase,
@@ -153,7 +154,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         },
         {
             title: 'APR',
-            content: Apy + '%',
+            content: apyString + '%',
             explanation: 'this is explanation',
         },
 
