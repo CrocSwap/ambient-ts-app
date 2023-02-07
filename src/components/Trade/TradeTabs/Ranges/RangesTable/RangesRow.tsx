@@ -166,7 +166,9 @@ export default function RangesRow(props: propsIF) {
 
     const openDetailsModal = () => {
         console.log({ position });
-        openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
+        openGlobalModal(
+            <RangeDetails position={position} account={account} {...rangeDetailsProps} />,
+        );
     };
 
     const dispatch = useAppDispatch();
