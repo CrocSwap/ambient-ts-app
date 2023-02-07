@@ -246,7 +246,7 @@ export default function Ranges(props: propsIF) {
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
     // transactions per page media queries
-    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView1 = useMediaQuery('(max-width: 580px)');
     const txView2 = useMediaQuery('(max-width: 720px)');
     const txView3 = useMediaQuery('(max-width: 1200px)');
     const txView4 = useMediaQuery('(max-width: 1800px)');
@@ -286,7 +286,7 @@ export default function Ranges(props: propsIF) {
 
     // const sidebarOpen = false;
 
-    const ipadView = useMediaQuery('(max-width: 480px)');
+    const ipadView = useMediaQuery('(max-width: 580px)');
     // const desktopView = useMediaQuery('(max-width: 768px)');
     const showColumns = useMediaQuery('(max-width: 1776px)');
 
@@ -436,7 +436,7 @@ export default function Ranges(props: propsIF) {
         {
             name: ' ',
             className: 'status',
-            show: !ipadView,
+            show: true,
             slug: 'status',
             sortable: false,
         },
@@ -495,7 +495,7 @@ export default function Ranges(props: propsIF) {
         />
     ));
 
-    const mobileView = useMediaQuery('(max-width: 850px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 

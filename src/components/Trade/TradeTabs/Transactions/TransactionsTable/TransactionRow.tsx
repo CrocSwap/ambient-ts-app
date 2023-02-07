@@ -17,6 +17,7 @@ import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     account: string;
@@ -97,11 +98,19 @@ export default function TransactionRow(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
 
     const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    const priceCharacter = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -112,7 +121,10 @@ export default function TransactionRow(props: propsIF) {
     const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
-    const logoSizes = showColumns ? '15px' : '20px';
+    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen = useMediaQuery('(max-width: 720px)');
+
+    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
 
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';
@@ -512,13 +524,8 @@ export default function TransactionRow(props: propsIF) {
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id' onClick={openDetailsModal}>
-                    <p className='base_color' style={{ textAlign: 'center' }}>
-                        {txHashTruncated}
-                    </p>{' '}
-                    <p
-                        className={usernameStyle}
-                        style={{ textTransform: 'lowercase', textAlign: 'center' }}
-                    >
+                    <p className='base_color'>{txHashTruncated}</p>{' '}
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}
                     </p>
                 </li>
@@ -546,7 +553,7 @@ export default function TransactionRow(props: propsIF) {
                             className={`${priceStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
@@ -554,7 +561,7 @@ export default function TransactionRow(props: propsIF) {
                                 </span>
                             </p>
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -565,7 +572,7 @@ export default function TransactionRow(props: propsIF) {
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
                             <div className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -576,14 +583,20 @@ export default function TransactionRow(props: propsIF) {
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage ? (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPriceDenomByMoneyness
+                                                    ? priceCharacter
+                                                    : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPriceDenomByMoneyness}
                                             </span>
                                         </p>
                                     ) : (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPrice ? priceCharacter : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPrice}
                                             </span>
@@ -603,7 +616,11 @@ export default function TransactionRow(props: propsIF) {
                         {isOnPortfolioPage
                             ? (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>
+                                          {truncatedDisplayPriceDenomByMoneyness
+                                              ? priceCharacter
+                                              : '…'}
+                                      </span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPriceDenomByMoneyness}
                                       </span>
@@ -611,7 +628,7 @@ export default function TransactionRow(props: propsIF) {
                               ) || '…'
                             : (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>{truncatedDisplayPrice ? priceCharacter : '…'}</span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPrice}
                                       </span>
@@ -649,7 +666,11 @@ export default function TransactionRow(props: propsIF) {
                     onClick={openDetailsModal}
                 >
                     <p>{type}</p>
-                    <p>{`${sideType} ${sideCharacter}`}</p>
+                    <p>
+                        {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                            ? `${sideType}`
+                            : `${sideType} ${sideCharacter}`}
+                    </p>
                 </li>
             )}
             {usdValueWithTooltip}
@@ -676,7 +697,6 @@ export default function TransactionRow(props: propsIF) {
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {' '}
                         {isBuy
                             ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
                             : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}

@@ -17,12 +17,10 @@
 
     padding: 1rem;
     position: relative;
-display: none;
-
-    
+    display: none;
 }
 
-.settings_container{
+.settings_container {
     position: absolute;
     top: 10px;
     right: 20px;
@@ -33,7 +31,7 @@ display: none;
     gap: 8px;
 }
 
-.settings_container button{
+.settings_container button {
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 
     cursor: pointer;
@@ -45,37 +43,36 @@ display: none;
     padding: 5px 8px;
     gap: 4px;
     font-weight: 300;
-font-size: 12px;
-line-height: 15px;
+    font-size: 12px;
+    line-height: 15px;
 
-border-radius: 50px;
-transition: all var(--animation-speed) ease-in-out
+    border-radius: 50px;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 /* .settings_container button:hover{
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2), 0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF, 0px 0px 2px rgba(205, 193, 255, 0.2);
 } */
 
-.button_following{
+.button_following {
     background: var(--title-gradient);
     padding: 3px;
-
 }
 
-.button_following:hover{
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2), 0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF, 0px 0px 2px rgba(205, 193, 255, 0.2);
+.button_following:hover {
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+        0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 
     box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
     transform: translateY(-3px);
-
 }
 
-.button_not_following{
+.button_not_following {
     background: transparent;
-    
 
     color: var(--text-accent);
-   
+
     transition: all var(--animation-speed) ease-in-out;
     background: linear-gradient(
         270deg,
@@ -89,15 +86,13 @@ transition: all var(--animation-speed) ease-in-out
     background-size: 180% 300%;
     text-decoration: none;
     border: 1px solid var(--text-highlight);
-    
 }
 
-.button_not_following:hover{
+.button_not_following:hover {
     color: var(--text-grey-dark);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
     box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
-   
 }
 
 /* .background{
@@ -205,13 +200,12 @@ transition: all var(--animation-speed) ease-in-out
         border-radius: 4px;
     }
 }
-@media only screen and (min-width: 850px) {
+@media only screen and (min-width: 1200px) {
     .rectangle_container {
         display: flex;
-     
     }
 
-    .nft_container{
+    .nft_container {
         display: flex;
     }
     .nft_container img {

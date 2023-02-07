@@ -51,7 +51,9 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
         // positionLiquidity,
     } = props;
 
-    const claimablePivotTimeString = pivotTime ? moment(pivotTime * 1000).toLocaleString() : '';
+    const claimablePivotTimeString = pivotTime
+        ? moment(pivotTime * 1000).format('MMMM Do YYYY, h:mm:ss a')
+        : '';
 
     return (
         <div className={styles.row}>

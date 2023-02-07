@@ -41,10 +41,11 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
                 className={`
-                    ${styles.modal_body}
-                    ${noBackground ? styles.no_background_modal : null}
+                ${styles.modal_body}
+                ${noBackground ? styles.no_background_modal : null}
                 `}
                 onMouseDown={(e) => e.stopPropagation()}
+                style={{ justifyContent: 'flex-start' }}
             >
                 <section className={styles.modal_content}>
                     {title && <SimpleModalHeader title={title} onClose={onClose} />}

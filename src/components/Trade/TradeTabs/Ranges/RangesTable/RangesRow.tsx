@@ -19,6 +19,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -175,7 +176,10 @@ export default function RangesRow(props: propsIF) {
             ? `position-${position.positionStorageSlot}`
             : '';
 
-    const logoSizes = showColumns ? '15px' : '20px';
+    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen = useMediaQuery('(max-width: 720px)');
+
+    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
@@ -644,6 +648,7 @@ export default function RangesRow(props: propsIF) {
                     </div>
                 </li>
             )}
+
             <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'right' }}>
                 {' '}
                 <p style={{ fontFamily: 'monospace' }} className={apyClassname}>

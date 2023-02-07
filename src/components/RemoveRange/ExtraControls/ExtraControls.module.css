@@ -42,10 +42,11 @@
     height: 15px;
 }
 .wallet_container_left {
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 1rem;
+   justify-content: space-between;
 }
 
 .gasless_text {

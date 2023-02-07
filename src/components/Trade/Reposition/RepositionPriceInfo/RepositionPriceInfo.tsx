@@ -26,12 +26,19 @@ interface IRepositionPriceInfoProps {
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
+    ambientApy: number | undefined;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
 // central react functional component
 export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
-    const { position, currentPoolPriceDisplay, currentPoolPriceTick, rangeWidthPercentage } = props;
+    const {
+        position,
+        ambientApy,
+        currentPoolPriceDisplay,
+        currentPoolPriceTick,
+        rangeWidthPercentage,
+    } = props;
 
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;
@@ -83,7 +90,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const pinnedMaxPriceDisplayTruncated = pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
-    const aprPercentage = 10;
 
     const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
         pinnedMinPriceDisplayTruncated || '0.00',
@@ -107,11 +113,23 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         ? getUnicodeCharacter(position?.quoteSymbol)
         : '';
     const poolPriceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+
+    const aprPercentage: number | undefined = ambientApy
+        ? 100 - rangeWidthPercentage + ambientApy
+        : undefined;
+
+    const aprPercentageString = aprPercentage
+        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })}%`
+        : '…';
+
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
     // JSX frag for estimated APR of position
 
-    const apr = <span className={styles.apr}> Est. APR | {aprPercentage}%</span>;
+    const apr = <span className={styles.apr}>{aprPercentageString}</span>;
 
     // JSX frag for lowest price in range
     const minimumPrice = (

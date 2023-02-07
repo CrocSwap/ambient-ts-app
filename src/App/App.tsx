@@ -44,7 +44,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
-import PageFooter from './components/PageFooter/PageFooter';
+// import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -373,6 +373,7 @@ export default function App() {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
+    // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
     const [fetchingCandle, setFetchingCandle] = useState(false);
@@ -2846,7 +2847,12 @@ export default function App() {
                             />
                             <Route
                                 path='reposition/:params'
-                                element={<Reposition isDenomBase={tradeData.isDenomBase} />}
+                                element={
+                                    <Reposition
+                                        ambientApy={ambientApy}
+                                        isDenomBase={tradeData.isDenomBase}
+                                    />
+                                }
                             />
                             <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
@@ -3157,7 +3163,7 @@ export default function App() {
             </div>
 
             <div className='footer_container'>
-                {currentLocation !== '/' && (
+                {/* {currentLocation !== '/' && (
                     <PageFooter
                         isUserIdle={isUserIdle}
                         lastBlockNumber={lastBlockNumber}
@@ -3167,7 +3173,7 @@ export default function App() {
                         setChatStatus={setChatStatus}
                         chatStatus={chatStatus}
                     />
-                )}
+                )} */}
                 {/* {currentLocation !== '/app/chat' && (
                     <Chat
                         ensName={ensName}

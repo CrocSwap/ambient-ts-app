@@ -7,8 +7,8 @@ import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import Toggle2 from '../Global/Toggle/Toggle2';
-import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
+// import Toggle2 from '../Global/Toggle/Toggle2';
+// import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
 import ClaimOrderModalHeader from './ClaimOrderModalHeader/ClaimOrderModalHeader';
 import ClaimOrderTokenHeader from './ClaimOrderTokenHeader/ClaimOrderTokenHeader';
@@ -279,47 +279,47 @@ export default function ClaimOrder(props: propsIF) {
 
     // ----------------------------- GASLESS TRANSACTION-----------------------
 
-    const gaslesssTransactionControl = (
-        <section className={styles.gasless_container}>
-            <h3>Enable Gasless Transaction</h3>
+    // const gaslesssTransactionControl = (
+    //     <section className={styles.gasless_container}>
+    //         <h3>Enable Gasless Transaction</h3>
 
-            <Toggle2
-                isOn={false}
-                handleToggle={() => console.log('toggled')}
-                id='gasless_transaction_toggle_claim_order'
-                disabled={true}
-            />
-        </section>
-    );
+    //         <Toggle2
+    //             isOn={false}
+    //             handleToggle={() => console.log('toggled')}
+    //             id='gasless_transaction_toggle_claim_order'
+    //             disabled={true}
+    //         />
+    //     </section>
+    // );
 
     // ----------------------------- END OF GASLESS TRANSACTION-----------------------
 
     // ---------------------Explanation data DISPLAY-----------------------------
 
-    const tooltipExplanationData = [
-        {
-            title: 'Network Fee',
-            tooltipTitle: 'something here about network fee',
-            data: '$???',
-            // data: isDenomBase
-            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
-    ];
+    // const tooltipExplanationData = [
+    //     {
+    //         title: 'Network Fee',
+    //         tooltipTitle: 'something here about network fee',
+    //         data: '$???',
+    //         // data: isDenomBase
+    //         //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+    //         //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+    //     },
+    // ];
 
-    const tooltipExplanationDataDisplay = (
-        <div className={styles.explanation_details}>
-            {tooltipExplanationData.map((item, idx) => (
-                <div className={styles.extra_row} key={idx}>
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
-                    </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
-        </div>
-    );
+    // const tooltipExplanationDataDisplay = (
+    //     <div className={styles.explanation_details}>
+    //         {tooltipExplanationData.map((item, idx) => (
+    //             <div className={styles.extra_row} key={idx}>
+    //                 <div className={styles.align_center}>
+    //                     <div>{item.title}</div>
+    //                     <TooltipComponent title={item.tooltipTitle} />
+    //                 </div>
+    //                 <div className={styles.data}>{item.data}</div>
+    //             </div>
+    //         ))}
+    //     </div>
+    // );
 
     // ---------------------Explanation data DISPLAY-----------------------------
 
@@ -370,8 +370,8 @@ export default function ClaimOrder(props: propsIF) {
                 quoteClaimString={'4543'}
                 truncatedDisplayPrice={truncatedDisplayPrice}
             />
-            {gaslesssTransactionControl}
-            {tooltipExplanationDataDisplay}
+            {/* {gaslesssTransactionControl} */}
+            {/* {tooltipExplanationDataDisplay} */}
             <ClaimOrderButton claimFn={claimFn} disabled={false} title='Claim Limit Order' />
         </div>
     );

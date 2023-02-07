@@ -152,6 +152,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         switchTheme: switchTheme,
         theme: theme,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // End of Page Header Functions

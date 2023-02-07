@@ -97,7 +97,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 props.isUserLoggedIn
                     ? props.message.isMentionMessage === false
                         ? styles.sent_message_body
-                        : props.message.mentionedName.trim() === props.name.trim()
+                        : props.message.mentionedName?.trim() === props.name?.trim()
                         ? styles.sent_message_body_with_mention
                         : styles.sent_message_body
                     : styles.sent_message_body

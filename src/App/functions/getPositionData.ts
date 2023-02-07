@@ -175,7 +175,7 @@ export const getPositionData = async (
                 ? liqBaseNum.toExponential(2)
                 : liqBaseNum < 2
                 ? liqBaseNum.toPrecision(3)
-                : liqBaseNum >= 100000
+                : liqBaseNum >= 10000
                 ? formatAmountOld(liqBaseNum)
                 : // ? baseLiqDisplayNum.toExponential(2)
                   liqBaseNum.toLocaleString(undefined, {
@@ -195,7 +195,7 @@ export const getPositionData = async (
                 ? liqQuoteNum.toExponential(2)
                 : liqQuoteNum < 2
                 ? liqQuoteNum.toPrecision(3)
-                : liqQuoteNum >= 100000
+                : liqQuoteNum >= 10000
                 ? formatAmountOld(liqQuoteNum)
                 : // ? quoteLiqDisplayNum.toExponential(2)
                   liqQuoteNum.toLocaleString(undefined, {

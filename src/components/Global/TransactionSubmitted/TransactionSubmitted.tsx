@@ -27,6 +27,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
 
     const addToMetamaskButton = (
         <Button
+            flat
             title={`Add ${tokenBSymbol} to Metamask`}
             // action={props.onClickFn}
             action={handleAddToMetamask}
@@ -46,12 +47,12 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 <Animation animData={completed} loop={false} />
             </div>
             <h2>Transaction Submitted</h2>
-            <p>
+            <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
                     ? null
                     : addToMetamaskButton}
-            </p>
+            </div>
         </div>
     );
 }

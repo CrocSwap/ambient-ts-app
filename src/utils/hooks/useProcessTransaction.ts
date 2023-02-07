@@ -6,7 +6,11 @@ import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
 
-export const useProcessTransaction = (tx: TransactionIF, account: string) => {
+export const useProcessTransaction = (
+    tx: TransactionIF,
+    account: string,
+    isOnPortfolioPage = false,
+) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = 'https://goerli.etherscan.io/';
     // const blockExplorer = chainData?.blockExplorer;
@@ -55,7 +59,9 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
     const quoteTokenSymbol = tx.quoteSymbol;
 
     const baseTokenAddress = tx.base;
+    const baseTokenAddressTruncated = trimString(baseTokenAddress, 6, 0, '…');
     const quoteTokenAddress = tx.quote;
+    const quoteTokenAddressTruncated = trimString(quoteTokenAddress, 6, 0, '…');
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
@@ -345,6 +351,8 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
     const priceType =
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
+    const isBuy = tx.isBuy === true || tx.isBid === true;
+
     const sideType =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
@@ -356,9 +364,18 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
                 : tx.changeType === 'recover'
                 ? 'claim'
                 : 'remove'
+            : isOnPortfolioPage
+            ? isBaseTokenMoneynessGreaterOrEqual
+                ? isBuy
+                    ? 'sell'
+                    : 'buy'
+                : isBuy
+                ? 'buy'
+                : 'sell'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
+
     // const sideType =
     //     tx.entityType === 'swap' || tx.entityType === 'limitOrder'
     //         ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
@@ -552,8 +569,11 @@ export const useProcessTransaction = (tx: TransactionIF, account: string) => {
         quoteFlowDisplay,
         baseTokenSymbol,
         baseTokenAddress,
+        baseTokenAddressTruncated,
         quoteTokenSymbol,
         quoteTokenAddress,
+        quoteTokenAddressTruncated,
+
         baseDisplayFrontend,
         quoteDisplayFrontend,
         quoteTokenLogo,

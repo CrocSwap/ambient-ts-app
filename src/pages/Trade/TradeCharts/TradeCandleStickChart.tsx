@@ -548,7 +548,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 depthLiqAskData.push({
                     activeLiq:
                         depthLiqAskData[!denominationsInBase ? 0 : depthLiqAskData.length - 1]
-                            .activeLiq,
+                            ?.activeLiq,
                     liqPrices: 0,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,

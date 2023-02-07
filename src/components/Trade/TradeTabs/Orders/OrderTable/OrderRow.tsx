@@ -17,6 +17,7 @@ import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -112,7 +113,10 @@ export default function OrderRow(props: propsIF) {
 
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
-    const logoSizes = showColumns ? '15px' : '18px';
+    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen = useMediaQuery('(max-width: 720px)');
+
+    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
 
     const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
 
