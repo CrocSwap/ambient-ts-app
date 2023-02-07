@@ -1307,15 +1307,39 @@ export default function Chart(props: ChartData) {
                                         ]);
                                     }
                                 } else if (location.pathname.includes('limit')) {
-                                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                    if (
+                                        maxYBoundary !== undefined &&
+                                        minYBoundary !== undefined &&
+                                        poolPriceDisplay
+                                    ) {
                                         const value = limit[0].value;
 
-                                        const low = minYBoundary < value ? minYBoundary : value;
-                                        const high = maxYBoundary > value ? maxYBoundary : value;
+                                        if (
+                                            value > 0 &&
+                                            !(value < poolPriceDisplay / 10) &&
+                                            !(value > poolPriceDisplay * 100)
+                                        ) {
+                                            const low = minYBoundary < value ? minYBoundary : value;
 
-                                        const buffer = Math.abs((low - high) / 6);
+                                            const high =
+                                                maxYBoundary > value ? maxYBoundary : value;
 
-                                        scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                                            const buffer = Math.abs((low - high) / 6);
+
+                                            scaleData.yScale.domain([
+                                                low - buffer,
+                                                high + buffer / 2,
+                                            ]);
+                                        } else {
+                                            const buffer = Math.abs(
+                                                (minYBoundary - maxYBoundary) / 6,
+                                            );
+
+                                            scaleData.yScale.domain([
+                                                minYBoundary - buffer,
+                                                maxYBoundary + buffer / 2,
+                                            ]);
+                                        }
                                     }
                                 } else {
                                     if (maxYBoundary !== undefined && minYBoundary !== undefined) {
@@ -1663,15 +1687,32 @@ export default function Chart(props: ChartData) {
                         }
                         setLiqHighlightedLinesAndArea(ranges);
                     } else if (location.pathname.includes('limit')) {
-                        if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                        if (
+                            maxYBoundary !== undefined &&
+                            minYBoundary !== undefined &&
+                            poolPriceDisplay
+                        ) {
                             const value = limit[0].value;
 
-                            const low = minYBoundary < value ? minYBoundary : value;
-                            const high = maxYBoundary > value ? maxYBoundary : value;
+                            if (
+                                value > 0 &&
+                                !(value < poolPriceDisplay / 10) &&
+                                !(value > poolPriceDisplay * 100)
+                            ) {
+                                const low = minYBoundary < value ? minYBoundary : value;
+                                const high = maxYBoundary > value ? maxYBoundary : value;
 
-                            const buffer = Math.abs((low - high) / 6);
+                                const buffer = Math.abs((low - high) / 6);
 
-                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                                scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                            } else {
+                                const buffer = Math.abs((minYBoundary - maxYBoundary) / 6);
+
+                                scaleData.yScale.domain([
+                                    minYBoundary - buffer,
+                                    maxYBoundary + buffer / 2,
+                                ]);
+                            }
                         }
                     } else {
                         if (
