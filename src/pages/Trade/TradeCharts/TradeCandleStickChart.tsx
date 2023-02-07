@@ -580,7 +580,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             setIsLoading(true);
             return undefined;
         }
-    }, [JSON.stringify(props.liquidityData), props.poolPriceDisplay]);
+    }, [props.liquidityData, props.liquidityData?.ranges, props.poolPriceDisplay]);
 
     useEffect(() => {
         console.log('resetting scale for chart because timeframe changed');
@@ -588,7 +588,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChart(parsedChartData);
-    }, [parsedChartData?.period, liquidityData]);
+    }, [parsedChartData?.period]);
 
     // Liq Scale
     useEffect(() => {
@@ -599,6 +599,8 @@ export default function TradeCandleStickChart(props: ChartData) {
     }, [liquidityData]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
+        console.log('parse Liq Scale');
+
         if (liquidityData !== undefined) {
             const liquidityScale = d3.scaleLinear();
 
@@ -617,7 +619,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Scale
     const setScaleForChart = (parsedChartData: any) => {
-        if (parsedChartData !== undefined && liquidityData !== undefined) {
+        if (parsedChartData !== undefined) {
             const temp = [...parsedChartData.chartData];
             const boundaryCandles = temp.splice(0, 99);
 
@@ -649,12 +651,11 @@ export default function TradeCandleStickChart(props: ChartData) {
             yScale.domain(priceRange(boundaryCandles));
 
             const xScaleCopy = xScale.copy();
-            const yScaleCopy = yScale.copy();
 
             const yScaleIndicator = yScale.copy();
             const xScaleIndicator = xScale.copy();
 
-            const ghostScale = d3.scaleLinear();
+            // const ghostScale = d3.scaleLinear();
 
             const volumeScale = d3.scaleLinear();
 
@@ -663,12 +664,12 @@ export default function TradeCandleStickChart(props: ChartData) {
             volumeScale.domain(yExtentVolume(volumeData));
 
             // bar chart
-            const ghostExtent = d3fc
-                .extentLinear(liquidityData.liqSnapData)
-                .include([0])
-                .accessors([(d: any) => parseFloat(d.activeLiq)]);
+            // const ghostExtent = d3fc
+            //     .extentLinear(liquidityData.liqSnapData)
+            //     .include([0])
+            //     .accessors([(d: any) => parseFloat(d.activeLiq)]);
 
-            ghostScale.domain(ghostExtent(liquidityData.liqSnapData));
+            // ghostScale.domain(ghostExtent(liquidityData.liqSnapData));
 
             setScaleData(() => {
                 return {
@@ -677,8 +678,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     yScaleIndicator: yScaleIndicator,
                     xScaleIndicator: xScaleIndicator,
                     xScaleCopy: xScaleCopy,
-                    yScaleCopy: yScaleCopy,
-                    ghostScale: ghostScale,
+                    // ghostScale: ghostScale,
                     subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
                     lastDragedY: 0,
