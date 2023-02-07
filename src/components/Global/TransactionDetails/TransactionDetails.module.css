@@ -1,6 +1,8 @@
 .tx_details_container{
     width: auto;
 max-width: 1000px;
+min-width: 340px;
+
 }
 
 .main_content {

@@ -1,6 +1,6 @@
 import styles from './RangeDetailsHeader.module.css';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { FiSettings, FiCopy, FiDownload } from 'react-icons/fi';
+import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { Dispatch, SetStateAction, useState } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -17,8 +17,7 @@ interface RangeDetailsPropsIF {
 export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     const {
         onClose,
-        showSettings,
-        setShowSettings,
+
         downloadAsImage,
         showShareComponent,
         setShowShareComponent,
@@ -32,7 +31,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         copy('example details data');
         setOpenSnackbar(true);
     }
-
+    // eslint-disable-next-line
     const snackbarContent = (
         <SnackbarComponent
             severity='info'

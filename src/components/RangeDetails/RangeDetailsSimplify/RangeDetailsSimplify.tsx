@@ -4,7 +4,7 @@ import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { ZERO_ADDRESS } from '../../../constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import moment from 'moment';
-import Apy from '../../Global/Tabs/Apy/Apy';
+// import Apy from '../../Global/Tabs/Apy/Apy';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 
 interface ItemRowPropsIF {

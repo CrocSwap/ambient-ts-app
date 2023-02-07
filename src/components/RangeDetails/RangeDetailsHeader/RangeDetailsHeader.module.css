@@ -34,6 +34,7 @@
     font-size: 2.25rem;
     font-weight: 100;
     line-height: 2.81rem;
+    display: none;
 }
 
 .ambient_text{
@@ -59,4 +60,13 @@ color: var(--text-grey-light)
     height: 25px;
  
    
+}
+
+
+@media only screen and (min-width: 768px) {
+   
+
+    .ambient_title{
+        display: block;
+    }
 }
