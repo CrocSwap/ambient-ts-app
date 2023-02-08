@@ -249,6 +249,7 @@ export default function Chart(props: ChartData) {
     });
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
+    const [isPeriodScaleSet, setIsPeriodScaleSet] = useState<number>();
 
     // d3
 
@@ -1017,6 +1018,7 @@ export default function Chart(props: ChartData) {
                 .selectAll('.horizontal')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
+            setRescale(true);
         } else if (location.pathname.includes('market')) {
             d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
             d3.select(d3Container.current)
@@ -2828,7 +2830,62 @@ export default function Chart(props: ChartData) {
             const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
 
             if (rescale) {
-                // scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+                if (poolPriceDisplay) {
+                    const xmin = new Date(Math.floor(scaleData.xScaleCopy.domain()[0]));
+                    const xmax = new Date(Math.floor(scaleData.xScaleCopy.domain()[1]));
+
+                    const filtered = parsedChartData?.chartData.filter(
+                        (data: any) => data.date >= xmin && data.date <= xmax,
+                    );
+
+                    if (filtered !== undefined && filtered.length > 0) {
+                        const minYBoundary = d3.min(filtered, (d) => d.low);
+                        const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                        if (
+                            location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                        ) {
+                            const low = ranges.filter((target: any) => target.name === 'Min')[0]
+                                .value;
+                            const high = ranges.filter((target: any) => target.name === 'Max')[0]
+                                .value;
+
+                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                const buffer = Math.abs(
+                                    (Math.max(high, maxYBoundary) - Math.min(low, minYBoundary)) /
+                                        6,
+                                );
+                                scaleData.yScale.domain([
+                                    Math.min(low, minYBoundary) - buffer,
+                                    Math.max(high, maxYBoundary) + buffer / 2,
+                                ]);
+                            }
+                        } else if (location.pathname.includes('limit')) {
+                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                const value = limit[0].value;
+
+                                const low = minYBoundary < value ? minYBoundary : value;
+                                const high = maxYBoundary > value ? maxYBoundary : value;
+
+                                const buffer = Math.abs((low - high) / 6);
+                                scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                            }
+                        } else {
+                            if (
+                                maxYBoundary !== undefined &&
+                                minYBoundary !== undefined &&
+                                liquidityData
+                            ) {
+                                const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                                scaleData.yScale.domain([
+                                    minYBoundary - buffer,
+                                    maxYBoundary + buffer / 2,
+                                ]);
+                            }
+                        }
+                    }
+                }
 
                 scaleData.xScale.domain([
                     new Date(centerX - diff * 0.8),
@@ -2856,7 +2913,7 @@ export default function Chart(props: ChartData) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [scaleData, latest, parsedChartData?.chartData, denomInBase, rescale]);
+    }, [scaleData, latest, parsedChartData?.chartData, denomInBase, rescale, location.pathname]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -4032,6 +4089,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(d3Container.current?.offsetWidth),
     ]);
 
+    // autoScaleF
     useEffect(() => {
         if (poolPriceDisplay) {
             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
@@ -4081,7 +4139,6 @@ export default function Chart(props: ChartData) {
                             const high = maxYBoundary > value ? maxYBoundary : value;
 
                             scaleData.yScale.domain([low - buffer, high + buffer / 2]);
-                            setRescale(true);
                         } else {
                             scaleData.yScale.domain([
                                 minYBoundary - buffer,
@@ -4097,8 +4154,8 @@ export default function Chart(props: ChartData) {
     }, [location.pathname]);
 
     useEffect(() => {
-        const min = pinnedMinPriceDisplayTruncated;
-        const max = pinnedMaxPriceDisplayTruncated;
+        const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
+        const max = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
         const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -4107,14 +4164,23 @@ export default function Chart(props: ChartData) {
             (data: any) => data.date >= xmin && data.date <= xmax,
         );
 
+        const value = limit[0].value;
+
         if (filtered !== undefined && filtered.length > 0) {
             const minYBoundary = d3.min(filtered, (d) => d.low);
             const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-            if (minYBoundary && maxYBoundary && min && max && poolPriceDisplay) {
+            if (minYBoundary && maxYBoundary && poolPriceDisplay) {
                 const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
-                if (location.pathname.includes('range') && simpleRangeWidth !== 100) {
+                if (
+                    min !== 0 &&
+                    max !== 0 &&
+                    (isPeriodScaleSet === undefined ||
+                        isPeriodScaleSet !== parsedChartData?.period) &&
+                    location.pathname.includes('range') &&
+                    simpleRangeWidth !== 100
+                ) {
                     const low =
                         minYBoundary < (min !== 0 ? min : minYBoundary)
                             ? minYBoundary
@@ -4131,9 +4197,16 @@ export default function Chart(props: ChartData) {
                     const bufferForRange = Math.abs((low - high) / 6);
 
                     scaleData.yScale.domain([low - bufferForRange, high + bufferForRange / 2]);
-                } else if (location.pathname.includes('limit')) {
-                    const value = limit[0].value;
 
+                    setIsPeriodScaleSet(() => {
+                        return parsedChartData?.period;
+                    });
+                } else if (
+                    value !== 0 &&
+                    (isPeriodScaleSet === undefined ||
+                        isPeriodScaleSet !== parsedChartData?.period) &&
+                    location.pathname.includes('limit')
+                ) {
                     if (
                         value > 0 &&
                         !(value < poolPriceDisplay / 10) &&
@@ -4147,10 +4220,14 @@ export default function Chart(props: ChartData) {
                     } else {
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                     }
+
+                    setIsPeriodScaleSet(() => {
+                        return parsedChartData?.period;
+                    });
                 }
             }
         }
-    }, [parsedChartData?.period]);
+    }, [parsedChartData?.period, limit, ranges, isPeriodScaleSet]);
 
     // Call drawChart()
     useEffect(() => {
