@@ -172,7 +172,7 @@ export default function Ranges(props: propsIF) {
             // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            console.log({ userPositionsToDisplayOnTrade });
+            // console.log({ userPositionsToDisplayOnTrade });
             setRangeData(userPositionsToDisplayOnTrade);
         } else if (positionsByPool && !isOnPortfolioPage) {
             // console.log({ positionsByPool });
