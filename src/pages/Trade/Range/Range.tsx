@@ -114,6 +114,8 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function Range(props: propsIF) {
@@ -165,6 +167,8 @@ export default function Range(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -999,6 +1003,8 @@ export default function Range(props: propsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
+        bypassConfirm: bypassConfirm,
+        toggleBypassConfirm: toggleBypassConfirm,
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -1310,9 +1316,11 @@ export default function Range(props: propsIF) {
                         tokenBApprovalButton
                     ) : (
                         <RangeButton
-                            onClickFn={openModal}
+                            onClickFn={bypassConfirm ? sendTransaction : openModal}
                             rangeAllowed={poolExists === true && rangeAllowed && !isInvalidRange}
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
+                            bypassConfirm={bypassConfirm}
+                            isAmbient={isAmbient}
                         />
                     )
                 ) : (

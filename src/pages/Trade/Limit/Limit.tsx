@@ -98,6 +98,8 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -146,6 +148,8 @@ export default function Limit(props: propsIF) {
         acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -575,7 +579,6 @@ export default function Limit(props: propsIF) {
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
-                // limitRate={limitRate}
                 insideTickDisplayPrice={endDisplayPrice}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
@@ -586,6 +589,8 @@ export default function Limit(props: propsIF) {
                 startDisplayPrice={startDisplayPrice}
                 middleDisplayPrice={middleDisplayPrice}
                 endDisplayPrice={endDisplayPrice}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </Modal>
     ) : null;
@@ -808,9 +813,10 @@ export default function Limit(props: propsIF) {
                         approvalButton
                     ) : (
                         <LimitButton
-                            onClickFn={openModal}
+                            onClickFn={bypassConfirm ? sendLimitOrder : openModal}
                             limitAllowed={isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
+                            bypassConfirm={bypassConfirm}
                         />
                     )
                 ) : (

@@ -19,7 +19,7 @@
 }
 
 .modal_body {
-  top: 10rem;
+
         border: solid 1px transparent;
     background-image: linear-gradient(rgba(189, 27, 27, 0), rgba(255, 255, 255, 0)),
         linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
@@ -28,7 +28,6 @@
     box-shadow: 2px 1000px 1px var(--dark1) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
 
-    min-width: 407px;
    height: fit-content;
    min-height: 300px;
     border-radius: var(--border-radius);
@@ -80,3 +79,13 @@
 
 
 
+@media only screen and (min-width: 768px) {
+    .modal_body {
+        top: 10rem;
+
+        min-width: 407px;
+    }
+
+
+
+}

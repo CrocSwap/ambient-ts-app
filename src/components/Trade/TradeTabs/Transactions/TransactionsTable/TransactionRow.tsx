@@ -104,8 +104,8 @@ export default function TransactionRow(props: propsIF) {
 
     const sideCharacter = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
-            ? baseTokenCharacter
-            : quoteTokenCharacter
+            ? quoteTokenCharacter
+            : baseTokenCharacter
         : isDenomBase
         ? baseTokenCharacter
         : quoteTokenCharacter;
@@ -144,14 +144,18 @@ export default function TransactionRow(props: propsIF) {
 
     const isSellQtyZero = (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
     const isBuyQtyZero = (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+    const isOrderRemove = tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
-        baseDisplay === '0.00' || !valueArrows || isBuyQtyZero || tx.source === 'manual'
+        baseDisplay === '0.00' ||
+        !valueArrows ||
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
+        tx.source === 'manual'
             ? styles.light_grey
             : styles.positive_value;
     // baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
     const negativeDisplayStyle =
-        quoteDisplay === '0.00' || !valueArrows || isSellQtyZero
+        quoteDisplay === '0.00' || !valueArrows || (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
             ? styles.light_grey
             : styles.negative_value;
     // const baseDisplayStyle =
@@ -442,7 +446,6 @@ export default function TransactionRow(props: propsIF) {
             </li>
         </DefaultTooltip>
     );
-
     // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
     // const quoteQtyToolTipStyle = (
     //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
@@ -608,7 +611,11 @@ export default function TransactionRow(props: propsIF) {
                     )
                 ) : (
                     <li
-                        onClick={openDetailsModal}
+                        onClick={() => {
+                            console.log({ isOnPortfolioPage });
+                            console.log({ truncatedDisplayPriceDenomByMoneyness });
+                            openDetailsModal();
+                        }}
                         data-label='price'
                         className={`${styles.align_right}  ${priceStyle}`}
                         style={{ fontFamily: 'monospace' }}
@@ -681,16 +688,34 @@ export default function TransactionRow(props: propsIF) {
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
                     style={{ textAlign: 'right' }}
-                    onClick={openDetailsModal}
+                    onClick={() => {
+                        // console.log({ isBuy });
+                        // console.log({ isOrderRemove });
+                        // console.log({ baseDisplay });
+                        // console.log({ quoteDisplay });
+                        openDetailsModal();
+                    }}
                 >
                     <div
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {isBuy ? quoteDisplay : baseDisplay}
+                        {isBuy
+                            ? isOrderRemove
+                                ? baseDisplay
+                                : quoteDisplay
+                            : isOrderRemove
+                            ? quoteDisplay
+                            : baseDisplay}
                         {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
-                        {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
+                        {isBuy
+                            ? isOrderRemove
+                                ? baseTokenLogoComponent
+                                : quoteTokenLogoComponent
+                            : isOrderRemove
+                            ? quoteTokenLogoComponent
+                            : baseTokenLogoComponent}
                     </div>
 
                     <div
@@ -698,10 +723,20 @@ export default function TransactionRow(props: propsIF) {
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {isBuy
-                            ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
-                            : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
+                            ? `${isOrderRemove ? quoteDisplay : baseDisplay}${
+                                  valueArrows ? negativeArrow : ' '
+                              }`
+                            : `${isOrderRemove ? baseDisplay : quoteDisplay}${
+                                  valueArrows ? negativeArrow : ' '
+                              }`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
-                        {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
+                        {isBuy
+                            ? isOrderRemove
+                                ? quoteTokenLogoComponent
+                                : baseTokenLogoComponent
+                            : isOrderRemove
+                            ? baseTokenLogoComponent
+                            : quoteTokenLogoComponent}
                     </div>
                 </li>
             )}
