@@ -5561,6 +5561,7 @@ export default function Chart(props: ChartData) {
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
+                                yAxisWidth={yAxisWidth}
                             />
                         </>
                     )}
@@ -5589,6 +5590,7 @@ export default function Chart(props: ChartData) {
                                 setMouseMoveChartName={setMouseMoveChartName}
                                 setTransformX={setTransformX}
                                 transformX={transformX}
+                                yAxisWidth={yAxisWidth}
                             />
                         </>
                     )}
