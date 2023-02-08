@@ -52,7 +52,7 @@ export default function RoomDropdown(props: RoomProps) {
         {
             id: 101,
             name: 'Current Pool',
-            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
+            value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
         },
     ];
 
@@ -84,7 +84,7 @@ export default function RoomDropdown(props: RoomProps) {
     useEffect(() => {
         const roomArr: string[] = [];
         rooms?.map((pool: PoolIF) => {
-            roomArr.push(pool.base.symbol + pool.quote.symbol);
+            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
         });
 
         setRoomArray(() => {
@@ -98,7 +98,7 @@ export default function RoomDropdown(props: RoomProps) {
         if (props.selectedRoom === 'Global') {
             const roomArr: string[] = [];
             rooms?.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + pool.quote.symbol);
+                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
             });
             setRoomArray(() => {
                 return roomArr;
@@ -106,7 +106,7 @@ export default function RoomDropdown(props: RoomProps) {
         } else {
             const roomArr: string[] = [];
             rooms.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + pool.quote.symbol);
+                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
             });
             setRoomArray(() => {
                 return roomArr;
