@@ -54,7 +54,7 @@ export default function TopRange() {
                 />
                 <Apy amount={10} />
 
-                <RangeStatus isInRange={true} isAmbient={true} />
+                <RangeStatus isInRange={true} isEmpty={false} isAmbient={true} />
             </div>
 
             <div className={styles.menu_container}>

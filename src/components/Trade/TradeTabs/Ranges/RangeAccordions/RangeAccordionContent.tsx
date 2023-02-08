@@ -1,7 +1,7 @@
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import styles from './RangeAccordionContent.module.css';
 
-interface RangeAccordionContentPropsIF {
+interface propsIF {
     posHash: string;
     userNameToDisplay: string;
     min: string;
@@ -15,8 +15,9 @@ interface RangeAccordionContentPropsIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
     isOwnerActiveAccount: boolean;
+    isEmpty: boolean;
 }
-export default function RangeAccordionContent(props: RangeAccordionContentPropsIF) {
+export default function RangeAccordionContent(props: propsIF) {
     const {
         posHash,
         userNameToDisplay,
@@ -31,6 +32,7 @@ export default function RangeAccordionContent(props: RangeAccordionContentPropsI
         isPositionInRange,
         isAmbient,
         isOwnerActiveAccount,
+        isEmpty
     } = props;
 
     const wallet = (
@@ -87,7 +89,7 @@ export default function RangeAccordionContent(props: RangeAccordionContentPropsI
     const statusDisplay = (
         <div className={styles.row}>
             <p>Status:</p>
-            <RangeStatus isAmbient={isAmbient} isInRange={isPositionInRange} />
+            <RangeStatus isAmbient={isAmbient} isEmpty={isEmpty} isInRange={isPositionInRange} />
         </div>
     );
 
