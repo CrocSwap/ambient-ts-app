@@ -146,11 +146,13 @@ export default function ChatPanel(props: ChatProps) {
                 } else {
                     setName(result.userData.walletID);
                     updateUser(currentUser as string, result.userData.walletID).then(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (result: any) => {
                             if (result.status === 'OK') {
                                 setName(result.userData.walletID);
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(currentUser as string, name).then(
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     (result: any) => {
                                         return result;
                                     },
