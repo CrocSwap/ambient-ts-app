@@ -434,11 +434,11 @@ export default function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Status',
             className: 'status',
             show: true,
             slug: 'status',
-            sortable: false,
+            sortable: true,
         },
         {
             name: '',
