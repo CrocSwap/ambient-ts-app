@@ -417,6 +417,15 @@ export default function Chart(props: ChartData) {
             ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
         ]);
 
+        yAxis.tickFormat((d: any) =>
+            formatAmountChartData(
+                d,
+                d === market[0].value || d === crosshairData[0].y
+                    ? undefined
+                    : d.toString().split('.')[1]?.length,
+            ),
+        );
+
         yAxis.decorate((selection: any) => {
             selection
                 .attr('filter', (d: any) => {
@@ -449,7 +458,12 @@ export default function Chart(props: ChartData) {
         yAxis.tickFormat((d: any) =>
             isSameLocation && d === sameLocationData
                 ? formatAmountChartData(limit[0].value)
-                : formatAmountChartData(d),
+                : formatAmountChartData(
+                      d,
+                      d === market[0].value || d === limit[0].value || d === crosshairData[0].y
+                          ? undefined
+                          : d.toString().split('.')[1]?.length,
+                  ),
         );
 
         yAxis.tickValues([
@@ -768,16 +782,59 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickFormat((d: any) => {
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                if (isSameLocationMin && d === sameLocationDataMin) {
-                    return formatAmountChartData(low);
-                }
+                const data =
+                    (isSameLocationMin && d === sameLocationDataMin) ||
+                    (isSameLocationMax && d === sameLocationDataMax)
+                        ? isSameLocationMin && d === sameLocationDataMin
+                            ? low
+                            : high
+                        : d;
 
-                if (isSameLocationMax && d === sameLocationDataMax) {
-                    return formatAmountChartData(high);
-                }
+                const longerValue =
+                    formatAmountChartData(low).length > formatAmountChartData(high).length
+                        ? low
+                        : high;
+                const shorterValue =
+                    formatAmountChartData(low).length > formatAmountChartData(high).length
+                        ? high
+                        : low;
+
+                const isSameLocation =
+                    isSameLocationMin && d === sameLocationDataMin
+                        ? isSameLocationMin
+                        : isSameLocationMax;
+                const sameLocationData =
+                    isSameLocationMin && d === sameLocationDataMin
+                        ? sameLocationDataMin
+                        : sameLocationDataMax;
+
+                const digit =
+                    formatAmountChartData(low).length >= formatAmountChartData(high).length
+                        ? formatAmountChartData(low).length -
+                          formatAmountChartData(high).length +
+                          formatAmountChartData(high).toString().split('.')[1]?.length
+                        : formatAmountChartData(high).length -
+                          formatAmountChartData(low).length +
+                          formatAmountChartData(low).toString().split('.')[1]?.length;
+
+                return formatAmountChartData(
+                    isSameLocation && d === sameLocationData ? data : d,
+                    d === sameLocationData ||
+                        d === shorterValue ||
+                        d === longerValue ||
+                        d === market[0].value ||
+                        d === crosshairData[0].y
+                        ? d === longerValue || d === market[0].value
+                            ? undefined
+                            : digit
+                        : d.toString().split('.')[1]?.length,
+                );
+            } else {
+                return formatAmountChartData(
+                    d,
+                    d === market[0].value ? undefined : d.toString().split('.')[1]?.length,
+                );
             }
-
-            return formatAmountChartData(d);
         });
 
         yAxis.decorate((selection: any) => {

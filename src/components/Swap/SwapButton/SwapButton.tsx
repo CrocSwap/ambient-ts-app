@@ -21,7 +21,9 @@ export default function SwapButton(props: propsIF) {
                             ? 'Send Swap'
                             : props.swapButtonErrorMessage
                         : props.swapAllowed
-                        ? (bypassConfirm ? 'Send Transaction' : 'Open Confirmation')
+                        ? bypassConfirm
+                            ? 'Send Transaction'
+                            : 'Open Confirmation'
                         : props.swapButtonErrorMessage
                 }
                 // action={() => console.log('clicked')}
