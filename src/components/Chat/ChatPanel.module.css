@@ -28,6 +28,7 @@
 
     overflow: auto;
 
+
 }
 
 
@@ -56,8 +57,9 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       color: white;
-      background: var(--dark2);
-      background: var(--text-highlight-dark);
+      background: var(--dark3);
+      border-top: 2px solid var(--text-highlight-dark);
+      /* background: var(--text-highlight-dark); */
   }
 
   .chat_header section{
