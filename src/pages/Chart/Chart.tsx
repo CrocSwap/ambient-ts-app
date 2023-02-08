@@ -1391,9 +1391,9 @@ export default function Chart(props: ChartData) {
                             if (
                                 !rescale &&
                                 event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel' &&
-                                event.sourceEvent.type === 'touchmove' &&
-                                event.sourceEvent.touches.length < 2
+                                (event.sourceEvent.type != 'wheel' ||
+                                    (event.sourceEvent.type === 'touchmove' &&
+                                        event.sourceEvent.touches.length < 2))
                             ) {
                                 const domainY = scaleData.yScale.domain();
                                 const linearY = d3
