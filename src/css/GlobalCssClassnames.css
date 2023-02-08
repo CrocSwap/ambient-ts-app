@@ -91,3 +91,7 @@ aside.emoji-picker-react {
 .emoji-picker-react .emoji-categories button {
     filter: invert(100%);
 }
+
+.MuiTooltip-popper {
+    z-index: 9999999 !important;
+}

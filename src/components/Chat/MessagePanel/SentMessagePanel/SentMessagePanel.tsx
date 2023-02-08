@@ -15,12 +15,13 @@ interface SentMessageProps {
     resolvedAddress: string | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
+    isUserLoggedIn: boolean;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
 
-    const { userImageData } = props;
+    // const { userImageData } = props;
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -33,6 +34,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
+
+    // useEffect(() => {
+    //     console.log('sent message panel name: ',props.name,props.message.ensName)
+    // }, [props.message]);
 
     function getName() {
         if (props.message.ensName.startsWith('0x')) {
@@ -59,7 +64,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
     }
 
     function mentionedMessage() {
-        console.log('message: ', props.message);
         const messagesArray = props.message.message.split(' ');
         if (props.message.isMentionMessage === true) {
             return (
@@ -68,8 +72,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         <span
                             key={index}
                             className={` ${
-                                word.slice(1) === props.name
-                                    ? styles.mention_message
+                                props.isUserLoggedIn
+                                    ? word.slice(1) === props.name
+                                        ? styles.mention_message
+                                        : styles.message
                                     : styles.message
                             }`}
                         >
@@ -88,17 +94,19 @@ export default function SentMessagePanel(props: SentMessageProps) {
     return (
         <div
             className={
-                props.message.isMentionMessage === false
-                    ? styles.sent_message_body
-                    : props.message.mentionedName.trim() === props.name.trim()
-                    ? styles.sent_message_body_with_mention
+                props.isUserLoggedIn
+                    ? props.message.isMentionMessage === false
+                        ? styles.sent_message_body
+                        : props.message.mentionedName?.trim() === props.name?.trim()
+                        ? styles.sent_message_body_with_mention
+                        : styles.sent_message_body
                     : styles.sent_message_body
             }
         >
             <div className={styles.nft_container}>
-                {userImageData[1] ? <img src={userImageData[1]} alt='nft' /> : null}
+                {/* {userImageData[1] ? <img src={userImageData[1]} alt='nft' /> : null}
                 {userImageData[2] ? <img src={userImageData[2]} alt='nft' /> : null}
-                {userImageData[3] ? <img src={userImageData[3]} alt='nft' /> : null}
+                {userImageData[3] ? <img src={userImageData[3]} alt='nft' /> : null} */}
                 {myBlockies}
             </div>
             <div className={styles.message_item}>

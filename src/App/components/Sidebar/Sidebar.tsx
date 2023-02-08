@@ -333,6 +333,11 @@ export default function Sidebar(props: propsIF) {
     );
 
     const inputContent = document.getElementById('search_input') as HTMLInputElement;
+
+    const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchMode(true);
+        setRawInput(e.target.value);
+    };
     // console.log(searchInput);
     const searchContainer = (
         <div className={styles.search_container}>
@@ -345,9 +350,9 @@ export default function Sidebar(props: propsIF) {
                 ref={searchInputRef}
                 placeholder='Search anything...'
                 className={styles.search__box}
-                onFocus={() => setSearchMode(true)}
-                onBlur={() => setSearchMode(false)}
-                onChange={(e) => setRawInput(e.target.value)}
+                // onFocus={() => setSearchMode(true)}
+                // onBlur={() => setSearchMode(false)}
+                onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
             />
             {inputContent?.value && (
@@ -423,7 +428,8 @@ export default function Sidebar(props: propsIF) {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1500px)');
+    // const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
 
     useEffect(() => {
         if (overflowSidebarMQ) {
@@ -545,7 +551,7 @@ export default function Sidebar(props: propsIF) {
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {searchContainerDisplay}
-                    {isInputValid && showSidebar ? (
+                    {isInputValid && showSidebar && searchMode ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
                             getTokenByAddress={getTokenByAddress}

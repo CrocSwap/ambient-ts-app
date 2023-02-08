@@ -13,7 +13,7 @@ export default function HarvestPositionButton(props: IHarvestPositionButtonProps
 
     return (
         <div>
-            <Button title={title} disabled={props.disabled} action={harvestFn} />
+            <Button title={title} disabled={props.disabled} action={harvestFn} flat />
         </div>
     );
 }

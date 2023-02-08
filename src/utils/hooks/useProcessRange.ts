@@ -9,6 +9,8 @@ import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
 export const useProcessRange = (position: PositionIF, account: string) => {
+    const blockExplorer = 'https://goerli.etherscan.io/';
+
     const tradeData = useAppSelector((state) => state.tradeData);
     const isDenomBase = tradeData.isDenomBase;
 
@@ -74,6 +76,8 @@ export const useProcessRange = (position: PositionIF, account: string) => {
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+    const baseTokenAddressTruncated = trimString(tokenAAddressLowerCase, 6, 0, '…');
+    const quoteTokenAddressTruncated = trimString(tokenBAddressLowerCase, 6, 0, '…');
 
     const positionMatchesSelectedTokens =
         (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
@@ -160,6 +164,8 @@ export const useProcessRange = (position: PositionIF, account: string) => {
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
+    const isPositionEmpty = position.positionLiq === '0';
+
     // if (!position) return null;
 
     return {
@@ -184,6 +190,8 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         quoteQty,
         baseTokenCharacter,
         quoteTokenCharacter,
+        baseTokenAddressTruncated,
+        quoteTokenAddressTruncated,
         baseTokenLogo,
         quoteTokenLogo,
         baseDisplayFrontend,
@@ -192,6 +200,8 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         quoteTokenSymbol,
         baseDisplay,
         quoteDisplay,
+        tokenAAddressLowerCase,
+        tokenBAddressLowerCase,
 
         // apy
         apy,
@@ -202,12 +212,14 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         isPositionInRange,
         isAmbient,
         isOwnerActiveAccount,
-
+        isPositionEmpty,
         // position matches select token data
         positionMatchesSelectedTokens,
         isDenomBase,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
+
+        blockExplorer,
     };
 };

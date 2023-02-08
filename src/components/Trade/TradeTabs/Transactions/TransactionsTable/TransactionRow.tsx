@@ -17,6 +17,7 @@ import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     account: string;
@@ -97,11 +98,19 @@ export default function TransactionRow(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
 
     const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? quoteTokenCharacter
+            : baseTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    const priceCharacter = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -112,7 +121,10 @@ export default function TransactionRow(props: propsIF) {
     const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
-    const logoSizes = showColumns ? '15px' : '20px';
+    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen = useMediaQuery('(max-width: 720px)');
+
+    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
 
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';
@@ -132,14 +144,18 @@ export default function TransactionRow(props: propsIF) {
 
     const isSellQtyZero = (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
     const isBuyQtyZero = (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+    const isOrderRemove = tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
-        baseDisplay === '0.00' || !valueArrows || isBuyQtyZero || tx.source === 'manual'
+        baseDisplay === '0.00' ||
+        !valueArrows ||
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
+        tx.source === 'manual'
             ? styles.light_grey
             : styles.positive_value;
     // baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
     const negativeDisplayStyle =
-        quoteDisplay === '0.00' || !valueArrows || isSellQtyZero
+        quoteDisplay === '0.00' || !valueArrows || (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
             ? styles.light_grey
             : styles.negative_value;
     // const baseDisplayStyle =
@@ -430,7 +446,6 @@ export default function TransactionRow(props: propsIF) {
             </li>
         </DefaultTooltip>
     );
-
     // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
     // const quoteQtyToolTipStyle = (
     //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
@@ -512,13 +527,8 @@ export default function TransactionRow(props: propsIF) {
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id' onClick={openDetailsModal}>
-                    <p className='base_color' style={{ textAlign: 'center' }}>
-                        {txHashTruncated}
-                    </p>{' '}
-                    <p
-                        className={usernameStyle}
-                        style={{ textTransform: 'lowercase', textAlign: 'center' }}
-                    >
+                    <p className='base_color'>{txHashTruncated}</p>{' '}
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}
                     </p>
                 </li>
@@ -546,7 +556,7 @@ export default function TransactionRow(props: propsIF) {
                             className={`${priceStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
@@ -554,7 +564,7 @@ export default function TransactionRow(props: propsIF) {
                                 </span>
                             </p>
                             <p className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -565,7 +575,7 @@ export default function TransactionRow(props: propsIF) {
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
                             <div className={`${styles.align_right} `}>
-                                <span>{sideCharacter}</span>
+                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -576,14 +586,20 @@ export default function TransactionRow(props: propsIF) {
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage ? (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPriceDenomByMoneyness
+                                                    ? priceCharacter
+                                                    : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPriceDenomByMoneyness}
                                             </span>
                                         </p>
                                     ) : (
                                         <p className={`${styles.align_right} `}>
-                                            <span>{sideCharacter}</span>
+                                            <span>
+                                                {truncatedLowDisplayPrice ? priceCharacter : '…'}
+                                            </span>
                                             <span style={{ fontFamily: 'monospace' }}>
                                                 {truncatedLowDisplayPrice}
                                             </span>
@@ -595,7 +611,11 @@ export default function TransactionRow(props: propsIF) {
                     )
                 ) : (
                     <li
-                        onClick={openDetailsModal}
+                        onClick={() => {
+                            console.log({ isOnPortfolioPage });
+                            console.log({ truncatedDisplayPriceDenomByMoneyness });
+                            openDetailsModal();
+                        }}
                         data-label='price'
                         className={`${styles.align_right}  ${priceStyle}`}
                         style={{ fontFamily: 'monospace' }}
@@ -603,7 +623,11 @@ export default function TransactionRow(props: propsIF) {
                         {isOnPortfolioPage
                             ? (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>
+                                          {truncatedDisplayPriceDenomByMoneyness
+                                              ? priceCharacter
+                                              : '…'}
+                                      </span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPriceDenomByMoneyness}
                                       </span>
@@ -611,7 +635,7 @@ export default function TransactionRow(props: propsIF) {
                               ) || '…'
                             : (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{sideCharacter}</span>
+                                      <span>{truncatedDisplayPrice ? priceCharacter : '…'}</span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPrice}
                                       </span>
@@ -649,7 +673,11 @@ export default function TransactionRow(props: propsIF) {
                     onClick={openDetailsModal}
                 >
                     <p>{type}</p>
-                    <p>{`${sideType} ${sideCharacter}`}</p>
+                    <p>
+                        {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                            ? `${sideType}`
+                            : `${sideType} ${sideCharacter}`}
+                    </p>
                 </li>
             )}
             {usdValueWithTooltip}
@@ -660,28 +688,55 @@ export default function TransactionRow(props: propsIF) {
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
                     style={{ textAlign: 'right' }}
-                    onClick={openDetailsModal}
+                    onClick={() => {
+                        // console.log({ isBuy });
+                        // console.log({ isOrderRemove });
+                        // console.log({ baseDisplay });
+                        // console.log({ quoteDisplay });
+                        openDetailsModal();
+                    }}
                 >
                     <div
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {isBuy ? quoteDisplay : baseDisplay}
+                        {isBuy
+                            ? isOrderRemove
+                                ? baseDisplay
+                                : quoteDisplay
+                            : isOrderRemove
+                            ? quoteDisplay
+                            : baseDisplay}
                         {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
-                        {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
+                        {isBuy
+                            ? isOrderRemove
+                                ? baseTokenLogoComponent
+                                : quoteTokenLogoComponent
+                            : isOrderRemove
+                            ? quoteTokenLogoComponent
+                            : baseTokenLogoComponent}
                     </div>
 
                     <div
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {' '}
                         {isBuy
-                            ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
-                            : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
+                            ? `${isOrderRemove ? quoteDisplay : baseDisplay}${
+                                  valueArrows ? negativeArrow : ' '
+                              }`
+                            : `${isOrderRemove ? baseDisplay : quoteDisplay}${
+                                  valueArrows ? negativeArrow : ' '
+                              }`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
-                        {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
+                        {isBuy
+                            ? isOrderRemove
+                                ? quoteTokenLogoComponent
+                                : baseTokenLogoComponent
+                            : isOrderRemove
+                            ? baseTokenLogoComponent
+                            : quoteTokenLogoComponent}
                     </div>
                 </li>
             )}

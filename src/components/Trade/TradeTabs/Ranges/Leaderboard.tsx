@@ -165,7 +165,7 @@ export default function Leaderboard(props: propsIF) {
 
     // const sidebarOpen = false;
 
-    const ipadView = useMediaQuery('(max-width: 480px)');
+    const ipadView = useMediaQuery('(max-width: 580px)');
     // const desktopView = useMediaQuery('(max-width: 768px)');
     const showColumns = useMediaQuery('(max-width: 1600px)');
 
@@ -347,12 +347,11 @@ export default function Leaderboard(props: propsIF) {
             isLeaderboard={true}
             idx={idx + 1}
             handlePulseAnimation={handlePulseAnimation}
-
             // blockExplorer={blockExplorer}
         />
     ));
 
-    const mobileView = useMediaQuery('(max-width: 850px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 

@@ -21,7 +21,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setPositionToBeRepositioned,
     setRangeModuleTriggered,
     setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
@@ -38,11 +37,11 @@ interface propsIF {
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
     rangeDetailsProps: any;
-    positionData: PositionIF;
+    position: PositionIF;
     posHash: string;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
-
+    isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
 }
@@ -54,15 +53,14 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         // chainData,
+        isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
-        positionData,
+        position,
         isOnPortfolioPage,
         handlePulseAnimation,
         showHighlightedButton,
-        // showSidebar,
-        // eslint-disable-next-line
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -90,18 +88,18 @@ export default function RangesMenu(props: propsIF) {
 
     const openRemoveModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
+        openGlobalModal(<RemoveRange position={position} {...rangeDetailsProps} />);
     };
 
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+        openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
     };
 
     const openHarvestModal = () => {
         setShowDropdownMenu(false);
         openGlobalModal(
-            <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />,
+            <HarvestPosition crocEnv={crocEnv} position={position} {...rangeDetailsProps} />,
         );
     };
 
@@ -117,12 +115,12 @@ export default function RangesMenu(props: propsIF) {
             handlePulseAnimation ? handlePulseAnimation('range') : null;
         }
 
-        if (positionData.positionType === 'ambient') {
+        if (position.positionType === 'ambient') {
             dispatch(setSimpleRangeWidth(100));
             dispatch(setAdvancedMode(false));
         } else {
-            dispatch(setAdvancedLowTick(positionData.bidTick));
-            dispatch(setAdvancedHighTick(positionData.askTick));
+            dispatch(setAdvancedLowTick(position.bidTick));
+            dispatch(setAdvancedHighTick(position.askTick));
             dispatch(setAdvancedMode(true));
         }
         setShowDropdownMenu(false);
@@ -151,10 +149,15 @@ export default function RangesMenu(props: propsIF) {
         // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
         <Link
             className={styles.reposition_button}
-            to={'/trade/reposition'}
-            onClick={() => {
-                dispatch(setPositionToBeRepositioned(positionData));
-            }}
+            to={
+                '/trade/reposition/chain=' +
+                position.chainId +
+                '&tokenA=' +
+                position.base +
+                '&tokenB=' +
+                position.quote
+            }
+            state={{ position: position }}
         >
             Reposition
         </Link>
@@ -175,11 +178,11 @@ export default function RangesMenu(props: propsIF) {
                 '/trade/range/' +
                 (isOnPortfolioPage
                     ? 'chain=' +
-                      positionData.chainId +
+                      position.chainId +
                       '&tokenA=' +
-                      positionData.base +
+                      position.base +
                       '&tokenB=' +
-                      positionData.quote
+                      position.quote
                     : currentLocation.slice(currentLocation.indexOf('chain')))
             }
             onClick={handleCopyClick}
@@ -216,25 +219,28 @@ export default function RangesMenu(props: propsIF) {
 
     // const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
-    // const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
+    const view1 = useMediaQuery('(min-width: 720px)');
+    const view2 = useMediaQuery('(min-width: 1380px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
     // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
-
+    const showRepositionButton =
+        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount && view1;
     // ----------------------
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {!isPositionInRange && userMatchesConnectedAccount && repositionButton}
-            {/* {view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
-            {/* {view1 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
+            {!showRepositionButton && view2 && detailsButton}
+            {showRepositionButton && repositionButton}
+            {view2 && removeButton}
+            {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
+            {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && harvestButton}
             {/* {view2 && removeButton} */}
-            {view3 && detailsButton}
-            {!userMatchesConnectedAccount && copyButton}
-            {/* {view1 && !props.showSidebar && copyButton} */}
+            {/* {view3 && detailsButton} */}
+            {!userMatchesConnectedAccount && view2 && copyButton}
+            {/* {view2 && !props.showSidebar && copyButton} */}
         </div>
     );
 

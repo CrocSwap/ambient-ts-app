@@ -21,9 +21,7 @@ const useSocket = (room: any) => {
         const roomId = room;
 
         socketRef.current = io(host, { query: { roomId } });
-        socketRef.current.on('connection', () => {
-            console.log('Connected Socket Id: ' + socketRef.current.id + ' Room: ' + roomId);
-        });
+        socketRef.current.on('connection');
 
         socketRef.current.on('send-msg', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,7 +38,6 @@ const useSocket = (room: any) => {
         });
 
         return () => {
-            console.log('Disconnected' + socketRef.current.id);
             socketRef.current.disconnect();
         };
     }, [room]);

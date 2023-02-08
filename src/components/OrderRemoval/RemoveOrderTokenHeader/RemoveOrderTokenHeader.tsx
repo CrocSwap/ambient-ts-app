@@ -25,7 +25,7 @@ export default function RemoveOrderTokenHeader(props: IRemoveOrderTokenHeaderPro
             >
                 <img
                     src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
-                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
+                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/580px-Ethereum-icon-purple.svg.png'
                     alt=''
                 />
                 <img

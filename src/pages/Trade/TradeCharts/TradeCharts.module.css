@@ -3,7 +3,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    position: static;
+    position: relative;
     /* padding: 1rem; */
 }
 
@@ -17,24 +17,17 @@
     flex-direction: row;
     justify-content: space-between;
 
-
     align-items: center;
     padding: 0.3rem 0.7rem 0 0;
 }
-
-
-
 
 .curve_depth_container,
 .volume_tvl_container,
 .main_time_frame_container,
 .chart_overlay_container {
-
-
     display: flex;
     flex-direction: row;
     align-items: center;
-    ;
     gap: 4px;
 }
 
@@ -43,10 +36,6 @@
 .main_time_frame_container:not(:last-child) {
     border-right: 1px solid var(--text-grey-light);
 }
-
-
-
-
 
 .active_selected_button,
 .non_active_selected_button {
@@ -64,18 +53,15 @@
     position: relative;
 }
 
-
-
 .settings_container:last-of-type {
     border-right: 1px solid transparent;
-
 }
-
 
 .active_selected_button:hover,
 .non_active_selected_button:hover {
     /* background: var(--title-gradient); */
     color: var(--text-grey-white);
+
 
     /* box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
     0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
@@ -88,15 +74,9 @@
     color: var(--text-grey-white);
 }
 
-
-
 .non_active_selected_button {
     color: var(--text-grey-light);
 }
-
-
-
-
 
 .token_info_container .amount {
     font-size: var(--header2-size);
@@ -129,9 +109,9 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    gap: 4px;
-    /*     gap: 1rem;; */
+    gap: 4px; /*     gap: 1rem;; */
 
+    display: none;
     display: none;
 }
 
@@ -267,7 +247,6 @@
     flex-direction: column;
     gap: 1rem;
 }
-
 .main_settings_container header {
     display: flex;
     flex-direction: row;
@@ -276,17 +255,14 @@
     padding: 0 4px;
     border-bottom: 1px solid var(--text-grey-dark);
 }
-
 .main_settings_container header div {
     cursor: pointer;
 }
-
 .main_settings_container header h2 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light)
+    color: var(--text-grey-light);
 }
-
 .chart_settings_inner {
     display: grid;
     grid-template-columns: 60px 1fr;
@@ -298,9 +274,12 @@
 
     opacity: 0;
 }
-
 .main_settings_container_active {
     opacity: 1;
+    width: 100%;
+    max-height: 90%;
+    top: 30px;
+    right: 10px;
     width: 100%;
     max-height: 90%;
     top: 30px;
@@ -316,16 +295,16 @@
 
     list-style: none;
     border-right: 1px solid var(--text-grey-dark);
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
-
 .chart_settings_nav li {
     cursor: pointer;
+    padding: 1rem;
     padding: 1rem;
 }
 
 .setting_active {
-    background: var(--dark2)
+    background: var(--dark2);
 }
 
 .main_chart_settings_content {
@@ -334,10 +313,9 @@
     flex-direction: column;
     /* justify-content: center; */
     align-items: center;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
-
-@media only screen and (min-device-width: 320px) and (max-device-width: 850px) and (-webkit-min-device-pixel-ratio: 2) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
         margin-bottom: 15px;
@@ -356,7 +334,6 @@
 }
 
 @media (min-width: 680px) {
-
     .middle_content_style {
         display: flex;
         flex-direction: column;
@@ -395,5 +372,4 @@
     .graph_settings_container div {
         cursor: pointer;
     }
-
 }

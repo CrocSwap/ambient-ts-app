@@ -31,6 +31,8 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -50,6 +52,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
     // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
@@ -241,7 +245,11 @@ export default function ConfirmLimitModal(props: propsIF) {
             {/* <DenominationSwitch /> */}
             {extraInfoData}
             {explanationText}
-            <ConfirmationModalControl />
+            <ConfirmationModalControl
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor='limit'
+            />
         </div>
     );
 
@@ -281,7 +289,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const confirmLimitButton = (
         <Button
-            title='Send Limit Order to Metamask'
+            title='Send Limit Transaction'
             action={() => {
                 // console.log(
                 //     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
@@ -290,7 +298,6 @@ export default function ConfirmLimitModal(props: propsIF) {
                 //     `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
                 // );
                 initiateLimitOrderMethod();
-
                 setShowConfirmation(false);
             }}
             flat={true}

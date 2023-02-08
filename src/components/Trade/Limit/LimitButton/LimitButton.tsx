@@ -13,15 +13,24 @@ interface ILimitButtonProps {
     onClickFn: () => void;
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
+    bypassConfirm: boolean;
 }
+
 export default function LimitButton(props: ILimitButtonProps) {
+    const { bypassConfirm } = props;
     // TODO:  @Junior do we need the top-level `<div>` here or can it be eliminated
     // TODO:  ... as an unnecessary wrapper?
 
     return (
         <div className={styles.button_container}>
             <Button
-                title={props.limitAllowed ? 'Open Confirmation' : props.limitButtonErrorMessage}
+                title={
+                    props.limitAllowed
+                        ? bypassConfirm
+                            ? 'Send Limit Order'
+                            : 'Open Confirmation'
+                        : props.limitButtonErrorMessage
+                }
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.limitAllowed}

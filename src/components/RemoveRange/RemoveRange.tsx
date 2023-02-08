@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
+import { VscClose } from 'react-icons/vsc';
 
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
@@ -36,8 +37,8 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import WithdrawAs from './WithdrawAs/WithdrawAs';
-import WithdrawTo from './WithdrawTo/WithdrawTo';
+// import WithdrawAs from './WithdrawAs/WithdrawAs';
+// import WithdrawTo from './WithdrawTo/WithdrawTo';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
@@ -431,7 +432,7 @@ export default function RemoveRange(props: propsIF) {
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
     const removalSuccess = (
-        <div className={styles.removal_pending}>
+        <div className={styles.removal_denied}>
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
@@ -512,9 +513,16 @@ export default function RemoveRange(props: propsIF) {
         <div className={styles.confirmation_container}>
             {showConfirmation && (
                 // {showConfirmation && !removalDenied && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
-                </div>
+                <header>
+                    <div className={styles.button} onClick={resetConfirmation}>
+                        {newRemovalTransactionHash == '' && <BsArrowLeft size={30} />}
+                    </div>
+                    {newRemovalTransactionHash !== '' && (
+                        <div onClick={closeGlobalModal}>
+                            <VscClose size={30} />
+                        </div>
+                    )}
+                </header>
             )}
             <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>
@@ -523,7 +531,7 @@ export default function RemoveRange(props: propsIF) {
     const buttonToDisplay = (
         <div style={{ padding: '0 1rem' }}>
             {showSettings ? (
-                <Button title='Confirm' action={() => setShowSettings(false)} flat={true} />
+                <Button title='Confirm' action={() => setShowSettings(false)} flat />
             ) : isPositionPendingUpdate ? (
                 <RemoveRangeButton
                     removeFn={removeFn}
@@ -576,8 +584,8 @@ export default function RemoveRange(props: propsIF) {
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
                 />
-                <WithdrawAs />
-                <WithdrawTo />
+                {/* <WithdrawAs />
+                <WithdrawTo /> */}
                 <ExtraControls
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}

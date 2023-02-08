@@ -44,7 +44,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
-import PageFooter from './components/PageFooter/PageFooter';
+// import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -160,6 +160,8 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
+import { checkBlacklist } from '../utils/data/blacklist';
+import { useBypassConfirm } from './hooks/useBypassConfirm';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -193,6 +195,12 @@ export default function App() {
     const { disconnect } = useDisconnect();
 
     const { address: account, isConnected } = useAccount();
+
+    useEffect(() => {
+        if (account && checkBlacklist(account)) {
+            disconnect();
+        }
+    }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
@@ -366,6 +374,7 @@ export default function App() {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
+    // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
     const [fetchingCandle, setFetchingCandle] = useState(false);
@@ -509,6 +518,10 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
+    false && checkBypassConfirm;
+    false && updateBypassConfirm;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -1131,7 +1144,7 @@ export default function App() {
                                 chainId: chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                // omitKnockout: 'true',
+                                omitKnockout: 'true',
                                 addValue: 'true',
                                 sortByAPY: 'true',
                                 n: '50',
@@ -1156,7 +1169,10 @@ export default function App() {
                                     .then((updatedPositions) => {
                                         const top10Positions = updatedPositions
                                             .filter((updatedPosition: PositionIF) => {
-                                                return updatedPosition.isPositionInRange;
+                                                return (
+                                                    updatedPosition.isPositionInRange &&
+                                                    updatedPosition.apy !== 0
+                                                );
                                             })
                                             .slice(0, 10);
 
@@ -1923,7 +1939,7 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
-                            omitEmpty: 'true',
+                            // omitEmpty: 'true',
                             omitKnockout: 'true',
                             addValue: 'true',
                         }),
@@ -2017,7 +2033,7 @@ export default function App() {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 500, // fetch last 500 changes,
+                    n: 100, // fetch last 100 changes,
                 })
                     .then((updatedTransactions) => {
                         dispatch(
@@ -2392,6 +2408,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('swap'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     // props for <Swap/> React element on trade route
@@ -2439,6 +2457,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('swap'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     // props for <Limit/> React element on trade route
@@ -2493,6 +2513,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('limit'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     // props for <Range/> React element
@@ -2551,6 +2573,8 @@ export default function App() {
         acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('range'),
+        toggleBypassConfirm: updateBypassConfirm,
     };
 
     function toggleSidebar() {
@@ -2830,7 +2854,19 @@ export default function App() {
                             />
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
-                            <Route path='reposition' element={<Reposition />} />
+                            <Route
+                                path='reposition'
+                                element={<Navigate to={defaultUrlParams.range} replace />}
+                            />
+                            <Route
+                                path='reposition/:params'
+                                element={
+                                    <Reposition
+                                        ambientApy={ambientApy}
+                                        isDenomBase={tradeData.isDenomBase}
+                                    />
+                                }
+                            />
                             <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
@@ -3140,7 +3176,7 @@ export default function App() {
             </div>
 
             <div className='footer_container'>
-                {currentLocation !== '/' && (
+                {/* {currentLocation !== '/' && (
                     <PageFooter
                         isUserIdle={isUserIdle}
                         lastBlockNumber={lastBlockNumber}
@@ -3150,7 +3186,7 @@ export default function App() {
                         setChatStatus={setChatStatus}
                         chatStatus={chatStatus}
                     />
-                )}
+                )} */}
                 {/* {currentLocation !== '/app/chat' && (
                     <Chat
                         ensName={ensName}

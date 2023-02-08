@@ -137,6 +137,16 @@ export default function Ranges(props: propsIF) {
         },
     );
 
+    const userPositionsToDisplayOnTrade = positionsByUserMatchingSelectedTokens.filter(
+        (position) => {
+            if (position.positionLiq !== '0') {
+                return true;
+            } else {
+                return false;
+            }
+        },
+    );
+
     const [rangeData, setRangeData] = useState(
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
@@ -162,8 +172,8 @@ export default function Ranges(props: propsIF) {
             // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            // console.log({ positionsByUserMatchingSelectedTokens });
-            setRangeData(positionsByUserMatchingSelectedTokens);
+            console.log({ userPositionsToDisplayOnTrade });
+            setRangeData(userPositionsToDisplayOnTrade);
         } else if (positionsByPool && !isOnPortfolioPage) {
             // console.log({ positionsByPool });
             setRangeData(positionsByPool);
@@ -173,7 +183,7 @@ export default function Ranges(props: propsIF) {
         isShowAllEnabled,
         connectedAccountActive,
         JSON.stringify(activeAccountPositionData),
-        JSON.stringify(positionsByUserMatchingSelectedTokens),
+        JSON.stringify(userPositionsToDisplayOnTrade),
         JSON.stringify(positionsByPool),
     ]);
 
@@ -236,7 +246,7 @@ export default function Ranges(props: propsIF) {
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
     // transactions per page media queries
-    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView1 = useMediaQuery('(max-width: 580px)');
     const txView2 = useMediaQuery('(max-width: 720px)');
     const txView3 = useMediaQuery('(max-width: 1200px)');
     const txView4 = useMediaQuery('(max-width: 1800px)');
@@ -276,7 +286,7 @@ export default function Ranges(props: propsIF) {
 
     // const sidebarOpen = false;
 
-    const ipadView = useMediaQuery('(max-width: 480px)');
+    const ipadView = useMediaQuery('(max-width: 580px)');
     // const desktopView = useMediaQuery('(max-width: 768px)');
     const showColumns = useMediaQuery('(max-width: 1776px)');
 
@@ -426,7 +436,7 @@ export default function Ranges(props: propsIF) {
         {
             name: ' ',
             className: 'status',
-            show: !ipadView,
+            show: true,
             slug: 'status',
             sortable: false,
         },
@@ -482,12 +492,10 @@ export default function Ranges(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
-
-            // blockExplorer={blockExplorer}
         />
     ));
 
-    const mobileView = useMediaQuery('(max-width: 850px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 
