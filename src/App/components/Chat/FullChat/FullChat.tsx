@@ -14,28 +14,87 @@ interface FullChatPropsIF {
     chatNotification: JSX.Element;
     messageInput: JSX.Element;
     room: any;
+    setRoom: any;
+    setIsCurrentPool: any;
+
     userName: string;
+    showCurrentPoolButton: any;
+    setShowCurrentPoolButton: any;
+    currentPool: any;
 }
 
 interface ChannelDisplayPropsIF {
     pool: PoolIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { messageList, chatNotification, messageInput, room, userName } = props;
+    const { messageList, chatNotification, messageInput, room, userName, currentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
+    const [readableRoomName, setReadableName] = useState('Global');
 
-    console.log(topPools);
+    function handleRoomClick(event: any, pool: PoolIF) {
+        const roomName = pool.base.symbol + pool.quote.symbol;
+        props.setRoom(roomName);
+
+        const readableRoomName = `${pool.base.symbol} / ${pool.quote.symbol}`;
+        setReadableName(readableRoomName);
+
+        if (roomName.toString() === 'Current Pool') {
+            props.setIsCurrentPool(true);
+            if (props.showCurrentPoolButton) {
+                props.setShowCurrentPoolButton(false);
+            }
+        } else {
+            props.setIsCurrentPool(false);
+            props.setShowCurrentPoolButton(true);
+        }
+
+        // handleDropdownMenu();
+    }
+
+    function handleGlobalClick() {
+        props.setRoom('Global');
+        setReadableName('Global');
+    }
+
+    function handleCurrentPoolClick() {
+        props.setRoom(currentPool.baseToken.symbol + currentPool.quoteToken.symbol);
+        setReadableName(`${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`);
+    }
 
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
         const { pool } = props;
 
+        const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
+        const poolIsCurrentPool =
+            pool.name === `${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`;
+        const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
+
+        console.log({ poolIsCurrentPool });
+        console.log(`${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`);
+        console.log(pool.name);
+
         return (
-            <div className={styles.pool_display}>
+            <div
+                className={`${styles.pool_display} ${activePoolStyle}`}
+                onClick={(event: any) => handleRoomClick(event, pool)}
+            >
                 <div>
                     <img src={pool?.base.logoURI} alt='base token' />
                     <img src={pool?.quote.logoURI} alt='quote token' />
                 </div>
                 <span>{pool?.name}</span>
+                {poolIsCurrentPool && (
+                    <p
+                        className={styles.current_pool}
+                        style={{
+                            color: activePoolIsCurrentPool
+                                ? 'var(--text-grey-white)'
+                                : 'var(--text-grey-dark)',
+                        }}
+                    >
+                        Current Pool
+                    </p>
+                )}
             </div>
         );
     }
@@ -74,6 +133,11 @@ export default function FullChat(props: FullChatPropsIF) {
             ))}
         </section>
     );
+    console.log({ readableRoomName });
+
+    const currentRoomIsGlobal = readableRoomName === 'Global';
+
+    console.log(currentRoomIsGlobal);
     const chatChanels = (
         <section className={styles.options}>
             <header>
@@ -96,7 +160,15 @@ export default function FullChat(props: FullChatPropsIF) {
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span># Something3</span>
             </div> */}
-            <div className={styles.option_item}>
+            <div className={styles.option_item} onClick={handleCurrentPoolClick}>
+                <FiAtSign size={20} color='var(--text-highlight)' />
+                <span> Current Pool</span>
+            </div>
+            <div
+                className={styles.option_item}
+                style={{ background: currentRoomIsGlobal ? 'var(--dark3)' : '' }}
+                onClick={handleGlobalClick}
+            >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Global</span>
             </div>
@@ -133,7 +205,7 @@ export default function FullChat(props: FullChatPropsIF) {
             </section>
 
             <section className={styles.right_container}>
-                <header className={styles.right_container_header}># {room}</header>
+                <header className={styles.right_container_header}># {readableRoomName}</header>
                 {chatContainer}
             </section>
         </div>

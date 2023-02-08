@@ -60,6 +60,9 @@ export default function ChatPanel(props: ChatProps) {
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
+    const [isCurrentPool, setIsCurrentPool] = useState(false);
+    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
+
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
@@ -344,6 +347,11 @@ export default function ChatPanel(props: ChatProps) {
                 messageInput={messageInput}
                 room={room}
                 userName={ens === null || ens === '' ? walletID : (ens as string)}
+                setRoom={setRoom}
+                setIsCurrentPool={setIsCurrentPool}
+                showCurrentPoolButton={showCurrentPoolButton}
+                setShowCurrentPoolButton={setShowCurrentPoolButton}
+                currentPool={currentPool}
             />
         );
 
@@ -367,6 +375,10 @@ export default function ChatPanel(props: ChatProps) {
                         currentPool={currentPool}
                         isFullScreen={props.isFullScreen}
                         room={room}
+                        setIsCurrentPool={setIsCurrentPool}
+                        isCurrentPool={isCurrentPool}
+                        showCurrentPoolButton={showCurrentPoolButton}
+                        setShowCurrentPoolButton={setShowCurrentPoolButton}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

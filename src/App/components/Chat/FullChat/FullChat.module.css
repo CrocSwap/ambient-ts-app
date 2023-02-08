@@ -71,7 +71,7 @@ padding: 4px 1rem;
 }
 
 .options .option_item{
-    padding: 0 1rem;
+    padding: 8px 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -101,17 +101,30 @@ padding: 4px 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0 1rem;
+    padding: 8px 1rem;
     gap: 8px;
     cursor: pointer;
+    border-radius: 4px;
 }
 
 .pool_display:hover, .option_item:hover{
 background: var(--dark3);
 transition: all var(--animation-speed) ease-in-out;
-border-radius: 4px;
 cursor: pointer;
 }
+
+.current_pool{
+    font-size: 10px;
+    background: var(--dark2);
+    padding: 0 4px;
+    color: var(--text-grey-dark)
+}
+
+.active_room{
+    background: var(--dark3);
+
+}
+
 .pool_display img{
     width: 20px;
 }
