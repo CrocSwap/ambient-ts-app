@@ -162,6 +162,7 @@ import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
+import FullChat from './components/Chat/FullChat/FullChat';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2696,6 +2697,8 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/app/chat' &&
+        currentLocation !== '/app/chat2' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2712,6 +2715,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/app/chat' ||
+        currentLocation == '/app/chat2' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2954,6 +2959,23 @@ export default function App() {
                                     isFullScreen={true}
                                     userImageData={imageData}
                                     ensName={ensName}
+                                />
+                            }
+                        />
+                        <Route
+                            path='app/chat2'
+                            element={
+                                <FullChat
+                                // chatStatus={true}
+                                // onClose={() => {
+                                //     console.error('Function not implemented.');
+                                // }}
+                                // favePools={favePools}
+                                // currentPool={currentPoolInfo}
+                                // setChatStatus={setChatStatus}
+                                // isFullScreen={true}
+                                // userImageData={imageData}
+                                // ensName={ensName}
                                 />
                             }
                         />
