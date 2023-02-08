@@ -1,5 +1,4 @@
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
@@ -35,13 +34,18 @@ export const useProcessTransaction = (
     // const baseAddressLowerCase = baseAddress.toLowerCase();
     // const quoteAddressLowerCase = quoteAddress.toLowerCase();
 
-    const isBaseTokenMoneynessGreaterOrEqual = useMemo(
-        () =>
-            getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-                getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-            0,
-        [tx.base, tx.base, tx.chainId],
-    );
+    const isBaseTokenMoneynessGreaterOrEqual =
+        getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
+            getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
+        0;
+
+    // const isBaseTokenMoneynessGreaterOrEqual = useMemo(
+    //     () =>
+    //         getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
+    //             getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
+    //         0,
+    //     [tx.base, tx.base, tx.chainId],
+    // );
 
     // useEffect(() => {
     //     console.log({ isBaseTokenMoneynessGreaterOrEqual });
@@ -74,279 +78,247 @@ export const useProcessTransaction = (
         (transactionBaseAddressLowerCase === tokenBAddressLowerCase ||
             transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
-    const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
-        useState<string | undefined>();
-    const [truncatedLowDisplayPrice, setTruncatedLowDisplayPrice] = useState<string | undefined>();
-    const [truncatedHighDisplayPrice, setTruncatedHighDisplayPrice] = useState<
-        string | undefined
-    >();
-    const [truncatedLowDisplayPriceDenomByMoneyness, setTruncatedLowDisplayPriceDenomByMoneyness] =
-        useState<string | undefined>();
-    const [
-        truncatedHighDisplayPriceDenomByMoneyness,
-        setTruncatedHighDisplayPriceDenomByMoneyness,
-    ] = useState<string | undefined>();
+    let truncatedDisplayPrice;
+    let truncatedDisplayPriceDenomByMoneyness;
+    let truncatedLowDisplayPrice;
+    let truncatedHighDisplayPrice;
+    let truncatedLowDisplayPriceDenomByMoneyness;
+    let truncatedHighDisplayPriceDenomByMoneyness;
 
-    const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
-    const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
-    const [isBaseFlowPositive, setIsBaseFlowPositive] = useState(false);
-    const [isQuoteFlowPositive, setIsQuoteFlowPositive] = useState(false);
-
-    useEffect(() => {
-        setBaseFlowDisplay(undefined);
-        setQuoteFlowDisplay(undefined);
-    }, [tx.tx]);
+    let baseFlowDisplay;
+    let quoteFlowDisplay;
+    let isBaseFlowPositive = false;
+    let isQuoteFlowPositive = false;
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
 
-    useEffect(() => {
-        // setTruncatedDisplayPrice(undefined);
-        if (tx.entityType === 'limitOrder') {
-            if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
-                const priceDecimalCorrected = tx.limitPriceDecimalCorrected;
-                const invPriceDecimalCorrected = tx.invLimitPriceDecimalCorrected;
+    if (tx.entityType === 'limitOrder') {
+        if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
+            const priceDecimalCorrected = tx.limitPriceDecimalCorrected;
+            const invPriceDecimalCorrected = tx.invLimitPriceDecimalCorrected;
 
-                const nonInvertedPriceTruncated =
-                    priceDecimalCorrected === 0
-                        ? '0.00'
-                        : priceDecimalCorrected < 0.0001
-                        ? priceDecimalCorrected.toExponential(2)
-                        : priceDecimalCorrected < 2
-                        ? priceDecimalCorrected.toPrecision(3)
-                        : priceDecimalCorrected >= 100000
-                        ? formatAmountOld(priceDecimalCorrected)
-                        : priceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0.00'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmountOld(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
 
-                const invertedPriceTruncated =
-                    invPriceDecimalCorrected === 0
-                        ? '0.00'
-                        : invPriceDecimalCorrected < 0.0001
-                        ? invPriceDecimalCorrected.toExponential(2)
-                        : invPriceDecimalCorrected < 2
-                        ? invPriceDecimalCorrected.toPrecision(3)
-                        : invPriceDecimalCorrected >= 100000
-                        ? formatAmountOld(invPriceDecimalCorrected)
-                        : invPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmountOld(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
 
-                const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+            truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
 
-                const truncatedDisplayPrice = isDenomBase
-                    ? invertedPriceTruncated
-                    : nonInvertedPriceTruncated;
-
-                setTruncatedDisplayPrice(truncatedDisplayPrice);
-                setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
-            } else {
-                setTruncatedDisplayPrice(undefined);
-            }
-        } else if (tx.entityType === 'liqchange') {
-            if (
-                tx.bidTickPriceDecimalCorrected &&
-                tx.bidTickInvPriceDecimalCorrected &&
-                tx.askTickPriceDecimalCorrected &&
-                tx.askTickInvPriceDecimalCorrected
-            ) {
-                const bidTickPriceDecimalCorrected = tx.bidTickPriceDecimalCorrected;
-                const bidTickInvPriceDecimalCorrected = tx.bidTickInvPriceDecimalCorrected;
-                const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
-                const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
-                const nonInvertedBidPriceTruncated =
-                    bidTickPriceDecimalCorrected === 1000000000000
-                        ? '∞'
-                        : bidTickPriceDecimalCorrected === 0
-                        ? '0.00'
-                        : bidTickPriceDecimalCorrected < 0.0001
-                        ? bidTickPriceDecimalCorrected.toExponential(2)
-                        : bidTickPriceDecimalCorrected < 2
-                        ? bidTickPriceDecimalCorrected.toPrecision(3)
-                        : bidTickPriceDecimalCorrected >= 100000
-                        ? formatAmountOld(bidTickPriceDecimalCorrected, 1)
-                        : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                const invertedBidPriceTruncated =
-                    bidTickInvPriceDecimalCorrected === 1000000000000
-                        ? '∞'
-                        : bidTickInvPriceDecimalCorrected === 0
-                        ? '0.00'
-                        : bidTickInvPriceDecimalCorrected < 0.0001
-                        ? bidTickInvPriceDecimalCorrected.toExponential(2)
-                        : bidTickInvPriceDecimalCorrected < 2
-                        ? bidTickInvPriceDecimalCorrected.toPrecision(3)
-                        : bidTickInvPriceDecimalCorrected >= 100000
-                        ? formatAmountOld(bidTickInvPriceDecimalCorrected, 1)
-                        : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                const nonInvertedAskPriceTruncated =
-                    askTickPriceDecimalCorrected === 1000000000000
-                        ? '∞'
-                        : askTickPriceDecimalCorrected === 0
-                        ? '0.00'
-                        : askTickPriceDecimalCorrected < 0.0001
-                        ? askTickPriceDecimalCorrected.toExponential(2)
-                        : askTickPriceDecimalCorrected < 2
-                        ? askTickPriceDecimalCorrected.toPrecision(3)
-                        : askTickPriceDecimalCorrected >= 100000
-                        ? formatAmountOld(askTickPriceDecimalCorrected, 1)
-                        : askTickPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                const invertedAskPriceTruncated =
-                    askTickInvPriceDecimalCorrected === 1000000000000
-                        ? '0.00'
-                        : askTickInvPriceDecimalCorrected === 0
-                        ? '∞'
-                        : askTickInvPriceDecimalCorrected < 0.0001
-                        ? askTickInvPriceDecimalCorrected.toExponential(2)
-                        : askTickInvPriceDecimalCorrected < 2
-                        ? askTickInvPriceDecimalCorrected.toPrecision(3)
-                        : askTickInvPriceDecimalCorrected >= 100000
-                        ? formatAmountOld(askTickInvPriceDecimalCorrected, 1)
-                        : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                const truncatedLowDisplayPrice = isDenomBase
-                    ? `${invertedAskPriceTruncated}`
-                    : `${nonInvertedAskPriceTruncated}`;
-                const truncatedHighDisplayPrice = isDenomBase
-                    ? `${invertedBidPriceTruncated}`
-                    : `${nonInvertedBidPriceTruncated}`;
-
-                const truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedAskPriceTruncated}`
-                    : `${invertedAskPriceTruncated}`;
-                const truncatedHighDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedBidPriceTruncated}`
-                    : `${invertedBidPriceTruncated}`;
-
-                setTruncatedLowDisplayPrice(truncatedLowDisplayPrice);
-                setTruncatedHighDisplayPrice(truncatedHighDisplayPrice);
-                setTruncatedLowDisplayPriceDenomByMoneyness(
-                    truncatedLowDisplayPriceDenomByMoneyness,
-                );
-                setTruncatedHighDisplayPriceDenomByMoneyness(
-                    truncatedHighDisplayPriceDenomByMoneyness,
-                );
-            } else {
-                setTruncatedLowDisplayPrice(undefined);
-                setTruncatedHighDisplayPrice(undefined);
-            }
+            truncatedDisplayPrice = isDenomBase
+                ? invertedPriceTruncated
+                : nonInvertedPriceTruncated;
         } else {
-            if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
-                const priceDecimalCorrected = tx.priceDecimalCorrected;
-                const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
-
-                const nonInvertedPriceTruncated =
-                    priceDecimalCorrected === 0
-                        ? '0.00'
-                        : priceDecimalCorrected < 0.0001
-                        ? priceDecimalCorrected.toExponential(2)
-                        : priceDecimalCorrected < 2
-                        ? priceDecimalCorrected.toPrecision(3)
-                        : priceDecimalCorrected >= 100000
-                        ? formatAmountOld(priceDecimalCorrected)
-                        : priceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-
-                const invertedPriceTruncated =
-                    invPriceDecimalCorrected === 0
-                        ? '0.00'
-                        : invPriceDecimalCorrected < 0.0001
-                        ? invPriceDecimalCorrected.toExponential(2)
-                        : invPriceDecimalCorrected < 2
-                        ? invPriceDecimalCorrected.toPrecision(3)
-                        : invPriceDecimalCorrected >= 100000
-                        ? formatAmountOld(invPriceDecimalCorrected)
-                        : invPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-
-                const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
-
-                const truncatedDisplayPrice = isDenomBase
-                    ? invertedPriceTruncated
-                    : nonInvertedPriceTruncated;
-
-                setTruncatedDisplayPrice(truncatedDisplayPrice);
-                setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
-            } else {
-                setTruncatedDisplayPrice(undefined);
-            }
+            truncatedDisplayPrice = undefined;
         }
-
-        if (tx.baseFlowDecimalCorrected !== undefined && tx.baseFlowDecimalCorrected !== null) {
-            const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
-            const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowPositive = baseFlowDisplayNum > 0;
-            setIsBaseFlowPositive(isBaseFlowPositive);
-            const baseFlowDisplayTruncated =
-                baseFlowAbsNum === 0
-                    ? '0.00 '
-                    : baseFlowAbsNum < 0.0001
-                    ? baseFlowAbsNum.toExponential(2)
-                    : baseFlowAbsNum < 0.01
-                    ? baseFlowAbsNum.toPrecision(3)
-                    : baseFlowAbsNum >= 10000
-                    ? formatAmountOld(baseFlowAbsNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      baseFlowAbsNum.toLocaleString(undefined, {
+    } else if (tx.entityType === 'liqchange') {
+        if (
+            tx.bidTickPriceDecimalCorrected &&
+            tx.bidTickInvPriceDecimalCorrected &&
+            tx.askTickPriceDecimalCorrected &&
+            tx.askTickInvPriceDecimalCorrected
+        ) {
+            const bidTickPriceDecimalCorrected = tx.bidTickPriceDecimalCorrected;
+            const bidTickInvPriceDecimalCorrected = tx.bidTickInvPriceDecimalCorrected;
+            const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
+            const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
+            const nonInvertedBidPriceTruncated =
+                bidTickPriceDecimalCorrected === 1000000000000
+                    ? '∞'
+                    : bidTickPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : bidTickPriceDecimalCorrected < 0.0001
+                    ? bidTickPriceDecimalCorrected.toExponential(2)
+                    : bidTickPriceDecimalCorrected < 2
+                    ? bidTickPriceDecimalCorrected.toPrecision(3)
+                    : bidTickPriceDecimalCorrected >= 100000
+                    ? formatAmountOld(bidTickPriceDecimalCorrected, 1)
+                    : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      }) + ' ';
-            const baseFlowDisplayString =
-                tx.entityType !== 'liqchange' && isBaseFlowPositive
-                    ? `${baseFlowDisplayTruncated}`
-                    : `${baseFlowDisplayTruncated}`;
-            setBaseFlowDisplay(baseFlowDisplayString);
-        }
-        if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
-            const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
-            const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-            const isQuoteFlowPositive = quoteFlowDisplayNum > 0;
-            setIsQuoteFlowPositive(isQuoteFlowPositive);
-            const quoteFlowDisplayTruncated =
-                quoteFlowAbsNum === 0
-                    ? '0.00 '
-                    : quoteFlowAbsNum < 0.0001
-                    ? quoteFlowAbsNum.toExponential(2)
-                    : quoteFlowAbsNum < 0.01
-                    ? quoteFlowAbsNum.toPrecision(3)
-                    : quoteFlowAbsNum >= 10000
-                    ? formatAmountOld(quoteFlowAbsNum)
-                    : // ? quoteLiqDisplayNum.toExponential(2)
-                      quoteFlowAbsNum.toLocaleString(undefined, {
+                      });
+            const invertedBidPriceTruncated =
+                bidTickInvPriceDecimalCorrected === 1000000000000
+                    ? '∞'
+                    : bidTickInvPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : bidTickInvPriceDecimalCorrected < 0.0001
+                    ? bidTickInvPriceDecimalCorrected.toExponential(2)
+                    : bidTickInvPriceDecimalCorrected < 2
+                    ? bidTickInvPriceDecimalCorrected.toPrecision(3)
+                    : bidTickInvPriceDecimalCorrected >= 100000
+                    ? formatAmountOld(bidTickInvPriceDecimalCorrected, 1)
+                    : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      }) + ' ';
-            const quoteFlowDisplayString =
-                tx.entityType !== 'liqchange' && isQuoteFlowPositive
-                    ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-                      // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                      `${quoteFlowDisplayTruncated}`
-                    : `${quoteFlowDisplayTruncated}`;
-            setQuoteFlowDisplay(quoteFlowDisplayString);
+                      });
+            const nonInvertedAskPriceTruncated =
+                askTickPriceDecimalCorrected === 1000000000000
+                    ? '∞'
+                    : askTickPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : askTickPriceDecimalCorrected < 0.0001
+                    ? askTickPriceDecimalCorrected.toExponential(2)
+                    : askTickPriceDecimalCorrected < 2
+                    ? askTickPriceDecimalCorrected.toPrecision(3)
+                    : askTickPriceDecimalCorrected >= 100000
+                    ? formatAmountOld(askTickPriceDecimalCorrected, 1)
+                    : askTickPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            const invertedAskPriceTruncated =
+                askTickInvPriceDecimalCorrected === 1000000000000
+                    ? '0.00'
+                    : askTickInvPriceDecimalCorrected === 0
+                    ? '∞'
+                    : askTickInvPriceDecimalCorrected < 0.0001
+                    ? askTickInvPriceDecimalCorrected.toExponential(2)
+                    : askTickInvPriceDecimalCorrected < 2
+                    ? askTickInvPriceDecimalCorrected.toPrecision(3)
+                    : askTickInvPriceDecimalCorrected >= 100000
+                    ? formatAmountOld(askTickInvPriceDecimalCorrected, 1)
+                    : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            truncatedLowDisplayPrice = isDenomBase
+                ? `${invertedAskPriceTruncated}`
+                : `${nonInvertedAskPriceTruncated}`;
+            truncatedHighDisplayPrice = isDenomBase
+                ? `${invertedBidPriceTruncated}`
+                : `${nonInvertedBidPriceTruncated}`;
+
+            truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? `${nonInvertedAskPriceTruncated}`
+                : `${invertedAskPriceTruncated}`;
+            truncatedHighDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? `${nonInvertedBidPriceTruncated}`
+                : `${invertedBidPriceTruncated}`;
+        } else {
+            truncatedLowDisplayPrice = undefined;
+            truncatedHighDisplayPrice = undefined;
         }
-    }, [JSON.stringify(tx), isDenomBase, isBaseTokenMoneynessGreaterOrEqual]);
+    } else {
+        if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
+            const priceDecimalCorrected = tx.priceDecimalCorrected;
+            const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0.00'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmountOld(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmountOld(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
+
+            truncatedDisplayPrice = isDenomBase
+                ? invertedPriceTruncated
+                : nonInvertedPriceTruncated;
+        } else {
+            truncatedDisplayPrice = undefined;
+        }
+    }
+
+    if (tx.baseFlowDecimalCorrected !== undefined && tx.baseFlowDecimalCorrected !== null) {
+        const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
+        const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
+        isBaseFlowPositive = baseFlowDisplayNum > 0;
+        const baseFlowDisplayTruncated =
+            baseFlowAbsNum === 0
+                ? '0.00 '
+                : baseFlowAbsNum < 0.0001
+                ? baseFlowAbsNum.toExponential(2)
+                : baseFlowAbsNum < 0.01
+                ? baseFlowAbsNum.toPrecision(3)
+                : baseFlowAbsNum >= 10000
+                ? formatAmountOld(baseFlowAbsNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  baseFlowAbsNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  }) + ' ';
+        const baseFlowDisplayString =
+            tx.entityType !== 'liqchange' && isBaseFlowPositive
+                ? `${baseFlowDisplayTruncated}`
+                : `${baseFlowDisplayTruncated}`;
+        baseFlowDisplay = baseFlowDisplayString;
+    }
+    if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
+        const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
+        const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
+        isQuoteFlowPositive = quoteFlowDisplayNum > 0;
+        const quoteFlowDisplayTruncated =
+            quoteFlowAbsNum === 0
+                ? '0.00 '
+                : quoteFlowAbsNum < 0.0001
+                ? quoteFlowAbsNum.toExponential(2)
+                : quoteFlowAbsNum < 0.01
+                ? quoteFlowAbsNum.toPrecision(3)
+                : quoteFlowAbsNum >= 10000
+                ? formatAmountOld(quoteFlowAbsNum)
+                : // ? quoteLiqDisplayNum.toExponential(2)
+                  quoteFlowAbsNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  }) + ' ';
+        const quoteFlowDisplayString =
+            tx.entityType !== 'liqchange' && isQuoteFlowPositive
+                ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+                  // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+                  `${quoteFlowDisplayTruncated}`
+                : `${quoteFlowDisplayTruncated}`;
+        quoteFlowDisplay = quoteFlowDisplayString;
+    }
 
     const priceType =
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
@@ -367,11 +339,11 @@ export const useProcessTransaction = (
             : isOnPortfolioPage
             ? isBaseTokenMoneynessGreaterOrEqual
                 ? isBuy
-                    ? 'sell'
-                    : 'buy'
+                    ? 'buy'
+                    : 'sell'
                 : isBuy
-                ? 'buy'
-                : 'sell'
+                ? 'sell'
+                : 'buy'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';

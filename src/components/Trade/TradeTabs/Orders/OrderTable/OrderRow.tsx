@@ -75,7 +75,7 @@ export default function OrderRow(props: propsIF) {
         // quoteDisplayFrontend,
         isOrderFilled,
         truncatedDisplayPrice,
-        side,
+        sideType,
         usdValue,
         usdValueLocaleString,
         baseTokenSymbol,
@@ -88,7 +88,7 @@ export default function OrderRow(props: propsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
     const orderMenuProps = {
         crocEnv: crocEnv,
@@ -101,7 +101,7 @@ export default function OrderRow(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = isOnPortfolioPage
+    const priceCharacter = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -109,9 +109,17 @@ export default function OrderRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? quoteTokenCharacter
+            : baseTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
     const priceStyle = 'base_color';
 
-    const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
+    const sellOrderStyle = sideType === 'sell' ? 'order_sell' : 'order_buy';
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
@@ -481,7 +489,7 @@ export default function OrderRow(props: propsIF) {
                     {isOnPortfolioPage
                         ? (
                               <p className={`${styles.align_right} `}>
-                                  <span>{sideCharacter}</span>
+                                  <span>{priceCharacter}</span>
                                   <span style={{ fontFamily: 'monospace' }}>
                                       {truncatedDisplayPriceDenomByMoneyness}
                                   </span>
@@ -489,7 +497,7 @@ export default function OrderRow(props: propsIF) {
                           ) || '…'
                         : (
                               <p className={`${styles.align_right} `}>
-                                  <span>{sideCharacter}</span>
+                                  <span>{priceCharacter}</span>
                                   <span style={{ fontFamily: 'monospace' }}>
                                       {truncatedDisplayPrice}
                                   </span>
@@ -504,7 +512,7 @@ export default function OrderRow(props: propsIF) {
                     data-label='side'
                     className={sellOrderStyle}
                 >
-                    {`${side} ${sideCharacter}`}
+                    {`${sideType} ${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
@@ -525,7 +533,7 @@ export default function OrderRow(props: propsIF) {
                     onClick={openDetailsModal}
                 >
                     <p>Order</p>
-                    <p>{`${side} ${sideCharacter}`}</p>
+                    <p>{`${sideType} ${sideCharacter}`}</p>
                 </li>
             )}
 
