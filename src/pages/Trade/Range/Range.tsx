@@ -1320,6 +1320,7 @@ export default function Range(props: propsIF) {
                             rangeAllowed={poolExists === true && rangeAllowed && !isInvalidRange}
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
                             bypassConfirm={bypassConfirm}
+                            isAmbient={isAmbient}
                         />
                     )
                 ) : (
