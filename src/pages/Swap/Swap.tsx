@@ -640,6 +640,7 @@ export default function Swap(props: propsIF) {
                                 isSwapConfirmationBypassEnabled={bypassConfirm}
                                 swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
+                                bypassConfirm={bypassConfirm}
                             />
                         )
                     ) : (

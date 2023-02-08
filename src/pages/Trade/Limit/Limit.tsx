@@ -816,6 +816,7 @@ export default function Limit(props: propsIF) {
                             onClickFn={bypassConfirm ? sendLimitOrder : openModal}
                             limitAllowed={isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
+                            bypassConfirm={bypassConfirm}
                         />
                     )
                 ) : (

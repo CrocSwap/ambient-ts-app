@@ -1319,6 +1319,7 @@ export default function Range(props: propsIF) {
                             onClickFn={bypassConfirm ? sendTransaction : openModal}
                             rangeAllowed={poolExists === true && rangeAllowed && !isInvalidRange}
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
+                            bypassConfirm={bypassConfirm}
                         />
                     )
                 ) : (
