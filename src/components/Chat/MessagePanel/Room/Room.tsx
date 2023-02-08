@@ -83,7 +83,7 @@ export default function RoomDropdown(props: RoomProps) {
 
     useEffect(() => {
         const roomArr: string[] = [];
-        rooms.map((pool: PoolIF) => {
+        rooms?.map((pool: PoolIF) => {
             roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
         });
 
@@ -97,7 +97,7 @@ export default function RoomDropdown(props: RoomProps) {
     useEffect(() => {
         if (props.selectedRoom === 'Global') {
             const roomArr: string[] = [];
-            rooms.map((pool: PoolIF) => {
+            rooms?.map((pool: PoolIF) => {
                 roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
             });
             setRoomArray(() => {

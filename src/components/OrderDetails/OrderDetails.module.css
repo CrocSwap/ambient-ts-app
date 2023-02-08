@@ -1,4 +1,5 @@
 .order_details_container{
+    min-width: 340px;
     width: auto;
 max-width: 1000px;
 }

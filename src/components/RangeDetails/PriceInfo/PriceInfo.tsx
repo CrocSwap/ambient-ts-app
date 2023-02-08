@@ -1,11 +1,11 @@
 import styles from './PriceInfo.module.css';
-import Row from '../../Global/Row/Row';
 
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import Divider from '../../Global/Divider/Divider';
-import { motion } from 'framer-motion';
+
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
+import Apy from '../../Global/Tabs/Apy/Apy';
+import DividerDark from '../../Global/DividerDark/DividerDark';
 
 type ItemIF = {
     slug: string;
@@ -28,6 +28,7 @@ interface IPriceInfoProps {
     isDenomBase: boolean;
     poolPriceDisplay: number;
     controlItems: ItemIF[];
+    positionApy: number | undefined;
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
@@ -44,108 +45,85 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenLogoURI,
         baseTokenSymbol,
         quoteTokenSymbol,
-        isAmbient,
+        // isAmbient,
         isDenomBase,
-        poolPriceDisplay,
-        controlItems,
+        // poolPriceDisplay,
+        // controlItems,
+        positionApy,
     } = props;
-    const collateralContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <span>Pooled {baseTokenSymbol}</span>
-                <div className={styles.info_text}>
-                    {baseCollateralDisplay || '…'}
-                    {baseTokenLogoURI ? (
-                        <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
-                    )}
-                </div>
-            </Row>
-            {/*  */}
-            <Row>
-                <span>Pooled {quoteTokenSymbol}</span>
-                <div className={styles.info_text}>
-                    {quoteCollateralDisplay || '…'}
-                    {/* <img src={quoteTokenLogoURI} alt='' /> */}
-                    {quoteTokenLogoURI ? (
-                        <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
-                    )}
-                </div>
-            </Row>
-            {/*  */}
-            {isAmbient ? null : <Divider />}
-            {/* <div className={styles.divider}></div> */}
-            {isAmbient ? null : (
-                <Row>
-                    <span> Earned {baseTokenSymbol}</span>
-                    <div className={styles.info_text}>
-                        {baseFeesDisplay || '…'}
-                        {baseTokenLogoURI ? (
-                            <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
-                        )}
-                    </div>
-                </Row>
-            )}
-            {isAmbient ? null : (
-                <Row>
-                    <span>Earned {quoteTokenSymbol} </span>
-                    <div className={styles.info_text}>
-                        {quoteFeesDisplay || '…'}
-                        {quoteTokenLogoURI ? (
-                            <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
-                        )}
-                    </div>
-                </Row>
-            )}
-        </motion.div>
+
+    const baseTokenLogoDisplay = baseTokenLogoURI ? (
+        <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
+    ) : (
+        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+    );
+    const quoteTokenLogoDisplay = quoteTokenLogoURI ? (
+        <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
+    ) : (
+        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
     );
 
-    // const timesContent = (
-    //     <motion.div
-    //         layout
-    //         initial={{ opacity: 0 }}
-    //         animate={{ opacity: 1 }}
-    //         exit={{ opacity: 0 }}
-    //         className={styles.info_container}
-    //     >
-    //         <Row>
-    //             <span>Open Time</span>
-    //             <div className={styles.info_text}>25/08/22</div>
-    //         </Row>
+    const totalValue = (
+        <div className={styles.value_content}>
+            <p>Total Value:</p>
+            <p>${usdValue}</p>
+        </div>
+    );
 
-    //         <Row>
-    //             <span>Close Time</span>
-    //             <div className={styles.info_text}>30/08/22</div>
-    //         </Row>
-    //     </motion.div>
-    // );
+    const pooledContent = <div className={styles.pooled_container}></div>;
+    const earnedContent = (
+        <div className={styles.earned_container}>
+            <section>
+                <div>
+                    <p>{`Pooled ${baseTokenSymbol}`}</p>
+                    <p>
+                        {baseCollateralDisplay || '…'}
+                        {baseTokenLogoDisplay}
+                    </p>
+                </div>
 
-    const totalValueContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <span>Total Value</span>
-                <div className={styles.info_text}>{usdValue}</div>
-            </Row>
-        </motion.div>
+                <div>
+                    <p>{`Pooled ${quoteTokenSymbol}`}</p>
+                    <p>
+                        {quoteCollateralDisplay || '…'}
+                        {quoteTokenLogoDisplay}
+                    </p>
+                </div>
+            </section>
+            <DividerDark />
+
+            <section>
+                <div>
+                    <p>{`Earned ${baseTokenSymbol}`}</p>
+                    <p>
+                        {baseFeesDisplay || '…'}
+                        {baseTokenLogoDisplay}
+                    </p>
+                </div>
+
+                <div>
+                    <p>{`Earned ${quoteTokenSymbol}`}</p>
+                    <p>
+                        {quoteFeesDisplay || '…'}
+                        {quoteTokenLogoDisplay}
+                    </p>
+                </div>
+            </section>
+        </div>
+    );
+
+    const priceStatusContent = (
+        <div className={styles.price_status_content}>
+            <section>
+                <p>Range Min:</p>
+                <h2 className={styles.low_range}>{lowRangeDisplay}</h2>
+            </section>
+
+            <section>
+                <p>Range Max:</p>
+                <h2 className={styles.high_range}>{highRangeDisplay}</h2>
+            </section>
+        </div>
     );
 
     const tokenPairDetails = (
@@ -155,72 +133,23 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 // dispatch(toggleDidUserFlipDenom());
             }}
         >
-            <div className={styles.token_pair_images}>
-                {baseTokenLogoURI ? (
-                    <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
-                ) : (
-                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
-                )}
-
-                {quoteTokenLogoURI ? (
-                    <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
-                ) : (
-                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
-                )}
-            </div>
             <p>
-                {' '}
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
 
-    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const minMaxPriceDisplay = (
-        <div className={styles.min_max_price}>
-            <div className={styles.min_max_content}>
-                Min Price
-                <span className={styles.min_price}>{lowRangeDisplay ?? 0}</span>
-            </div>
-            <div className={styles.min_max_content}>
-                Current Price
-                <span className={styles.min_price}>{displayPriceString}</span>
-            </div>
-            <div className={styles.min_max_content}>
-                Max Price
-                <span className={styles.max_price}>{highRangeDisplay ?? 'Infinity'}</span>
-            </div>
-        </div>
-    );
-    // console.log(controlItems);
-
     return (
         <div className={styles.main_container}>
-            {/* <div className={styles.price_info_container}> */}
-            {tokenPairDetails}
-            {controlItems[1].checked && totalValueContent}
-            {/* {controlItems[0].checked && timesContent} */}
-            {controlItems[0].checked && collateralContent}
-            {minMaxPriceDisplay}
-
-            {/* <div className={styles.graph_image_container}>
-                    <img src={graphImage} alt='chart' />
-                </div> */}
-            {/* </div> */}
+            <div className={styles.price_info_container}>
+                {tokenPairDetails}
+                {totalValue}
+                {pooledContent}
+                {earnedContent}
+                {priceStatusContent}
+                <Apy amount={positionApy || undefined} fs='48px' lh='60px' center showTitle />
+            </div>
         </div>
     );
 }

@@ -1,8 +1,25 @@
+.apr{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    
+}
+
+.align_center{
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+
+}
+
 .apr p {
     /* font-weight: 200; */
 
     font-weight: 100;
     letter-spacing: -0.02em;
+
+   
 }
 
 .apr_green p {
@@ -14,7 +31,7 @@
     background-clip: text;
     text-fill-color: transparent;
 
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+    /* text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75); */
 }
 
 .apr_red p {
@@ -26,7 +43,7 @@
     background-clip: text;
     text-fill-color: transparent;
 
-    text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75);
+    /* text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75); */
 }
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {

@@ -30,7 +30,7 @@ export default function OrderAccordions(props: propsIF) {
         quoteDisplayFrontend,
         isOrderFilled,
         truncatedDisplayPrice,
-        side,
+        sideType,
         usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -72,7 +72,7 @@ export default function OrderAccordions(props: propsIF) {
     );
     const sideDisplay = (
         <div className={styles.side}>
-            <p>{side}</p>
+            <p>{sideType}</p>
         </div>
     );
     const typeDisplay = (
@@ -135,7 +135,7 @@ export default function OrderAccordions(props: propsIF) {
                             posHash={posHashTruncated}
                             userNameToDisplay={userNameToDisplay}
                             price={truncatedDisplayPrice}
-                            side={side}
+                            side={sideType}
                             baseTokenSymbol={baseTokenSymbol}
                             quoteTokenSymbol={quoteTokenSymbol}
                             value={usdValue}

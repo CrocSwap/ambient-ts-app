@@ -8,7 +8,6 @@
     align-self: end;
     vertical-align: middle;
     margin: 10px;
-
 }
 
 .avatar_image_position {
@@ -21,7 +20,6 @@
     align-self: end;
     vertical-align: end;
     margin: 0;
-
 }
 
 .message_date {
@@ -33,7 +31,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 8px);
+    font-size: 12px;
+    /* font-size: calc(1vw - 8px); */
     line-height: 12px;
     align-self: flex-end;
 
@@ -43,11 +42,9 @@
 
     /* Inside auto layout */
     order: 0;
-
 }
 
 .message {
-
     width: 80%;
     height: 80%;
 
@@ -57,7 +54,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 2px);
+    font-size: 14px;
+    /* font-size: calc(1vw - 2px); */
     line-height: 15px;
     flex-grow: 5px !important;
     margin: 10px;
@@ -67,7 +65,7 @@
     font-weight: 300;
     font-size: 15px;
     line-height: 15px;
-    color: #EBEBFF;
+    color: #ebebff;
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
@@ -107,28 +105,25 @@
     float: left;
     vertical-align: middle;
     margin-left: 301px;
-    
-
-    
 }
 
 .sent_message_body {
-flex-grow: 5 !important;
-display: flex;
-flex-direction: row;
-align-items: flex-end;
-gap: 0px;
+    flex-grow: 5 !important;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0px;
 
-height: 100%;
-width:  100%;
-height: auto;
- min-height: 53%;
-padding: 0px 4px 8px;
+    height: 100%;
+    width: 100%;
+    height: auto;
+    min-height: 53%;
+    padding: 0px 4px 8px;
 
-box-sizing: border-box;
-flex: none;
-order: 4;
-align-self: stretch;
+    box-sizing: border-box;
+    flex: none;
+    order: 4;
+    align-self: stretch;
 }
 
 .sent_message_body_with_mention {
@@ -137,21 +132,19 @@ align-self: stretch;
     flex-direction: row;
     align-items: flex-end;
     gap: 0px;
-    
+
     height: 100%;
-    width:  100%;
+    width: 100%;
     height: auto;
-     min-height: 53%;
+    min-height: 53%;
     padding: 0px 4px 8px;
-    
+
     box-sizing: border-box;
     flex: none;
     order: 4;
     align-self: stretch;
-    background: #242F3F;
-    }
-
-
+    background: #242f3f;
+}
 
 .name {
     width: 82px;
@@ -162,24 +155,23 @@ align-self: stretch;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 5px);
+    font-size: 12px;
+    /* font-size: calc(1vw - 5px); */
     line-height: 16px;
     display: flex;
     align-items: center;
 
     /* accent/secondary */
 
-    color: #E480FF;
-
+    color: #e480ff;
 
     /* Inside auto layout */
 
     flex: none;
     order: 0;
     flex-grow: 0;
-    
-    
-    margin-left: 5px
+
+    margin-left: 5px;
 }
 
 .current_user_name {
@@ -191,7 +183,8 @@ align-self: stretch;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 5px);
+    font-size: 12px;
+    /* font-size: calc(1vw - 5px); */
     line-height: 16px;
     display: flex;
     align-items: center;
@@ -200,13 +193,12 @@ align-self: stretch;
 
     color: #9f55ffd5;
 
-
     /* Inside auto layout */
 
     flex: none;
     order: 0;
     flex-grow: 0;
-    margin-left: 5px
+    margin-left: 5px;
 }
 
 .message_item {
@@ -220,7 +212,7 @@ align-self: stretch;
     word-break: break-word;
 }
 
- img,
+img,
 picture {
     max-width: 100%;
-} 
+}

@@ -21,7 +21,7 @@ interface SentMessageProps {
 export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
 
-    const { userImageData } = props;
+    // const { userImageData } = props;
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -112,9 +112,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
             }
         >
             <div className={styles.nft_container}>
-                {userImageData[1] ? <img src={userImageData[1]} alt='nft' /> : null}
+                {/* {userImageData[1] ? <img src={userImageData[1]} alt='nft' /> : null}
                 {userImageData[2] ? <img src={userImageData[2]} alt='nft' /> : null}
-                {userImageData[3] ? <img src={userImageData[3]} alt='nft' /> : null}
+                {userImageData[3] ? <img src={userImageData[3]} alt='nft' /> : null} */}
                 {myBlockies}
             </div>
             <div className={styles.message_item}>

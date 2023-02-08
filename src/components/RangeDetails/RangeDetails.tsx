@@ -7,14 +7,14 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
-import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
-import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
+
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
-import RangeDetailsActions from './RangeDetailsActions/RangeDetailsActions';
-import RangeStatus from '../Global/RangeStatus/RangeStatus';
+
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
+import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -39,11 +39,14 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     positionApy: number;
+    account: string;
 
     closeGlobalModal: () => void;
 }
 
 export default function RangeDetails(props: propsIF) {
+    const [showShareComponent, setShowShareComponent] = useState(false);
+
     const {
         crocEnv,
         baseTokenAddress,
@@ -61,9 +64,10 @@ export default function RangeDetails(props: propsIF) {
         position,
         positionApy,
         closeGlobalModal,
-        isPositionInRange,
+        // isPositionInRange,
         isAmbient,
         cachedQuerySpotPrice,
+        account,
     } = props;
 
     const detailsRef = useRef(null);
@@ -251,35 +255,68 @@ export default function RangeDetails(props: propsIF) {
             })();
         }
     }, [lastBlockNumber]);
-
+    // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         // { slug: 'times', name: 'Show times', checked: false },
         { slug: 'collateral', name: 'Show collateral', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
 
-    const handleChange = (slug: string) => {
-        const copyControlItems = [...controlItems];
-        const modifiedControlItems = copyControlItems.map((item) => {
-            if (slug === item.slug) {
-                item.checked = !item.checked;
-            }
+    // const handleChange = (slug: string) => {
+    //     const copyControlItems = [...controlItems];
+    //     const modifiedControlItems = copyControlItems.map((item) => {
+    //         if (slug === item.slug) {
+    //             item.checked = !item.checked;
+    //         }
 
-            return item;
-        });
+    //         return item;
+    //     });
 
-        setControlItems(modifiedControlItems);
-    };
+    //     setControlItems(modifiedControlItems);
+    // };
 
     const [showSettings, setShowSettings] = useState(false);
 
-    const controlDisplay = showSettings ? (
-        <div className={styles.control_display_container}>
-            {controlItems.map((item, idx) => (
-                <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
-            ))}
+    // const controlDisplay = showSettings ? (
+    //     <div className={styles.control_display_container}>
+    //         {controlItems.map((item, idx) => (
+    //             <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
+    //         ))}
+    //     </div>
+    // ) : null;
+
+    const shareComponent = (
+        <div ref={detailsRef}>
+            <div className={styles.main_content}>
+                <div className={styles.left_container}>
+                    <PriceInfo
+                        poolPriceDisplay={poolPriceDisplay}
+                        usdValue={usdValue ?? '…'}
+                        lowRangeDisplay={lowRangeDisplay}
+                        highRangeDisplay={highRangeDisplay}
+                        baseCollateralDisplay={baseCollateralDisplay}
+                        quoteCollateralDisplay={quoteCollateralDisplay}
+                        baseFeesDisplay={baseFeesDisplay}
+                        quoteFeesDisplay={quoteFeesDisplay}
+                        baseTokenLogoURI={baseTokenLogoURI}
+                        quoteTokenLogoURI={quoteTokenLogoURI}
+                        baseTokenSymbol={props.baseTokenSymbol}
+                        quoteTokenSymbol={props.quoteTokenSymbol}
+                        isDenomBase={props.isDenomBase}
+                        controlItems={controlItems}
+                        isAmbient={isAmbient}
+                        positionApy={positionApy}
+                    />
+                </div>
+                <div className={styles.right_container}>
+                    <TransactionDetailsGraph tx={position} transactionType={'liqchange'} />
+                    {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
+                </div>
+                {/* <RangeDetailsActions /> */}
+            </div>
+            <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
-    ) : null;
+    );
 
     return (
         <div className={styles.range_details_container}>
@@ -288,39 +325,14 @@ export default function RangeDetails(props: propsIF) {
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
+                showShareComponent={showShareComponent}
+                setShowShareComponent={setShowShareComponent}
             />
-            {controlDisplay}
-            <div ref={detailsRef}>
-                <div className={styles.main_content}>
-                    <div className={styles.left_container}>
-                        <PriceInfo
-                            poolPriceDisplay={poolPriceDisplay}
-                            usdValue={usdValue ?? '…'}
-                            lowRangeDisplay={lowRangeDisplay}
-                            highRangeDisplay={highRangeDisplay}
-                            baseCollateralDisplay={baseCollateralDisplay}
-                            quoteCollateralDisplay={quoteCollateralDisplay}
-                            baseFeesDisplay={baseFeesDisplay}
-                            quoteFeesDisplay={quoteFeesDisplay}
-                            baseTokenLogoURI={baseTokenLogoURI}
-                            quoteTokenLogoURI={quoteTokenLogoURI}
-                            baseTokenSymbol={props.baseTokenSymbol}
-                            quoteTokenSymbol={props.quoteTokenSymbol}
-                            isDenomBase={props.isDenomBase}
-                            controlItems={controlItems}
-                            isAmbient={isAmbient}
-                        />
-                    </div>
-                    <div className={styles.right_container}>
-                        <APYGraphDisplay
-                            updatedPositionApy={updatedPositionApy}
-                            position={position}
-                        />
-                    </div>
-                    <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} fullText />
-                    <RangeDetailsActions />
-                </div>
-            </div>
+            {showShareComponent ? (
+                shareComponent
+            ) : (
+                <RangeDetailsSimplify account={account} position={position} />
+            )}
         </div>
     );
 }
