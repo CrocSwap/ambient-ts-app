@@ -2551,7 +2551,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
-
+        graphData: graphData,
         openGlobalModal: openGlobalModal,
 
         poolExists: poolExists,
