@@ -1,3 +1,8 @@
+.main_container{
+    padding: 1rem;
+    height: calc(100vh - 7.5rem);
+}
+
 .left_container{
 background: var(--dark1);
 /* background: red; */
@@ -12,16 +17,23 @@ padding: 4px 1rem;
 .user_wallet{
     /* padding: 1rem 4px; */
     height: 50px;
-    display: flex;
     /* justify-content: center; */
     /* align-items: center; */
-    border-bottom: 1px solid white;;
+    border-bottom: 1px solid var(--text-grey-dark);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* align-items: center; */
 
 }
 
 .right_container_header{
     height: 50px;
-    border-bottom: 1px solid white;;
+    border-bottom: 1px solid var(--text-grey-dark);
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    color: var(--text-grey-light)
 }
 
 .options{
@@ -33,6 +45,27 @@ padding: 4px 1rem;
 
 .options header{
     margin: 8px 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.options header h3{
+    text-transform: uppercase;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light)
+}
+
+.options span{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white);
+    text-transform: uppercase;
+    
+}
+
+.options header svg{
+    display: none;
 }
 
 .options div{
@@ -41,6 +74,48 @@ padding: 4px 1rem;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+}
+
+.user_wallet div{
+    cursor: pointer;
+}
+
+.user_wallet a{
+    text-transform: capitalize;
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+}
+.chat_main_container{
+   display: flex;
+   flex-direction: column;
+}
+/* .chat_scrollable{
+    padding: 1rem;
+    overflow-y: scroll;
+    box-shadow: 0px 15px 10px -15px #111;    
+   
+   
+}
+.chat_container_divider{
+    height: 30px;
+}
+.chat_input{
+    padding: 1rem;
+    background: green;
+    border-radius: var(--border-radius);
+    background: var(--dark1);
+    height: 100px;
+} */
+
+.main_container_close .options span, .main_container_close .user_wallet a, .main_container_close .options header h3{
+    display: none;
+}
+.main_container_close .options header svg{
+    display: block;
 }
 
 @media only screen and (min-width: 1280px) {
@@ -55,15 +130,7 @@ padding: 4px 1rem;
         display: grid;
         grid-template-columns: 60px auto;
     }
-
-    .content-container {
-        height: 100vh;
-
-        background: var(--body-bg);
-    }
-    .content-container-trade {
-        overflow: hidden;
-
-        background: var(--body-bg);
-    }
+.chat_main_container{
+    height: 80vh
+}
 }

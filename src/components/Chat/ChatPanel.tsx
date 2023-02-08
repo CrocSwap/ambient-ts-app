@@ -16,6 +16,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import FullChat from '../../App/components/Chat/FullChat/FullChat';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -48,6 +49,8 @@ interface ChatProps {
     fullScreen?: boolean;
     userImageData: string[];
     ensName: string;
+
+    newChat?: boolean;
 }
 
 export default function ChatPanel(props: ChatProps) {
@@ -332,6 +335,17 @@ export default function ChatPanel(props: ChatProps) {
 
     const contentHeight = props.isFullScreen ? '100%' : props.chatStatus ? '479px' : '40px';
     const contentWidth = props.isFullScreen ? '100%' : props.chatStatus ? '320px' : '300px';
+
+    if (props.newChat)
+        return (
+            <FullChat
+                messageList={messageList}
+                chatNotification={chatNotification}
+                messageInput={messageInput}
+                room={room}
+                userName={ens === null || ens === '' ? walletID : (ens as string)}
+            />
+        );
 
     return (
         <div

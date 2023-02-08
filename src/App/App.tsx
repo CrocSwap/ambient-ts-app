@@ -2965,17 +2965,18 @@ export default function App() {
                         <Route
                             path='app/chat2'
                             element={
-                                <FullChat
-                                // chatStatus={true}
-                                // onClose={() => {
-                                //     console.error('Function not implemented.');
-                                // }}
-                                // favePools={favePools}
-                                // currentPool={currentPoolInfo}
-                                // setChatStatus={setChatStatus}
-                                // isFullScreen={true}
-                                // userImageData={imageData}
-                                // ensName={ensName}
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
+                                    userImageData={imageData}
+                                    ensName={ensName}
+                                    newChat={true}
                                 />
                             }
                         />
