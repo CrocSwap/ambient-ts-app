@@ -1092,7 +1092,7 @@ export default function Chart(props: ChartData) {
                 .style('filter', 'none');
             setRescale(true);
         }
-    }, [location.pathname, parsedChartData?.period]);
+    }, [location.pathname, parsedChartData?.period, simpleRangeWidth]);
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
