@@ -43,6 +43,8 @@ padding: 4px 1rem;
     padding: 1rem 0;
 }
 
+
+
 .options header{
     margin: 8px 0;
     display: flex;
@@ -60,7 +62,7 @@ padding: 4px 1rem;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-white);
-    text-transform: uppercase;
+    text-transform: capitalize;
     
 }
 
@@ -68,13 +70,14 @@ padding: 4px 1rem;
     display: none;
 }
 
-.options div{
+.options .option_item{
     padding: 0 1rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
 }
+
 
 .user_wallet div{
     cursor: pointer;
@@ -93,6 +96,30 @@ padding: 4px 1rem;
    display: flex;
    flex-direction: column;
 }
+
+.pool_display{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.pool_display:hover, .option_item:hover{
+background: var(--dark3);
+transition: all var(--animation-speed) ease-in-out;
+border-radius: 4px;
+cursor: pointer;
+}
+.pool_display img{
+    width: 20px;
+}
+
+.main_container_close .option_item, .main_container_close .pool_display{
+    padding: 0;
+}
+
 /* .chat_scrollable{
     padding: 1rem;
     overflow-y: scroll;
@@ -118,7 +145,7 @@ padding: 4px 1rem;
     display: block;
 }
 
-@media only screen and (min-width: 1280px) {
+@media only screen and (min-width: 720px) {
     .main_container {
         transition: all var(--animation-speed) ease-in-out;
         display: grid;

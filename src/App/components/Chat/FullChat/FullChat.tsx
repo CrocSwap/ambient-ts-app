@@ -1,10 +1,13 @@
 import styles from './FullChat.module.css';
 import { useState } from 'react';
-import { FiAtSign } from 'react-icons/fi';
+import { FiAtSign, FiSettings } from 'react-icons/fi';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
-import { IoOptions } from 'react-icons/io5';
+import { AiOutlineSound } from 'react-icons/ai';
+import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import { topPools } from '../../../../App/mockData';
+import { PoolIF } from '../../../../utils/interfaces/exports';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -13,9 +16,29 @@ interface FullChatPropsIF {
     room: any;
     userName: string;
 }
+
+interface ChannelDisplayPropsIF {
+    pool: PoolIF;
+}
 export default function FullChat(props: FullChatPropsIF) {
     const { messageList, chatNotification, messageInput, room, userName } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
+
+    console.log(topPools);
+
+    function ChannelDisplay(props: ChannelDisplayPropsIF) {
+        const { pool } = props;
+
+        return (
+            <div className={styles.pool_display}>
+                <div>
+                    <img src={pool?.base.logoURI} alt='base token' />
+                    <img src={pool?.quote.logoURI} alt='quote token' />
+                </div>
+                <span>{pool?.name}</span>
+            </div>
+        );
+    }
 
     const sidebarExpandOrCollapseIcon = (
         <div onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}>
@@ -27,6 +50,15 @@ export default function FullChat(props: FullChatPropsIF) {
         </div>
     );
 
+    const chatOptionData = [
+        { title: 'Settings', icon: <FiSettings size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Notification',
+            icon: <IoNotificationsOutline size={20} color='var(--text-highlight)' />,
+        },
+        { title: 'Sound', icon: <AiOutlineSound size={20} color='var(--text-highlight)' /> },
+    ];
+
     const chatOptions = (
         <section className={styles.options}>
             <header>
@@ -34,18 +66,12 @@ export default function FullChat(props: FullChatPropsIF) {
 
                 <IoOptions size={20} color='var(--text-grey-light)' />
             </header>
-            <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span> Settings</span>
-            </div>
-            <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span> Notification</span>
-            </div>
-            <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span> Sound</span>
-            </div>
+            {chatOptionData.map((item, idx) => (
+                <div key={idx} className={styles.option_item}>
+                    {item.icon}
+                    <span>{item.title}</span>
+                </div>
+            ))}
         </section>
     );
     const chatChanels = (
@@ -54,7 +80,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 <h3>CHANNELS</h3>
                 <MdOutlineChat size={20} color='var(--text-grey-light)' />
             </header>
-            <div>
+            {/* <div>
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span># Global</span>
             </div>
@@ -69,7 +95,14 @@ export default function FullChat(props: FullChatPropsIF) {
             <div>
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span># Something3</span>
+            </div> */}
+            <div className={styles.option_item}>
+                <FiAtSign size={20} color='var(--text-highlight)' />
+                <span> Global</span>
             </div>
+            {topPools.map((pool, idx) => (
+                <ChannelDisplay pool={pool} key={idx} />
+            ))}
         </section>
     );
 
