@@ -217,7 +217,7 @@ align-self: stretch;
 }
 
 .message_item p {
-    word-break: break-all;
+    word-break: break-word;
 }
 
  img,
