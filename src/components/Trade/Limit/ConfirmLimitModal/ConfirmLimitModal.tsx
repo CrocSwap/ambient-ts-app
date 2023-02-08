@@ -248,6 +248,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             <ConfirmationModalControl
                 bypassConfirm={bypassConfirm}
                 toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor='limit'
             />
         </div>
     );

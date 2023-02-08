@@ -3,7 +3,7 @@ import {
     // useState,
     // useEffect,
     Dispatch,
-    SetStateAction,
+    SetStateAction
 } from 'react';
 
 // START: Import JSX Functional Components
@@ -188,6 +188,7 @@ export default function ConfirmRangeModal(props: propsIF) {
             <ConfirmationModalControl
                 bypassConfirm={bypassConfirm}
                 toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor='range'
             />
         </>
     );

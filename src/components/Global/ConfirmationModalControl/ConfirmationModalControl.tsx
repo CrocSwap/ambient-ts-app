@@ -5,10 +5,15 @@ import styles from './ConfirmationModalControl.module.css';
 interface propsIF {
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+    toggleFor: string;
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const { bypassConfirm, toggleBypassConfirm } = props;
+    const {
+        bypassConfirm,
+        toggleBypassConfirm,
+        toggleFor,
+    } = props;
     const compKey = useId();
 
     const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] = useState(bypassConfirm);
@@ -19,7 +24,7 @@ export default function ConfirmationModalControl(props: propsIF) {
 
     return (
         <div className={styles.main_container}>
-            <p>Do not show this confirmation modal again</p>
+            <p>Skip this step in the future</p>
             <Toggle2
                 key={compKey}
                 isOn={isBypassToggleEnabledLocal}
@@ -27,7 +32,7 @@ export default function ConfirmationModalControl(props: propsIF) {
                 handleToggle={() => {
                     console.log('setting to: ' + !isBypassToggleEnabledLocal);
                     setIsBypassToggleEnabledLocal(!isBypassToggleEnabledLocal);
-                    toggleBypassConfirm('swap', !isBypassToggleEnabledLocal);
+                    toggleBypassConfirm(toggleFor, !isBypassToggleEnabledLocal);
                 }}
                 id='disabled_confirmation_modal_toggle'
             />

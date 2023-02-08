@@ -232,6 +232,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <ConfirmationModalControl
                 bypassConfirm={bypassConfirm}
                 toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor='swap'
             />
         </div>
     );
