@@ -254,7 +254,7 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.actions_menu}>
             {!showRepositionButton && view2 && detailsButton}
             {showRepositionButton && repositionButton}
-            {!showRepositionButton && userMatchesConnectedAccount && view2 && addButton}
+            {!showRepositionButton && userMatchesConnectedAccount && addButton}
             {view2 && removeButton}
             {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
