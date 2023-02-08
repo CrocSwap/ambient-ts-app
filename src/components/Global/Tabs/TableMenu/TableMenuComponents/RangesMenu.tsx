@@ -60,7 +60,7 @@ export default function RangesMenu(props: propsIF) {
         position,
         isOnPortfolioPage,
         handlePulseAnimation,
-        showHighlightedButton,
+        // showHighlightedButton,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -172,7 +172,8 @@ export default function RangesMenu(props: propsIF) {
 
     const copyButton = (
         <Link
-            style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
+            style={{ opacity: '1' }}
+            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             to={
                 '/trade/range/' +
