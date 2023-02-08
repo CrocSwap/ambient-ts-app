@@ -833,11 +833,12 @@ export default function Chart(props: ChartData) {
 
             return formatAmountChartData(
                 isSameLocation && d === sameLocationData ? data : d,
-                d === shorterValue ||
+                d === sameLocationData ||
+                    d === shorterValue ||
                     d === longerValue ||
                     d === market[0].value ||
                     d === crosshairData[0].y
-                    ? d === longerValue || d === market[0].value
+                    ? d === longerValue || d === market[0].value || d === sameLocationData
                         ? undefined
                         : digit
                     : d.toString().split('.')[1]?.length,
