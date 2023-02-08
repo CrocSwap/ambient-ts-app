@@ -60,7 +60,7 @@ export default function RangesMenu(props: propsIF) {
         position,
         isOnPortfolioPage,
         handlePulseAnimation,
-        showHighlightedButton,
+        // showHighlightedButton,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -172,7 +172,8 @@ export default function RangesMenu(props: propsIF) {
 
     const copyButton = (
         <Link
-            style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
+            style={{ opacity: '1' }}
+            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             to={
                 '/trade/range/' +
@@ -188,6 +189,27 @@ export default function RangesMenu(props: propsIF) {
             onClick={handleCopyClick}
         >
             Copy Trade
+        </Link>
+    );
+
+    const addButton = (
+        <Link
+            style={{ opacity: '1' }}
+            className={styles.option_button}
+            to={
+                '/trade/range/' +
+                (isOnPortfolioPage
+                    ? 'chain=' +
+                      position.chainId +
+                      '&tokenA=' +
+                      position.base +
+                      '&tokenB=' +
+                      position.quote
+                    : currentLocation.slice(currentLocation.indexOf('chain')))
+            }
+            onClick={handleCopyClick}
+        >
+            Add
         </Link>
     );
 
@@ -233,6 +255,7 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.actions_menu}>
             {!showRepositionButton && view2 && detailsButton}
             {showRepositionButton && repositionButton}
+            {!showRepositionButton && userMatchesConnectedAccount && addButton}
             {view2 && removeButton}
             {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
