@@ -87,6 +87,8 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function Swap(props: propsIF) {
@@ -131,6 +133,8 @@ export default function Swap(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -415,6 +419,8 @@ export default function Swap(props: propsIF) {
                 slippageTolerancePercentage={slippageTolerancePercentage}
                 effectivePrice={effectivePrice}
                 isSellTokenBase={isSellTokenBase}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </Modal>
     ) : null;
@@ -527,8 +533,6 @@ export default function Swap(props: propsIF) {
         </div>
     );
 
-    const [isSwapConfirmationBypassEnabled] = useState(false);
-
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     // const denominationSwitchOrNull = priceImpact ? (
@@ -632,12 +636,11 @@ export default function Swap(props: propsIF) {
                             approvalButton
                         ) : (
                             <SwapButton
-                                onClickFn={
-                                    isSwapConfirmationBypassEnabled ? initiateSwap : openModal
-                                }
-                                isSwapConfirmationBypassEnabled={isSwapConfirmationBypassEnabled}
+                                onClickFn={bypassConfirm ? initiateSwap : openModal}
+                                isSwapConfirmationBypassEnabled={bypassConfirm}
                                 swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
+                                bypassConfirm={bypassConfirm}
                             />
                         )
                     ) : (
