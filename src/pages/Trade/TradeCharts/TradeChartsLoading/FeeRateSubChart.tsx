@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { FeeChartData } from '../TradeCharts';
-
+import './Subcharts.css';
 interface FreeRateData {
     feeData: FeeChartData[] | undefined;
     period: number | undefined;
@@ -21,6 +21,7 @@ interface FreeRateData {
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
     mouseMoveChartName: string | undefined;
+    yAxisWidth: string;
 }
 
 export default function FeeRateSubChart(props: FreeRateData) {
@@ -40,6 +41,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         setMouseMoveChartName,
         mouseMoveChartName,
         subChartValues,
+        yAxisWidth,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -257,22 +259,11 @@ export default function FeeRateSubChart(props: FreeRateData) {
     );
 
     return (
-        <div
-            className='main_layout_chart'
-            id='fee_rate_chart'
-            data-testid={'chart'}
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                height: '15%',
-                width: '100%',
-                paddingTop: '5px',
-            }}
-        >
+        <div id='fee_rate_chart' data-testid={'chart'}>
             <d3fc-svg
                 id='d3PlotFeeRate'
                 ref={d3PlotFeeRate}
-                style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
+                style={{ overflow: 'hidden' }}
             ></d3fc-svg>
             <label style={{ position: 'absolute', left: '0%' }}>
                 Fee Rate:{' '}
@@ -280,7 +271,11 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     subChartValues.filter((value: any) => value.name === 'feeRate')[0].value * 100
                 ).toString() + '%'}
             </label>
-            <d3fc-svg className='y-axis' ref={d3Yaxis} style={{ flexGrow: 1 }}></d3fc-svg>
+            <d3fc-svg
+                className='y-axis'
+                ref={d3Yaxis}
+                style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
+            ></d3fc-svg>
         </div>
     );
 }
