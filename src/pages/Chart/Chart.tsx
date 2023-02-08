@@ -1090,12 +1090,22 @@ export default function Chart(props: ChartData) {
             let clickedForLine = false;
             let zoomTimeout: any | undefined = undefined;
             let previousTouch: any | undefined = undefined;
+            let previousDeltaTouch: any = undefined;
             const zoom = d3
                 .zoom()
                 .on('start', (event: any) => {
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
-                        previousTouch = event.sourceEvent.changedTouches[0];
+                        previousTouch = event.sourceEvent.touches[0];
+
+                        if (event.sourceEvent.touches.length > 1) {
+                            previousDeltaTouch = Math.hypot(
+                                event.sourceEvent.touches[0].pageX -
+                                    event.sourceEvent.touches[1].pageX,
+                                event.sourceEvent.touches[0].pageY -
+                                    event.sourceEvent.touches[1].pageY,
+                            );
+                        }
                     }
                     zoomTimeout = event.sourceEvent.timeStamp;
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
@@ -1218,40 +1228,46 @@ export default function Chart(props: ChartData) {
                                                 scaleData.xScale.domain([newBoundary, domainX[1]]);
                                             }
                                         } else {
-                                            const gapTop =
-                                                domainX[1].getTime() -
-                                                scaleData.xScale
-                                                    .invert(event.sourceEvent.offsetX)
-                                                    .getTime();
-                                            const gapBot =
-                                                scaleData.xScale
-                                                    .invert(event.sourceEvent.offsetX)
-                                                    .getTime() - domainX[0].getTime();
-
-                                            const minGap = Math.min(gapTop, gapBot);
-                                            const maxGap = Math.max(gapTop, gapBot);
-                                            const baseMovement = deltaX / (maxGap / minGap + 1);
-
-                                            if (gapBot < gapTop) {
-                                                scaleData.xScale.domain([
-                                                    new Date(domainX[0].getTime() - baseMovement),
-                                                    new Date(
-                                                        domainX[1].getTime() +
-                                                            baseMovement * (maxGap / minGap),
-                                                    ),
-                                                ]);
-                                            } else {
-                                                scaleData.xScale.domain([
-                                                    new Date(
-                                                        domainX[0].getTime() -
-                                                            baseMovement * (maxGap / minGap),
-                                                    ),
-                                                    new Date(domainX[1].getTime() + baseMovement),
-                                                ]);
-                                            }
+                                            changeCandleSize(
+                                                domainX,
+                                                deltaX,
+                                                event.sourceEvent.offsetX,
+                                            );
                                         }
                                     }
                                 }
+                            } else if (
+                                event.sourceEvent.type === 'touchmove' &&
+                                event.sourceEvent.touches.length > 1
+                            ) {
+                                const domainX = scaleData.xScale.domain();
+                                const linearX = d3
+                                    .scaleTime()
+                                    .domain(scaleData.xScale.range())
+                                    .range([0, domainX[1] - domainX[0]]);
+
+                                // mobile
+                                const touch1 = event.sourceEvent.touches[0];
+                                const touch2 = event.sourceEvent.touches[1];
+
+                                const deltaTouch = Math.hypot(
+                                    touch1.pageX - touch2.pageX,
+                                    touch1.pageY - touch2.pageY,
+                                );
+
+                                let movement = Math.abs(touch1.pageX - touch2.pageX);
+
+                                if (previousDeltaTouch > deltaTouch) {
+                                    // zoom out
+                                    movement = movement / 10;
+                                }
+                                if (previousDeltaTouch < deltaTouch) {
+                                    // zoom in
+                                    movement = -movement / 10;
+                                }
+                                const deltaX = linearX(movement);
+
+                                changeCandleSize(domainX, deltaX, touch1.clientX);
                             } else {
                                 const domainX = scaleData.xScale.domain();
                                 const linearX = d3
@@ -1375,7 +1391,9 @@ export default function Chart(props: ChartData) {
                             if (
                                 !rescale &&
                                 event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
+                                event.sourceEvent.type != 'wheel' &&
+                                event.sourceEvent.type === 'touchmove' &&
+                                event.sourceEvent.touches.length < 2
                             ) {
                                 const domainY = scaleData.yScale.domain();
                                 const linearY = d3
@@ -1473,10 +1491,41 @@ export default function Chart(props: ChartData) {
                         }
                     }
 
+                    function changeCandleSize(domainX: any, deltaX: number, offsetX: number) {
+                        const gapTop =
+                            domainX[1].getTime() - scaleData.xScale.invert(offsetX).getTime();
+                        const gapBot =
+                            scaleData.xScale.invert(offsetX).getTime() - domainX[0].getTime();
+
+                        const minGap = Math.min(gapTop, gapBot);
+                        const maxGap = Math.max(gapTop, gapBot);
+                        const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                        if (gapBot < gapTop) {
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() - baseMovement),
+                                new Date(domainX[1].getTime() + baseMovement * (maxGap / minGap)),
+                            ]);
+                        } else {
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
+                                new Date(domainX[1].getTime() + baseMovement),
+                            ]);
+                        }
+                    }
+
                     newDomains(parsedChartData).then(() => {
                         // mobile
                         if (event.sourceEvent.type.includes('touch')) {
                             previousTouch = event.sourceEvent.changedTouches[0];
+                            if (event.sourceEvent.touches.length > 1) {
+                                previousDeltaTouch = Math.hypot(
+                                    event.sourceEvent.touches[0].pageX -
+                                        event.sourceEvent.touches[1].pageX,
+                                    event.sourceEvent.touches[0].pageY -
+                                        event.sourceEvent.touches[1].pageY,
+                                );
+                            }
                         }
                     });
                 })
