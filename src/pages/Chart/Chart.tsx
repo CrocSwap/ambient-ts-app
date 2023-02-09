@@ -355,8 +355,8 @@ export default function Chart(props: ChartData) {
         if (minPrice !== 0 && maxPrice !== 0) {
             setRanges((prevState) => {
                 const newTargets = [...prevState];
-                newTargets.filter((target: any) => target.name === 'Max')[0].value = minPrice;
-                newTargets.filter((target: any) => target.name === 'Min')[0].value = maxPrice;
+                newTargets.filter((target: any) => target.name === 'Max')[0].value = maxPrice;
+                newTargets.filter((target: any) => target.name === 'Min')[0].value = minPrice;
 
                 setLiqHighlightedLinesAndArea(newTargets);
 
@@ -2924,6 +2924,14 @@ export default function Chart(props: ChartData) {
                         const buffer = Math.abs(
                             (Math.max(high, maxYBoundary) - Math.min(low, minYBoundary)) / 6,
                         );
+
+                        console.log(
+                            low,
+                            Math.min(low, minYBoundary),
+                            high,
+                            Math.max(high, maxYBoundary),
+                        );
+
                         scaleData.yScale.domain([
                             Math.min(low, minYBoundary) - buffer,
                             Math.max(high, maxYBoundary) + buffer / 2,
