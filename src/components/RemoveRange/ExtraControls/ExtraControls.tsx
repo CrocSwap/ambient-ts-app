@@ -3,6 +3,7 @@ import styles from './ExtraControls.module.css';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { Dispatch, SetStateAction } from 'react';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 
 interface CurrencyConverterPropsIF {
     isSaveAsDexSurplusChecked: boolean;
@@ -20,7 +21,7 @@ interface CurrencyConverterPropsIF {
 export default function ExtraControls(props: CurrencyConverterPropsIF) {
     const {
         isSaveAsDexSurplusChecked,
-        // setIsSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -94,50 +95,86 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
         },
     );
 
+    const walletBalanceWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={'Save to Wallet Balance'}
+            // placement={'bottom'}
+            placement={'top-end'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div
+                className={styles.wallet_section}
+                style={{
+                    color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555',
+                    cursor: 'pointer',
+                }}
+                onClick={() => setIsSaveAsDexSurplusChecked(false)}
+            >
+                <MdAccountBalanceWallet
+                    size={25}
+                    color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
+                />
+                <div className={styles.wallet_amounts}>
+                    <div>
+                        {isSaveAsDexSurplusChecked
+                            ? `${truncatedWalletBaseQty} ${baseTokenSymbol}`
+                            : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol}`}
+                    </div>
+                    <div>
+                        {isSaveAsDexSurplusChecked
+                            ? `${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
+                            : `${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
+                    </div>
+                </div>
+            </div>
+        </DefaultTooltip>
+    );
+    const exchangeBalanceWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={'Save to Exchange Balance'}
+            // placement={'bottom'}
+            placement={'top-end'}
+            // placement={'left-start'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div
+                className={`${styles.exchange_text} ${
+                    !isSaveAsDexSurplusChecked && styles.grey_logo
+                }`}
+                style={{
+                    color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555',
+                    cursor: 'pointer',
+                }}
+                onClick={() => setIsSaveAsDexSurplusChecked(true)}
+            >
+                <div className={styles.wallet_amounts}>
+                    <div>
+                        {isSaveAsDexSurplusChecked
+                            ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol}`
+                            : `${truncatedDexBaseQty} ${baseTokenSymbol}`}
+                    </div>
+                    <div>
+                        {isSaveAsDexSurplusChecked
+                            ? `${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
+                            : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
+                    </div>
+                </div>
+                <img src={ambientLogo} width='25' alt='' />
+            </div>
+        </DefaultTooltip>
+    );
+
     const exchangeBalanceControl = (
         <section className={styles.wallet_container}>
             <div className={styles.wallet_container_left}>
-                <div
-                    className={styles.wallet_section}
-                    style={{ color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
-                >
-                    <MdAccountBalanceWallet
-                        size={25}
-                        color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
-                    />
-                    <div className={styles.wallet_amounts}>
-                        <div>
-                            {isSaveAsDexSurplusChecked
-                                ? `${truncatedWalletBaseQty} ${baseTokenSymbol}`
-                                : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol}`}
-                        </div>
-                        <div>
-                            {isSaveAsDexSurplusChecked
-                                ? `${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
-                                : `${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
-                        </div>
-                    </div>
-                </div>
-                <div
-                    className={`${styles.exchange_text} ${
-                        !isSaveAsDexSurplusChecked && styles.grey_logo
-                    }`}
-                    style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
-                >
-                    <div className={styles.wallet_amounts}>
-                        <div>
-                            {isSaveAsDexSurplusChecked
-                                ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol}`
-                                : `${truncatedDexBaseQty} ${baseTokenSymbol}`}
-                        </div>
-                        <div>
-                            {isSaveAsDexSurplusChecked
-                                ? `${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
-                                : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
-                        </div>
-                    </div>
-                    <img src={ambientLogo} width='25' alt='' />
-                </div>
+                {walletBalanceWithTooltip}
+                {exchangeBalanceWithTooltip}
             </div>
             {/* 
             <Toggle2

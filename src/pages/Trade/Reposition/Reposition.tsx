@@ -16,6 +16,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -112,11 +113,7 @@ export default function Reposition(props: propsIF) {
             : truncatedCurrentPoolDisplayPriceInQuote;
 
     // const currentLocation = location.pathname;
-    const [
-        isModalOpen,
-        // openModal,
-        closeModal,
-    ] = useModal();
+    const [isModalOpen, openModal, closeModal] = useModal();
 
     useEffect(() => {
         setRangeWidthPercentage(() => simpleRangeWidth);
@@ -183,11 +180,19 @@ export default function Reposition(props: propsIF) {
                     setMaxPrice={setMaxPrice}
                     setMinPrice={setMinPrice}
                 />
-                <RepositionButton onClickFn={sendRepositionTransaction} />
+                <RepositionButton onClickFn={openModal} />
             </div>
             {isModalOpen && (
                 <Modal onClose={closeModal} title=' Confirm Reposition'>
-                    <ConfirmRepositionModal onClose={closeModal} />
+                    <ConfirmRepositionModal
+                        position={position as PositionIF}
+                        ambientApy={ambientApy}
+                        currentPoolPriceDisplay={currentPoolPriceDisplay}
+                        currentPoolPriceTick={currentPoolPriceTick}
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        onClose={closeModal}
+                        onSend={sendRepositionTransaction}
+                    />
                 </Modal>
             )}
         </div>

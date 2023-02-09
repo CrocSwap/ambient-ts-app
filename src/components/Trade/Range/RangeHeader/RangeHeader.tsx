@@ -25,14 +25,23 @@ interface propsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function RangeHeader(props: propsIF) {
-    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase, openGlobalModal } =
-        props;
+    const {
+        tokenPair,
+        mintSlippage,
+        isPairStable,
+        isDenomBase,
+        isTokenABase,
+        openGlobalModal,
+        bypassConfirm,
+        toggleBypassConfirm,
+    } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -47,6 +56,8 @@ export default function RangeHeader(props: propsIF) {
                 slippage={mintSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </Modal>
     ) : null;

@@ -63,7 +63,7 @@
 	
 	border-radius: 50%;
 	z-index: 1;
-	filter: blur(60px);
+	filter: blur(40px);
 }
 
 @keyframes animate {

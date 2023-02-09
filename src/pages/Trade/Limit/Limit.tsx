@@ -728,6 +728,8 @@ export default function Limit(props: propsIF) {
                     isPairStable={isPairStable}
                     openGlobalModal={props.openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
+                    bypassConfirm={bypassConfirm}
+                    toggleBypassConfirm={toggleBypassConfirm}
                 />
                 {/* <DividerDark addMarginTop /> */}
                 {navigationMenu}
