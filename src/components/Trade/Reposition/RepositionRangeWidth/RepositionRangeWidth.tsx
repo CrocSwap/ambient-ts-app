@@ -10,10 +10,12 @@ import { updateRangeWithButton, handleRangeSlider } from './repositionRangeWidth
 interface IRepositionRangeWidth {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
-    const { rangeWidthPercentage, setRangeWidthPercentage } = props;
+    const { rangeWidthPercentage, setRangeWidthPercentage, seRescaleRangeBoundariesWithSlider } =
+        props;
 
     const dispatch = useAppDispatch();
 
@@ -95,7 +97,9 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
-                        // onClick={() => {dispatch(setRescaleRangeBoundaries(true))}}
+                        onClick={() => {
+                            seRescaleRangeBoundariesWithSlider(true);
+                        }}
                     />
                 </div>
 

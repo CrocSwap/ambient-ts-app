@@ -91,6 +91,8 @@ interface propsIF {
     setIsCandleDataNull: React.Dispatch<React.SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -148,6 +150,8 @@ export default function Trade(props: propsIF) {
         isCandleDataNull,
         minPrice,
         maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -503,6 +507,10 @@ export default function Trade(props: propsIF) {
                                 setFetchingCandle={setFetchingCandle}
                                 minPrice={minPrice}
                                 maxPrice={maxPrice}
+                                rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
+                                seRescaleRangeBoundariesWithSlider={
+                                    seRescaleRangeBoundariesWithSlider
+                                }
                             />
                         )}
                     </div>

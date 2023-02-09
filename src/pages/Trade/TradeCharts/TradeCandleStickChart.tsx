@@ -82,6 +82,8 @@ interface ChartData {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ChartUtils {
@@ -117,6 +119,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         setFetchingCandle,
         minPrice,
         maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -780,6 +784,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         handlePulseAnimation={handlePulseAnimation}
                         minPrice={minPrice}
                         maxPrice={maxPrice}
+                        rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
+                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                     />
                 ) : (
                     <>{loading}</>

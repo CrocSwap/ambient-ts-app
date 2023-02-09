@@ -22,10 +22,17 @@ interface propsIF {
     ambientApy: number | undefined;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Reposition(props: propsIF) {
-    const { isDenomBase, ambientApy, setMinPrice, setMaxPrice } = props;
+    const {
+        isDenomBase,
+        ambientApy,
+        setMinPrice,
+        setMaxPrice,
+        seRescaleRangeBoundariesWithSlider,
+    } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -161,6 +168,7 @@ export default function Reposition(props: propsIF) {
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
+                    seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                 />
                 <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}

@@ -111,6 +111,8 @@ interface propsIF {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface CandleChartData {
@@ -195,6 +197,8 @@ export default function TradeCharts(props: propsIF) {
         setFetchingCandle,
         minPrice,
         maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -603,6 +607,8 @@ export default function TradeCharts(props: propsIF) {
                         setFetchingCandle={setFetchingCandle}
                         minPrice={minPrice}
                         maxPrice={maxPrice}
+                        rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
+                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                     />
                 </div>
             )}
