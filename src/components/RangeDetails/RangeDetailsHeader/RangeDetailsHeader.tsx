@@ -54,7 +54,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
                 >
-                    {showShareComponent ? 'Info' : 'Share'}
+                    {showShareComponent ? 'Details' : 'Share'}
                 </button>
 
                 {showShareComponent ? (
