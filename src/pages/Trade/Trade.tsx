@@ -89,6 +89,8 @@ interface propsIF {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     isCandleDataNull: boolean;
     setIsCandleDataNull: React.Dispatch<React.SetStateAction<boolean>>;
+    minPrice: number;
+    maxPrice: number;
 }
 
 // React functional component
@@ -144,6 +146,8 @@ export default function Trade(props: propsIF) {
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
+        minPrice,
+        maxPrice,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -497,6 +501,8 @@ export default function Trade(props: propsIF) {
                                 setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
                                 fetchingCandle={fetchingCandle}
                                 setFetchingCandle={setFetchingCandle}
+                                minPrice={minPrice}
+                                maxPrice={maxPrice}
                             />
                         )}
                     </div>

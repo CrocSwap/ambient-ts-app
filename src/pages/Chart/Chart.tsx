@@ -111,6 +111,8 @@ interface ChartData {
     activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
     liquidityScale: any;
+    minPrice: number;
+    maxPrice: number;
 }
 
 export default function Chart(props: ChartData) {
@@ -144,7 +146,23 @@ export default function Chart(props: ChartData) {
         liquidityData,
         handlePulseAnimation,
         liquidityScale,
+        minPrice,
+        maxPrice,
     } = props;
+
+    useEffect(() => {
+        if (minPrice !== 0 && maxPrice !== 0) {
+            setRanges((prevState) => {
+                const newTargets = [...prevState];
+                newTargets.filter((target: any) => target.name === 'Max')[0].value = minPrice;
+                newTargets.filter((target: any) => target.name === 'Min')[0].value = maxPrice;
+
+                setLiqHighlightedLinesAndArea(newTargets);
+
+                return newTargets;
+            });
+        }
+    }, [minPrice, maxPrice]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -1093,7 +1111,7 @@ export default function Chart(props: ChartData) {
                 .style('filter', 'none');
             setRescale(true);
         }
-    }, [location.pathname, parsedChartData?.period, simpleRangeWidth]);
+    }, [location.pathname, parsedChartData?.period]);
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
@@ -3868,9 +3886,11 @@ export default function Chart(props: ChartData) {
                 });
             }
 
-            if (autoScale) {
+            if (autoScale && rescale) {
                 const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                 const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+                console.log({ ranges });
 
                 const filtered = parsedChartData?.chartData.filter(
                     (data: any) => data.date >= xmin && data.date <= xmax,

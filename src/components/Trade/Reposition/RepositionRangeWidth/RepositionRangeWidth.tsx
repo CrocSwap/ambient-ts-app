@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setRescaleRangeBoundaries } from '../../../../utils/state/tradeDataSlice';
 import styles from './RepositionRangeWidth.module.css';
 import { updateRangeWithButton, handleRangeSlider } from './repositionRangeWidthFunctions';
 
@@ -12,6 +14,8 @@ interface IRepositionRangeWidth {
 
 export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
     const { rangeWidthPercentage, setRangeWidthPercentage } = props;
+
+    const dispatch = useAppDispatch();
 
     // todo
     // @anyone working on this. I think we could refactor the RangeWidth component and reuse it here but I know this might take a few different functionalities so to simplify things, I have created an entirely new component for it. The workflow should follow a similar approach to RangeWidth.tsx so take a look at that for some guidance, especially rangeWidthFunctions.ts.
@@ -27,6 +31,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 className={styles.percentage_option_buttons}
                 onClick={() => {
                     updateRangeWithButton((1 / 20) * 100, setRangeWidthPercentage);
+                    dispatch(setRescaleRangeBoundaries(true));
                 }}
             >
                 5%
@@ -35,6 +40,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 className={styles.percentage_option_buttons}
                 onClick={() => {
                     updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
+                    dispatch(setRescaleRangeBoundaries(true));
                 }}
             >
                 10%
@@ -43,6 +49,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 className={styles.percentage_option_buttons}
                 onClick={() => {
                     updateRangeWithButton((1 / 4) * 100, setRangeWidthPercentage);
+                    dispatch(setRescaleRangeBoundaries(true));
                 }}
             >
                 25%
@@ -51,6 +58,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 className={styles.percentage_option_buttons}
                 onClick={() => {
                     updateRangeWithButton((1 / 2) * 100, setRangeWidthPercentage);
+                    dispatch(setRescaleRangeBoundaries(true));
                 }}
             >
                 50%
@@ -59,6 +67,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 className={styles.percentage_option_buttons}
                 onClick={() => {
                     updateRangeWithButton(100, setRangeWidthPercentage);
+                    dispatch(setRescaleRangeBoundaries(true));
                 }}
             >
                 Ambient
@@ -86,6 +95,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
+                        // onClick={() => {dispatch(setRescaleRangeBoundaries(true))}}
                     />
                 </div>
 
