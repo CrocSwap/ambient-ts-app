@@ -48,6 +48,7 @@
 }
 
 .info_button {
+    cursor: pointer;
     outline: none;
     border: none;
     background: var(--text-highlight-dark);
