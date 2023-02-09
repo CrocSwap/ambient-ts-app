@@ -1374,9 +1374,14 @@ export default function Chart(props: ChartData) {
                                     const maxYBoundary: any = d3.max(filtered, (d: any) => d.high);
 
                                     if (
-                                        location.pathname.includes('range') ||
-                                        location.pathname.includes('reposition')
+                                        (location.pathname.includes('range') ||
+                                            location.pathname.includes('reposition')) &&
+                                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
                                     ) {
+                                        console.log('zoom', {
+                                            simpleRangeWidth,
+                                            isAdvancedModeActive,
+                                        });
                                         if (
                                             maxYBoundary !== undefined &&
                                             minYBoundary !== undefined
@@ -1817,9 +1822,12 @@ export default function Chart(props: ChartData) {
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                     if (
-                        location.pathname.includes('range') ||
-                        location.pathname.includes('reposition')
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')) &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
                     ) {
+                        console.log('rescale');
+
                         const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                         const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
@@ -2839,8 +2847,9 @@ export default function Chart(props: ChartData) {
                 const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                 if (
-                    location.pathname.includes('range') ||
-                    location.pathname.includes('reposition')
+                    (location.pathname.includes('range') ||
+                        location.pathname.includes('reposition')) &&
+                    (isAdvancedModeActive || (!isAdvancedModeActive && simpleRangeWidth !== 100))
                 ) {
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
@@ -2900,9 +2909,11 @@ export default function Chart(props: ChartData) {
                         const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                         if (
-                            location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
+                            (location.pathname.includes('range') ||
+                                location.pathname.includes('reposition')) &&
+                            (simpleRangeWidth !== 100 || isAdvancedModeActive)
                         ) {
+                            console.log('rescale');
                             const low = ranges.filter((target: any) => target.name === 'Min')[0]
                                 .value;
                             const high = ranges.filter((target: any) => target.name === 'Max')[0]
