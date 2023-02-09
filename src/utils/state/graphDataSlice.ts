@@ -286,7 +286,15 @@ export const graphDataSlice = createSlice({
                         state.positionsByUser.positions,
                     );
                 } else {
-                    state.positionsByUser.positions[indexOfPositionInState] = action.payload[index];
+                    const existingPosition =
+                        state.positionsByUser.positions[indexOfPositionInState];
+                    const updatedPosition = action.payload[index];
+
+                    if (!updatedPosition.latestUpdateTime) {
+                        updatedPosition.latestUpdateTime = existingPosition.latestUpdateTime;
+                    }
+
+                    state.positionsByUser.positions[indexOfPositionInState] = updatedPosition;
                 }
             }
         },

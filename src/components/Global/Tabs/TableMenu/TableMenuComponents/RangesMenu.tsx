@@ -60,7 +60,7 @@ export default function RangesMenu(props: propsIF) {
         position,
         isOnPortfolioPage,
         handlePulseAnimation,
-        showHighlightedButton,
+        // showHighlightedButton,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -170,9 +170,10 @@ export default function RangesMenu(props: propsIF) {
         </button>
     ) : null;
 
-    const copyButton = (
+    const copyButton = position ? (
         <Link
-            style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
+            style={{ opacity: '1' }}
+            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             to={
                 '/trade/range/' +
@@ -188,6 +189,27 @@ export default function RangesMenu(props: propsIF) {
             onClick={handleCopyClick}
         >
             Copy Trade
+        </Link>
+    ) : null;
+
+    const addButton = (
+        <Link
+            style={{ opacity: '1' }}
+            className={styles.option_button}
+            to={
+                '/trade/range/' +
+                (isOnPortfolioPage
+                    ? 'chain=' +
+                      position.chainId +
+                      '&tokenA=' +
+                      position.base +
+                      '&tokenB=' +
+                      position.quote
+                    : currentLocation.slice(currentLocation.indexOf('chain')))
+            }
+            onClick={handleCopyClick}
+        >
+            Add
         </Link>
     );
 
@@ -231,15 +253,17 @@ export default function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {!showRepositionButton && view2 && detailsButton}
+            {/* {!showRepositionButton && view2 && detailsButton} */}
             {showRepositionButton && repositionButton}
+            {!showRepositionButton && userMatchesConnectedAccount && addButton}
             {view2 && removeButton}
             {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && harvestButton}
             {/* {view2 && removeButton} */}
             {/* {view3 && detailsButton} */}
-            {!userMatchesConnectedAccount && view2 && copyButton}
+            {!userMatchesConnectedAccount && copyButton}
+            {/* {!userMatchesConnectedAccount && view2 && copyButton} */}
             {/* {view2 && !props.showSidebar && copyButton} */}
         </div>
     );
@@ -250,10 +274,10 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {/* {!view1 && !isPositionInRange && repositionButton} */}
             {/* {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
-            {harvestButton}
-            {removeButton}
+            {!view3 && harvestButton}
+            {!view2 && removeButton}
             {detailsButton}
-            {/* {copyButton} */}
+            {userMatchesConnectedAccount && copyButton}
         </div>
     );
 

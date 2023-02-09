@@ -60,6 +60,7 @@ export default function TransactionRow(props: propsIF) {
         closeGlobalModal,
         openGlobalModal,
         desktopView,
+        showSidebar,
     } = props;
 
     const {
@@ -521,7 +522,7 @@ export default function TransactionRow(props: propsIF) {
             ref={currentTxActiveInTransactions ? activePositionRef : null}
         >
             {!showColumns && TxTimeWithTooltip}
-            {isOnPortfolioPage && !desktopView && tokenPair}
+            {isOnPortfolioPage && !desktopView && !showSidebar && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}

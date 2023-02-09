@@ -8,10 +8,11 @@ interface IRangeButtonProps {
     rangeButtonErrorMessage: string;
     bypassConfirm: boolean;
     isAmbient: boolean;
+    isAdd: boolean;
 }
 
 export default function RangeButton(props: IRangeButtonProps) {
-    const { bypassConfirm, isAmbient } = props;
+    const { bypassConfirm, isAmbient, isAdd } = props;
     // const [allowedButton] = useState<boolean>(props.isAmountEntered);
 
     const ButtonDisplay = (
@@ -20,7 +21,9 @@ export default function RangeButton(props: IRangeButtonProps) {
                 title={
                     props.rangeAllowed
                         ? bypassConfirm
-                            ? `Send ${isAmbient ? 'Ambient' : 'Range'} Order`
+                            ? isAdd
+                                ? `Add to ${isAmbient ? 'Ambient' : 'Range'} Position`
+                                : `Create ${isAmbient ? 'Ambient' : 'Range'} Position`
                             : 'Open Confirmation'
                         : props.rangeButtonErrorMessage
                 }
