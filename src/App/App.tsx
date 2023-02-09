@@ -162,7 +162,6 @@ import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
-import FullChat from './components/Chat/FullChat/FullChat';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2976,7 +2975,7 @@ export default function App() {
                                     isFullScreen={true}
                                     userImageData={imageData}
                                     ensName={ensName}
-                                    newChat={true}
+                                    appPage={true}
                                 />
                             }
                         />
@@ -3225,20 +3224,22 @@ export default function App() {
                     />
                 )} */}
 
-                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
-                    <ChatPanel
-                        chatStatus={chatStatus}
-                        onClose={() => {
-                            console.error('Function not implemented.');
-                        }}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        isFullScreen={false}
-                        userImageData={imageData}
-                        ensName={ensName}
-                    />
-                )}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/app/chat' &&
+                    currentLocation !== '/app/chat2' && (
+                        <ChatPanel
+                            chatStatus={chatStatus}
+                            onClose={() => {
+                                console.error('Function not implemented.');
+                            }}
+                            favePools={favePools}
+                            currentPool={currentPoolInfo}
+                            setChatStatus={setChatStatus}
+                            isFullScreen={false}
+                            userImageData={imageData}
+                            ensName={ensName}
+                        />
+                    )}
             </div>
             <SidebarFooter />
             <GlobalModal

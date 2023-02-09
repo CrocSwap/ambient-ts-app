@@ -1,4 +1,4 @@
-.main_container{
+.main_container, .main_container_close{
     padding: 1rem;
     height: calc(100vh - 7.5rem);
 }
@@ -151,9 +151,10 @@ cursor: pointer;
     height: 100px;
 } */
 
-.main_container_close .options span, .main_container_close .user_wallet a, .main_container_close .options header h3{
+.main_container_close .options span, .main_container_close .user_wallet a, .main_container_close .options header h3, .main_container_close .current_pool{
     display: none;
 }
+
 .main_container_close .options header svg{
     display: block;
 }

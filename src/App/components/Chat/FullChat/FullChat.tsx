@@ -1,5 +1,5 @@
 import styles from './FullChat.module.css';
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
@@ -13,13 +13,15 @@ interface FullChatPropsIF {
     messageList: JSX.Element;
     chatNotification: JSX.Element;
     messageInput: JSX.Element;
-    room: any;
-    setRoom: any;
-    setIsCurrentPool: any;
+    room: string;
+
+    setRoom: Dispatch<SetStateAction<string>>;
+    setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
 
     userName: string;
-    showCurrentPoolButton: any;
-    setShowCurrentPoolButton: any;
+    showCurrentPoolButton: boolean;
+    setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line
     currentPool: any;
 }
 
@@ -27,10 +29,10 @@ interface ChannelDisplayPropsIF {
     pool: PoolIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { messageList, chatNotification, messageInput, room, userName, currentPool } = props;
+    const { messageList, chatNotification, messageInput, userName, currentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
-
+    // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF) {
         const roomName = pool.base.symbol + pool.quote.symbol;
         props.setRoom(roomName);
@@ -69,13 +71,10 @@ export default function FullChat(props: FullChatPropsIF) {
             pool.name === `${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`;
         const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
 
-        console.log({ poolIsCurrentPool });
-        console.log(`${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`);
-        console.log(pool.name);
-
         return (
             <div
                 className={`${styles.pool_display} ${activePoolStyle}`}
+                // eslint-disable-next-line
                 onClick={(event: any) => handleRoomClick(event, pool)}
             >
                 <div>
@@ -133,33 +132,16 @@ export default function FullChat(props: FullChatPropsIF) {
             ))}
         </section>
     );
-    console.log({ readableRoomName });
 
     const currentRoomIsGlobal = readableRoomName === 'Global';
 
-    console.log(currentRoomIsGlobal);
     const chatChanels = (
         <section className={styles.options}>
             <header>
                 <h3>CHANNELS</h3>
                 <MdOutlineChat size={20} color='var(--text-grey-light)' />
             </header>
-            {/* <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span># Global</span>
-            </div>
-            <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span># Something1</span>
-            </div>
-            <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span># Something2</span>
-            </div>
-            <div>
-                <FiAtSign size={20} color='var(--text-highlight)' />
-                <span># Something3</span>
-            </div> */}
+
             <div className={styles.option_item} onClick={handleCurrentPoolClick}>
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Current Pool</span>
@@ -180,14 +162,9 @@ export default function FullChat(props: FullChatPropsIF) {
 
     const chatContainer = (
         <div className={styles.chat_main_container}>
-            {/* <div className={styles.chat_scrollable}> */}
             {messageList}
             {chatNotification}
 
-            {/* </div> */}
-            {/* <div className={styles.chat_input}>
-                I am chat input
-            </div> */}
             {messageInput}
             <div id='thelastmessage' />
         </div>
