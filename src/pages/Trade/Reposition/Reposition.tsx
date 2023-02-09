@@ -192,6 +192,8 @@ export default function Reposition(props: propsIF) {
                         rangeWidthPercentage={rangeWidthPercentage}
                         onClose={closeModal}
                         onSend={sendRepositionTransaction}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
                     />
                 </Modal>
             )}
