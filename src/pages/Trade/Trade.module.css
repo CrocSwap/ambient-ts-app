@@ -427,7 +427,7 @@
 
 @media only screen and (max-width: 1200px) {
     /* COMMENTING OUT MIDDLE COL AND MAIN LAYOUT FIXES THE DISSAPEARING CHAT ISSUE BUT THIS DOESNT SOLVE THE LAYOUT ISSUE */
-    .middle_col {
+    /* .middle_col {
         width: 95%;
         margin: 0 auto;
     }
@@ -435,7 +435,7 @@
     .main_layout {
         display: flex;
         flex-direction: column;
-    }
+    } */
 
     /* .main_layout {
         gap: 1rem;
