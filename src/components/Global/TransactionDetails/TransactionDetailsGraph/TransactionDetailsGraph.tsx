@@ -1,3 +1,4 @@
+import { positions } from '@material-ui/system';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -434,7 +435,6 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
         <div
             className='main_layout_chart'
             ref={graphMainDiv}
-            id='tvl_chart'
             data-testid={'chart'}
             style={{
                 height: '100%',

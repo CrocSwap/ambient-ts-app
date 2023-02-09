@@ -109,6 +109,10 @@ interface propsIF {
     handlePulseAnimation: (type: string) => void;
     fetchingCandle: boolean;
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
+    minPrice: number;
+    maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface CandleChartData {
@@ -191,6 +195,10 @@ export default function TradeCharts(props: propsIF) {
         handlePulseAnimation,
         fetchingCandle,
         setFetchingCandle,
+        minPrice,
+        maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -597,6 +605,10 @@ export default function TradeCharts(props: propsIF) {
                         handlePulseAnimation={handlePulseAnimation}
                         fetchingCandle={fetchingCandle}
                         setFetchingCandle={setFetchingCandle}
+                        minPrice={minPrice}
+                        maxPrice={maxPrice}
+                        rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
+                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                     />
                 </div>
             )}
