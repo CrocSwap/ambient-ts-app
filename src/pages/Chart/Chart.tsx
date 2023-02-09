@@ -249,7 +249,8 @@ export default function Chart(props: ChartData) {
     });
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
-    const [isPeriodScaleSet, setIsPeriodScaleSet] = useState<number>();
+    const [isLimitPeriodScaleSet, setIsLimitPeriodScaleSet] = useState<number>();
+    const [isRangePeriodScaleSet, setIsRangePeriodScaleSet] = useState<number>();
 
     // d3
 
@@ -1378,10 +1379,6 @@ export default function Chart(props: ChartData) {
                                             location.pathname.includes('reposition')) &&
                                         (simpleRangeWidth !== 100 || isAdvancedModeActive)
                                     ) {
-                                        console.log('zoom', {
-                                            simpleRangeWidth,
-                                            isAdvancedModeActive,
-                                        });
                                         if (
                                             maxYBoundary !== undefined &&
                                             minYBoundary !== undefined
@@ -1826,8 +1823,6 @@ export default function Chart(props: ChartData) {
                             location.pathname.includes('reposition')) &&
                         (simpleRangeWidth !== 100 || isAdvancedModeActive)
                     ) {
-                        console.log('rescale');
-
                         const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                         const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
@@ -2913,7 +2908,6 @@ export default function Chart(props: ChartData) {
                                 location.pathname.includes('reposition')) &&
                             (simpleRangeWidth !== 100 || isAdvancedModeActive)
                         ) {
-                            console.log('rescale');
                             const low = ranges.filter((target: any) => target.name === 'Min')[0]
                                 .value;
                             const high = ranges.filter((target: any) => target.name === 'Max')[0]
@@ -4174,9 +4168,14 @@ export default function Chart(props: ChartData) {
                 if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
-                    if (location.pathname.includes('range') && simpleRangeWidth !== 100) {
+                    if (
+                        location.pathname.includes('range') &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                    ) {
                         const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
                         const max = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                        console.log(min, max);
 
                         const low =
                             minYBoundary < (min !== 0 ? min : minYBoundary)
@@ -4213,7 +4212,7 @@ export default function Chart(props: ChartData) {
                                 maxYBoundary + buffer / 2,
                             ]);
                         }
-                    } else if (location.pathname.includes('market')) {
+                    } else {
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                     }
                 }
@@ -4241,11 +4240,13 @@ export default function Chart(props: ChartData) {
             if (minYBoundary && maxYBoundary && poolPriceDisplay) {
                 const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
+                console.log(min, max, isRangePeriodScaleSet);
+
                 if (
                     min !== 0 &&
                     max !== 0 &&
-                    (isPeriodScaleSet === undefined ||
-                        isPeriodScaleSet !== parsedChartData?.period) &&
+                    (isRangePeriodScaleSet === undefined ||
+                        isRangePeriodScaleSet !== parsedChartData?.period) &&
                     location.pathname.includes('range') &&
                     simpleRangeWidth !== 100
                 ) {
@@ -4266,13 +4267,13 @@ export default function Chart(props: ChartData) {
 
                     scaleData.yScale.domain([low - bufferForRange, high + bufferForRange / 2]);
 
-                    setIsPeriodScaleSet(() => {
+                    setIsRangePeriodScaleSet(() => {
                         return parsedChartData?.period;
                     });
                 } else if (
                     value !== 0 &&
-                    (isPeriodScaleSet === undefined ||
-                        isPeriodScaleSet !== parsedChartData?.period) &&
+                    (isLimitPeriodScaleSet === undefined ||
+                        isLimitPeriodScaleSet !== parsedChartData?.period) &&
                     location.pathname.includes('limit')
                 ) {
                     if (
@@ -4289,13 +4290,13 @@ export default function Chart(props: ChartData) {
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                     }
 
-                    setIsPeriodScaleSet(() => {
+                    setIsLimitPeriodScaleSet(() => {
                         return parsedChartData?.period;
                     });
                 }
             }
         }
-    }, [parsedChartData?.period, limit, ranges, isPeriodScaleSet]);
+    }, [parsedChartData?.period, limit, ranges, isLimitPeriodScaleSet, isRangePeriodScaleSet]);
 
     // Call drawChart()
     useEffect(() => {
