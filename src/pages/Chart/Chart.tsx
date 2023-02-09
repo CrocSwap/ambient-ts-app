@@ -4175,8 +4175,6 @@ export default function Chart(props: ChartData) {
                         const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
                         const max = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-                        console.log(min, max);
-
                         const low =
                             minYBoundary < (min !== 0 ? min : minYBoundary)
                                 ? minYBoundary
@@ -4239,8 +4237,6 @@ export default function Chart(props: ChartData) {
 
             if (minYBoundary && maxYBoundary && poolPriceDisplay) {
                 const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
-
-                console.log(min, max, isRangePeriodScaleSet);
 
                 if (
                     min !== 0 &&
