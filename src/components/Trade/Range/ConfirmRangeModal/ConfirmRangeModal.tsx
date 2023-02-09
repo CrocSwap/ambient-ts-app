@@ -3,7 +3,7 @@ import {
     // useState,
     // useEffect,
     Dispatch,
-    SetStateAction
+    SetStateAction,
 } from 'react';
 
 // START: Import JSX Functional Components
@@ -47,6 +47,7 @@ interface propsIF {
     resetConfirmation: () => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+    isAdd: boolean;
 }
 
 export default function ConfirmRangeModal(props: propsIF) {
@@ -73,6 +74,7 @@ export default function ConfirmRangeModal(props: propsIF) {
         resetConfirmation,
         bypassConfirm,
         toggleBypassConfirm,
+        isAdd,
     } = props;
 
     const tokenA = tokenPair.dataTokenA;
@@ -127,7 +129,7 @@ export default function ConfirmRangeModal(props: propsIF) {
                     {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
-            <RangeStatus isInRange={isInRange} isAmbient={isAmbient} />
+            <RangeStatus isInRange={isInRange} isEmpty={false} isAmbient={isAmbient} />
         </section>
     );
 
@@ -206,7 +208,11 @@ export default function ConfirmRangeModal(props: propsIF) {
 
     const confirmTradeButton = (
         <Button
-            title={isAmbient ? 'Send Ambient Transaction' : 'Send Range Transaction'}
+            title={
+                isAdd
+                    ? `Add to ${isAmbient ? 'Ambient' : 'Range'} Position`
+                    : `Create ${isAmbient ? 'Ambient' : 'Range'} Position`
+            }
             action={() => {
                 console.log(`Sell Token Full name: ${tokenA.symbol} and quantity: ${tokenAQty}`);
                 console.log(

@@ -49,7 +49,7 @@ export default function TransactionDetailsHeader(props: TransactionDetailsHeader
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
                 >
-                    {showShareComponent ? 'Info' : 'Share'}
+                    {showShareComponent ? 'Details' : 'Share'}
                 </button>
 
                 {showShareComponent ? (

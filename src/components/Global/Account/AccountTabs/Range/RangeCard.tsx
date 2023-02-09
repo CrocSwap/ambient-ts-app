@@ -83,6 +83,7 @@ export default function RangeCard(props: propsIF) {
                 <Apy amount={position.apy} />
                 <RangeStatus
                     isInRange={position.isPositionInRange}
+                    isEmpty={position.totalValueUSD === 0}
                     isAmbient={position.positionType === 'ambient'}
                 />
             </div>

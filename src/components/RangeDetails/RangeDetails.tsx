@@ -45,7 +45,7 @@ interface propsIF {
 }
 
 export default function RangeDetails(props: propsIF) {
-    const [showShareComponent, setShowShareComponent] = useState(false);
+    const [showShareComponent, setShowShareComponent] = useState(true);
 
     const {
         crocEnv,
