@@ -824,7 +824,7 @@ export default function Chart(props: ChartData) {
                         d === longerValue ||
                         d === market[0].value ||
                         d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value
+                        ? d === longerValue || d === market[0].value || d === crosshairData[0].y
                             ? undefined
                             : digit
                         : d.toString().split('.')[1]?.length,
