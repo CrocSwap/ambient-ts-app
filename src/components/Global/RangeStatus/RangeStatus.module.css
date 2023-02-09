@@ -62,7 +62,7 @@
     width: 21.5px;
     height: 21.5px;
     border-radius: 50%;
-    background: transparent;
+    background: var(--dark3);
     border: 1px solid var(--text-grey-light);
 }
 
