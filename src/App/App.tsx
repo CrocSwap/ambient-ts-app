@@ -2696,6 +2696,8 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/app/chat' &&
+        currentLocation !== '/app/chat2' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2712,6 +2714,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/app/chat' ||
+        currentLocation == '/app/chat2' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2954,6 +2958,24 @@ export default function App() {
                                     isFullScreen={true}
                                     userImageData={imageData}
                                     ensName={ensName}
+                                />
+                            }
+                        />
+                        <Route
+                            path='app/chat2'
+                            element={
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
+                                    userImageData={imageData}
+                                    ensName={ensName}
+                                    appPage={true}
                                 />
                             }
                         />
@@ -3202,20 +3224,22 @@ export default function App() {
                     />
                 )} */}
 
-                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
-                    <ChatPanel
-                        chatStatus={chatStatus}
-                        onClose={() => {
-                            console.error('Function not implemented.');
-                        }}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        isFullScreen={false}
-                        userImageData={imageData}
-                        ensName={ensName}
-                    />
-                )}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/app/chat' &&
+                    currentLocation !== '/app/chat2' && (
+                        <ChatPanel
+                            chatStatus={chatStatus}
+                            onClose={() => {
+                                console.error('Function not implemented.');
+                            }}
+                            favePools={favePools}
+                            currentPool={currentPoolInfo}
+                            setChatStatus={setChatStatus}
+                            isFullScreen={false}
+                            userImageData={imageData}
+                            ensName={ensName}
+                        />
+                    )}
             </div>
             <SidebarFooter />
             <GlobalModal
