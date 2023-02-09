@@ -20,7 +20,7 @@ interface CurrencyConverterPropsIF {
 export default function ExtraControls(props: CurrencyConverterPropsIF) {
     const {
         isSaveAsDexSurplusChecked,
-        // setIsSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -99,7 +99,11 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
             <div className={styles.wallet_container_left}>
                 <div
                     className={styles.wallet_section}
-                    style={{ color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
+                    style={{
+                        color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setIsSaveAsDexSurplusChecked(false)}
                 >
                     <MdAccountBalanceWallet
                         size={25}
@@ -122,7 +126,11 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
                     className={`${styles.exchange_text} ${
                         !isSaveAsDexSurplusChecked && styles.grey_logo
                     }`}
-                    style={{ color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555' }}
+                    style={{
+                        color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setIsSaveAsDexSurplusChecked(true)}
                 >
                     <div className={styles.wallet_amounts}>
                         <div>
