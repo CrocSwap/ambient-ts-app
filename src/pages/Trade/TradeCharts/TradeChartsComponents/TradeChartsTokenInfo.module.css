@@ -1,7 +1,7 @@
 .tokens_info {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
 }
 
@@ -33,7 +33,8 @@
 
 .favorite_button {
     margin-left: 3px;
-    margin-top: 3px;
+    margin-top: -3px;
+    margin-bottom: 6px;
     background: transparent;
     outline: none;
     border: none;

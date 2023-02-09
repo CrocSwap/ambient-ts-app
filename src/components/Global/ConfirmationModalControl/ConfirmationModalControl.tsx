@@ -6,10 +6,12 @@ interface propsIF {
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
     toggleFor: string;
+    displayInSettings?: boolean;
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const { bypassConfirm, toggleBypassConfirm, toggleFor } = props;
+    const { bypassConfirm, toggleBypassConfirm, toggleFor, displayInSettings } = props;
+
     const compKey = useId();
 
     const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] = useState(bypassConfirm);
@@ -18,9 +20,14 @@ export default function ConfirmationModalControl(props: propsIF) {
     // TODO:   @Junior  ... or for CSS targeting, just take it out and use the
     // TODO:   @Junior  ... `compKey` value instead (also delete this TODO note)
 
+    const label = displayInSettings ? (
+        <p>Skip confirmation step in the future</p>
+    ) : (
+        <p>Skip this step in the future</p>
+    );
     return (
         <div className={styles.main_container}>
-            <p>Skip this step in the future</p>
+            {label}
             <Toggle2
                 key={compKey}
                 isOn={isBypassToggleEnabledLocal}

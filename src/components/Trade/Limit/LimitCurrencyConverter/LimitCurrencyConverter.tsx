@@ -358,7 +358,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity)
                     : limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity);
             }
-
             handleLimitButtonMessage(parseFloat(tradeData.primaryQuantity));
         }
 
@@ -459,7 +458,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     ? limitTickDisplayPrice * parseFloat(input)
                     : (1 / limitTickDisplayPrice) * parseFloat(input);
             }
-            handleLimitButtonMessage(parseFloat(input));
+
+            handleLimitButtonMessage(rawTokenAQty);
+            // handleLimitButtonMessage(parseFloat(input));
 
             // rawTokenAQty = isDenominationInBase
             //     ? (1 / limitTickDisplayPrice) * parseFloat(input)
@@ -475,6 +476,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     ? limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity);
             }
+
             handleLimitButtonMessage(rawTokenAQty);
         }
         const truncatedTokenAQty = rawTokenAQty
