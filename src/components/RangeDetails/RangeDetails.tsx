@@ -149,11 +149,11 @@ export default function RangeDetails(props: propsIF) {
 
                     if (usdValue) {
                         setUsdValue(
-                            '$' +
-                                usdValue.toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                }),
+                            // '$' +
+                            usdValue.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
                         );
                     }
 
