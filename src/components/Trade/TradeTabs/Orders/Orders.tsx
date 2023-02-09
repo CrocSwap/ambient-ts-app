@@ -304,7 +304,7 @@ export default function Orders(props: propsIF) {
     const ipadView = useMediaQuery('(max-width: 580px)');
     // const desktopView = useMediaQuery('(max-width: 768px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
-    const showColumns = useMediaQuery('(max-width: 1600px)');
+    const showColumns = useMediaQuery('(max-width: 1700px)');
 
     // const showColumns = desktopView;
 
