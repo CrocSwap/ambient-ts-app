@@ -23,15 +23,19 @@ interface FullChatPropsIF {
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line
     currentPool: any;
+
+    favePools: PoolIF[];
 }
 
 interface ChannelDisplayPropsIF {
     pool: PoolIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { messageList, chatNotification, messageInput, userName, currentPool } = props;
+    // eslint-disable-next-line
+    const { messageList, chatNotification, messageInput, userName, currentPool, favePools } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
+
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF) {
         const roomName = pool.base.symbol + pool.quote.symbol;
@@ -116,7 +120,7 @@ export default function FullChat(props: FullChatPropsIF) {
         },
         { title: 'Sound', icon: <AiOutlineSound size={20} color='var(--text-highlight)' /> },
     ];
-
+    // eslint-disable-next-line
     const chatOptions = (
         <section className={styles.options}>
             <header>
@@ -177,7 +181,7 @@ export default function FullChat(props: FullChatPropsIF) {
                     <Link to='/account'>{userName}</Link>
                     {sidebarExpandOrCollapseIcon}
                 </header>
-                {chatOptions}
+                {/* {chatOptions} */}
                 {chatChanels}
             </section>
 
