@@ -339,6 +339,10 @@ export default function App() {
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
+    const [minRangePrice, setMinRangePrice] = useState<number>(0);
+    const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
+        useState<boolean>(false);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -2832,6 +2836,14 @@ export default function App() {
                                     setFetchingCandle={setFetchingCandle}
                                     isCandleDataNull={isCandleDataNull}
                                     setIsCandleDataNull={setIsCandleDataNull}
+                                    minPrice={minRangePrice}
+                                    maxPrice={maxRangePrice}
+                                    rescaleRangeBoundariesWithSlider={
+                                        rescaleRangeBoundariesWithSlider
+                                    }
+                                    seRescaleRangeBoundariesWithSlider={
+                                        seRescaleRangeBoundariesWithSlider
+                                    }
                                 />
                             }
                         >
@@ -2864,6 +2876,11 @@ export default function App() {
                                     <Reposition
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
+                                        setMaxPrice={setMaxRangePrice}
+                                        setMinPrice={setMinRangePrice}
+                                        seRescaleRangeBoundariesWithSlider={
+                                            seRescaleRangeBoundariesWithSlider
+                                        }
                                     />
                                 }
                             />

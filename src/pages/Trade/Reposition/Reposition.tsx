@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
@@ -20,10 +20,19 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 interface propsIF {
     isDenomBase: boolean;
     ambientApy: number | undefined;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Reposition(props: propsIF) {
-    const { isDenomBase, ambientApy } = props;
+    const {
+        isDenomBase,
+        ambientApy,
+        setMinPrice,
+        setMaxPrice,
+        seRescaleRangeBoundariesWithSlider,
+    } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -119,6 +128,14 @@ export default function Reposition(props: propsIF) {
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
 
+    useEffect(() => {
+        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+            console.log('set Range');
+            // dispatch(setRangeModuleTriggered(true));
+            // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+        }
+    }, [rangeWidthPercentage]);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -151,6 +168,7 @@ export default function Reposition(props: propsIF) {
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
+                    seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                 />
                 <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}
@@ -162,6 +180,8 @@ export default function Reposition(props: propsIF) {
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
+                    setMaxPrice={setMaxPrice}
+                    setMinPrice={setMinPrice}
                 />
                 <RepositionButton onClickFn={sendRepositionTransaction} />
             </div>

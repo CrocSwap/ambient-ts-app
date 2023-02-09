@@ -1,6 +1,6 @@
 // START: Import Local Files
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -27,6 +27,8 @@ interface IRepositionPriceInfoProps {
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
     ambientApy: number | undefined;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -38,6 +40,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentPoolPriceDisplay,
         currentPoolPriceTick,
         rangeWidthPercentage,
+        setMaxPrice,
+        setMinPrice,
     } = props;
 
     const baseSymbol = position?.baseSymbol;
@@ -100,10 +104,14 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     useEffect(() => {
         setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
+        if (pinnedMinPriceDisplayTruncated !== undefined) {
+            setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
+        }
     }, [pinnedMinPriceDisplayTruncated]);
 
     useEffect(() => {
         setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
+        setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
     }, [pinnedMaxPriceDisplayTruncated]);
 
     const baseTokenCharacter = position?.baseSymbol

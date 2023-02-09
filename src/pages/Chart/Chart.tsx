@@ -1,7 +1,16 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
-import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    DetailedHTMLProps,
+    Dispatch,
+    HTMLAttributes,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { formatAmountChartData, formatAmountWithoutDigit } from '../../utils/numbers';
@@ -111,6 +120,10 @@ interface ChartData {
     activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
     liquidityScale: any;
+    minPrice: number;
+    maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Chart(props: ChartData) {
@@ -144,6 +157,10 @@ export default function Chart(props: ChartData) {
         liquidityData,
         handlePulseAnimation,
         liquidityScale,
+        minPrice,
+        maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -333,6 +350,60 @@ export default function Chart(props: ChartData) {
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    useEffect(() => {
+        if (minPrice !== 0 && maxPrice !== 0) {
+            setRanges((prevState) => {
+                const newTargets = [...prevState];
+                newTargets.filter((target: any) => target.name === 'Max')[0].value = minPrice;
+                newTargets.filter((target: any) => target.name === 'Min')[0].value = maxPrice;
+
+                setLiqHighlightedLinesAndArea(newTargets);
+
+                scaleWithButtons(minPrice, maxPrice);
+
+                return newTargets;
+            });
+        }
+    }, [minPrice, maxPrice]);
+
+    const scaleWithButtons = (minPrice: number, maxPrice: number) => {
+        if (
+            poolPriceDisplay !== undefined &&
+            (rescaleRangeBoundaries || rescaleRangeBoundariesWithSlider) &&
+            rescale
+        ) {
+            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+            const filtered = parsedChartData?.chartData.filter(
+                (data: any) => data.date >= xmin && data.date <= xmax,
+            );
+
+            if (filtered !== undefined) {
+                const minYBoundary = d3.min(filtered, (d) => d.low);
+                const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                if (maxYBoundary && minYBoundary) {
+                    const min = minYBoundary < minPrice ? minYBoundary : minPrice;
+                    const max = maxYBoundary > maxPrice ? maxYBoundary : maxPrice;
+
+                    const buffer = Math.abs((max - min) / 6);
+
+                    scaleData.yScale.domain([min - buffer, max + buffer / 2]);
+
+                    dispatch(setRescaleRangeBoundaries(false));
+                    seRescaleRangeBoundariesWithSlider(false);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (rescaleRangeBoundariesWithSlider) {
+            scaleWithButtons(minPrice, maxPrice);
+        }
+    }, [rescaleRangeBoundariesWithSlider, minPrice, maxPrice]);
 
     const standardDeviation = (arr: any, usePopulation = false) => {
         const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
@@ -1093,7 +1164,7 @@ export default function Chart(props: ChartData) {
                 .style('filter', 'none');
             setRescale(true);
         }
-    }, [location.pathname, parsedChartData?.period, simpleRangeWidth]);
+    }, [location.pathname, parsedChartData?.period]);
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
@@ -3868,10 +3939,7 @@ export default function Chart(props: ChartData) {
                 });
             }
 
-            if (autoScale) {
-                const min = scaleData.yScale.domain()[0];
-                const max = scaleData.yScale.domain()[1];
-
+            if (autoScale && rescale) {
                 const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                 const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
@@ -3884,10 +3952,13 @@ export default function Chart(props: ChartData) {
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                     if (maxYBoundary && minYBoundary) {
-                        if (min > low || max < high) {
-                            const buffer = Math.abs((low - high) / 6);
-                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
-                        }
+                        const buffer = Math.abs(
+                            (Math.min(low, minYBoundary) - Math.max(high, maxYBoundary)) / 6,
+                        );
+                        scaleData.yScale.domain([
+                            Math.min(low, minYBoundary) - buffer,
+                            Math.max(high, maxYBoundary) + buffer / 2,
+                        ]);
                     }
                 }
             }
