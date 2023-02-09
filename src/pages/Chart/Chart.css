@@ -286,3 +286,39 @@ label {
     grid-column: 4;
     grid-row: 3;
 }
+
+.xAxis {
+    height: 5%;
+}
+
+
+@media (max-width: 1600px) and (min-width: 1500px) {
+
+    .xAxis {
+        height: 10%!important;
+    }
+}
+
+
+@media (max-width: 1500px) and (min-width: 1280px) {
+
+    .xAxis {
+        height: 10%!important;
+    }
+}
+
+
+@media (max-width: 1290px) and (min-width: 400px) {
+
+    .xAxis {
+        height: 10%!important;
+    }
+}
+
+
+@media (max-width: 400px) {
+
+    .xAxis {
+        height: 15%!important;
+    }
+}

@@ -5595,7 +5595,7 @@ export default function Chart(props: ChartData) {
                         </>
                     )}
 
-                    <div style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}>
+                    <div className='xAxis'>
                         <hr />
                         <d3fc-svg
                             ref={d3Xaxis}
