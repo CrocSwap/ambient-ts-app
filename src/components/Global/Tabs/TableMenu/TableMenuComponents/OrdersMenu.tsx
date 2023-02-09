@@ -53,7 +53,7 @@ export default function OrdersMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        isShowAllEnabled,
+        // isShowAllEnabled,
         crocEnv,
         chainData,
         tradeData,
@@ -66,7 +66,7 @@ export default function OrdersMenu(props: propsIF) {
         handlePulseAnimation,
         lastBlockNumber,
         account,
-        showHighlightedButton,
+        // showHighlightedButton,
         // isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
@@ -223,7 +223,7 @@ export default function OrdersMenu(props: propsIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const minView = useMediaQuery('(min-width: 720px)');
-    const view1 = useMediaQuery('(min-width: 1280px)');
+    // const view1 = useMediaQuery('(min-width: 1280px)');
     // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
@@ -256,29 +256,30 @@ export default function OrdersMenu(props: propsIF) {
                 Claim
             </button>
         ) : null;
-    const copyButton =
-        limitOrder && isShowAllEnabled && !isOwnerActiveAccount ? (
-            <button
-                style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
-                className={styles.option_button}
-                onClick={() => {
-                    dispatch(setLimitTickCopied(true));
-                    dispatch(setLimitTick(0));
-                    navigate(
-                        '/trade/limit/' +
-                            'chain=' +
-                            limitOrder.chainId +
-                            '&tokenA=' +
-                            (limitOrder.isBid ? limitOrder.base : limitOrder.quote) +
-                            '&tokenB=' +
-                            (limitOrder.isBid ? limitOrder.quote : limitOrder.base),
-                    );
-                    handleCopyOrder();
-                }}
-            >
-                Copy Trade
-            </button>
-        ) : null;
+    const copyButton = limitOrder ? (
+        // limitOrder && isShowAllEnabled && !isOwnerActiveAccount ? (
+        <button
+            style={{ opacity: '1' }}
+            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
+            className={styles.option_button}
+            onClick={() => {
+                dispatch(setLimitTickCopied(true));
+                dispatch(setLimitTick(0));
+                navigate(
+                    '/trade/limit/' +
+                        'chain=' +
+                        limitOrder.chainId +
+                        '&tokenA=' +
+                        (limitOrder.isBid ? limitOrder.base : limitOrder.quote) +
+                        '&tokenB=' +
+                        (limitOrder.isBid ? limitOrder.quote : limitOrder.base),
+                );
+                handleCopyOrder();
+            }}
+        >
+            Copy Trade
+        </button>
+    ) : null;
     const detailsButton = (
         <button className={styles.option_button} onClick={detailsButtonOnClick}>
             Details
@@ -292,7 +293,8 @@ export default function OrdersMenu(props: propsIF) {
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
-            {view1 && copyButton}
+            {!isOwnerActiveAccount && copyButton}
+            {/* {view1 && !isOwnerActiveAccount && copyButton} */}
             {/* {view1 && !isOrderFilled && copyButton} */}
         </div>
     );
@@ -300,9 +302,10 @@ export default function OrdersMenu(props: propsIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {!view1 && copyButton}
+            {isOwnerActiveAccount && copyButton}
+            {/* {!view1 && copyButton} */}
             {/* {!(view1 && !isOrderFilled) && copyButton} */}
-            {removeButton}
+            {!minView && removeButton}
         </div>
     );
 
