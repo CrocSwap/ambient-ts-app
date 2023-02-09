@@ -90,7 +90,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
     const logoSizes = smallScrenView ? '18px' : '25px';
 
     const currentAmountDisplay = (
-        <span className={styles.amount}>
+        <span className={styles.amount} style={{ marginTop: '2px' }}>
             {poolPriceDisplay === Infinity || poolPriceDisplay === 0
                 ? '…'
                 : `${currencyCharacter}${truncatedPoolPrice}`}
