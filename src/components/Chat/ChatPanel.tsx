@@ -352,6 +352,7 @@ export default function ChatPanel(props: ChatProps) {
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 currentPool={currentPool}
+                favePools={favePools}
             />
         );
 
