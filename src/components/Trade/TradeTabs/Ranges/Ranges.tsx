@@ -434,11 +434,11 @@ export default function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Status',
             className: 'status',
             show: true,
             slug: 'status',
-            sortable: false,
+            sortable: true,
         },
         {
             name: '',
@@ -465,11 +465,11 @@ export default function Ranges(props: propsIF) {
             ))}
         </ul>
     );
-    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
+    const rowItemContent = usePaginateDataOrNull?.map((position: PositionIF, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
-            key={idx}
+            key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}

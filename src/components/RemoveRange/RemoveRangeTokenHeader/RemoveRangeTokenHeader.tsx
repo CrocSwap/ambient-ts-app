@@ -3,7 +3,7 @@ import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './RemoveRangeTokenHeader.module.css';
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-interface IRemoveRangeTokenHeaderProps {
+interface propsIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -13,7 +13,7 @@ interface IRemoveRangeTokenHeaderProps {
     isDenomBase: boolean;
 }
 
-export default function RemoveRangeTokenHeader(props: IRemoveRangeTokenHeaderProps) {
+export default function RemoveRangeTokenHeader(props: propsIF) {
     // const dispatch = useAppDispatch();
 
     return (
@@ -41,7 +41,11 @@ export default function RemoveRangeTokenHeader(props: IRemoveRangeTokenHeaderPro
                     {props.baseTokenSymbol} /{props.quoteTokenSymbol}
                 </span>
             </div>
-            <RangeStatus isInRange={props.isPositionInRange} isAmbient={props.isAmbient} />
+            <RangeStatus
+                isInRange={props.isPositionInRange}
+                isEmpty={false}
+                isAmbient={props.isAmbient}
+            />
         </div>
     );
 }

@@ -129,7 +129,7 @@ export default function ConfirmRangeModal(props: propsIF) {
                     {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
-            <RangeStatus isInRange={isInRange} isAmbient={isAmbient} />
+            <RangeStatus isInRange={isInRange} isEmpty={false} isAmbient={isAmbient} />
         </section>
     );
 
