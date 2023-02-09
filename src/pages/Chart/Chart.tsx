@@ -1024,6 +1024,26 @@ export default function Chart(props: ChartData) {
         isMouseMoveCrosshair,
     ]);
 
+    const showHighlightedLines = () => {
+        d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'visible');
+    };
+
+    const hideHighlightedLines = () => {
+        d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'hidden');
+    };
+
     useEffect(() => {
         if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
@@ -1038,6 +1058,7 @@ export default function Chart(props: ChartData) {
                     .style('visibility', 'visible');
             }
 
+            showHighlightedLines();
             d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('.annotation-line')
@@ -1070,6 +1091,7 @@ export default function Chart(props: ChartData) {
                 });
 
             d3.select(d3PlotArea.current).select('.horizontalBand').style('visibility', 'hidden');
+            hideHighlightedLines();
             d3.select(d3Container.current)
                 .select('.targets')
                 .selectAll('.horizontal')
@@ -1084,6 +1106,8 @@ export default function Chart(props: ChartData) {
                 .style('visibility', 'hidden');
 
             d3.select(d3PlotArea.current).select('.horizontalBand').style('visibility', 'hidden');
+
+            hideHighlightedLines();
 
             d3.select(d3Container.current)
                 .select('.targets')
@@ -3906,13 +3930,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineAskGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineAskSeries(() => {
@@ -3933,13 +3950,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineBidGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineBidSeries(() => {
@@ -3960,13 +3970,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineBidGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineDepthAskSeries(() => {
@@ -3987,13 +3990,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineAskGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineDepthBidSeries(() => {
