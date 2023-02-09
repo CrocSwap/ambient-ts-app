@@ -17,6 +17,7 @@ import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from '../../App/components/Chat/FullChat/FullChat';
+import trimString from '../../utils/functions/trimString';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -336,7 +337,6 @@ export default function ChatPanel(props: ChatProps) {
     );
 
     const contentHeight = props.chatStatus ? '479px' : '30px';
-
     if (props.appPage)
         return (
             <FullChat
@@ -344,7 +344,9 @@ export default function ChatPanel(props: ChatProps) {
                 chatNotification={chatNotification}
                 messageInput={messageInput}
                 room={room}
-                userName={ens === null || ens === '' ? walletID : (ens as string)}
+                userName={
+                    ens === null || ens === '' ? trimString(walletID, 6, 0, '…') : (ens as string)
+                }
                 setRoom={setRoom}
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}

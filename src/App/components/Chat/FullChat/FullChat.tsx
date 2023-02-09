@@ -177,7 +177,7 @@ export default function FullChat(props: FullChatPropsIF) {
                     <Link to='/account'>{userName}</Link>
                     {sidebarExpandOrCollapseIcon}
                 </header>
-                {chatOptions}
+                {/* {chatOptions} */}
                 {chatChanels}
             </section>
 
