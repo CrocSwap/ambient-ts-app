@@ -3869,9 +3869,6 @@ export default function Chart(props: ChartData) {
             }
 
             if (autoScale) {
-                const min = scaleData.yScale.domain()[0];
-                const max = scaleData.yScale.domain()[1];
-
                 const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                 const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
@@ -3884,10 +3881,13 @@ export default function Chart(props: ChartData) {
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                     if (maxYBoundary && minYBoundary) {
-                        if (min > low || max < high) {
-                            const buffer = Math.abs((low - high) / 6);
-                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
-                        }
+                        const buffer = Math.abs(
+                            (Math.min(low, minYBoundary) - Math.max(high, maxYBoundary)) / 6,
+                        );
+                        scaleData.yScale.domain([
+                            Math.min(low, minYBoundary) - buffer,
+                            Math.max(high, maxYBoundary) + buffer / 2,
+                        ]);
                     }
                 }
             }
