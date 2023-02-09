@@ -19,7 +19,7 @@ interface propsIF {
 }
 
 export default function OrderDetails(props: propsIF) {
-    const [showShareComponent, setShowShareComponent] = useState(false);
+    const [showShareComponent, setShowShareComponent] = useState(true);
 
     const { limitOrder, account } = props;
     const { isOrderFilled, baseDisplayFrontend, quoteDisplayFrontend } = useProcessOrder(

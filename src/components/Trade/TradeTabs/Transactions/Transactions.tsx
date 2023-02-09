@@ -409,7 +409,7 @@ export default function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView,
+            show: isOnPortfolioPage && !desktopView && !showSidebar,
             slug: 'pool',
             sortable: true,
         },

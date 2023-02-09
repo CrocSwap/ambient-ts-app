@@ -658,7 +658,12 @@ export default function RangesRow(props: propsIF) {
                 </p>
             </li>
             <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
-                <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
+                <RangeStatus
+                    isInRange={isPositionInRange}
+                    isAmbient={isAmbient}
+                    isEmpty={position.totalValueUSD === 0}
+                    justSymbol
+                />
             </li>
             <li data-label='menu' className={styles.menu}>
                 <RangesMenu

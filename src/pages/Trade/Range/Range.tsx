@@ -38,7 +38,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
+import { PositionIF, SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
@@ -59,6 +59,7 @@ import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
+import { graphData } from '../../../utils/state/graphDataSlice';
 
 interface propsIF {
     account: string | undefined;
@@ -91,7 +92,7 @@ interface propsIF {
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
-
+    graphData: graphData;
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -149,7 +150,7 @@ export default function Range(props: propsIF) {
         ambientApy,
         openGlobalModal,
         poolExists,
-
+        graphData,
         isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
@@ -173,6 +174,8 @@ export default function Range(props: propsIF) {
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
+    const [isAmbient, setIsAmbient] = useState(false);
+
     const dispatch = useAppDispatch();
 
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
@@ -189,6 +192,27 @@ export default function Range(props: propsIF) {
 
         setTxErrorMessage('');
     };
+
+    const userPositions = graphData.positionsByUser.positions;
+    const [isAdd, setIsAdd] = useState<boolean>(false);
+
+    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
+        if (isAmbient && position.positionType === 'ambient') {
+            return true;
+        } else if (
+            !isAmbient &&
+            defaultLowTick === position.bidTick &&
+            defaultHighTick === position.askTick
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    // useEffect(() => {
+    //     console.log({ isAdd });
+    // }, [isAdd]);
 
     const { tradeData, navigationMenu } = useTradeData();
 
@@ -307,14 +331,21 @@ export default function Range(props: propsIF) {
         [tradeData.advancedHighTick, currentPoolPriceTick],
     );
 
+    useEffect(() => {
+        const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
+        if (isAdd) {
+            setIsAdd(true);
+        } else {
+            setIsAdd(false);
+        }
+    }, [userPositions.length, isAmbient, defaultLowTick, defaultHighTick]);
+
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] = useState(
         defaultMinPriceDifferencePercentage,
     );
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] = useState(
         defaultMaxPriceDifferencePercentage,
     );
-
-    const [isAmbient, setIsAmbient] = useState(false);
 
     // useEffect(() => {
     //     // const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
@@ -987,6 +1018,7 @@ export default function Range(props: propsIF) {
         denominationsInBase: denominationsInBase,
         isTokenABase: isTokenABase,
         isAmbient: isAmbient,
+        isAdd: isAdd,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         sendTransaction: sendTransaction,
@@ -1321,6 +1353,7 @@ export default function Range(props: propsIF) {
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
                             bypassConfirm={bypassConfirm}
                             isAmbient={isAmbient}
+                            isAdd={isAdd}
                         />
                     )
                 ) : (
