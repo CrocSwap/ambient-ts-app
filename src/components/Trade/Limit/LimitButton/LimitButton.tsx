@@ -24,7 +24,13 @@ export default function LimitButton(props: ILimitButtonProps) {
     return (
         <div className={styles.button_container}>
             <Button
-                title={props.limitAllowed ? (bypassConfirm ? 'Send Limit Order' : 'Open Confirmation') : props.limitButtonErrorMessage}
+                title={
+                    props.limitAllowed
+                        ? bypassConfirm
+                            ? 'Send Limit Order'
+                            : 'Open Confirmation'
+                        : props.limitButtonErrorMessage
+                }
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.limitAllowed}

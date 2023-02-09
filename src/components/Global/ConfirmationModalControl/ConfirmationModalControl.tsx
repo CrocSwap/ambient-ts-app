@@ -9,11 +9,7 @@ interface propsIF {
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const {
-        bypassConfirm,
-        toggleBypassConfirm,
-        toggleFor,
-    } = props;
+    const { bypassConfirm, toggleBypassConfirm, toggleFor } = props;
     const compKey = useId();
 
     const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] = useState(bypassConfirm);

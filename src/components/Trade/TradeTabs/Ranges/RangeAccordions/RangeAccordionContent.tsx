@@ -32,7 +32,7 @@ export default function RangeAccordionContent(props: propsIF) {
         isPositionInRange,
         isAmbient,
         isOwnerActiveAccount,
-        isEmpty
+        isEmpty,
     } = props;
 
     const wallet = (

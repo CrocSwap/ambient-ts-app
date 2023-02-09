@@ -39,11 +39,7 @@ export default function HarvestPositionTokenHeader(props: propsIF) {
                     {isDenomBase ? baseTokenSymbol : quoteTokenSymbol}
                 </span>
             </div>
-            <RangeStatus
-                isInRange={props.isPositionInRange}
-                isEmpty={false}
-                isAmbient={false}
-            />
+            <RangeStatus isInRange={props.isPositionInRange} isEmpty={false} isAmbient={false} />
         </div>
     );
 }

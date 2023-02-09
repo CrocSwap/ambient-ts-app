@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { TvlChartData } from '../TradeCharts';
+import './Subcharts.css';
 
 interface TvlData {
     tvlData: TvlChartData[] | undefined;
@@ -24,6 +25,7 @@ interface TvlData {
     mouseMoveChartName: string | undefined;
     setTransformX: React.Dispatch<React.SetStateAction<any>>;
     transformX: any;
+    yAxisWidth: string;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -43,6 +45,7 @@ export default function TvlSubChart(props: TvlData) {
         setMouseMoveChartName,
         mouseMoveChartName,
         subChartValues,
+        yAxisWidth,
     } = props;
 
     const tvlMainDiv = useRef(null);
@@ -297,31 +300,19 @@ export default function TvlSubChart(props: TvlData) {
     );
 
     return (
-        <div
-            className='main_layout_chart'
-            ref={tvlMainDiv}
-            id='tvl_chart'
-            data-testid={'chart'}
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                height: '15%',
-                width: '100%',
-                paddingTop: '5px',
-            }}
-        >
-            <d3fc-svg
-                id='d3PlotTvl'
-                ref={d3PlotTvl}
-                style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
-            ></d3fc-svg>
+        <div ref={tvlMainDiv} id='tvl_chart' data-testid={'chart'}>
+            <d3fc-svg id='d3PlotTvl' ref={d3PlotTvl} style={{ overflow: 'hidden' }}></d3fc-svg>
             <label style={{ position: 'absolute', left: '0%' }}>
                 TVL{' '}
                 {formatDollarAmountAxis(
                     subChartValues.filter((value: any) => value.name === 'tvl')[0].value,
                 )}
             </label>
-            <d3fc-svg className='y-axis' ref={d3Yaxis} style={{ flexGrow: 1 }}></d3fc-svg>
+            <d3fc-svg
+                className='y-axis'
+                ref={d3Yaxis}
+                style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
+            ></d3fc-svg>
         </div>
     );
 }

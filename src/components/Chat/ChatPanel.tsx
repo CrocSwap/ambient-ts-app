@@ -137,7 +137,7 @@ export default function ChatPanel(props: ChatProps) {
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
                 setWalletID(result.userData.walletID);
-                if (ens !== null) {
+                if (ens !== null || ens !== undefined) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     updateUser(currentUser as string, ens as string).then((result: any) => {
                         if (result.status === 'OK') {
@@ -149,7 +149,22 @@ export default function ChatPanel(props: ChatProps) {
                         }
                     });
                 } else {
-                    setName(ens !== null ? ens : result.userData.walletID);
+                    setName(result.userData.walletID);
+                    updateUser(currentUser as string, result.userData.walletID).then(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (result: any) => {
+                            if (result.status === 'OK') {
+                                setName(result.userData.walletID);
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                updateMessageUser(currentUser as string, name).then(
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    (result: any) => {
+                                        return result;
+                                    },
+                                );
+                            }
+                        },
+                    );
                 }
             });
         }
@@ -280,7 +295,7 @@ export default function ChatPanel(props: ChatProps) {
                         <SentMessagePanel
                             isUserLoggedIn={isUserLoggedIn as boolean}
                             message={item}
-                            name={ens === null || ens === '' ? walletID : (ens as string)}
+                            name={name}
                             isCurrentUser={item.sender === currentUser}
                             currentUser={currentUser}
                             userImageData={
@@ -331,7 +346,7 @@ export default function ChatPanel(props: ChatProps) {
                     ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
                     : room
             }
-            ensName={ens === null || ens === '' ? walletID : (ens as string)}
+            ensName={ens === null || ens === undefined ? walletID : (ens as string)}
         />
     );
 

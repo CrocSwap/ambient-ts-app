@@ -185,7 +185,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 .yScale(scaleData.yScale)
                 .crossValue((d: any) => d.x)
                 .mainValue((d: any) => d.y)
-                .size(14);
+                .size(400)
+                .decorate((sel: any) => {
+                    sel.enter().attr('fill', 'rgba(255, 255, 255, 0.2)');
+                    sel.enter().attr('stroke', 'rgba(255, 255, 255, 0.6)');
+                });
 
             setCrossPoint(() => {
                 return crossPoint;
@@ -324,9 +328,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             if (graphData.length > 0) {
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale).ticks(5);
 
-                const priceJoin = d3fc.dataJoin('g', 'priceJoin');
-                const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');
-                const finishPriceJoin = d3fc.dataJoin('g', 'finishPriceJoin');
+                // const priceJoin = d3fc.dataJoin('g', 'priceJoin');
+                // const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');
+                // const finishPriceJoin = d3fc.dataJoin('g', 'finishPriceJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
@@ -377,23 +381,16 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 d3.select(d3PlotGraph.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
-                    if (transactionType === 'swap' && tx !== undefined) {
-                        priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
-                        crossPointJoin(svg, [
-                            [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
-                        ]).call(crossPoint);
-                    }
-
                     if (transactionType === 'limitOrder' && tx !== undefined) {
                         horizontalBandData[0] = [
                             tx.bidTickInvPriceDecimalCorrected,
                             tx.askTickInvPriceDecimalCorrected,
                         ];
 
-                        finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
-                            priceLine,
-                        );
-                        startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(priceLine);
+                        // finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                        //     priceLine,
+                        // );
+                        // startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(priceLine);
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                     }
 
@@ -404,17 +401,24 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                                 tx.askTickInvPriceDecimalCorrected,
                             ];
 
-                            finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
-                                priceLine,
-                            );
-                            startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(
-                                priceLine,
-                            );
+                            // finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                            //     priceLine,
+                            // );
+                            // startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(
+                            //     priceLine,
+                            // );
                             horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                         }
                     }
 
                     lineJoin(svg, [graphData]).call(lineSeries);
+
+                    if (transactionType === 'swap' && tx !== undefined) {
+                        // priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
+                        crossPointJoin(svg, [
+                            [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
+                        ]).call(crossPoint);
+                    }
 
                     d3.select(d3Yaxis.current).select('svg').call(scaleData.yAxis);
                     d3.select(d3Xaxis.current).select('svg').call(xAxis);

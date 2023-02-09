@@ -63,8 +63,8 @@ export const useSortedPositions = (
         const empty: PositionIF[] = [];
         const huh: PositionIF[] = [];
         const checkInRange = (val: number, low: number, high: number): boolean => {
-            return ((val > low) && (val < high));
-        }
+            return val > low && val < high;
+        };
         unsortedData.forEach((pos: PositionIF) => {
             if (pos.totalValueUSD === 0) {
                 empty.push(pos);
@@ -78,14 +78,8 @@ export const useSortedPositions = (
                 huh.push(pos);
             }
         });
-        return [
-            ...outOfRange,
-            ...inRange,
-            ...ambient,
-            ...empty,
-            ...huh
-        ];
-    }
+        return [...outOfRange, ...inRange, ...ambient, ...empty, ...huh];
+    };
 
     // column the user wants the table sorted by
     const [sortBy, setSortBy] = useState(defaultSort);
@@ -97,7 +91,7 @@ export const useSortedPositions = (
         // variable to hold output
         let sortedData: PositionIF[];
         // router to apply a specific sort function
-        console.log({data});
+        console.log({ data });
         switch (sortBy) {
             case 'id':
                 sortedData = sortById(data);
@@ -139,7 +133,7 @@ export const useSortedPositions = (
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
         const poss = sortData(positions);
-        console.log({poss});
+        console.log({ poss });
         return poss;
     }, [sortBy, reverseSort, positions.length]);
 
