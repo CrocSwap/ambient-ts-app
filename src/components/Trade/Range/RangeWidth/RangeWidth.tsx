@@ -105,7 +105,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
-                        onMouseUp={() => dispatch(setRescaleRangeBoundaries(true))}
+                        onClick={() => dispatch(setRescaleRangeBoundaries(true))}
                     />
                 </div>
 
