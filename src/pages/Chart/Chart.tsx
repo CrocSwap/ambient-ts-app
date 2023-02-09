@@ -5258,7 +5258,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges, location.pathname],
+        [candlestick, bandwidth, limit, ranges, location.pathname, parsedChartData?.chartData],
     );
 
     function showCrosshairVertical() {
