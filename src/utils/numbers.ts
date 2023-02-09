@@ -39,23 +39,27 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
 };
 
 // using a currency library here in case we want to add more in future
-export const formatAmountChartData = (num: number | undefined, digits = 2) => {
+export const formatAmountChartData = (
+    num: number | undefined,
+    digits: undefined | number = undefined,
+) => {
     if (num === 0) return '0';
     if (!num) return '-';
     if (num.toString().includes('e')) return num + '.00';
 
     const a = numbro(num).format({
         // average: num > 0 || num < 10000 ? false : true,
-        mantissa:
-            num > 10 || num < -10
-                ? 2
-                : (num > 1 && num < 10) || (num > -10 && num < -1)
-                ? 3
-                : (num < 1 && num > 0.001) || (num > -1 && num < -0.001)
-                ? 5
-                : (num < 0.001 && num > 0) || (num < 0 && num > -0.001)
-                ? 7
-                : digits,
+        mantissa: digits
+            ? digits
+            : num > 10 || num < -10
+            ? 2
+            : (num > 1 && num <= 10) || (num >= -10 && num < -1)
+            ? 3
+            : (num <= 1 && num >= 0.001) || (num >= -1 && num <= -0.001)
+            ? 5
+            : (num < 0.001 && num > 0) || (num < 0 && num > -0.001)
+            ? 7
+            : 2,
 
         // mantissa: num > 1000 ? 2 : digits,
         abbreviations: {

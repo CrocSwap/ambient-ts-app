@@ -40,10 +40,18 @@ export default function SentMessagePanel(props: SentMessageProps) {
     // }, [props.message]);
 
     function getName() {
-        if (props.message.ensName?.startsWith('0x')) {
+        if (
+            props.message.ensName === null ||
+            props.message.ensName === undefined ||
+            props.message.ensName === ''
+        ) {
             return props.message.walletID.slice(0, 6) + '...';
         } else {
-            return props.message.ensName;
+            if (props.message.ensName.startsWith('0x')) {
+                return props.message.walletID.slice(0, 6) + '...';
+            } else {
+                return props.message.ensName;
+            }
         }
     }
 
