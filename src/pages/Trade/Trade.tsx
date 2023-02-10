@@ -349,6 +349,16 @@ export default function Trade(props: propsIF) {
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
+            <button
+                onClick={() => setActiveMobileComponent('trade')}
+                className={
+                    activeMobileComponent === 'trade'
+                        ? styles.active_button_mobile_toggle
+                        : styles.non_active_button_mobile_toggle
+                }
+            >
+                Trade
+            </button>
             {!isCandleDataNull && (
                 <button
                     onClick={() => setActiveMobileComponent('chart')}
@@ -370,16 +380,6 @@ export default function Trade(props: propsIF) {
                 }
             >
                 Transactions
-            </button>
-            <button
-                onClick={() => setActiveMobileComponent('trade')}
-                className={
-                    activeMobileComponent === 'trade'
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
-            >
-                Trade
             </button>
         </div>
     );
@@ -556,11 +556,19 @@ export default function Trade(props: propsIF) {
     };
 
     const mobileTrade = (
-        <section className={styles.main_layout}>
+        <section
+            className={styles.main_layout_mobile}
+            style={{
+                height: 'calc(100vh - 8rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+            }}
+        >
             {poolNotInitializedContent}
             {mobileDataToggle}
             {activeMobileComponent === 'chart' && (
-                <div className={` ${fullScreenStyle}`}>
+                <div className={` ${fullScreenStyle}`} style={{ marginLeft: '2rem' }}>
                     {!isCandleDataNull && (
                         <TradeCharts
                             // poolPriceTick={poolPriceTick}
@@ -571,15 +579,13 @@ export default function Trade(props: propsIF) {
             )}
 
             {activeMobileComponent === 'transactions' && (
-                <motion.div className={styles.full_table_height}>
+                <div className={styles.full_table_height} style={{ marginLeft: '2rem' }}>
                     <TradeTabs2 {...tradeTabsProps} />
-                </motion.div>
+                </div>
             )}
 
             {activeMobileComponent === 'trade' && (
-                <div>
-                    <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
-                </div>
+                <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
             )}
         </section>
     );
