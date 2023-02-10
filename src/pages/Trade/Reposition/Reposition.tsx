@@ -173,6 +173,7 @@ export default function Reposition(props: propsIF) {
                 <RepositionButton
                     bypassConfirm={bypassConfirm}
                     onClickFn={openModal}
+                    sendRepositionTransaction={sendRepositionTransaction}
                 />
             </div>
             {isModalOpen && (
