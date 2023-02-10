@@ -26,6 +26,7 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     );
 
     const baseQty = position.positionLiqBaseTruncated;
+
     const quoteQty = position.positionLiqQuoteTruncated;
 
     const baseTokenSymbol = position.baseSymbol;
