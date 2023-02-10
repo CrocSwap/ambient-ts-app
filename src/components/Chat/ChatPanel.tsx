@@ -225,7 +225,7 @@ export default function ChatPanel(props: ChatProps) {
     const header = (
         <div className={styles.chat_header} onClick={() => setChatStatus(!props.chatStatus)}>
             <h2 className={styles.chat_title}>Chat</h2>
-            <section>
+            <section style={{ paddingRight: '10px' }}>
                 {props.isFullScreen || !props.chatStatus ? (
                     <></>
                 ) : (
