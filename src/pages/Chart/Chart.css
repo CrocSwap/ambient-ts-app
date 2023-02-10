@@ -292,33 +292,23 @@ label {
 }
 
 
-@media (max-width: 1600px) and (min-width: 1500px) {
+@media (max-width: 1700px) and (min-width: 1500px) {
+
+    .xAxis {
+        height: 5%!important;
+    }
+}
+
+@media (max-width: 1500px) and (min-width: 1270px) {
 
     .xAxis {
         height: 10%!important;
     }
 }
 
-
-@media (max-width: 1500px) and (min-width: 1280px) {
-
-    .xAxis {
-        height: 10%!important;
-    }
-}
-
-
-@media (max-width: 1290px) and (min-width: 400px) {
+@media (max-width: 1270px) {
 
     .xAxis {
         height: 10%!important;
-    }
-}
-
-
-@media (max-width: 400px) {
-
-    .xAxis {
-        height: 15%!important;
     }
 }
