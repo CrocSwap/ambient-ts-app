@@ -113,9 +113,38 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             <RiExternalLinkLine />
         </div>
     );
+
+    console.log({ tx });
+    const changeType = tx.changeType;
+    const positionType = tx.positionType;
+    const entityType = tx.entityType;
+
+    const changeTypeDisplay =
+        changeType === 'mint'
+            ? entityType === 'limitOrder'
+                ? 'Add to Limit'
+                : positionType === 'concentrated'
+                ? 'Add to Range Position'
+                : 'Add to Ambient Position'
+            : changeType === 'burn'
+            ? entityType === 'limitOrder'
+                ? 'Remove from Limit'
+                : positionType === 'concentrated'
+                ? 'Removal from Range Position'
+                : positionType === 'ambient'
+                ? 'Removal from Ambient Position'
+                : 'Market'
+            : changeType === 'recover'
+            ? 'Claim from Limit'
+            : 'Swap';
+
     // Create a data array for the info and map through it here
     const infoContent = [
-        { title: 'Position Type ', content: 'Market', explanation: 'this is explanation' },
+        {
+            title: 'Transaction Type ',
+            content: changeTypeDisplay,
+            explanation: 'this is explanation',
+        },
 
         { title: 'Wallet ', content: walletContent, explanation: 'this is explanation' },
 
