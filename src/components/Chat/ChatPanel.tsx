@@ -139,7 +139,6 @@ export default function ChatPanel(props: ChatProps) {
             } else {
                 setEnsName(ens);
             }
-            console.log('address: ', address, 'ensName: ', ensName);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 if (result.status === 'Not OK') {
@@ -157,7 +156,6 @@ export default function ChatPanel(props: ChatProps) {
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(currentUser as string, ensName).then(
                                     (result: any) => {
-                                        console.log('1. update message user: ', result);
                                         return result;
                                     },
                                 );
