@@ -136,7 +136,7 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
                 : 'Market'
             : changeType === 'recover'
             ? 'Claim from Limit'
-            : 'Swap';
+            : 'Market';
 
     // Create a data array for the info and map through it here
     const infoContent = [
@@ -226,14 +226,16 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     return (
         <div className={styles.tx_details_container}>
             <div className={styles.main_container}>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
+                <div className={styles.info_content}>
+                    {infoContent.map((info, idx) => (
+                        <InfoRow
+                            key={info.title + idx}
+                            title={info.title}
+                            content={info.content}
+                            explanation={info.explanation}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );
