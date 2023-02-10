@@ -557,93 +557,30 @@ export default function Trade(props: propsIF) {
 
     const mobileTrade = (
         <section className={styles.main_layout}>
-            <div className={`${styles.middle_col} ${expandTradeTable ? styles.flex_column : ''}`}>
-                {poolNotInitializedContent}
-                {/* {mobileDataToggle} */}
-                {activeMobileComponent === 'chart' && (
-                    <div
-                        className={` ${expandGraphStyle}  ${fullScreenStyle}`}
-                        style={{ background: chartBg }}
-                    >
-                        <div className={styles.main__chart_container}>
-                            {!isCandleDataNull && (
-                                <TradeCharts
-                                    // poolPriceTick={poolPriceTick}
-                                    {...tradeChartsProps}
-                                />
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                <motion.div
-                    className={
-                        expandTradeTable ? styles.full_table_height : styles.min_table_height
-                    }
-                >
-                    {activeMobileComponent === 'transactions' && (
-                        <TradeTabs2
-                            cachedQuerySpotPrice={cachedQuerySpotPrice}
-                            isUserLoggedIn={isUserLoggedIn}
-                            isTokenABase={isTokenABase}
-                            crocEnv={crocEnv}
-                            provider={provider}
-                            account={account}
-                            lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
-                            chainData={chainData}
-                            currentTxActiveInTransactions={currentTxActiveInTransactions}
-                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                            baseTokenBalance={baseTokenBalance}
-                            quoteTokenBalance={quoteTokenBalance}
-                            baseTokenDexBalance={baseTokenDexBalance}
-                            quoteTokenDexBalance={quoteTokenDexBalance}
-                            isShowAllEnabled={isShowAllEnabled}
-                            setIsShowAllEnabled={setIsShowAllEnabled}
-                            expandTradeTable={expandTradeTable}
-                            setExpandTradeTable={setExpandTradeTable}
-                            tokenMap={tokenMap}
-                            isCandleSelected={isCandleSelected}
-                            setIsCandleSelected={setIsCandleSelected}
-                            filter={transactionFilter}
-                            setTransactionFilter={setTransactionFilter}
-                            selectedOutsideTab={props.selectedOutsideTab}
-                            setSelectedOutsideTab={props.setSelectedOutsideTab}
-                            outsideControl={props.outsideControl}
-                            setOutsideControl={props.setOutsideControl}
-                            currentPositionActive={props.currentPositionActive}
-                            setCurrentPositionActive={props.setCurrentPositionActive}
-                            openGlobalModal={props.openGlobalModal}
-                            closeGlobalModal={props.closeGlobalModal}
-                            importedTokens={importedTokens}
-                            showSidebar={showSidebar}
-                            handlePulseAnimation={handlePulseAnimation}
-                            changeState={changeState}
-                            selectedDate={selectedDate}
-                            setSelectedDate={setSelectedDate}
-                            hasInitialized={hasInitialized}
-                            setHasInitialized={setHasInitialized}
-                            activeTimeFrame={activeTimeFrame}
-                            unselectCandle={unselectCandle}
-                            favePools={favePools}
-                            addPoolToFaves={addPoolToFaves}
-                            removePoolFromFaves={removePoolFromFaves}
-                            poolPriceDisplay={poolPriceDisplayWithDenom}
-                            poolPriceChangePercent={poolPriceChangePercent}
-                            setPoolPriceChangePercent={setPoolPriceChangePercent}
-                            isPoolPriceChangePositive={isPoolPriceChangePositive}
-                            setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
-                            // handleTxCopiedClick={handleTxCopiedClick}
-                            // handleOrderCopiedClick={handleOrderCopiedClick}
-                            // handleRangeCopiedClick={handleRangeCopiedClick}
-                            isCandleDataNull={isCandleDataNull}
-                            isCandleArrived={isCandleArrived}
-                            setIsCandleDataArrived={setIsCandleDataArrived}
+            {poolNotInitializedContent}
+            {mobileDataToggle}
+            {activeMobileComponent === 'chart' && (
+                <div className={` ${fullScreenStyle}`}>
+                    {!isCandleDataNull && (
+                        <TradeCharts
+                            // poolPriceTick={poolPriceTick}
+                            {...tradeChartsProps}
                         />
                     )}
+                </div>
+            )}
+
+            {activeMobileComponent === 'transactions' && (
+                <motion.div className={styles.full_table_height}>
+                    <TradeTabs2 {...tradeTabsProps} />
                 </motion.div>
-            </div>
-            {mainContent}
+            )}
+
+            {activeMobileComponent === 'trade' && (
+                <div>
+                    <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
+                </div>
+            )}
         </section>
     );
     if (showActiveMobileComponent) return mobileTrade;
@@ -677,64 +614,7 @@ export default function Trade(props: propsIF) {
                     }
                 >
                     <div className={activeMobileComponent !== 'transactions' ? styles.hide : ''}>
-                        <TradeTabs2
-                            cachedQuerySpotPrice={cachedQuerySpotPrice}
-                            isUserLoggedIn={isUserLoggedIn}
-                            isTokenABase={isTokenABase}
-                            crocEnv={crocEnv}
-                            provider={provider}
-                            account={account}
-                            lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
-                            chainData={chainData}
-                            currentTxActiveInTransactions={currentTxActiveInTransactions}
-                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                            baseTokenBalance={baseTokenBalance}
-                            quoteTokenBalance={quoteTokenBalance}
-                            baseTokenDexBalance={baseTokenDexBalance}
-                            quoteTokenDexBalance={quoteTokenDexBalance}
-                            isShowAllEnabled={isShowAllEnabled}
-                            setIsShowAllEnabled={setIsShowAllEnabled}
-                            expandTradeTable={expandTradeTable}
-                            setExpandTradeTable={setExpandTradeTable}
-                            tokenMap={tokenMap}
-                            isCandleSelected={isCandleSelected}
-                            setIsCandleSelected={setIsCandleSelected}
-                            filter={transactionFilter}
-                            setTransactionFilter={setTransactionFilter}
-                            selectedOutsideTab={props.selectedOutsideTab}
-                            setSelectedOutsideTab={props.setSelectedOutsideTab}
-                            outsideControl={props.outsideControl}
-                            setOutsideControl={props.setOutsideControl}
-                            currentPositionActive={props.currentPositionActive}
-                            setCurrentPositionActive={props.setCurrentPositionActive}
-                            openGlobalModal={props.openGlobalModal}
-                            closeGlobalModal={props.closeGlobalModal}
-                            importedTokens={importedTokens}
-                            showSidebar={showSidebar}
-                            handlePulseAnimation={handlePulseAnimation}
-                            changeState={changeState}
-                            selectedDate={selectedDate}
-                            setSelectedDate={setSelectedDate}
-                            hasInitialized={hasInitialized}
-                            setHasInitialized={setHasInitialized}
-                            activeTimeFrame={activeTimeFrame}
-                            unselectCandle={unselectCandle}
-                            favePools={favePools}
-                            addPoolToFaves={addPoolToFaves}
-                            removePoolFromFaves={removePoolFromFaves}
-                            poolPriceDisplay={poolPriceDisplayWithDenom}
-                            poolPriceChangePercent={poolPriceChangePercent}
-                            setPoolPriceChangePercent={setPoolPriceChangePercent}
-                            isPoolPriceChangePositive={isPoolPriceChangePositive}
-                            setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
-                            // handleTxCopiedClick={handleTxCopiedClick}
-                            // handleOrderCopiedClick={handleOrderCopiedClick}
-                            // handleRangeCopiedClick={handleRangeCopiedClick}
-                            isCandleDataNull={isCandleDataNull}
-                            isCandleArrived={isCandleArrived}
-                            setIsCandleDataArrived={setIsCandleDataArrived}
-                        />
+                        <TradeTabs2 {...tradeTabsProps} />
                     </div>
                 </motion.div>
             </div>
