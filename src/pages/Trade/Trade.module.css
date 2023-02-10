@@ -108,7 +108,7 @@
 .mobile_toggle_container {
     /* width: 100%; */
 
-    display: none;
+    /* display: none; */
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -273,7 +273,6 @@
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
-        /* display: none; */
         margin-bottom: 35px;
     }
     .mobile_toggle_container {
@@ -292,11 +291,7 @@
         padding-left: 30px;
     }
 
-    /* .chart_image,
-    .time_frame_container,
-    .token_info_container {
-        display: none;
-    } */
+  
 }
 @media (min-width: 320px) {
     .middle_content_style {

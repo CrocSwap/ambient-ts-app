@@ -20,6 +20,7 @@ import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 // interface for React functional component props
 interface propsIF {
@@ -443,6 +444,201 @@ export default function Trade(props: propsIF) {
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
     // const expandTableHeightStyle = expandTradeTable ? styles.full_height : styles.min_height;
+
+    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+
+    const tradeChartsProps = {
+        isUserLoggedIn: isUserLoggedIn,
+        pool: pool,
+        chainData: chainData,
+        poolPriceDisplay: poolPriceDisplayWithDenom,
+        expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
+        isTokenABase: isTokenABase,
+        fullScreenChart: fullScreenChart,
+        setFullScreenChart: setFullScreenChart,
+        changeState: changeState,
+        candleData: candleData,
+        liquidityData: liquidityData,
+        lastBlockNumber: lastBlockNumber,
+        chainId: chainId,
+        limitTick: limitTick,
+        favePools: favePools,
+        addPoolToFaves: addPoolToFaves,
+        removePoolFromFaves: removePoolFromFaves,
+        isAdvancedModeActive: advancedMode,
+        simpleRangeWidth: simpleRangeWidth,
+        pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
+        pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
+        upBodyColor: upBodyColor,
+        upBorderColor: upBorderColor,
+        downBodyColor: downBodyColor,
+        downBorderColor: downBorderColor,
+        upVolumeColor: upVolumeColor,
+        downVolumeColor: downVolumeColor,
+        baseTokenAddress: baseTokenAddress,
+        poolPriceNonDisplay: poolPriceNonDisplay,
+        selectedDate: selectedDate,
+        setSelectedDate: setSelectedDate,
+        activeTimeFrame: activeTimeFrame,
+        setActiveTimeFrame: setActiveTimeFrame,
+        handlePulseAnimation: handlePulseAnimation,
+        poolPriceChangePercent: poolPriceChangePercent,
+        setPoolPriceChangePercent: setPoolPriceChangePercent,
+        isPoolPriceChangePositive: isPoolPriceChangePositive,
+        setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
+        fetchingCandle: fetchingCandle,
+        setFetchingCandle: setFetchingCandle,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
+        TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
+    };
+
+    const mobileTrade = (
+        <section className={styles.main_layout}>
+            <div className={`${styles.middle_col} ${expandTradeTable ? styles.flex_column : ''}`}>
+                {poolNotInitializedContent}
+                {mobileDataToggle}
+                {activeMobileComponent === 'chart' && (
+                    <div
+                        className={` ${expandGraphStyle}  ${fullScreenStyle}`}
+                        style={{ background: chartBg }}
+                    >
+                        <div className={styles.main__chart_container}>
+                            {!isCandleDataNull && (
+                                <TradeCharts
+                                    // poolPriceTick={poolPriceTick}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    pool={pool}
+                                    chainData={chainData}
+                                    poolPriceDisplay={poolPriceDisplayWithDenom}
+                                    expandTradeTable={expandTradeTable}
+                                    setExpandTradeTable={setExpandTradeTable}
+                                    isTokenABase={isTokenABase}
+                                    fullScreenChart={fullScreenChart}
+                                    setFullScreenChart={setFullScreenChart}
+                                    changeState={changeState}
+                                    candleData={candleData}
+                                    liquidityData={liquidityData}
+                                    lastBlockNumber={lastBlockNumber}
+                                    chainId={chainId}
+                                    limitTick={limitTick}
+                                    favePools={favePools}
+                                    addPoolToFaves={addPoolToFaves}
+                                    removePoolFromFaves={removePoolFromFaves}
+                                    isAdvancedModeActive={advancedMode}
+                                    simpleRangeWidth={simpleRangeWidth}
+                                    pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                                    pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                                    upBodyColor={upBodyColor}
+                                    upBorderColor={upBorderColor}
+                                    downBodyColor={downBodyColor}
+                                    downBorderColor={downBorderColor}
+                                    upVolumeColor={upVolumeColor}
+                                    downVolumeColor={downVolumeColor}
+                                    baseTokenAddress={baseTokenAddress}
+                                    poolPriceNonDisplay={poolPriceNonDisplay}
+                                    selectedDate={selectedDate}
+                                    setSelectedDate={setSelectedDate}
+                                    activeTimeFrame={activeTimeFrame}
+                                    setActiveTimeFrame={setActiveTimeFrame}
+                                    TradeSettingsColor={
+                                        <TradeSettingsColor {...tradeSettingsColorProps} />
+                                    }
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    poolPriceChangePercent={poolPriceChangePercent}
+                                    setPoolPriceChangePercent={setPoolPriceChangePercent}
+                                    isPoolPriceChangePositive={isPoolPriceChangePositive}
+                                    setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
+                                    fetchingCandle={fetchingCandle}
+                                    setFetchingCandle={setFetchingCandle}
+                                    minPrice={minPrice}
+                                    maxPrice={maxPrice}
+                                    rescaleRangeBoundariesWithSlider={
+                                        rescaleRangeBoundariesWithSlider
+                                    }
+                                    seRescaleRangeBoundariesWithSlider={
+                                        seRescaleRangeBoundariesWithSlider
+                                    }
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                <motion.div
+                    className={
+                        expandTradeTable ? styles.full_table_height : styles.min_table_height
+                    }
+                >
+                    {activeMobileComponent === 'transactions' && (
+                        <TradeTabs2
+                            cachedQuerySpotPrice={cachedQuerySpotPrice}
+                            isUserLoggedIn={isUserLoggedIn}
+                            isTokenABase={isTokenABase}
+                            crocEnv={crocEnv}
+                            provider={provider}
+                            account={account}
+                            lastBlockNumber={lastBlockNumber}
+                            chainId={chainId}
+                            chainData={chainData}
+                            currentTxActiveInTransactions={currentTxActiveInTransactions}
+                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                            baseTokenBalance={baseTokenBalance}
+                            quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
+                            isShowAllEnabled={isShowAllEnabled}
+                            setIsShowAllEnabled={setIsShowAllEnabled}
+                            expandTradeTable={expandTradeTable}
+                            setExpandTradeTable={setExpandTradeTable}
+                            tokenMap={tokenMap}
+                            isCandleSelected={isCandleSelected}
+                            setIsCandleSelected={setIsCandleSelected}
+                            filter={transactionFilter}
+                            setTransactionFilter={setTransactionFilter}
+                            selectedOutsideTab={props.selectedOutsideTab}
+                            setSelectedOutsideTab={props.setSelectedOutsideTab}
+                            outsideControl={props.outsideControl}
+                            setOutsideControl={props.setOutsideControl}
+                            currentPositionActive={props.currentPositionActive}
+                            setCurrentPositionActive={props.setCurrentPositionActive}
+                            openGlobalModal={props.openGlobalModal}
+                            closeGlobalModal={props.closeGlobalModal}
+                            importedTokens={importedTokens}
+                            showSidebar={showSidebar}
+                            handlePulseAnimation={handlePulseAnimation}
+                            changeState={changeState}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
+                            hasInitialized={hasInitialized}
+                            setHasInitialized={setHasInitialized}
+                            activeTimeFrame={activeTimeFrame}
+                            unselectCandle={unselectCandle}
+                            favePools={favePools}
+                            addPoolToFaves={addPoolToFaves}
+                            removePoolFromFaves={removePoolFromFaves}
+                            poolPriceDisplay={poolPriceDisplayWithDenom}
+                            poolPriceChangePercent={poolPriceChangePercent}
+                            setPoolPriceChangePercent={setPoolPriceChangePercent}
+                            isPoolPriceChangePositive={isPoolPriceChangePositive}
+                            setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
+                            // handleTxCopiedClick={handleTxCopiedClick}
+                            // handleOrderCopiedClick={handleOrderCopiedClick}
+                            // handleRangeCopiedClick={handleRangeCopiedClick}
+                            isCandleDataNull={isCandleDataNull}
+                            isCandleArrived={isCandleArrived}
+                            setIsCandleDataArrived={setIsCandleDataArrived}
+                        />
+                    )}
+                </motion.div>
+            </div>
+            {mainContent}
+        </section>
+    );
+    if (showActiveMobileComponent) return mobileTrade;
 
     return (
         <section className={styles.main_layout}>
