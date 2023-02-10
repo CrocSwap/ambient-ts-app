@@ -155,6 +155,7 @@ export default function ChatPanel(props: ChatProps) {
                             if (result.status === 'OK') {
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(currentUser as string, ensName).then(
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     (result: any) => {
                                         return result;
                                     },
