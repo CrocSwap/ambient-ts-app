@@ -7,4 +7,5 @@ export interface Message {
     walletID: string;
     isMentionMessage: boolean;
     mentionedName: string;
+    roomInfo: string;
 }
