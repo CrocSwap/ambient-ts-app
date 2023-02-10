@@ -26,6 +26,7 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     );
 
     const baseQty = position.positionLiqBaseTruncated;
+
     const quoteQty = position.positionLiqQuoteTruncated;
 
     const baseTokenSymbol = position.baseSymbol;
@@ -117,7 +118,7 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     const ambientOrMin = position.positionType === 'ambient' ? '0.00' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
-    const usdValueNum = position.positionLiqTotalUSD;
+    const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined

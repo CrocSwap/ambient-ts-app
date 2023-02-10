@@ -208,6 +208,94 @@ export const getPositionData = async (
     return newPosition;
 };
 
+export const updatePositionStats = async (position: PositionIF): Promise<PositionIF> => {
+    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+
+    // console.log('fetching position apy');
+
+    const updatedPosition = await fetch(
+        positionStatsCacheEndpoint +
+            new URLSearchParams({
+                user: position.user.length === 40 ? '0x' + position.user : position.user,
+                askTick: position.askTick.toString(),
+                bidTick: position.bidTick.toString(),
+                base: position.base.length === 40 ? '0x' + position.base : position.base,
+                quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
+                poolIdx: position.poolIdx.toString(),
+                chainId: position.chainId,
+                // chainId: position.chainId,
+                positionType: position.positionType,
+                addValue: 'true',
+            }),
+    )
+        .then((response) => response?.json())
+        .then((json) => {
+            // console.log({ json });
+            const apy = json?.data.apy;
+            const totalValueUSD = json?.data.totalValueUSD;
+            const positionLiq = json?.data.positionLiq;
+            const positionLiqBase = json?.data.positionLiqBase;
+            const positionLiqBaseDecimalCorrected = json?.data.positionLiqBaseDecimalCorrected;
+            const positionLiqQuote = json?.data.positionLiqQuote;
+            const positionLiqQuoteDecimalCorrected = json?.data.positionLiqQuoteDecimalCorrected;
+
+            const liqBaseNum = positionLiqBaseDecimalCorrected;
+            const liqQuoteNum = positionLiqQuoteDecimalCorrected;
+
+            const positionLiqBaseTruncated = !liqBaseNum
+                ? '0'
+                : liqBaseNum < 0.0001
+                ? liqBaseNum.toExponential(2)
+                : liqBaseNum < 2
+                ? liqBaseNum.toPrecision(3)
+                : liqBaseNum >= 10000
+                ? formatAmountOld(liqBaseNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqBaseNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+
+            // console.log({ positionLiqBaseTruncated });
+            // console.log({ positionLiqBaseTruncated });
+
+            const positionLiqQuoteTruncated = !liqQuoteNum
+                ? '0'
+                : liqQuoteNum < 0.0001
+                ? liqQuoteNum.toExponential(2)
+                : liqQuoteNum < 2
+                ? liqQuoteNum.toPrecision(3)
+                : liqQuoteNum >= 10000
+                ? formatAmountOld(liqQuoteNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqQuoteNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+
+            // console.log({ positionLiqQuoteTruncated });
+
+            // if (apy) {
+            return Object.assign({}, position, {
+                apy: apy || 0,
+                totalValueUSD: totalValueUSD,
+                positionLiq: positionLiq,
+                positionLiqBase: positionLiqBase,
+                positionLiqQuote: positionLiqQuote,
+                positionLiqBaseDecimalCorrected: positionLiqBaseDecimalCorrected,
+                positionLiqQuoteDecimalCorrected: positionLiqQuoteDecimalCorrected,
+                positionLiqBaseTruncated: positionLiqBaseTruncated,
+                positionLiqQuoteTruncated: positionLiqQuoteTruncated,
+            });
+            // }
+        })
+
+        .catch(console.log);
+
+    return updatedPosition || position;
+};
+
 export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
     const positionApyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';

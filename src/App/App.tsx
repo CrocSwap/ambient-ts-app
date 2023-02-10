@@ -1629,6 +1629,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
             if (lastMessageData && crocEnv) {
                 console.log('new user position message received');
+                // console.log({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1640,6 +1641,7 @@ export default function App() {
                         );
                     }),
                 ).then((updatedPositions) => {
+                    // console.log({ updatedPositions });
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }
@@ -2700,6 +2702,8 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/app/chat' &&
+        currentLocation !== '/app/chat2' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2716,6 +2720,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/app/chat' ||
+        currentLocation == '/app/chat2' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2974,6 +2980,24 @@ export default function App() {
                                 />
                             }
                         />
+                        <Route
+                            path='app/chat2'
+                            element={
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
+                                    userImageData={imageData}
+                                    ensName={ensName}
+                                    appPage={true}
+                                />
+                            }
+                        />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route
@@ -3219,20 +3243,22 @@ export default function App() {
                     />
                 )} */}
 
-                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
-                    <ChatPanel
-                        chatStatus={chatStatus}
-                        onClose={() => {
-                            console.error('Function not implemented.');
-                        }}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        isFullScreen={false}
-                        userImageData={imageData}
-                        ensName={ensName}
-                    />
-                )}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/app/chat' &&
+                    currentLocation !== '/app/chat2' && (
+                        <ChatPanel
+                            chatStatus={chatStatus}
+                            onClose={() => {
+                                console.error('Function not implemented.');
+                            }}
+                            favePools={favePools}
+                            currentPool={currentPoolInfo}
+                            setChatStatus={setChatStatus}
+                            isFullScreen={false}
+                            userImageData={imageData}
+                            ensName={ensName}
+                        />
+                    )}
             </div>
             <SidebarFooter />
             <GlobalModal

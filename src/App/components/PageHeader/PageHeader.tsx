@@ -243,6 +243,8 @@ export default function PageHeader(props: HeaderPropsIF) {
             document.title = isDenomBase
                 ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
+        } else if (location.pathname.includes('chat')) {
+            document.title = 'Chat ~ ambient.finance';
         } else {
             document.title = 'Home ~ ambient.finance';
         }
