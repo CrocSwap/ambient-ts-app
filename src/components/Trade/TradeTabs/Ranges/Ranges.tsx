@@ -142,7 +142,7 @@ export default function Ranges(props: propsIF) {
 
     const userPositionsToDisplayOnTrade = positionsByUserMatchingSelectedTokens.filter(
         (position) => {
-            if (position.positionLiq !== '0') {
+            if (position.positionLiq !== '0' || position.source === 'manual') {
                 return true;
             } else {
                 return false;
