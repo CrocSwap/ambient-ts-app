@@ -2975,13 +2975,6 @@ export default function Chart(props: ChartData) {
                             (Math.max(high, maxYBoundary) - Math.min(low, minYBoundary)) / 6,
                         );
 
-                        console.log(
-                            low,
-                            Math.min(low, minYBoundary),
-                            high,
-                            Math.max(high, maxYBoundary),
-                        );
-
                         scaleData.yScale.domain([
                             Math.min(low, minYBoundary) - buffer,
                             Math.max(high, maxYBoundary) + buffer / 2,
@@ -2993,9 +2986,16 @@ export default function Chart(props: ChartData) {
 
                         const low = minYBoundary < value ? minYBoundary : value;
                         const high = maxYBoundary > value ? maxYBoundary : value;
-
-                        const buffer = Math.abs((low - high) / 6);
-                        scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                        if (value > 0) {
+                            const buffer = Math.abs((low - high) / 6);
+                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                        } else {
+                            const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                            scaleData.yScale.domain([
+                                minYBoundary - buffer,
+                                maxYBoundary + buffer / 2,
+                            ]);
+                        }
                     }
                 } else {
                     if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
@@ -4303,8 +4303,11 @@ export default function Chart(props: ChartData) {
                             const low = minYBoundary < value ? minYBoundary : value;
 
                             const high = maxYBoundary > value ? maxYBoundary : value;
-
-                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                            const bufferForLimit = Math.abs((low - high) / 6);
+                            scaleData.yScale.domain([
+                                low - bufferForLimit,
+                                high + bufferForLimit / 2,
+                            ]);
                         } else {
                             scaleData.yScale.domain([
                                 minYBoundary - buffer,
