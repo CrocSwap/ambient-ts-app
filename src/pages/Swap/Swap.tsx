@@ -558,6 +558,8 @@ export default function Swap(props: propsIF) {
                         isOnTradeRoute={isOnTradeRoute}
                         openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
+                        bypassConfirm={bypassConfirm}
+                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                     {/* <DividerDark addMarginTop /> */}
                     {navigationMenu}

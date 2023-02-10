@@ -55,7 +55,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
         </SnackbarComponent>
     );
     function handleCopyAddress(item: string) {

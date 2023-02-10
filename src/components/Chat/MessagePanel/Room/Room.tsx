@@ -34,13 +34,24 @@ interface RoomProps {
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     room: any;
+    isCurrentPool: any;
+    setIsCurrentPool: any;
+    showCurrentPoolButton: any;
+    setShowCurrentPoolButton: any;
 }
 export default function RoomDropdown(props: RoomProps) {
-    const { currentPool, isFullScreen } = props;
+    const {
+        currentPool,
+        isFullScreen,
+        isCurrentPool,
+        setIsCurrentPool,
+        showCurrentPoolButton,
+        setShowCurrentPoolButton,
+    } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray, setRoomArray] = useState<string[]>([]);
-    const [isCurrentPool, setIsCurrentPool] = useState(false);
-    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
+    // const [isCurrentPool, setIsCurrentPool] = useState(false);
+    // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
 
     const defaultRooms = [

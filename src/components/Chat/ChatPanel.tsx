@@ -9,13 +9,15 @@ import useSocket from './Service/useSocket';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
-import { MdOpenInFull } from 'react-icons/md';
-import { useParams, useNavigate } from 'react-router-dom';
+import { TbTableExport } from 'react-icons/tb';
+import { useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import FullChat from '../../App/components/Chat/FullChat/FullChat';
+import trimString from '../../utils/functions/trimString';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -47,21 +49,24 @@ interface ChatProps {
     setChatStatus: Dispatch<SetStateAction<boolean>>;
     fullScreen?: boolean;
     userImageData: string[];
+    appPage?: boolean;
 }
 
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
+    const [isCurrentPool, setIsCurrentPool] = useState(false);
+    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
+
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [scrollDirection, setScrollDirection] = useState(String);
-    const wrapperStyleFull = styles.chat_wrapper_full;
     const [notification, setNotification] = useState(0);
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
@@ -213,10 +218,10 @@ export default function ChatPanel(props: ChatProps) {
         }
     };
 
-    const handleFullScreenRedirect = () => {
-        navigate('/app/chat');
-        props.setChatStatus(true);
-    };
+    // const handleFullScreenRedirect = () => {
+    //     navigate('/app/chat');
+    //     props.setChatStatus(true);
+    // };
 
     const header = (
         <div className={styles.chat_header} onClick={() => setChatStatus(!props.chatStatus)}>
@@ -225,10 +230,10 @@ export default function ChatPanel(props: ChatProps) {
                 {props.isFullScreen || !props.chatStatus ? (
                     <></>
                 ) : (
-                    <MdOpenInFull
-                        size={16}
+                    <TbTableExport
+                        size={18}
                         className={styles.open_full_button}
-                        onClick={handleFullScreenRedirect}
+                        onClick={() => window.open('/app/chat2')}
                     />
                 )}
                 {props.isFullScreen || !props.chatStatus ? (
@@ -314,19 +319,35 @@ export default function ChatPanel(props: ChatProps) {
         />
     );
 
-    const contentHeight = props.isFullScreen ? '100%' : props.chatStatus ? '479px' : '40px';
-    const contentWidth = props.isFullScreen ? '100%' : props.chatStatus ? '320px' : '300px';
+    const contentHeight = props.chatStatus ? '479px' : '30px';
+    if (props.appPage)
+        return (
+            <FullChat
+                messageList={messageList}
+                chatNotification={chatNotification}
+                messageInput={messageInput}
+                room={room}
+                userName={
+                    ens === null || ens === ''
+                        ? trimString(address as string, 6, 0, '…')
+                        : (ens as string)
+                }
+                setRoom={setRoom}
+                setIsCurrentPool={setIsCurrentPool}
+                showCurrentPoolButton={showCurrentPoolButton}
+                setShowCurrentPoolButton={setShowCurrentPoolButton}
+                currentPool={currentPool}
+                favePools={favePools}
+            />
+        );
 
     return (
         <div
-            className={props.isFullScreen ? styles.full_screen_wrapper : styles.example}
+            className={styles.main_container}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
-            <div
-                className={`${props.isFullScreen ? wrapperStyleFull : styles.modal_body}`}
-                style={{ height: contentHeight, width: contentWidth }}
-            >
+            <div className={styles.modal_body} style={{ height: contentHeight, width: '100%' }}>
                 <div className={styles.chat_body}>
                     {header}
 
@@ -337,6 +358,10 @@ export default function ChatPanel(props: ChatProps) {
                         currentPool={currentPool}
                         isFullScreen={props.isFullScreen}
                         room={room}
+                        setIsCurrentPool={setIsCurrentPool}
+                        isCurrentPool={isCurrentPool}
+                        showCurrentPoolButton={showCurrentPoolButton}
+                        setShowCurrentPoolButton={setShowCurrentPoolButton}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

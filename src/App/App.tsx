@@ -339,6 +339,10 @@ export default function App() {
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
+    const [minRangePrice, setMinRangePrice] = useState<number>(0);
+    const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
+        useState<boolean>(false);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -1625,6 +1629,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
             if (lastMessageData && crocEnv) {
                 console.log('new user position message received');
+                // console.log({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1636,6 +1641,7 @@ export default function App() {
                         );
                     }),
                 ).then((updatedPositions) => {
+                    // console.log({ updatedPositions });
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }
@@ -2696,6 +2702,8 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/app/chat' &&
+        currentLocation !== '/app/chat2' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2712,6 +2720,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/app/chat' ||
+        currentLocation == '/app/chat2' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2832,6 +2842,14 @@ export default function App() {
                                     setFetchingCandle={setFetchingCandle}
                                     isCandleDataNull={isCandleDataNull}
                                     setIsCandleDataNull={setIsCandleDataNull}
+                                    minPrice={minRangePrice}
+                                    maxPrice={maxRangePrice}
+                                    rescaleRangeBoundariesWithSlider={
+                                        rescaleRangeBoundariesWithSlider
+                                    }
+                                    seRescaleRangeBoundariesWithSlider={
+                                        seRescaleRangeBoundariesWithSlider
+                                    }
                                 />
                             }
                         >
@@ -2864,6 +2882,11 @@ export default function App() {
                                     <Reposition
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
+                                        setMaxPrice={setMaxRangePrice}
+                                        setMinPrice={setMinRangePrice}
+                                        seRescaleRangeBoundariesWithSlider={
+                                            seRescaleRangeBoundariesWithSlider
+                                        }
                                     />
                                 }
                             />
@@ -2953,6 +2976,23 @@ export default function App() {
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
                                     userImageData={imageData}
+                                />
+                            }
+                        />
+                        <Route
+                            path='app/chat2'
+                            element={
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
+                                    userImageData={imageData}
+                                    appPage={true}
                                 />
                             }
                         />
@@ -3201,19 +3241,21 @@ export default function App() {
                     />
                 )} */}
 
-                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
-                    <ChatPanel
-                        chatStatus={chatStatus}
-                        onClose={() => {
-                            console.error('Function not implemented.');
-                        }}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        isFullScreen={false}
-                        userImageData={imageData}
-                    />
-                )}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/app/chat' &&
+                    currentLocation !== '/app/chat2' && (
+                        <ChatPanel
+                            chatStatus={chatStatus}
+                            onClose={() => {
+                                console.error('Function not implemented.');
+                            }}
+                            favePools={favePools}
+                            currentPool={currentPoolInfo}
+                            setChatStatus={setChatStatus}
+                            isFullScreen={false}
+                            userImageData={imageData}
+                        />
+                    )}
             </div>
             <SidebarFooter />
             <GlobalModal

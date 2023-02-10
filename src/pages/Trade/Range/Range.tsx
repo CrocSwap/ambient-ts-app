@@ -1326,6 +1326,8 @@ export default function Range(props: propsIF) {
                     isTokenABase={isTokenABase}
                     openGlobalModal={openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
+                    bypassConfirm={bypassConfirm}
+                    toggleBypassConfirm={toggleBypassConfirm}
                 />
                 {/* <DividerDark addMarginTop /> */}
                 {navigationMenu}
