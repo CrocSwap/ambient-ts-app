@@ -23,6 +23,7 @@ import NotificationCenter from '../../../components/Global/NotificationCenter/No
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -50,6 +51,7 @@ interface HeaderPropsIF {
     addRecentPool: (pool: SmallerPoolIF) => void;
     switchTheme: () => void;
     theme: string;
+    chainData: ChainSpec;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -74,6 +76,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         addRecentPool,
         theme,
         poolPriceDisplay,
+        // isUserLoggedIn,
+        chainData,
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -153,6 +157,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchTheme: switchTheme,
         theme: theme,
         lastBlockNumber: lastBlockNumber,
+        chainData: chainData,
     };
 
     // End of Page Header Functions
