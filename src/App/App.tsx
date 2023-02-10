@@ -2360,6 +2360,7 @@ export default function App() {
         addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
+        chainData: chainData,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
