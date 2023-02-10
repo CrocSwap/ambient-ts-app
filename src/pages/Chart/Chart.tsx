@@ -1804,6 +1804,7 @@ export default function Chart(props: ChartData) {
                     const center =
                         domainY[1] !== domainY[0] ? (domainY[1] + domainY[0]) / 2 : domainY[0] / 2;
                     let deltaY;
+
                     if (event.sourceEvent.type === 'touchmove') {
                         const touch = event.sourceEvent.changedTouches[0];
 
@@ -1828,8 +1829,33 @@ export default function Chart(props: ChartData) {
                             : 1,
                     );
 
-                    const size = (domainY[1] - domainY[0]) / 2 / factor;
-                    await scaleData.yScale.domain([center - size, center + size]);
+                    const size = (domainY[1] - domainY[0]) / factor;
+
+                    const newCenter = scaleData.yScale.invert(event.sourceEvent.offsetY);
+
+                    const diff = domainY[1] - domainY[0];
+
+                    const distance =
+                        newCenter > center
+                            ? Math.abs(newCenter - scaleData.yScale.domain()[1])
+                            : Math.abs(newCenter - scaleData.yScale.domain()[0]);
+                    const diffFactor = (diff - distance) / distance;
+
+                    const bottomDiff = size / (diffFactor + 1);
+                    const topDiff = size - bottomDiff;
+
+                    if (newCenter > center) {
+                        await scaleData.yScale.domain([
+                            newCenter - topDiff,
+                            newCenter + bottomDiff,
+                        ]);
+                    } else {
+                        await scaleData.yScale.domain([
+                            newCenter - bottomDiff,
+                            newCenter + topDiff,
+                        ]);
+                    }
+
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
