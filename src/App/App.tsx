@@ -520,8 +520,6 @@ export default function App() {
     }, [tokenListsReceived]);
 
     const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
-    false && checkBypassConfirm;
-    false && updateBypassConfirm;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -585,7 +583,7 @@ export default function App() {
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
-    const [swapSlippage, mintSlippage] = useSlippage();
+    const [swapSlippage, mintSlippage, repoSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
@@ -2868,6 +2866,10 @@ export default function App() {
                                     <Reposition
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
+                                        repoSlippage={repoSlippage}
+                                        isPairStable={isPairStable}
+                                        bypassConfirm={checkBypassConfirm('repo')}
+                                        toggleBypassConfirm={updateBypassConfirm}
                                     />
                                 }
                             />

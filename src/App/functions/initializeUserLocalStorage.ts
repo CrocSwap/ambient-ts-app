@@ -57,6 +57,7 @@ export default function initializeUserLocalStorage() {
         user.slippage = {
             swap: { stable: '0.1', volatile: '0.5' },
             mint: { stable: '1', volatile: '3' },
+            repo: { stable: '2', volatile: '4'}
         };
         userUpdated = true;
     }
@@ -103,6 +104,7 @@ export default function initializeUserLocalStorage() {
             ['swap', false],
             ['limit', false],
             ['range', false],
+            ['repo', false]
         ];
         initialPairs.forEach((pair) => initialMap.set(pair[0], pair[1]));
         user.bypassConfirm = JSON.stringify(Array.from(initialMap.entries()));

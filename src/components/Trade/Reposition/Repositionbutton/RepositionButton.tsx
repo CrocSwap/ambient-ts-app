@@ -2,23 +2,21 @@ import styles from './RepositionButton.module.css';
 import Button from '../../../Global/Button/Button';
 
 interface propsIF {
+    bypassConfirm: boolean;
     onClickFn: () => void;
 }
 
+// TODO:   @Junior  please get rid of this file and move JSX into Reposition.tsx
+
 export default function RepositionButton(props: propsIF) {
-    const { onClickFn } = props;
-    // ----------------------------TEMPORARY DATA------------------------
-    const repositionAllowed = true;
-    // const onClickFn = () => console.log('clicked');
-    const rangeButtonErrorMessage = 'Enter an amount';
-    // ----------------------------TEMPORARY DATA------------------------
+    const { bypassConfirm, onClickFn } = props;
 
     return (
         <div className={styles.button_container}>
             <Button
-                title={repositionAllowed ? 'Open Confirmation' : rangeButtonErrorMessage}
+                title={bypassConfirm ? 'Reposition' : 'Open Confirmation'}
                 action={onClickFn}
-                disabled={!repositionAllowed}
+                disabled={false}
                 flat={true}
             />
         </div>
