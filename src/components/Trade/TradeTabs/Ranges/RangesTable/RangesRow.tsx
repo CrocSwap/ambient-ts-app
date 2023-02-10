@@ -82,8 +82,8 @@ export default function RangesRow(props: propsIF) {
         ownerId,
         quoteTokenLogo,
         baseTokenLogo,
-        baseDisplay,
-        quoteDisplay,
+        // baseDisplay,
+        // quoteDisplay,
         // baseDisplayFrontend,
         // quoteDisplayFrontend,
         userMatchesConnectedAccount,
@@ -408,7 +408,7 @@ export default function RangesRow(props: propsIF) {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {baseDisplay}
+                {position.positionLiqBaseTruncated}
                 {baseTokenLogoComponent}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </div>
@@ -436,7 +436,8 @@ export default function RangesRow(props: propsIF) {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {quoteDisplay}
+                {position.positionLiqQuoteTruncated}
+                {/* {quoteDisplay} */}
                 {quoteTokenLogoComponent}
 
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
@@ -636,7 +637,8 @@ export default function RangesRow(props: propsIF) {
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {baseDisplay}
+                        {position.positionLiqBaseTruncated}
+                        {/* {baseDisplay} */}
                         {baseTokenLogoComponent}
                     </div>
 
@@ -644,8 +646,8 @@ export default function RangesRow(props: propsIF) {
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {' '}
-                        {quoteDisplay}
+                        {position.positionLiqQuoteTruncated}
+                        {/* {quoteDisplay} */}
                         {quoteTokenLogoComponent}
                     </div>
                 </li>

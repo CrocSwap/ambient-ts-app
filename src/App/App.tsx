@@ -1629,6 +1629,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
             if (lastMessageData && crocEnv) {
                 console.log('new user position message received');
+                // console.log({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1640,6 +1641,7 @@ export default function App() {
                         );
                     }),
                 ).then((updatedPositions) => {
+                    // console.log({ updatedPositions });
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }

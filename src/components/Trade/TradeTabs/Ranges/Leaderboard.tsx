@@ -21,7 +21,10 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { updateApy } from '../../../../App/functions/getPositionData';
+import {
+    //  updateApy,
+    updatePositionStats,
+} from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -108,7 +111,7 @@ export default function Leaderboard(props: propsIF) {
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updateApy(position);
+                    return updatePositionStats(position);
                 }),
             )
                 .then((updatedPositions) => {
