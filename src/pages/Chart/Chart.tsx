@@ -5329,42 +5329,43 @@ export default function Chart(props: ChartData) {
                     );
             };
 
-            if (liqMode === 'Depth') {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                    liqTextData.totalValue = snap(
-                        liquidityData.depthLiqAskData,
-                        liqTooltipSelectedLiqBar.liqPrices,
-                    );
+            if (liqTooltipSelectedLiqBar.liqPrices != null) {
+                if (liqMode === 'Depth') {
+                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                        liqTextData.totalValue = snap(
+                            liquidityData.depthLiqAskData,
+                            liqTooltipSelectedLiqBar.liqPrices,
+                        );
+                    } else {
+                        liqTextData.totalValue = snap(
+                            liquidityData.depthLiqBidData,
+                            liqTooltipSelectedLiqBar.liqPrices,
+                        );
+                    }
                 } else {
-                    liqTextData.totalValue = snap(
-                        liquidityData.depthLiqBidData,
-                        liqTooltipSelectedLiqBar.liqPrices,
-                    );
-                }
-            } else {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                    liquidityData.liqAskData.map((liqData: any) => {
-                        if (
-                            liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay > liqData.liqPrices
-                        ) {
-                            liqTextData.totalValue =
-                                liqTextData.totalValue + liqData.deltaAverageUSD;
-                        }
-                    });
-                } else {
-                    liquidityData.liqBidData.map((liqData: any) => {
-                        if (
-                            liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay < liqData.liqPrices
-                        ) {
-                            liqTextData.totalValue =
-                                liqTextData.totalValue + liqData.deltaAverageUSD;
-                        }
-                    });
+                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                        liquidityData.liqAskData.map((liqData: any) => {
+                            if (
+                                liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                                poolPriceDisplay > liqData.liqPrices
+                            ) {
+                                liqTextData.totalValue =
+                                    liqTextData.totalValue + liqData.deltaAverageUSD;
+                            }
+                        });
+                    } else {
+                        liquidityData.liqBidData.map((liqData: any) => {
+                            if (
+                                liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                                poolPriceDisplay < liqData.liqPrices
+                            ) {
+                                liqTextData.totalValue =
+                                    liqTextData.totalValue + liqData.deltaAverageUSD;
+                            }
+                        });
+                    }
                 }
             }
-
             // const absoluteDifference = Math.abs(difference)
 
             const pinnedTick = getPinnedTickFromDisplayPrice(
