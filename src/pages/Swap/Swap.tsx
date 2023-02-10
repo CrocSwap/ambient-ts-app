@@ -615,7 +615,6 @@ export default function Swap(props: propsIF) {
                             openGlobalPopup={openGlobalPopup}
                         />
                     </motion.div>
-                    {/* {denominationSwitchOrNull} */}
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
