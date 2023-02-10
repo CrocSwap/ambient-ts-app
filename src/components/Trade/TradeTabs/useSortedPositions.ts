@@ -91,7 +91,7 @@ export const useSortedPositions = (
         // variable to hold output
         let sortedData: PositionIF[];
         // router to apply a specific sort function
-        console.log({ data });
+        // console.log({ data });
         switch (sortBy) {
             case 'id':
                 sortedData = sortById(data);
@@ -133,9 +133,9 @@ export const useSortedPositions = (
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
         const poss = sortData(positions);
-        console.log({ poss });
+        // console.log({ poss });
         return poss;
-    }, [sortBy, reverseSort, positions.length]);
+    }, [sortBy, reverseSort, JSON.stringify(positions)]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };
