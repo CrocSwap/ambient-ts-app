@@ -119,8 +119,8 @@
     margin: 10px auto;
 }
 .mobile_toggle_container button {
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
+    /* font-size: var(--body-size); */
+    /* line-height: var(--body-lh); */
     padding: 4px 1.5rem;
 
     cursor: pointer;
