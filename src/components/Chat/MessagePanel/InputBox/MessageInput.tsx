@@ -17,7 +17,7 @@ interface MessageInputProps {
     message?: Message;
     room: string;
     currentUser: string;
-    ensName: string;
+    ensName: string | undefined | any;
 }
 interface currentPoolInfo {
     tokenA: TokenIF;

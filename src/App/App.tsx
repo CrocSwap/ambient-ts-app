@@ -2953,7 +2953,6 @@ export default function App() {
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
                                     userImageData={imageData}
-                                    ensName={ensName}
                                 />
                             }
                         />
@@ -3213,7 +3212,6 @@ export default function App() {
                         setChatStatus={setChatStatus}
                         isFullScreen={false}
                         userImageData={imageData}
-                        ensName={ensName}
                     />
                 )}
             </div>
