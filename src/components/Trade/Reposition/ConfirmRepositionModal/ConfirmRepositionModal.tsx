@@ -3,6 +3,7 @@ import RepositionPriceInfo from '../RepositionPriceInfo/RepositionPriceInfo';
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ConfirmRepositionModalProps {
     onClose: () => void;
@@ -12,6 +13,8 @@ interface ConfirmRepositionModalProps {
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
     onSend: () => void;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
@@ -22,6 +25,8 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         currentPoolPriceTick,
         rangeWidthPercentage,
         onSend,
+        setMinPrice,
+        setMaxPrice,
     } = props;
 
     const sendButton = <Button title='Send Reposition' action={onSend} flat={true} />;
@@ -36,6 +41,8 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 currentPoolPriceTick={currentPoolPriceTick}
                 currentPoolPriceDisplay={currentPoolPriceDisplay}
                 ambientApy={ambientApy}
+                setMaxPrice={setMaxPrice}
+                setMinPrice={setMinPrice}
             />
         </div>
     );

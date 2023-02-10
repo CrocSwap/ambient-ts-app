@@ -339,6 +339,10 @@ export default function App() {
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
+    const [minRangePrice, setMinRangePrice] = useState<number>(0);
+    const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
+        useState<boolean>(false);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -1623,6 +1627,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
             if (lastMessageData && crocEnv) {
                 console.log('new user position message received');
+                // console.log({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1634,6 +1639,7 @@ export default function App() {
                         );
                     }),
                 ).then((updatedPositions) => {
+                    // console.log({ updatedPositions });
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }
@@ -1884,6 +1890,7 @@ export default function App() {
                     console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
+                    // console.log({ newTokenAllowance });
                     if (tokenAAllowance !== newTokenAllowance) {
                         console.log('setting new token a allowance');
                         setTokenAAllowance(newTokenAllowance);
@@ -2351,6 +2358,7 @@ export default function App() {
         addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
+        chainData: chainData,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2834,6 +2842,14 @@ export default function App() {
                                     setFetchingCandle={setFetchingCandle}
                                     isCandleDataNull={isCandleDataNull}
                                     setIsCandleDataNull={setIsCandleDataNull}
+                                    minPrice={minRangePrice}
+                                    maxPrice={maxRangePrice}
+                                    rescaleRangeBoundariesWithSlider={
+                                        rescaleRangeBoundariesWithSlider
+                                    }
+                                    seRescaleRangeBoundariesWithSlider={
+                                        seRescaleRangeBoundariesWithSlider
+                                    }
                                 />
                             }
                         >
@@ -2870,6 +2886,11 @@ export default function App() {
                                         isPairStable={isPairStable}
                                         bypassConfirm={checkBypassConfirm('repo')}
                                         toggleBypassConfirm={updateBypassConfirm}
+                                        setMaxPrice={setMaxRangePrice}
+                                        setMinPrice={setMinRangePrice}
+                                        seRescaleRangeBoundariesWithSlider={
+                                            seRescaleRangeBoundariesWithSlider
+                                        }
                                     />
                                 }
                             />
@@ -2959,7 +2980,6 @@ export default function App() {
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
                                     userImageData={imageData}
-                                    ensName={ensName}
                                 />
                             }
                         />
@@ -2976,7 +2996,6 @@ export default function App() {
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
                                     userImageData={imageData}
-                                    ensName={ensName}
                                     appPage={true}
                                 />
                             }
@@ -3239,7 +3258,6 @@ export default function App() {
                             setChatStatus={setChatStatus}
                             isFullScreen={false}
                             userImageData={imageData}
-                            ensName={ensName}
                         />
                     )}
             </div>

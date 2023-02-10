@@ -13,7 +13,7 @@
 .settings_control {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    /* align-items: flex-start; */
 
     gap: 8px;
 }
@@ -48,6 +48,7 @@
 }
 
 .info_button {
+    cursor: pointer;
     outline: none;
     border: none;
     background: var(--text-highlight-dark);

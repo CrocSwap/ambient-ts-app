@@ -434,7 +434,6 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
         <div
             className='main_layout_chart'
             ref={graphMainDiv}
-            id='tvl_chart'
             data-testid={'chart'}
             style={{
                 height: '100%',

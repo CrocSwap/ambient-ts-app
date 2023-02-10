@@ -29,6 +29,7 @@ interface FullChatPropsIF {
 
 interface ChannelDisplayPropsIF {
     pool: PoolIF;
+    isDropdown: boolean;
 }
 export default function FullChat(props: FullChatPropsIF) {
     // eslint-disable-next-line
@@ -36,8 +37,10 @@ export default function FullChat(props: FullChatPropsIF) {
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
 
+    const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
+
     // eslint-disable-next-line
-    function handleRoomClick(event: any, pool: PoolIF) {
+    function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
         const roomName = pool.base.symbol + pool.quote.symbol;
         props.setRoom(roomName);
 
@@ -54,6 +57,8 @@ export default function FullChat(props: FullChatPropsIF) {
             props.setShowCurrentPoolButton(true);
         }
 
+        if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
+
         // handleDropdownMenu();
     }
 
@@ -68,7 +73,7 @@ export default function FullChat(props: FullChatPropsIF) {
     }
 
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
-        const { pool } = props;
+        const { pool, isDropdown } = props;
 
         const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
         const poolIsCurrentPool =
@@ -79,9 +84,9 @@ export default function FullChat(props: FullChatPropsIF) {
             <div
                 className={`${styles.pool_display} ${activePoolStyle}`}
                 // eslint-disable-next-line
-                onClick={(event: any) => handleRoomClick(event, pool)}
+                onClick={(event: any) => handleRoomClick(event, pool, isDropdown)}
             >
-                <div>
+                <div className={styles.token_logos}>
                     <img src={pool?.base.logoURI} alt='base token' />
                     <img src={pool?.quote.logoURI} alt='quote token' />
                 </div>
@@ -159,9 +164,33 @@ export default function FullChat(props: FullChatPropsIF) {
                 <span> Global</span>
             </div>
             {topPools.map((pool, idx) => (
-                <ChannelDisplay pool={pool} key={idx} />
+                <ChannelDisplay pool={pool} key={idx} isDropdown={false} />
             ))}
         </section>
+    );
+
+    const channelsDropdown = (
+        <div className={styles.channels_dropdown}>
+            <button
+                className={styles.active_channel_dropdown}
+                onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
+            >
+                # {readableRoomName}
+            </button>
+            {showChannelsDropdown && (
+                <div
+                    className={
+                        showChannelsDropdown
+                            ? styles.active_channel_dropdown_items_containers
+                            : styles.channel_dropdown_items_containers
+                    }
+                >
+                    {topPools.map((pool, idx) => (
+                        <ChannelDisplay pool={pool} key={idx} isDropdown={true} />
+                    ))}
+                </div>
+            )}
+        </div>
     );
 
     const chatContainer = (
@@ -186,7 +215,8 @@ export default function FullChat(props: FullChatPropsIF) {
             </section>
 
             <section className={styles.right_container}>
-                <header className={styles.right_container_header}># {readableRoomName}</header>
+                <header className={styles.right_container_header}># {readableRoomName}</header>{' '}
+                {channelsDropdown}
                 {chatContainer}
             </section>
         </div>
