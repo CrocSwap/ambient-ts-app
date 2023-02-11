@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
@@ -16,14 +16,16 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 interface propsIF {
+    crocEnv: CrocEnv | undefined;
     isDenomBase: boolean;
     ambientApy: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
-    const { isDenomBase, ambientApy } = props;
+    const { crocEnv, isDenomBase, ambientApy } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -51,7 +53,8 @@ export default function Reposition(props: propsIF) {
     location.state || navigate(redirectPath, { replace: true });
 
     // position data from the location object
-    const { position } = location.state;
+    const { position } = location.state as { position: PositionIF };
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const simpleRangeWidth = tradeData.simpleRangeWidth;
@@ -157,6 +160,7 @@ export default function Reposition(props: propsIF) {
                     quoteTokenSymbol={position.quoteSymbol || 'USDC'}
                 />
                 <RepositionPriceInfo
+                    crocEnv={crocEnv}
                     position={position}
                     ambientApy={ambientApy}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}

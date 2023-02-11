@@ -1,4 +1,5 @@
 // START: Import Local Files
+import { CrocEnv, CrocReposition } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useEffect, useState } from 'react';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
@@ -22,7 +23,8 @@ import styles from './RepositionPriceInfo.module.css';
 // }
 
 interface IRepositionPriceInfoProps {
-    position: PositionIF | undefined;
+    crocEnv: CrocEnv | undefined;
+    position: PositionIF;
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
@@ -33,6 +35,7 @@ interface IRepositionPriceInfoProps {
 // central react functional component
 export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const {
+        crocEnv,
         position,
         ambientApy,
         currentPoolPriceDisplay,
@@ -47,32 +50,23 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const isDenomBase = useAppSelector((state) => state.tradeData)?.isDenomBase;
 
-    const currentBaseQtyDisplayTruncated = currentBaseQtyDisplay
-        ? currentBaseQtyDisplay < 2
-            ? currentBaseQtyDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : currentBaseQtyDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '0.00';
+    function truncateString(qty?: number): string {
+        return qty
+            ? qty < 2
+                ? qty.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                  })
+                : qty.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : '0.00';
+    }
 
-    const currentQuoteQtyDisplayTruncated = currentQuoteQtyDisplay
-        ? currentQuoteQtyDisplay < 2
-            ? currentQuoteQtyDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : currentQuoteQtyDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '0.00';
+    const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
 
-    const newBaseQtyDisplayTruncated = currentBaseQtyDisplayTruncated;
-    const newQuoteQtyDisplayTruncated = currentQuoteQtyDisplayTruncated;
+    const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
 
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
@@ -88,6 +82,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const pinnedMinPriceDisplayTruncated = pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
     const pinnedMaxPriceDisplayTruncated = pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+    const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
+    const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
@@ -98,6 +94,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         pinnedMaxPriceDisplayTruncated || '0.00',
     );
 
+    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
+
     useEffect(() => {
         setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
     }, [pinnedMinPriceDisplayTruncated]);
@@ -105,6 +104,31 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     useEffect(() => {
         setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
     }, [pinnedMaxPriceDisplayTruncated]);
+
+    useEffect(() => {
+        if (!crocEnv) {
+            return;
+        }
+        const pool = crocEnv.pool(position.base, position.quote);
+
+        const repo = new CrocReposition(pool, {
+            liquidity: position.positionLiq,
+            burn: [position.bidTick, position.askTick],
+            mint: [pinnedLowTick, pinnedHighTick],
+        });
+
+        console.log([pinnedLowTick, pinnedHighTick]);
+        repo.postBalance().then(([base, quote]: [number, number]) => {
+            setNewBaseQtyDisplay(truncateString(base));
+            setNewQuoteQtyDisplay(truncateString(quote));
+        });
+    }, [
+        pinnedLowTick,
+        pinnedHighTick,
+        position.baseSymbol,
+        position.quoteSymbol,
+        currentPoolPriceTick,
+    ]);
 
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
@@ -171,13 +195,13 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const newBaseTokenCollateral = (
         <div className={styles.collateral_display}>
             <p className={styles.collateral_title}>{baseSymbol} After Reposition</p>
-            <p className={styles.collateral_amount}>{newBaseQtyDisplayTruncated}</p>
+            <p className={styles.collateral_amount}>{newBaseQtyDisplay}</p>
         </div>
     );
     const newQuoteTokenCollateral = (
         <div className={styles.collateral_display}>
             <p className={styles.collateral_title}>{quoteSymbol} After Reposition</p>
-            <p className={styles.collateral_amount}>{newQuoteQtyDisplayTruncated}</p>
+            <p className={styles.collateral_amount}>{newQuoteQtyDisplay}</p>
         </div>
     );
 

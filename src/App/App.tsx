@@ -2862,6 +2862,7 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        crocEnv={crocEnv}
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
                                     />
