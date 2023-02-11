@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { concDepositSkew, CrocEnv } from '@crocswap-libs/sdk';
+import { concDepositSkew, capitalConcFactor, CrocEnv } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Elements
@@ -758,9 +758,16 @@ export default function Range(props: propsIF) {
 
     const maxPriceDisplay = isAmbient ? 'Infinity' : pinnedMaxPriceDisplayTruncated;
 
-    const aprPercentage: number | undefined = ambientApy
-        ? 100 - rangeWidthPercentage + ambientApy
-        : undefined;
+    let aprPercentage = ambientApy;
+
+    if (!isAmbient && ambientApy && poolPriceNonDisplay) {
+        const concFactor = capitalConcFactor(
+            poolPriceNonDisplay,
+            rangeLowBoundNonDisplayPrice,
+            rangeHighBoundNonDisplayPrice,
+        );
+        aprPercentage = ambientApy * concFactor;
+    }
 
     const advancedDaysInRangeEstimation =
         minimumSpan < 0 ? 0 : parseFloat(truncateDecimals(minimumSpan / 100, 0));

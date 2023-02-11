@@ -1,5 +1,5 @@
 // START: Import Local Files
-import { CrocEnv, CrocReposition } from '@crocswap-libs/sdk';
+import { capitalConcFactor, CrocEnv, CrocReposition, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -149,9 +149,16 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         : '';
     const poolPriceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
-    const aprPercentage: number | undefined = ambientApy
-        ? 100 - rangeWidthPercentage + ambientApy
-        : undefined;
+    let aprPercentage = ambientApy;
+
+    if (ambientApy) {
+        const concFactor = capitalConcFactor(
+            tickToPrice(currentPoolPriceTick),
+            tickToPrice(pinnedLowTick),
+            tickToPrice(pinnedHighTick),
+        );
+        aprPercentage = ambientApy * concFactor;
+    }
 
     const aprPercentageString = aprPercentage
         ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
