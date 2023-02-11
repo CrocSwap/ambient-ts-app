@@ -46,7 +46,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <h2>Transaction Submitted</h2>
+            <h2 style={{ marginBottom: '15px' }}>Transaction Submitted</h2>
             <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
