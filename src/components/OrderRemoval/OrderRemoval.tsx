@@ -382,7 +382,7 @@ export default function OrderRemoval(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <div>
+        <div style={{ padding: '1rem ' }}>
             <RemoveOrderModalHeader
                 onClose={closeGlobalModal}
                 title={showConfirmation ? '' : 'Remove Limit Order'}

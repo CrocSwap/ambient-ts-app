@@ -16,11 +16,15 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { PositionIF, SlippagePairIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     isDenomBase: boolean;
     ambientApy: number | undefined;
+    repoSlippage: SlippagePairIF;
+    isPairStable: boolean;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
@@ -30,6 +34,10 @@ export default function Reposition(props: propsIF) {
     const {
         isDenomBase,
         ambientApy,
+        repoSlippage,
+        isPairStable,
+        bypassConfirm,
+        toggleBypassConfirm,
         setMinPrice,
         setMaxPrice,
         seRescaleRangeBoundariesWithSlider,
@@ -138,30 +146,12 @@ export default function Reposition(props: propsIF) {
             <RepositionHeader
                 positionHash={position.positionStorageSlot}
                 redirectPath={redirectPath}
+                repoSlippage={repoSlippage}
+                isPairStable={isPairStable}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
             <div className={styles.reposition_content}>
-                {/* <div className={styles.reposition_toggle_container}>
-                    <Link
-                        to='/trade/reposition'
-                        className={
-                            currentLocation.includes('reposition')
-                                ? styles.active_button_toggle
-                                : styles.non_active_button_toggle
-                        }
-                    >
-                        Reposition
-                    </Link>
-                    <Link
-                        to='/trade/add'
-                        className={
-                            currentLocation.includes('add')
-                                ? styles.active_button_toggle
-                                : styles.non_active_button_toggle
-                        }
-                    >
-                        Add
-                    </Link>
-                </div> */}
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
@@ -180,7 +170,11 @@ export default function Reposition(props: propsIF) {
                     setMaxPrice={setMaxPrice}
                     setMinPrice={setMinPrice}
                 />
-                <RepositionButton onClickFn={openModal} />
+                <RepositionButton
+                    bypassConfirm={bypassConfirm}
+                    onClickFn={openModal}
+                    sendRepositionTransaction={sendRepositionTransaction}
+                />
             </div>
             {isModalOpen && (
                 <Modal onClose={closeModal} title=' Confirm Reposition'>

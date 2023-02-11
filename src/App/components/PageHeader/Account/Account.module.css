@@ -280,19 +280,20 @@ background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1))
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-
 }
 
-.block_number_div span{
+.block_number_div span {
+    cursor: default !important;
+
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-white);
-    color: var(--text-grey-white)
-
+    color: var(--text-grey-white);
 }
 
 /* page block sign */
 .page_block_sign {
+    cursor: default !important;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -324,10 +325,8 @@ background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1))
     }
 }
 
-
-
 @media (max-width: 600px) {
-.wallet_name{
-    display: none;
-}
+    .wallet_name {
+        display: none;
+    }
 }

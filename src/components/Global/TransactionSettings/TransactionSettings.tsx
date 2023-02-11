@@ -12,7 +12,8 @@ import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationMo
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
+    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order' | 'Reposition';
+    toggleFor: string;
     slippage: SlippagePairIF;
     isPairStable: boolean;
     onClose: () => void;
@@ -21,7 +22,7 @@ interface propsIF {
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose, bypassConfirm, toggleBypassConfirm } = props;
+    const { module, toggleFor, slippage, isPairStable, onClose, bypassConfirm, toggleBypassConfirm } = props;
 
     // const dispatch = useAppDispatch();
 
@@ -51,13 +52,6 @@ export default function TransactionSettings(props: propsIF) {
             handleSubmit();
         }
     };
-
-    const toggleFor =
-        module === 'Swap' || module === 'Market Order'
-            ? 'swap'
-            : module === 'Limit Order'
-            ? 'limit'
-            : 'range';
 
     const shouldDisplaySlippageTolerance = module !== 'Limit Order';
 

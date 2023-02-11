@@ -524,8 +524,6 @@ export default function App() {
     }, [tokenListsReceived]);
 
     const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
-    false && checkBypassConfirm;
-    false && updateBypassConfirm;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -589,7 +587,7 @@ export default function App() {
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
-    const [swapSlippage, mintSlippage] = useSlippage();
+    const [swapSlippage, mintSlippage, repoSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
@@ -1892,6 +1890,7 @@ export default function App() {
                     console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
+                    // console.log({ newTokenAllowance });
                     if (tokenAAllowance !== newTokenAllowance) {
                         console.log('setting new token a allowance');
                         setTokenAAllowance(newTokenAllowance);
@@ -2359,6 +2358,7 @@ export default function App() {
         addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
+        chainData: chainData,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2882,6 +2882,10 @@ export default function App() {
                                     <Reposition
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
+                                        repoSlippage={repoSlippage}
+                                        isPairStable={isPairStable}
+                                        bypassConfirm={checkBypassConfirm('repo')}
+                                        toggleBypassConfirm={updateBypassConfirm}
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
                                         seRescaleRangeBoundariesWithSlider={

@@ -53,6 +53,7 @@ export default function RangeHeader(props: propsIF) {
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
                 module='Range Order'
+                toggleFor='range'
                 slippage={mintSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}
