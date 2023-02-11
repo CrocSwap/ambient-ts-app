@@ -49,6 +49,7 @@ export default function LimitHeader(props: propsIF) {
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
                 module='Limit Order'
+                toggleFor='limit'
                 slippage={mintSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}

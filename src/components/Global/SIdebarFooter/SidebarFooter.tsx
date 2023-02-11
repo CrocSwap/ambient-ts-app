@@ -7,7 +7,7 @@ import { MdAccountBox } from 'react-icons/md';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { useUrlParams } from '../../../App/components/PageHeader/useUrlParams';
-
+import { BsFillChatDotsFill } from 'react-icons/bs';
 export default function SidebarFooter() {
     const location = useLocation();
 
@@ -30,6 +30,7 @@ export default function SidebarFooter() {
         { title: 'Swap', destination: '/swap' + paramsSlug, icon: RiSwapBoxFill },
         { title: 'Trade', destination: tradeDestination + paramsSlug, icon: GiTrade },
         { title: 'Account', destination: '/account', icon: MdAccountBox },
+        { title: 'Chat', destination: '/app/chat2', icon: BsFillChatDotsFill },
     ];
 
     return (
