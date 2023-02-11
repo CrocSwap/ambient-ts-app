@@ -10,7 +10,7 @@
     flex-direction: column;
     justify-content: center;
     height: calc(100% - 5rem);
-
+    cursor: default;
     padding: 1rem 2rem;
     border: 1px solid var(--dark3);
     backdrop-filter: blur(10px);

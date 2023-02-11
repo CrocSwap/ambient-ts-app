@@ -1,7 +1,7 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
 import Row from '../../../Global/Row/Row';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineDash } from 'react-icons/ai';
@@ -25,7 +25,7 @@ interface propsIF {
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { account, tx, controlItems } = props;
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const {
         usdValue,
         baseTokenSymbol,
@@ -59,7 +59,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         <div
             className={styles.token_pair_details}
             onClick={() => {
-                dispatch(toggleDidUserFlipDenom());
+                // dispatch(toggleDidUserFlipDenom());
             }}
         >
             <div className={styles.token_pair_images}>
