@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
 
@@ -12,6 +13,8 @@ interface propsIF {
 export default function ConfirmationModalControl(props: propsIF) {
     const { bypassConfirm, toggleBypassConfirm, toggleFor, displayInSettings } = props;
 
+    const { pathname } = useLocation();
+
     const compKey = useId();
 
     const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] = useState(bypassConfirm);
@@ -20,8 +23,20 @@ export default function ConfirmationModalControl(props: propsIF) {
     // TODO:   @Junior  ... or for CSS targeting, just take it out and use the
     // TODO:   @Junior  ... `compKey` value instead (also delete this TODO note)
 
+    const moduleName = pathname.includes('swap')
+        ? 'swaps'
+        : pathname.includes('market')
+        ? 'market orders'
+        : pathname.includes('limit')
+        ? 'limits'
+        : pathname.includes('range')
+        ? 'ranges'
+        : pathname.includes('reposition')
+        ? 'repositions'
+        : 'unhandled';
+
     const label = displayInSettings ? (
-        <p>Skip confirmation step in the future</p>
+        <p>{`Skip confirmation step for ${moduleName} in the future`}</p>
     ) : (
         <p>Skip this step in the future</p>
     );
