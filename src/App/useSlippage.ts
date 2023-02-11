@@ -13,10 +13,13 @@ export const useSlippage = () => {
     const [needInitialization, setNeedInitialization] = useState(true);
 
     if (needInitialization && userData?.slippage) {
-        setSlipSwapStable(userData.slippage.swap.stable);
-        setSlipSwapVolatile(userData.slippage.swap.volatile);
-        setSlipMintStable(userData.slippage.mint.stable);
-        setSlipMintVolatile(userData.slippage.mint.volatile);
+        setSlipSwapStable(userData.slippage?.swap?.stable);
+        setSlipSwapVolatile(userData.slippage?.swap?.volatile);
+        setSlipMintStable(userData.slippage?.mint?.stable);
+        setSlipMintVolatile(userData.slippage?.mint?.volatile);
+        setSlipRepoStable(userData.slippage?.repo?.stable);
+        setSlipRepoVolatile(userData.slippage?.repo?.volatile);
+
         setNeedInitialization(false);
     }
 
@@ -64,7 +67,6 @@ export const useSlippage = () => {
         }
     }, [slipMintVolatile]);
 
-
     useEffect(() => {
         if (userData?.slippage) {
             if (slipRepoStable === '') {
@@ -86,8 +88,6 @@ export const useSlippage = () => {
             }
         }
     }, [slipRepoVolatile]);
-
-
 
     return [
         // swap values and setter functions

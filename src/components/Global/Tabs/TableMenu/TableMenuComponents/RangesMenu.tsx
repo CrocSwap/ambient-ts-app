@@ -120,7 +120,7 @@ export default function RangesMenu(props: propsIF) {
             dispatch(setSimpleRangeWidth(100));
             dispatch(setAdvancedMode(false));
         } else {
-            console.log({position});
+            console.log({ position });
             dispatch(setAdvancedLowTick(position.bidTick));
             dispatch(setAdvancedHighTick(position.askTick));
             dispatch(setAdvancedMode(true));

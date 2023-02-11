@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
@@ -15,10 +15,20 @@ import Modal from '../../../components/Global/Modal/Modal';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF, SlippagePairIF } from '../../../utils/interfaces/exports';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { PositionIF, SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+// import { BigNumber } from 'ethers';
+import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../utils/TransactionError';
 
 interface propsIF {
+    crocEnv: CrocEnv | undefined;
     isDenomBase: boolean;
     ambientApy: number | undefined;
     repoSlippage: SlippagePairIF;
@@ -28,10 +38,12 @@ interface propsIF {
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    tokenPair: TokenPairIF;
 }
 
 export default function Reposition(props: propsIF) {
     const {
+        crocEnv,
         isDenomBase,
         ambientApy,
         repoSlippage,
@@ -41,16 +53,31 @@ export default function Reposition(props: propsIF) {
         setMinPrice,
         setMaxPrice,
         seRescaleRangeBoundariesWithSlider,
+        tokenPair,
     } = props;
 
     // current URL parameter string
     const { params } = useParams();
+
+    const [newRepositionTransactionHash, setNewRepositionTransactionHash] = useState('');
+    const [showConfirmation, setShowConfirmation] = useState(true);
+    const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode('');
+
+        setTxErrorMessage('');
+    };
 
     // location object (we need this mainly for position data)
     const location = useLocation();
 
     // fn to conditionally navigate the user
     const navigate = useNavigate();
+
+    const dispatch = useAppDispatch();
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
@@ -69,7 +96,8 @@ export default function Reposition(props: propsIF) {
     location.state || navigate(redirectPath, { replace: true });
 
     // position data from the location object
-    const { position } = location.state;
+    const { position } = location.state as { position: PositionIF };
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const simpleRangeWidth = tradeData.simpleRangeWidth;
@@ -127,11 +155,35 @@ export default function Reposition(props: propsIF) {
         setRangeWidthPercentage(() => simpleRangeWidth);
     }, [simpleRangeWidth]);
 
-    const sendRepositionTransaction = () => {
-        console.log({ position });
-    };
-
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+    const [pinnedLowTick, setPinnedLowTick] = useState(0);
+    const [pinnedHighTick, setPinnedHighTick] = useState(0);
+
+    useEffect(() => {
+        if (!position) {
+            return;
+        }
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            isDenomBase,
+            position.baseDecimals,
+            position.quoteDecimals,
+            lowTick,
+            highTick,
+            lookupChain(position?.chainId || '0x5').gridSize,
+        );
+
+        setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
+        setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+    }, [
+        rangeWidthPercentage,
+        currentPoolPriceTick,
+        currentPoolPriceDisplay,
+        position?.base,
+        position?.quote,
+    ]);
 
     useEffect(() => {
         if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
@@ -140,6 +192,56 @@ export default function Reposition(props: propsIF) {
             // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
         }
     }, [rangeWidthPercentage]);
+
+    const sendRepositionTransaction = async () => {
+        if (!crocEnv) {
+            return;
+        }
+        let tx;
+
+        try {
+            const pool = crocEnv.pool(position.base, position.quote);
+            const repo = new CrocReposition(pool, {
+                liquidity: position.positionLiq,
+                burn: [position.bidTick, position.askTick],
+                mint: [pinnedLowTick, pinnedHighTick],
+            });
+
+            tx = await repo.rebal();
+            setNewRepositionTransactionHash(tx?.hash);
+            dispatch(addPendingTx(tx?.hash));
+        } catch (error) {
+            console.log({ error });
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
+
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                dispatch(removePendingTx(error.hash));
+                const newTransactionHash = error.replacement.hash;
+                dispatch(addPendingTx(newTransactionHash));
+                setNewRepositionTransactionHash(newTransactionHash);
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
+        if (receipt) {
+            dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
+        }
+    };
 
     return (
         <div className={styles.repositionContainer}>
@@ -162,6 +264,7 @@ export default function Reposition(props: propsIF) {
                     quoteTokenSymbol={position.quoteSymbol || 'USDC'}
                 />
                 <RepositionPriceInfo
+                    crocEnv={crocEnv}
                     position={position}
                     ambientApy={ambientApy}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
@@ -179,6 +282,7 @@ export default function Reposition(props: propsIF) {
             {isModalOpen && (
                 <Modal onClose={closeModal} title=' Confirm Reposition'>
                     <ConfirmRepositionModal
+                        crocEnv={crocEnv}
                         position={position as PositionIF}
                         ambientApy={ambientApy}
                         currentPoolPriceDisplay={currentPoolPriceDisplay}
@@ -188,9 +292,24 @@ export default function Reposition(props: propsIF) {
                         onSend={sendRepositionTransaction}
                         setMaxPrice={setMaxPrice}
                         setMinPrice={setMinPrice}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        newRepositionTransactionHash={newRepositionTransactionHash}
+                        tokenPair={tokenPair}
+                        resetConfirmation={resetConfirmation}
+                        txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                     />
                 </Modal>
             )}
         </div>
     );
 }
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+// function setTxErrorCode(code: any) {
+//     throw new Error('Function not implemented.');
+// }
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+// function setTxErrorMessage(message: any) {
+//     throw new Error('Function not implemented.');
+// }

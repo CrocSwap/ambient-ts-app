@@ -22,7 +22,15 @@ interface propsIF {
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, toggleFor, slippage, isPairStable, onClose, bypassConfirm, toggleBypassConfirm } = props;
+    const {
+        module,
+        toggleFor,
+        slippage,
+        isPairStable,
+        onClose,
+        bypassConfirm,
+        toggleBypassConfirm,
+    } = props;
 
     // const dispatch = useAppDispatch();
 

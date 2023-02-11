@@ -4,7 +4,7 @@ import Button from '../../../Global/Button/Button';
 interface propsIF {
     bypassConfirm: boolean;
     onClickFn: () => void;
-    sendRepositionTransaction: () => void
+    sendRepositionTransaction: () => void;
 }
 
 // TODO:   @Junior  please get rid of this file and move JSX into Reposition.tsx

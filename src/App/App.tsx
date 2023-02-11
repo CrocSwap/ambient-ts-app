@@ -1686,6 +1686,7 @@ export default function App() {
                     }),
                 )
                     .then((updatedTransactions) => {
+                        // console.log({ updatedTransactions });
                         dispatch(addChangesByUser(updatedTransactions));
                     })
                     .catch(console.log);
@@ -2880,6 +2881,8 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        tokenPair={tokenPair}
+                                        crocEnv={crocEnv}
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
                                         repoSlippage={repoSlippage}
