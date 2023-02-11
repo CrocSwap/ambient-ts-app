@@ -3531,16 +3531,28 @@ export default function Chart(props: ChartData) {
                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
             );
 
-            newRangeValue = ranges;
-            if (lineToBeSet === 'Max') {
-                newRangeValue.filter((target: any) => target.name === 'Max')[0].value =
-                    pinnedMaxPriceDisplayTruncated;
-            } else {
-                newRangeValue.filter((target: any) => target.name === 'Min')[0].value =
-                    pinnedMinPriceDisplayTruncated;
-            }
-            setRanges(newRangeValue);
-            onBlurRange(newRangeValue, lineToBeSet === 'Max', lineToBeSet === 'Min', false);
+            (async () => {
+                setRanges((prevState) => {
+                    const newTargets = [...prevState];
+
+                    if (lineToBeSet === 'Max') {
+                        newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                            pinnedMaxPriceDisplayTruncated;
+                    } else {
+                        newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                            pinnedMinPriceDisplayTruncated;
+                    }
+
+                    render();
+
+                    newRangeValue = newTargets;
+
+                    setLiqHighlightedLinesAndArea(newTargets);
+                    return newTargets;
+                });
+            })().then(() => {
+                onBlurRange(newRangeValue, lineToBeSet === 'Max', lineToBeSet === 'Min', false);
+            });
         }
     };
 
