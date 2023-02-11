@@ -74,6 +74,7 @@ export default function TransactionDetails(props: propsIF) {
     return (
         <div className={styles.tx_details_container}>
             <TransactionDetailsHeader
+                tx={tx}
                 onClose={props.closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}

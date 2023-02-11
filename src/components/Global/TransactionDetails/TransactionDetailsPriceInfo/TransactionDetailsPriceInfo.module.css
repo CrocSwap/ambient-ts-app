@@ -105,6 +105,7 @@
     justify-content: center;
     gap: 1rem;
     align-items: center;
+    cursor: default;
 }
 
 .token_pair_details p {
@@ -157,13 +158,9 @@
     gap: 4px;
 }
 
-
 @media only screen and (min-width: 768px) {
-    .price_info_container,     .main_container{
-      
+    .price_info_container,
+    .main_container {
         gap: 1rem;
     }
-   
-    
-
 }
