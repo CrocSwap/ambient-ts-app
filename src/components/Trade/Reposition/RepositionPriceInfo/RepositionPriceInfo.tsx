@@ -127,7 +127,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         });
 
         repo.postBalance().then(([base, quote]: [number, number]) => {
-            console.log(['postBal', base, quote]);
             setNewBaseQtyDisplay(truncateString(base));
             setNewQuoteQtyDisplay(truncateString(quote));
         });

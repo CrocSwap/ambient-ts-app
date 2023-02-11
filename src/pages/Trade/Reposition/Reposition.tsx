@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
@@ -15,8 +15,12 @@ import Modal from '../../../components/Global/Modal/Modal';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF, SlippagePairIF } from '../../../utils/interfaces/exports';
+import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { BigNumber } from 'ethers';
+import { addPendingTx } from '../../../utils/state/receiptDataSlice';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -53,6 +57,8 @@ export default function Reposition(props: propsIF) {
 
     // fn to conditionally navigate the user
     const navigate = useNavigate();
+
+    const dispatch = useAppDispatch();
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
@@ -130,11 +136,35 @@ export default function Reposition(props: propsIF) {
         setRangeWidthPercentage(() => simpleRangeWidth);
     }, [simpleRangeWidth]);
 
-    const sendRepositionTransaction = () => {
-        console.log({ position });
-    };
-
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+    const [pinnedLowTick, setPinnedLowTick] = useState(0);
+    const [pinnedHighTick, setPinnedHighTick] = useState(0);
+
+    useEffect(() => {
+        if (!position) {
+            return;
+        }
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            isDenomBase,
+            position.baseDecimals,
+            position.quoteDecimals,
+            lowTick,
+            highTick,
+            lookupChain(position?.chainId || '0x5').gridSize,
+        );
+
+        setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
+        setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+    }, [
+        rangeWidthPercentage,
+        currentPoolPriceTick,
+        currentPoolPriceDisplay,
+        position?.base,
+        position?.quote,
+    ]);
 
     useEffect(() => {
         if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
@@ -143,6 +173,27 @@ export default function Reposition(props: propsIF) {
             // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
         }
     }, [rangeWidthPercentage]);
+
+    const sendRepositionTransaction = async () => {
+        if (!crocEnv) {
+            return;
+        }
+
+        try {
+            const pool = crocEnv.pool(position.base, position.quote);
+            const repo = new CrocReposition(pool, {
+                liquidity: position.positionLiq,
+                burn: [position.bidTick, position.askTick],
+                mint: [pinnedLowTick, pinnedHighTick],
+            });
+
+            const tx = await repo.rebal();
+            dispatch(addPendingTx(tx?.hash));
+        } catch (error) {
+            setTxErrorCode(error?.code);
+            setTxErrorMessage(error?.message);
+        }
+    };
 
     return (
         <div className={styles.repositionContainer}>
@@ -198,4 +249,11 @@ export default function Reposition(props: propsIF) {
             )}
         </div>
     );
+}
+function setTxErrorCode(code: any) {
+    throw new Error('Function not implemented.');
+}
+
+function setTxErrorMessage(message: any) {
+    throw new Error('Function not implemented.');
 }
