@@ -16,11 +16,16 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF, SlippagePairIF } from '../../../utils/interfaces/exports';
+import { PositionIF, SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { BigNumber } from 'ethers';
-import { addPendingTx } from '../../../utils/state/receiptDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../utils/TransactionError';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -33,6 +38,7 @@ interface propsIF {
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    tokenPair: TokenPairIF;
 }
 
 export default function Reposition(props: propsIF) {
@@ -47,10 +53,23 @@ export default function Reposition(props: propsIF) {
         setMinPrice,
         setMaxPrice,
         seRescaleRangeBoundariesWithSlider,
+        tokenPair,
     } = props;
 
     // current URL parameter string
     const { params } = useParams();
+
+    const [newRepositionTransactionHash, setNewRepositionTransactionHash] = useState('');
+    const [showConfirmation, setShowConfirmation] = useState(true);
+    const [txErrorCode, setTxErrorCode] = useState('');
+    const [txErrorMessage, setTxErrorMessage] = useState('');
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode('');
+
+        setTxErrorMessage('');
+    };
 
     // location object (we need this mainly for position data)
     const location = useLocation();
@@ -178,6 +197,7 @@ export default function Reposition(props: propsIF) {
         if (!crocEnv) {
             return;
         }
+        let tx;
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
@@ -187,11 +207,39 @@ export default function Reposition(props: propsIF) {
                 mint: [pinnedLowTick, pinnedHighTick],
             });
 
-            const tx = await repo.rebal();
+            tx = await repo.rebal();
+            setNewRepositionTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
         } catch (error) {
+            console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+        }
+
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                dispatch(removePendingTx(error.hash));
+                const newTransactionHash = error.replacement.hash;
+                dispatch(addPendingTx(newTransactionHash));
+                setNewRepositionTransactionHash(newTransactionHash);
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
+        if (receipt) {
+            dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
         }
     };
 
@@ -244,17 +292,24 @@ export default function Reposition(props: propsIF) {
                         onSend={sendRepositionTransaction}
                         setMaxPrice={setMaxPrice}
                         setMinPrice={setMinPrice}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        newRepositionTransactionHash={newRepositionTransactionHash}
+                        tokenPair={tokenPair}
+                        resetConfirmation={resetConfirmation}
+                        txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
                     />
                 </Modal>
             )}
         </div>
     );
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-function setTxErrorCode(code: any) {
-    throw new Error('Function not implemented.');
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-function setTxErrorMessage(message: any) {
-    throw new Error('Function not implemented.');
-}
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+// function setTxErrorCode(code: any) {
+//     throw new Error('Function not implemented.');
+// }
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+// function setTxErrorMessage(message: any) {
+//     throw new Error('Function not implemented.');
+// }
