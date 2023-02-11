@@ -11,6 +11,7 @@ const getPoolStatsFresh = async (chainId: string, base: string, quote: string, p
                 base: base,
                 quote: quote,
                 poolIdx: poolIdx.toString(),
+                addTotalVolume: 'true',
                 concise: 'true',
             }),
     )
