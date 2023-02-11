@@ -41,10 +41,10 @@ export default function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
-        const roomName = pool.base.symbol + pool.quote.symbol;
+        const roomName = pool.base.symbol + '/' + pool.quote.symbol;
         props.setRoom(roomName);
 
-        const readableRoomName = `${pool.base.symbol} / ${pool.quote.symbol}`;
+        const readableRoomName = `${pool.base.symbol}/${pool.quote.symbol}`;
         setReadableName(readableRoomName);
 
         if (roomName.toString() === 'Current Pool') {
@@ -68,8 +68,9 @@ export default function FullChat(props: FullChatPropsIF) {
     }
 
     function handleCurrentPoolClick() {
-        props.setRoom(currentPool.baseToken.symbol + currentPool.quoteToken.symbol);
-        setReadableName(`${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`);
+        // console.log(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
+        props.setRoom(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
+        setReadableName(`${currentPool.baseToken.symbol}/${currentPool.quoteToken.symbol}`);
     }
 
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
@@ -77,14 +78,17 @@ export default function FullChat(props: FullChatPropsIF) {
 
         const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
         const poolIsCurrentPool =
-            pool.name === `${currentPool.baseToken.symbol} / ${currentPool.quoteToken.symbol}`;
+            pool.name === `${currentPool.baseToken.symbol}/${currentPool.quoteToken.symbol}`;
         const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
 
         return (
             <div
                 className={`${styles.pool_display} ${activePoolStyle}`}
                 // eslint-disable-next-line
-                onClick={(event: any) => handleRoomClick(event, pool, isDropdown)}
+                onClick={(event: any) => {
+                    // console.log({ pool });
+                    handleRoomClick(event, pool, isDropdown);
+                }}
             >
                 <div className={styles.token_logos}>
                     <img src={pool?.base.logoURI} alt='base token' />
