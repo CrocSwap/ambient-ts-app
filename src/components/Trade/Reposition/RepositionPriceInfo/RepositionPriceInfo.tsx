@@ -2,6 +2,7 @@
 import { CrocEnv, CrocReposition } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import useDebounce from '../../../../App/hooks/useDebounce';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -125,17 +126,20 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             mint: [pinnedLowTick, pinnedHighTick],
         });
 
-        console.log([pinnedLowTick, pinnedHighTick]);
         repo.postBalance().then(([base, quote]: [number, number]) => {
+            console.log(['postBal', base, quote]);
             setNewBaseQtyDisplay(truncateString(base));
             setNewQuoteQtyDisplay(truncateString(quote));
         });
     }, [
-        pinnedLowTick,
-        pinnedHighTick,
+        useDebounce(pinnedLowTick, 500), // Debounce beause effect involves on-chain call
+        useDebounce(pinnedHighTick, 500),
         position.baseSymbol,
         position.quoteSymbol,
         currentPoolPriceTick,
+        position.positionLiq,
+        position.bidTick,
+        position.askTick,
     ]);
 
     const baseTokenCharacter = position?.baseSymbol

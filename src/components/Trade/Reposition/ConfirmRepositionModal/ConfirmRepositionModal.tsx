@@ -4,9 +4,11 @@ import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { Dispatch, SetStateAction } from 'react';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface ConfirmRepositionModalProps {
     onClose: () => void;
+    crocEnv: CrocEnv | undefined;
     position: PositionIF;
     ambientApy: number | undefined;
     rangeWidthPercentage: number;
@@ -19,6 +21,7 @@ interface ConfirmRepositionModalProps {
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
     const {
+        crocEnv,
         position,
         ambientApy,
         currentPoolPriceDisplay,
@@ -36,6 +39,7 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
             <h1>confirm reposition token content here</h1>
             <Divider />
             <RepositionPriceInfo
+                crocEnv={crocEnv}
                 position={position}
                 rangeWidthPercentage={rangeWidthPercentage}
                 currentPoolPriceTick={currentPoolPriceTick}

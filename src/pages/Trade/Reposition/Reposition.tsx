@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
@@ -183,6 +183,7 @@ export default function Reposition(props: propsIF) {
             {isModalOpen && (
                 <Modal onClose={closeModal} title=' Confirm Reposition'>
                     <ConfirmRepositionModal
+                        crocEnv={crocEnv}
                         position={position as PositionIF}
                         ambientApy={ambientApy}
                         currentPoolPriceDisplay={currentPoolPriceDisplay}
