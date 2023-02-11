@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolki
 import { PositionIF, SlippagePairIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { BigNumber } from 'ethers';
+// import { BigNumber } from 'ethers';
 import { addPendingTx } from '../../../utils/state/receiptDataSlice';
 
 interface propsIF {
@@ -250,10 +250,11 @@ export default function Reposition(props: propsIF) {
         </div>
     );
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 function setTxErrorCode(code: any) {
     throw new Error('Function not implemented.');
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 function setTxErrorMessage(message: any) {
     throw new Error('Function not implemented.');
 }
