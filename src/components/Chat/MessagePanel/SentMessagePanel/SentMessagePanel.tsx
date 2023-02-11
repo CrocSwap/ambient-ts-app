@@ -8,7 +8,7 @@ import Blockies from 'react-blockies';
 
 interface SentMessageProps {
     message: Message;
-    name: string;
+    ensName: string;
     isCurrentUser: boolean;
     currentUser: string | undefined;
     userImageData: string[];
@@ -35,12 +35,12 @@ export default function SentMessagePanel(props: SentMessageProps) {
         return strTime;
     };
 
-    // useEffect(() => {
-    //     console.log('sent message panel name: ',props.name,props.message.ensName)
-    // }, [props.message]);
-
     function getName() {
-        if (props.message.ensName.startsWith('0x')) {
+        if (
+            props.message.ensName === 'defaultValue' ||
+            props.message.ensName === null ||
+            props.message.ensName === undefined
+        ) {
             return props.message.walletID.slice(0, 6) + '...';
         } else {
             return props.message.ensName;
@@ -55,7 +55,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
         </SnackbarComponent>
     );
     function handleCopyAddress(item: string) {
@@ -67,13 +67,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const messagesArray = props.message.message.split(' ');
         if (props.message.isMentionMessage === true) {
             return (
-                <p className={styles.message}>
+                <p>
                     {messagesArray.map((word, index) => (
                         <span
                             key={index}
                             className={` ${
                                 props.isUserLoggedIn
-                                    ? word.slice(1) === props.name
+                                    ? word.slice(1) === props.ensName ||
+                                      word.slice(1) === props.connectedAccountActive
                                         ? styles.mention_message
                                         : styles.message
                                     : styles.message
@@ -97,7 +98,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 props.isUserLoggedIn
                     ? props.message.isMentionMessage === false
                         ? styles.sent_message_body
-                        : props.message.mentionedName?.trim() === props.name?.trim()
+                        : props.message.mentionedName?.trim() === props.ensName?.trim() ||
+                          props.message.mentionedName?.trim() ===
+                              props.connectedAccountActive?.trim()
                         ? styles.sent_message_body_with_mention
                         : styles.sent_message_body
                     : styles.sent_message_body
@@ -112,7 +115,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
             <div className={styles.message_item}>
                 <div
                     className={props.isCurrentUser ? styles.current_user_name : styles.name}
-                    onClick={() => handleCopyAddress(props.message.ensName)}
+                    onClick={() =>
+                        handleCopyAddress(
+                            props.message.ensName === 'defaultValue'
+                                ? props.message.walletID
+                                : props.message.ensName,
+                        )
+                    }
                 >
                     {getName()}
                 </div>

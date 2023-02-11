@@ -1,7 +1,16 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
-import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    DetailedHTMLProps,
+    Dispatch,
+    HTMLAttributes,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { formatAmountChartData, formatAmountWithoutDigit } from '../../utils/numbers';
@@ -111,6 +120,10 @@ interface ChartData {
     activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
     liquidityScale: any;
+    minPrice: number;
+    maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Chart(props: ChartData) {
@@ -144,6 +157,10 @@ export default function Chart(props: ChartData) {
         liquidityData,
         handlePulseAnimation,
         liquidityScale,
+        minPrice,
+        maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -249,6 +266,8 @@ export default function Chart(props: ChartData) {
     });
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
+    const [isLimitPeriodScaleSet, setIsLimitPeriodScaleSet] = useState<number>();
+    const [isRangePeriodScaleSet, setIsRangePeriodScaleSet] = useState<number>();
 
     // d3
 
@@ -331,6 +350,60 @@ export default function Chart(props: ChartData) {
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    useEffect(() => {
+        if (minPrice !== 0 && maxPrice !== 0) {
+            setRanges((prevState) => {
+                const newTargets = [...prevState];
+                newTargets.filter((target: any) => target.name === 'Max')[0].value = maxPrice;
+                newTargets.filter((target: any) => target.name === 'Min')[0].value = minPrice;
+
+                setLiqHighlightedLinesAndArea(newTargets);
+
+                scaleWithButtons(minPrice, maxPrice);
+
+                return newTargets;
+            });
+        }
+    }, [minPrice, maxPrice]);
+
+    const scaleWithButtons = (minPrice: number, maxPrice: number) => {
+        if (
+            poolPriceDisplay !== undefined &&
+            (rescaleRangeBoundaries || rescaleRangeBoundariesWithSlider) &&
+            rescale
+        ) {
+            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+            const filtered = parsedChartData?.chartData.filter(
+                (data: any) => data.date >= xmin && data.date <= xmax,
+            );
+
+            if (filtered !== undefined) {
+                const minYBoundary = d3.min(filtered, (d) => d.low);
+                const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                if (maxYBoundary && minYBoundary) {
+                    const min = minYBoundary < minPrice ? minYBoundary : minPrice;
+                    const max = maxYBoundary > maxPrice ? maxYBoundary : maxPrice;
+
+                    const buffer = Math.abs((max - min) / 6);
+
+                    scaleData.yScale.domain([min - buffer, max + buffer / 2]);
+
+                    dispatch(setRescaleRangeBoundaries(false));
+                    seRescaleRangeBoundariesWithSlider(false);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (rescaleRangeBoundariesWithSlider) {
+            scaleWithButtons(minPrice, maxPrice);
+        }
+    }, [rescaleRangeBoundariesWithSlider, minPrice, maxPrice]);
 
     const standardDeviation = (arr: any, usePopulation = false) => {
         const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
@@ -416,6 +489,15 @@ export default function Chart(props: ChartData) {
             ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
         ]);
 
+        yAxis.tickFormat((d: any) =>
+            formatAmountChartData(
+                d,
+                d === market[0].value || d === crosshairData[0].y
+                    ? undefined
+                    : d.toString().split('.')[1]?.length,
+            ),
+        );
+
         yAxis.decorate((selection: any) => {
             selection
                 .attr('filter', (d: any) => {
@@ -448,7 +530,12 @@ export default function Chart(props: ChartData) {
         yAxis.tickFormat((d: any) =>
             isSameLocation && d === sameLocationData
                 ? formatAmountChartData(limit[0].value)
-                : formatAmountChartData(d),
+                : formatAmountChartData(
+                      d,
+                      d === market[0].value || d === limit[0].value || d === crosshairData[0].y
+                          ? undefined
+                          : d.toString().split('.')[1]?.length,
+                  ),
         );
 
         yAxis.tickValues([
@@ -767,16 +854,59 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickFormat((d: any) => {
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                if (isSameLocationMin && d === sameLocationDataMin) {
-                    return formatAmountChartData(low);
-                }
+                const data =
+                    (isSameLocationMin && d === sameLocationDataMin) ||
+                    (isSameLocationMax && d === sameLocationDataMax)
+                        ? isSameLocationMin && d === sameLocationDataMin
+                            ? low
+                            : high
+                        : d;
 
-                if (isSameLocationMax && d === sameLocationDataMax) {
-                    return formatAmountChartData(high);
-                }
+                const longerValue =
+                    formatAmountChartData(low).length > formatAmountChartData(high).length
+                        ? low
+                        : high;
+                const shorterValue =
+                    formatAmountChartData(low).length > formatAmountChartData(high).length
+                        ? high
+                        : low;
+
+                const isSameLocation =
+                    isSameLocationMin && d === sameLocationDataMin
+                        ? isSameLocationMin
+                        : isSameLocationMax;
+                const sameLocationData =
+                    isSameLocationMin && d === sameLocationDataMin
+                        ? sameLocationDataMin
+                        : sameLocationDataMax;
+
+                const digit =
+                    formatAmountChartData(low).length >= formatAmountChartData(high).length
+                        ? formatAmountChartData(low).length -
+                          formatAmountChartData(high).length +
+                          formatAmountChartData(high).toString().split('.')[1]?.length
+                        : formatAmountChartData(high).length -
+                          formatAmountChartData(low).length +
+                          formatAmountChartData(low).toString().split('.')[1]?.length;
+
+                return formatAmountChartData(
+                    isSameLocation && d === sameLocationData ? data : d,
+                    d === sameLocationData ||
+                        d === shorterValue ||
+                        d === longerValue ||
+                        d === market[0].value ||
+                        d === crosshairData[0].y
+                        ? d === longerValue || d === market[0].value || d === crosshairData[0].y
+                            ? undefined
+                            : digit
+                        : d.toString().split('.')[1]?.length,
+                );
+            } else {
+                return formatAmountChartData(
+                    d,
+                    d === market[0].value ? undefined : d.toString().split('.')[1]?.length,
+                );
             }
-
-            return formatAmountChartData(d);
         });
 
         yAxis.decorate((selection: any) => {
@@ -966,6 +1096,26 @@ export default function Chart(props: ChartData) {
         isMouseMoveCrosshair,
     ]);
 
+    const showHighlightedLines = () => {
+        d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'visible');
+    };
+
+    const hideHighlightedLines = () => {
+        d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'hidden');
+    };
+
     useEffect(() => {
         if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
@@ -980,6 +1130,7 @@ export default function Chart(props: ChartData) {
                     .style('visibility', 'visible');
             }
 
+            showHighlightedLines();
             d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('.annotation-line')
@@ -994,7 +1145,6 @@ export default function Chart(props: ChartData) {
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'hidden');
-            setRescale(true);
         } else if (location.pathname.includes('limit')) {
             d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
 
@@ -1012,6 +1162,7 @@ export default function Chart(props: ChartData) {
                 });
 
             d3.select(d3PlotArea.current).select('.horizontalBand').style('visibility', 'hidden');
+            hideHighlightedLines();
             d3.select(d3Container.current)
                 .select('.targets')
                 .selectAll('.horizontal')
@@ -1026,13 +1177,18 @@ export default function Chart(props: ChartData) {
 
             d3.select(d3PlotArea.current).select('.horizontalBand').style('visibility', 'hidden');
 
+            hideHighlightedLines();
+
             d3.select(d3Container.current)
                 .select('.targets')
                 .selectAll('.horizontal')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
-            setRescale(true);
         }
+    }, [location.pathname, parsedChartData?.period, simpleRangeWidth, isAdvancedModeActive]);
+
+    useEffect(() => {
+        setRescale(true);
     }, [location.pathname, parsedChartData?.period]);
 
     useEffect(() => {
@@ -1090,12 +1246,22 @@ export default function Chart(props: ChartData) {
             let clickedForLine = false;
             let zoomTimeout: any | undefined = undefined;
             let previousTouch: any | undefined = undefined;
+            let previousDeltaTouch: any = undefined;
             const zoom = d3
                 .zoom()
                 .on('start', (event: any) => {
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
-                        previousTouch = event.sourceEvent.changedTouches[0];
+                        previousTouch = event.sourceEvent.touches[0];
+
+                        if (event.sourceEvent.touches.length > 1) {
+                            previousDeltaTouch = Math.hypot(
+                                event.sourceEvent.touches[0].pageX -
+                                    event.sourceEvent.touches[1].pageX,
+                                event.sourceEvent.touches[0].pageY -
+                                    event.sourceEvent.touches[1].pageY,
+                            );
+                        }
                     }
                     zoomTimeout = event.sourceEvent.timeStamp;
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
@@ -1218,40 +1384,46 @@ export default function Chart(props: ChartData) {
                                                 scaleData.xScale.domain([newBoundary, domainX[1]]);
                                             }
                                         } else {
-                                            const gapTop =
-                                                domainX[1].getTime() -
-                                                scaleData.xScale
-                                                    .invert(event.sourceEvent.offsetX)
-                                                    .getTime();
-                                            const gapBot =
-                                                scaleData.xScale
-                                                    .invert(event.sourceEvent.offsetX)
-                                                    .getTime() - domainX[0].getTime();
-
-                                            const minGap = Math.min(gapTop, gapBot);
-                                            const maxGap = Math.max(gapTop, gapBot);
-                                            const baseMovement = deltaX / (maxGap / minGap + 1);
-
-                                            if (gapBot < gapTop) {
-                                                scaleData.xScale.domain([
-                                                    new Date(domainX[0].getTime() - baseMovement),
-                                                    new Date(
-                                                        domainX[1].getTime() +
-                                                            baseMovement * (maxGap / minGap),
-                                                    ),
-                                                ]);
-                                            } else {
-                                                scaleData.xScale.domain([
-                                                    new Date(
-                                                        domainX[0].getTime() -
-                                                            baseMovement * (maxGap / minGap),
-                                                    ),
-                                                    new Date(domainX[1].getTime() + baseMovement),
-                                                ]);
-                                            }
+                                            changeCandleSize(
+                                                domainX,
+                                                deltaX,
+                                                event.sourceEvent.offsetX,
+                                            );
                                         }
                                     }
                                 }
+                            } else if (
+                                event.sourceEvent.type === 'touchmove' &&
+                                event.sourceEvent.touches.length > 1
+                            ) {
+                                const domainX = scaleData.xScale.domain();
+                                const linearX = d3
+                                    .scaleTime()
+                                    .domain(scaleData.xScale.range())
+                                    .range([0, domainX[1] - domainX[0]]);
+
+                                // mobile
+                                const touch1 = event.sourceEvent.touches[0];
+                                const touch2 = event.sourceEvent.touches[1];
+
+                                const deltaTouch = Math.hypot(
+                                    touch1.pageX - touch2.pageX,
+                                    touch1.pageY - touch2.pageY,
+                                );
+
+                                let movement = Math.abs(touch1.pageX - touch2.pageX);
+
+                                if (previousDeltaTouch > deltaTouch) {
+                                    // zoom out
+                                    movement = movement / 10;
+                                }
+                                if (previousDeltaTouch < deltaTouch) {
+                                    // zoom in
+                                    movement = -movement / 10;
+                                }
+                                const deltaX = linearX(movement);
+
+                                changeCandleSize(domainX, deltaX, touch1.clientX);
                             } else {
                                 const domainX = scaleData.xScale.domain();
                                 const linearX = d3
@@ -1299,8 +1471,9 @@ export default function Chart(props: ChartData) {
                                     const maxYBoundary: any = d3.max(filtered, (d: any) => d.high);
 
                                     if (
-                                        location.pathname.includes('range') ||
-                                        location.pathname.includes('reposition')
+                                        (location.pathname.includes('range') ||
+                                            location.pathname.includes('reposition')) &&
+                                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
                                     ) {
                                         if (
                                             maxYBoundary !== undefined &&
@@ -1375,7 +1548,9 @@ export default function Chart(props: ChartData) {
                             if (
                                 !rescale &&
                                 event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
+                                (event.sourceEvent.type != 'wheel' ||
+                                    (event.sourceEvent.type === 'touchmove' &&
+                                        event.sourceEvent.touches.length < 2))
                             ) {
                                 const domainY = scaleData.yScale.domain();
                                 const linearY = d3
@@ -1473,10 +1648,41 @@ export default function Chart(props: ChartData) {
                         }
                     }
 
+                    function changeCandleSize(domainX: any, deltaX: number, offsetX: number) {
+                        const gapTop =
+                            domainX[1].getTime() - scaleData.xScale.invert(offsetX).getTime();
+                        const gapBot =
+                            scaleData.xScale.invert(offsetX).getTime() - domainX[0].getTime();
+
+                        const minGap = Math.min(gapTop, gapBot);
+                        const maxGap = Math.max(gapTop, gapBot);
+                        const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                        if (gapBot < gapTop) {
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() - baseMovement),
+                                new Date(domainX[1].getTime() + baseMovement * (maxGap / minGap)),
+                            ]);
+                        } else {
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
+                                new Date(domainX[1].getTime() + baseMovement),
+                            ]);
+                        }
+                    }
+
                     newDomains(parsedChartData).then(() => {
                         // mobile
                         if (event.sourceEvent.type.includes('touch')) {
                             previousTouch = event.sourceEvent.changedTouches[0];
+                            if (event.sourceEvent.touches.length > 1) {
+                                previousDeltaTouch = Math.hypot(
+                                    event.sourceEvent.touches[0].pageX -
+                                        event.sourceEvent.touches[1].pageX,
+                                    event.sourceEvent.touches[0].pageY -
+                                        event.sourceEvent.touches[1].pageY,
+                                );
+                            }
                         }
                     });
                 })
@@ -1599,6 +1805,7 @@ export default function Chart(props: ChartData) {
                     const center =
                         domainY[1] !== domainY[0] ? (domainY[1] + domainY[0]) / 2 : domainY[0] / 2;
                     let deltaY;
+
                     if (event.sourceEvent.type === 'touchmove') {
                         const touch = event.sourceEvent.changedTouches[0];
 
@@ -1623,8 +1830,33 @@ export default function Chart(props: ChartData) {
                             : 1,
                     );
 
-                    const size = (domainY[1] - domainY[0]) / 2 / factor;
-                    await scaleData.yScale.domain([center - size, center + size]);
+                    const size = (domainY[1] - domainY[0]) / factor;
+
+                    const newCenter = scaleData.yScale.invert(event.sourceEvent.offsetY);
+
+                    const diff = domainY[1] - domainY[0];
+
+                    const distance =
+                        newCenter > center
+                            ? Math.abs(newCenter - scaleData.yScale.domain()[1])
+                            : Math.abs(newCenter - scaleData.yScale.domain()[0]);
+                    const diffFactor = (diff - distance) / distance;
+
+                    const bottomDiff = size / (diffFactor + 1);
+                    const topDiff = size - bottomDiff;
+
+                    if (newCenter > center) {
+                        await scaleData.yScale.domain([
+                            newCenter - topDiff,
+                            newCenter + bottomDiff,
+                        ]);
+                    } else {
+                        await scaleData.yScale.domain([
+                            newCenter - bottomDiff,
+                            newCenter + topDiff,
+                        ]);
+                    }
+
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
@@ -1709,8 +1941,9 @@ export default function Chart(props: ChartData) {
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                     if (
-                        location.pathname.includes('range') ||
-                        location.pathname.includes('reposition')
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')) &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
                     ) {
                         const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                         const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
@@ -2731,8 +2964,9 @@ export default function Chart(props: ChartData) {
                 const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                 if (
-                    location.pathname.includes('range') ||
-                    location.pathname.includes('reposition')
+                    (location.pathname.includes('range') ||
+                        location.pathname.includes('reposition')) &&
+                    (isAdvancedModeActive || (!isAdvancedModeActive && simpleRangeWidth !== 100))
                 ) {
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
@@ -2741,6 +2975,7 @@ export default function Chart(props: ChartData) {
                         const buffer = Math.abs(
                             (Math.max(high, maxYBoundary) - Math.min(low, minYBoundary)) / 6,
                         );
+
                         scaleData.yScale.domain([
                             Math.min(low, minYBoundary) - buffer,
                             Math.max(high, maxYBoundary) + buffer / 2,
@@ -2752,9 +2987,16 @@ export default function Chart(props: ChartData) {
 
                         const low = minYBoundary < value ? minYBoundary : value;
                         const high = maxYBoundary > value ? maxYBoundary : value;
-
-                        const buffer = Math.abs((low - high) / 6);
-                        scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                        if (value > 0) {
+                            const buffer = Math.abs((low - high) / 6);
+                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                        } else {
+                            const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                            scaleData.yScale.domain([
+                                minYBoundary - buffer,
+                                maxYBoundary + buffer / 2,
+                            ]);
+                        }
                     }
                 } else {
                     if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
@@ -2779,7 +3021,63 @@ export default function Chart(props: ChartData) {
             const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
 
             if (rescale) {
-                // scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+                if (poolPriceDisplay) {
+                    const xmin = new Date(Math.floor(scaleData.xScaleCopy.domain()[0]));
+                    const xmax = new Date(Math.floor(scaleData.xScaleCopy.domain()[1]));
+
+                    const filtered = parsedChartData?.chartData.filter(
+                        (data: any) => data.date >= xmin && data.date <= xmax,
+                    );
+
+                    if (filtered !== undefined && filtered.length > 0) {
+                        const minYBoundary = d3.min(filtered, (d) => d.low);
+                        const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                        if (
+                            (location.pathname.includes('range') ||
+                                location.pathname.includes('reposition')) &&
+                            (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                        ) {
+                            const low = ranges.filter((target: any) => target.name === 'Min')[0]
+                                .value;
+                            const high = ranges.filter((target: any) => target.name === 'Max')[0]
+                                .value;
+
+                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                const buffer = Math.abs(
+                                    (Math.max(high, maxYBoundary) - Math.min(low, minYBoundary)) /
+                                        6,
+                                );
+                                scaleData.yScale.domain([
+                                    Math.min(low, minYBoundary) - buffer,
+                                    Math.max(high, maxYBoundary) + buffer / 2,
+                                ]);
+                            }
+                        } else if (location.pathname.includes('limit')) {
+                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                const value = limit[0].value;
+
+                                const low = minYBoundary < value ? minYBoundary : value;
+                                const high = maxYBoundary > value ? maxYBoundary : value;
+
+                                const buffer = Math.abs((low - high) / 6);
+                                scaleData.yScale.domain([low - buffer, high + buffer / 2]);
+                            }
+                        } else {
+                            if (
+                                maxYBoundary !== undefined &&
+                                minYBoundary !== undefined &&
+                                liquidityData
+                            ) {
+                                const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                                scaleData.yScale.domain([
+                                    minYBoundary - buffer,
+                                    maxYBoundary + buffer / 2,
+                                ]);
+                            }
+                        }
+                    }
+                }
 
                 scaleData.xScale.domain([
                     new Date(centerX - diff * 0.8),
@@ -2807,7 +3105,7 @@ export default function Chart(props: ChartData) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [scaleData, latest, parsedChartData?.chartData, denomInBase, rescale]);
+    }, [scaleData, latest, parsedChartData?.chartData, denomInBase, rescale, location.pathname]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -3700,10 +3998,7 @@ export default function Chart(props: ChartData) {
                 });
             }
 
-            if (autoScale) {
-                const min = scaleData.yScale.domain()[0];
-                const max = scaleData.yScale.domain()[1];
-
+            if (autoScale && rescale) {
                 const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                 const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
@@ -3716,10 +4011,13 @@ export default function Chart(props: ChartData) {
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                     if (maxYBoundary && minYBoundary) {
-                        if (min > low || max < high) {
-                            const buffer = Math.abs((low - high) / 6);
-                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
-                        }
+                        const buffer = Math.abs(
+                            (Math.min(low, minYBoundary) - Math.max(high, maxYBoundary)) / 6,
+                        );
+                        scaleData.yScale.domain([
+                            Math.min(low, minYBoundary) - buffer,
+                            Math.max(high, maxYBoundary) + buffer / 2,
+                        ]);
                     }
                 }
             }
@@ -3743,13 +4041,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineAskGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineAskSeries(() => {
@@ -3770,13 +4061,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineBidGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineBidSeries(() => {
@@ -3797,13 +4081,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineBidGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineDepthAskSeries(() => {
@@ -3824,13 +4101,6 @@ export default function Chart(props: ChartData) {
                         return 'url(#lineAskGradient)';
                     });
                     selection.attr('stroke-width', '2');
-                    selection.style(
-                        'visibility',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'visible'
-                            : 'hidden',
-                    );
                 });
 
             setLineDepthBidSeries(() => {
@@ -3983,6 +4253,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(d3Container.current?.offsetWidth),
     ]);
 
+    // autoScaleF
     useEffect(() => {
         if (poolPriceDisplay) {
             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
@@ -3999,7 +4270,10 @@ export default function Chart(props: ChartData) {
                 if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
-                    if (location.pathname.includes('range') && simpleRangeWidth !== 100) {
+                    if (
+                        location.pathname.includes('range') &&
+                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                    ) {
                         const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
                         const max = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
@@ -4030,16 +4304,18 @@ export default function Chart(props: ChartData) {
                             const low = minYBoundary < value ? minYBoundary : value;
 
                             const high = maxYBoundary > value ? maxYBoundary : value;
-
-                            scaleData.yScale.domain([low - buffer, high + buffer / 2]);
-                            setRescale(true);
+                            const bufferForLimit = Math.abs((low - high) / 6);
+                            scaleData.yScale.domain([
+                                low - bufferForLimit,
+                                high + bufferForLimit / 2,
+                            ]);
                         } else {
                             scaleData.yScale.domain([
                                 minYBoundary - buffer,
                                 maxYBoundary + buffer / 2,
                             ]);
                         }
-                    } else if (location.pathname.includes('market')) {
+                    } else {
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                     }
                 }
@@ -4048,8 +4324,8 @@ export default function Chart(props: ChartData) {
     }, [location.pathname]);
 
     useEffect(() => {
-        const min = pinnedMinPriceDisplayTruncated;
-        const max = pinnedMaxPriceDisplayTruncated;
+        const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
+        const max = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
         const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -4058,14 +4334,23 @@ export default function Chart(props: ChartData) {
             (data: any) => data.date >= xmin && data.date <= xmax,
         );
 
+        const value = limit[0].value;
+
         if (filtered !== undefined && filtered.length > 0) {
             const minYBoundary = d3.min(filtered, (d) => d.low);
             const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-            if (minYBoundary && maxYBoundary && min && max && poolPriceDisplay) {
+            if (minYBoundary && maxYBoundary && poolPriceDisplay) {
                 const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
-                if (location.pathname.includes('range') && simpleRangeWidth !== 100) {
+                if (
+                    min !== 0 &&
+                    max !== 0 &&
+                    (isRangePeriodScaleSet === undefined ||
+                        isRangePeriodScaleSet !== parsedChartData?.period) &&
+                    location.pathname.includes('range') &&
+                    simpleRangeWidth !== 100
+                ) {
                     const low =
                         minYBoundary < (min !== 0 ? min : minYBoundary)
                             ? minYBoundary
@@ -4082,9 +4367,16 @@ export default function Chart(props: ChartData) {
                     const bufferForRange = Math.abs((low - high) / 6);
 
                     scaleData.yScale.domain([low - bufferForRange, high + bufferForRange / 2]);
-                } else if (location.pathname.includes('limit')) {
-                    const value = limit[0].value;
 
+                    setIsRangePeriodScaleSet(() => {
+                        return parsedChartData?.period;
+                    });
+                } else if (
+                    value !== 0 &&
+                    (isLimitPeriodScaleSet === undefined ||
+                        isLimitPeriodScaleSet !== parsedChartData?.period) &&
+                    location.pathname.includes('limit')
+                ) {
                     if (
                         value > 0 &&
                         !(value < poolPriceDisplay / 10) &&
@@ -4098,10 +4390,14 @@ export default function Chart(props: ChartData) {
                     } else {
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
                     }
+
+                    setIsLimitPeriodScaleSet(() => {
+                        return parsedChartData?.period;
+                    });
                 }
             }
         }
-    }, [parsedChartData?.period]);
+    }, [parsedChartData?.period, limit, ranges, isLimitPeriodScaleSet, isRangePeriodScaleSet]);
 
     // Call drawChart()
     useEffect(() => {
@@ -5067,7 +5363,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges, location.pathname],
+        [candlestick, bandwidth, limit, ranges, location.pathname, parsedChartData?.chartData],
     );
 
     function showCrosshairVertical() {
@@ -5138,42 +5434,43 @@ export default function Chart(props: ChartData) {
                     );
             };
 
-            if (liqMode === 'Depth') {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                    liqTextData.totalValue = snap(
-                        liquidityData.depthLiqAskData,
-                        liqTooltipSelectedLiqBar.liqPrices,
-                    );
+            if (liqTooltipSelectedLiqBar.liqPrices != null) {
+                if (liqMode === 'Depth') {
+                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                        liqTextData.totalValue = snap(
+                            liquidityData.depthLiqAskData,
+                            liqTooltipSelectedLiqBar.liqPrices,
+                        );
+                    } else {
+                        liqTextData.totalValue = snap(
+                            liquidityData.depthLiqBidData,
+                            liqTooltipSelectedLiqBar.liqPrices,
+                        );
+                    }
                 } else {
-                    liqTextData.totalValue = snap(
-                        liquidityData.depthLiqBidData,
-                        liqTooltipSelectedLiqBar.liqPrices,
-                    );
-                }
-            } else {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                    liquidityData.liqAskData.map((liqData: any) => {
-                        if (
-                            liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay > liqData.liqPrices
-                        ) {
-                            liqTextData.totalValue =
-                                liqTextData.totalValue + liqData.deltaAverageUSD;
-                        }
-                    });
-                } else {
-                    liquidityData.liqBidData.map((liqData: any) => {
-                        if (
-                            liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay < liqData.liqPrices
-                        ) {
-                            liqTextData.totalValue =
-                                liqTextData.totalValue + liqData.deltaAverageUSD;
-                        }
-                    });
+                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                        liquidityData.liqAskData.map((liqData: any) => {
+                            if (
+                                liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                                poolPriceDisplay > liqData.liqPrices
+                            ) {
+                                liqTextData.totalValue =
+                                    liqTextData.totalValue + liqData.deltaAverageUSD;
+                            }
+                        });
+                    } else {
+                        liquidityData.liqBidData.map((liqData: any) => {
+                            if (
+                                liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                                poolPriceDisplay < liqData.liqPrices
+                            ) {
+                                liqTextData.totalValue =
+                                    liqTextData.totalValue + liqData.deltaAverageUSD;
+                            }
+                        });
+                    }
                 }
             }
-
             // const absoluteDifference = Math.abs(difference)
 
             const pinnedTick = getPinnedTickFromDisplayPrice(
@@ -5378,6 +5675,7 @@ export default function Chart(props: ChartData) {
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
+                                yAxisWidth={yAxisWidth}
                             />
                         </>
                     )}
@@ -5406,11 +5704,12 @@ export default function Chart(props: ChartData) {
                                 setMouseMoveChartName={setMouseMoveChartName}
                                 setTransformX={setTransformX}
                                 transformX={transformX}
+                                yAxisWidth={yAxisWidth}
                             />
                         </>
                     )}
 
-                    <div style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}>
+                    <div className='xAxis'>
                         <hr />
                         <d3fc-svg
                             ref={d3Xaxis}

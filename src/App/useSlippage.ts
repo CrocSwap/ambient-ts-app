@@ -7,6 +7,8 @@ export const useSlippage = () => {
     const [slipSwapVolatile, setSlipSwapVolatile] = useState('');
     const [slipMintStable, setSlipMintStable] = useState('');
     const [slipMintVolatile, setSlipMintVolatile] = useState('');
+    const [slipRepoStable, setSlipRepoStable] = useState('');
+    const [slipRepoVolatile, setSlipRepoVolatile] = useState('');
 
     const [needInitialization, setNeedInitialization] = useState(true);
 
@@ -62,6 +64,28 @@ export const useSlippage = () => {
         }
     }, [slipMintVolatile]);
 
+    useEffect(() => {
+        if (userData?.slippage) {
+            if (slipRepoStable === '') {
+                setSlipRepoStable(userData.slippage.repo.stable);
+            } else {
+                userData.slippage.repo.stable = slipRepoStable;
+                localStorage.setItem('user', JSON.stringify(userData));
+            }
+        }
+    }, [slipRepoStable]);
+
+    useEffect(() => {
+        if (userData?.slippage) {
+            if (slipRepoVolatile === '') {
+                setSlipRepoVolatile(userData.slippage.repo.volatile);
+            } else {
+                userData.slippage.repo.volatile = slipRepoVolatile;
+                localStorage.setItem('user', JSON.stringify(userData));
+            }
+        }
+    }, [slipRepoVolatile]);
+
     return [
         // swap values and setter functions
         {
@@ -72,6 +96,11 @@ export const useSlippage = () => {
         {
             stable: { value: slipMintStable, setValue: setSlipMintStable },
             volatile: { value: slipMintVolatile, setValue: setSlipMintVolatile },
+        },
+        // reposition values and setter functions
+        {
+            stable: { value: slipRepoStable, setValue: setSlipRepoStable },
+            volatile: { value: slipRepoVolatile, setValue: setSlipRepoVolatile },
         },
     ];
 };

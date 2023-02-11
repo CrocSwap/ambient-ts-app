@@ -17,7 +17,7 @@ export default function TransactionDetails(props: propsIF) {
     const { account, tx } = props;
 
     const [showSettings, setShowSettings] = useState(false);
-    const [showShareComponent, setShowShareComponent] = useState(false);
+    const [showShareComponent, setShowShareComponent] = useState(true);
 
     const detailsRef = useRef(null);
     const downloadAsImage = () => {

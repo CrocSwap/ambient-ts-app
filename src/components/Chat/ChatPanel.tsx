@@ -9,13 +9,15 @@ import useSocket from './Service/useSocket';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
-import { MdOpenInFull } from 'react-icons/md';
-import { useParams, useNavigate } from 'react-router-dom';
+import { TbTableExport } from 'react-icons/tb';
+import { useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import FullChat from '../../App/components/Chat/FullChat/FullChat';
+import trimString from '../../utils/functions/trimString';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -47,28 +49,29 @@ interface ChatProps {
     setChatStatus: Dispatch<SetStateAction<boolean>>;
     fullScreen?: boolean;
     userImageData: string[];
-    ensName: string;
+    appPage?: boolean;
 }
 
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
+    const [isCurrentPool, setIsCurrentPool] = useState(false);
+    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
+
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
+    const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
-    const [name, setName] = useState('');
-    const [walletID, setWalletID] = useState('');
     const [scrollDirection, setScrollDirection] = useState(String);
-    const wrapperStyleFull = styles.chat_wrapper_full;
     const [notification, setNotification] = useState(0);
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, updateUser, updateMessageUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -103,7 +106,10 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
-                if (lastMessage?.mentionedName === name || lastMessage?.mentionedName === address) {
+                if (
+                    lastMessage?.mentionedName === ensName ||
+                    lastMessage?.mentionedName === address
+                ) {
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
@@ -128,31 +134,41 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         setScrollDirection('Scroll Down');
         if (address) {
+            if (ens === null || ens === undefined) {
+                setEnsName('defaultValue');
+            } else {
+                setEnsName(ens);
+            }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
-                setCurrentUser(result.userData._id);
-                setWalletID(result.userData.walletID);
-                if (ens !== null) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    updateUser(currentUser as string, ens as string).then((result: any) => {
-                        if (result.status === 'OK') {
-                            setName(ens as string);
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            updateMessageUser(currentUser as string, name).then((result: any) => {
-                                return result;
-                            });
-                        }
+                if (result.status === 'Not OK') {
+                    // eslint-disable-next-line
+                    saveUser(address, ensName).then((result: any) => {
+                        setCurrentUser(result.userData._id);
+                        return result;
                     });
                 } else {
-                    setName(ens !== null ? ens : result.userData.walletID);
+                    setCurrentUser(result.userData._id);
+                    if (result.userData.ensName !== ensName) {
+                        // eslint-disable-next-line
+                        updateUser(currentUser as string, ensName).then((result: any) => {
+                            if (result.status === 'OK') {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                updateMessageUser(currentUser as string, ensName).then(
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    (result: any) => {
+                                        return result;
+                                    },
+                                );
+                            }
+                        });
+                    }
                 }
             });
+        } else {
+            setCurrentUser(undefined);
         }
     }, [address, props.chatStatus, props.isFullScreen]);
-
-    useEffect(() => {
-        isCurrentUser();
-    }, [isUserLoggedIn]);
 
     useEffect(() => {
         scrollToBottom();
@@ -201,22 +217,22 @@ export default function ChatPanel(props: ChatProps) {
         }
     };
 
-    const handleFullScreenRedirect = () => {
-        navigate('/app/chat');
-        props.setChatStatus(true);
-    };
+    // const handleFullScreenRedirect = () => {
+    //     navigate('/app/chat');
+    //     props.setChatStatus(true);
+    // };
 
     const header = (
         <div className={styles.chat_header} onClick={() => setChatStatus(!props.chatStatus)}>
             <h2 className={styles.chat_title}>Chat</h2>
-            <section>
+            <section style={{ paddingRight: '10px' }}>
                 {props.isFullScreen || !props.chatStatus ? (
                     <></>
                 ) : (
-                    <MdOpenInFull
-                        size={16}
+                    <TbTableExport
+                        size={18}
                         className={styles.open_full_button}
-                        onClick={handleFullScreenRedirect}
+                        onClick={() => window.open('/app/chat2')}
                     />
                 )}
                 {props.isFullScreen || !props.chatStatus ? (
@@ -233,34 +249,6 @@ export default function ChatPanel(props: ChatProps) {
         </div>
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function isCurrentUser() {
-        if (!address) {
-            return setCurrentUser(undefined);
-        } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            getID().then((result: any) => {
-                setCurrentUser(result.userData._id);
-                setWalletID(result.userData.walletID);
-                if (ens !== null) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    updateUser(currentUser as string, ens as string).then((result: any) => {
-                        if (result.status === 'OK') {
-                            setName(ens as string);
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            updateMessageUser(currentUser as string, name).then((result: any) => {
-                                return result;
-                            });
-                        }
-                    });
-                } else {
-                    setName(ens === null ? result.userData.walletID : ens);
-                }
-            });
-            return currentUser;
-        }
-    }
-
     const messageList = (
         <div
             ref={messageEnd}
@@ -275,7 +263,7 @@ export default function ChatPanel(props: ChatProps) {
                         <SentMessagePanel
                             isUserLoggedIn={isUserLoggedIn as boolean}
                             message={item}
-                            name={ens === null || ens === '' ? walletID : (ens as string)}
+                            ensName={ensName}
                             isCurrentUser={item.sender === currentUser}
                             currentUser={currentUser}
                             userImageData={
@@ -326,23 +314,39 @@ export default function ChatPanel(props: ChatProps) {
                     ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
                     : room
             }
-            ensName={ens === null || ens === '' ? walletID : (ens as string)}
+            ensName={ensName}
         />
     );
 
-    const contentHeight = props.isFullScreen ? '100%' : props.chatStatus ? '479px' : '40px';
-    const contentWidth = props.isFullScreen ? '100%' : props.chatStatus ? '320px' : '300px';
+    const contentHeight = props.chatStatus ? '479px' : '30px';
+    if (props.appPage)
+        return (
+            <FullChat
+                messageList={messageList}
+                chatNotification={chatNotification}
+                messageInput={messageInput}
+                room={room}
+                userName={
+                    ens === null || ens === ''
+                        ? trimString(address as string, 6, 0, '…')
+                        : (ens as string)
+                }
+                setRoom={setRoom}
+                setIsCurrentPool={setIsCurrentPool}
+                showCurrentPoolButton={showCurrentPoolButton}
+                setShowCurrentPoolButton={setShowCurrentPoolButton}
+                currentPool={currentPool}
+                favePools={favePools}
+            />
+        );
 
     return (
         <div
-            className={props.isFullScreen ? styles.full_screen_wrapper : styles.example}
+            className={styles.main_container}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
-            <div
-                className={`${props.isFullScreen ? wrapperStyleFull : styles.modal_body}`}
-                style={{ height: contentHeight, width: contentWidth }}
-            >
+            <div className={styles.modal_body} style={{ height: contentHeight, width: '100%' }}>
                 <div className={styles.chat_body}>
                     {header}
 
@@ -353,6 +357,10 @@ export default function ChatPanel(props: ChatProps) {
                         currentPool={currentPool}
                         isFullScreen={props.isFullScreen}
                         room={room}
+                        setIsCurrentPool={setIsCurrentPool}
+                        isCurrentPool={isCurrentPool}
+                        showCurrentPoolButton={showCurrentPoolButton}
+                        setShowCurrentPoolButton={setShowCurrentPoolButton}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
@@ -16,16 +16,34 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { PositionIF, SlippagePairIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     isDenomBase: boolean;
     ambientApy: number | undefined;
+    repoSlippage: SlippagePairIF;
+    isPairStable: boolean;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Reposition(props: propsIF) {
-    const { crocEnv, isDenomBase, ambientApy } = props;
+    const {
+        crocEnv,
+        isDenomBase,
+        ambientApy,
+        repoSlippage,
+        isPairStable,
+        bypassConfirm,
+        toggleBypassConfirm,
+        setMinPrice,
+        setMaxPrice,
+        seRescaleRangeBoundariesWithSlider,
+    } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -106,11 +124,7 @@ export default function Reposition(props: propsIF) {
             : truncatedCurrentPoolDisplayPriceInQuote;
 
     // const currentLocation = location.pathname;
-    const [
-        isModalOpen,
-        // openModal,
-        closeModal,
-    ] = useModal();
+    const [isModalOpen, openModal, closeModal] = useModal();
 
     useEffect(() => {
         setRangeWidthPercentage(() => simpleRangeWidth);
@@ -122,38 +136,29 @@ export default function Reposition(props: propsIF) {
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
 
+    useEffect(() => {
+        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+            console.log('set Range');
+            // dispatch(setRangeModuleTriggered(true));
+            // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+        }
+    }, [rangeWidthPercentage]);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 positionHash={position.positionStorageSlot}
                 redirectPath={redirectPath}
+                repoSlippage={repoSlippage}
+                isPairStable={isPairStable}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
             <div className={styles.reposition_content}>
-                {/* <div className={styles.reposition_toggle_container}>
-                    <Link
-                        to='/trade/reposition'
-                        className={
-                            currentLocation.includes('reposition')
-                                ? styles.active_button_toggle
-                                : styles.non_active_button_toggle
-                        }
-                    >
-                        Reposition
-                    </Link>
-                    <Link
-                        to='/trade/add'
-                        className={
-                            currentLocation.includes('add')
-                                ? styles.active_button_toggle
-                                : styles.non_active_button_toggle
-                        }
-                    >
-                        Add
-                    </Link>
-                </div> */}
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
+                    seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                 />
                 <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}
@@ -166,12 +171,28 @@ export default function Reposition(props: propsIF) {
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
+                    setMaxPrice={setMaxPrice}
+                    setMinPrice={setMinPrice}
                 />
-                <RepositionButton onClickFn={sendRepositionTransaction} />
+                <RepositionButton
+                    bypassConfirm={bypassConfirm}
+                    onClickFn={openModal}
+                    sendRepositionTransaction={sendRepositionTransaction}
+                />
             </div>
             {isModalOpen && (
                 <Modal onClose={closeModal} title=' Confirm Reposition'>
-                    <ConfirmRepositionModal onClose={closeModal} />
+                    <ConfirmRepositionModal
+                        position={position as PositionIF}
+                        ambientApy={ambientApy}
+                        currentPoolPriceDisplay={currentPoolPriceDisplay}
+                        currentPoolPriceTick={currentPoolPriceTick}
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        onClose={closeModal}
+                        onSend={sendRepositionTransaction}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
+                    />
                 </Modal>
             )}
         </div>

@@ -22,7 +22,8 @@ interface propsIF {
     // tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
-
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
 
     shareOptionsDisplay: JSX.Element;
@@ -32,7 +33,8 @@ interface propsIF {
 
 // central react functional component
 export default function LimitHeader(props: propsIF) {
-    const { mintSlippage, isPairStable, openGlobalModal } = props;
+    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm, toggleBypassConfirm } =
+        props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -47,9 +49,12 @@ export default function LimitHeader(props: propsIF) {
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
                 module='Limit Order'
+                toggleFor='limit'
                 slippage={mintSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </Modal>
     ) : null;

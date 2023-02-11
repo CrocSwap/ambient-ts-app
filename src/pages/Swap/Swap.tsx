@@ -163,80 +163,17 @@ export default function Swap(props: propsIF) {
 
     const { tokenA, tokenB } = tradeData;
 
-    const slippageTolerancePercentage = isPairStable
-        ? parseFloat(swapSlippage.stable.value)
-        : parseFloat(swapSlippage.volatile.value);
-
-    const loginButton = (
-        <button onClick={openModalWallet} className={styles.authenticate_button}>
-            Connect Wallet
-        </button>
-    );
-
-    // <Button title='Connect Wallet' action={openModalWallet} />;
-
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const [sellQtyString, setSellQtyString] = useState<string>('');
     const [buyQtyString, setBuyQtyString] = useState<string>('');
 
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.log({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
-                    dispatch(removePendingTx(error.hash));
+    const slippageTolerancePercentage = isPairStable
+        ? parseFloat(swapSlippage.stable.value)
+        : parseFloat(swapSlippage.volatile.value);
 
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
+    // <Button title='Connect Wallet' action={openModalWallet} />;
 
-                    console.log({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            console.log({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-        }
-    };
-
-    const approvalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenA.address);
-            }}
-            flat
-        />
-    );
-
-    // const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
-    // const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
@@ -261,9 +198,9 @@ export default function Swap(props: propsIF) {
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
-        const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-        const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-        const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
+        // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
+        // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
         const isQtySell = isTokenAPrimary;
         // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
         let tx;
@@ -370,6 +307,66 @@ export default function Swap(props: propsIF) {
         resetConfirmation();
     };
 
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
+
+    const approvalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenA.address);
+            }}
+            flat
+        />
+    );
+
+    const approve = async (tokenAddress: string) => {
+        if (!crocEnv) return;
+        try {
+            setIsApprovalPending(true);
+            const tx = await crocEnv.token(tokenAddress).approve();
+            if (tx) dispatch(addPendingTx(tx?.hash));
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.log({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    console.log('repriced');
+                    dispatch(removePendingTx(error.hash));
+
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+
+                    console.log({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    // console.log({ error });
+                    receipt = error.receipt;
+                }
+            }
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
+            }
+        } catch (error) {
+            console.log({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+    };
     const effectivePrice =
         parseFloat(priceImpact?.buyQty || '0') / parseFloat(priceImpact?.sellQty || '1');
 
@@ -421,6 +418,8 @@ export default function Swap(props: propsIF) {
                 isSellTokenBase={isSellTokenBase}
                 bypassConfirm={bypassConfirm}
                 toggleBypassConfirm={toggleBypassConfirm}
+                sellQtyString={sellQtyString}
+                buyQtyString={buyQtyString}
             />
         </Modal>
     ) : null;
@@ -544,6 +543,7 @@ export default function Swap(props: propsIF) {
 
     // console.log({ isUserLoggedIn });
     // console.log({ swapAllowed });
+    // console.log({ sellQtyString });
 
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
@@ -558,6 +558,8 @@ export default function Swap(props: propsIF) {
                         isOnTradeRoute={isOnTradeRoute}
                         openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
+                        bypassConfirm={bypassConfirm}
+                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                     {/* <DividerDark addMarginTop /> */}
                     {navigationMenu}
@@ -613,7 +615,6 @@ export default function Swap(props: propsIF) {
                             openGlobalPopup={openGlobalPopup}
                         />
                     </motion.div>
-                    {/* {denominationSwitchOrNull} */}
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}

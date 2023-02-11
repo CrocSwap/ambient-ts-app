@@ -339,6 +339,10 @@ export default function App() {
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+    const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
+    const [minRangePrice, setMinRangePrice] = useState<number>(0);
+    const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
+        useState<boolean>(false);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -520,8 +524,6 @@ export default function App() {
     }, [tokenListsReceived]);
 
     const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
-    false && checkBypassConfirm;
-    false && updateBypassConfirm;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -585,7 +587,7 @@ export default function App() {
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
-    const [swapSlippage, mintSlippage] = useSlippage();
+    const [swapSlippage, mintSlippage, repoSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
@@ -1625,6 +1627,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
             if (lastMessageData && crocEnv) {
                 console.log('new user position message received');
+                // console.log({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1636,6 +1639,7 @@ export default function App() {
                         );
                     }),
                 ).then((updatedPositions) => {
+                    // console.log({ updatedPositions });
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }
@@ -1886,6 +1890,7 @@ export default function App() {
                     console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
+                    // console.log({ newTokenAllowance });
                     if (tokenAAllowance !== newTokenAllowance) {
                         console.log('setting new token a allowance');
                         setTokenAAllowance(newTokenAllowance);
@@ -2353,6 +2358,7 @@ export default function App() {
         addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
+        chainData: chainData,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2551,7 +2557,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
-
+        graphData: graphData,
         openGlobalModal: openGlobalModal,
 
         poolExists: poolExists,
@@ -2696,6 +2702,8 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/app/chat' &&
+        currentLocation !== '/app/chat2' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2712,6 +2720,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/app/chat' ||
+        currentLocation == '/app/chat2' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2832,6 +2842,14 @@ export default function App() {
                                     setFetchingCandle={setFetchingCandle}
                                     isCandleDataNull={isCandleDataNull}
                                     setIsCandleDataNull={setIsCandleDataNull}
+                                    minPrice={minRangePrice}
+                                    maxPrice={maxRangePrice}
+                                    rescaleRangeBoundariesWithSlider={
+                                        rescaleRangeBoundariesWithSlider
+                                    }
+                                    seRescaleRangeBoundariesWithSlider={
+                                        seRescaleRangeBoundariesWithSlider
+                                    }
                                 />
                             }
                         >
@@ -2865,6 +2883,15 @@ export default function App() {
                                         crocEnv={crocEnv}
                                         ambientApy={ambientApy}
                                         isDenomBase={tradeData.isDenomBase}
+                                        repoSlippage={repoSlippage}
+                                        isPairStable={isPairStable}
+                                        bypassConfirm={checkBypassConfirm('repo')}
+                                        toggleBypassConfirm={updateBypassConfirm}
+                                        setMaxPrice={setMaxRangePrice}
+                                        setMinPrice={setMinRangePrice}
+                                        seRescaleRangeBoundariesWithSlider={
+                                            seRescaleRangeBoundariesWithSlider
+                                        }
                                     />
                                 }
                             />
@@ -2954,7 +2981,23 @@ export default function App() {
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
                                     userImageData={imageData}
-                                    ensName={ensName}
+                                />
+                            }
+                        />
+                        <Route
+                            path='app/chat2'
+                            element={
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
+                                    userImageData={imageData}
+                                    appPage={true}
                                 />
                             }
                         />
@@ -3203,20 +3246,21 @@ export default function App() {
                     />
                 )} */}
 
-                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
-                    <ChatPanel
-                        chatStatus={chatStatus}
-                        onClose={() => {
-                            console.error('Function not implemented.');
-                        }}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        isFullScreen={false}
-                        userImageData={imageData}
-                        ensName={ensName}
-                    />
-                )}
+                {currentLocation !== '/' &&
+                    currentLocation !== '/app/chat' &&
+                    currentLocation !== '/app/chat2' && (
+                        <ChatPanel
+                            chatStatus={chatStatus}
+                            onClose={() => {
+                                console.error('Function not implemented.');
+                            }}
+                            favePools={favePools}
+                            currentPool={currentPoolInfo}
+                            setChatStatus={setChatStatus}
+                            isFullScreen={false}
+                            userImageData={imageData}
+                        />
+                    )}
             </div>
             <SidebarFooter />
             <GlobalModal

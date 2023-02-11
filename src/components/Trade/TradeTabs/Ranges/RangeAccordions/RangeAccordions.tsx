@@ -88,7 +88,12 @@ export default function RangeAccordions(props: propsIF) {
 
     const status = (
         <div className={styles.status}>
-            <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
+            <RangeStatus
+                isInRange={isPositionInRange}
+                isEmpty={position.totalValueUSD === 0}
+                isAmbient={isAmbient}
+                justSymbol
+            />
         </div>
     );
 
@@ -151,6 +156,7 @@ export default function RangeAccordions(props: propsIF) {
                             isOwnerActiveAccount={userMatchesConnectedAccount}
                             isPositionInRange={isPositionInRange}
                             isAmbient={isAmbient}
+                            isEmpty={position.totalValueUSD === 0}
                         />
                     </motion.section>
                 )}

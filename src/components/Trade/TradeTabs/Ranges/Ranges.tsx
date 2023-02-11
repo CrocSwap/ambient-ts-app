@@ -20,7 +20,10 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { updateApy } from '../../../../App/functions/getPositionData';
+import {
+    // updateApy,
+    updatePositionStats,
+} from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -139,7 +142,7 @@ export default function Ranges(props: propsIF) {
 
     const userPositionsToDisplayOnTrade = positionsByUserMatchingSelectedTokens.filter(
         (position) => {
-            if (position.positionLiq !== '0') {
+            if (position.positionLiq !== '0' || position.source === 'manual') {
                 return true;
             } else {
                 return false;
@@ -172,7 +175,7 @@ export default function Ranges(props: propsIF) {
             // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            console.log({ userPositionsToDisplayOnTrade });
+            // console.log({ userPositionsToDisplayOnTrade });
             setRangeData(userPositionsToDisplayOnTrade);
         } else if (positionsByPool && !isOnPortfolioPage) {
             // console.log({ positionsByPool });
@@ -208,7 +211,7 @@ export default function Ranges(props: propsIF) {
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updateApy(position);
+                    return updatePositionStats(position);
                 }),
             )
                 .then((updatedPositions) => {
@@ -220,6 +223,7 @@ export default function Ranges(props: propsIF) {
                                 (position) => position.user.toLowerCase() === account.toLowerCase(),
                             );
                             if (updatedPositionsMatchingUser.length)
+                                // console.log({ updatedPositionsMatchingUser });
                                 dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
                     } else {
@@ -434,11 +438,11 @@ export default function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Status',
             className: 'status',
             show: true,
             slug: 'status',
-            sortable: false,
+            sortable: true,
         },
         {
             name: '',
@@ -470,6 +474,7 @@ export default function Ranges(props: propsIF) {
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
+            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}

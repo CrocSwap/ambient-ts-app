@@ -34,13 +34,24 @@ interface RoomProps {
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     room: any;
+    isCurrentPool: any;
+    setIsCurrentPool: any;
+    showCurrentPoolButton: any;
+    setShowCurrentPoolButton: any;
 }
 export default function RoomDropdown(props: RoomProps) {
-    const { currentPool, isFullScreen } = props;
+    const {
+        currentPool,
+        isFullScreen,
+        isCurrentPool,
+        setIsCurrentPool,
+        showCurrentPoolButton,
+        setShowCurrentPoolButton,
+    } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray, setRoomArray] = useState<string[]>([]);
-    const [isCurrentPool, setIsCurrentPool] = useState(false);
-    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
+    // const [isCurrentPool, setIsCurrentPool] = useState(false);
+    // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
 
     const defaultRooms = [
@@ -52,7 +63,7 @@ export default function RoomDropdown(props: RoomProps) {
         {
             id: 101,
             name: 'Current Pool',
-            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
+            value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
         },
     ];
 
@@ -84,7 +95,7 @@ export default function RoomDropdown(props: RoomProps) {
     useEffect(() => {
         const roomArr: string[] = [];
         rooms?.map((pool: PoolIF) => {
-            roomArr.push(pool.base.symbol + pool.quote.symbol);
+            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
         });
 
         setRoomArray(() => {
@@ -98,7 +109,7 @@ export default function RoomDropdown(props: RoomProps) {
         if (props.selectedRoom === 'Global') {
             const roomArr: string[] = [];
             rooms?.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + pool.quote.symbol);
+                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
             });
             setRoomArray(() => {
                 return roomArr;
@@ -106,7 +117,7 @@ export default function RoomDropdown(props: RoomProps) {
         } else {
             const roomArr: string[] = [];
             rooms.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + pool.quote.symbol);
+                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
             });
             setRoomArray(() => {
                 return roomArr;

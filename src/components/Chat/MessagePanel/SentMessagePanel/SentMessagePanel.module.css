@@ -73,7 +73,7 @@
 }
 
 .mention_message {
-    color: var(--accent-5);
+    color: red;
     width: 80%;
     height: 80%;
 
@@ -138,7 +138,6 @@
     height: auto;
     min-height: 53%;
     padding: 0px 4px 8px;
-
     box-sizing: border-box;
     flex: none;
     order: 4;
@@ -209,7 +208,7 @@
 }
 
 .message_item p {
-    word-break: break-all;
+    word-break: break-word;
 }
 
 img,

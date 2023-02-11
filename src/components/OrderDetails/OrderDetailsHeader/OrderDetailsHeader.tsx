@@ -47,7 +47,7 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
                 >
-                    {showShareComponent ? 'Info' : 'Share'}
+                    {showShareComponent ? 'Details' : 'Share'}
                 </button>
 
                 {showShareComponent ? (
