@@ -1686,6 +1686,7 @@ export default function App() {
                     }),
                 )
                     .then((updatedTransactions) => {
+                        // console.log({ updatedTransactions });
                         dispatch(addChangesByUser(updatedTransactions));
                     })
                     .catch(console.log);
