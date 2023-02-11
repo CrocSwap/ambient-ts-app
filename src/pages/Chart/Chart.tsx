@@ -979,6 +979,10 @@ export default function Chart(props: ChartData) {
     const utcDiff = moment().utcOffset();
     const utcDiffHours = Math.floor(utcDiff / 60);
 
+    useEffect(() => {
+        setBandwidth(5);
+    }, [reset]);
+
     // x axis text
     useEffect(() => {
         if (scaleData && xAxis) {
@@ -1042,9 +1046,9 @@ export default function Chart(props: ChartData) {
         JSON.stringify(d3Container.current?.offsetWidth),
         mouseMoveEventCharts,
         activeTimeFrame,
-        rescale,
-        reset,
         latest,
+        rescale,
+        bandwidth,
     ]);
 
     function changeyAxisWidth() {

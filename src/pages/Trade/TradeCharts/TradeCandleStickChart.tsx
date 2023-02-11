@@ -379,11 +379,13 @@ export default function TradeCandleStickChart(props: ChartData) {
                 ])
                 .range([1, 550]);
 
-            const liqBoundaryData = props.liquidityData.ranges.find((liq: any) =>
-                denominationsInBase
-                    ? liq.upperBoundInvPriceDecimalCorrected < barThreshold
-                    : liq.lowerBoundPriceDecimalCorrected > barThreshold,
-            );
+            const liqBoundaryData = props.liquidityData.ranges.find((liq: any) => {
+                return denominationsInBase
+                    ? liq.upperBoundInvPriceDecimalCorrected < barThreshold &&
+                          liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
+                    : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                          liq.upperBoundPriceDecimalCorrected !== '+inf';
+            });
 
             const liqBoundary =
                 liqBoundaryData !== undefined
