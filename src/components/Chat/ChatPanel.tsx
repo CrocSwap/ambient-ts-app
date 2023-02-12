@@ -311,7 +311,7 @@ export default function ChatPanel(props: ChatProps) {
             message={messages[0]}
             room={
                 room === 'Current Pool'
-                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+                    ? currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol
                     : room
             }
             ensName={ensName}

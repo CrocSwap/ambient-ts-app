@@ -9,6 +9,7 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 // import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF } from '../../../utils/interfaces/exports';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
+import DividerDark from '../DividerDark/DividerDark';
 
 // interface for component props
 interface propsIF {
@@ -74,6 +75,8 @@ export default function TransactionSettings(props: propsIF) {
                     handleKeyDown={handleKeyDown}
                 />
             ) : null}
+            <DividerDark />
+            <DividerDark />
 
             <ConfirmationModalControl
                 bypassConfirm={bypassConfirm}

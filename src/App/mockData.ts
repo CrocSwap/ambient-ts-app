@@ -1,6 +1,6 @@
 export const topPools = [
     {
-        name: 'ETH / USDC',
+        name: 'ETH/USDC',
         base: {
             name: 'Native Ether',
             address: '0x0000000000000000000000000000000000000000',
@@ -26,7 +26,7 @@ export const topPools = [
     },
 
     {
-        name: 'ETH / WBTC',
+        name: 'ETH/WBTC',
         base: {
             name: 'Native Ether',
             address: '0x0000000000000000000000000000000000000000',
@@ -51,7 +51,7 @@ export const topPools = [
         id: 3,
     },
     {
-        name: 'WBTC / USDC',
+        name: 'WBTC/USDC',
         base: {
             name: 'Wrapped BTC',
             address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
@@ -76,7 +76,7 @@ export const topPools = [
         id: 4,
     },
     {
-        name: 'USDC / DAI',
+        name: 'USDC/DAI',
         base: {
             name: 'USDCoin',
             address: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
