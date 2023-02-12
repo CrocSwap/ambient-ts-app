@@ -36,9 +36,9 @@ export default function ConfirmationModalControl(props: propsIF) {
         : 'unhandled';
 
     const label = displayInSettings ? (
-        <p>{`Skip Confirmation Step for ${moduleName}`}</p>
+        <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
     ) : (
-        <p>Skip this step in the future</p>
+        <p>Skip this confirmation step in the future</p>
     );
     return (
         <div className={styles.main_container}>

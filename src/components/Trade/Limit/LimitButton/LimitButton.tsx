@@ -27,7 +27,7 @@ export default function LimitButton(props: ILimitButtonProps) {
                 title={
                     props.limitAllowed
                         ? bypassConfirm
-                            ? 'Send Limit Order'
+                            ? 'Send Limit'
                             : 'Open Confirmation'
                         : props.limitButtonErrorMessage
                 }
