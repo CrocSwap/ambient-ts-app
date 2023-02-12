@@ -18,6 +18,7 @@ interface ConfirmRepositionModalProps {
     newRepositionTransactionHash: string;
     tokenPair: TokenPairIF;
     ambientApy: number | undefined;
+    dailyVol: number | undefined;
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
@@ -37,6 +38,7 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         position,
         tokenPair,
         ambientApy,
+        dailyVol,
         currentPoolPriceDisplay,
         currentPoolPriceTick,
         rangeWidthPercentage,
@@ -117,6 +119,7 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 currentPoolPriceTick={currentPoolPriceTick}
                 currentPoolPriceDisplay={currentPoolPriceDisplay}
                 ambientApy={ambientApy}
+                dailyVol={dailyVol}
                 setMaxPrice={setMaxPrice}
                 setMinPrice={setMinPrice}
             />

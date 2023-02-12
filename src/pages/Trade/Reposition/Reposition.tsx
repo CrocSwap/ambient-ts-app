@@ -288,6 +288,7 @@ export default function Reposition(props: propsIF) {
                         crocEnv={crocEnv}
                         position={position as PositionIF}
                         ambientApy={ambientApy}
+                        dailyVol={dailyVol}
                         currentPoolPriceDisplay={currentPoolPriceDisplay}
                         currentPoolPriceTick={currentPoolPriceTick}
                         rangeWidthPercentage={rangeWidthPercentage}
