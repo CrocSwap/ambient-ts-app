@@ -24,19 +24,19 @@ export default function ConfirmationModalControl(props: propsIF) {
     // TODO:   @Junior  ... `compKey` value instead (also delete this TODO note)
 
     const moduleName = pathname.includes('swap')
-        ? 'swaps'
+        ? 'Swaps'
         : pathname.includes('market')
-        ? 'market orders'
+        ? 'Market Orders'
         : pathname.includes('limit')
-        ? 'limits'
+        ? 'Limit Orders'
         : pathname.includes('range')
-        ? 'ranges'
+        ? 'Range Orders'
         : pathname.includes('reposition')
-        ? 'repositions'
+        ? 'Repositions'
         : 'unhandled';
 
     const label = displayInSettings ? (
-        <p>{`Skip confirmation step for ${moduleName} in the future`}</p>
+        <p>{`Skip Confirmation Step for ${moduleName}`}</p>
     ) : (
         <p>Skip this step in the future</p>
     );
