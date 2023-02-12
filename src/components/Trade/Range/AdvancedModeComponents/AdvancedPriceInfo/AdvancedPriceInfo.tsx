@@ -1,7 +1,5 @@
 import styles from './AdvancedPriceInfo.module.css';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
-import truncateDecimals from '../../../../../utils/data/truncateDecimals';
-import { formatDaysRange } from '../../../../../App/functions/formatDaysRange';
 
 interface propsIF {
     tokenPair: TokenPairIF;
@@ -21,17 +19,15 @@ export default function AdvancedPriceInfo(props: propsIF) {
         poolPriceDisplay,
         isDenomBase,
         isTokenABase,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         minimumSpan,
         isOutOfRange,
         aprPercentage,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         daysInRange,
     } = props;
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
-
-    // const displayPriceString = isDenomBase
-    //     ? truncateDecimals(1 / parseFloat(poolPriceDisplay), 4).toString()
-    //     : truncateDecimals(parseFloat(poolPriceDisplay), 4).toString();
 
     const currentPrice = (
         <div className={styles.price_info_row}>
@@ -50,12 +46,6 @@ export default function AdvancedPriceInfo(props: propsIF) {
               maximumFractionDigits: 2,
           })}%`
         : '…';
-    // JSX frag for estimated APR of position
-    const apr = <span className={styles.apr}>{aprPercentageString}</span>;
-
-    const daysInRangeString = daysInRange ? `Time in Range | ${formatDaysRange(daysInRange)}` : '…';
-    // JSX frag for estimated APR of position
-    const days = <span className={styles.apr}>{daysInRangeString}</span>;
 
     const estimatedAPR = isOutOfRange ? (
         <div className={styles.apr_display_out_of_range}>
