@@ -1,6 +1,7 @@
 import styles from './AdvancedPriceInfo.module.css';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 import truncateDecimals from '../../../../../utils/data/truncateDecimals';
+import { formatDaysRange } from '../../../../../App/functions/formatDaysRange';
 
 interface propsIF {
     tokenPair: TokenPairIF;
@@ -9,12 +10,22 @@ interface propsIF {
     isTokenABase: boolean;
     minimumSpan: number;
     isOutOfRange: boolean;
+    aprPercentage: number | undefined;
+    daysInRange: number | undefined;
 }
 
 export default function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
-    const { tokenPair, poolPriceDisplay, isDenomBase, isTokenABase, minimumSpan, isOutOfRange } =
-        props;
+    const {
+        tokenPair,
+        poolPriceDisplay,
+        isDenomBase,
+        isTokenABase,
+        minimumSpan,
+        isOutOfRange,
+        aprPercentage,
+        daysInRange,
+    } = props;
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
@@ -33,14 +44,26 @@ export default function AdvancedPriceInfo(props: propsIF) {
         </div>
     );
 
-    // JSX frag to display the estimated APR of the position
-    const estimatedAPR = (
-        <div
-            className={isOutOfRange ? styles.apr_display_out_of_range : styles.apr_display_in_range}
-        >
-            <div>
-                Est. APR | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%
-            </div>
+    const aprPercentageString = aprPercentage
+        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })}%`
+        : '…';
+    // JSX frag for estimated APR of position
+    const apr = <span className={styles.apr}>{aprPercentageString}</span>;
+
+    const daysInRangeString = daysInRange ? `Time in Range | ${formatDaysRange(daysInRange)}` : '…';
+    // JSX frag for estimated APR of position
+    const days = <span className={styles.apr}>{daysInRangeString}</span>;
+
+    const estimatedAPR = isOutOfRange ? (
+        <div className={styles.apr_display_out_of_range}>
+            <div>Est. APR | 0%</div>
+        </div>
+    ) : (
+        <div className={styles.apr_display_in_range}>
+            <div>{aprPercentageString}</div>
         </div>
     );
 

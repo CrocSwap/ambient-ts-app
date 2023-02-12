@@ -90,6 +90,7 @@ interface propsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
+    dailyVol: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
     graphData: graphData;
@@ -148,6 +149,7 @@ export default function Range(props: propsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
+        dailyVol,
         openGlobalModal,
         poolExists,
         graphData,
@@ -769,14 +771,18 @@ export default function Range(props: propsIF) {
         aprPercentage = ambientApy * concFactor;
     }
 
-    const advancedDaysInRangeEstimation =
-        minimumSpan < 0 ? 0 : parseFloat(truncateDecimals(minimumSpan / 100, 0));
+    let daysInRange = isAmbient ? Infinity : 0;
 
-    const daysInRangeEstimation: number = isAmbient
-        ? 365
-        : tradeData.advancedMode
-        ? advancedDaysInRangeEstimation
-        : rangeWidthPercentage;
+    if (!isAmbient && dailyVol && poolPriceNonDisplay) {
+        const upperPercent = Math.log(rangeHighBoundNonDisplayPrice / poolPriceNonDisplay);
+        const lowerPercent = Math.log(poolPriceNonDisplay / rangeLowBoundNonDisplayPrice);
+
+        if (upperPercent > 0 && lowerPercent > 0) {
+            const daysBelow = Math.pow(upperPercent / dailyVol, 2);
+            const daysAbove = Math.pow(lowerPercent / dailyVol, 2);
+            daysInRange = Math.min(daysBelow, daysAbove);
+        }
+    }
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
@@ -954,6 +960,7 @@ export default function Range(props: propsIF) {
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         aprPercentage: aprPercentage,
+        daysInRange: daysInRange,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,
@@ -1119,9 +1126,10 @@ export default function Range(props: propsIF) {
         quoteTokenIsBuy: true,
         isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
-        daysInRangeEstimation: daysInRangeEstimation,
         showExtraInfoDropdown: showExtraInfoDropdown,
         isBalancedMode: !tradeData.advancedMode,
+        aprPercentage: aprPercentage,
+        daysInRange: daysInRange,
     };
 
     const baseModeContent = (
@@ -1180,6 +1188,8 @@ export default function Range(props: propsIF) {
                 isTokenABase={isTokenABase}
                 minimumSpan={minimumSpan}
                 isOutOfRange={isOutOfRange}
+                aprPercentage={aprPercentage}
+                daysInRange={daysInRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>

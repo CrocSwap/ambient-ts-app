@@ -2,6 +2,7 @@
 import { capitalConcFactor, CrocEnv, CrocReposition, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -30,6 +31,7 @@ interface IRepositionPriceInfoProps {
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
     ambientApy: number | undefined;
+    dailyVol: number | undefined;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
 }
@@ -41,6 +43,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         crocEnv,
         position,
         ambientApy,
+        dailyVol,
         currentPoolPriceDisplay,
         currentPoolPriceTick,
         rangeWidthPercentage,
@@ -167,11 +170,31 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
           })}%`
         : '…';
 
+    let daysInRange = 0;
+
+    if (dailyVol) {
+        const poolPrice = tickToPrice(currentPoolPriceTick);
+        const lowPrice = tickToPrice(pinnedLowTick);
+        const highPrice = tickToPrice(pinnedHighTick);
+
+        const upperPercent = Math.log(highPrice / poolPrice);
+        const lowerPercent = Math.log(poolPrice / lowPrice);
+
+        if (upperPercent > 0 && lowerPercent > 0) {
+            const daysBelow = Math.pow(upperPercent / dailyVol, 2);
+            const daysAbove = Math.pow(lowerPercent / dailyVol, 2);
+            daysInRange = Math.min(daysBelow, daysAbove);
+        }
+    }
+
+    const daysInRangeString = daysInRange ? `Time in Range | ${formatDaysRange(daysInRange)}` : '…';
+
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
     // JSX frag for estimated APR of position
 
     const apr = <span className={styles.apr}>{aprPercentageString}</span>;
+    const days = <span className={styles.apr}>{daysInRangeString}</span>;
 
     // JSX frag for lowest price in range
     const minimumPrice = (
@@ -226,6 +249,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     return (
         <div className={styles.price_info_container}>
             {apr}
+            {days}
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>

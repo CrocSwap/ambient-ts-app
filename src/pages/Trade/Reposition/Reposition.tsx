@@ -31,6 +31,7 @@ interface propsIF {
     crocEnv: CrocEnv | undefined;
     isDenomBase: boolean;
     ambientApy: number | undefined;
+    dailyVol: number | undefined;
     repoSlippage: SlippagePairIF;
     isPairStable: boolean;
     bypassConfirm: boolean;
@@ -46,6 +47,7 @@ export default function Reposition(props: propsIF) {
         crocEnv,
         isDenomBase,
         ambientApy,
+        dailyVol,
         repoSlippage,
         isPairStable,
         bypassConfirm,
@@ -267,6 +269,7 @@ export default function Reposition(props: propsIF) {
                     crocEnv={crocEnv}
                     position={position}
                     ambientApy={ambientApy}
+                    dailyVol={dailyVol}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}

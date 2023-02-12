@@ -791,6 +791,7 @@ export default function App() {
     const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
+    const [dailyVol, setDailyVol] = useState<number | undefined>();
 
     // TODO:  @Emily useMemo() this value
     const tokenPair = {
@@ -874,8 +875,13 @@ export default function App() {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
+                        console.log(json.data);
                         const ambientApy = json?.data?.apy;
                         setAmbientApy(ambientApy);
+
+                        const tickVol = json?.data?.tickStdev;
+                        const dailyVol = tickVol ? tickVol / 10000 : undefined;
+                        setDailyVol(dailyVol);
                     });
             }
         })();
@@ -2558,6 +2564,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
+        dailyVol: dailyVol,
         graphData: graphData,
         openGlobalModal: openGlobalModal,
 
@@ -2884,6 +2891,7 @@ export default function App() {
                                         tokenPair={tokenPair}
                                         crocEnv={crocEnv}
                                         ambientApy={ambientApy}
+                                        dailyVol={dailyVol}
                                         isDenomBase={tradeData.isDenomBase}
                                         repoSlippage={repoSlippage}
                                         isPairStable={isPairStable}
