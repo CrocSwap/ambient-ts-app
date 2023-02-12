@@ -321,6 +321,7 @@ export default function RangeDetails(props: propsIF) {
     return (
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
+                position={position}
                 onClose={closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
