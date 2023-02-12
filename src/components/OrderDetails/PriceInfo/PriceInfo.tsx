@@ -5,6 +5,7 @@ import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
+import { formatAmountOld } from '../../../utils/numbers';
 
 type ItemIF = {
     slug: string;
@@ -46,7 +47,7 @@ export default function PriceInfo(props: propsIF) {
         quoteTokenLogo,
 
         usdValue,
-
+        truncatedDisplayPrice,
         // bidTick,
         // askTick,
         // positionLiqTotalUSD,
@@ -55,6 +56,10 @@ export default function PriceInfo(props: propsIF) {
         // quoteDisplayFrontend,
         // positionLiquidity,
     } = useProcessOrder(limitOrder, account);
+
+    console.log({ limitOrder });
+
+    const isBid = limitOrder.isBid;
 
     const tokenPairDetails = (
         <div
@@ -82,12 +87,99 @@ export default function PriceInfo(props: propsIF) {
             <p>${usdValue}</p>
         </div>
     );
+
+    const limitPriceString = truncatedDisplayPrice ? truncatedDisplayPrice : '0';
+    // console.log({ limitPriceString });
+
+    const parsedLimitPriceNum = parseFloat(limitPriceString.replace(/,/, ''));
+    const baseDisplayFrontendNum = parseFloat(baseDisplayFrontend.replace(/,/, ''));
+    const quoteDisplayFrontendNum = parseFloat(quoteDisplayFrontend.replace(/,/, ''));
+
+    const isFillStarted = isBid ? quoteDisplayFrontendNum !== 0 : baseDisplayFrontendNum !== 0;
+
+    const approximateSellQty = isBid
+        ? isDenomBase
+            ? quoteDisplayFrontendNum / parsedLimitPriceNum
+            : quoteDisplayFrontendNum * parsedLimitPriceNum
+        : isDenomBase
+        ? baseDisplayFrontendNum * parsedLimitPriceNum
+        : baseDisplayFrontendNum / parsedLimitPriceNum;
+
+    // console.log({ approximateSellQty });
+
+    const approximateSellQtyTruncated =
+        approximateSellQty === 0
+            ? '0'
+            : approximateSellQty < 0.0001
+            ? approximateSellQty.toExponential(2)
+            : approximateSellQty < 2
+            ? approximateSellQty.toPrecision(3)
+            : approximateSellQty >= 100000
+            ? formatAmountOld(approximateSellQty)
+            : approximateSellQty.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // console.log({ parsedLimitPriceNum });
+
+    const approximateBuyQty = isFillStarted
+        ? isBid
+            ? isDenomBase
+                ? approximateSellQty * parsedLimitPriceNum
+                : approximateSellQty / parsedLimitPriceNum
+            : isDenomBase
+            ? approximateSellQty / parsedLimitPriceNum
+            : approximateSellQty * parsedLimitPriceNum
+        : isBid
+        ? isDenomBase
+            ? baseDisplayFrontendNum * parsedLimitPriceNum
+            : baseDisplayFrontendNum / parsedLimitPriceNum
+        : isDenomBase
+        ? quoteDisplayFrontendNum / parsedLimitPriceNum
+        : quoteDisplayFrontendNum * parsedLimitPriceNum;
+
+    // console.log({ approximateBuyQty });
+
+    const approximateBuyQtyTruncated =
+        approximateBuyQty === 0
+            ? '0'
+            : approximateBuyQty < 0.0001
+            ? approximateBuyQty.toExponential(2)
+            : approximateBuyQty < 2
+            ? approximateBuyQty.toPrecision(3)
+            : approximateBuyQty >= 100000
+            ? formatAmountOld(approximateBuyQty)
+            : approximateBuyQty.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // console.log({ isOrderFilled });
+    // console.log({ isBid });
+    // console.log({ quoteDisplayFrontend });
+    // console.log({ baseDisplayFrontend });
+    // console.log({ approximateBuyQtyTruncated });
+    // console.log({ approximateSellQtyTruncated });
+    // console.log({ truncatedDisplayPrice });
+
     const buyContent = (
         <div className={styles.buy_content}>
             <p>Buy:</p>
             <p>
-                {baseDisplayFrontend}
-                {baseTokenLogo ? (
+                {isOrderFilled
+                    ? isBid
+                        ? quoteDisplayFrontend
+                        : baseDisplayFrontend
+                    : approximateBuyQtyTruncated}
+
+                {isBid ? (
+                    quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt='quote token' />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                    )
+                ) : baseTokenLogo ? (
                     <img src={baseTokenLogo} alt='base token' />
                 ) : (
                     <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
@@ -99,11 +191,21 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.sell_content}>
             <p>Sell:</p>
             <p>
-                {quoteDisplayFrontend}
-                {quoteTokenLogo ? (
-                    <img src={quoteTokenLogo} alt='quote token' />
+                {isFillStarted
+                    ? approximateSellQtyTruncated
+                    : isBid
+                    ? baseDisplayFrontend
+                    : quoteDisplayFrontend}
+                {!isBid ? (
+                    quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt='quote token' />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                    )
+                ) : baseTokenLogo ? (
+                    <img src={baseTokenLogo} alt='base token' />
                 ) : (
-                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
                 )}
             </p>
         </div>
@@ -113,7 +215,7 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.price_status_content}>
             <section>
                 <p>Price:</p>
-                <h2>$1,571.90</h2>
+                <h2>{truncatedDisplayPrice}</h2>
             </section>
 
             <section>
