@@ -276,6 +276,7 @@ export default function OrderDetails(props: propsIF) {
     return (
         <div className={styles.order_details_container}>
             <OrderDetailsHeader
+                limitOrder={limitOrder}
                 onClose={props.closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
