@@ -2,7 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -154,17 +154,17 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
 
-    const top3Positions = useMemo(() => {
-        const sortByApy = (unsortedData: PositionIF[]) =>
-            [...unsortedData].sort((a, b) => b.apy - a.apy);
-        const dataByApy = sortByApy(rangeData);
-        const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
-        return topThree;
-    }, [rangeData]);
+    // const top3Positions = useMemo(() => {
+    //     const sortByApy = (unsortedData: PositionIF[]) =>
+    //         [...unsortedData].sort((a, b) => b.apy - a.apy);
+    //     const dataByApy = sortByApy(rangeData);
+    //     const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
+    //     return topThree;
+    // }, [rangeData]);
 
-    useEffect(() => {
-        false && console.log(top3Positions);
-    }, [top3Positions]);
+    // useEffect(() => {
+    //     false && console.log(top3Positions);
+    // }, [top3Positions]);
 
     useEffect(() => {
         if (
