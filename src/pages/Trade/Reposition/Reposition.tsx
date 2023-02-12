@@ -153,6 +153,12 @@ export default function Reposition(props: propsIF) {
     // const currentLocation = location.pathname;
     const [isModalOpen, openModal, closeModal] = useModal();
 
+    const handleModalClose = () => {
+        closeModal();
+        setNewRepositionTransactionHash('');
+        resetConfirmation();
+    };
+
     useEffect(() => {
         setRangeWidthPercentage(() => simpleRangeWidth);
     }, [simpleRangeWidth]);
@@ -212,6 +218,7 @@ export default function Reposition(props: propsIF) {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            navigate(redirectPath, { replace: true });
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
@@ -283,7 +290,7 @@ export default function Reposition(props: propsIF) {
                 />
             </div>
             {isModalOpen && (
-                <Modal onClose={closeModal} title=' Confirm Reposition'>
+                <Modal onClose={handleModalClose} title=' Confirm Reposition'>
                     <ConfirmRepositionModal
                         crocEnv={crocEnv}
                         position={position as PositionIF}
@@ -292,7 +299,7 @@ export default function Reposition(props: propsIF) {
                         currentPoolPriceDisplay={currentPoolPriceDisplay}
                         currentPoolPriceTick={currentPoolPriceTick}
                         rangeWidthPercentage={rangeWidthPercentage}
-                        onClose={closeModal}
+                        onClose={handleModalClose}
                         onSend={sendRepositionTransaction}
                         setMaxPrice={setMaxPrice}
                         setMinPrice={setMinPrice}
