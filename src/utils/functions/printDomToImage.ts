@@ -23,7 +23,7 @@ const saveAs = (uri: string, filename: string) => {
 const printDomToImage = (node: HTMLElement) => {
     // if (canvasRef.current) {
     domtoimage
-        .toPng(node)
+        .toJpeg(node)
         // eslint-disable-next-line
         .then(function (dataUrl: any) {
             const img = new Image();
