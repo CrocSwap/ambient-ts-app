@@ -219,17 +219,7 @@ export default function RoomDropdown(props: RoomProps) {
             }
         } else {
             if (selectedRoom === 'Global') {
-                return (
-                    <div
-                        className={styles.dropdown_item}
-                        key={defaultRooms[0].id}
-                        data-value={defaultRooms[0].value}
-                        onClick={(event: any) => handleRoomClick(event, defaultRooms[0].name)}
-                    >
-                        {handleShowRooms(defaultRooms[0].name)}
-                        {defaultRooms[0].name}
-                    </div>
-                );
+                return '';
             } else {
                 {
                     return defaultRooms.reverse().map((tab) => (

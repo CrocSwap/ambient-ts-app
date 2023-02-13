@@ -50,6 +50,7 @@ interface ChatProps {
     fullScreen?: boolean;
     userImageData: string[];
     appPage?: boolean;
+    username?: string | undefined | null;
 }
 
 export default function ChatPanel(props: ChatProps) {
@@ -59,6 +60,7 @@ export default function ChatPanel(props: ChatProps) {
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
+    const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
 
@@ -82,6 +84,18 @@ export default function ChatPanel(props: ChatProps) {
 
     const connectedAccountActive =
         !addressFromParams || resolvedAddress?.toLowerCase() === address?.toLowerCase();
+
+    const moderators = [
+        {
+            id: '63ea229604023acecd110f8f',
+            name: 'Umay',
+        },
+        // {
+        //     id: 101,
+        //     name: 'Current Pool',
+        //     value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+        // },
+    ];
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -148,6 +162,7 @@ export default function ChatPanel(props: ChatProps) {
                         return result;
                     });
                 } else {
+                    currentUser === moderators[0].id ? setModerator(true) : setModerator(true);
                     setCurrentUser(result.userData._id);
                     if (result.userData.ensName !== ensName) {
                         // eslint-disable-next-line
@@ -186,6 +201,7 @@ export default function ChatPanel(props: ChatProps) {
             messageEnd.current?.scrollHeight,
             messageEnd.current?.scrollHeight,
         );
+        setScrollDirection('Scroll Down');
     };
 
     const scrollToBottom = async () => {
@@ -199,7 +215,7 @@ export default function ChatPanel(props: ChatProps) {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
-        if (e.target.scrollTop === 0 || e.target.scrollTop === 1) {
+        if (0 <= e.target.scrollTop && e.target.scrollTop <= 1) {
             setNotification(0);
             setScrollDirection('Scroll Down');
         } else {
@@ -214,6 +230,9 @@ export default function ChatPanel(props: ChatProps) {
             messageEnd.current?.scrollHeight !== messageEnd.current?.scrollHeight
         ) {
             setScrollDirection('Scroll Up');
+        }
+        if (0 <= messageEnd.current?.scrollTop && messageEnd.current?.scrollTop <= 1) {
+            setScrollDirection('Scroll Down');
         }
     };
 
@@ -271,6 +290,7 @@ export default function ChatPanel(props: ChatProps) {
                             }
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
+                            moderator={moderator}
                         />
                         <hr />
                     </div>
