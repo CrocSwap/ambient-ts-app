@@ -162,7 +162,7 @@ export default function ChatPanel(props: ChatProps) {
                         return result;
                     });
                 } else {
-                    currentUser === moderators[0].id ? setModerator(true) : setModerator(true);
+                    currentUser === moderators[0].id ? setModerator(true) : setModerator(false);
                     setCurrentUser(result.userData._id);
                     if (result.userData.ensName !== ensName) {
                         // eslint-disable-next-line
