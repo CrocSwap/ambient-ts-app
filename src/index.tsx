@@ -21,11 +21,14 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 // import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
+// console.log(process.env.NODE_ENV);
+// console.log(process.env.REACT_APP_INFURA_KEY);
+
 const { chains, provider, webSocketProvider } = configureChains(
     [goerli, avalanche, avalancheFuji],
     [
         infuraProvider({
-            apiKey: process.env.REACT_APP_INFURA_ID || '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+            apiKey: process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
         }),
         // alchemyProvider({
         //     apiKey: process.env.REACT_APP_ALCHEMY_ID || '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS',
