@@ -5,6 +5,7 @@ import { useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
+import { FiDelete } from 'react-icons/fi';
 
 interface SentMessageProps {
     message: Message;
@@ -16,6 +17,7 @@ interface SentMessageProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
+    moderator: boolean;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -133,7 +135,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 />
                 {!isPosition && mentionedMessage()}
             </div>
+            {props.moderator ? <FiDelete color='red' /> : ''}
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
+
             {snackbarContent}
         </div>
     );

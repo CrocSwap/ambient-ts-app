@@ -18,8 +18,8 @@
 
 .position_box {
     background: #242F3F;
-    /* width: 99%;
-    height: 95%; */
+     width: 99%;
+   /* height: 95%; */
     border-radius: 4px;
     display: flex;
     flex-direction: column;

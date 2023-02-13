@@ -218,33 +218,23 @@ export default function RoomDropdown(props: RoomProps) {
                 }
             }
         } else {
-            if (selectedRoom === 'Global') {
-                return (
+            // if (selectedRoom === 'Global') {
+            //     return '';
+            // } else {
+            {
+                return defaultRooms.reverse().map((tab) => (
                     <div
                         className={styles.dropdown_item}
-                        key={defaultRooms[0].id}
-                        data-value={defaultRooms[0].value}
-                        onClick={(event: any) => handleRoomClick(event, defaultRooms[0].name)}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) => handleRoomClick(event, tab.name)}
                     >
-                        {handleShowRooms(defaultRooms[0].name)}
-                        {defaultRooms[0].name}
+                        {handleShowRooms(tab.name)}
+                        {tab.name}
                     </div>
-                );
-            } else {
-                {
-                    return defaultRooms.reverse().map((tab) => (
-                        <div
-                            className={styles.dropdown_item}
-                            key={tab.id}
-                            data-value={tab.value}
-                            onClick={(event: any) => handleRoomClick(event, tab.name)}
-                        >
-                            {handleShowRooms(tab.name)}
-                            {tab.name}
-                        </div>
-                    ));
-                }
+                ));
             }
+            // }
         }
     }
 
