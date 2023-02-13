@@ -4335,7 +4335,7 @@ export default function Chart(props: ChartData) {
     }, [location.pathname]);
 
     useEffect(() => {
-        if (rescale) {
+        if (rescale && !isLineDrag) {
             changeScale();
         }
     }, [ranges, limit]);
