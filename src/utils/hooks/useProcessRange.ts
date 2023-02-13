@@ -14,8 +14,10 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const isDenomBase = tradeData.isDenomBase;
 
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
+    const tokenAAddress = position.base;
+    const tokenBAddress = position.quote;
+    // const tokenAAddress = tradeData.tokenA.address;
+    // const tokenBAddress = tradeData.tokenB.address;
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>

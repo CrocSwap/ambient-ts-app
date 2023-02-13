@@ -4,7 +4,7 @@ import Row from '../../../Global/Row/Row';
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { AiOutlineDash } from 'react-icons/ai';
+import { AiOutlineLine } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
@@ -271,7 +271,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     {truncatedHighDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
-                    {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                    {!truncatedDisplayPrice ? <AiOutlineLine style={{ marginTop: '2px' }} /> : null}
                     {truncatedLowDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
@@ -285,7 +285,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     {truncatedLowDisplayPriceDenomByMoneyness
                         ? quoteCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
-                    {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                    {!truncatedDisplayPrice ? (
+                        <AiOutlineLine style={{ paddingTop: '6px' }} />
+                    ) : null}
                     {truncatedHighDisplayPriceDenomByMoneyness
                         ? quoteCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}

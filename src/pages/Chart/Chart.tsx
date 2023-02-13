@@ -5420,63 +5420,63 @@ export default function Chart(props: ChartData) {
         ) {
             const liqTextData = { totalValue: 0 };
 
-            const snap = (data: any, point: any) => {
-                if (point == undefined) return [];
-                const filtered =
-                    data.length > 1 ? data.filter((d: any) => d.liqPrices != null) : data;
-                const nearest = minimum(filtered, (d: any) => Math.abs(point - d.liqPrices))[1];
-                return nearest?.cumAverageUSD;
-            };
+            // const snap = (data: any, point: any) => {
+            //     if (point == undefined) return [];
+            //     const filtered =
+            //         data.length > 1 ? data.filter((d: any) => d.liqPrices != null) : data;
+            //     const nearest = minimum(filtered, (d: any) => Math.abs(point - d.liqPrices))[1];
+            //     return nearest?.cumAverageUSD;
+            // };
 
-            const minimum = (data: any, accessor: any) => {
-                return data
-                    .map(function (dataPoint: any, index: any) {
-                        return [accessor(dataPoint, index), dataPoint, index];
-                    })
-                    .reduce(
-                        function (accumulator: any, dataPoint: any) {
-                            return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
-                        },
-                        [Number.MAX_VALUE, null, -1],
-                    );
-            };
+            // const minimum = (data: any, accessor: any) => {
+            //     return data
+            //         .map(function (dataPoint: any, index: any) {
+            //             return [accessor(dataPoint, index), dataPoint, index];
+            //         })
+            //         .reduce(
+            //             function (accumulator: any, dataPoint: any) {
+            //                 return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+            //             },
+            //             [Number.MAX_VALUE, null, -1],
+            //         );
+            // };
 
             if (liqTooltipSelectedLiqBar.liqPrices != null) {
-                if (liqMode === 'Depth') {
-                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                        liqTextData.totalValue = snap(
-                            liquidityData.depthLiqAskData,
-                            liqTooltipSelectedLiqBar.liqPrices,
-                        );
-                    } else {
-                        liqTextData.totalValue = snap(
-                            liquidityData.depthLiqBidData,
-                            liqTooltipSelectedLiqBar.liqPrices,
-                        );
-                    }
+                // if (liqMode === 'Depth') {
+                //     if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                //         liqTextData.totalValue = snap(
+                //             liquidityData.depthLiqAskData,
+                //             liqTooltipSelectedLiqBar.liqPrices,
+                //         );
+                //     } else {
+                //         liqTextData.totalValue = snap(
+                //             liquidityData.depthLiqBidData,
+                //             liqTooltipSelectedLiqBar.liqPrices,
+                //         );
+                //     }
+                // } else {
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                    liquidityData.liqAskData.map((liqData: any) => {
+                        if (
+                            liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                            poolPriceDisplay > liqData.liqPrices
+                        ) {
+                            liqTextData.totalValue =
+                                liqTextData.totalValue + liqData.deltaAverageUSD;
+                        }
+                    });
                 } else {
-                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                        liquidityData.liqAskData.map((liqData: any) => {
-                            if (
-                                liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
-                                poolPriceDisplay > liqData.liqPrices
-                            ) {
-                                liqTextData.totalValue =
-                                    liqTextData.totalValue + liqData.deltaAverageUSD;
-                            }
-                        });
-                    } else {
-                        liquidityData.liqBidData.map((liqData: any) => {
-                            if (
-                                liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
-                                poolPriceDisplay < liqData.liqPrices
-                            ) {
-                                liqTextData.totalValue =
-                                    liqTextData.totalValue + liqData.deltaAverageUSD;
-                            }
-                        });
-                    }
+                    liquidityData.liqBidData.map((liqData: any) => {
+                        if (
+                            liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                            poolPriceDisplay < liqData.liqPrices
+                        ) {
+                            liqTextData.totalValue =
+                                liqTextData.totalValue + liqData.deltaAverageUSD;
+                        }
+                    });
                 }
+                // }
             }
             // const absoluteDifference = Math.abs(difference)
 

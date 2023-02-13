@@ -25,7 +25,7 @@ const { chains, provider, webSocketProvider } = configureChains(
     [goerli, avalanche, avalancheFuji],
     [
         infuraProvider({
-            apiKey: process.env.REACT_APP_INFURA_ID || '4a162c75bd514925890174ca13cdb6a2',
+            apiKey: process.env.REACT_APP_INFURA_ID || '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
         }),
         alchemyProvider({
             apiKey: process.env.REACT_APP_ALCHEMY_ID || '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS',

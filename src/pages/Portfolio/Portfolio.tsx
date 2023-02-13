@@ -32,7 +32,8 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
-    'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
+    // 'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
+    'wss://mainnet.infura.io/ws/v3/360ea5fda45b4a22883de8522ebd639e', // croc labs #2
 );
 
 interface propsIF {

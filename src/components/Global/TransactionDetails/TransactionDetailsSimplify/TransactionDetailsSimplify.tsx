@@ -48,8 +48,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         quoteTokenAddress,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-        // truncatedLowDisplayPrice,
-        // truncatedHighDisplayPrice,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
         truncatedDisplayPrice,
         // truncatedLowDisplayPriceDenomByMoneyness,
         // truncatedHighDisplayPriceDenomByMoneyness,
@@ -58,9 +58,13 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
 
-    // console.log({ tx });
+    console.log({ truncatedDisplayPrice });
+
+    console.log({ tx });
 
     const isBuy = tx.isBid || tx.isBuy;
+
+    const isSwap = tx.entityType === 'swap' || tx.entityType === 'limitOrder';
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
@@ -77,13 +81,13 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             const adressUrl =
                 baseTokenAddress === ZERO_ADDRESS
                     ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
-                    : `${blockExplorer}address/${baseTokenAddress}`;
+                    : `${blockExplorer}token/${baseTokenAddress}`;
             window.open(adressUrl);
         }
     }
     function handleOpenQuoteAddress() {
         if (txHash && blockExplorer) {
-            const adressUrl = `${blockExplorer}address/${quoteTokenAddress}`;
+            const adressUrl = `${blockExplorer}token/${quoteTokenAddress}`;
             window.open(adressUrl);
         }
     }
@@ -143,61 +147,68 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         {
             title: 'Transaction Type ',
             content: changeTypeDisplay,
-            explanation: 'this is explanation',
+            explanation: 'Transaction type explanation',
         },
 
-        { title: 'Wallet ', content: walletContent, explanation: 'this is explanation' },
+        {
+            title: 'Wallet ',
+            content: walletContent,
+            explanation: 'The account of the transaction owner',
+        },
 
-        { title: 'Transaction ', content: txContent, explanation: 'this is explanation' },
+        { title: 'Transaction ', content: txContent, explanation: 'The transaction hash' },
 
         {
             title: 'Time ',
             content: moment(tx.time * 1000).format('MM/DD/YYYY HH:mm'),
-            explanation: 'this is explanation',
+            explanation: 'The transaction confirmation time',
         },
 
         {
-            title: 'From Token ',
+            title: isSwap ? 'From Token ' : 'Token 1 ',
             content: isBuy ? baseTokenSymbol : quoteTokenSymbol,
-            explanation: 'this is explanation',
+            explanation: 'The symbol (short name) of the sell token',
         },
 
         {
-            title: 'From Address ',
+            title: isSwap ? 'From Address ' : 'Token 1 Address',
             content: isBuy ? baseAddressContent : quoteAddressContent,
-            explanation: 'this is explanation',
+            explanation: 'Address of the From/Sell Token',
         },
 
         {
-            title: 'From Qty ',
+            title: isSwap ? 'From Qty ' : 'Token 1 Qty',
             content: isBuy
                 ? `${baseDisplayFrontend} ${baseTokenSymbol}`
                 : `${quoteDisplayFrontend} ${quoteTokenSymbol}`,
-            explanation: 'this is explanation',
+            explanation: 'The quantity of the sell token (scaled by its decimals value)',
         },
 
         {
-            title: 'To Token ',
+            title: isSwap ? 'To Token ' : 'Token 2 ',
             content: !isBuy ? baseTokenSymbol : quoteTokenSymbol,
-            explanation: 'this is explanation',
+            explanation: 'The symbol (short name) of the buy token',
         },
 
         {
-            title: 'To Address ',
+            title: isSwap ? 'To Address ' : 'Token 2 Address',
             content: !isBuy ? baseAddressContent : quoteAddressContent,
-            explanation: 'this is explanation',
+            explanation: 'Address of the From/Sell Token',
         },
 
         {
-            title: 'To Qty ',
+            title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
             content: !isBuy
                 ? `${baseDisplayFrontend} ${baseTokenSymbol}`
                 : `${quoteDisplayFrontend} ${quoteTokenSymbol}`,
-            explanation: 'this is explanation',
+            explanation: 'The quantity of the to/buy token (scaled by its decimals value)',
         },
 
-        { title: 'Price ', content: truncatedDisplayPrice, explanation: 'this is explanation' },
-        { title: 'Value ', content: usdValue, explanation: 'this is explanation' },
+        {
+            title: isSwap ? 'Price ' : 'Low Price Boundary',
+            content: isSwap ? truncatedDisplayPrice : truncatedLowDisplayPrice,
+            explanation: isSwap ? 'The transaction price' : 'The low price boundary',
+        },
 
         // {
         //     title: 'Liquidity Provider Fee ',
@@ -207,6 +218,27 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
 
         // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
+
+    if (isSwap) {
+        infoContent.push({
+            title: 'Value ',
+            content: usdValue,
+            explanation: 'The appoximate US dollar value of the transaction',
+        });
+    } else {
+        infoContent.push(
+            {
+                title: 'High Price Boundary',
+                content: truncatedHighDisplayPrice,
+                explanation: 'The high price boundary',
+            },
+            {
+                title: 'Value ',
+                content: usdValue,
+                explanation: 'The appoximate US dollar value of the transaction',
+            },
+        );
+    }
 
     function InfoRow(props: ItemRowPropsIF) {
         const { title, content, explanation } = props;
