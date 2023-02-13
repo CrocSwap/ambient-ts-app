@@ -2712,10 +2712,10 @@ export default function Chart(props: ChartData) {
 
                     if (newLimitValue < 0) newLimitValue = 0;
 
-                    newLimitValue =
-                        poolPriceDisplay !== undefined && newLimitValue >= liquidityData.topBoundary
-                            ? liquidityData.topBoundary
-                            : newLimitValue;
+                    // newLimitValue =
+                    //     poolPriceDisplay !== undefined && newLimitValue >= liquidityData.topBoundary
+                    //         ? liquidityData.topBoundary
+                    //         : newLimitValue;
 
                     setLimit(() => {
                         return [{ name: 'Limit', value: newLimitValue }];
@@ -4848,11 +4848,11 @@ export default function Chart(props: ChartData) {
 
                         if (newLimitValue < 0) newLimitValue = 0;
 
-                        newLimitValue =
-                            poolPriceDisplay !== undefined &&
-                            newLimitValue > liquidityData.topBoundary
-                                ? liquidityData.topBoundary
-                                : newLimitValue;
+                        // newLimitValue =
+                        //     poolPriceDisplay !== undefined &&
+                        //     newLimitValue > liquidityData.topBoundary
+                        //         ? liquidityData.topBoundary
+                        //         : newLimitValue;
 
                         onBlurLimitRate(newLimitValue);
                     }
@@ -5648,11 +5648,7 @@ export default function Chart(props: ChartData) {
                                   maximumFractionDigits: 2,
                               });
 
-                    const limitValue =
-                        poolPriceDisplay !== undefined &&
-                        parseFloat(limitRateTruncated.replace(',', '')) >= liquidityData.topBoundary
-                            ? liquidityData.topBoundary
-                            : parseFloat(limitRateTruncated.replace(',', ''));
+                    const limitValue = parseFloat(limitRateTruncated.replace(',', ''));
 
                     reverseTokenForChart(limitPreviousData, limitValue);
                     setLimit(() => {
