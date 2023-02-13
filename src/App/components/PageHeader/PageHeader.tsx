@@ -226,11 +226,12 @@ export default function PageHeader(props: HeaderPropsIF) {
         const path = location.pathname;
 
         const pathNoLeadingSlash = path.slice(1);
-        // console.log({ pathNoLeadingSlash });
+        console.log({ pathNoLeadingSlash });
 
         const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
         const isAddressHex =
-            pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42;
+            (pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42) ||
+            (pathNoLeadingSlash?.startsWith('account/0x') && pathNoLeadingSlash?.length == 50);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
         // console.log({ isPathValidAddress });
@@ -238,11 +239,13 @@ export default function PageHeader(props: HeaderPropsIF) {
         if (pathNoLeadingSlash === 'account') {
             document.title = 'My Account ~ ambient.finance';
         } else if (isPathValidAddress) {
+            const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            // console.log({ pathNoPrefix });
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoLeadingSlash.length > 15
-                    ? trimString(pathNoLeadingSlash, 10, 3, '…')
-                    : pathNoLeadingSlash
-                : trimString(pathNoLeadingSlash, 6, 0, '…');
+                ? pathNoPrefix.length > 15
+                    ? trimString(pathNoPrefix, 10, 3, '…')
+                    : pathNoPrefix
+                : trimString(pathNoPrefix, 6, 0, '…');
             document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase

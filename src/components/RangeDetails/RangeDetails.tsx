@@ -321,6 +321,7 @@ export default function RangeDetails(props: propsIF) {
     return (
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
+                position={position}
                 onClose={closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
@@ -331,7 +332,12 @@ export default function RangeDetails(props: propsIF) {
             {showShareComponent ? (
                 shareComponent
             ) : (
-                <RangeDetailsSimplify account={account} position={position} />
+                <RangeDetailsSimplify
+                    account={account}
+                    position={position}
+                    baseFeesDisplay={baseFeesDisplay}
+                    quoteFeesDisplay={quoteFeesDisplay}
+                />
             )}
         </div>
     );

@@ -10,6 +10,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
+import { formatAmountOld } from '../../utils/numbers';
 
 interface propsIF {
     account: string;
@@ -22,15 +23,25 @@ export default function OrderDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const { limitOrder, account } = props;
-    const { isOrderFilled, baseDisplayFrontend, quoteDisplayFrontend } = useProcessOrder(
-        limitOrder,
-        account,
-    );
+
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
+    const {
+        // usdValue,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
+        isDenomBase,
+        baseTokenLogo,
+        quoteTokenLogo,
+        isOrderFilled,
+        truncatedDisplayPrice,
+    } = useProcessOrder(limitOrder, account);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
-    const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
+    const [usdValue, setUsdValue] = useState<string>('...');
+    // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<string>(baseDisplayFrontend);
     const [quoteCollateralDisplay, setQuoteCollateralDisplay] =
         useState<string>(quoteDisplayFrontend);
@@ -42,7 +53,77 @@ export default function OrderDetails(props: propsIF) {
     const baseTokenAddress = limitOrder.base;
     const quoteTokenAddress = limitOrder.quote;
     const positionType = 'knockout';
-    const isBid = !limitOrder.isBid ? 'false' : 'true';
+
+    // console.log({ limitOrder });
+
+    const isBid = limitOrder.isBid;
+
+    const limitPriceString = truncatedDisplayPrice ? truncatedDisplayPrice : '0';
+    // console.log({ limitPriceString });
+
+    const parsedLimitPriceNum = parseFloat(limitPriceString.replace(/,/, ''));
+    const baseDisplayFrontendNum = parseFloat(baseDisplayFrontend.replace(/,/, ''));
+    const quoteDisplayFrontendNum = parseFloat(quoteDisplayFrontend.replace(/,/, ''));
+
+    const isFillStarted = isBid ? quoteDisplayFrontendNum !== 0 : baseDisplayFrontendNum !== 0;
+
+    const approximateSellQty = isBid
+        ? isDenomBase
+            ? quoteDisplayFrontendNum / parsedLimitPriceNum
+            : quoteDisplayFrontendNum * parsedLimitPriceNum
+        : isDenomBase
+        ? baseDisplayFrontendNum * parsedLimitPriceNum
+        : baseDisplayFrontendNum / parsedLimitPriceNum;
+
+    // console.log({ approximateSellQty });
+
+    const approximateSellQtyTruncated =
+        approximateSellQty === 0
+            ? '0'
+            : approximateSellQty < 0.0001
+            ? approximateSellQty.toExponential(2)
+            : approximateSellQty < 2
+            ? approximateSellQty.toPrecision(3)
+            : approximateSellQty >= 100000
+            ? formatAmountOld(approximateSellQty)
+            : approximateSellQty.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // console.log({ parsedLimitPriceNum });
+
+    const approximateBuyQty = isFillStarted
+        ? isBid
+            ? isDenomBase
+                ? approximateSellQty * parsedLimitPriceNum
+                : approximateSellQty / parsedLimitPriceNum
+            : isDenomBase
+            ? approximateSellQty / parsedLimitPriceNum
+            : approximateSellQty * parsedLimitPriceNum
+        : isBid
+        ? isDenomBase
+            ? baseDisplayFrontendNum * parsedLimitPriceNum
+            : baseDisplayFrontendNum / parsedLimitPriceNum
+        : isDenomBase
+        ? quoteDisplayFrontendNum / parsedLimitPriceNum
+        : quoteDisplayFrontendNum * parsedLimitPriceNum;
+
+    // console.log({ approximateBuyQty });
+
+    const approximateBuyQtyTruncated =
+        approximateBuyQty === 0
+            ? '0'
+            : approximateBuyQty < 0.0001
+            ? approximateBuyQty.toExponential(2)
+            : approximateBuyQty < 2
+            ? approximateBuyQty.toPrecision(3)
+            : approximateBuyQty >= 100000
+            ? formatAmountOld(approximateBuyQty)
+            : approximateBuyQty.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
@@ -57,7 +138,7 @@ export default function OrderDetails(props: propsIF) {
                         user: user,
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
-                        isBid: isBid,
+                        isBid: isBid ? 'true' : 'false',
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: poolIndex.toString(),
@@ -152,69 +233,8 @@ export default function OrderDetails(props: propsIF) {
                     } else {
                         setUsdValue('0.00');
                     }
-
-                    // const baseFeeDisplayNum = positionStats.feesLiqBaseDecimalCorrected;
-                    // const quoteFeeDisplayNum = positionStats.feesLiqQuoteDecimalCorrected;
-
-                    // const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                    //     ? '0.00'
-                    //     : baseFeeDisplayNum < 0.0001
-                    //     ? baseFeeDisplayNum.toExponential(2)
-                    //     : baseFeeDisplayNum < 2
-                    //     ? baseFeeDisplayNum.toPrecision(3)
-                    //     : baseFeeDisplayNum >= 100000
-                    //     ? formatAmountOld(baseFeeDisplayNum)
-                    //     : // ? baseLiqDisplayNum.toExponential(2)
-                    //       baseFeeDisplayNum.toLocaleString(undefined, {
-                    //           minimumFractionDigits: 2,
-                    //           maximumFractionDigits: 2,
-                    //       });
-                    // setBaseFeesDisplay(baseFeeDisplayTruncated);
-
-                    // const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                    //     ? '0.00'
-                    //     : quoteFeeDisplayNum < 0.0001
-                    //     ? quoteFeeDisplayNum.toExponential(2)
-                    //     : quoteFeeDisplayNum < 2
-                    //     ? quoteFeeDisplayNum.toPrecision(3)
-                    //     : quoteFeeDisplayNum >= 100000
-                    //     ? formatAmountOld(quoteFeeDisplayNum)
-                    //     : quoteFeeDisplayNum.toLocaleString(undefined, {
-                    //           minimumFractionDigits: 2,
-                    //           maximumFractionDigits: 2,
-                    //       });
-                    // setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-
-                    // if (positionStats.apy) {
-                    //     setUpdatedPositionApy(positionStats.apy);
-                    // }
                 })
                 .catch(console.log);
-
-            // fetch(
-            //     apyCacheEndpoint +
-            //         new URLSearchParams({
-            //             user: user,
-            //             bidTick: bidTick.toString(),
-            //             askTick: askTick.toString(),
-            //             base: baseTokenAddress,
-            //             quote: quoteTokenAddress,
-            //             poolIdx: poolIndex.toString(),
-            //             chainId: chainId,
-            //             positionType: position.positionType,
-            //             concise: 'true',
-            //         }),
-            // )
-            //     .then((response) => response?.json())
-            //     .then((json) => {
-            //         const results = json?.data.results;
-            //         const apr = results.apy;
-
-            //         if (apr) {
-            //             setUpdatedPositionApy(apr);
-            //         }
-            //     })
-            //     .catch(console.log);
         }
     }, [lastBlock]);
 
@@ -260,9 +280,21 @@ export default function OrderDetails(props: propsIF) {
                         limitOrder={limitOrder}
                         controlItems={controlItems}
                         usdValue={usdValue}
+                        isBid={isBid}
+                        isDenomBase={isDenomBase}
                         baseCollateralDisplay={baseCollateralDisplay}
                         quoteCollateralDisplay={quoteCollateralDisplay}
                         isOrderFilled={isClaimable}
+                        approximateSellQtyTruncated={approximateSellQtyTruncated}
+                        approximateBuyQtyTruncated={approximateBuyQtyTruncated}
+                        baseDisplayFrontend={baseDisplayFrontend}
+                        quoteDisplayFrontend={quoteDisplayFrontend}
+                        quoteTokenLogo={quoteTokenLogo}
+                        baseTokenLogo={baseTokenLogo}
+                        baseTokenSymbol={baseTokenSymbol}
+                        quoteTokenSymbol={quoteTokenSymbol}
+                        isFillStarted={isFillStarted}
+                        truncatedDisplayPrice={truncatedDisplayPrice}
                     />
                 </div>
                 <div className={styles.right_container}>
@@ -276,6 +308,7 @@ export default function OrderDetails(props: propsIF) {
     return (
         <div className={styles.order_details_container}>
             <OrderDetailsHeader
+                limitOrder={limitOrder}
                 onClose={props.closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
@@ -287,7 +320,26 @@ export default function OrderDetails(props: propsIF) {
             {showShareComponent ? (
                 shareComponent
             ) : (
-                <OrderDetailsSimplify account={account} limitOrder={limitOrder} />
+                <OrderDetailsSimplify
+                    account={account}
+                    limitOrder={limitOrder}
+                    usdValue={usdValue}
+                    isBid={isBid}
+                    isDenomBase={isDenomBase}
+                    baseCollateralDisplay={baseCollateralDisplay}
+                    quoteCollateralDisplay={quoteCollateralDisplay}
+                    isOrderFilled={isClaimable}
+                    approximateSellQtyTruncated={approximateSellQtyTruncated}
+                    approximateBuyQtyTruncated={approximateBuyQtyTruncated}
+                    baseDisplayFrontend={baseDisplayFrontend}
+                    quoteDisplayFrontend={quoteDisplayFrontend}
+                    quoteTokenLogo={quoteTokenLogo}
+                    baseTokenLogo={baseTokenLogo}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    isFillStarted={isFillStarted}
+                    truncatedDisplayPrice={truncatedDisplayPrice}
+                />
             )}
         </div>
     );

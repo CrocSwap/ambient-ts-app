@@ -17,13 +17,15 @@ interface ItemRowPropsIF {
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
     account: string;
+    baseFeesDisplay: string | undefined;
+    quoteFeesDisplay: string | undefined;
 }
 export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
-    const { account, position } = props;
+    const { account, position, baseFeesDisplay, quoteFeesDisplay } = props;
 
     const {
         userNameToDisplay,
-        posHashTruncated,
+        // posHashTruncated,
         posHash,
         // blockExplorer,
         isOwnerActiveAccount,
@@ -46,37 +48,39 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         quoteDisplayFrontend,
     } = useProcessRange(position, account);
 
+    // console.log({ isAmbient });
+
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
         window.open(walletUrl);
     }
-    function handleOpenExplorer() {
-        if (posHash && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${posHash}`;
-            window.open(explorerUrl);
-        }
-    }
+    // function handleOpenExplorer() {
+    //     if (posHash && blockExplorer) {
+    //         const explorerUrl = `${blockExplorer}tx/${posHash}`;
+    //         window.open(explorerUrl);
+    //     }
+    // }
     function handleOpenBaseAddress() {
         if (posHash && blockExplorer) {
             const adressUrl =
                 tokenAAddressLowerCase === ZERO_ADDRESS
                     ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
-                    : `${blockExplorer}address/${tokenAAddressLowerCase}`;
+                    : `${blockExplorer}token/${tokenAAddressLowerCase}`;
             window.open(adressUrl);
         }
     }
     function handleOpenQuoteAddress() {
         if (posHash && blockExplorer) {
-            const adressUrl = `${blockExplorer}address/${tokenBAddressLowerCase}`;
+            const adressUrl = `${blockExplorer}token/${tokenBAddressLowerCase}`;
             window.open(adressUrl);
         }
     }
-    const txContent = (
-        <div className={styles.link_row} onClick={handleOpenExplorer}>
-            <p>{posHashTruncated}</p>
-            <RiExternalLinkLine />
-        </div>
-    );
+    // const txContent = (
+    //     <div className={styles.link_row} onClick={handleOpenExplorer}>
+    //         <p>{posHashTruncated}</p>
+    //         <RiExternalLinkLine />
+    //     </div>
+    // );
 
     const walletContent = (
         <div className={styles.link_row} onClick={handleOpenWallet}>
@@ -104,84 +108,106 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
     // const fillTime = moment(position.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const infoContent = [
-        { title: 'Position Type ', content: 'Range', explanation: 'this is explanation' },
+        {
+            title: 'Position Type ',
+            content: isAmbient ? 'Ambient' : 'Range',
+            explanation: 'e.g. Range / Ambient ',
+        },
 
-        { title: 'Wallet ', content: walletContent, explanation: 'this is explanation' },
+        {
+            title: 'Wallet ',
+            content: walletContent,
+            explanation: 'The account of the position owner',
+        },
 
-        { title: 'Add Transaction ', content: txContent, explanation: 'this is explanation' },
-        { title: 'Remove Transaction ', content: txContent, explanation: 'this is explanation' },
+        // { title: 'Add Transaction ', content: txContent, explanation: 'this is explanation' },
+        // { title: 'Remove Transaction ', content: txContent, explanation: 'this is explanation' },
 
-        { title: 'Add Time ', content: submissionTime, explanation: 'this is explanation' },
-        { title: 'Remove Time ', content: 'remove time', explanation: 'this is explanation' },
-        { title: 'Status ', content: status, explanation: 'this is explanation' },
+        {
+            title: 'Add Time ',
+            content: submissionTime,
+            explanation: 'The time the owner first added a range at these prices',
+        },
+        // { title: 'Remove Time ', content: 'remove time', explanation: 'this is explanation' },
+        {
+            title: 'Status ',
+            content: status,
+            explanation: 'e.g. Ambient / In Range / Out of Range',
+        },
 
-        { title: 'Token 1 ', content: baseTokenSymbol, explanation: 'this is explanation' },
+        { title: 'Token 1 ', content: baseTokenSymbol, explanation: 'Token #1 in the token pair' },
 
         {
             title: 'Token 1 Address ',
             content: baseAddressContent,
-            explanation: 'this is explanation',
+            explanation: 'Address of token #1 in the token pair',
         },
 
         {
             title: 'Token 1 Qty ',
-            content: baseDisplayFrontend + baseTokenSymbol,
-            explanation: 'this is explanation',
+            content: baseDisplayFrontend + ' ' + baseTokenSymbol,
+            explanation:
+                'The quantity of token #1 in the token pair (scaled by its decimals value)',
         },
 
-        { title: 'Token 2 ', content: quoteTokenSymbol, explanation: 'this is explanation' },
+        { title: 'Token 2 ', content: quoteTokenSymbol, explanation: 'Token #2 in the token pair' },
 
         {
             title: 'Token 2 Address ',
             content: quoteAddressContent,
-            explanation: 'this is explanation',
+            explanation: 'Address of token #2 in the token pair',
         },
 
         {
             title: 'Token 2 Qty ',
-            content: quoteDisplayFrontend + quoteTokenSymbol,
-            explanation: 'this is explanation',
+            content: quoteDisplayFrontend + ' ' + quoteTokenSymbol,
+            explanation:
+                'The quantity of token #2 in the token pair (scaled by its decimals value)',
         },
         {
             title: 'Range Min ',
             content: ambientOrMin,
-            explanation: 'this is explanation',
+            explanation: 'The low price boundary of the range',
         },
         {
             title: 'Range Max ',
             content: ambientOrMax,
-            explanation: 'this is explanation',
+            explanation: 'The high price boundary of the range',
         },
         {
             title: 'APR',
-            content: apyString + '%',
-            explanation: 'this is explanation',
+            content: apyString,
+            explanation: 'The estimated APR of the position based on fees earned',
         },
 
-        {
-            title: 'Token 1 Total Fees Earned ',
-            content: 'T1 fees earned',
-            explanation: 'this is explanation',
-        },
-        {
-            title: 'Token 2 Total Fees Earned ',
-            content: 'T2 fees earned',
-            explanation: 'this is explanation',
-        },
+        // {
+        //     title: 'Token 1 Total Fees Earned ',
+        //     content: 'T1 fees earned',
+        //     explanation: 'this is explanation',
+        // },
+        // {
+        //     title: 'Token 2 Total Fees Earned ',
+        //     content: 'T2 fees earned',
+        //     explanation: 'this is explanation',
+        // },
         {
             title: 'Token 1 Unclaimed Fees ',
-            content: 'T1 unclaimed fees',
-            explanation: 'this is explanation',
+            content: baseFeesDisplay + ' ' + baseTokenSymbol,
+            explanation: 'Token #1 unclaimed fees',
         },
         {
             title: 'Token 2 Unclaimed Fees ',
-            content: 'T2 unclaimed fees',
-            explanation: 'this is explanation',
+            content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
+            explanation: 'Token #2 unclaimed fees',
         },
-        { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
-        { title: 'Value ', content: usdValue, explanation: 'this is explanation' },
+        // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
+        {
+            title: 'Value ',
+            content: '$' + usdValue,
+            explanation: 'The appoximate US dollar value of the limit order',
+        },
 
-        { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
+        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
     function InfoRow(props: ItemRowPropsIF) {
