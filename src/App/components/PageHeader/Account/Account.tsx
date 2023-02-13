@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, Dispatch, SetStateAction, useRef, useEffect } from 'react';
-import { FiMoreHorizontal, FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import Local Files
 import styles from './Account.module.css';
@@ -10,13 +10,12 @@ import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 // import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
-import { CgProfile } from 'react-icons/cg';
-import { NavLink } from 'react-router-dom';
-import { AiOutlineLogout } from 'react-icons/ai';
+
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import WalletDropdown from './WalletDropdown/WalletDropdown';
 // import { formatAmountOld } from '../../../../utils/numbers';
 
 interface AccountPropsIF {
@@ -133,63 +132,23 @@ export default function Account(props: AccountPropsIF) {
                 </p>
             </div>
 
-            <div className={walletWrapperStyle}>
-                <div className={styles.name_display_container}>
-                    <div className={styles.name_display}>
-                        <h2>{ensName !== '' ? ensName : props.accountAddress}</h2>
-                        <a
-                            target='_blank'
-                            rel='noreferrer'
-                            href={`https://goerli.etherscan.io/address/${props.accountAddressFull}`}
-                        >
-                            <FiExternalLink />
-                        </a>
-                        <div onClick={handleCopyAddress}>
-                            <FiCopy />
-                        </div>
-                    </div>
-                    <div className={styles.wallet_display}>
-                        <p>{connector?.name}</p>
-                        <p>{props.accountAddress}</p>
-                    </div>
-                </div>
-
-                <div className={styles.ambient_card_container}>
-                    <div className={styles.ambient_card_content}>
-                        <div className={styles.token_qty_display}>
-                            <div className={styles.token_display}>
-                                <img
-                                    src='https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'
-                                    alt=''
-                                />
-                                <h2>ETH</h2>
-                            </div>
-
-                            <div className={styles.value_display}>
-                                <h2>
-                                    {isUserLoggedIn
-                                        ? nativeBalance
-                                            ? 'Ξ ' + ethQuantityInWalletAndDeposits
-                                            : '...'
-                                        : ''}
-                                </h2>
-                                <p>{`${ethMainnetUsdValueTruncated}`}</p>
-                                {/* <p>$63,853.924</p> */}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.actions_container}>
-                    <button onClick={clickLogout}>
-                        {' '}
-                        <AiOutlineLogout color='var(--negative)' /> Disconnect
-                    </button>
-                    <NavLink to={'/account'}>
-                        <CgProfile />
-                        My Profile
-                    </NavLink>
-                </div>
-            </div>
+            <WalletDropdown
+                ensName={ensName !== '' ? ensName : ''}
+                accountAddress={props.accountAddress}
+                handleCopyAddress={handleCopyAddress}
+                connectorName={connector?.name}
+                clickLogout={clickLogout}
+                walletWrapperStyle={walletWrapperStyle}
+                ethAmount={
+                    isUserLoggedIn
+                        ? nativeBalance
+                            ? 'Ξ ' + ethQuantityInWalletAndDeposits
+                            : '...'
+                        : ''
+                }
+                ethValue={`${ethMainnetUsdValueTruncated}`}
+                accountAddressFull={props.accountAddressFull}
+            />
         </section>
     );
 
