@@ -4260,8 +4260,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(d3Container.current?.offsetWidth),
     ]);
 
-    // autoScaleF
-    useEffect(() => {
+    function changeScale() {
         if (poolPriceDisplay) {
             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
             const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -4328,7 +4327,18 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
+    }
+
+    // autoScaleF
+    useEffect(() => {
+        changeScale();
     }, [location.pathname]);
+
+    useEffect(() => {
+        if (rescale) {
+            changeScale();
+        }
+    }, [ranges, limit]);
 
     useEffect(() => {
         const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
