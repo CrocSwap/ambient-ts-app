@@ -2477,6 +2477,9 @@ export default function Chart(props: ChartData) {
                                 rangeWidthPercentage =
                                     Math.abs(pinnedTick - currentPoolPriceTick) / 100;
 
+                                rangeWidthPercentage =
+                                    rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
+
                                 const offset = rangeWidthPercentage * 100;
                                 // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
@@ -2503,6 +2506,9 @@ export default function Chart(props: ChartData) {
 
                                 rangeWidthPercentage =
                                     Math.abs(currentPoolPriceTick - pinnedTick) / 100;
+
+                                rangeWidthPercentage =
+                                    rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                                 const offset = rangeWidthPercentage * 100;
 
                                 const lowTick = currentPoolPriceTick - offset;
@@ -4260,8 +4266,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(d3Container.current?.offsetWidth),
     ]);
 
-    // autoScaleF
-    useEffect(() => {
+    function changeScale() {
         if (poolPriceDisplay) {
             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
             const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -4328,7 +4333,18 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
+    }
+
+    // autoScaleF
+    useEffect(() => {
+        changeScale();
     }, [location.pathname]);
+
+    useEffect(() => {
+        if (rescale && !isLineDrag) {
+            changeScale();
+        }
+    }, [ranges, limit]);
 
     useEffect(() => {
         const min = ranges.filter((target: any) => target.name === 'Min')[0].value;
@@ -4558,6 +4574,9 @@ export default function Chart(props: ChartData) {
 
         if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
 
+        const averageVolume =
+            volumeData.reduce((a: any, b: any) => a + b.value, 0) /
+            (volumeData.filter((item) => item.value !== 0).length * 0.75);
         const nearest = snapForCandle(event);
         const dateControl =
             nearest?.date.getTime() > startDate.getTime() &&
@@ -4570,7 +4589,10 @@ export default function Chart(props: ChartData) {
         );
         const selectedVolumeDataValue = selectedVolumeData?.value;
         const isSelectedVolume = selectedVolumeDataValue
-            ? yValueVolume <= selectedVolumeDataValue && yValueVolume !== 0
+            ? yValueVolume <=
+                  (selectedVolumeDataValue < averageVolume
+                      ? averageVolume
+                      : selectedVolumeDataValue) && yValueVolume !== 0
                 ? true
                 : false
             : false;
