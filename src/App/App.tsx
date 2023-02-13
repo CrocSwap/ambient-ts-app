@@ -1895,7 +1895,7 @@ export default function App() {
         (async () => {
             if (crocEnv && account && tokenAAddress) {
                 try {
-                    console.log('checking token a allowance');
+                    // console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
                     // console.log({ newTokenAllowance });
@@ -1916,7 +1916,7 @@ export default function App() {
         (async () => {
             if (crocEnv && tokenBAddress && tokenBDecimals && account) {
                 try {
-                    console.log('checking token b allowance');
+                    // console.log('checking token b allowance');
                     const allowance = await crocEnv.token(tokenBAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenBDecimals);
                     if (tokenBAllowance !== newTokenAllowance) {
