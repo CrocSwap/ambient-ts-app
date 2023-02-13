@@ -332,7 +332,12 @@ export default function RangeDetails(props: propsIF) {
             {showShareComponent ? (
                 shareComponent
             ) : (
-                <RangeDetailsSimplify account={account} position={position} />
+                <RangeDetailsSimplify
+                    account={account}
+                    position={position}
+                    baseFeesDisplay={baseFeesDisplay}
+                    quoteFeesDisplay={quoteFeesDisplay}
+                />
             )}
         </div>
     );

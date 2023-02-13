@@ -157,7 +157,7 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
         {
             title: 'Position Type ',
             content: 'Limit',
-            explanation: 'e.g. Limit / Range / Ambient ',
+            explanation: 'A limit order is a type of range position ',
         },
 
         {
