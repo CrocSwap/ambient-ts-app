@@ -134,7 +134,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             setNewQuoteQtyDisplay(truncateString(quote));
         });
     }, [
-        useDebounce(pinnedLowTick, 500), // Debounce beause effect involves on-chain call
+        crocEnv,
+        useDebounce(pinnedLowTick, 500), // Debounce because effect involves on-chain call
         useDebounce(pinnedHighTick, 500),
         position.baseSymbol,
         position.quoteSymbol,
