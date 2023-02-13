@@ -21,6 +21,8 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 // import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
+console.log(process.env.REACT_APP_INFURA_ID);
+
 const { chains, provider, webSocketProvider } = configureChains(
     [goerli, avalanche, avalancheFuji],
     [
