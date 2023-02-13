@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -69,7 +69,6 @@ export default function Reposition(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-
         setTxErrorMessage('');
     };
 
@@ -85,17 +84,20 @@ export default function Reposition(props: propsIF) {
     // will try to preserve current params, will use default path otherwise
     const redirectPath = '/trade/range/' + (params ?? '');
 
-    // log in console if conditions are such to trigger an automatic URL redirect
-    // this will help troubleshoot if we ever break functionality to link this page
-    console.assert(
-        location.state,
-        `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in location.state as returned by the useLocation() hook. Actual value received is <<${location.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
-    );
-
     // navigate the user to the redirect URL path if location.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link
     // ... inside the app, but will be empty if they navigated manually to the path
-    location.state || navigate(redirectPath, { replace: true });
+    if (!location.state) {
+        // log in console if conditions are such to trigger an automatic URL redirect
+        // this will help troubleshoot if we ever break functionality to link this page
+        console.assert(
+            location.state,
+            `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in location.state as returned by the useLocation() hook. Actual value received is <<${location.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
+        );
+        // IMPORTANT!! we must use this pathway, other implementations will not immediately
+        // ... stop code in the rest of the file from running
+        return <Navigate to={redirectPath} replace />;
+    }
 
     // position data from the location object
     const { position } = location.state as { position: PositionIF };
