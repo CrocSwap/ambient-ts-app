@@ -168,6 +168,7 @@ export default function PositionBox(props: propsIF) {
             {hashMsg && hashMsg.split(' ') && trimString(hashMsg, 6, 4, '…')} copied
         </SnackbarComponent>
     );
+
     function handleCopyAddress() {
         const hashMsg = message.split(' ').find((item) => item.includes('0x'));
 
