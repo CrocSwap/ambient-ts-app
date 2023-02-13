@@ -2711,7 +2711,7 @@ export default function App() {
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         currentLocation !== '/app/chat' &&
-        currentLocation !== '/app/chat2' &&
+        currentLocation !== '/chat' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2729,7 +2729,7 @@ export default function App() {
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
         currentLocation == '/app/chat' ||
-        currentLocation == '/app/chat2' ||
+        currentLocation == '/chat' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2996,7 +2996,7 @@ export default function App() {
                             }
                         />
                         <Route
-                            path='app/chat2'
+                            path='chat'
                             element={
                                 <ChatPanel
                                     chatStatus={true}
@@ -3260,7 +3260,7 @@ export default function App() {
 
                 {currentLocation !== '/' &&
                     currentLocation !== '/app/chat' &&
-                    currentLocation !== '/app/chat2' && (
+                    currentLocation !== '/chat' && (
                         <ChatPanel
                             chatStatus={chatStatus}
                             onClose={() => {

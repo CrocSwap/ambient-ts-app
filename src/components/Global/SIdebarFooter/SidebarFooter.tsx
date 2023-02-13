@@ -30,7 +30,7 @@ export default function SidebarFooter() {
         { title: 'Swap', destination: '/swap' + paramsSlug, icon: RiSwapBoxFill },
         { title: 'Trade', destination: tradeDestination + paramsSlug, icon: GiTrade },
         { title: 'Account', destination: '/account', icon: MdAccountBox },
-        { title: 'Chat', destination: '/app/chat2', icon: BsFillChatDotsFill },
+        { title: 'Chat', destination: '/chat', icon: BsFillChatDotsFill },
     ];
 
     return (

@@ -10,6 +10,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import { useMemo } from 'react';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { useLocation } from 'react-router-dom';
 
 type ItemIF = {
     slug: string;
@@ -43,8 +44,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         // quoteDisplay,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-        // truncatedLowDisplayPrice,
-        // truncatedHighDisplayPrice,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
         truncatedDisplayPrice,
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
@@ -52,6 +53,10 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
+
+    const { pathname } = useLocation();
+
+    const isOnTradeRoute = pathname.includes('trade');
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
@@ -261,8 +266,35 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const PriceDisplay = (
         <div className={styles.min_max_price}>
             <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
+            {isOnTradeRoute ? (
+                isDenomBase ? (
+                    <span className={styles.min_price}>
+                        {truncatedDisplayPrice ? quoteCharacter + truncatedDisplayPrice : null}
 
-            {isBaseTokenMoneynessGreaterOrEqual ? (
+                        {truncatedLowDisplayPrice
+                            ? quoteCharacter + truncatedLowDisplayPrice
+                            : null}
+                        {!truncatedDisplayPrice ? (
+                            <AiOutlineLine style={{ paddingTop: '6px' }} />
+                        ) : null}
+                        {truncatedHighDisplayPrice
+                            ? quoteCharacter + truncatedHighDisplayPrice
+                            : null}
+                    </span>
+                ) : (
+                    <span className={styles.min_price}>
+                        {truncatedDisplayPrice ? baseCharacter + truncatedDisplayPrice : null}
+
+                        {truncatedHighDisplayPrice
+                            ? baseCharacter + truncatedHighDisplayPrice
+                            : null}
+                        {!truncatedDisplayPrice ? (
+                            <AiOutlineLine style={{ paddingTop: '6px' }} />
+                        ) : null}
+                        {truncatedLowDisplayPrice ? baseCharacter + truncatedLowDisplayPrice : null}
+                    </span>
+                )
+            ) : isBaseTokenMoneynessGreaterOrEqual ? (
                 <span className={styles.min_price}>
                     {truncatedDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedDisplayPriceDenomByMoneyness
@@ -271,7 +303,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     {truncatedHighDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
-                    {!truncatedDisplayPrice ? <AiOutlineLine style={{ marginTop: '2px' }} /> : null}
+                    {!truncatedDisplayPrice ? (
+                        <AiOutlineLine style={{ paddingTop: '6px' }} />
+                    ) : null}
                     {truncatedLowDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}

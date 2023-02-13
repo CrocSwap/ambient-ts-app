@@ -31,6 +31,7 @@
     gap: 0.5rem;
     width: 350px;
     height: 100px;
+    border-radius: 4px;
     cursor: default;
     transition: all var(--animation-speed) ease-in-out;
 }

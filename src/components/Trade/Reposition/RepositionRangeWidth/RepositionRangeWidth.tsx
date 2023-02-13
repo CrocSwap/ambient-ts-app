@@ -90,7 +90,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                         size={28}
                         aria-labelledby='reposition-input slider'
                         id='reposition-input-slider-range'
-                        min='5'
+                        min='1'
                         max='100'
                         step='1'
                         defaultValue={rangeWidthPercentage}
