@@ -16,23 +16,58 @@ interface ItemRowPropsIF {
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
     account: string;
+
+    baseCollateralDisplay: string | undefined;
+    quoteCollateralDisplay: string | undefined;
+
+    usdValue: string | undefined;
+    isDenomBase: boolean;
+    isOrderFilled: boolean;
+    isBid: boolean;
+    approximateSellQtyTruncated: string;
+    approximateBuyQtyTruncated: string;
+    baseDisplayFrontend: string;
+    quoteDisplayFrontend: string;
+    quoteTokenLogo: string;
+    baseTokenLogo: string;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    isFillStarted: boolean;
+    truncatedDisplayPrice: string | undefined;
 }
 export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
-    const { account, limitOrder } = props;
+    const {
+        isBid,
+        account,
+        approximateSellQtyTruncated,
+        approximateBuyQtyTruncated,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
+        isOrderFilled,
+        // quoteTokenLogo,
+        // baseTokenLogo,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isFillStarted,
+        // truncatedDisplayPrice,
+        // isDenomBase,
+        usdValue,
+        limitOrder,
+    } = props;
 
     const {
         userNameToDisplay,
-        posHashTruncated,
+        // posHashTruncated,
         posHash,
         // blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        usdValue,
-        baseTokenSymbol,
-        quoteTokenSymbol,
+        // usdValue,
+        // baseTokenSymbol,
+        // quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
-        isOrderFilled,
+        // isOrderFilled,
 
         // isDenomBase,
         // baseTokenLogo,
@@ -48,8 +83,7 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
         blockExplorer,
         baseTokenAddressLowerCase,
         quoteTokenAddressLowerCase,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+
         // truncatedLowDisplayPrice,
         // truncatedHighDisplayPrice,
         // truncatedDisplayPrice,
@@ -63,36 +97,36 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
     // console.log({ limitOrder });
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
-    function handleOpenExplorer() {
-        if (posHash && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${posHash}`;
-            window.open(explorerUrl);
-        }
-    }
+    // function handleOpenExplorer() {
+    //     if (posHash && blockExplorer) {
+    //         const explorerUrl = `${blockExplorer}tx/${posHash}`;
+    //         window.open(explorerUrl);
+    //     }
+    // }
     function handleOpenBaseAddress() {
         if (posHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddressLowerCase === ZERO_ADDRESS
                     ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
-                    : `${blockExplorer}address/${baseTokenAddressLowerCase}`;
+                    : `${blockExplorer}token/${baseTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
     }
     function handleOpenQuoteAddress() {
         if (posHash && blockExplorer) {
-            const adressUrl = `${blockExplorer}address/${quoteTokenAddressLowerCase}`;
+            const adressUrl = `${blockExplorer}token/${quoteTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
     }
-    const txContent = (
-        <div className={styles.link_row} onClick={handleOpenExplorer}>
-            <p>{posHashTruncated}</p>
-            <RiExternalLinkLine />
-        </div>
-    );
+    // const txContent = (
+    //     <div className={styles.link_row} onClick={handleOpenExplorer}>
+    //         <p>{posHashTruncated}</p>
+    //         <RiExternalLinkLine />
+    //     </div>
+    // );
 
     const walletContent = (
         <div className={styles.link_row} onClick={handleOpenWallet}>
@@ -115,54 +149,100 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
     );
 
     const submissionTime = moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm');
-    const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
+    // const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const status = isOrderFilled ? 'Filled' : 'Not Filled';
 
     const infoContent = [
-        { title: 'Position Type ', content: 'Limit', explanation: 'this is explanation' },
+        {
+            title: 'Position Type ',
+            content: 'Limit',
+            explanation: 'e.g. Limit / Range / Ambient ',
+        },
 
-        { title: 'Wallet ', content: walletContent, explanation: 'this is explanation' },
+        {
+            title: 'Wallet ',
+            content: walletContent,
+            explanation: 'The account of the limit owner',
+        },
 
-        { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
-        { title: 'Claim Transaction ', content: txContent, explanation: 'this is explanation' },
+        // { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
+        // { title: 'Claim Transaction ', content: txContent, explanation: 'this is explanation' },
 
-        { title: 'Submit Time ', content: submissionTime, explanation: 'this is explanation' },
-        { title: 'Fill Time ', content: fillTime, explanation: 'this is explanation' },
-        { title: 'Status ', content: status, explanation: 'this is explanation' },
+        {
+            title: 'Submit Time ',
+            content: submissionTime,
+            explanation: 'The time the owner first added a limit at this price',
+        },
+        // { title: 'Fill Time ', content: fillTime, explanation: 'this is explanation' },
+        { title: 'Status ', content: status, explanation: 'The current fill status of the order.' },
 
-        { title: 'From Token ', content: baseTokenSymbol, explanation: 'this is explanation' },
+        {
+            title: 'From Token ',
+            content: isBid ? baseTokenSymbol : quoteTokenSymbol,
+            explanation: 'The symbol (short name) of the sell token',
+        },
 
-        { title: 'From Address ', content: baseAddressContent, explanation: 'this is explanation' },
+        {
+            title: 'From Address ',
+            content: isBid ? baseAddressContent : quoteAddressContent,
+            explanation: 'Address of the From/Sell Token',
+        },
 
         {
             title: 'From Qty ',
-            content: baseDisplayFrontend + baseTokenSymbol,
-            explanation: 'this is explanation',
+            content: isBid
+                ? isFillStarted
+                    ? approximateSellQtyTruncated
+                    : baseDisplayFrontend
+                : // : baseDisplayFrontend + ' ' + baseTokenSymbol
+                isFillStarted
+                ? approximateSellQtyTruncated
+                : quoteDisplayFrontend,
+            explanation: 'The quantity of the sell token (scaled by its decimals value)',
         },
 
-        { title: 'To Token ', content: quoteTokenSymbol, explanation: 'this is explanation' },
+        {
+            title: 'To Token ',
+            content: isBid ? quoteTokenSymbol : baseTokenSymbol,
+            explanation: 'The symbol (short name) of the buy token',
+        },
 
-        { title: 'To Address ', content: quoteAddressContent, explanation: 'this is explanation' },
+        {
+            title: 'To Address ',
+            content: isBid ? quoteAddressContent : baseAddressContent,
+            explanation: 'Address of the From/Sell Token',
+        },
 
         {
             title: 'To Qty ',
-            content: quoteDisplayFrontend + quoteTokenSymbol,
-            explanation: 'this is explanation',
+            content: isBid
+                ? isOrderFilled
+                    ? quoteDisplayFrontend
+                    : approximateBuyQtyTruncated
+                : // : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
+                isOrderFilled
+                ? baseDisplayFrontend
+                : approximateBuyQtyTruncated,
+            explanation: 'The quantity of the to/buy token (scaled by its decimals value)',
         },
 
-        { title: 'Realized Price ', content: 'price', explanation: 'this is explanation' },
-        { title: 'Fill Start ', content: 'price', explanation: 'this is explanation' },
-        { title: 'Fill End ', content: 'price', explanation: 'this is explanation' },
-        { title: 'Value ', content: usdValue, explanation: 'this is explanation' },
-
+        // { title: 'Realized Price ', content: 'price', explanation: 'this is explanation' },
+        // { title: 'Fill Start ', content: 'price', explanation: 'this is explanation' },
+        // { title: 'Fill End ', content: 'price', explanation: 'this is explanation' },
         {
-            title: 'Rebate Rate ',
-            content: 'rebate rate',
-            explanation: 'this is explanation',
+            title: 'Value ',
+            content: '$' + usdValue,
+            explanation: 'The appoximate US dollar value of the limit order',
         },
 
-        { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
+        // {
+        //     title: 'Rebate Rate ',
+        //     content: 'rebate rate',
+        //     explanation: 'this is explanation',
+        // },
+
+        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
     function InfoRow(props: ItemRowPropsIF) {
