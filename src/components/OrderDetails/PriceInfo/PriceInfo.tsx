@@ -1,7 +1,6 @@
 import styles from './PriceInfo.module.css';
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
@@ -13,48 +12,103 @@ type ItemIF = {
 };
 
 interface propsIF {
-    // usdValue: number | undefined;
     account: string;
     limitOrder: LimitOrderIF;
-    // lowRangeDisplay: string;
-    // highRangeDisplay: string;
+
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
-    // baseFeesDisplay: string | undefined;
-    // quoteFeesDisplay: string | undefined;
-    // baseTokenLogoURI: string;
-    // quoteTokenLogoURI: string;
-    // baseTokenSymbol: string;
-    // quoteTokenSymbol: string;
+
     usdValue: string | undefined;
-    // isDenomBase: boolean;
+    isDenomBase: boolean;
     isOrderFilled: boolean;
+    isBid: boolean;
     controlItems: ItemIF[];
+    approximateSellQtyTruncated: string;
+    approximateBuyQtyTruncated: string;
+    baseDisplayFrontend: string;
+    quoteDisplayFrontend: string;
+    quoteTokenLogo: string;
+    baseTokenLogo: string;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    isFillStarted: boolean;
+    truncatedDisplayPrice: string | undefined;
 }
 
 export default function PriceInfo(props: propsIF) {
-    const { account, limitOrder, isOrderFilled } = props;
-    // const dispatch = useAppDispatch();
     const {
-        // usdValue,
-        baseTokenSymbol,
-        quoteTokenSymbol,
+        isBid,
+        approximateSellQtyTruncated,
+        approximateBuyQtyTruncated,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-        isDenomBase,
-        baseTokenLogo,
+        isOrderFilled,
         quoteTokenLogo,
-
+        baseTokenLogo,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isFillStarted,
+        truncatedDisplayPrice,
+        isDenomBase,
         usdValue,
+    } = props;
+    // const dispatch = useAppDispatch();
 
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
+    // console.log({ isOrderFilled });
+    // console.log({ isBid });
+    // console.log({ quoteDisplayFrontend });
+    // console.log({ baseDisplayFrontend });
+    // console.log({ approximateBuyQtyTruncated });
+    // console.log({ approximateSellQtyTruncated });
+    // console.log({ truncatedDisplayPrice });
 
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
-        // positionLiquidity,
-    } = useProcessOrder(limitOrder, account);
+    const buyContent = (
+        <div className={styles.buy_content}>
+            <p>Buy:</p>
+            <p>
+                {isOrderFilled
+                    ? isBid
+                        ? quoteDisplayFrontend
+                        : baseDisplayFrontend
+                    : approximateBuyQtyTruncated}
+
+                {isBid ? (
+                    quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt='quote token' />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                    )
+                ) : baseTokenLogo ? (
+                    <img src={baseTokenLogo} alt='base token' />
+                ) : (
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
+                )}
+            </p>
+        </div>
+    );
+    const sellContent = (
+        <div className={styles.sell_content}>
+            <p>Sell:</p>
+            <p>
+                {isFillStarted
+                    ? approximateSellQtyTruncated
+                    : isBid
+                    ? baseDisplayFrontend
+                    : quoteDisplayFrontend}
+                {!isBid ? (
+                    quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt='quote token' />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                    )
+                ) : baseTokenLogo ? (
+                    <img src={baseTokenLogo} alt='base token' />
+                ) : (
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
+                )}
+            </p>
+        </div>
+    );
 
     const tokenPairDetails = (
         <div
@@ -72,7 +126,7 @@ export default function PriceInfo(props: propsIF) {
 
     const orderType = (
         <div className={styles.order_type}>
-            <p>Order Type:</p>
+            <p>Type:</p>
             <p>Limit</p>
         </div>
     );
@@ -82,38 +136,12 @@ export default function PriceInfo(props: propsIF) {
             <p>${usdValue}</p>
         </div>
     );
-    const buyContent = (
-        <div className={styles.buy_content}>
-            <p>Buy:</p>
-            <p>
-                {baseDisplayFrontend}
-                {baseTokenLogo ? (
-                    <img src={baseTokenLogo} alt='base token' />
-                ) : (
-                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
-                )}
-            </p>
-        </div>
-    );
-    const sellContent = (
-        <div className={styles.sell_content}>
-            <p>Sell:</p>
-            <p>
-                {quoteDisplayFrontend}
-                {quoteTokenLogo ? (
-                    <img src={quoteTokenLogo} alt='quote token' />
-                ) : (
-                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
-                )}
-            </p>
-        </div>
-    );
 
     const priceStatusContent = (
         <div className={styles.price_status_content}>
             <section>
                 <p>Price:</p>
-                <h2>$1,571.90</h2>
+                <h2>{truncatedDisplayPrice}</h2>
             </section>
 
             <section>

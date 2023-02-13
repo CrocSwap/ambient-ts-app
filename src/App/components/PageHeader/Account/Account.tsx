@@ -15,6 +15,8 @@ import { NavLink } from 'react-router-dom';
 import { AiOutlineLogout } from 'react-icons/ai';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
+import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import { ChainSpec } from '@crocswap-libs/sdk';
 // import { formatAmountOld } from '../../../../utils/numbers';
 
 interface AccountPropsIF {
@@ -33,7 +35,7 @@ interface AccountPropsIF {
 
     switchTheme: () => void;
     theme: string;
-
+    chainData: ChainSpec;
     lastBlockNumber: number;
 }
 
@@ -50,6 +52,7 @@ export default function Account(props: AccountPropsIF) {
         switchTheme,
         theme,
         lastBlockNumber,
+        chainData,
     } = props;
 
     const { connector, isConnected } = useAccount();
@@ -191,10 +194,20 @@ export default function Account(props: AccountPropsIF) {
     );
 
     const blockNumberDisplay = (
-        <div className={styles.block_number_div}>
-            <div className={styles.page_block_sign} />
-            <span>{lastBlockNumber}</span>
-        </div>
+        <DefaultTooltip
+            interactive
+            title={`Latest block number on ${chainData.displayName}`}
+            // placement={'bottom'}
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div className={styles.block_number_div}>
+                <div className={styles.page_block_sign} />
+                <span>{lastBlockNumber}</span>
+            </div>
+        </DefaultTooltip>
     );
     return (
         <div className={styles.account_container}>

@@ -9,10 +9,12 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 // import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF } from '../../../utils/interfaces/exports';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
+import DividerDark from '../DividerDark/DividerDark';
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
+    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order' | 'Reposition';
+    toggleFor: string;
     slippage: SlippagePairIF;
     isPairStable: boolean;
     onClose: () => void;
@@ -21,7 +23,15 @@ interface propsIF {
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose, bypassConfirm, toggleBypassConfirm } = props;
+    const {
+        module,
+        toggleFor,
+        slippage,
+        isPairStable,
+        onClose,
+        bypassConfirm,
+        toggleBypassConfirm,
+    } = props;
 
     // const dispatch = useAppDispatch();
 
@@ -52,13 +62,6 @@ export default function TransactionSettings(props: propsIF) {
         }
     };
 
-    const toggleFor =
-        module === 'Swap' || module === 'Market Order'
-            ? 'swap'
-            : module === 'Limit Order'
-            ? 'limit'
-            : 'range';
-
     const shouldDisplaySlippageTolerance = module !== 'Limit Order';
 
     return (
@@ -72,6 +75,8 @@ export default function TransactionSettings(props: propsIF) {
                     handleKeyDown={handleKeyDown}
                 />
             ) : null}
+            <DividerDark />
+            <DividerDark />
 
             <ConfirmationModalControl
                 bypassConfirm={bypassConfirm}

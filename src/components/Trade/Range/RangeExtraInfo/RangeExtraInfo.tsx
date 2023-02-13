@@ -19,7 +19,6 @@ interface propsIF {
     rangeGasPriceinDollars: string | undefined;
     isDenomBase: boolean;
     isTokenABase: boolean;
-    daysInRangeEstimation: number;
     isQtyEntered: boolean;
     showExtraInfoDropdown: boolean;
     isBalancedMode: boolean;
@@ -36,7 +35,6 @@ export default function RangeExtraInfo(props: propsIF) {
         liquidityProviderFee,
         isDenomBase,
         isTokenABase,
-        daysInRangeEstimation,
         // isQtyEntered,
         showExtraInfoDropdown,
         isBalancedMode,
@@ -45,32 +43,6 @@ export default function RangeExtraInfo(props: propsIF) {
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
-    // const invertPrice = displayForBase;
-
-    // console.log({ isTokenABase });
-    // console.log({ displayForBase });
-    // console.log({ reverseDisplay });
-    // console.log({ invertPrice });
-    // console.log({ poolPriceDisplay });
-
-    // const displayPrice = invertPrice ? 1 / poolPriceDisplay : poolPriceDisplay;
-    // const displayPriceStringTruncated =
-    //     displayPrice < 2
-    //         ? truncateDecimals(displayPrice, 6).toString()
-    //         : truncateDecimals(displayPrice, 2).toString();
-
-    // const priceLimitAfterSlippageAndFee = quoteTokenIsBuy
-    //     ? truncateDecimals(
-    //           (1 / poolPriceDisplay) *
-    //               (1 - slippageTolerance / 100) *
-    //               (1 - liquidityProviderFee / 100),
-    //           4,
-    //       )
-    //     : truncateDecimals(
-    //           (1 / poolPriceDisplay) * (1 + slippageTolerance) * (1 + liquidityProviderFee / 100),
-    //           4,
-    //       );
-    // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
 
     const extraInfoDataAdvanced = [
         {
@@ -110,11 +82,6 @@ export default function RangeExtraInfo(props: propsIF) {
             tooltipTitle: 'liquidity provider fee explanation',
             data: `${liquidityProviderFee}%`,
         },
-        {
-            title: 'Estimated Range Duration',
-            tooltipTitle: 'range duration explanation',
-            data: `${daysInRangeEstimation} Days`,
-        },
     ];
 
     const extraInfoData = isBalancedMode ? extraInfoDataBalanced : extraInfoDataAdvanced;
@@ -134,14 +101,6 @@ export default function RangeExtraInfo(props: propsIF) {
     );
 
     const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
-
-    // const [baseTokenData, quoteTokenData] = isTokenABase
-    //     ? [tokenPair.dataTokenA, tokenPair.dataTokenB]
-    //     : [tokenPair.dataTokenB, tokenPair.dataTokenA];
-
-    // const defaultDisplay = `1 ${tokenPair.dataTokenA.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenB.symbol}`;
-
-    // const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
     const extraInfoSection = (
         <div

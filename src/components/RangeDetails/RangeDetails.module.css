@@ -1,10 +1,9 @@
-.range_details_container{
+.range_details_container {
     min-width: 340px;
 
     width: auto;
-max-width: 1000px;
+    max-width: 1000px;
 }
-
 
 .main_content {
     transition: all var(--animation-speed) ease-in-out;
@@ -17,8 +16,8 @@ max-width: 1000px;
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
+    cursor: default;
 
-  
     padding: 1rem 2rem;
 
     /* width: 800px; */
@@ -32,13 +31,12 @@ max-width: 1000px;
     align-items: flex-end;
 } */
 
-
-.control_display_container{
+.control_display_container {
     display: flex;
     justify-content: center;
     flex-direction: row;
     align-items: center;
-    gap: 1rem
+    gap: 1rem;
 }
 
 .left_container {
@@ -48,41 +46,37 @@ max-width: 1000px;
 .right_container {
     /* width: 450px; */
     background: rgba(23, 29, 39, 0.3);
-backdrop-filter: blur(10px);
-border-radius: 4px;
-padding: 1rem;
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+    padding: 1rem;
 }
 
-.ambi_copyright{
+.ambi_copyright {
     display: flex;
     justify-content: center;
     font-family: var(--font-logo);
     font-weight: 100;
-font-size: 24px;
-line-height: 30px;
-color: var(--text-grey-dark);
-padding: 4px 0;
+    font-size: 24px;
+    line-height: 30px;
+    color: var(--text-grey-dark);
+    padding: 4px 0;
+    cursor: default;
 }
 
-
 @media only screen and (min-width: 720px) {
-    .range_details_container{
+    .range_details_container {
         height: 500px;
         width: 1000px;
-        
-        
-        }
-    
-        .main_content{
-            display: grid;
-            grid-template-columns: 244px auto;
-        
-            animation: fadeIn ease 1s;
-            -webkit-animation: fadeIn ease 1s;
-            -moz-animation: fadeIn ease 1s;
-            -o-animation: fadeIn ease 1s;
-            -ms-animation: fadeIn ease 1s;
-        
-           
-        }
+    }
+
+    .main_content {
+        display: grid;
+        grid-template-columns: 244px auto;
+
+        animation: fadeIn ease 1s;
+        -webkit-animation: fadeIn ease 1s;
+        -moz-animation: fadeIn ease 1s;
+        -o-animation: fadeIn ease 1s;
+        -ms-animation: fadeIn ease 1s;
+    }
 }

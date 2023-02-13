@@ -137,7 +137,8 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: rgba(255, 235, 251, 0.25);
+    color: #ebebff;
+    /* color: rgba(255, 235, 251, 0.25); */
     background-color: transparent;
 
     /* Inside auto layout */
@@ -193,7 +194,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 1px);
+    font-size: var(--body-size);
+    /* font-size: calc(1vw - 1px); */
     line-height: 15px;
     display: flex;
     align-items: center;
@@ -221,7 +223,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 1px);
+    font-size: var(--body-size);
+    /* font-size: calc(1vw - 1px); */
     line-height: 15px;
     display: flex;
     align-items: center;

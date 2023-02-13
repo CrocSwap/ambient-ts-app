@@ -62,6 +62,7 @@ export const useSortedPositions = (
         const ambient: PositionIF[] = [];
         const empty: PositionIF[] = [];
         const huh: PositionIF[] = [];
+
         const checkInRange = (val: number, low: number, high: number): boolean => {
             return val > low && val < high;
         };
@@ -78,7 +79,20 @@ export const useSortedPositions = (
                 huh.push(pos);
             }
         });
-        return [...outOfRange, ...inRange, ...ambient, ...empty, ...huh];
+
+        const outOfRangeAfterSecondarySort: PositionIF[] = sortByTime(outOfRange);
+        const inRangeAfterSecondarySorte: PositionIF[] = sortByTime(inRange);
+        const ambientAfterSecondarySort: PositionIF[] = sortByTime(ambient);
+        const emptyAfterSecondarySort: PositionIF[] = sortByTime(empty);
+        const huhAfterSecondarySort: PositionIF[] = sortByTime(huh);
+
+        return [
+            ...outOfRangeAfterSecondarySort,
+            ...inRangeAfterSecondarySorte,
+            ...ambientAfterSecondarySort,
+            ...emptyAfterSecondarySort,
+            ...huhAfterSecondarySort,
+        ];
     };
 
     // column the user wants the table sorted by

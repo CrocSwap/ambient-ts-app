@@ -524,8 +524,6 @@ export default function App() {
     }, [tokenListsReceived]);
 
     const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
-    false && checkBypassConfirm;
-    false && updateBypassConfirm;
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -589,7 +587,7 @@ export default function App() {
 
     // hook holding values and setter functions for slippage
     // holds stable and volatile values for swap and mint transactions
-    const [swapSlippage, mintSlippage] = useSlippage();
+    const [swapSlippage, mintSlippage, repoSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
@@ -793,6 +791,7 @@ export default function App() {
     const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
+    const [dailyVol, setDailyVol] = useState<number | undefined>();
 
     // TODO:  @Emily useMemo() this value
     const tokenPair = {
@@ -876,8 +875,13 @@ export default function App() {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
+                        console.log(json.data);
                         const ambientApy = json?.data?.apy;
                         setAmbientApy(ambientApy);
+
+                        const tickVol = json?.data?.tickStdev;
+                        const dailyVol = tickVol ? tickVol / 10000 : undefined;
+                        setDailyVol(dailyVol);
                     });
             }
         })();
@@ -1688,6 +1692,7 @@ export default function App() {
                     }),
                 )
                     .then((updatedTransactions) => {
+                        // console.log({ updatedTransactions });
                         dispatch(addChangesByUser(updatedTransactions));
                     })
                     .catch(console.log);
@@ -1892,6 +1897,7 @@ export default function App() {
                     console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
+                    // console.log({ newTokenAllowance });
                     if (tokenAAllowance !== newTokenAllowance) {
                         console.log('setting new token a allowance');
                         setTokenAAllowance(newTokenAllowance);
@@ -2359,6 +2365,7 @@ export default function App() {
         addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
+        chainData: chainData,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2557,6 +2564,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
+        dailyVol: dailyVol,
         graphData: graphData,
         openGlobalModal: openGlobalModal,
 
@@ -2880,8 +2888,15 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        tokenPair={tokenPair}
+                                        crocEnv={crocEnv}
                                         ambientApy={ambientApy}
+                                        dailyVol={dailyVol}
                                         isDenomBase={tradeData.isDenomBase}
+                                        repoSlippage={repoSlippage}
+                                        isPairStable={isPairStable}
+                                        bypassConfirm={checkBypassConfirm('repo')}
+                                        toggleBypassConfirm={updateBypassConfirm}
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
                                         seRescaleRangeBoundariesWithSlider={

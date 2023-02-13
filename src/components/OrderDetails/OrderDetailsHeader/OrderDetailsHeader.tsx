@@ -4,6 +4,8 @@ import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
 interface OrderDetailsPropsIF {
     onClose: () => void;
     downloadAsImage: () => void;
@@ -11,9 +13,11 @@ interface OrderDetailsPropsIF {
     setShowSettings: Dispatch<SetStateAction<boolean>>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
+    limitOrder: LimitOrderIF;
 }
 export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
-    const { onClose, downloadAsImage, showShareComponent, setShowShareComponent } = props;
+    const { limitOrder, onClose, downloadAsImage, showShareComponent, setShowShareComponent } =
+        props;
     // eslint-disable-next-line
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
@@ -21,9 +25,26 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     const [value, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
-        copy('example details data');
+        const txHash = limitOrder.tx;
+        copy(txHash);
         setOpenSnackbar(true);
     }
+
+    const copyIconWithTooltip = (
+        <IconWithTooltip title='Copy transaction hash to clipboard' placement='bottom'>
+            <div onClick={handleCopyAddress}>
+                <FiCopy size={25} color='var(--text-grey-dark)' />
+            </div>
+        </IconWithTooltip>
+    );
+
+    const downloadIconWithTooltip = (
+        <IconWithTooltip title='Download shareable image' placement='bottom'>
+            <div onClick={downloadAsImage}>
+                <FiDownload size={25} color='var(--text-grey-dark)' />
+            </div>
+        </IconWithTooltip>
+    );
 
     // const snackbarContent = (
     //     <SnackbarComponent
@@ -50,21 +71,9 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
 
-                {showShareComponent ? (
-                    <div onClick={handleCopyAddress}>
-                        <FiCopy size={25} color='var(--text-grey-dark)' />
-                    </div>
-                ) : (
-                    phIcon
-                )}
+                {showShareComponent ? copyIconWithTooltip : phIcon}
 
-                {showShareComponent ? (
-                    <div onClick={downloadAsImage}>
-                        <FiDownload size={25} color='var(--text-grey-dark)' />
-                    </div>
-                ) : (
-                    phIcon
-                )}
+                {showShareComponent ? downloadIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text-grey-dark)' />

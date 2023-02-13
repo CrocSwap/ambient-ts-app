@@ -35,11 +35,14 @@ interface propsIF {
     isSellTokenBase: boolean;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+    sellQtyString: string;
+    buyQtyString: string;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
     const {
         initiateSwapMethod,
+
         // priceImpact,
         isDenomBase,
         poolPriceDisplay,
@@ -58,6 +61,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         bypassConfirm,
         toggleBypassConfirm,
+        sellQtyString,
+        buyQtyString,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -72,8 +77,8 @@ export default function ConfirmSwapModal(props: propsIF) {
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
-    const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-    const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+    // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
+    // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
     // const primarySwapInput = 'sell';
     const sellTokenData = tokenPair.dataTokenA;
@@ -164,7 +169,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
-            <h2>{buyTokenQty}</h2>
+            <h2>{buyQtyString}</h2>
 
             <div className={styles.logo_display}>
                 {buyTokenData.logoURI ? (
@@ -180,7 +185,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
-            <h2>{sellTokenQty}</h2>
+            <h2>{sellQtyString}</h2>
 
             <div className={styles.logo_display}>
                 {sellTokenData.logoURI ? (
@@ -199,7 +204,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <div className={styles.row}>
                 <p>Expected Output</p>
                 <p>
-                    {buyTokenQty} {buyTokenData.symbol}{' '}
+                    {buyQtyString} {buyTokenData.symbol}{' '}
                 </p>
             </div>
             <div className={styles.row}>
@@ -280,7 +285,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${
+            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${
                 buyTokenData.symbol
             }. Please check the ${'Metamask'} extension in your browser for notifications.
             `}
@@ -307,10 +312,10 @@ export default function ConfirmSwapModal(props: propsIF) {
             title='Send Swap'
             action={() => {
                 console.log(
-                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
+                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellQtyString}`,
                 );
                 console.log(
-                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
+                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyQtyString}`,
                 );
                 initiateSwapMethod();
                 setShowConfirmation(false);

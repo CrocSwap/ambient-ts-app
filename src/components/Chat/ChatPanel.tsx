@@ -225,7 +225,7 @@ export default function ChatPanel(props: ChatProps) {
     const header = (
         <div className={styles.chat_header} onClick={() => setChatStatus(!props.chatStatus)}>
             <h2 className={styles.chat_title}>Chat</h2>
-            <section>
+            <section style={{ paddingRight: '10px' }}>
                 {props.isFullScreen || !props.chatStatus ? (
                     <></>
                 ) : (
@@ -311,7 +311,7 @@ export default function ChatPanel(props: ChatProps) {
             message={messages[0]}
             room={
                 room === 'Current Pool'
-                    ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
+                    ? currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol
                     : room
             }
             ensName={ensName}
