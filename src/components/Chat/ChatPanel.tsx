@@ -232,7 +232,7 @@ export default function ChatPanel(props: ChatProps) {
                     <TbTableExport
                         size={18}
                         className={styles.open_full_button}
-                        onClick={() => window.open('/app/chat2')}
+                        onClick={() => window.open('/chat')}
                     />
                 )}
                 {props.isFullScreen || !props.chatStatus ? (
