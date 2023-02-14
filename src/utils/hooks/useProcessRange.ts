@@ -8,10 +8,17 @@ import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
-export const useProcessRange = (position: PositionIF, account: string) => {
+export const useProcessRange = (
+    position: PositionIF,
+    account: string,
+    isOnPortfolioPage?: boolean,
+) => {
     const blockExplorer = 'https://goerli.etherscan.io/';
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
+
     const isDenomBase = tradeData.isDenomBase;
 
     const tokenAAddress = position.base;
@@ -70,7 +77,14 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     }
 
     // -----------------------------POSITIONS RANGE--------------------
-    const isPositionInRange = position.isPositionInRange;
+    let isPositionInRange = position.isPositionInRange;
+
+    const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    if (!isOnPortfolioPage)
+        isPositionInRange =
+            position.positionType === 'ambient' ||
+            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
     // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
 
