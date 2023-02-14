@@ -190,7 +190,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         }
     }
 
-    const daysInRangeString = daysInRange ? `Time in Range | ${formatDaysRange(daysInRange)}` : '…';
+    const daysInRangeString = daysInRange
+        ? `Est. Time in Range | ${formatDaysRange(daysInRange)}`
+        : '…';
 
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
