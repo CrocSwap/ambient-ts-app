@@ -34,6 +34,7 @@ interface IRepositionPriceInfoProps {
     dailyVol: number | undefined;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
+    isConfirmModal?: boolean;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -49,6 +50,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         rangeWidthPercentage,
         setMaxPrice,
         setMinPrice,
+        isConfirmModal,
     } = props;
 
     const baseSymbol = position?.baseSymbol;
@@ -249,8 +251,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     return (
         <div className={styles.price_info_container}>
-            {apr}
-            {days}
+            {!isConfirmModal ? apr : null}
+            {!isConfirmModal ? days : null}
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>

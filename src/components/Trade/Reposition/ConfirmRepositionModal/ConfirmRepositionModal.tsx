@@ -1,4 +1,4 @@
-import Divider from '../../../Global/Divider/Divider';
+// import Divider from '../../../Global/Divider/Divider';
 import RepositionPriceInfo from '../RepositionPriceInfo/RepositionPriceInfo';
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
@@ -110,8 +110,8 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
 
     const fullTxDetails = (
         <div>
-            <h1>confirm reposition token content here</h1>
-            <Divider />
+            {/* <h1>confirm reposition token content here</h1> */}
+            {/* <Divider /> */}
             <RepositionPriceInfo
                 crocEnv={crocEnv}
                 position={position}
@@ -122,6 +122,7 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 dailyVol={dailyVol}
                 setMaxPrice={setMaxPrice}
                 setMinPrice={setMinPrice}
+                isConfirmModal={true}
             />
         </div>
     );

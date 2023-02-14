@@ -14,6 +14,7 @@ import { PoolIF, TokenIF, TransactionIF } from '../../../utils/interfaces/export
 // import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
 // import { BiDownArrow } from 'react-icons/bi';
 
+import leaderboard from '../../../assets/images/leaderboard.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/topTokens.svg';
@@ -561,7 +562,7 @@ export default function TradeTabs2(props: propsIF) {
               {
                   label: 'Leaderboard',
                   content: <Leaderboard {...rangesProps} />,
-                  icon: rangePositionsImage,
+                  icon: leaderboard,
                   showRightSideOption: false,
               },
               //   {
