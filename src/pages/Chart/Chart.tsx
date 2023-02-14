@@ -1699,9 +1699,9 @@ export default function Chart(props: ChartData) {
                             event.sourceEvent.type !== 'wheel' &&
                             event.sourceEvent.timeStamp - zoomTimeout < 1
                         ) {
-                            const { isHoverCandleOrVolumeData, _selectedDate } =
+                            const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                                 candleOrVolumeDataHoverStatus(event.sourceEvent);
-                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
                         }
                     }
 
@@ -4641,12 +4641,25 @@ export default function Chart(props: ChartData) {
                     dateControl) ||
                     isSelectedVolume),
             _selectedDate: nearest?.date,
+            nearest: nearest,
         };
     };
 
-    const selectedDateEvent = (isHoverCandleOrVolumeData: any, _selectedDate: any) => {
+    const selectedDateEvent = (
+        isHoverCandleOrVolumeData: any,
+        _selectedDate: any,
+        nearest: any,
+    ) => {
         if (isHoverCandleOrVolumeData) {
             if (selectedDate === undefined || selectedDate.getTime() !== _selectedDate.getTime()) {
+                props.setCurrentData(nearest);
+
+                const volumeData = props.volumeData.find(
+                    (item: any) => item.time.getTime() === _selectedDate.getTime(),
+                ) as any;
+
+                props.setCurrentVolumeData(volumeData?.volume);
+
                 setSelectedDate(_selectedDate);
             } else {
                 setSelectedDate(undefined);
@@ -4828,9 +4841,9 @@ export default function Chart(props: ChartData) {
                 });
 
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
-                    const { isHoverCandleOrVolumeData, _selectedDate } =
+                    const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                         candleOrVolumeDataHoverStatus(event);
-                    selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                    selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
 
                     if (
                         (location.pathname.includes('range') ||
