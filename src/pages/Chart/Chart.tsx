@@ -820,12 +820,17 @@ export default function Chart(props: ChartData) {
 
                 return formatAmountChartData(
                     isSameLocation && d === sameLocationData ? data : d,
-                    d === sameLocationData ||
+
+                    d === sameLocationDataMax ||
+                        d === sameLocationDataMin ||
                         d === shorterValue ||
                         d === longerValue ||
                         d === market[0].value ||
                         d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value || d === crosshairData[0].y
+                        ? d === longerValue ||
+                          d === market[0].value ||
+                          d === crosshairData[0].y ||
+                          d === sameLocationData
                             ? undefined
                             : digit
                         : d.toString().split('.')[1]?.length,
@@ -5011,11 +5016,17 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
-                            .style('left', event.offsetX - 80 + 'px');
-
+                        if (
+                            liquidityData.depthLiqAskData != null &&
+                            liqTooltipSelectedLiqBar.liqPrices != null
+                        ) {
+                            liqTooltip
+                                .style('visibility', 'visible')
+                                .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
+                                .style('left', event.offsetX - 80 + 'px');
+                        } else {
+                            liqTooltip.style('visibility', 'hidden');
+                        }
                         liquidityData.liqHighligtedAskSeries = [];
 
                         const svgmain = d3.select(d3PlotArea.current).select('svg');
@@ -5365,6 +5376,8 @@ export default function Chart(props: ChartData) {
                         });
                     }
                 }
+            } else {
+                liqTooltip.style('visibility', 'hidden');
             }
             // const absoluteDifference = Math.abs(difference)
 
