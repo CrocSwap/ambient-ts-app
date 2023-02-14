@@ -176,18 +176,10 @@ export const useUrlParams = (
         const paramsIncludesToken = paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
-            console.log('going to new tokens!');
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB),
             ]).then((res) => {
-                res.forEach((tkn) =>
-                    console.assert(
-                        tkn,
-                        'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
-                    ),
-                );
-
                 res[0] && dispatch(setTokenA(res[0] as TokenIF));
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });
