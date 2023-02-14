@@ -242,7 +242,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 50;
+                        ) / 6;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -268,7 +268,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 50;
+                        ) / 6;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,

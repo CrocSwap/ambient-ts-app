@@ -493,6 +493,7 @@ export default function Trade(props: propsIF) {
         maxPrice: maxPrice,
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
+        showSidebar: showSidebar,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
     };
 
