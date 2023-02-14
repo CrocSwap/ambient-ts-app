@@ -8,7 +8,7 @@ import { AiOutlineLine } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
-import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
+// import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 
@@ -137,56 +137,56 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     //     second: '2-digit',
     // }).format(tx.time);
 
-    const fillTime = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit',
-    }).format(tx.time * 1000);
+    // const fillTime = new Intl.DateTimeFormat('en-US', {
+    //     hour: 'numeric',
+    //     minute: '2-digit',
+    //     second: '2-digit',
+    // }).format(tx.time * 1000);
 
-    const fillDate = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).format(tx.time * 1000);
+    // const fillDate = new Intl.DateTimeFormat('en-US', {
+    //     year: 'numeric',
+    //     month: '2-digit',
+    //     day: '2-digit',
+    // }).format(tx.time * 1000);
 
-    const fillTimeContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <DefaultTooltip
-                    interactive
-                    title={'Block: ' + tx.block}
-                    placement={'right'}
-                    arrow
-                    enterDelay={750}
-                    leaveDelay={200}
-                >
-                    <div className={styles.info_text}>{fillDate}</div>
-                </DefaultTooltip>
-                <DefaultTooltip
-                    interactive
-                    title={'Block: ' + tx.block}
-                    placement={'right'}
-                    arrow
-                    enterDelay={750}
-                    leaveDelay={200}
-                >
-                    <div className={styles.info_text}>{fillTime}</div>
-                </DefaultTooltip>
+    // const fillTimeContent = (
+    //     <motion.div
+    //         layout
+    //         initial={{ opacity: 0 }}
+    //         animate={{ opacity: 1 }}
+    //         exit={{ opacity: 0 }}
+    //         className={styles.info_container}
+    //     >
+    //         <Row>
+    //             <DefaultTooltip
+    //                 interactive
+    //                 title={'Block: ' + tx.block}
+    //                 placement={'right'}
+    //                 arrow
+    //                 enterDelay={750}
+    //                 leaveDelay={200}
+    //             >
+    //                 <div className={styles.info_text}>{fillDate}</div>
+    //             </DefaultTooltip>
+    //             <DefaultTooltip
+    //                 interactive
+    //                 title={'Block: ' + tx.block}
+    //                 placement={'right'}
+    //                 arrow
+    //                 enterDelay={750}
+    //                 leaveDelay={200}
+    //             >
+    //                 <div className={styles.info_text}>{fillTime}</div>
+    //             </DefaultTooltip>
 
-                {/* <span>Date: </span> */}
-            </Row>
+    //             {/* <span>Date: </span> */}
+    //         </Row>
 
-            {/* <Row> */}
-            {/* <span>Time: </span> */}
-            {/* </Row> */}
-        </motion.div>
-    );
+    //         {/* <Row> */}
+    //         {/* <span>Time: </span> */}
+    //         {/* </Row> */}
+    //     </motion.div>
+    // );
 
     const isBuyTransactionDetails = (
         <div
@@ -336,7 +336,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
-                {fillTimeContent}
+                {/* {fillTimeContent} */}
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
