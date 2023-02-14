@@ -314,8 +314,11 @@ export default function Reposition(props: propsIF) {
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
 
+    const debouncedLowTick = useDebounce(pinnedLowTick, 500);
+    const debouncedHighTick = useDebounce(pinnedHighTick, 500);
+
     useEffect(() => {
-        if (!crocEnv) {
+        if (!crocEnv || !debouncedLowTick || !debouncedHighTick) {
             return;
         }
         const pool = crocEnv.pool(position.base, position.quote);
@@ -323,7 +326,7 @@ export default function Reposition(props: propsIF) {
         const repo = new CrocReposition(pool, {
             liquidity: position.positionLiq,
             burn: [position.bidTick, position.askTick],
-            mint: [pinnedLowTick, pinnedHighTick],
+            mint: [debouncedLowTick, debouncedHighTick],
         });
 
         repo.postBalance().then(([base, quote]: [number, number]) => {
@@ -332,8 +335,8 @@ export default function Reposition(props: propsIF) {
         });
     }, [
         crocEnv,
-        useDebounce(pinnedLowTick, 500), // Debounce because effect involves on-chain call
-        useDebounce(pinnedHighTick, 500),
+        debouncedLowTick, // Debounce because effect involves on-chain call
+        debouncedHighTick,
         position.baseSymbol,
         position.quoteSymbol,
         currentPoolPriceTick,
