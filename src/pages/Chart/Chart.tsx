@@ -1761,6 +1761,7 @@ export default function Chart(props: ChartData) {
                     setIsMouseMoveCrosshair(false);
                 }) as any;
 
+            let firstLocation: any;
             const yAxisZoom = d3
                 .zoom()
                 .on('start', (event) => {
@@ -1768,6 +1769,7 @@ export default function Chart(props: ChartData) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
                     }
+                    firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
@@ -1836,7 +1838,7 @@ export default function Chart(props: ChartData) {
 
                     const size = (domainY[1] - domainY[0]) / factor;
 
-                    const newCenter = scaleData.yScale.invert(event.sourceEvent.offsetY);
+                    const newCenter = scaleData.yScale.invert(firstLocation.offsetY);
 
                     const diff = domainY[1] - domainY[0];
 
