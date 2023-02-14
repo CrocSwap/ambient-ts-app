@@ -124,6 +124,15 @@ interface ChartData {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    showSidebar: boolean;
+}
+
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height,
+    };
 }
 
 export default function Chart(props: ChartData) {
@@ -161,6 +170,7 @@ export default function Chart(props: ChartData) {
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -179,6 +189,8 @@ export default function Chart(props: ChartData) {
     const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
+
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
 
     const parsedChartData = props.candleData;
 
@@ -350,6 +362,15 @@ export default function Chart(props: ChartData) {
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         if (minPrice !== 0 && maxPrice !== 0) {
@@ -4551,6 +4572,7 @@ export default function Chart(props: ChartData) {
         selectedDate,
         liqMode,
         liquidityScale,
+        showSidebar,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -5409,7 +5431,18 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges, location.pathname, parsedChartData?.chartData],
+        [
+            candlestick,
+            bandwidth,
+            limit,
+            ranges,
+            location.pathname,
+            parsedChartData?.chartData,
+            windowDimensions,
+            showTvl,
+            showVolume,
+            showFeeRate,
+        ],
     );
 
     function showCrosshairVertical() {
