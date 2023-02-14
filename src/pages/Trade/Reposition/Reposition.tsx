@@ -26,6 +26,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
+import useDebounce from '../../../App/hooks/useDebounce';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -254,6 +255,93 @@ export default function Reposition(props: propsIF) {
         }
     };
 
+    const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+    const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+        isDenomBase,
+        position?.baseDecimals || 18,
+        position?.quoteDecimals || 18,
+        lowTick,
+        highTick,
+        lookupChain(position?.chainId || '0x5').gridSize,
+    );
+
+    const pinnedMinPriceDisplayTruncated = pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+    const pinnedMaxPriceDisplayTruncated = pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+
+    // -----------------------------TEMPORARY PLACE HOLDERS--------------
+
+    const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
+        pinnedMinPriceDisplayTruncated || '0.00',
+    );
+    const [maxPriceDisplay, setMaxPriceDisplay] = useState<string>(
+        pinnedMaxPriceDisplayTruncated || '0.00',
+    );
+
+    useEffect(() => {
+        setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
+        if (pinnedMinPriceDisplayTruncated !== undefined) {
+            setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
+        }
+    }, [pinnedMinPriceDisplayTruncated]);
+
+    useEffect(() => {
+        setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
+        setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
+    }, [pinnedMaxPriceDisplayTruncated]);
+
+    function truncateString(qty?: number): string {
+        return qty
+            ? qty < 2
+                ? qty.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                  })
+                : qty.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : '0.00';
+    }
+
+    const currentBaseQtyDisplay = position?.positionLiqBaseDecimalCorrected;
+    const currentQuoteQtyDisplay = position?.positionLiqQuoteDecimalCorrected;
+    const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
+
+    const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
+
+    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
+
+    useEffect(() => {
+        if (!crocEnv) {
+            return;
+        }
+        const pool = crocEnv.pool(position.base, position.quote);
+
+        const repo = new CrocReposition(pool, {
+            liquidity: position.positionLiq,
+            burn: [position.bidTick, position.askTick],
+            mint: [pinnedLowTick, pinnedHighTick],
+        });
+
+        repo.postBalance().then(([base, quote]: [number, number]) => {
+            setNewBaseQtyDisplay(truncateString(base));
+            setNewQuoteQtyDisplay(truncateString(quote));
+        });
+    }, [
+        crocEnv,
+        useDebounce(pinnedLowTick, 500), // Debounce because effect involves on-chain call
+        useDebounce(pinnedHighTick, 500),
+        position.baseSymbol,
+        position.quoteSymbol,
+        currentPoolPriceTick,
+        position.positionLiq,
+        position.bidTick,
+        position.askTick,
+    ]);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -284,6 +372,12 @@ export default function Reposition(props: propsIF) {
                     rangeWidthPercentage={rangeWidthPercentage}
                     setMaxPrice={setMaxPrice}
                     setMinPrice={setMinPrice}
+                    minPriceDisplay={minPriceDisplay}
+                    maxPriceDisplay={maxPriceDisplay}
+                    currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
+                    currentQuoteQtyDisplayTruncated={currentQuoteQtyDisplayTruncated}
+                    newBaseQtyDisplay={newBaseQtyDisplay}
+                    newQuoteQtyDisplay={newQuoteQtyDisplay}
                 />
                 <RepositionButton
                     bypassConfirm={bypassConfirm}
@@ -312,6 +406,12 @@ export default function Reposition(props: propsIF) {
                         resetConfirmation={resetConfirmation}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        minPriceDisplay={minPriceDisplay}
+                        maxPriceDisplay={maxPriceDisplay}
+                        currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
+                        currentQuoteQtyDisplayTruncated={currentQuoteQtyDisplayTruncated}
+                        newBaseQtyDisplay={newBaseQtyDisplay}
+                        newQuoteQtyDisplay={newQuoteQtyDisplay}
                     />
                 </Modal>
             )}
