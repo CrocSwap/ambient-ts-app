@@ -520,6 +520,7 @@ export default function Reposition(props: propsIF) {
             {isModalOpen && (
                 <Modal onClose={handleModalClose} title=' Confirm Reposition'>
                     <ConfirmRepositionModal
+                        isPositionInRange={isPositionInRange}
                         crocEnv={crocEnv}
                         position={position as PositionIF}
                         ambientApy={ambientApy}
