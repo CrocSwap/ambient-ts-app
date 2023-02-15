@@ -20,6 +20,7 @@ interface SentMessageProps {
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
     moderator: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     room: any;
 }
 
@@ -53,7 +54,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
-    const [room, setRoom] = useState('Global');
+    const [room] = useState('Global');
     const { getMsg } = useSocket(room);
 
     const [value, copy] = useCopyToClipboard();
