@@ -3458,6 +3458,8 @@ export default function Chart(props: ChartData) {
 
                     rangeWidthPercentage = Math.abs(tickValue - currentPoolPriceTick) / 100;
 
+                    rangeWidthPercentage = rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
+
                     const offset = rangeWidthPercentage * 100;
                     // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
@@ -3483,6 +3485,7 @@ export default function Chart(props: ChartData) {
                     );
 
                     rangeWidthPercentage = Math.abs(currentPoolPriceTick - tickValue) / 100;
+                    rangeWidthPercentage = rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     const offset = rangeWidthPercentage * 100;
 
                     const lowTick = currentPoolPriceTick - offset;
