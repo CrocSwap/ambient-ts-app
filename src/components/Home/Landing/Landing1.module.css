@@ -22,6 +22,11 @@
     align-items: center;
     gap: 2rem;
 }
+
+.content_container img{
+    width: 250px;
+    transition: all var(--animation-speed) ease-in-out;
+}
 .ambient_background {
     display: none;
 }
@@ -115,3 +120,10 @@ color: var(--dark2)
 }
 
 
+@media only screen and (min-width: 768px) {
+
+    .content_container img{
+        width: 500px;
+    }
+
+}

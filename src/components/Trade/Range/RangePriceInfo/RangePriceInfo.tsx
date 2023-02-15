@@ -37,7 +37,9 @@ export default function RangePriceInfo(props: propsIF) {
     // JSX frag for estimated APR of position
     const apr = <span className={styles.apr}>{aprPercentageString}</span>;
 
-    const daysInRangeString = daysInRange ? `Time in Range | ${formatDaysRange(daysInRange)}` : '…';
+    const daysInRangeString = daysInRange
+        ? `Est. Time in Range | ${formatDaysRange(daysInRange)}`
+        : '…';
     // JSX frag for estimated APR of position
     const days = <span className={styles.apr}>{daysInRangeString}</span>;
 
