@@ -7,6 +7,7 @@ import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarCompone
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
+import useSocket from '../../Service/useSocket';
 
 interface SentMessageProps {
     message: Message;
@@ -19,6 +20,7 @@ interface SentMessageProps {
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
     moderator: boolean;
+    room: any;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -51,6 +53,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
+    const [room, setRoom] = useState('Global');
+    const { getMsg } = useSocket(room);
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -93,6 +97,17 @@ export default function SentMessagePanel(props: SentMessageProps) {
         } else {
             return <p className={styles.message}>{props.message.message}</p>;
         }
+    }
+
+    function deleteMessages(id: string) {
+        // eslint-disable-next-line
+        deleteMessage(id).then((result: any) => {
+            if (result.status === 'OK') {
+                getMsg();
+
+                return result;
+            }
+        });
     }
 
     const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
@@ -139,7 +154,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 {!isPosition && mentionedMessage()}
             </div>
             {props.moderator ? (
-                <FiDelete color='red' onClick={() => deleteMessage(props.message._id)} />
+                <FiDelete color='red' onClick={() => deleteMessages(props.message._id)} />
             ) : (
                 ''
             )}
