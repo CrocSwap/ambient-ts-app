@@ -2886,6 +2886,7 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        lastBlockNumber={lastBlockNumber}
                                         tokenPair={tokenPair}
                                         crocEnv={crocEnv}
                                         ambientApy={ambientApy}

@@ -42,6 +42,7 @@ interface propsIF {
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
+    lastBlockNumber: number;
 }
 
 export default function Reposition(props: propsIF) {
@@ -59,6 +60,7 @@ export default function Reposition(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
         tokenPair,
         poolPriceDisplay,
+        lastBlockNumber,
     } = props;
 
     // current URL parameter string
@@ -312,11 +314,77 @@ export default function Reposition(props: propsIF) {
             : '0.00';
     }
 
-    const currentBaseQtyDisplay = position?.positionLiqBaseDecimalCorrected;
-    const currentQuoteQtyDisplay = position?.positionLiqQuoteDecimalCorrected;
-    const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
+    const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] = useState<string>(
+        position?.positionLiqBaseTruncated || '0.00',
+    );
+    const [currentQuoteQtyDisplayTruncated, setCurrentQuoteQtyDisplayTruncated] = useState<string>(
+        position?.positionLiqQuoteTruncated || '0.00',
+    );
+    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
+    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+    const poolIndex = lookupChain(position?.chainId || '0x5').poolIndex;
+
+    const fetchCurrentCollateral = () => {
+        fetch(
+            positionStatsCacheEndpoint +
+                new URLSearchParams({
+                    user: position.user,
+                    bidTick: position.bidTick.toString(),
+                    askTick: position.askTick.toString(),
+                    base: position.base,
+                    quote: position.quote,
+                    poolIdx: poolIndex.toString(),
+                    chainId: position?.chainId || '0x5',
+                    positionType: position.positionType,
+                    addValue: 'true',
+                    omitAPY: 'true',
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const positionStats = json?.data;
+                const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
+                const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
+                const liqBaseDisplay = liqBaseNum
+                    ? liqBaseNum < 2
+                        ? liqBaseNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                          })
+                        : liqBaseNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                    : undefined;
+                // console.log({ liqBaseDisplay });
+                setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
+
+                const liqQuoteDisplay = liqQuoteNum
+                    ? liqQuoteNum < 2
+                        ? liqQuoteNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                          })
+                        : liqQuoteNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                    : undefined;
+                // console.log({ liqQuoteDisplay });
+                setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
+            })
+            .catch(console.log);
+    };
+
+    useEffect(() => {
+        fetchCurrentCollateral();
+    }, [lastBlockNumber, JSON.stringify(position)]);
+
+    // const currentBaseQtyDisplay = position?.positionLiqBaseDecimalCorrected;
+    // const currentQuoteQtyDisplay = position?.positionLiqQuoteDecimalCorrected;
+    // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
+    // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
 
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
