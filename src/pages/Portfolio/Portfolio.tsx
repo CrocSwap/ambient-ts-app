@@ -28,8 +28,6 @@ import {
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { dividerClasses } from '@mui/material';
-import { not } from 'ajv/dist/compile/codegen';
 
 const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2;
 
@@ -528,8 +526,9 @@ export default function Portfolio(props: propsIF) {
     // console.log({ secondaryEnsName });
     // console.log({ ensName });
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
-    const hideTabs = useMediaQuery('(max-width: 1200px)') && showTabsAndNotExchange;
-    const hideExchange = useMediaQuery('(max-width: 1200px)') && !showTabsAndNotExchange;
+    // const hideTabs = useMediaQuery('(max-width: 1200px)') && showTabsAndNotExchange;
+    // const hideExchange = useMediaQuery('(max-width: 1200px)') && !showTabsAndNotExchange;
+    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
@@ -558,7 +557,7 @@ export default function Portfolio(props: propsIF) {
 
     const notConnectedContent = (
         <div className={styles.non_connected_content}>
-            <p>Please connect wallet to view your transactions.</p>
+            <p>Please connect your wallet.</p>
             <Button flat title='Connect Wallet' action={() => openModalWallet()} />
         </div>
     );
@@ -642,12 +641,39 @@ export default function Portfolio(props: propsIF) {
         openGlobalModal: openGlobalModal,
     };
 
+    const mobilePortfolio = (
+        <section
+            style={{
+                height: 'calc(100vh - 8rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                margin: '0 auto',
+                paddingLeft: '8px',
+            }}
+        >
+            {connectedAccountActive && mobileDataToggle}
+            {!showTabsAndNotExchange ? (
+                showLoggedInButton ? (
+                    notConnectedContent
+                ) : (
+                    <PortfolioTabs {...portfolioTabsProps} />
+                )
+            ) : showLoggedInButton ? (
+                notConnectedContent
+            ) : (
+                connectedAccountActive && exchangeBalanceComponent
+            )}
+        </section>
+    );
+
+    if (showActiveMobileComponent) return mobilePortfolio;
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && <ProfileSettings {...profileSettingsProps} />}
             <PortfolioBanner {...portfolioBannerProps} />
 
-            {mobileDataToggle}
             <div
                 className={
                     fullLayoutActive
@@ -655,14 +681,15 @@ export default function Portfolio(props: propsIF) {
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton && !hideTabs ? (
+                {!showLoggedInButton ? (
                     <PortfolioTabs {...portfolioTabsProps} />
                 ) : (
-                    !hideTabs && notConnectedContent
+                    notConnectedContent
                 )}
+
                 {showLoggedInButton
                     ? notConnectedContent
-                    : connectedAccountActive && !hideExchange && exchangeBalanceComponent}
+                    : connectedAccountActive && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
                 <Modal
