@@ -267,6 +267,7 @@ export default function Chart(props: ChartData) {
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+    const [isliqTextHasValue, setIsliqTextHasValue] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -912,12 +913,17 @@ export default function Chart(props: ChartData) {
 
                 return formatAmountChartData(
                     isSameLocation && d === sameLocationData ? data : d,
-                    d === sameLocationData ||
+
+                    d === sameLocationDataMax ||
+                        d === sameLocationDataMin ||
                         d === shorterValue ||
                         d === longerValue ||
                         d === market[0].value ||
                         d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value || d === crosshairData[0].y
+                        ? d === longerValue ||
+                          d === market[0].value ||
+                          d === crosshairData[0].y ||
+                          d === sameLocationData
                             ? undefined
                             : digit
                         : d.toString().split('.')[1]?.length,
@@ -4531,6 +4537,7 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
+                isliqTextHasValue,
             );
         }
     }, [
@@ -4761,6 +4768,7 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
+            isliqTextHasValue: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -5065,10 +5073,14 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
-                            .style('left', event.offsetX - 80 + 'px');
+                        if (isliqTextHasValue) {
+                            liqTooltip
+                                .style('visibility', 'visible')
+                                .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
+                                .style('left', event.offsetX - 80 + 'px');
+                        } else {
+                            liqTooltip.style('visibility', 'hidden');
+                        }
 
                         const svgmain = d3.select(d3PlotArea.current).select('svg');
 
@@ -5184,10 +5196,14 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
-                            .style('left', event.offsetX - 80 + 'px');
+                        if (isliqTextHasValue) {
+                            liqTooltip
+                                .style('visibility', 'visible')
+                                .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
+                                .style('left', event.offsetX - 80 + 'px');
+                        } else {
+                            liqTooltip.style('visibility', 'hidden');
+                        }
 
                         liquidityData.liqHighligtedAskSeries = [];
 
@@ -5442,6 +5458,8 @@ export default function Chart(props: ChartData) {
             showTvl,
             showVolume,
             showFeeRate,
+            isliqTextHasValue,
+            liqTooltipSelectedLiqBar,
         ],
     );
 
@@ -5565,16 +5583,26 @@ export default function Chart(props: ChartData) {
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
             ).toFixed(1);
 
-            liqTooltip.html(
-                '<p>' +
-                    percentage +
-                    '%</p>' +
-                    '<p> $' +
-                    formatAmountWithoutDigit(liqTextData.totalValue, 0) +
-                    ' </p>',
-            );
+            if (percentage != null && liqTextData.totalValue != null) {
+                setIsliqTextHasValue(true);
+                liqTooltip.html(
+                    '<p>' +
+                        percentage +
+                        '%</p>' +
+                        '<p> $' +
+                        formatAmountWithoutDigit(liqTextData.totalValue, 0) +
+                        ' </p>',
+                );
+            } else {
+                liqTooltip.html('<p>' + 0 + '%</p>' + '<p> $' + 0 + ' </p>');
+                liqTooltip.style('visibility', 'hidden');
+            }
         }
     }, [liqTooltipSelectedLiqBar]);
+
+    useEffect(() => {
+        render();
+    }, [isliqTextHasValue]);
 
     // Color Picker
     useEffect(() => {
