@@ -238,6 +238,7 @@ export default function Chart(props: ChartData) {
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+    const [isliqTextHasValue, setIsliqTextHasValue] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -4383,6 +4384,7 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
+                isliqTextHasValue,
             );
         }
     }, [
@@ -4593,6 +4595,7 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
+            isliqTextHasValue: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -4897,10 +4900,15 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
-                            .style('left', event.offsetX - 80 + 'px');
+                        if (isliqTextHasValue) {
+                            liqTooltip
+                                .style('visibility', 'visible')
+                                .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
+                                .style('left', event.offsetX - 80 + 'px');
+                        } else {
+                            console.log('hidden');
+                            liqTooltip.style('visibility', 'hidden');
+                        }
 
                         const svgmain = d3.select(d3PlotArea.current).select('svg');
 
@@ -5016,17 +5024,16 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        if (
-                            liquidityData.depthLiqAskData != null &&
-                            liqTooltipSelectedLiqBar.liqPrices != null
-                        ) {
+                        if (isliqTextHasValue) {
                             liqTooltip
                                 .style('visibility', 'visible')
                                 .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
                                 .style('left', event.offsetX - 80 + 'px');
                         } else {
+                            console.log('hidden - 2');
                             liqTooltip.style('visibility', 'hidden');
                         }
+
                         liquidityData.liqHighligtedAskSeries = [];
 
                         const svgmain = d3.select(d3PlotArea.current).select('svg');
@@ -5269,7 +5276,15 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges, location.pathname],
+        [
+            candlestick,
+            bandwidth,
+            limit,
+            ranges,
+            location.pathname,
+            isliqTextHasValue,
+            liqTooltipSelectedLiqBar,
+        ],
     );
 
     function showCrosshairVertical() {
@@ -5340,45 +5355,42 @@ export default function Chart(props: ChartData) {
                     );
             };
 
-            if (liqTooltipSelectedLiqBar.liqPrices != null) {
-                if (liqMode === 'Depth') {
-                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                        liqTextData.totalValue = snap(
-                            liquidityData.depthLiqAskData,
-                            liqTooltipSelectedLiqBar.liqPrices,
-                        );
-                    } else {
-                        liqTextData.totalValue = snap(
-                            liquidityData.depthLiqBidData,
-                            liqTooltipSelectedLiqBar.liqPrices,
-                        );
-                    }
+            if (liqMode === 'Depth') {
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                    liqTextData.totalValue = snap(
+                        liquidityData.depthLiqAskData,
+                        liqTooltipSelectedLiqBar.liqPrices,
+                    );
                 } else {
-                    if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                        liquidityData.liqAskData.map((liqData: any) => {
-                            if (
-                                liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
-                                poolPriceDisplay > liqData.liqPrices
-                            ) {
-                                liqTextData.totalValue =
-                                    liqTextData.totalValue + liqData.deltaAverageUSD;
-                            }
-                        });
-                    } else {
-                        liquidityData.liqBidData.map((liqData: any) => {
-                            if (
-                                liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
-                                poolPriceDisplay < liqData.liqPrices
-                            ) {
-                                liqTextData.totalValue =
-                                    liqTextData.totalValue + liqData.deltaAverageUSD;
-                            }
-                        });
-                    }
+                    liqTextData.totalValue = snap(
+                        liquidityData.depthLiqBidData,
+                        liqTooltipSelectedLiqBar.liqPrices,
+                    );
                 }
             } else {
-                liqTooltip.style('visibility', 'hidden');
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                    liquidityData.liqAskData.map((liqData: any) => {
+                        if (
+                            liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                            poolPriceDisplay > liqData.liqPrices
+                        ) {
+                            liqTextData.totalValue =
+                                liqTextData.totalValue + liqData.deltaAverageUSD;
+                        }
+                    });
+                } else {
+                    liquidityData.liqBidData.map((liqData: any) => {
+                        if (
+                            liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                            poolPriceDisplay < liqData.liqPrices
+                        ) {
+                            liqTextData.totalValue =
+                                liqTextData.totalValue + liqData.deltaAverageUSD;
+                        }
+                    });
+                }
             }
+
             // const absoluteDifference = Math.abs(difference)
 
             const pinnedTick = getPinnedTickFromDisplayPrice(
@@ -5394,16 +5406,28 @@ export default function Chart(props: ChartData) {
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
             ).toFixed(1);
 
-            liqTooltip.html(
-                '<p>' +
-                    percentage +
-                    '%</p>' +
-                    '<p> $' +
-                    formatAmountWithoutDigit(liqTextData.totalValue, 0) +
-                    ' </p>',
-            );
+            console.log(isliqTextHasValue);
+            if (percentage != null && liqTextData.totalValue != null) {
+                setIsliqTextHasValue(true);
+                console.log(isliqTextHasValue);
+                liqTooltip.html(
+                    '<p>' +
+                        percentage +
+                        '%</p>' +
+                        '<p> $' +
+                        formatAmountWithoutDigit(liqTextData.totalValue, 0) +
+                        ' </p>',
+                );
+            } else {
+                liqTooltip.html('<p>' + 0 + '%</p>' + '<p> $' + 0 + ' </p>');
+                liqTooltip.style('visibility', 'hidden');
+            }
         }
     }, [liqTooltipSelectedLiqBar]);
+
+    useEffect(() => {
+        render();
+    }, [isliqTextHasValue]);
 
     // Color Picker
     useEffect(() => {
