@@ -4906,7 +4906,6 @@ export default function Chart(props: ChartData) {
                                 .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
                                 .style('left', event.offsetX - 80 + 'px');
                         } else {
-                            console.log('hidden');
                             liqTooltip.style('visibility', 'hidden');
                         }
 
@@ -5030,7 +5029,6 @@ export default function Chart(props: ChartData) {
                                 .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
                                 .style('left', event.offsetX - 80 + 'px');
                         } else {
-                            console.log('hidden - 2');
                             liqTooltip.style('visibility', 'hidden');
                         }
 
@@ -5406,10 +5404,8 @@ export default function Chart(props: ChartData) {
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
             ).toFixed(1);
 
-            console.log(isliqTextHasValue);
             if (percentage != null && liqTextData.totalValue != null) {
                 setIsliqTextHasValue(true);
-                console.log(isliqTextHasValue);
                 liqTooltip.html(
                     '<p>' +
                         percentage +
