@@ -62,6 +62,7 @@ export const useSortedPositions = (
         const ambient: PositionIF[] = [];
         const empty: PositionIF[] = [];
         const huh: PositionIF[] = [];
+
         const checkInRange = (val: number, low: number, high: number): boolean => {
             return val > low && val < high;
         };
@@ -78,7 +79,20 @@ export const useSortedPositions = (
                 huh.push(pos);
             }
         });
-        return [...outOfRange, ...inRange, ...ambient, ...empty, ...huh];
+
+        const outOfRangeAfterSecondarySort: PositionIF[] = sortByTime(outOfRange);
+        const inRangeAfterSecondarySorte: PositionIF[] = sortByTime(inRange);
+        const ambientAfterSecondarySort: PositionIF[] = sortByTime(ambient);
+        const emptyAfterSecondarySort: PositionIF[] = sortByTime(empty);
+        const huhAfterSecondarySort: PositionIF[] = sortByTime(huh);
+
+        return [
+            ...outOfRangeAfterSecondarySort,
+            ...inRangeAfterSecondarySorte,
+            ...ambientAfterSecondarySort,
+            ...emptyAfterSecondarySort,
+            ...huhAfterSecondarySort,
+        ];
     };
 
     // column the user wants the table sorted by
@@ -91,7 +105,7 @@ export const useSortedPositions = (
         // variable to hold output
         let sortedData: PositionIF[];
         // router to apply a specific sort function
-        console.log({ data });
+        // console.log({ data });
         switch (sortBy) {
             case 'id':
                 sortedData = sortById(data);
@@ -133,9 +147,9 @@ export const useSortedPositions = (
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
         const poss = sortData(positions);
-        console.log({ poss });
+        // console.log({ poss });
         return poss;
-    }, [sortBy, reverseSort, positions.length]);
+    }, [sortBy, reverseSort, JSON.stringify(positions)]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };

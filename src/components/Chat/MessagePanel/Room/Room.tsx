@@ -3,8 +3,9 @@ import styles from './Room.module.css';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+// import { BsSuitHeartFill } from 'react-icons/bs';
 import { useState, useEffect } from 'react';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -34,44 +35,56 @@ interface RoomProps {
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     room: any;
+    isCurrentPool: any;
+    setIsCurrentPool: any;
+    showCurrentPoolButton: any;
+    setShowCurrentPoolButton: any;
 }
 export default function RoomDropdown(props: RoomProps) {
-    const { currentPool, isFullScreen } = props;
+    const {
+        currentPool,
+        isFullScreen,
+        isCurrentPool,
+        setIsCurrentPool,
+        showCurrentPoolButton,
+        setShowCurrentPoolButton,
+    } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray, setRoomArray] = useState<string[]>([]);
-    const [isCurrentPool, setIsCurrentPool] = useState(false);
-    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
+    // const [isCurrentPool, setIsCurrentPool] = useState(false);
+    // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
 
+    // non-empty space
     const defaultRooms = [
         {
             id: 100,
-            name: 'Global',
+            name: '   @Global',
             value: 'Global',
         },
-        {
-            id: 101,
-            name: 'Current Pool',
-            value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-        },
+        // {
+        //     id: 101,
+        //     name: 'Current Pool',
+        //     value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+        // },
     ];
 
     const isFullScreenDefaultRooms = [
         {
             id: 100,
-            name: 'Global',
+            name: '@Global',
             value: 'Global',
         },
     ];
 
-    useEffect(() => {
-        defaultRooms.pop;
-        defaultRooms.push({
-            id: 101,
-            name: 'Current Pool',
-            value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
-        });
-    }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
+    // useEffect(() => {
+    //     defaultRooms.pop;
+    //     defaultRooms.push({
+    //         id: 101,
+    //         name: 'Current Pool',
+    //         value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
+    //     });
+    // }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
 
     useEffect(() => {
         if (isCurrentPool) {
@@ -94,35 +107,37 @@ export default function RoomDropdown(props: RoomProps) {
         roomArray.splice(0, middleIndex);
     }, []);
 
-    useEffect(() => {
-        if (props.selectedRoom === 'Global') {
-            const roomArr: string[] = [];
-            rooms?.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-            });
-            setRoomArray(() => {
-                return roomArr;
-            });
-        } else {
-            const roomArr: string[] = [];
-            rooms.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-            });
-            setRoomArray(() => {
-                return roomArr;
-            });
-            const index = roomArr.indexOf(props.selectedRoom);
-            roomArr.splice(index, 1);
-            if (index > -1) {
-                // only splice array when item is found
-                setRoomArray(() => {
-                    return roomArr;
-                });
-            }
-        }
-    }, [props.selectedRoom]);
-
     const rooms = props.favePools;
+
+    useEffect(() => {
+        // if (props.selectedRoom === 'Global') {
+        const roomArr: string[] = [];
+        rooms?.map((pool: PoolIF) => {
+            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+        });
+        setRoomArray(() => {
+            return roomArr;
+        });
+        // } else {
+        //     const roomArr: string[] = [];
+        //     rooms.map((pool: PoolIF) => {
+        //         roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+        //     });
+        //     console.log({ roomArr });
+        //     setRoomArray(() => {
+        //         return roomArr;
+        //     });
+        //     const index = roomArr.indexOf(props.selectedRoom);
+        //     roomArr.splice(index, 1);
+        //     if (index > -1) {
+        //         // only splice array when item is found
+        //         setRoomArray(() => {
+        //             return roomArr;
+        //         });
+        //     }
+        // }
+    }, [props.selectedRoom, rooms]);
+
     const [isActive, setIsActive] = useState(false);
 
     const handleMouseOver = () => {
@@ -153,7 +168,7 @@ export default function RoomDropdown(props: RoomProps) {
     }
 
     function handleRoomClickCurrentPool() {
-        props.setRoom(currentPool.baseToken.symbol + currentPool.quoteToken.symbol);
+        props.setRoom(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
         setShowCurrentPoolButton(false);
         setIsActive(false);
     }
@@ -162,7 +177,8 @@ export default function RoomDropdown(props: RoomProps) {
         if (room === 'Global') {
             return '';
         } else {
-            return <BsSuitHeartFill className={styles.star_icon} />;
+            return '';
+            // return <BsSuitHeart className={styles.star_icon} />;
         }
     }
 
@@ -170,7 +186,8 @@ export default function RoomDropdown(props: RoomProps) {
         if (selectedRoom === 'Global') {
             return '';
         } else {
-            return <BsSuitHeartFill className={styles.star_icon_selected_room} />;
+            return '';
+            // return <BsSuitHeartFill className={styles.star_icon_selected_room} />;
         }
     }
 
@@ -201,35 +218,27 @@ export default function RoomDropdown(props: RoomProps) {
                 }
             }
         } else {
-            if (selectedRoom === 'Global') {
-                return (
+            // if (selectedRoom === 'Global') {
+            //     return '';
+            // } else {
+            {
+                return defaultRooms.reverse().map((tab) => (
                     <div
                         className={styles.dropdown_item}
-                        key={defaultRooms[1].id}
-                        data-value={defaultRooms[1].value}
-                        onClick={(event: any) => handleRoomClick(event, defaultRooms[1].name)}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) => handleRoomClick(event, tab.name)}
                     >
-                        {handleShowRooms(defaultRooms[1].name)}
-                        {defaultRooms[1].name}
+                        {handleShowRooms(tab.name)}
+                        {tab.name}
                     </div>
-                );
-            } else {
-                {
-                    return defaultRooms.reverse().map((tab) => (
-                        <div
-                            className={styles.dropdown_item}
-                            key={tab.id}
-                            data-value={tab.value}
-                            onClick={(event: any) => handleRoomClick(event, tab.name)}
-                        >
-                            {handleShowRooms(tab.name)}
-                            {tab.name}
-                        </div>
-                    ));
-                }
+                ));
             }
+            // }
         }
     }
+
+    const smallScrenView = useMediaQuery('(max-width: 968px)');
 
     return (
         <div className={styles.dropdown}>
@@ -270,7 +279,35 @@ export default function RoomDropdown(props: RoomProps) {
                                 data-icon='glyphicon glyphicon-eye-open'
                                 onClick={(event: any) => handleRoomClick(event, pool)}
                             >
-                                <BsSuitHeart className={styles.star_icon} />
+                                <svg
+                                    width={smallScrenView ? '15px' : '20px'}
+                                    height={smallScrenView ? '15px' : '20px'}
+                                    viewBox='0 0 15 15'
+                                    fill='none'
+                                    xmlns='http://www.w3.org/2000/svg'
+                                >
+                                    <g clipPath='url(#clip0_1874_47746)'>
+                                        <path
+                                            d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
+                                            fill={'#6b6f7d'}
+                                            // fill={isButtonFavorited ? '#EBEBFF' : 'none'}
+                                            stroke='#6b6f7d'
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                        />
+                                    </g>
+                                    <defs>
+                                        <clipPath id='clip0_1874_47746'>
+                                            <rect
+                                                width='14'
+                                                height='14'
+                                                fill='white'
+                                                transform='translate(0.600098 0.599976)'
+                                            />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                {/* <BsSuitHeart className={styles.star_icon} /> */}
 
                                 {pool}
                             </div>

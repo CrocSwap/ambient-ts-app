@@ -21,7 +21,8 @@ interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
     shareOptionsDisplay: JSX.Element;
     // isDenomBase: boolean;
     // isTokenABase: boolean;
@@ -29,7 +30,14 @@ interface propsIF {
 
 // main react functional component
 export default function SwapHeader(props: propsIF) {
-    const { swapSlippage, isPairStable, isOnTradeRoute, openGlobalModal } = props;
+    const {
+        swapSlippage,
+        isPairStable,
+        isOnTradeRoute,
+        openGlobalModal,
+        bypassConfirm,
+        toggleBypassConfirm,
+    } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -45,9 +53,12 @@ export default function SwapHeader(props: propsIF) {
         <Modal noHeader title='modal' onClose={closeModal}>
             <TransactionSettings
                 module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                toggleFor='swap'
                 slippage={swapSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
             />
         </Modal>
     ) : null;

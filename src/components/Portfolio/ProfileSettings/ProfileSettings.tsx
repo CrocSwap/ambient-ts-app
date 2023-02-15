@@ -45,7 +45,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const [id, setId] = useState('');
     const { setShowProfileSettings, imageData, openGlobalModal } = props;
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const host = 'http://crocswap-chat.herokuapp.com/';
+    const host = 'https://ambichat.link:5000';
     const nameDisplay = (
         <div className={styles.row}>
             <h4>Name</h4>

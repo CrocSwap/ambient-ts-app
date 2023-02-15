@@ -8,17 +8,30 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 // import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 // import { setSlippageTolerance } from '../../../utils/state/tradeDataSlice';
 import { SlippagePairIF } from '../../../utils/interfaces/exports';
+import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
+import DividerDark from '../DividerDark/DividerDark';
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
+    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order' | 'Reposition';
+    toggleFor: string;
     slippage: SlippagePairIF;
     isPairStable: boolean;
     onClose: () => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose } = props;
+    const {
+        module,
+        toggleFor,
+        slippage,
+        isPairStable,
+        onClose,
+        bypassConfirm,
+        toggleBypassConfirm,
+    } = props;
 
     // const dispatch = useAppDispatch();
 
@@ -62,6 +75,16 @@ export default function TransactionSettings(props: propsIF) {
                     handleKeyDown={handleKeyDown}
                 />
             ) : null}
+            <DividerDark />
+            <DividerDark />
+
+            <ConfirmationModalControl
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor={toggleFor}
+                displayInSettings={true}
+            />
+
             <div className={styles.button_container}>
                 {shouldDisplaySlippageTolerance ? (
                     <Button title='Submit' action={handleSubmit} flat={true} />

@@ -94,7 +94,7 @@
 }
 
 .dropdown_btn {
-    padding: 15px 16px;
+    padding: 4px 16px;
     background: #171d27;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
@@ -127,7 +127,7 @@
 }
 
 .dropdown_btn_isActive {
-    padding: 15px 16px;
+    padding: 4px 16px;
     background: #171d27;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
@@ -151,6 +151,10 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    gap: 4px;
     transition: all 0.2s;
     color: rgba(235, 235, 255, 0.4);
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }

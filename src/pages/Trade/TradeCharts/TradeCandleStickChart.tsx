@@ -80,6 +80,11 @@ interface ChartData {
     handlePulseAnimation: (type: string) => void;
     fetchingCandle: boolean;
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
+    minPrice: number;
+    maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    showSidebar: boolean;
 }
 
 export interface ChartUtils {
@@ -113,6 +118,11 @@ export default function TradeCandleStickChart(props: ChartData) {
         handlePulseAnimation,
         // fetchingCandle,
         setFetchingCandle,
+        minPrice,
+        maxPrice,
+        rescaleRangeBoundariesWithSlider,
+        seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -371,11 +381,13 @@ export default function TradeCandleStickChart(props: ChartData) {
                 ])
                 .range([1, 550]);
 
-            const liqBoundaryData = props.liquidityData.ranges.find((liq: any) =>
-                denominationsInBase
-                    ? liq.upperBoundInvPriceDecimalCorrected < barThreshold
-                    : liq.lowerBoundPriceDecimalCorrected > barThreshold,
-            );
+            const liqBoundaryData = props.liquidityData.ranges.find((liq: any) => {
+                return denominationsInBase
+                    ? liq.upperBoundInvPriceDecimalCorrected < barThreshold &&
+                          liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
+                    : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                          liq.upperBoundPriceDecimalCorrected !== '+inf';
+            });
 
             const liqBoundary =
                 liqBoundaryData !== undefined
@@ -774,6 +786,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                         activeTimeFrame={activeTimeFrame}
                         liquidityScale={liquidityScale}
                         handlePulseAnimation={handlePulseAnimation}
+                        minPrice={minPrice}
+                        maxPrice={maxPrice}
+                        rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
+                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        showSidebar={showSidebar}
                     />
                 ) : (
                     <>{loading}</>

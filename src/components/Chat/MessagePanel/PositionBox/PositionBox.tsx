@@ -168,6 +168,7 @@ export default function PositionBox(props: propsIF) {
             {hashMsg && hashMsg.split(' ') && trimString(hashMsg, 6, 4, '…')} copied
         </SnackbarComponent>
     );
+
     function handleCopyAddress() {
         const hashMsg = message.split(' ').find((item) => item.includes('0x'));
 
@@ -209,14 +210,14 @@ export default function PositionBox(props: propsIF) {
                             <div className={styles.address_box}>
                                 <div className={styles.address}>{getPositionAdress()}</div>
 
-                                <div>
+                                <div style={{ cursor: 'pointer' }}>
                                     <FiCopy
                                         size={19}
                                         color='rgba(235, 235, 255, 0.4)'
                                         onClick={handleCopyAddress}
                                     />
                                 </div>
-                                <div>
+                                <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
                                         size={20}
                                         color='rgba(235, 235, 255, 0.4)'
@@ -348,13 +349,13 @@ export default function PositionBox(props: propsIF) {
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>{getPositionAdress()}</div>
-                                <div>
+                                <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
                                         size={22}
                                         color='rgba(235, 235, 255, 0.4)'
                                     />
                                 </div>
-                                <div>
+                                <div style={{ cursor: 'pointer' }}>
                                     <FiCopy onClick={handleCopyAddress} />
                                 </div>
                             </div>

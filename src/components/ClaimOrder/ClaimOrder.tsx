@@ -330,7 +330,7 @@ export default function ClaimOrder(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <div>
+        <div style={{ padding: '1rem' }}>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
                 title={showConfirmation ? '' : 'Claim Limit Order'}

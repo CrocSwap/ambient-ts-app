@@ -353,6 +353,10 @@ export const graphDataSlice = createSlice({
             state.changesByUser = action.payload;
         },
         addChangesByUser: (state, action: PayloadAction<Array<TransactionIF>>) => {
+            // const payload = action.payload;
+            // console.log({ payload });
+            const newChangesArray: Array<TransactionIF> = [];
+
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
@@ -360,13 +364,16 @@ export const graphDataSlice = createSlice({
                     (tx) => tx.tx.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
-                    state.changesByUser.changes = [action.payload[index]].concat(
-                        state.changesByUser.changes,
-                    );
+                    newChangesArray.push(action.payload[index]);
+                    // state.changesByUser.changes = [action.payload[index]].concat(
+                    //     state.changesByUser.changes,
+                    // );
                 } else {
                     state.changesByUser.changes[indexOfTxInState] = action.payload[index];
                 }
             }
+            if (newChangesArray.length)
+                state.changesByUser.changes = newChangesArray.concat(state.changesByUser.changes);
         },
         addLimitOrderChangesByUser: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {

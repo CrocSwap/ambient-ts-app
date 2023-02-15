@@ -2,7 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -20,7 +20,10 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { updateApy } from '../../../../App/functions/getPositionData';
+import {
+    // updateApy,
+    updatePositionStats,
+} from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -139,7 +142,7 @@ export default function Ranges(props: propsIF) {
 
     const userPositionsToDisplayOnTrade = positionsByUserMatchingSelectedTokens.filter(
         (position) => {
-            if (position.positionLiq !== '0') {
+            if (position.positionLiq !== '0' || position.source === 'manual') {
                 return true;
             } else {
                 return false;
@@ -151,17 +154,17 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
 
-    const top3Positions = useMemo(() => {
-        const sortByApy = (unsortedData: PositionIF[]) =>
-            [...unsortedData].sort((a, b) => b.apy - a.apy);
-        const dataByApy = sortByApy(rangeData);
-        const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
-        return topThree;
-    }, [rangeData]);
+    // const top3Positions = useMemo(() => {
+    //     const sortByApy = (unsortedData: PositionIF[]) =>
+    //         [...unsortedData].sort((a, b) => b.apy - a.apy);
+    //     const dataByApy = sortByApy(rangeData);
+    //     const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
+    //     return topThree;
+    // }, [rangeData]);
 
-    useEffect(() => {
-        false && console.log(top3Positions);
-    }, [top3Positions]);
+    // useEffect(() => {
+    //     false && console.log(top3Positions);
+    // }, [top3Positions]);
 
     useEffect(() => {
         if (
@@ -208,7 +211,7 @@ export default function Ranges(props: propsIF) {
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updateApy(position);
+                    return updatePositionStats(position);
                 }),
             )
                 .then((updatedPositions) => {
@@ -220,6 +223,7 @@ export default function Ranges(props: propsIF) {
                                 (position) => position.user.toLowerCase() === account.toLowerCase(),
                             );
                             if (updatedPositionsMatchingUser.length)
+                                // console.log({ updatedPositionsMatchingUser });
                                 dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
                     } else {
@@ -465,11 +469,12 @@ export default function Ranges(props: propsIF) {
             ))}
         </ul>
     );
-    const rowItemContent = usePaginateDataOrNull?.map((position: PositionIF, idx) => (
+    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
-            key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
+            key={idx}
+            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}

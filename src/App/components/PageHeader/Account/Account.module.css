@@ -126,10 +126,11 @@
     height: 250px;
     right: -40px;
     z-index: 9;
-    padding: 1rem;
+    padding: 8px 1rem;
 
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 1rem;
     border-radius: var(--border-radius);
 }
@@ -147,132 +148,6 @@
     pointer-events: auto;
 }
 
-.ambient_card_container {
-    margin-top: 1rem;
-    background: var(--dark1);
-    border-radius: var(--border-radius);
-    width: 100%;
-    height: 100px;
-    position: relative;
-    padding: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.ambient_card_content {
-    position: absolute;
-    background: #1d4350; /* fallback for old browsers */
-    /* background: -webkit-linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1));  
-background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1)); */
-    background: var(--dark3);
-    border-bottom: 1px dotted var(--text-grey-light);
-    width: 90%;
-    height: 100px;
-    top: -20px;
-}
-
-.name_display_container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.name_display_container .name_display {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-}
-
-.name_display_container .name_display h2 {
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-    color: var(--text-grey-white);
-}
-.name_display_container .wallet_display {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    align-items: center;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-}
-
-.wallet_display p {
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-}
-
-.token_qty_display {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4px;
-    border-bottom: 1px solid var(--text-grey-dark);
-}
-.token_display {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-}
-.token_display img {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-}
-.token_display h2,
-.value_display h2 {
-    font-family: sans-serif;
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-    color: var(--text-grey-white);
-}
-.value_display {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.value_display p {
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-light);
-}
-
-.actions_container {
-    width: 100%;
-    /* position: absolute; */
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    bottom: 0;
-    z-index: 9;
-}
-.actions_container button,
-.actions_container a {
-    cursor: pointer;
-    background: transparent;
-    background: var(--dark3);
-    border: none;
-    outline: none;
-    padding: 8px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    color: var(--text-grey-light);
-    transition: all var(--animation-speed) ease-in-out;
-}
-
-.actions_container button:hover,
-.actions_container a:hover {
-    opacity: 0.8;
-}
-.actions_container button:first-of-type {
-    color: var(--negative);
-}
 
 .block_number_div {
     margin-right: 10px;
@@ -280,19 +155,20 @@ background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1))
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-
 }
 
-.block_number_div span{
+.block_number_div span {
+    cursor: default !important;
+
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-white);
-    color: var(--text-grey-white)
-
+    color: var(--text-grey-white);
 }
 
 /* page block sign */
 .page_block_sign {
+    cursor: default !important;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -324,10 +200,8 @@ background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1))
     }
 }
 
-
-
 @media (max-width: 600px) {
-.wallet_name{
-    display: none;
-}
+    .wallet_name {
+        display: none;
+    }
 }

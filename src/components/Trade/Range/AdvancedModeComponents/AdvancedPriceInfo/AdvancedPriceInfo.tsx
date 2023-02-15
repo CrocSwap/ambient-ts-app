@@ -1,6 +1,5 @@
 import styles from './AdvancedPriceInfo.module.css';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
-import truncateDecimals from '../../../../../utils/data/truncateDecimals';
 
 interface propsIF {
     tokenPair: TokenPairIF;
@@ -9,18 +8,26 @@ interface propsIF {
     isTokenABase: boolean;
     minimumSpan: number;
     isOutOfRange: boolean;
+    aprPercentage: number | undefined;
+    daysInRange: number | undefined;
 }
 
 export default function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
-    const { tokenPair, poolPriceDisplay, isDenomBase, isTokenABase, minimumSpan, isOutOfRange } =
-        props;
+    const {
+        tokenPair,
+        poolPriceDisplay,
+        isDenomBase,
+        isTokenABase,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        minimumSpan,
+        isOutOfRange,
+        aprPercentage,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        daysInRange,
+    } = props;
 
     const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
-
-    // const displayPriceString = isDenomBase
-    //     ? truncateDecimals(1 / parseFloat(poolPriceDisplay), 4).toString()
-    //     : truncateDecimals(parseFloat(poolPriceDisplay), 4).toString();
 
     const currentPrice = (
         <div className={styles.price_info_row}>
@@ -33,14 +40,20 @@ export default function AdvancedPriceInfo(props: propsIF) {
         </div>
     );
 
-    // JSX frag to display the estimated APR of the position
-    const estimatedAPR = (
-        <div
-            className={isOutOfRange ? styles.apr_display_out_of_range : styles.apr_display_in_range}
-        >
-            <div>
-                Est. APR | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%
-            </div>
+    const aprPercentageString = aprPercentage
+        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })}%`
+        : '…';
+
+    const estimatedAPR = isOutOfRange ? (
+        <div className={styles.apr_display_out_of_range}>
+            <div>Est. APR | 0%</div>
+        </div>
+    ) : (
+        <div className={styles.apr_display_in_range}>
+            <div>{aprPercentageString}</div>
         </div>
     );
 

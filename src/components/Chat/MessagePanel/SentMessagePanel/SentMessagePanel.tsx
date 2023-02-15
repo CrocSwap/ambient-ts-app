@@ -5,10 +5,12 @@ import { useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
+import { FiDelete } from 'react-icons/fi';
+import useChatApi from '../../Service/ChatApi';
 
 interface SentMessageProps {
     message: Message;
-    name: string;
+    ensName: string;
     isCurrentUser: boolean;
     currentUser: string | undefined;
     userImageData: string[];
@@ -16,12 +18,15 @@ interface SentMessageProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
+    moderator: boolean;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
 
     // const { userImageData } = props;
+
+    const { deleteMessage } = useChatApi();
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -35,23 +40,15 @@ export default function SentMessagePanel(props: SentMessageProps) {
         return strTime;
     };
 
-    // useEffect(() => {
-    //     console.log('sent message panel name: ',props.name,props.message.ensName)
-    // }, [props.message]);
-
     function getName() {
         if (
+            props.message.ensName === 'defaultValue' ||
             props.message.ensName === null ||
-            props.message.ensName === undefined ||
-            props.message.ensName === ''
+            props.message.ensName === undefined
         ) {
             return props.message.walletID.slice(0, 6) + '...';
         } else {
-            if (props.message.ensName.startsWith('0x')) {
-                return props.message.walletID.slice(0, 6) + '...';
-            } else {
-                return props.message.ensName;
-            }
+            return props.message.ensName;
         }
     }
 
@@ -63,7 +60,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
         </SnackbarComponent>
     );
     function handleCopyAddress(item: string) {
@@ -75,13 +72,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const messagesArray = props.message.message.split(' ');
         if (props.message.isMentionMessage === true) {
             return (
-                <p className={styles.message}>
+                <p>
                     {messagesArray.map((word, index) => (
                         <span
                             key={index}
                             className={` ${
                                 props.isUserLoggedIn
-                                    ? word.slice(1) === props.name
+                                    ? word.slice(1) === props.ensName ||
+                                      word.slice(1) === props.connectedAccountActive
                                         ? styles.mention_message
                                         : styles.message
                                     : styles.message
@@ -105,7 +103,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 props.isUserLoggedIn
                     ? props.message.isMentionMessage === false
                         ? styles.sent_message_body
-                        : props.message.mentionedName?.trim() === props.name?.trim()
+                        : props.message.mentionedName?.trim() === props.ensName?.trim() ||
+                          props.message.mentionedName?.trim() ===
+                              props.connectedAccountActive?.trim()
                         ? styles.sent_message_body_with_mention
                         : styles.sent_message_body
                     : styles.sent_message_body
@@ -120,7 +120,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
             <div className={styles.message_item}>
                 <div
                     className={props.isCurrentUser ? styles.current_user_name : styles.name}
-                    onClick={() => handleCopyAddress(props.message.ensName)}
+                    onClick={() =>
+                        handleCopyAddress(
+                            props.message.ensName === 'defaultValue'
+                                ? props.message.walletID
+                                : props.message.ensName,
+                        )
+                    }
                 >
                     {getName()}
                 </div>
@@ -132,7 +138,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 />
                 {!isPosition && mentionedMessage()}
             </div>
+            {props.moderator ? (
+                <FiDelete color='red' onClick={() => deleteMessage(props.message._id)} />
+            ) : (
+                ''
+            )}
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
+
             {snackbarContent}
         </div>
     );

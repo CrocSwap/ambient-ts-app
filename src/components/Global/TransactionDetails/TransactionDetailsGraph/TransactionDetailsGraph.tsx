@@ -6,6 +6,7 @@ import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetc
 import { useAppChain } from '../../../../App/hooks/useAppChain';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
@@ -31,6 +32,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
     const quoteTokenAddress = tx.quote;
 
     const chainId = tx.chainId;
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const denominationsInBase = tradeData.isDenomBase;
 
     // const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
     // const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
@@ -154,7 +158,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
                 .crossValue((d: any) => d.time * 1000)
-                .mainValue((d: any) => d.invPriceCloseExclMEVDecimalCorrected)
+                .mainValue((d: any) =>
+                    denominationsInBase
+                        ? d.invPriceCloseExclMEVDecimalCorrected
+                        : d.priceCloseExclMEVDecimalCorrected,
+                )
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', '#7371FC');
                 });
@@ -209,13 +217,18 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 return horizontalBand;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, denominationsInBase]);
 
     useEffect(() => {
         if (graphData !== undefined) {
             const yExtent = d3fc
                 .extentLinear()
-                .accessors([(d: any) => d.invPriceCloseExclMEVDecimalCorrected])
+                .accessors([
+                    (d: any) =>
+                        denominationsInBase
+                            ? d.invPriceCloseExclMEVDecimalCorrected
+                            : d.priceCloseExclMEVDecimalCorrected,
+                ])
                 .pad([0.05, 0.1]);
 
             const xExtent = d3fc.extentDate().accessors([(d: any) => d.time * 1000]);
@@ -230,19 +243,27 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             } else if (transactionType === 'limitOrder') {
                 if (tx !== undefined) {
                     const lowBoundary = Math.min(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
                     const topBoundary = Math.max(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
 
                     const buffer =
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 50;
+                        ) / 6;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -256,19 +277,27 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             } else if (transactionType === 'liqchange') {
                 if (tx !== undefined && tx.positionType !== 'ambient') {
                     const lowBoundary = Math.min(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
                     const topBoundary = Math.max(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
 
                     const buffer =
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 50;
+                        ) / 6;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -383,28 +412,36 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                     if (transactionType === 'limitOrder' && tx !== undefined) {
                         horizontalBandData[0] = [
-                            tx.bidTickInvPriceDecimalCorrected,
-                            tx.askTickInvPriceDecimalCorrected,
+                            denominationsInBase
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected,
+                            denominationsInBase
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected,
                         ];
 
-                        // finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                        // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
                         //     priceLine,
                         // );
-                        // startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(priceLine);
+                        // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(priceLine);
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                     }
 
                     if (transactionType === 'liqchange' && tx !== undefined) {
                         if (tx.positionType !== 'ambient') {
                             horizontalBandData[0] = [
-                                tx.bidTickInvPriceDecimalCorrected,
-                                tx.askTickInvPriceDecimalCorrected,
+                                denominationsInBase
+                                    ? tx.bidTickInvPriceDecimalCorrected
+                                    : tx.bidTickPriceDecimalCorrected,
+                                denominationsInBase
+                                    ? tx.askTickInvPriceDecimalCorrected
+                                    : tx.askTickPriceDecimalCorrected,
                             ];
 
-                            // finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                            // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
                             //     priceLine,
                             // );
-                            // startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(
+                            // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(
                             //     priceLine,
                             // );
                             horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
@@ -416,7 +453,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     if (transactionType === 'swap' && tx !== undefined) {
                         // priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
                         crossPointJoin(svg, [
-                            [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
+                            [
+                                {
+                                    x: tx.time * 1000,
+                                    y: denominationsInBase
+                                        ? tx.invPriceDecimalCorrected
+                                        : tx.priceDecimalCorrected,
+                                },
+                            ],
                         ]).call(crossPoint);
                     }
 
@@ -434,7 +478,6 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
         <div
             className='main_layout_chart'
             ref={graphMainDiv}
-            id='tvl_chart'
             data-testid={'chart'}
             style={{
                 height: '100%',

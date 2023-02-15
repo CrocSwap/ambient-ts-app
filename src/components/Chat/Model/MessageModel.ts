@@ -1,5 +1,5 @@
 export interface Message {
-    _id: number;
+    _id: string;
     message: string;
     sender: string;
     createdAt: string;
@@ -7,4 +7,5 @@ export interface Message {
     walletID: string;
     isMentionMessage: boolean;
     mentionedName: string;
+    roomInfo: string;
 }

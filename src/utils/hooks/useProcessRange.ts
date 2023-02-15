@@ -8,14 +8,23 @@ import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
-export const useProcessRange = (position: PositionIF, account: string) => {
+export const useProcessRange = (
+    position: PositionIF,
+    account: string,
+    isOnPortfolioPage?: boolean,
+) => {
     const blockExplorer = 'https://goerli.etherscan.io/';
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
+
     const isDenomBase = tradeData.isDenomBase;
 
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
+    const tokenAAddress = position.base;
+    const tokenBAddress = position.quote;
+    // const tokenAAddress = tradeData.tokenA.address;
+    // const tokenBAddress = tradeData.tokenB.address;
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
@@ -26,6 +35,7 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     );
 
     const baseQty = position.positionLiqBaseTruncated;
+
     const quoteQty = position.positionLiqQuoteTruncated;
 
     const baseTokenSymbol = position.baseSymbol;
@@ -67,7 +77,14 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     }
 
     // -----------------------------POSITIONS RANGE--------------------
-    const isPositionInRange = position.isPositionInRange;
+    let isPositionInRange = position.isPositionInRange;
+
+    const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    if (!isOnPortfolioPage)
+        isPositionInRange =
+            position.positionType === 'ambient' ||
+            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
     // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
 
@@ -117,7 +134,7 @@ export const useProcessRange = (position: PositionIF, account: string) => {
     const ambientOrMin = position.positionType === 'ambient' ? '0.00' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
-    const usdValueNum = position.positionLiqTotalUSD;
+    const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined

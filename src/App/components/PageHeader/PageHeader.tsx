@@ -23,6 +23,7 @@ import NotificationCenter from '../../../components/Global/NotificationCenter/No
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -50,6 +51,7 @@ interface HeaderPropsIF {
     addRecentPool: (pool: SmallerPoolIF) => void;
     switchTheme: () => void;
     theme: string;
+    chainData: ChainSpec;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -74,6 +76,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         addRecentPool,
         theme,
         poolPriceDisplay,
+        // isUserLoggedIn,
+        chainData,
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -153,6 +157,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchTheme: switchTheme,
         theme: theme,
         lastBlockNumber: lastBlockNumber,
+        chainData: chainData,
     };
 
     // End of Page Header Functions
@@ -225,7 +230,8 @@ export default function PageHeader(props: HeaderPropsIF) {
 
         const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
         const isAddressHex =
-            pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42;
+            (pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42) ||
+            (pathNoLeadingSlash?.startsWith('account/0x') && pathNoLeadingSlash?.length == 50);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
         // console.log({ isPathValidAddress });
@@ -233,16 +239,20 @@ export default function PageHeader(props: HeaderPropsIF) {
         if (pathNoLeadingSlash === 'account') {
             document.title = 'My Account ~ ambient.finance';
         } else if (isPathValidAddress) {
+            const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            // console.log({ pathNoPrefix });
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoLeadingSlash.length > 15
-                    ? trimString(pathNoLeadingSlash, 10, 3, '…')
-                    : pathNoLeadingSlash
-                : trimString(pathNoLeadingSlash, 6, 0, '…');
+                ? pathNoPrefix.length > 15
+                    ? trimString(pathNoPrefix, 10, 3, '…')
+                    : pathNoPrefix
+                : trimString(pathNoPrefix, 6, 0, '…');
             document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
                 ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
+        } else if (location.pathname.includes('chat')) {
+            document.title = 'Chat ~ ambient.finance';
         } else {
             document.title = 'Home ~ ambient.finance';
         }
