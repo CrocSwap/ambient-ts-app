@@ -36,6 +36,7 @@ import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 // import { calcImpact } from '../../App/functions/calcImpact';
 import { FiCopy } from 'react-icons/fi';
+import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -394,33 +395,35 @@ export default function Swap(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
+    const confirmSwapModalProps = {
+        poolPriceDisplay: poolPriceDisplay,
+        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
+        isDenomBase: tradeData.isDenomBase,
+        baseTokenSymbol: tradeData.baseToken.symbol,
+        quoteTokenSymbol: tradeData.quoteToken.symbol,
+        priceImpact: priceImpact,
+        initiateSwapMethod: initiateSwap,
+        onClose: handleModalClose,
+        newSwapTransactionHash: newSwapTransactionHash,
+        txErrorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
+        resetConfirmation: resetConfirmation,
+        slippageTolerancePercentage: slippageTolerancePercentage,
+        effectivePrice: effectivePrice,
+        isSellTokenBase: isSellTokenBase,
+        bypassConfirm: bypassConfirm,
+        toggleBypassConfirm: toggleBypassConfirm,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+    };
+
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={handleModalClose} title='Swap Confirmation'>
-            <ConfirmSwapModal
-                poolPriceDisplay={poolPriceDisplay}
-                tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                isDenomBase={tradeData.isDenomBase}
-                baseTokenSymbol={tradeData.baseToken.symbol}
-                quoteTokenSymbol={tradeData.quoteToken.symbol}
-                priceImpact={priceImpact}
-                initiateSwapMethod={initiateSwap}
-                onClose={handleModalClose}
-                newSwapTransactionHash={newSwapTransactionHash}
-                txErrorCode={txErrorCode}
-                txErrorMessage={txErrorMessage}
-                showConfirmation={showConfirmation}
-                setShowConfirmation={setShowConfirmation}
-                resetConfirmation={resetConfirmation}
-                slippageTolerancePercentage={slippageTolerancePercentage}
-                effectivePrice={effectivePrice}
-                isSellTokenBase={isSellTokenBase}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-                sellQtyString={sellQtyString}
-                buyQtyString={buyQtyString}
-            />
+            <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
     ) : null;
 
@@ -545,6 +548,10 @@ export default function Swap(props: propsIF) {
     // console.log({ swapAllowed });
     // console.log({ sellQtyString });
 
+    const bypassConfirmButton = (
+        <button className={styles.bypass_confirm_button}>ByPass COnfirm</button>
+    );
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -636,13 +643,16 @@ export default function Swap(props: propsIF) {
                         sellQtyString !== 'Infinity' ? (
                             approvalButton
                         ) : (
-                            <SwapButton
-                                onClickFn={bypassConfirm ? initiateSwap : openModal}
-                                isSwapConfirmationBypassEnabled={bypassConfirm}
-                                swapAllowed={swapAllowed}
-                                swapButtonErrorMessage={swapButtonErrorMessage}
-                                bypassConfirm={bypassConfirm}
-                            />
+                            <>
+                                <SwapButton
+                                    onClickFn={bypassConfirm ? initiateSwap : openModal}
+                                    isSwapConfirmationBypassEnabled={bypassConfirm}
+                                    swapAllowed={swapAllowed}
+                                    swapButtonErrorMessage={swapButtonErrorMessage}
+                                    bypassConfirm={bypassConfirm}
+                                />
+                                <BypassConfirmSwapButton {...confirmSwapModalProps} />
+                            </>
                         )
                     ) : (
                         loginButton

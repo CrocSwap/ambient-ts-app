@@ -344,5 +344,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
+    console.log({ bypassConfirm });
+
     return <>{modal}</>;
 }
