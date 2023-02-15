@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
-import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
@@ -110,12 +110,15 @@ export default function Reposition(props: propsIF) {
     const isTokenABase = tradeData.isTokenABase;
 
     const simpleRangeWidth = tradeData.simpleRangeWidth;
+    const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
-    const currentPoolPriceTick = position.poolPriceInTicks || 0;
+    const currentPoolPriceTick = Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
+
+    const isPositionInRange =
+        position.bidTick <= currentPoolPriceTick && currentPoolPriceTick <= position.askTick;
+
     const baseTokenDecimals = position.baseDecimals || 18;
     const quoteTokenDecimals = position.quoteDecimals || 18;
-
-    const currentPoolPriceNonDisplay = tickToPrice(currentPoolPriceTick);
 
     const currentPoolDisplayPriceInBase =
         1 / toDisplayPrice(currentPoolPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
@@ -374,7 +377,7 @@ export default function Reposition(props: propsIF) {
     );
 
     useEffect(() => {
-        if (!crocEnv || !debouncedLowTick || !debouncedHighTick) {
+        if (isPositionInRange || !crocEnv || !debouncedLowTick || !debouncedHighTick) {
             return;
         }
         const pool = crocEnv.pool(position.base, position.quote);
@@ -390,6 +393,7 @@ export default function Reposition(props: propsIF) {
             setNewQuoteQtyDisplay(truncateString(quote));
         });
     }, [
+        isPositionInRange,
         crocEnv,
         debouncedLowTick, // Debounce because effect involves on-chain call
         debouncedHighTick,
@@ -439,6 +443,7 @@ export default function Reposition(props: propsIF) {
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                 />
                 <RepositionButton
+                    isPositionInRange={isPositionInRange}
                     bypassConfirm={bypassConfirm}
                     onClickFn={openModal}
                     sendRepositionTransaction={sendRepositionTransaction}
