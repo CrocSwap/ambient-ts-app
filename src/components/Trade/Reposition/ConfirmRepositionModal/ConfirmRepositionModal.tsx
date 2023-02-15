@@ -1,5 +1,4 @@
 // import Divider from '../../../Global/Divider/Divider';
-import RepositionPriceInfo from '../RepositionPriceInfo/RepositionPriceInfo';
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
@@ -10,6 +9,9 @@ import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
+import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 
 interface ConfirmRepositionModalProps {
     onClose: () => void;
@@ -30,26 +32,52 @@ interface ConfirmRepositionModalProps {
     resetConfirmation: () => void;
     txErrorCode: string;
     txErrorMessage: string;
+    minPriceDisplay: string;
+    maxPriceDisplay: string;
+    currentBaseQtyDisplayTruncated: string;
+    currentQuoteQtyDisplayTruncated: string;
+    pinnedMinPriceDisplayTruncatedInBase: string;
+    pinnedMinPriceDisplayTruncatedInQuote: string;
+    pinnedMaxPriceDisplayTruncatedInBase: string;
+    pinnedMaxPriceDisplayTruncatedInQuote: string;
+    poolPriceDisplayNum: number;
+    newBaseQtyDisplay: string;
+    newQuoteQtyDisplay: string;
+    isDenomBase: boolean;
+    isTokenABase: boolean;
 }
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
     const {
-        crocEnv,
-        position,
+        // crocEnv,
+        // position,
         tokenPair,
-        ambientApy,
-        dailyVol,
-        currentPoolPriceDisplay,
-        currentPoolPriceTick,
-        rangeWidthPercentage,
+        // ambientApy,
+        // dailyVol,
+        poolPriceDisplayNum,
+        // currentPoolPriceDisplay,
+        // currentPoolPriceTick,
+        // rangeWidthPercentage,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
         onSend,
-        setMinPrice,
-        setMaxPrice,
+        // setMinPrice,
+        // setMaxPrice,
         showConfirmation,
         setShowConfirmation,
         newRepositionTransactionHash,
         resetConfirmation,
         txErrorCode,
+        minPriceDisplay,
+        maxPriceDisplay,
+        currentBaseQtyDisplayTruncated,
+        currentQuoteQtyDisplayTruncated,
+        newBaseQtyDisplay,
+        newQuoteQtyDisplay,
+        isDenomBase,
+        isTokenABase,
         // txErrorMessage,
     } = props;
 
@@ -108,28 +136,120 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
             ? transactionSubmitted
             : confirmSendMessage;
 
-    const fullTxDetails = (
-        <div>
-            {/* <h1>confirm reposition token content here</h1> */}
-            {/* <Divider /> */}
-            <RepositionPriceInfo
-                crocEnv={crocEnv}
-                position={position}
-                rangeWidthPercentage={rangeWidthPercentage}
-                currentPoolPriceTick={currentPoolPriceTick}
-                currentPoolPriceDisplay={currentPoolPriceDisplay}
-                ambientApy={ambientApy}
-                dailyVol={dailyVol}
-                setMaxPrice={setMaxPrice}
-                setMinPrice={setMinPrice}
-                isConfirmModal={true}
-            />
-        </div>
+    // ------------------------------------
+    const dataTokenA = tokenPair.dataTokenA;
+    const dataTokenB = tokenPair.dataTokenB;
+
+    const rangeHeader = (
+        <section className={styles.position_display}>
+            <div className={styles.token_display}>
+                <div className={styles.tokens}>
+                    {dataTokenA.logoURI ? (
+                        <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='30px' />
+                    )}
+                    {dataTokenB.logoURI ? (
+                        <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='30px' />
+                    )}
+                </div>
+                <span className={styles.token_symbol}>
+                    {dataTokenA.symbol}/{dataTokenB.symbol}
+                </span>
+            </div>
+            <RangeStatus isInRange={true} isEmpty={false} isAmbient={false} />
+        </section>
+    );
+
+    const tokenAmountDisplay = (
+        <section className={styles.fee_tier_display}>
+            <div className={styles.fee_tier_container}>
+                <div className={styles.detail_line}>
+                    <div>
+                        {dataTokenA.logoURI ? (
+                            <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='20px' />
+                        )}
+                        <span>Current {dataTokenA.symbol} Collateral</span>
+                    </div>
+                    <span>{currentBaseQtyDisplayTruncated}</span>
+                </div>
+
+                <div className={styles.detail_line}>
+                    <div>
+                        {dataTokenA.logoURI ? (
+                            <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='20px' />
+                        )}
+                        <span> {dataTokenA.symbol} After Reposition</span>
+                    </div>
+                    <span>{newBaseQtyDisplay}</span>
+                </div>
+                <p className={styles.divider} />
+
+                <div className={styles.detail_line}>
+                    <div>
+                        {dataTokenB.logoURI ? (
+                            <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='20px' />
+                        )}
+                        <span>Current {dataTokenB.symbol} Collateral</span>
+                    </div>
+                    <span>{currentQuoteQtyDisplayTruncated}</span>
+                </div>
+                <div className={styles.detail_line}>
+                    <div>
+                        {dataTokenB.logoURI ? (
+                            <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='20px' />
+                        )}
+                        <span>{dataTokenB.symbol} After Reposition</span>
+                    </div>
+                    <span>{newQuoteQtyDisplay}</span>
+                </div>
+            </div>
+        </section>
+    );
+
+    const isAmbient = false;
+    const selectedRangeOrNull = !isAmbient ? (
+        <SelectedRange
+            minPriceDisplay={minPriceDisplay}
+            maxPriceDisplay={maxPriceDisplay}
+            poolPriceDisplayNum={poolPriceDisplayNum}
+            tokenPair={tokenPair}
+            denominationsInBase={isDenomBase}
+            isTokenABase={isTokenABase}
+            isAmbient={isAmbient}
+            pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
+            pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
+            pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
+            pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
+        />
+    ) : null;
+
+    const fullTxDetails2 = (
+        <>
+            {rangeHeader}
+            {tokenAmountDisplay}
+            {selectedRangeOrNull}
+            {/* <ConfirmationModalControl
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor='range'
+            /> */}
+        </>
     );
 
     return (
         <div className={styles.confirm_range_modal_container}>
-            <div>{showConfirmation ? fullTxDetails : confirmationDisplay}</div>
+            <div>{showConfirmation ? fullTxDetails2 : confirmationDisplay}</div>
             <footer className={styles.modal_footer}>{showConfirmation ? sendButton : null}</footer>
         </div>
     );
