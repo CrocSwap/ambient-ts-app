@@ -124,6 +124,15 @@ interface ChartData {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    showSidebar: boolean;
+}
+
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height,
+    };
 }
 
 export default function Chart(props: ChartData) {
@@ -161,6 +170,7 @@ export default function Chart(props: ChartData) {
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -179,6 +189,8 @@ export default function Chart(props: ChartData) {
     const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
+
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
 
     const parsedChartData = props.candleData;
 
@@ -350,6 +362,15 @@ export default function Chart(props: ChartData) {
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         if (minPrice !== 0 && maxPrice !== 0) {
@@ -1699,9 +1720,9 @@ export default function Chart(props: ChartData) {
                             event.sourceEvent.type !== 'wheel' &&
                             event.sourceEvent.timeStamp - zoomTimeout < 1
                         ) {
-                            const { isHoverCandleOrVolumeData, _selectedDate } =
+                            const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                                 candleOrVolumeDataHoverStatus(event.sourceEvent);
-                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
                         }
                     }
 
@@ -1761,6 +1782,7 @@ export default function Chart(props: ChartData) {
                     setIsMouseMoveCrosshair(false);
                 }) as any;
 
+            let firstLocation: any;
             const yAxisZoom = d3
                 .zoom()
                 .on('start', (event) => {
@@ -1768,6 +1790,7 @@ export default function Chart(props: ChartData) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
                     }
+                    firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
@@ -1836,7 +1859,7 @@ export default function Chart(props: ChartData) {
 
                     const size = (domainY[1] - domainY[0]) / factor;
 
-                    const newCenter = scaleData.yScale.invert(event.sourceEvent.offsetY);
+                    const newCenter = scaleData.yScale.invert(firstLocation.offsetY);
 
                     const diff = domainY[1] - domainY[0];
 
@@ -4549,6 +4572,7 @@ export default function Chart(props: ChartData) {
         selectedDate,
         liqMode,
         liquidityScale,
+        showSidebar,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -4641,12 +4665,25 @@ export default function Chart(props: ChartData) {
                     dateControl) ||
                     isSelectedVolume),
             _selectedDate: nearest?.date,
+            nearest: nearest,
         };
     };
 
-    const selectedDateEvent = (isHoverCandleOrVolumeData: any, _selectedDate: any) => {
+    const selectedDateEvent = (
+        isHoverCandleOrVolumeData: any,
+        _selectedDate: any,
+        nearest: any,
+    ) => {
         if (isHoverCandleOrVolumeData) {
             if (selectedDate === undefined || selectedDate.getTime() !== _selectedDate.getTime()) {
+                props.setCurrentData(nearest);
+
+                const volumeData = props.volumeData.find(
+                    (item: any) => item.time.getTime() === _selectedDate.getTime(),
+                ) as any;
+
+                props.setCurrentVolumeData(volumeData?.volume);
+
                 setSelectedDate(_selectedDate);
             } else {
                 setSelectedDate(undefined);
@@ -4828,9 +4865,9 @@ export default function Chart(props: ChartData) {
                 });
 
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
-                    const { isHoverCandleOrVolumeData, _selectedDate } =
+                    const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                         candleOrVolumeDataHoverStatus(event);
-                    selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                    selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
 
                     if (
                         (location.pathname.includes('range') ||
@@ -5394,7 +5431,18 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges, location.pathname, parsedChartData?.chartData],
+        [
+            candlestick,
+            bandwidth,
+            limit,
+            ranges,
+            location.pathname,
+            parsedChartData?.chartData,
+            windowDimensions,
+            showTvl,
+            showVolume,
+            showFeeRate,
+        ],
     );
 
     function showCrosshairVertical() {

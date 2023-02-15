@@ -1156,6 +1156,7 @@ export default function App() {
                                 addValue: 'true',
                                 sortByAPY: 'true',
                                 n: '50',
+                                minPosAge: '86400', // restrict leaderboard to position > 1 day old
                             }),
                     )
                         .then((response) => response.json())
@@ -1466,97 +1467,94 @@ export default function App() {
 
     const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
 
-    function getTime() {
-        if (candleData) {
-            return candleData.candles.map((d) => d.time);
-        } else {
-            return [0];
-        }
-    }
-    function getMinTime() {
-        return Math.min(...getTime());
-    }
+    const minTimeMemo = useMemo(() => {
+        const candleDataLength = candleData?.candles?.length;
+        if (!candleDataLength) return;
+        console.log({ candleDataLength });
+        return candleData.candles.reduce((prev, curr) => (prev.time < curr.time ? prev : curr))
+            ?.time;
+    }, [candleData?.candles?.length]);
+
+    const numDurationsNeeded = useMemo(() => {
+        if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
+        return Math.floor((minTimeMemo - domainBoundaryInSecondsDebounced) / activePeriod);
+    }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
+
+    const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
+
+    const fetchCandlesByNumDurations = (numDurations: number) =>
+        fetch(
+            candleSeriesCacheEndpoint +
+                new URLSearchParams({
+                    base: mainnetBaseTokenAddress.toLowerCase(),
+                    quote: mainnetQuoteTokenAddress.toLowerCase(),
+                    poolIdx: chainData.poolIndex.toString(),
+                    period: activePeriod.toString(),
+                    time: minTimeMemo ? minTimeMemo.toString() : '0',
+                    // time: debouncedBoundary.toString(),
+                    n: numDurations.toString(), // positive integer
+                    // page: '0', // nonnegative integer
+                    chainId: '0x1',
+                    dex: 'all',
+                    poolStats: 'true',
+                    concise: 'true',
+                    poolStatsChainIdOverride: '0x5',
+                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const fetchedCandles = json?.data;
+                // console.log({ fetchedCandles });
+                if (fetchedCandles && candleData) {
+                    const newCandles: CandleData[] = [];
+                    const updatedCandles: CandleData[] = candleData.candles;
+
+                    for (let index = 0; index < fetchedCandles.length; index++) {
+                        const messageCandle = fetchedCandles[index];
+                        const indexOfExistingCandle = candleData.candles.findIndex(
+                            (savedCandle) => savedCandle.time === messageCandle.time,
+                        );
+
+                        if (indexOfExistingCandle === -1) {
+                            newCandles.push(messageCandle);
+                        } else if (
+                            JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                            JSON.stringify(messageCandle)
+                        ) {
+                            updatedCandles[indexOfExistingCandle] = messageCandle;
+                        }
+                    }
+                    // console.log({ newCandles });
+                    const newCandleData: CandlesByPoolAndDuration = {
+                        pool: candleData.pool,
+                        duration: candleData.duration,
+                        candles: newCandles.concat(updatedCandles),
+                    };
+                    setCandleData(newCandleData);
+                }
+            })
+            .catch(console.log);
 
     useEffect(() => {
         // console.log({ debouncedBoundary });
         // console.log({ activePeriod });
         // console.log({ candleData });
 
-        console.log('domain boundary changes');
+        if (!numDurationsNeeded) return;
 
-        const minTime = getMinTime();
-        // console.log({ minTime });
+        // console.log('domain boundary changes');
 
-        const numDurationsNeeded = Math.floor(
-            (minTime - domainBoundaryInSecondsDebounced) / activePeriod,
-        );
+        // console.log({ minTimeMemo });
+        // console.log({ numDurationsNeeded });
 
-        if (
-            numDurationsNeeded > 0 &&
-            isServerEnabled &&
-            httpGraphCacheServerDomain &&
-            domainBoundaryInSecondsDebounced &&
-            minTime
-        ) {
-            console.log('fetching new candles');
-            const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
-
-            fetch(
-                candleSeriesCacheEndpoint +
-                    new URLSearchParams({
-                        base: mainnetBaseTokenAddress.toLowerCase(),
-                        quote: mainnetQuoteTokenAddress.toLowerCase(),
-                        poolIdx: chainData.poolIndex.toString(),
-                        period: activePeriod.toString(),
-                        time: minTime.toString(),
-                        // time: debouncedBoundary.toString(),
-                        n: numDurationsNeeded.toString(), // positive integer
-                        // page: '0', // nonnegative integer
-                        chainId: '0x1',
-                        dex: 'all',
-                        poolStats: 'true',
-                        concise: 'true',
-                        poolStatsChainIdOverride: '0x5',
-                        poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                        poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                        poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const fetchedCandles = json?.data;
-                    console.log({ candleData });
-                    if (fetchedCandles && candleData) {
-                        const newCandles: CandleData[] = [];
-                        const updatedCandles: CandleData[] = candleData.candles;
-
-                        for (let index = 0; index < fetchedCandles.length; index++) {
-                            const messageCandle = fetchedCandles[index];
-                            const indexOfExistingCandle = candleData.candles.findIndex(
-                                (savedCandle) => savedCandle.time === messageCandle.time,
-                            );
-
-                            if (indexOfExistingCandle === -1) {
-                                newCandles.push(messageCandle);
-                            } else if (
-                                JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
-                                JSON.stringify(messageCandle)
-                            ) {
-                                updatedCandles[indexOfExistingCandle] = messageCandle;
-                            }
-                        }
-                        // console.log({ newCandles });
-                        const newCandleData: CandlesByPoolAndDuration = {
-                            pool: candleData.pool,
-                            duration: candleData.duration,
-                            candles: newCandles.concat(updatedCandles),
-                        };
-                        setCandleData(newCandleData);
-                    }
-                })
-                .catch(console.log);
+        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
+            console.log(`fetching ${numDurationsNeeded} new candles`);
+            fetchCandlesByNumDurations(numDurationsNeeded);
         }
-    }, [domainBoundaryInSecondsDebounced]);
+    }, [numDurationsNeeded]);
 
     useEffect(() => {
         if (candlesMessage) {
@@ -1894,7 +1892,7 @@ export default function App() {
         (async () => {
             if (crocEnv && account && tokenAAddress) {
                 try {
-                    console.log('checking token a allowance');
+                    // console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
                     // console.log({ newTokenAllowance });
@@ -1915,7 +1913,7 @@ export default function App() {
         (async () => {
             if (crocEnv && tokenBAddress && tokenBDecimals && account) {
                 try {
-                    console.log('checking token b allowance');
+                    // console.log('checking token b allowance');
                     const allowance = await crocEnv.token(tokenBAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenBDecimals);
                     if (tokenBAllowance !== newTokenAllowance) {
@@ -2711,7 +2709,7 @@ export default function App() {
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         currentLocation !== '/app/chat' &&
-        currentLocation !== '/app/chat2' &&
+        currentLocation !== '/chat' &&
         !fullScreenChart && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
@@ -2729,7 +2727,7 @@ export default function App() {
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
         currentLocation == '/app/chat' ||
-        currentLocation == '/app/chat2' ||
+        currentLocation == '/chat' ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -2902,6 +2900,7 @@ export default function App() {
                                         seRescaleRangeBoundariesWithSlider={
                                             seRescaleRangeBoundariesWithSlider
                                         }
+                                        poolPriceDisplay={poolPriceDisplay}
                                     />
                                 }
                             />
@@ -2996,7 +2995,7 @@ export default function App() {
                             }
                         />
                         <Route
-                            path='app/chat2'
+                            path='chat'
                             element={
                                 <ChatPanel
                                     chatStatus={true}
@@ -3260,7 +3259,7 @@ export default function App() {
 
                 {currentLocation !== '/' &&
                     currentLocation !== '/app/chat' &&
-                    currentLocation !== '/app/chat2' && (
+                    currentLocation !== '/chat' && (
                         <ChatPanel
                             chatStatus={chatStatus}
                             onClose={() => {

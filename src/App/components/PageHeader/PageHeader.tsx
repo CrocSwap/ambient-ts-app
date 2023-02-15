@@ -226,7 +226,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         const path = location.pathname;
 
         const pathNoLeadingSlash = path.slice(1);
-        console.log({ pathNoLeadingSlash });
+        // console.log({ pathNoLeadingSlash });
 
         const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
         const isAddressHex =

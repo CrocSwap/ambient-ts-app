@@ -3,7 +3,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 // import Investors from '../../components/Home/Investors/Investors';
 import HomeSlider from '../../components/Home/Landing/HomeSlider';
-import Links from '../../components/Home/Links/Links';
+// import Links from '../../components/Home/Links/Links';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import { TokenIF } from '../../utils/interfaces/exports';
@@ -55,7 +55,7 @@ export default function Home(props: propsIF) {
 
                 {/* <Investors /> */}
                 {/* <DividerDark /> */}
-                <Links />
+                {/* <Links /> */}
             </section>
         </>
     );

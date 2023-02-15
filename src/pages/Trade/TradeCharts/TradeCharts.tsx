@@ -55,6 +55,7 @@ import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
 import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
+import { useLocation } from 'react-router-dom';
 
 // interface for React functional component props
 interface propsIF {
@@ -113,6 +114,7 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    showSidebar: boolean;
 }
 
 export interface CandleChartData {
@@ -199,6 +201,7 @@ export default function TradeCharts(props: propsIF) {
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -284,7 +287,20 @@ export default function TradeCharts(props: propsIF) {
     const [showFeeRate, setShowFeeRate] = useState(false);
     const [showVolume, setShowVolume] = useState(true);
 
-    const [liqMode, setLiqMode] = useState('Curve');
+    const [liqMode, setLiqMode] = useState('Depth');
+
+    const path = useLocation().pathname;
+
+    const isMarketOrLimitModule = path.includes('market') || path.includes('limit');
+
+    useEffect(() => {
+        // console.log({ isMarketOrLimitModule });
+        if (isMarketOrLimitModule) {
+            setLiqMode('Depth');
+        } else {
+            setLiqMode('Curve');
+        }
+    }, [isMarketOrLimitModule]);
 
     const chartItemStates = { showFeeRate, showTvl, showVolume, liqMode };
 
@@ -609,6 +625,7 @@ export default function TradeCharts(props: propsIF) {
                         maxPrice={maxPrice}
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        showSidebar={showSidebar}
                     />
                 </div>
             )}

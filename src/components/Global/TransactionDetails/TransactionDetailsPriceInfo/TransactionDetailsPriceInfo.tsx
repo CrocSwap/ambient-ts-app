@@ -8,8 +8,9 @@ import { AiOutlineLine } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
-import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
+// import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { useLocation } from 'react-router-dom';
 
 type ItemIF = {
     slug: string;
@@ -43,8 +44,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         // quoteDisplay,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-        // truncatedLowDisplayPrice,
-        // truncatedHighDisplayPrice,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
         truncatedDisplayPrice,
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
@@ -52,6 +53,10 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
+
+    const { pathname } = useLocation();
+
+    const isOnTradeRoute = pathname.includes('trade');
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
@@ -132,56 +137,56 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     //     second: '2-digit',
     // }).format(tx.time);
 
-    const fillTime = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit',
-    }).format(tx.time * 1000);
+    // const fillTime = new Intl.DateTimeFormat('en-US', {
+    //     hour: 'numeric',
+    //     minute: '2-digit',
+    //     second: '2-digit',
+    // }).format(tx.time * 1000);
 
-    const fillDate = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).format(tx.time * 1000);
+    // const fillDate = new Intl.DateTimeFormat('en-US', {
+    //     year: 'numeric',
+    //     month: '2-digit',
+    //     day: '2-digit',
+    // }).format(tx.time * 1000);
 
-    const fillTimeContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <DefaultTooltip
-                    interactive
-                    title={'Block: ' + tx.block}
-                    placement={'right'}
-                    arrow
-                    enterDelay={750}
-                    leaveDelay={200}
-                >
-                    <div className={styles.info_text}>{fillDate}</div>
-                </DefaultTooltip>
-                <DefaultTooltip
-                    interactive
-                    title={'Block: ' + tx.block}
-                    placement={'right'}
-                    arrow
-                    enterDelay={750}
-                    leaveDelay={200}
-                >
-                    <div className={styles.info_text}>{fillTime}</div>
-                </DefaultTooltip>
+    // const fillTimeContent = (
+    //     <motion.div
+    //         layout
+    //         initial={{ opacity: 0 }}
+    //         animate={{ opacity: 1 }}
+    //         exit={{ opacity: 0 }}
+    //         className={styles.info_container}
+    //     >
+    //         <Row>
+    //             <DefaultTooltip
+    //                 interactive
+    //                 title={'Block: ' + tx.block}
+    //                 placement={'right'}
+    //                 arrow
+    //                 enterDelay={750}
+    //                 leaveDelay={200}
+    //             >
+    //                 <div className={styles.info_text}>{fillDate}</div>
+    //             </DefaultTooltip>
+    //             <DefaultTooltip
+    //                 interactive
+    //                 title={'Block: ' + tx.block}
+    //                 placement={'right'}
+    //                 arrow
+    //                 enterDelay={750}
+    //                 leaveDelay={200}
+    //             >
+    //                 <div className={styles.info_text}>{fillTime}</div>
+    //             </DefaultTooltip>
 
-                {/* <span>Date: </span> */}
-            </Row>
+    //             {/* <span>Date: </span> */}
+    //         </Row>
 
-            {/* <Row> */}
-            {/* <span>Time: </span> */}
-            {/* </Row> */}
-        </motion.div>
-    );
+    //         {/* <Row> */}
+    //         {/* <span>Time: </span> */}
+    //         {/* </Row> */}
+    //     </motion.div>
+    // );
 
     const isBuyTransactionDetails = (
         <div
@@ -261,8 +266,35 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const PriceDisplay = (
         <div className={styles.min_max_price}>
             <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
+            {isOnTradeRoute ? (
+                isDenomBase ? (
+                    <span className={styles.min_price}>
+                        {truncatedDisplayPrice ? quoteCharacter + truncatedDisplayPrice : null}
 
-            {isBaseTokenMoneynessGreaterOrEqual ? (
+                        {truncatedLowDisplayPrice
+                            ? quoteCharacter + truncatedLowDisplayPrice
+                            : null}
+                        {!truncatedDisplayPrice ? (
+                            <AiOutlineLine style={{ paddingTop: '6px' }} />
+                        ) : null}
+                        {truncatedHighDisplayPrice
+                            ? quoteCharacter + truncatedHighDisplayPrice
+                            : null}
+                    </span>
+                ) : (
+                    <span className={styles.min_price}>
+                        {truncatedDisplayPrice ? baseCharacter + truncatedDisplayPrice : null}
+
+                        {truncatedHighDisplayPrice
+                            ? baseCharacter + truncatedHighDisplayPrice
+                            : null}
+                        {!truncatedDisplayPrice ? (
+                            <AiOutlineLine style={{ paddingTop: '6px' }} />
+                        ) : null}
+                        {truncatedLowDisplayPrice ? baseCharacter + truncatedLowDisplayPrice : null}
+                    </span>
+                )
+            ) : isBaseTokenMoneynessGreaterOrEqual ? (
                 <span className={styles.min_price}>
                     {truncatedDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedDisplayPriceDenomByMoneyness
@@ -271,7 +303,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     {truncatedHighDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
-                    {!truncatedDisplayPrice ? <AiOutlineLine style={{ marginTop: '2px' }} /> : null}
+                    {!truncatedDisplayPrice ? (
+                        <AiOutlineLine style={{ paddingTop: '6px' }} />
+                    ) : null}
                     {truncatedLowDisplayPriceDenomByMoneyness
                         ? baseCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
@@ -302,7 +336,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
-                {fillTimeContent}
+                {/* {fillTimeContent} */}
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
