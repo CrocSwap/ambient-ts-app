@@ -6,6 +6,7 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
+import useChatApi from '../../Service/ChatApi';
 
 interface SentMessageProps {
     message: Message;
@@ -24,6 +25,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
 
     // const { userImageData } = props;
+
+    const { deleteMessage } = useChatApi();
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -135,7 +138,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 />
                 {!isPosition && mentionedMessage()}
             </div>
-            {props.moderator ? <FiDelete color='red' /> : ''}
+            {props.moderator ? (
+                <FiDelete color='red' onClick={() => deleteMessage(props.message._id)} />
+            ) : (
+                ''
+            )}
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
 
             {snackbarContent}

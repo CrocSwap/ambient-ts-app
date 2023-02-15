@@ -73,7 +73,7 @@ export default function ChatPanel(props: ChatProps) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser, saveUser, deleteMessage } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -90,11 +90,10 @@ export default function ChatPanel(props: ChatProps) {
             id: '63ea229604023acecd110f8f',
             name: 'Umay',
         },
-        // {
-        //     id: 101,
-        //     name: 'Current Pool',
-        //     value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-        // },
+        {
+            id: '63e69c3404023acecd110547',
+            name: 'Benjamin',
+        },
     ];
 
     // eslint-disable-next-line
@@ -162,7 +161,9 @@ export default function ChatPanel(props: ChatProps) {
                         return result;
                     });
                 } else {
-                    currentUser === moderators[0].id ? setModerator(true) : setModerator(false);
+                    currentUser === moderators[0].id || currentUser === moderators[1].id
+                        ? setModerator(true)
+                        : setModerator(false);
                     setCurrentUser(result.userData._id);
                     if (result.userData.ensName !== ensName) {
                         // eslint-disable-next-line
@@ -188,9 +189,12 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
         setNotification(0);
-
         getMsg();
     }, [room]);
+
+    // useEffect(() => {
+    //     getMsg();
+    // }, [deleteMessage]);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
@@ -215,7 +219,7 @@ export default function ChatPanel(props: ChatProps) {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
-        if (0 <= e.target.scrollTop && e.target.scrollTop <= 1) {
+        if (0 <= e.target.scrollTop) {
             setNotification(0);
             setScrollDirection('Scroll Down');
         } else {
@@ -231,7 +235,7 @@ export default function ChatPanel(props: ChatProps) {
         ) {
             setScrollDirection('Scroll Up');
         }
-        if (0 <= messageEnd.current?.scrollTop && messageEnd.current?.scrollTop <= 1) {
+        if (0 <= messageEnd.current?.scrollTop) {
             setScrollDirection('Scroll Down');
         }
     };

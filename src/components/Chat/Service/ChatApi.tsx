@@ -82,6 +82,16 @@ const useChatApi = () => {
         return data;
     }
 
+    async function deleteMessage(_id: string) {
+        const response = await fetch(host + '/api/messages/deleteMessage/' + _id, {
+            method: 'DELETE',
+        });
+        const data = await response.json();
+        console.log(data);
+
+        return data;
+    }
+
     async function saveUser(walletID: string, ensName: string) {
         const response = await fetch(host + '/api/auth/saveUser', {
             method: 'POST',
@@ -103,6 +113,7 @@ const useChatApi = () => {
         updateUser,
         updateMessageUser,
         saveUser,
+        deleteMessage,
     };
 };
 export default useChatApi;
