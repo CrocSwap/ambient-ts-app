@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { CrocEnv, CrocReposition, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
@@ -41,6 +41,7 @@ interface propsIF {
     setMinPrice: Dispatch<SetStateAction<number>>;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
+    poolPriceDisplay: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
@@ -57,6 +58,7 @@ export default function Reposition(props: propsIF) {
         setMaxPrice,
         seRescaleRangeBoundariesWithSlider,
         tokenPair,
+        poolPriceDisplay,
     } = props;
 
     // current URL parameter string
@@ -104,6 +106,8 @@ export default function Reposition(props: propsIF) {
     const { position } = location.state as { position: PositionIF };
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isTokenABase = tradeData.isTokenABase;
 
     const simpleRangeWidth = tradeData.simpleRangeWidth;
 
@@ -317,6 +321,58 @@ export default function Reposition(props: propsIF) {
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
 
+    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                debouncedLowTick,
+                debouncedHighTick,
+                lookupChain(position?.chainId || '0x5').gridSize,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+    );
+
+    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                debouncedLowTick,
+                debouncedHighTick,
+                lookupChain(position?.chainId || '0x5').gridSize,
+            ).pinnedMinPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                debouncedLowTick,
+                debouncedHighTick,
+                lookupChain(position?.chainId || '0x5').gridSize,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+    );
+
+    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                debouncedLowTick,
+                debouncedHighTick,
+                lookupChain(position?.chainId || '0x5').gridSize,
+            ).pinnedMaxPriceDisplayTruncated,
+        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+    );
+
     useEffect(() => {
         if (!crocEnv || !debouncedLowTick || !debouncedHighTick) {
             return;
@@ -415,6 +471,17 @@ export default function Reposition(props: propsIF) {
                         currentQuoteQtyDisplayTruncated={currentQuoteQtyDisplayTruncated}
                         newBaseQtyDisplay={newBaseQtyDisplay}
                         newQuoteQtyDisplay={newQuoteQtyDisplay}
+                        pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                        isDenomBase={isDenomBase}
+                        isTokenABase={isTokenABase}
+                        poolPriceDisplayNum={poolPriceDisplay || 0}
                     />
                 </Modal>
             )}

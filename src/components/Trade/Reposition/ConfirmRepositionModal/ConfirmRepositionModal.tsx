@@ -36,9 +36,15 @@ interface ConfirmRepositionModalProps {
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
     currentQuoteQtyDisplayTruncated: string;
-
+    pinnedMinPriceDisplayTruncatedInBase: string;
+    pinnedMinPriceDisplayTruncatedInQuote: string;
+    pinnedMaxPriceDisplayTruncatedInBase: string;
+    pinnedMaxPriceDisplayTruncatedInQuote: string;
+    poolPriceDisplayNum: number;
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
+    isDenomBase: boolean;
+    isTokenABase: boolean;
 }
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
@@ -48,9 +54,14 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         tokenPair,
         // ambientApy,
         // dailyVol,
+        poolPriceDisplayNum,
         // currentPoolPriceDisplay,
         // currentPoolPriceTick,
         // rangeWidthPercentage,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
         onSend,
         // setMinPrice,
         // setMaxPrice,
@@ -65,6 +76,8 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
         newQuoteQtyDisplay,
+        isDenomBase,
+        isTokenABase,
         // txErrorMessage,
     } = props;
 
@@ -209,16 +222,15 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         <SelectedRange
             minPriceDisplay={minPriceDisplay}
             maxPriceDisplay={maxPriceDisplay}
-            spotPriceDisplay={'1'}
-            poolPriceDisplayNum={1}
+            poolPriceDisplayNum={poolPriceDisplayNum}
             tokenPair={tokenPair}
-            denominationsInBase={false}
-            isTokenABase={false}
+            denominationsInBase={isDenomBase}
+            isTokenABase={isTokenABase}
             isAmbient={isAmbient}
-            pinnedMinPriceDisplayTruncatedInBase={'12'}
-            pinnedMinPriceDisplayTruncatedInQuote={minPriceDisplay}
-            pinnedMaxPriceDisplayTruncatedInBase={'111'}
-            pinnedMaxPriceDisplayTruncatedInQuote={maxPriceDisplay}
+            pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
+            pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
+            pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
+            pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
         />
     ) : null;
 

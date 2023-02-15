@@ -2900,6 +2900,7 @@ export default function App() {
                                         seRescaleRangeBoundariesWithSlider={
                                             seRescaleRangeBoundariesWithSlider
                                         }
+                                        poolPriceDisplay={poolPriceDisplay}
                                     />
                                 }
                             />
