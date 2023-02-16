@@ -2,7 +2,7 @@ import styles from './BypassConfirmSwapButton.module.css';
 
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
 
 import {
@@ -15,6 +15,8 @@ import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirm
 import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../Global/TransactionException/TransactionException';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -40,6 +42,8 @@ interface propsIF {
     buyQtyString: string;
 }
 export default function BypassConfirmSwapButton(props: propsIF) {
+    const receiptData = useAppSelector((state) => state.receiptData);
+
     const {
         newSwapTransactionHash,
         txErrorCode,
@@ -75,9 +79,23 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     const transactionDenied = (
         <TransactionDenied noAnimation resetConfirmation={resetConfirmation} />
     );
+    const transactionFailed = (
+        <TransactionFailed noAnimation resetConfirmation={resetConfirmation} />
+    );
     const transactionException = (
         <TransactionException noAnimation resetConfirmation={resetConfirmation} />
     );
+
+    const lastReceipt =
+        receiptData?.sessionReceipts.length > 0
+            ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
+            : null;
+
+    const isLastReceiptSuccess = lastReceipt?.status === 1;
+
+    useEffect(() => {
+        if (isLastReceiptSuccess) setShowBypassConfirm(false), [lastReceipt];
+    });
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -96,12 +114,14 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             ? transactionDenied
             : transactionApproved
             ? transactionSubmitted
+            : lastReceipt && !isLastReceiptSuccess
+            ? transactionFailed
             : confirmSendMessage;
 
     const buttonColor =
         isTransactionException || isGasLimitException || isInsufficientFundsException
             ? 'orange'
-            : isTransactionDenied
+            : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
             ? 'var(--negative)'
             : transactionApproved
             ? 'var(--positive)'
@@ -110,7 +130,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     const animationDisplay =
         isTransactionException || isGasLimitException || isInsufficientFundsException ? (
             <CircleLoaderFailed size='30px' />
-        ) : isTransactionDenied ? (
+        ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
             <CircleLoaderFailed size='30px' />
         ) : transactionApproved ? (
             <CircleLoaderCompleted size='30px' />
@@ -123,6 +143,8 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             ? 'Transaction Exception'
             : isTransactionDenied
             ? 'Transaction Denied'
+            : lastReceipt && !isLastReceiptSuccess
+            ? 'Transaction Failed'
             : transactionApproved
             ? 'Transaction Submitted'
             : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
