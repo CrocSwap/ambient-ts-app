@@ -1,7 +1,7 @@
 import styles from './TransactionException.module.css';
 // import Animation from '../Animation/Animation';
 // import NotFound from '../../../assets/animations/NotFound.json';
-import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
+// import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
 // import { Dispatch, SetStateAction } from 'react';
 import Button from '../Button/Button';
 

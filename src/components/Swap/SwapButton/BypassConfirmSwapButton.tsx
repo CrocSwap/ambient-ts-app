@@ -1,8 +1,8 @@
 import styles from './BypassConfirmSwapButton.module.css';
 
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
 
 import {
@@ -29,7 +29,7 @@ interface propsIF {
     txErrorCode: string;
     txErrorMessage: string;
     showConfirmation: boolean;
-    // setShowConfirmation: Dispatch<SetStateAction<boolean>>;
+    setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     slippageTolerancePercentage: number;
     effectivePrice: number;
@@ -40,7 +40,15 @@ interface propsIF {
     buyQtyString: string;
 }
 export default function BypassConfirmSwapButton(props: propsIF) {
-    const { newSwapTransactionHash, txErrorCode, sellQtyString, buyQtyString, tokenPair } = props;
+    const {
+        newSwapTransactionHash,
+        txErrorCode,
+        sellQtyString,
+        buyQtyString,
+        tokenPair,
+        resetConfirmation,
+        setShowBypassConfirm,
+    } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
     // console.log({ txErrorCode });
@@ -64,8 +72,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         />
     );
 
-    const resetConfirmation = () => console.log('yes');
-
     const transactionDenied = (
         <TransactionDenied noAnimation resetConfirmation={resetConfirmation} />
     );
@@ -80,6 +86,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            noAnimation
         />
     );
     const confirmationDisplay =
@@ -117,13 +124,13 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             : isTransactionDenied
             ? 'Transaction Denied'
             : transactionApproved
-            ? `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`
+            ? 'Transaction Submitted'
             : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
     return (
-        <>
+        <section className={styles.container}>
             <div className={styles.button_container}>
                 <button
                     className={styles.button_content}
@@ -133,14 +140,18 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                         {animationDisplay}
                         {buttonText}
                     </div>
-
-                    <RiArrowDownSLine size={20} />
+                    {showExtraInfo ? <RiArrowUpSLine size={20} /> : <RiArrowDownSLine size={20} />}
                 </button>
 
                 {showExtraInfo && (
                     <section className={styles.extra_info_container}>{confirmationDisplay}</section>
                 )}
+                <span className={styles.close_icon_container}>
+                    <button onClick={() => setShowBypassConfirm(false)}>
+                        Submit another transaction
+                    </button>
+                </span>
             </div>
-        </>
+        </section>
     );
 }

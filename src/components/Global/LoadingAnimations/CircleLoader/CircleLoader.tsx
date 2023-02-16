@@ -43,9 +43,9 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
 
     const borderColorStyle = props.borderColor
         ? `0.2rem solid ${props.borderColor}`
-        : ' 0.2rem solid white';
+        : ' 0.2rem solid var(--positive)';
 
-    const borderTop = '0.2rem solid white';
+    const borderTop = '0.2rem solid var(--positive)';
     return (
         <>
             <motion.span
@@ -59,7 +59,7 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
                 // animate={{ rotate: 360 }}
                 transition={spinTransition}
             >
-                <ImCheckmark size={20} />
+                <ImCheckmark size={20} color='var(--positive)' />
             </motion.span>
         </>
     );

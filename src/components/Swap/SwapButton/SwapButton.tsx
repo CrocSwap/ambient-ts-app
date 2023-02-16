@@ -1,7 +1,6 @@
 import styles from './SwapButton.module.css';
 // import { useState } from 'react';
 import Button from '../../Global/Button/Button';
-import BypassConfirmSwapButton from './BypassConfirmSwapButton';
 
 interface propsIF {
     onClickFn: () => void;
@@ -35,10 +34,5 @@ export default function SwapButton(props: propsIF) {
         </div>
     );
 
-    return (
-        <div>
-            {ButtonDisplay}
-            {/* <BypassConfirmSwapButton/> */}
-        </div>
-    );
+    return <div>{ButtonDisplay}</div>;
 }

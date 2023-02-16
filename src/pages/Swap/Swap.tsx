@@ -394,6 +394,7 @@ export default function Swap(props: propsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
+    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
 
     const confirmSwapModalProps = {
         poolPriceDisplay: poolPriceDisplay,
@@ -417,6 +418,7 @@ export default function Swap(props: propsIF) {
         toggleBypassConfirm: toggleBypassConfirm,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
+        setShowBypassConfirm: setShowBypassConfirm,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -594,8 +596,6 @@ export default function Swap(props: propsIF) {
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
     };
-
-    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
 
     const handleSwapButtonClickWithBypass = () => {
         setShowBypassConfirm(true);
