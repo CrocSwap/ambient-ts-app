@@ -4,6 +4,7 @@ import styles from './PriceInfo.module.css';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
+import { useLocation } from 'react-router-dom';
 
 type ItemIF = {
     slug: string;
@@ -33,6 +34,7 @@ interface propsIF {
     quoteTokenSymbol: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
+    truncatedDisplayPriceDenomByMoneyness: string | undefined;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -51,6 +53,7 @@ export default function PriceInfo(props: propsIF) {
         truncatedDisplayPrice,
         isDenomBase,
         usdValue,
+        truncatedDisplayPriceDenomByMoneyness,
     } = props;
     // const dispatch = useAppDispatch();
 
@@ -61,6 +64,10 @@ export default function PriceInfo(props: propsIF) {
     // console.log({ approximateBuyQtyTruncated });
     // console.log({ approximateSellQtyTruncated });
     // console.log({ truncatedDisplayPrice });
+
+    const { pathname } = useLocation();
+
+    const isOnTradeRoute = pathname.includes('trade');
 
     const buyContent = (
         <div className={styles.buy_content}>
@@ -141,7 +148,11 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.price_status_content}>
             <section>
                 <p>Price:</p>
-                <h2>{truncatedDisplayPrice}</h2>
+                <h2>
+                    {isOnTradeRoute
+                        ? truncatedDisplayPrice
+                        : truncatedDisplayPriceDenomByMoneyness || '0'}
+                </h2>
             </section>
 
             <section>

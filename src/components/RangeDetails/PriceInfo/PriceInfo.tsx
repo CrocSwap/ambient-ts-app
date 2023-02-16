@@ -6,6 +6,7 @@ import styles from './PriceInfo.module.css';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import Apy from '../../Global/Tabs/Apy/Apy';
 import DividerDark from '../../Global/DividerDark/DividerDark';
+import { useLocation } from 'react-router-dom';
 
 type ItemIF = {
     slug: string;
@@ -29,6 +30,8 @@ interface IPriceInfoProps {
     poolPriceDisplay: number;
     controlItems: ItemIF[];
     positionApy: number | undefined;
+    minRangeDenomByMoneyness: string;
+    maxRangeDenomByMoneyness: string;
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
@@ -50,7 +53,13 @@ export default function PriceInfo(props: IPriceInfoProps) {
         // poolPriceDisplay,
         // controlItems,
         positionApy,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
     } = props;
+
+    const { pathname } = useLocation();
+
+    const isOnTradeRoute = pathname.includes('trade');
 
     const baseTokenLogoDisplay = baseTokenLogoURI ? (
         <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
@@ -116,12 +125,16 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.price_status_content}>
             <section>
                 <p>Range Min:</p>
-                <h2 className={styles.low_range}>{lowRangeDisplay}</h2>
+                <h2 className={styles.low_range}>
+                    {isOnTradeRoute ? lowRangeDisplay : minRangeDenomByMoneyness}
+                </h2>
             </section>
 
             <section>
                 <p>Range Max:</p>
-                <h2 className={styles.high_range}>{highRangeDisplay}</h2>
+                <h2 className={styles.high_range}>
+                    {isOnTradeRoute ? highRangeDisplay : maxRangeDenomByMoneyness}
+                </h2>
             </section>
         </div>
     );

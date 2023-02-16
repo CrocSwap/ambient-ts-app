@@ -40,7 +40,10 @@ interface propsIF {
     quoteTokenAddress: string;
     positionApy: number;
     account: string;
-
+    isOnPortfolioPage: boolean;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    minRangeDenomByMoneyness: string;
+    maxRangeDenomByMoneyness: string;
     closeGlobalModal: () => void;
 }
 
@@ -68,6 +71,10 @@ export default function RangeDetails(props: propsIF) {
         isAmbient,
         cachedQuerySpotPrice,
         account,
+        isOnPortfolioPage,
+        isBaseTokenMoneynessGreaterOrEqual,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
     } = props;
 
     const detailsRef = useRef(null);
@@ -306,10 +313,17 @@ export default function RangeDetails(props: propsIF) {
                         controlItems={controlItems}
                         isAmbient={isAmbient}
                         positionApy={positionApy}
+                        minRangeDenomByMoneyness={minRangeDenomByMoneyness}
+                        maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                     />
                 </div>
                 <div className={styles.right_container}>
-                    <TransactionDetailsGraph tx={position} transactionType={'liqchange'} />
+                    <TransactionDetailsGraph
+                        tx={position}
+                        transactionType={'liqchange'}
+                        isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                        isOnPortfolioPage={isOnPortfolioPage}
+                    />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
                 {/* <RangeDetailsActions /> */}

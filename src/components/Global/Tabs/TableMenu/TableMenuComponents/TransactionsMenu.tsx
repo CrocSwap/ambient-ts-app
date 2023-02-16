@@ -43,7 +43,7 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
 }
 
@@ -55,13 +55,14 @@ export default function TransactionsMenu(props: propsIF) {
         tradeData,
         // isTokenABase,
         // userPosition,
+        isBaseTokenMoneynessGreaterOrEqual,
         tx,
         blockExplorer,
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
         handlePulseAnimation,
-        // isOnPortfolioPage,
+        isOnPortfolioPage,
     } = props;
 
     // const [value, copy] = useCopyToClipboard();
@@ -250,7 +251,13 @@ export default function TransactionsMenu(props: propsIF) {
 
     const openDetailsModal = () => {
         openGlobalModal(
-            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+            <TransactionDetails
+                account={account}
+                tx={tx}
+                closeGlobalModal={closeGlobalModal}
+                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isOnPortfolioPage={isOnPortfolioPage}
+            />,
         );
     };
 
