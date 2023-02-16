@@ -103,6 +103,10 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </motion.div>
     );
 
+    console.log({ tx });
+
+    const isAmbient = tx.positionType === 'ambient';
+
     const typeDisplay = tx.entityType
         ? tx.entityType === 'swap'
             ? 'Market'
@@ -266,7 +270,15 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const PriceDisplay = (
         <div className={styles.min_max_price}>
             <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
-            {isOnTradeRoute ? (
+            {isAmbient ? (
+                <span className={styles.min_price}>
+                    {'0'}
+
+                    <AiOutlineLine style={{ paddingTop: '6px' }} />
+
+                    {'∞'}
+                </span>
+            ) : isOnTradeRoute ? (
                 isDenomBase ? (
                     <span className={styles.min_price}>
                         {truncatedDisplayPrice ? quoteCharacter + truncatedDisplayPrice : null}
