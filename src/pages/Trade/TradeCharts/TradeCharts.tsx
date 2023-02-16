@@ -114,6 +114,7 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    showSidebar: boolean;
 }
 
 export interface CandleChartData {
@@ -200,6 +201,7 @@ export default function TradeCharts(props: propsIF) {
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -623,6 +625,7 @@ export default function TradeCharts(props: propsIF) {
                         maxPrice={maxPrice}
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        showSidebar={showSidebar}
                     />
                 </div>
             )}
