@@ -48,16 +48,6 @@ export default function PriceInput(props: priceInputProps) {
         />
     );
 
-    // const disabledContent = (
-    //     <div className={styles.overlay_container}>
-    //         <GoCircleSlash size={15} />
-    //         <div className={styles.disabled_text}>
-    //             The market is outside your specified range.
-    //             <span className={styles.warning_text}>Single-asset deposit only.</span>
-    //         </div>
-    //     </div>
-    // );
-
     const percentageDifferenceString =
         percentageDifference >= 0 ? '+' + percentageDifference : percentageDifference.toString();
 

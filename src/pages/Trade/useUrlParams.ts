@@ -11,15 +11,19 @@ export const useUrlParams = (
     // module: string,
     chainId: string,
     isInitialized: boolean,
-) => {
+): [
+    string[],
+    Array<number|null>
+] => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
+    console.log({params});
 
     const dispatch = useAppDispatch();
 
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
-    const urlParams = useMemo(() => {
+    const urlParams = useMemo<string[][]>(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
@@ -45,6 +49,20 @@ export const useUrlParams = (
 
     const tokenPair = useMemo(() => {
         return [getAddress('tokenA'), getAddress('tokenB')];
+    }, [urlParams]);
+
+    const tickPair = useMemo<Array<number|null>>(() => {
+        const getTick = (tick: string): number|null => {
+            let neededTick: string;
+            if (tick === 'low') {
+                neededTick = 'lowTick';
+            } else if (tick === 'high') {
+                neededTick = 'highTick';
+            };
+            const tickParam = urlParams.find((param) => param[0] === neededTick);
+            return tickParam ? parseInt(tickParam[1]) : null;
+        }
+        return [getTick('low') ?? 0, getTick('high') ?? 0];
     }, [urlParams]);
 
     // make a list of params found in the URL queried
@@ -90,7 +108,6 @@ export const useUrlParams = (
                 setTimeout(check, 100);
             }
         }
-
         setTimeout(check, 100);
     }, []);
 
@@ -186,5 +203,8 @@ export const useUrlParams = (
         }
     }, [tokenList, urlParams]);
 
-    return tokenPair;
+    return [
+        tokenPair,
+        tickPair
+    ];
 };

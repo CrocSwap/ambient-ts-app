@@ -216,8 +216,8 @@ export default function Range(props: propsIF) {
     //     console.log({ isAdd });
     // }, [isAdd]);
 
-    const { tradeData, navigationMenu } = useTradeData();
-
+    const { tradeData, navigationMenu, tickPairFromParams } = useTradeData();
+console.log({tickPairFromParams})
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
@@ -225,7 +225,6 @@ export default function Range(props: propsIF) {
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
-    // const targetData = tradeData.targetData;
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
@@ -307,31 +306,32 @@ export default function Range(props: propsIF) {
     const defaultMinPriceDifferencePercentage = -10;
     const defaultMaxPriceDifferencePercentage = 10;
 
+    // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo(
-        () =>
-            tradeData.advancedLowTick === 0 ||
+        () => {
+            const value = tickPairFromParams[0] ?? (tradeData.advancedLowTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
                 ? roundDownTick(
                       currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100,
                       lookupChain(chainId).gridSize,
                   )
-                : tradeData.advancedLowTick,
-        [tradeData.advancedLowTick, currentPoolPriceTick],
-    );
+                : tradeData.advancedLowTick);
+            return value;
+    }, [tradeData.advancedLowTick, currentPoolPriceTick]);
 
-    const defaultHighTick = useMemo(
-        () =>
-            tradeData.advancedHighTick === 0 ||
+    // default high tick to seed in the DOM (range upper value)
+    const defaultHighTick = useMemo(() => {
+        const value = tickPairFromParams[1] ?? (tradeData.advancedHighTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
                 ? roundUpTick(
-                      currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
-                      lookupChain(chainId).gridSize,
-                  )
-                : tradeData.advancedHighTick,
-        [tradeData.advancedHighTick, currentPoolPriceTick],
-    );
+                    currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
+                    lookupChain(chainId).gridSize,
+                )
+                : tradeData.advancedHighTick);
+        return value;
+    }, [tradeData.advancedHighTick, currentPoolPriceTick]);
 
     useEffect(() => {
         const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
@@ -348,21 +348,6 @@ export default function Range(props: propsIF) {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] = useState(
         defaultMaxPriceDifferencePercentage,
     );
-
-    // useEffect(() => {
-    //     // const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-    //     // const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-    //     const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-    //         denominationsInBase,
-    //         baseTokenDecimals,
-    //         quoteTokenDecimals,
-    //         defaultLowTick,
-    //         defaultHighTick,
-    //         lookupChain(chainId).gridSize,
-    //     );
-    //     dispatch(setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)));
-    //     dispatch(setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)));
-    // }, []);
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
@@ -387,16 +372,11 @@ export default function Range(props: propsIF) {
                 lookupChain(chainId).gridSize,
             );
 
-            console.log({ pinnedDisplayPrices });
-
             setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay);
             setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
             setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
             setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
-
-            // setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
-            // setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
@@ -422,9 +402,6 @@ export default function Range(props: propsIF) {
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
 
     const showExtraInfoDropdown = tokenAInputQty !== '' || tokenBInputQty !== '';
-    // const showExtraInfoDropdown =
-    //     (tokenAInputQty !== '' && tokenAInputQty !== '0') ||
-    //     (tokenBInputQty !== '' && tokenBInputQty !== '0');
 
     const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
@@ -945,13 +922,6 @@ export default function Range(props: propsIF) {
     );
 
     const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
-    // const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
-    //     tradeData.isTokenAPrimaryRange,
-    // );
-
-    // useEffect(() => {
-    //     console.log({ isTokenAPrimaryLocal });
-    // }, [isTokenAPrimaryLocal]);
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
@@ -1346,14 +1316,12 @@ export default function Range(props: propsIF) {
                     bypassConfirm={bypassConfirm}
                     toggleBypassConfirm={toggleBypassConfirm}
                 />
-                {/* <DividerDark addMarginTop /> */}
                 {navigationMenu}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {/* <DividerDark /> */}
                     {tradeData.advancedMode ? advancedModeContent : baseModeContent}
                 </motion.div>
                 {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
