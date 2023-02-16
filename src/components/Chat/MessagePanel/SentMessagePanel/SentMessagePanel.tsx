@@ -54,8 +54,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
-    const [room] = useState('Global');
-    const { getMsg } = useSocket(room);
+    const { getMsg } = useSocket(props.room);
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
