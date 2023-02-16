@@ -315,10 +315,6 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             const yAxis = d3fc.axisRight().scale(yScale);
 
             if (transactionType !== 'swap') {
-                const price = graphData.find(
-                    (data: any) => (data.time = d3.max(graphData, (d: any) => d.time)),
-                );
-
                 const topLineTick = denominationsInBase
                     ? tx.bidTickInvPriceDecimalCorrected
                     : tx.bidTickPriceDecimalCorrected;
