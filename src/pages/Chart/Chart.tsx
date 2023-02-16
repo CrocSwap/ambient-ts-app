@@ -4608,9 +4608,8 @@ export default function Chart(props: ChartData) {
 
         if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
 
-        const averageVolume =
-            volumeData.reduce((a: any, b: any) => a + b.value, 0) /
-            (volumeData.filter((item) => item.value !== 0).length * 0.75);
+        const longestValue = d3.max(volumeData, (d: any) => d.value) / 2;
+
         const nearest = snapForCandle(event);
         const dateControl =
             nearest?.date.getTime() > startDate.getTime() &&
@@ -4622,10 +4621,11 @@ export default function Chart(props: ChartData) {
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
         const selectedVolumeDataValue = selectedVolumeData?.value;
+
         const isSelectedVolume = selectedVolumeDataValue
             ? yValueVolume <=
-                  (selectedVolumeDataValue < averageVolume
-                      ? averageVolume
+                  (selectedVolumeDataValue < longestValue
+                      ? longestValue
                       : selectedVolumeDataValue) && yValueVolume !== 0
                 ? true
                 : false
