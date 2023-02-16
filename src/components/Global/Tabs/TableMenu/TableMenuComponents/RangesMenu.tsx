@@ -157,7 +157,11 @@ export default function RangesMenu(props: propsIF) {
                 '&tokenA=' +
                 position.base +
                 '&tokenB=' +
-                position.quote
+                position.quote +
+                '&lowTick=' +
+                position.bidTick +
+                '&highTick=' +
+                position.askTick
             }
             state={{ position: position }}
         >

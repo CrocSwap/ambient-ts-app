@@ -65,6 +65,7 @@ export default function Reposition(props: propsIF) {
 
     // current URL parameter string
     const { params } = useParams();
+    console.log({params});
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
