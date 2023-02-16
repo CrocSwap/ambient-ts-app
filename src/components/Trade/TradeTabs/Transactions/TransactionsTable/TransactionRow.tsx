@@ -168,7 +168,13 @@ export default function TransactionRow(props: propsIF) {
 
     const openDetailsModal = () => {
         openGlobalModal(
-            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+            <TransactionDetails
+                account={account}
+                tx={tx}
+                closeGlobalModal={closeGlobalModal}
+                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isOnPortfolioPage={isOnPortfolioPage}
+            />,
         );
     };
 
@@ -754,6 +760,7 @@ export default function TransactionRow(props: propsIF) {
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
+                    isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
                 />
             </li>
         </ul>
