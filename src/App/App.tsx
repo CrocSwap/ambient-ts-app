@@ -1156,7 +1156,7 @@ export default function App() {
                                 addValue: 'true',
                                 sortByAPY: 'true',
                                 n: '50',
-                                minPosAge: '1440', // restrict leaderboard to position > 1 day old
+                                minPosAge: '86400', // restrict leaderboard to position > 1 day old
                             }),
                     )
                         .then((response) => response.json())
@@ -2886,6 +2886,7 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        lastBlockNumber={lastBlockNumber}
                                         tokenPair={tokenPair}
                                         crocEnv={crocEnv}
                                         ambientApy={ambientApy}
@@ -2900,6 +2901,7 @@ export default function App() {
                                         seRescaleRangeBoundariesWithSlider={
                                             seRescaleRangeBoundariesWithSlider
                                         }
+                                        poolPriceDisplay={poolPriceDisplay}
                                     />
                                 }
                             />

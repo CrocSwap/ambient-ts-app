@@ -5,7 +5,7 @@ import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 interface propsIF {
     minPriceDisplay: number | string;
     maxPriceDisplay: number | string;
-    spotPriceDisplay: string;
+    spotPriceDisplay?: string;
     poolPriceDisplayNum: number;
     denominationsInBase: boolean;
     isTokenABase: boolean;

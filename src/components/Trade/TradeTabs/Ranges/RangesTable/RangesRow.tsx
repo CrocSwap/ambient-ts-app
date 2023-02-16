@@ -111,7 +111,7 @@ export default function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessRange(position, account);
+    } = useProcessRange(position, account, isOnPortfolioPage);
 
     const rangeDetailsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -637,7 +637,7 @@ export default function RangesRow(props: propsIF) {
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {position.positionLiqBaseTruncated}
+                        {position.positionLiqBaseTruncated || '0'}
                         {/* {baseDisplay} */}
                         {baseTokenLogoComponent}
                     </div>
@@ -646,7 +646,7 @@ export default function RangesRow(props: propsIF) {
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {position.positionLiqQuoteTruncated}
+                        {position.positionLiqQuoteTruncated || '0'}
                         {/* {quoteDisplay} */}
                         {quoteTokenLogoComponent}
                     </div>

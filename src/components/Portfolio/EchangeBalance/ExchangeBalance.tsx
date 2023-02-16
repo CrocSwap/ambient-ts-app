@@ -224,19 +224,19 @@ export default function ExchangeBalance(props: propsIF) {
                     )}
                     {exchangeControl}
                 </div>
-                {(!fullLayoutActive || columnView) && (
-                    <>
-                        <div className={styles.info_text}>
-                            Collateral deposited into the Ambient Finance exchange can be traded at
-                            lower gas costs.
-                        </div>
-                        <div className={styles.info_text}>
-                            {' '}
-                            Collateral can be withdrawn at any time.
-                        </div>
-                    </>
-                )}
             </motion.div>
+            {(!fullLayoutActive || columnView) && (
+                <section style={{ background: 'var(--dark1)' }}>
+                    <div className={styles.info_text}>
+                        Collateral deposited into the Ambient Finance exchange can be traded at
+                        lower gas costs.
+                    </div>
+                    <div className={styles.info_text}>
+                        {' '}
+                        Collateral can be withdrawn at any time.
+                    </div>
+                </section>
+            )}
         </motion.main>
     );
 }
