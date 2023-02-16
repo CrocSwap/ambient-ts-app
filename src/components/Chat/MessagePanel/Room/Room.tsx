@@ -230,7 +230,11 @@ export default function RoomDropdown(props: RoomProps) {
                 if (rooms.length !== 0) {
                     return '';
                 } else {
-                    return <div className={styles.dropdown_item}>There is no favorite pool</div>;
+                    return (
+                        <div className={styles.dropdown_item}>
+                            Your favorite pools will appear here
+                        </div>
+                    );
                 }
             } else {
                 return defaultRooms.reverse().map((tab) => (
