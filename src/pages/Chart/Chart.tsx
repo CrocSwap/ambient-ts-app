@@ -2571,15 +2571,20 @@ export default function Chart(props: ChartData) {
                             }
                         }
                     } else {
-                        const draggingLine = event.subject.name;
+                        const advancedValue = scaleData.yScale.invert(event.y);
+
+                        const draggingLine =
+                            event.subject.name !== undefined
+                                ? event.subject.name
+                                : Math.abs(advancedValue - low) < Math.abs(advancedValue - high)
+                                ? 'Min'
+                                : 'Max';
 
                         highLineMoved = draggingLine === 'Max';
                         lowLineMoved = draggingLine === 'Min';
 
                         let pinnedMaxPriceDisplayTruncated = high;
                         let pinnedMinPriceDisplayTruncated = low;
-
-                        const advancedValue = scaleData.yScale.invert(event.y);
 
                         if (advancedValue >= 0) {
                             if (draggingLine === 'Max') {
