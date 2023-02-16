@@ -291,7 +291,11 @@ export default function TransactionsMenu(props: propsIF) {
                             '&tokenA=' +
                             (tx.isBid ? tx.base : tx.quote) +
                             '&tokenB=' +
-                            (tx.isBid ? tx.quote : tx.base),
+                            (tx.isBid ? tx.quote : tx.base) +
+                            '&lowTick=' +
+                            tx.bidTick +
+                            '&highTick=' +
+                            tx.askTick,
                     );
                     handleCopyClick();
                 }}
