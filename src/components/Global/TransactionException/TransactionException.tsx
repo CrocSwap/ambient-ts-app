@@ -15,6 +15,7 @@ import Button from '../Button/Button';
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;
+    noAnimation?: boolean;
 }
 
 export default function TransactionException(props: TransactionSubmittedProps) {
@@ -23,7 +24,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
     return (
         <div className={styles.removal_pending}>
             <h2>Transaction Exception</h2>
-            <CircleLoaderFailed />
+
             <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;.

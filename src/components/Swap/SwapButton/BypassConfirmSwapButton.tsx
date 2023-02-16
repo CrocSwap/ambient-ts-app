@@ -1,10 +1,7 @@
-import Animation from '../../Global/Animation/Animation';
 import styles from './BypassConfirmSwapButton.module.css';
-import loading from '../../../assets/animations/loading4.json';
-import failed from '../../../assets/animations/failedButton.json';
-import success from '../../../assets/animations/successButton.json';
-import { RiErrorWarningLine, RiArrowDownSLine } from 'react-icons/ri';
-import { IoCheckmarkCircleOutline } from 'react-icons/io5';
+
+import { RiArrowDownSLine } from 'react-icons/ri';
+
 import { useState } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
 
@@ -69,8 +66,12 @@ export default function BypassConfirmSwapButton(props: propsIF) {
 
     const resetConfirmation = () => console.log('yes');
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionDenied = (
+        <TransactionDenied noAnimation resetConfirmation={resetConfirmation} />
+    );
+    const transactionException = (
+        <TransactionException noAnimation resetConfirmation={resetConfirmation} />
+    );
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -90,13 +91,22 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             ? transactionSubmitted
             : confirmSendMessage;
 
+    const buttonColor =
+        isTransactionException || isGasLimitException || isInsufficientFundsException
+            ? 'orange'
+            : isTransactionDenied
+            ? 'var(--negative)'
+            : transactionApproved
+            ? 'var(--positive)'
+            : 'var(--text-highlight-dark)';
+
     const animationDisplay =
         isTransactionException || isGasLimitException || isInsufficientFundsException ? (
             <CircleLoaderFailed size='30px' />
         ) : isTransactionDenied ? (
             <CircleLoaderFailed size='30px' />
-        ) : <CircleLoaderCompleted size='30px' /> ? (
-            <CircleLoader size='30px' />
+        ) : transactionApproved ? (
+            <CircleLoaderCompleted size='30px' />
         ) : (
             <CircleLoader size='30px' />
         );
@@ -110,22 +120,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             ? `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`
             : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [isFailed, setIsFailed] = useState(false);
-    const [isGood, setIsGood] = useState(false);
     const [showExtraInfo, setShowExtraInfo] = useState(false);
-
-    const handleFailed = () => {
-        setIsLoading(false);
-        setIsGood(true);
-        setIsFailed(true);
-    };
-
-    const handleSuccess = () => {
-        setIsLoading(false);
-        setIsFailed(false);
-        setIsGood(true);
-    };
 
     return (
         <>
@@ -134,7 +129,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                     className={styles.button_content}
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
-                    <div>
+                    <div style={{ color: buttonColor }}>
                         {animationDisplay}
                         {buttonText}
                     </div>
@@ -146,8 +141,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                     <section className={styles.extra_info_container}>{confirmationDisplay}</section>
                 )}
             </div>
-            <button onClick={handleFailed}>Failed</button>
-            <button onClick={handleSuccess}> Success</button>
         </>
     );
 }

@@ -548,9 +548,59 @@ export default function Swap(props: propsIF) {
     // console.log({ swapAllowed });
     // console.log({ sellQtyString });
 
-    const bypassConfirmButton = (
-        <button className={styles.bypass_confirm_button}>ByPass COnfirm</button>
-    );
+    const currencyConverterProps = {
+        crocEnv: crocEnv,
+        poolExists: poolExists,
+        isUserLoggedIn: isUserLoggedIn,
+        provider: provider,
+        slippageTolerancePercentage: slippageTolerancePercentage,
+        setPriceImpact: setPriceImpact,
+        tokenPair: tokenPair,
+        tokensBank: importedTokens,
+        setImportedTokens: setImportedTokens,
+        chainId: chainId as string,
+        isLiq: false,
+        poolPriceDisplay: poolPriceDisplay,
+        isTokenAPrimary: isTokenAPrimary,
+        isSellTokenBase: isSellTokenBase,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        setSellQtyString: setSellQtyString,
+        setBuyQtyString: setBuyQtyString,
+        isWithdrawFromDexChecked: isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
+        setSwapAllowed: setSwapAllowed,
+        setSwapButtonErrorMessage: setSwapButtonErrorMessage,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        gasPriceInGwei: gasPriceInGwei,
+        isSwapCopied: isSwapCopied,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: importedTokensPlus,
+        addRecentToken: addRecentToken,
+        getRecentTokens: getRecentTokens,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
+        openGlobalPopup: openGlobalPopup,
+    };
+
+    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
+
+    const handleSwapButtonClickWithBypass = () => {
+        setShowBypassConfirm(true);
+        initiateSwap();
+    };
 
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
@@ -575,52 +625,7 @@ export default function Swap(props: propsIF) {
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <CurrencyConverter
-                            crocEnv={crocEnv}
-                            poolExists={poolExists}
-                            isUserLoggedIn={isUserLoggedIn}
-                            provider={provider}
-                            slippageTolerancePercentage={slippageTolerancePercentage}
-                            setPriceImpact={setPriceImpact}
-                            tokenPair={tokenPair}
-                            tokensBank={importedTokens}
-                            setImportedTokens={setImportedTokens}
-                            chainId={chainId as string}
-                            isLiq={false}
-                            poolPriceDisplay={poolPriceDisplay}
-                            isTokenAPrimary={isTokenAPrimary}
-                            isSellTokenBase={isSellTokenBase}
-                            baseTokenBalance={baseTokenBalance}
-                            quoteTokenBalance={quoteTokenBalance}
-                            baseTokenDexBalance={baseTokenDexBalance}
-                            quoteTokenDexBalance={quoteTokenDexBalance}
-                            sellQtyString={sellQtyString}
-                            buyQtyString={buyQtyString}
-                            setSellQtyString={setSellQtyString}
-                            setBuyQtyString={setBuyQtyString}
-                            isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                            setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                            isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                            setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                            setSwapAllowed={setSwapAllowed}
-                            setSwapButtonErrorMessage={setSwapButtonErrorMessage}
-                            activeTokenListsChanged={activeTokenListsChanged}
-                            indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                            gasPriceInGwei={gasPriceInGwei}
-                            isSwapCopied={isSwapCopied}
-                            verifyToken={verifyToken}
-                            getTokensByName={getTokensByName}
-                            getTokenByAddress={getTokenByAddress}
-                            importedTokensPlus={importedTokensPlus}
-                            addRecentToken={addRecentToken}
-                            getRecentTokens={getRecentTokens}
-                            outputTokens={outputTokens}
-                            validatedInput={validatedInput}
-                            setInput={setInput}
-                            searchType={searchType}
-                            acknowledgeToken={acknowledgeToken}
-                            openGlobalPopup={openGlobalPopup}
-                        />
+                        <CurrencyConverter {...currencyConverterProps} />
                     </motion.div>
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -644,14 +649,21 @@ export default function Swap(props: propsIF) {
                             approvalButton
                         ) : (
                             <>
-                                <SwapButton
-                                    onClickFn={bypassConfirm ? initiateSwap : openModal}
-                                    isSwapConfirmationBypassEnabled={bypassConfirm}
-                                    swapAllowed={swapAllowed}
-                                    swapButtonErrorMessage={swapButtonErrorMessage}
-                                    bypassConfirm={bypassConfirm}
-                                />
-                                <BypassConfirmSwapButton {...confirmSwapModalProps} />
+                                {!showBypassConfirm ? (
+                                    <SwapButton
+                                        onClickFn={
+                                            bypassConfirm
+                                                ? handleSwapButtonClickWithBypass
+                                                : openModal
+                                        }
+                                        isSwapConfirmationBypassEnabled={bypassConfirm}
+                                        swapAllowed={swapAllowed}
+                                        swapButtonErrorMessage={swapButtonErrorMessage}
+                                        bypassConfirm={bypassConfirm}
+                                    />
+                                ) : (
+                                    <BypassConfirmSwapButton {...confirmSwapModalProps} />
+                                )}
                             </>
                         )
                     ) : (

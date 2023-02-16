@@ -15,15 +15,16 @@ import Button from '../Button/Button';
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;
+    noAnimation?: boolean;
 }
 
 export default function TransactionDenied(props: TransactionSubmittedProps) {
-    const { resetConfirmation } = props;
+    const { resetConfirmation, noAnimation } = props;
 
     return (
-        <div className={styles.removal_pending}>
+        <div className={styles.removal_pending} style={{ height: noAnimation ? 'auto' : '300px' }}>
             <div className={styles.animation_container}>
-                <CircleLoaderFailed size='8rem' />
+                {!noAnimation && <CircleLoaderFailed size='8rem' />}
                 <h2>Transaction Denied in Wallet</h2>
             </div>
             {/* <p>
