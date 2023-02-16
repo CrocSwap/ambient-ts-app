@@ -73,7 +73,7 @@ export default function ChatPanel(props: ChatProps) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, updateUser, updateMessageUser, saveUser, deleteMessage } = useChatApi();
+    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -84,17 +84,6 @@ export default function ChatPanel(props: ChatProps) {
 
     const connectedAccountActive =
         !addressFromParams || resolvedAddress?.toLowerCase() === address?.toLowerCase();
-
-    const moderators = [
-        {
-            id: '63ea229604023acecd110f8f',
-            name: 'Umay',
-        },
-        {
-            id: '63e69c3404023acecd110547',
-            name: 'Benjamin',
-        },
-    ];
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -161,9 +150,7 @@ export default function ChatPanel(props: ChatProps) {
                         return result;
                     });
                 } else {
-                    currentUser === moderators[0].id || currentUser === moderators[1].id
-                        ? setModerator(true)
-                        : setModerator(false);
+                    result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                     setCurrentUser(result.userData._id);
                     if (result.userData.ensName !== ensName) {
                         // eslint-disable-next-line
@@ -187,14 +174,14 @@ export default function ChatPanel(props: ChatProps) {
     }, [address, props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
-        scrollToBottom();
         setNotification(0);
         getMsg();
     }, [room]);
 
-    // useEffect(() => {
-    //     getMsg();
-    // }, [deleteMessage]);
+    useEffect(() => {
+        scrollToBottom();
+        setNotification(0);
+    }, [props.chatStatus]);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
@@ -295,6 +282,7 @@ export default function ChatPanel(props: ChatProps) {
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
                             moderator={moderator}
+                            room={room}
                         />
                         <hr />
                     </div>

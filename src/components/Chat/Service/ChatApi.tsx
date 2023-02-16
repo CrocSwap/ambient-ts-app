@@ -18,7 +18,6 @@ const useChatApi = () => {
             if (data.status === 'OK') {
                 return data;
             } else {
-                console.error('else', data);
                 return data;
             }
         }
@@ -87,7 +86,6 @@ const useChatApi = () => {
             method: 'DELETE',
         });
         const data = await response.json();
-        console.log(data);
 
         return data;
     }
