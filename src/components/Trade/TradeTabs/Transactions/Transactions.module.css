@@ -255,7 +255,7 @@ text-transform: capitalize;
 } */
 
 .menu {
-  opacity: 0.2;
+  opacity: 0.8;
   transition: all var(--animation-speed) ease-in-out;
 }
 
