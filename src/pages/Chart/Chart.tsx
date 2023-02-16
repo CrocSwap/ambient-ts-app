@@ -3763,14 +3763,20 @@ export default function Chart(props: ChartData) {
                 .autoBandwidth(d3fc.seriesCanvasBar())
                 .decorate((context: any, d: any) => {
                     context.fillStyle =
-                        selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
+                        d.value === 0
+                            ? 'transparent'
+                            : selectedDate !== undefined &&
+                              selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
                             : d.color;
 
                     context.strokeStyle =
-                        selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
+                        d.value === 0
+                            ? 'transparent'
+                            : selectedDate !== undefined &&
+                              selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
-                            : d.stroke;
+                            : d.color;
 
                     context.cursorStyle = 'pointer';
                 })
