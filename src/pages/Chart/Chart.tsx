@@ -388,8 +388,6 @@ export default function Chart(props: ChartData) {
         const aspect = width / height,
             chart = d3.select(d3PlotArea.current) as any;
         d3.select(d3Container.current).on('resize', function () {
-            console.log('aman be');
-
             const targetWidth = chart.node().getBoundingClientRect().width;
             chart.attr('width', targetWidth);
             chart.attr('height', targetWidth / aspect);
@@ -5781,8 +5779,6 @@ export default function Chart(props: ChartData) {
                     liquidityScale.range([width, (width / 10) * 9]);
 
                     scaleData.volumeScale.range([height, height - height / 10]);
-
-                    console.log('!amany', height, height - height / 10);
                 }
 
                 render();
