@@ -124,6 +124,15 @@ interface ChartData {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    showSidebar: boolean;
+}
+
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height,
+    };
 }
 
 export default function Chart(props: ChartData) {
@@ -161,6 +170,7 @@ export default function Chart(props: ChartData) {
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -180,11 +190,14 @@ export default function Chart(props: ChartData) {
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
     const parsedChartData = props.candleData;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
-    const d3PlotArea = useRef(null);
-    const d3Canvas = useRef(null);
+    const d3PlotArea = useRef<HTMLInputElement | null>(null);
+    const d3CanvasCandle = useRef(null);
+    const d3CanvasBar = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -255,6 +268,7 @@ export default function Chart(props: ChartData) {
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+    const [isliqTextHasValue, setIsliqTextHasValue] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -350,6 +364,36 @@ export default function Chart(props: ChartData) {
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    useEffect(() => {
+        function handleResize() {
+            const { width, height } = getWindowDimensions();
+            setWindowDimensions(getWindowDimensions());
+
+            scaleData.xScale.range([0, width]);
+            scaleData.yScale.range([height, 0]);
+
+            scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
+
+            liquidityScale.range([width, (width / 10) * 9]);
+
+            scaleData.volumeScale.range([height, height - height / 10]);
+        }
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, [d3PlotArea]);
+
+    useEffect(() => {
+        const { width, height } = getWindowDimensions();
+
+        const aspect = width / height,
+            chart = d3.select(d3PlotArea.current) as any;
+        d3.select(d3Container.current).on('resize', function () {
+            const targetWidth = chart.node().getBoundingClientRect().width;
+            chart.attr('width', targetWidth);
+            chart.attr('height', targetWidth / aspect);
+        });
+    }, []);
 
     useEffect(() => {
         if (minPrice !== 0 && maxPrice !== 0) {
@@ -891,12 +935,17 @@ export default function Chart(props: ChartData) {
 
                 return formatAmountChartData(
                     isSameLocation && d === sameLocationData ? data : d,
-                    d === sameLocationData ||
+
+                    d === sameLocationDataMax ||
+                        d === sameLocationDataMin ||
                         d === shorterValue ||
                         d === longerValue ||
                         d === market[0].value ||
                         d === crosshairData[0].y
-                        ? d === longerValue || d === market[0].value || d === crosshairData[0].y
+                        ? d === longerValue ||
+                          d === market[0].value ||
+                          d === crosshairData[0].y ||
+                          d === sameLocationData
                             ? undefined
                             : digit
                         : d.toString().split('.')[1]?.length,
@@ -1699,9 +1748,9 @@ export default function Chart(props: ChartData) {
                             event.sourceEvent.type !== 'wheel' &&
                             event.sourceEvent.timeStamp - zoomTimeout < 1
                         ) {
-                            const { isHoverCandleOrVolumeData, _selectedDate } =
+                            const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                                 candleOrVolumeDataHoverStatus(event.sourceEvent);
-                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
                         }
                     }
 
@@ -1761,6 +1810,7 @@ export default function Chart(props: ChartData) {
                     setIsMouseMoveCrosshair(false);
                 }) as any;
 
+            let firstLocation: any;
             const yAxisZoom = d3
                 .zoom()
                 .on('start', (event) => {
@@ -1768,6 +1818,7 @@ export default function Chart(props: ChartData) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
                     }
+                    firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
@@ -1836,7 +1887,7 @@ export default function Chart(props: ChartData) {
 
                     const size = (domainY[1] - domainY[0]) / factor;
 
-                    const newCenter = scaleData.yScale.invert(event.sourceEvent.offsetY);
+                    const newCenter = scaleData.yScale.invert(firstLocation.offsetY);
 
                     const diff = domainY[1] - domainY[0];
 
@@ -2548,15 +2599,20 @@ export default function Chart(props: ChartData) {
                             }
                         }
                     } else {
-                        const draggingLine = event.subject.name;
+                        const advancedValue = scaleData.yScale.invert(event.y);
+
+                        const draggingLine =
+                            event.subject.name !== undefined
+                                ? event.subject.name
+                                : Math.abs(advancedValue - low) < Math.abs(advancedValue - high)
+                                ? 'Min'
+                                : 'Max';
 
                         highLineMoved = draggingLine === 'Max';
                         lowLineMoved = draggingLine === 'Min';
 
                         let pinnedMaxPriceDisplayTruncated = high;
                         let pinnedMinPriceDisplayTruncated = low;
-
-                        const advancedValue = scaleData.yScale.invert(event.y);
 
                         if (advancedValue >= 0) {
                             if (draggingLine === 'Max') {
@@ -2828,6 +2884,7 @@ export default function Chart(props: ChartData) {
 
             d3.select(d3Xaxis.current).on('draw', function (event: any) {
                 d3.select(event.target).select('svg').call(_xAxis);
+                // d3.select(event.target).select('svg').attr('preserveAspectRatio','xMidyMid');
                 d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
             });
         }
@@ -3435,6 +3492,8 @@ export default function Chart(props: ChartData) {
 
                     rangeWidthPercentage = Math.abs(tickValue - currentPoolPriceTick) / 100;
 
+                    rangeWidthPercentage = rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
+
                     const offset = rangeWidthPercentage * 100;
                     // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
@@ -3460,6 +3519,7 @@ export default function Chart(props: ChartData) {
                     );
 
                     rangeWidthPercentage = Math.abs(currentPoolPriceTick - tickValue) / 100;
+                    rangeWidthPercentage = rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     const offset = rangeWidthPercentage * 100;
 
                     const lowTick = currentPoolPriceTick - offset;
@@ -3682,10 +3742,12 @@ export default function Chart(props: ChartData) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
-        const ctx = (d3.select(d3Canvas.current).select('canvas').node() as any).getContext('2d');
+        const ctx = (d3.select(d3CanvasCandle.current).select('canvas').node() as any).getContext(
+            '2d',
+        );
 
         if (candlestick) {
-            d3.select(d3Canvas.current)
+            d3.select(d3CanvasCandle.current)
                 .on('draw', () => {
                     candlestick(parsedChartData?.chartData);
                 })
@@ -3695,46 +3757,75 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData, candlestick]);
 
-    function renderCanvas() {
-        if (d3Canvas) {
-            const container = d3.select(d3Canvas.current).node() as any;
-            container.requestRedraw();
-        }
-    }
-
     useEffect(() => {
         if (scaleData !== undefined) {
-            const barSeries = d3fc
-                .autoBandwidth(d3fc.seriesSvgBar())
-                .align('center')
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.volumeScale)
-                .crossValue((d: any) => d.time)
-                .mainValue((d: any) => d.value)
-                .decorate((selection: any) => {
-                    selection.style('fill', (d: any) => {
-                        return d.value === 0
-                            ? 'transparent'
-                            : selectedDate !== undefined &&
-                              selectedDate.getTime() === d.time.getTime()
-                            ? '#E480FF'
-                            : d.color;
-                    });
-                    selection.style('stroke', (d: any) =>
+            const canvasBarChart = d3fc
+                .autoBandwidth(d3fc.seriesCanvasBar())
+                .decorate((context: any, d: any) => {
+                    context.fillStyle =
                         d.value === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
-                            : d.color,
-                    );
-                });
+                            : d.color;
 
-            setBarSeries(() => {
-                return barSeries;
-            });
+                    context.strokeStyle =
+                        d.value === 0
+                            ? 'transparent'
+                            : selectedDate !== undefined &&
+                              selectedDate.getTime() === d.time.getTime()
+                            ? '#E480FF'
+                            : d.color;
+
+                    context.cursorStyle = 'pointer';
+                })
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.volumeScale)
+                .crossValue((d: any) => d.time)
+                .mainValue((d: any) => d.value);
+
+            setBarSeries(() => canvasBarChart);
+            renderCanvas();
+            render();
         }
     }, [scaleData, selectedDate]);
+
+    useEffect(() => {
+        const ctx = (d3.select(d3CanvasBar.current).select('canvas').node() as any).getContext(
+            '2d',
+        );
+
+        if (barSeries) {
+            d3.select(d3CanvasBar.current)
+                .on('draw', () => {
+                    barSeries(volumeData);
+                })
+                .on('measure', () => {
+                    barSeries.context(ctx);
+                });
+        }
+    }, [volumeData, barSeries]);
+
+    useEffect(() => {
+        if (showVolume) {
+            d3.select(d3CanvasBar.current).select('canvas').style('display', 'inline');
+        } else {
+            d3.select(d3CanvasBar.current).select('canvas').style('display', 'none');
+        }
+    }, [showVolume]);
+
+    function renderCanvas() {
+        if (d3CanvasCandle) {
+            const container = d3.select(d3CanvasCandle.current).node() as any;
+            container.requestRedraw();
+        }
+
+        if (d3CanvasBar) {
+            const container = d3.select(d3CanvasBar.current).node() as any;
+            container.requestRedraw();
+        }
+    }
 
     useEffect(() => {
         if (!location.pathname.includes('range') && !location.pathname.includes('reposition')) {
@@ -4502,12 +4593,13 @@ export default function Chart(props: ChartData) {
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
                 horizontalBandData,
-                barSeries,
+                // barSeries,
                 volumeData,
-                showVolume,
+                // showVolume,
                 selectedDate,
                 liqMode,
                 liquidityScale,
+                isliqTextHasValue,
             );
         }
     }, [
@@ -4525,7 +4617,7 @@ export default function Chart(props: ChartData) {
         liqTooltip,
         marketLine,
         candlestick,
-        barSeries,
+        // barSeries,
         liqAskSeries,
         liqBidSeries,
         lineBidSeries,
@@ -4545,10 +4637,11 @@ export default function Chart(props: ChartData) {
         mouseMoveEventCharts,
         isZoomForSubChart,
         horizontalBandData,
-        showVolume,
+        // showVolume,
         selectedDate,
         liqMode,
         liquidityScale,
+        showSidebar,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -4576,9 +4669,8 @@ export default function Chart(props: ChartData) {
 
         if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
 
-        const averageVolume =
-            volumeData.reduce((a: any, b: any) => a + b.value, 0) /
-            (volumeData.filter((item) => item.value !== 0).length * 0.75);
+        const longestValue = d3.max(volumeData, (d: any) => d.value) / 2;
+
         const nearest = snapForCandle(event);
         const dateControl =
             nearest?.date.getTime() > startDate.getTime() &&
@@ -4590,10 +4682,11 @@ export default function Chart(props: ChartData) {
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
         const selectedVolumeDataValue = selectedVolumeData?.value;
+
         const isSelectedVolume = selectedVolumeDataValue
             ? yValueVolume <=
-                  (selectedVolumeDataValue < averageVolume
-                      ? averageVolume
+                  (selectedVolumeDataValue < longestValue
+                      ? longestValue
                       : selectedVolumeDataValue) && yValueVolume !== 0
                 ? true
                 : false
@@ -4641,12 +4734,25 @@ export default function Chart(props: ChartData) {
                     dateControl) ||
                     isSelectedVolume),
             _selectedDate: nearest?.date,
+            nearest: nearest,
         };
     };
 
-    const selectedDateEvent = (isHoverCandleOrVolumeData: any, _selectedDate: any) => {
+    const selectedDateEvent = (
+        isHoverCandleOrVolumeData: any,
+        _selectedDate: any,
+        nearest: any,
+    ) => {
         if (isHoverCandleOrVolumeData) {
             if (selectedDate === undefined || selectedDate.getTime() !== _selectedDate.getTime()) {
+                props.setCurrentData(nearest);
+
+                const volumeData = props.volumeData.find(
+                    (item: any) => item.time.getTime() === _selectedDate.getTime(),
+                ) as any;
+
+                props.setCurrentVolumeData(volumeData?.volume);
+
                 setSelectedDate(_selectedDate);
             } else {
                 setSelectedDate(undefined);
@@ -4718,12 +4824,13 @@ export default function Chart(props: ChartData) {
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
             horizontalBandData: any,
-            barSeries: any,
+            // barSeries: any,
             volumeData: any,
-            showVolume: boolean,
+            // showVolume: boolean,
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
+            isliqTextHasValue: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -4806,31 +4913,31 @@ export default function Chart(props: ChartData) {
                 // );
                 // const indicatorLineJoin = d3fc.dataJoin('g', 'indicatorLine');
 
-                const barJoin = d3fc.dataJoin('g', 'bar');
+                // const barJoin = d3fc.dataJoin('g', 'bar');
 
                 // handle the plot area measure event in order to compute the scale ranges
 
-                d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                    scaleData.xScale.range([0, event.detail.width]);
-                    scaleData.yScale.range([event.detail.height, 0]);
+                // d3.select(d3PlotArea.current).on('measure', function (event: any) {
+                //     scaleData.xScale.range([0, event.detail.width]);
+                //     scaleData.yScale.range([event.detail.height, 0]);
 
-                    scaleData.xScaleIndicator.range([
-                        (event.detail.width / 10) * 8,
-                        event.detail.width,
-                    ]);
+                //     scaleData.xScaleIndicator.range([
+                //         (event.detail.width / 10) * 8,
+                //         event.detail.width,
+                //     ]);
 
-                    liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+                //     liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
 
-                    scaleData.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height - event.detail.height / 10,
-                    ]);
-                });
+                //     scaleData.volumeScale.range([
+                //         event.detail.height,
+                //         event.detail.height - event.detail.height / 10,
+                //     ]);
+                // });
 
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
-                    const { isHoverCandleOrVolumeData, _selectedDate } =
+                    const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                         candleOrVolumeDataHoverStatus(event);
-                    selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                    selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
 
                     if (
                         (location.pathname.includes('range') ||
@@ -4863,7 +4970,8 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
-
+                        // svg.attr('preserveAspectRatio','xMidyMid');
+                        svg.attr('preserveAspectRatio', 'xMidYMid meet');
                         if (
                             !(
                                 scaleData.xScale.domain()[0].toString() === 'Invalid Date' ||
@@ -4930,10 +5038,10 @@ export default function Chart(props: ChartData) {
                                 ]).call(depthLiqBidSeries);
                             }
 
-                            if (JSON.stringify(scaleData.volumeScale.domain()) !== '[0,0]') {
-                                if (barSeries)
-                                    barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
-                            }
+                            // if (JSON.stringify(scaleData.volumeScale.domain()) !== '[0,0]') {
+                            //     if (barSeries)
+                            //         barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                            // }
                         }
 
                         setDragControl(true);
@@ -5028,10 +5136,14 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
-                            .style('left', event.offsetX - 80 + 'px');
+                        if (isliqTextHasValue) {
+                            liqTooltip
+                                .style('visibility', 'visible')
+                                .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
+                                .style('left', event.offsetX - 80 + 'px');
+                        } else {
+                            liqTooltip.style('visibility', 'hidden');
+                        }
 
                         const svgmain = d3.select(d3PlotArea.current).select('svg');
 
@@ -5147,10 +5259,14 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
-                            .style('left', event.offsetX - 80 + 'px');
+                        if (isliqTextHasValue) {
+                            liqTooltip
+                                .style('visibility', 'visible')
+                                .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
+                                .style('left', event.offsetX - 80 + 'px');
+                        } else {
+                            liqTooltip.style('visibility', 'hidden');
+                        }
 
                         liquidityData.liqHighligtedAskSeries = [];
 
@@ -5394,7 +5510,20 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth, limit, ranges, location.pathname, parsedChartData?.chartData],
+        [
+            candlestick,
+            bandwidth,
+            limit,
+            ranges,
+            location.pathname,
+            parsedChartData?.chartData,
+            windowDimensions,
+            showTvl,
+            showVolume,
+            showFeeRate,
+            isliqTextHasValue,
+            liqTooltipSelectedLiqBar,
+        ],
     );
 
     function showCrosshairVertical() {
@@ -5517,16 +5646,26 @@ export default function Chart(props: ChartData) {
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
             ).toFixed(1);
 
-            liqTooltip.html(
-                '<p>' +
-                    percentage +
-                    '%</p>' +
-                    '<p> $' +
-                    formatAmountWithoutDigit(liqTextData.totalValue, 0) +
-                    ' </p>',
-            );
+            if (percentage != null && liqTextData.totalValue != null) {
+                setIsliqTextHasValue(true);
+                liqTooltip.html(
+                    '<p>' +
+                        percentage +
+                        '%</p>' +
+                        '<p> $' +
+                        formatAmountWithoutDigit(liqTextData.totalValue, 0) +
+                        ' </p>',
+                );
+            } else {
+                liqTooltip.html('<p>' + 0 + '%</p>' + '<p> $' + 0 + ' </p>');
+                liqTooltip.style('visibility', 'hidden');
+            }
         }
     }, [liqTooltipSelectedLiqBar]);
+
+    useEffect(() => {
+        render();
+    }, [isliqTextHasValue]);
 
     // Color Picker
     useEffect(() => {
@@ -5666,12 +5805,41 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    useEffect(() => {
+        if (d3PlotArea) {
+            const myDiv = d3.select(d3PlotArea.current) as any;
+
+            const resizeObserver = new ResizeObserver((entries) => {
+                const width = entries[0].contentRect.width;
+                const height = entries[0].contentRect.height;
+                if (height && width) {
+                    scaleData.xScale.range([0, width]);
+                    scaleData.yScale.range([height, 0]);
+
+                    scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
+
+                    liquidityScale.range([width, (width / 10) * 9]);
+
+                    scaleData.volumeScale.range([height, height - height / 10]);
+                }
+
+                render();
+            });
+
+            resizeObserver.observe(myDiv.node());
+
+            return () => resizeObserver.unobserve(myDiv.node());
+        }
+    }, []);
+
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group id='d3fc_group' auto-resize>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div className='chart_grid'>
-                        <d3fc-canvas ref={d3Canvas} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasCandle} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasBar} className='plot-canvas'></d3fc-canvas>
+
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
                         <d3fc-svg

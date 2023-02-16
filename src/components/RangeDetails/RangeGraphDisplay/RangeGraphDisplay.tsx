@@ -16,7 +16,8 @@ export default function RangeGraphDisplay(props: IRangeGraphDisplayProps) {
                 <p className={`${styles.apr_text} ${styles.apr_green}`}>APR</p>
             </div> */}
             <div className={styles.chart_container}>
-                <TransactionDetailsGraph tx={position} transactionType={'liqchange'} />
+                {/* <TransactionDetailsGraph tx={position} transactionType={'liqchange'} 
+                /> */}
             </div>
         </div>
     );

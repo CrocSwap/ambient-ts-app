@@ -77,22 +77,22 @@ export default function RoomDropdown(props: RoomProps) {
         },
     ];
 
-    // useEffect(() => {
-    //     defaultRooms.pop;
-    //     defaultRooms.push({
-    //         id: 101,
-    //         name: 'Current Pool',
-    //         value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
-    //     });
-    // }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
-
     useEffect(() => {
-        if (isCurrentPool) {
+        if (
+            isCurrentPool ||
+            props.selectedRoom ===
+                currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol
+        ) {
             setShowCurrentPoolButton(false);
         } else {
             setShowCurrentPoolButton(true);
         }
-    }, [isCurrentPool, currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
+    }, [
+        isCurrentPool,
+        currentPool.baseToken.symbol,
+        currentPool.quoteToken.symbol,
+        props.selectedRoom,
+    ]);
 
     useEffect(() => {
         const roomArr: string[] = [];
@@ -110,32 +110,49 @@ export default function RoomDropdown(props: RoomProps) {
     const rooms = props.favePools;
 
     useEffect(() => {
-        // if (props.selectedRoom === 'Global') {
-        const roomArr: string[] = [];
-        rooms?.map((pool: PoolIF) => {
-            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-        });
-        setRoomArray(() => {
-            return roomArr;
-        });
-        // } else {
-        //     const roomArr: string[] = [];
-        //     rooms.map((pool: PoolIF) => {
-        //         roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-        //     });
-        //     console.log({ roomArr });
-        //     setRoomArray(() => {
-        //         return roomArr;
-        //     });
-        //     const index = roomArr.indexOf(props.selectedRoom);
-        //     roomArr.splice(index, 1);
-        //     if (index > -1) {
-        //         // only splice array when item is found
-        //         setRoomArray(() => {
-        //             return roomArr;
-        //         });
-        //     }
-        // }
+        if (props.selectedRoom === 'Global') {
+            const roomArr: string[] = [];
+            rooms?.map((pool: PoolIF) => {
+                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+            });
+            setRoomArray(() => {
+                return roomArr;
+            });
+        } else {
+            if (isCurrentPool) {
+                const roomArr: string[] = [];
+                rooms.map((pool: PoolIF) => {
+                    roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+                });
+                setRoomArray(() => {
+                    return roomArr;
+                });
+                const index = roomArr.indexOf(props.selectedRoom);
+                roomArr.splice(index, 1);
+                if (index > -1) {
+                    // only splice array when item is found
+                    setRoomArray(() => {
+                        return roomArr;
+                    });
+                }
+            } else {
+                const roomArr: string[] = [];
+                rooms.map((pool: PoolIF) => {
+                    roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+                });
+                setRoomArray(() => {
+                    return roomArr;
+                });
+                const index = roomArr.indexOf(props.selectedRoom);
+                roomArr.splice(index, 1);
+                if (index > -1) {
+                    // only splice array when item is found
+                    setRoomArray(() => {
+                        return roomArr;
+                    });
+                }
+            }
+        }
     }, [props.selectedRoom, rooms]);
 
     const [isActive, setIsActive] = useState(false);
@@ -171,15 +188,7 @@ export default function RoomDropdown(props: RoomProps) {
         props.setRoom(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
         setShowCurrentPoolButton(false);
         setIsActive(false);
-    }
-
-    function handleShowRooms(room: string) {
-        if (room === 'Global') {
-            return '';
-        } else {
-            return '';
-            // return <BsSuitHeart className={styles.star_icon} />;
-        }
+        setIsCurrentPool(true);
     }
 
     function handleShowSelectedRoom(selectedRoom: string) {
@@ -211,17 +220,23 @@ export default function RoomDropdown(props: RoomProps) {
                             data-value={tab.value}
                             onClick={(event: any) => handleRoomClick(event, tab.name)}
                         >
-                            {handleShowRooms(tab.name)}
                             {tab.name}
                         </div>
                     ));
                 }
             }
         } else {
-            // if (selectedRoom === 'Global') {
-            //     return '';
-            // } else {
-            {
+            if (selectedRoom === 'Global') {
+                if (rooms.length !== 0) {
+                    return '';
+                } else {
+                    return (
+                        <div className={styles.dropdown_item}>
+                            Your favorite pools will appear here
+                        </div>
+                    );
+                }
+            } else {
                 return defaultRooms.reverse().map((tab) => (
                     <div
                         className={styles.dropdown_item}
@@ -229,12 +244,10 @@ export default function RoomDropdown(props: RoomProps) {
                         data-value={tab.value}
                         onClick={(event: any) => handleRoomClick(event, tab.name)}
                     >
-                        {handleShowRooms(tab.name)}
                         {tab.name}
                     </div>
                 ));
             }
-            // }
         }
     }
 
