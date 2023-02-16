@@ -55,7 +55,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
     const fetchGraphData = memoizeFetchTransactionGraphData();
 
-    const [graphData, setGraphData] = useState();
+    const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
     const d3Yaxis = useRef(null);
@@ -312,7 +312,96 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             const xScaleOriginal = xScale.copy();
 
-            const yAxis = d3fc.axisRight().scale(yScale).ticks(5);
+            const yAxis = d3fc.axisRight().scale(yScale);
+
+            if (transactionType !== 'swap') {
+                const price = graphData.find(
+                    (data: any) => (data.time = d3.max(graphData, (d: any) => d.time)),
+                );
+
+                const topLineTick = denominationsInBase
+                    ? tx.bidTickInvPriceDecimalCorrected
+                    : tx.bidTickPriceDecimalCorrected;
+
+                const lowLineTick = denominationsInBase
+                    ? tx.askTickInvPriceDecimalCorrected
+                    : tx.askTickPriceDecimalCorrected;
+
+                const diff = Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 4;
+
+                const lowerBoundaryFill = Math.abs(
+                    yScale.domain()[0] +
+                        diff / 3 -
+                        (lowLineTick < topLineTick ? lowLineTick : topLineTick),
+                );
+                const lowerBoudnaryFactor = Math.ceil(lowerBoundaryFill / diff);
+
+                const lowValues: any = [];
+
+                if (lowerBoundaryFill > diff) {
+                    if (lowerBoudnaryFactor < 2) {
+                        lowValues[0] = Math.round((lowLineTick - lowerBoundaryFill / 2) / 10) * 10;
+                    } else {
+                        for (let i = 1; i <= lowerBoudnaryFactor; i++) {
+                            lowValues[i - 1] =
+                                Math.round(
+                                    (lowLineTick - lowerBoundaryFill / (lowerBoudnaryFactor / i)) /
+                                        10,
+                                ) * 10;
+                        }
+                    }
+                }
+
+                const topBoundaryFill = Math.abs(
+                    yScale.domain()[1] -
+                        diff / 4 -
+                        (lowLineTick > topLineTick ? lowLineTick : topLineTick),
+                );
+                const topBoudnaryFactor = Math.ceil(topBoundaryFill / diff);
+
+                const topValues: any = [];
+
+                if (topBoundaryFill > diff) {
+                    if (topBoudnaryFactor < 2) {
+                        topValues[0] = Math.round((topLineTick + topBoundaryFill / 2) / 10) * 10;
+                    } else {
+                        for (let i = 1; i <= topBoudnaryFactor; i++) {
+                            topValues[i - 1] =
+                                Math.round(
+                                    (topLineTick + topBoundaryFill / (topBoudnaryFactor / i)) / 10,
+                                ) * 10;
+                        }
+                    }
+                }
+
+                const bandBoundaryFill = Math.abs(lowLineTick - topLineTick);
+                const bandBoudnaryFactor = Math.ceil(bandBoundaryFill / diff);
+
+                const bandValues: any = [];
+
+                if (bandBoundaryFill > diff) {
+                    if (bandBoudnaryFactor < 2) {
+                        bandValues[0] = Math.round((topLineTick - bandBoundaryFill / 2) / 10) * 10;
+                    } else {
+                        for (let i = 1; i < bandBoudnaryFactor; i++) {
+                            bandValues[i - 1] =
+                                Math.round(
+                                    (topLineTick - bandBoundaryFill / (bandBoudnaryFactor / i)) /
+                                        10,
+                                ) * 10;
+                        }
+                    }
+                }
+
+                yAxis.tickValues([
+                    0,
+                    Math.round(topLineTick / 10) * 10,
+                    Math.round(lowLineTick / 10) * 10,
+                    ...lowValues,
+                    ...topValues,
+                    ...bandValues,
+                ]);
+            }
 
             const scaleData = {
                 xScale: xScale,
