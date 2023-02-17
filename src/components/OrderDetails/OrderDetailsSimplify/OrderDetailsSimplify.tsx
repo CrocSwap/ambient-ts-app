@@ -23,7 +23,7 @@ interface OrderDetailsSimplifyPropsIF {
     usdValue: string | undefined;
     isDenomBase: boolean;
     isOrderFilled: boolean;
-    isBid: number;
+    isBid: boolean;
     approximateSellQtyTruncated: string;
     approximateBuyQtyTruncated: string;
     baseDisplayFrontend: string;
