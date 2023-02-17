@@ -202,12 +202,12 @@ export default function Limit(props: propsIF) {
     const limitTickCopied = tradeData.limitTickCopied;
     useEffect(() => {
         // console.log({ limitTickFromParams });
-        if (limitTickFromParams) {
+        if (limitTickFromParams && limitTick === undefined) {
             // console.log('firing');
             dispatch(setLimitTick(limitTickFromParams));
             // dispatch(setLimitTickCopied(true));
         }
-    }, [limitTickFromParams]);
+    }, [limitTickFromParams, limitTick === undefined]);
 
     const { tokenA, tokenB } = useUrlParams();
 
