@@ -4917,22 +4917,22 @@ export default function Chart(props: ChartData) {
 
                 // handle the plot area measure event in order to compute the scale ranges
 
-                // d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                //     scaleData.xScale.range([0, event.detail.width]);
-                //     scaleData.yScale.range([event.detail.height, 0]);
+                d3.select(d3PlotArea.current).on('measure', function (event: any) {
+                    scaleData.xScale.range([0, event.detail.width]);
+                    scaleData.yScale.range([event.detail.height, 0]);
 
-                //     scaleData.xScaleIndicator.range([
-                //         (event.detail.width / 10) * 8,
-                //         event.detail.width,
-                //     ]);
+                    scaleData.xScaleIndicator.range([
+                        (event.detail.width / 10) * 8,
+                        event.detail.width,
+                    ]);
 
-                //     liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+                    liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
 
-                //     scaleData.volumeScale.range([
-                //         event.detail.height,
-                //         event.detail.height - event.detail.height / 10,
-                //     ]);
-                // });
+                    scaleData.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 10,
+                    ]);
+                });
 
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
                     const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
