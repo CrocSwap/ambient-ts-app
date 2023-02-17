@@ -22,7 +22,7 @@ interface propsIF {
     usdValue: string | undefined;
     isDenomBase: boolean;
     isOrderFilled: boolean;
-    isBid: boolean;
+    isBid: number;
     controlItems: ItemIF[];
     approximateSellQtyTruncated: string;
     approximateBuyQtyTruncated: string;

@@ -105,7 +105,7 @@ export default function ClaimOrder(props: propsIF) {
             console.log({ limitOrder });
             let tx;
             try {
-                if (limitOrder.isBid === true || limitOrder.isBid === 1) {
+                if (limitOrder.isBid === 1) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
