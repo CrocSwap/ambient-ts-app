@@ -145,6 +145,8 @@ export default function RangesRow(props: propsIF) {
 
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
+        minRangeDenomByMoneyness: minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
     };
 
     const rangeMenuProps = {
@@ -167,7 +169,13 @@ export default function RangesRow(props: propsIF) {
     const openDetailsModal = () => {
         console.log({ position });
         openGlobalModal(
-            <RangeDetails position={position} account={account} {...rangeDetailsProps} />,
+            <RangeDetails
+                position={position}
+                account={account}
+                {...rangeDetailsProps}
+                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isOnPortfolioPage={isOnPortfolioPage}
+            />,
         );
     };
 
@@ -542,7 +550,7 @@ export default function RangesRow(props: propsIF) {
                         <span>{sideCharacter}</span>
                         {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
                         <span style={{ fontFamily: 'monospace' }}>
-                            {isOnPortfolioPage
+                            {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
                                 : ambientOrMin || '…'}
                         </span>
@@ -594,7 +602,7 @@ export default function RangesRow(props: propsIF) {
                     <p>
                         <span>{sideCharacter}</span>
                         <span style={{ fontFamily: 'monospace' }}>
-                            {isOnPortfolioPage
+                            {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
                                 : ambientOrMin || '…'}
                         </span>
@@ -637,7 +645,7 @@ export default function RangesRow(props: propsIF) {
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {position.positionLiqBaseTruncated}
+                        {position.positionLiqBaseTruncated || '0'}
                         {/* {baseDisplay} */}
                         {baseTokenLogoComponent}
                     </div>
@@ -646,7 +654,7 @@ export default function RangesRow(props: propsIF) {
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
-                        {position.positionLiqQuoteTruncated}
+                        {position.positionLiqQuoteTruncated || '0'}
                         {/* {quoteDisplay} */}
                         {quoteTokenLogoComponent}
                     </div>

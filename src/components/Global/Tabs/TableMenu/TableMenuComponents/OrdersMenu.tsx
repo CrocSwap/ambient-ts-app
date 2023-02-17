@@ -40,12 +40,13 @@ interface propsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     isOrderFilled: boolean;
-    isOnPortfolioPage: boolean;
     handlePulseAnimation?: (type: string) => void;
     // orderDetailsProps: any;
     account: string;
     lastBlockNumber: number;
     showHighlightedButton: boolean;
+    isOnPortfolioPage: boolean;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 // React functional component
@@ -66,8 +67,9 @@ export default function OrdersMenu(props: propsIF) {
         handlePulseAnimation,
         lastBlockNumber,
         account,
+        isBaseTokenMoneynessGreaterOrEqual,
         // showHighlightedButton,
-        // isOnPortfolioPage,
+        isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
     // const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -209,6 +211,8 @@ export default function OrdersMenu(props: propsIF) {
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}
+                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
 

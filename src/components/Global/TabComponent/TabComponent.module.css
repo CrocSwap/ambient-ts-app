@@ -55,7 +55,7 @@
     position: relative;
     user-select: none;
     list-style: none;
-    color: var(--text-grey-dark);
+    color: #a8a5a5;
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);

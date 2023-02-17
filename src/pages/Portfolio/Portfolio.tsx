@@ -526,8 +526,9 @@ export default function Portfolio(props: propsIF) {
     // console.log({ secondaryEnsName });
     // console.log({ ensName });
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
-    const hideTabs = useMediaQuery('(max-width: 1200px)') && showTabsAndNotExchange;
-    const hideExchange = useMediaQuery('(max-width: 1200px)') && !showTabsAndNotExchange;
+    // const hideTabs = useMediaQuery('(max-width: 1200px)') && showTabsAndNotExchange;
+    // const hideExchange = useMediaQuery('(max-width: 1200px)') && !showTabsAndNotExchange;
+    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
@@ -554,33 +555,125 @@ export default function Portfolio(props: propsIF) {
         </div>
     );
 
+    const notConnectedContent = (
+        <div className={styles.non_connected_content}>
+            <p>Please connect your wallet.</p>
+            <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+        </div>
+    );
+
+    const portfolioTabsProps = {
+        searchableTokens: searchableTokens,
+        cachedQuerySpotPrice: cachedQuerySpotPrice,
+        crocEnv: crocEnv,
+        isTokenABase: isTokenABase,
+        provider: provider,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
+        importedTokens: importedTokens,
+        connectedUserTokens: connectedUserTokens,
+        resolvedAddressTokens: resolvedAddressTokens,
+        resolvedAddress: resolvedAddress,
+        lastBlockNumber: lastBlockNumber,
+        activeAccount: address ?? connectedAccount ?? '',
+        connectedAccountActive: connectedAccountActive,
+        chainId: chainId,
+        tokenMap: tokensOnActiveLists,
+        selectedOutsideTab: selectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
+        setOutsideControl: setOutsideControl,
+        outsideControl: outsideControl,
+        openTokenModal: openTokenModal,
+        openGlobalModal: openGlobalModal,
+        closeGlobalModal: closeGlobalModal,
+        showSidebar: showSidebar,
+        account: props.account,
+        chainData: props.chainData,
+        currentPositionActive: props.currentPositionActive,
+        setCurrentPositionActive: props.setCurrentPositionActive,
+        isUserLoggedIn: isUserLoggedIn,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+        currentTxActiveInTransactions: currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
+        fullLayoutToggle: fullLayerToggle,
+        handlePulseAnimation: handlePulseAnimation,
+    };
+
+    const soloTokenSelectProps = {
+        modalCloseCustom: modalCloseCustom,
+        provider: provider,
+        closeModal: closeTokenModal,
+        chainId: chainId,
+        importedTokens: outputTokens,
+        setImportedTokens: setImportedTokens,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        verifyToken: verifyToken,
+        showSoloSelectTokenButtons: showSoloSelectTokenButtons,
+        setShowSoloSelectTokenButtons: setShowSoloSelectTokenButtons,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        addRecentToken: addRecentToken,
+        getRecentTokens: getRecentTokens,
+        isSingleToken: true,
+        tokenAorB: null,
+        acknowledgeToken: acknowledgeToken,
+    };
+
+    const portfolioBannerProps = {
+        ensName: connectedAccountActive ? ensName ?? '' : secondaryEnsName ? secondaryEnsName : '',
+        resolvedAddress: resolvedAddress,
+        activeAccount: address ?? connectedAccount ?? '',
+        imageData: connectedAccountActive ? userImageData : secondaryImageData,
+        setShowProfileSettings: setShowProfileSettings,
+        connectedAccountActive: connectedAccountActive,
+    };
+
+    const profileSettingsProps = {
+        showProfileSettings: showProfileSettings,
+        setShowProfileSettings: setShowProfileSettings,
+        ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
+        imageData: connectedAccountActive ? userImageData : secondaryImageData,
+        openGlobalModal: openGlobalModal,
+    };
+
+    const mobilePortfolio = (
+        <section
+            style={{
+                height: 'calc(100vh - 8rem)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                margin: '0 auto',
+                paddingLeft: '8px',
+            }}
+        >
+            {connectedAccountActive && mobileDataToggle}
+            {!showTabsAndNotExchange ? (
+                showLoggedInButton ? (
+                    notConnectedContent
+                ) : (
+                    <PortfolioTabs {...portfolioTabsProps} />
+                )
+            ) : showLoggedInButton ? (
+                notConnectedContent
+            ) : (
+                connectedAccountActive && exchangeBalanceComponent
+            )}
+        </section>
+    );
+
+    if (showActiveMobileComponent) return mobilePortfolio;
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {userAccount && showProfileSettings && (
-                <ProfileSettings
-                    showProfileSettings={showProfileSettings}
-                    setShowProfileSettings={setShowProfileSettings}
-                    ensName={secondaryEnsName ? secondaryEnsName : ensName ?? ''}
-                    imageData={connectedAccountActive ? userImageData : secondaryImageData}
-                    openGlobalModal={openGlobalModal}
-                />
-            )}
-            <PortfolioBanner
-                ensName={
-                    connectedAccountActive
-                        ? ensName ?? ''
-                        : secondaryEnsName
-                        ? secondaryEnsName
-                        : ''
-                }
-                resolvedAddress={resolvedAddress}
-                activeAccount={address ?? connectedAccount ?? ''}
-                imageData={connectedAccountActive ? userImageData : secondaryImageData}
-                setShowProfileSettings={setShowProfileSettings}
-                connectedAccountActive={connectedAccountActive}
-            />
+            {userAccount && showProfileSettings && <ProfileSettings {...profileSettingsProps} />}
+            <PortfolioBanner {...portfolioBannerProps} />
 
-            {mobileDataToggle}
             <div
                 className={
                     fullLayoutActive
@@ -588,54 +681,15 @@ export default function Portfolio(props: propsIF) {
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton && !hideTabs ? (
-                    <PortfolioTabs
-                        searchableTokens={searchableTokens}
-                        cachedQuerySpotPrice={cachedQuerySpotPrice}
-                        crocEnv={crocEnv}
-                        isTokenABase={isTokenABase}
-                        provider={provider}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        importedTokens={importedTokens}
-                        connectedUserTokens={connectedUserTokens}
-                        resolvedAddressTokens={resolvedAddressTokens}
-                        resolvedAddress={resolvedAddress}
-                        lastBlockNumber={lastBlockNumber}
-                        activeAccount={address ?? connectedAccount ?? ''}
-                        connectedAccountActive={connectedAccountActive}
-                        chainId={chainId}
-                        tokenMap={tokensOnActiveLists}
-                        selectedOutsideTab={selectedOutsideTab}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setOutsideControl={setOutsideControl}
-                        outsideControl={outsideControl}
-                        openTokenModal={openTokenModal}
-                        openGlobalModal={openGlobalModal}
-                        closeGlobalModal={closeGlobalModal}
-                        showSidebar={showSidebar}
-                        account={props.account}
-                        chainData={props.chainData}
-                        currentPositionActive={props.currentPositionActive}
-                        setCurrentPositionActive={props.setCurrentPositionActive}
-                        isUserLoggedIn={isUserLoggedIn}
-                        baseTokenBalance={baseTokenBalance}
-                        quoteTokenBalance={quoteTokenBalance}
-                        baseTokenDexBalance={baseTokenDexBalance}
-                        quoteTokenDexBalance={quoteTokenDexBalance}
-                        currentTxActiveInTransactions={currentTxActiveInTransactions}
-                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                        fullLayoutToggle={fullLayerToggle}
-                        handlePulseAnimation={handlePulseAnimation}
-                    />
+                {!showLoggedInButton ? (
+                    <PortfolioTabs {...portfolioTabsProps} />
                 ) : (
-                    !hideTabs && (
-                        <div className={styles.non_connected_content}>
-                            <p>Please connect wallet to view your transactions.</p>
-                            <Button flat title='Connect Wallet' action={() => openModalWallet()} />
-                        </div>
-                    )
+                    notConnectedContent
                 )}
-                {connectedAccountActive && !hideExchange && exchangeBalanceComponent}
+
+                {showLoggedInButton
+                    ? notConnectedContent
+                    : connectedAccountActive && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
                 <Modal
@@ -646,28 +700,7 @@ export default function Portfolio(props: propsIF) {
                     showBackButton={!showSoloSelectTokenButtons}
                     footer={null}
                 >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        provider={provider}
-                        closeModal={closeTokenModal}
-                        chainId={chainId}
-                        importedTokens={outputTokens}
-                        setImportedTokens={setImportedTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
-                        isSingleToken={true}
-                        tokenAorB={null}
-                        acknowledgeToken={acknowledgeToken}
-                    />
+                    <SoloTokenSelect {...soloTokenSelectProps} />
                 </Modal>
             )}
         </main>

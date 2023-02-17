@@ -25,6 +25,7 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
+import { getTransactionData } from '../../../../App/functions/getTransactionData';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface propsIF {
@@ -321,33 +322,33 @@ export default function Transactions(props: propsIF) {
                 console.log('pool recent changes subscription opened');
 
                 // repeat fetch with the interval of 30 seconds
-                const timerId = setInterval(() => {
-                    fetchPoolRecentChanges({
-                        tokensOnActiveLists: tokenMap,
+                // const timerId = setInterval(() => {
+                //     fetchPoolRecentChanges({
+                //         tokensOnActiveLists: tokenMap,
 
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: chainData.poolIndex,
-                        chainId: chainData.chainId,
-                        annotate: true,
-                        addValue: true,
-                        simpleCalc: true,
-                        annotateMEV: false,
-                        ensResolution: true,
-                        n: 100,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                dispatch(addChangesByPool(poolChangesJsonData));
-                            }
-                        })
-                        .catch(console.log);
-                }, 30000);
+                //         base: baseTokenAddress,
+                //         quote: quoteTokenAddress,
+                //         poolIdx: chainData.poolIndex,
+                //         chainId: chainData.chainId,
+                //         annotate: true,
+                //         addValue: true,
+                //         simpleCalc: true,
+                //         annotateMEV: false,
+                //         ensResolution: true,
+                //         n: 100,
+                //     })
+                //         .then((poolChangesJsonData) => {
+                //             if (poolChangesJsonData) {
+                //                 dispatch(addChangesByPool(poolChangesJsonData));
+                //             }
+                //         })
+                //         .catch(console.log);
+                // }, 30000);
 
-                // after 90 seconds stop
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, 90000);
+                // // after 90 seconds stop
+                // setTimeout(() => {
+                //     clearInterval(timerId);
+                // }, 90000);
             },
             onClose: (event: CloseEvent) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
@@ -362,7 +363,18 @@ export default function Transactions(props: propsIF) {
         if (lastPoolChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             // console.log({ lastMessageData });
-            if (lastMessageData) dispatch(addChangesByPool(lastMessageData));
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: TransactionIF) => {
+                        return getTransactionData(tx, tokenMap);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        // console.log({ updatedTransactions });
+                        dispatch(addChangesByPool(updatedTransactions));
+                    })
+                    .catch(console.log);
+            }
         }
     }, [lastPoolChangeMessage]);
 
