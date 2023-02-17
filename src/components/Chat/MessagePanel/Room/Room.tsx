@@ -79,8 +79,6 @@ export default function RoomDropdown(props: RoomProps) {
         },
     ];
 
-    let output: string[];
-
     useEffect(() => {
         if (
             isCurrentPool ||
