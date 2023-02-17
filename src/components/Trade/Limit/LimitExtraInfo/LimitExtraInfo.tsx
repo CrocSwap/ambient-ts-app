@@ -125,43 +125,6 @@ export default function LimitExtraInfo(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
-    // const limitRateString = truncateDecimals(parseFloat(limitRate), 2);
-
-    // const displayPriceString = isDenomBase
-    //     ? truncateDecimals(1 / poolPriceDisplay, 2)
-    //     : truncateDecimals(poolPriceDisplay, 2);
-
-    // const priceLimitAfterSlippageAndFee = reverseSlippage
-    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
-
-    // const displayLimitPriceString =
-    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-    //         ? '…'
-    //         : priceLimitAfterSlippageAndFee < 2
-    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
-    // const priceLimitAfterSlippageAndFee = reverseSlippage
-    //     ? truncateDecimals(
-    //           parseFloat(limitRateString) *
-    //               (1 + slippageTolerance / 100) *
-    //               (1 + liquidityProviderFee / 100),
-    //           4,
-    //       )
-    //     : truncateDecimals(
-    //           parseFloat(limitRateString) *
-    //               (1 - slippageTolerance / 100) *
-    //               (1 - liquidityProviderFee / 100),
-    //           4,
-    //       );
-
-    // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
 
     const extraInfoData = [
         {

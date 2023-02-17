@@ -73,7 +73,7 @@ interface propsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    limitTick: number;
+    limitTick: number | undefined;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (

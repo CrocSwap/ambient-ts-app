@@ -152,7 +152,7 @@ export default function Limit(props: propsIF) {
         toggleBypassConfirm,
     } = props;
 
-    const { tradeData, navigationMenu } = useTradeData();
+    const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -200,6 +200,14 @@ export default function Limit(props: propsIF) {
 
     const isDenomBase = tradeData.isDenomBase;
     const limitTickCopied = tradeData.limitTickCopied;
+    useEffect(() => {
+        // console.log({ limitTickFromParams });
+        if (limitTickFromParams && limitTick === undefined) {
+            // console.log('firing');
+            dispatch(setLimitTick(limitTickFromParams));
+            // dispatch(setLimitTickCopied(true));
+        }
+    }, [limitTickFromParams, limitTick === undefined]);
 
     const { tokenA, tokenB } = useUrlParams();
 
@@ -214,7 +222,7 @@ export default function Limit(props: propsIF) {
             // const sellToken = tradeData.tokenA.address;
             // console.log({ sellToken });
 
-            if (limitTick === 0 && crocEnv && !limitTickCopied) {
+            if (limitTick === undefined && crocEnv && !limitTickCopied) {
                 // console.log('resetting limit to default');
                 if (!pool) return;
                 // if (!provider) return;
@@ -244,7 +252,7 @@ export default function Limit(props: propsIF) {
                 // pinTick.then((newTick) => {
                 // console.log({ pinnedTick });
 
-                // console.log({ pinnedTick });
+                console.log({ pinnedTick });
                 dispatch(setLimitTick(pinnedTick));
 
                 const tickPrice = tickToPrice(pinnedTick);
@@ -320,6 +328,7 @@ export default function Limit(props: propsIF) {
                     });
                 }
             } else if (limitTick) {
+                // console.log({ limitTick });
                 if (!pool) return;
                 // if (!provider) return;
                 if (poolPriceNonDisplay === 0) return;
@@ -410,7 +419,7 @@ export default function Limit(props: propsIF) {
         // initialLoad,
         // chainId,
         limitTick,
-        // poolPriceNonDisplay,
+        poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
     ]);
@@ -455,7 +464,7 @@ export default function Limit(props: propsIF) {
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
-        if (!crocEnv) return;
+        if (!crocEnv || limitTick === undefined) return;
         // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
         //     return;
         // }

@@ -1,3 +1,4 @@
+import { useRepoExitPath } from './useRepoExitPath';
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import { RiSettings5Line } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +12,6 @@ import { VscClose } from 'react-icons/vsc';
 
 interface propsIF {
     positionHash: string;
-    redirectPath: string;
     repoSlippage: SlippagePairIF;
     isPairStable: boolean;
     bypassConfirm: boolean;
@@ -21,7 +21,6 @@ interface propsIF {
 export default function RepositionHeader(props: propsIF) {
     const {
         positionHash,
-        redirectPath,
         repoSlippage,
         isPairStable,
         bypassConfirm,
@@ -29,6 +28,9 @@ export default function RepositionHeader(props: propsIF) {
     } = props;
 
     const navigate = useNavigate();
+
+    // navpath for when user clicks the exit button
+    const exitPath = useRepoExitPath();
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -53,7 +55,7 @@ export default function RepositionHeader(props: propsIF) {
                 </Modal>
             )}
             <div
-                onClick={() => navigate(redirectPath, { replace: true })}
+                onClick={() => navigate(exitPath, { replace: true })}
                 style={{ cursor: 'pointer', marginRight: '10px' }}
             >
                 <VscClose size={22} />

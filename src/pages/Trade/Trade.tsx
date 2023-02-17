@@ -12,8 +12,8 @@ import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF, setAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -155,7 +155,19 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
     } = props;
 
-    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    const dispatch = useAppDispatch();
+
+    const [tokenPairFromParams, tickPairFromParams, limitTickFromParams] = useUrlParams(
+        chainId,
+        isInitialized,
+    );
+
+    // console.log({tickPairFromParams});
+
+    if (!tickPairFromParams.includes(0)) {
+        dispatch(setAdvancedMode(true));
+    }
+
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
     }, [tokenPairFromParams]);
@@ -254,7 +266,14 @@ export default function Trade(props: propsIF) {
                 activeMobileComponent !== 'trade' ? styles.hide : ''
             }`}
         >
-            <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
+            <Outlet
+                context={{
+                    tradeData: tradeData,
+                    navigationMenu: navigationMenu,
+                    tickPairFromParams: tickPairFromParams,
+                    limitTickFromParams: limitTickFromParams,
+                }}
+            />
         </div>
     );
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
@@ -628,7 +647,12 @@ export default function Trade(props: propsIF) {
     );
 }
 
-type ContextType = { tradeData: TradeDataIF; navigationMenu: JSX.Element };
+type ContextType = {
+    tradeData: TradeDataIF;
+    navigationMenu: JSX.Element;
+    tickPairFromParams: Array<number | null>;
+    limitTickFromParams: number | null;
+};
 
 export function useTradeData() {
     return useOutletContext<ContextType>();

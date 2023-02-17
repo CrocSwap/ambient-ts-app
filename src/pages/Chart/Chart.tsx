@@ -86,7 +86,7 @@ interface ChartData {
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
-    limitTick: number;
+    limitTick: number | undefined;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -2111,6 +2111,7 @@ export default function Chart(props: ChartData) {
     }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
+        if (tradeData.limitTick === undefined) return;
         const limitDisplayPrice = pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
         limitDisplayPrice?.then((limit) => {
             setLimit([
@@ -5759,6 +5760,7 @@ export default function Chart(props: ChartData) {
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
+            console.log({ pinnedTick });
             dispatch(setLimitTick(pinnedTick));
 
             const tickPrice = tickToPrice(pinnedTick);
