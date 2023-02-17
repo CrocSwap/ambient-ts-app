@@ -336,7 +336,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const lowValues: any = [];
 
-                if (lowerBoundaryFill > diff) {
+                if (lowerBoundaryFill > diff && tx.positionType !== 'ambient') {
                     if (lowerBoudnaryFactor < 2) {
                         lowValues[0] = Math.round((lowLineTick - lowerBoundaryFill / 2) / 10) * 10;
                     } else {
@@ -359,7 +359,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const topValues: any = [];
 
-                if (topBoundaryFill > diff) {
+                if (topBoundaryFill > diff && tx.positionType !== 'ambient') {
                     if (topBoudnaryFactor < 2) {
                         topValues[0] = Math.round((topLineTick + topBoundaryFill / 2) / 10) * 10;
                     } else {
@@ -377,7 +377,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const bandValues: any = [];
 
-                if (bandBoundaryFill > diff) {
+                if (bandBoundaryFill > diff && tx.positionType !== 'ambient') {
                     if (bandBoudnaryFactor < 2) {
                         bandValues[0] = Math.round((topLineTick - bandBoundaryFill / 2) / 10) * 10;
                     } else {
