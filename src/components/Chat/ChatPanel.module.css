@@ -19,7 +19,8 @@
     cursor: pointer;
     /* height: 479px; */
     /* width: 378px; */
-    border-radius: var(--border-radius);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
     color: white;
     position: sticky;
     /* bottom: 100px; */
