@@ -17,10 +17,10 @@ export function CircleLoader(props: CircleLoaderProps) {
     const widthAndHeight = props.size ? props.size : '3rem';
 
     const borderColorStyle = props.borderColor
-        ? `0.5rem solid ${props.borderColor}`
-        : ' 0.5rem solid white';
+        ? `0.2rem solid ${props.borderColor}`
+        : ' 0.2rem solid white';
 
-    const borderTop = '0.5rem solid #3498db';
+    const borderTop = '0.2rem solid #3498db';
     return (
         <>
             <motion.span
@@ -42,10 +42,10 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
     const widthAndHeight = props.size ? props.size : '3rem';
 
     const borderColorStyle = props.borderColor
-        ? `0.5rem solid ${props.borderColor}`
-        : ' 0.5rem solid white';
+        ? `0.2rem solid ${props.borderColor}`
+        : ' 0.2rem solid var(--positive)';
 
-    const borderTop = '0.5rem solid #3498db';
+    const borderTop = '0.2rem solid var(--positive)';
     return (
         <>
             <motion.span
@@ -56,10 +56,10 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
                     borderTop: borderTop,
                 }}
                 className={styles.circle_completed}
-                animate={{ rotate: 360 }}
+                // animate={{ rotate: 360 }}
                 transition={spinTransition}
             >
-                <ImCheckmark size={30} />
+                <ImCheckmark size={20} color='var(--positive)' />
             </motion.span>
         </>
     );

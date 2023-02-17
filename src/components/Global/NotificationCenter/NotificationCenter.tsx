@@ -38,6 +38,7 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
+
     const notificationItemRef = useRef<HTMLDivElement>(null);
     const activityCenterRef = useRef<HTMLDivElement>(null);
 
