@@ -21,7 +21,7 @@ export interface LimitOrderIF {
     bidTickInvPriceDecimalCorrected: number;
     bidTickPriceDecimalCorrected: number;
     askTick: number;
-    isBid: number;
+    isBid: boolean;
     price: number;
     deflator: number;
     concGrowth: number;
