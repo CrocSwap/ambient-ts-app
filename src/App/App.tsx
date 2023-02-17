@@ -162,6 +162,7 @@ import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
+import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -171,6 +172,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedLiquidityQuery = memoizePoolLiquidity();
 // const cachedFetchContractDetails = memoizeFetchContractDetails();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
@@ -719,8 +721,28 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
+    const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(() => Math.floor(lastBlockNumber / 8), [lastBlockNumber]);
     // check for token balances every eight blocks
+
+    const fetchLiquidity = async () => {
+        if (!baseTokenAddress || !quoteTokenAddress || !chainData || !everySecondBlock) return;
+        cachedLiquidityQuery(
+            chainData.chainId,
+            baseTokenAddress.toLowerCase(),
+            quoteTokenAddress.toLowerCase(),
+            chainData.poolIndex,
+            everySecondBlock,
+        )
+            .then((jsonData) => {
+                dispatch(setLiquidity(jsonData));
+            })
+            .catch(console.log);
+    };
+
+    useEffect(() => {
+        fetchLiquidity();
+    }, [everySecondBlock]);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
@@ -1043,38 +1065,18 @@ export default function App() {
 
                     // retrieve pool liquidity
 
-                    const poolLiquidityCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
+                    // const poolLiquidityCacheEndpoint =
+                    //     httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
 
-                    fetch(
-                        poolLiquidityCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                concise: 'true',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
+                    cachedLiquidityQuery(
+                        chainData.chainId,
+                        sortedTokens[0].toLowerCase(),
+                        sortedTokens[1].toLowerCase(),
+                        chainData.poolIndex,
+                        lastBlockNumber,
                     )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolLiquidity = json?.data;
-
-                            if (poolLiquidity) {
-                                dispatch(
-                                    setLiquidity({
-                                        pool: {
-                                            baseAddress: sortedTokens[0].toLowerCase(),
-                                            quoteAddress: sortedTokens[1].toLowerCase(),
-                                            poolIdx: chainData.poolIndex,
-                                            chainId: chainData.chainId,
-                                        },
-                                        liquidityData: poolLiquidity,
-                                    }),
-                                );
-                            }
+                        .then((jsonData) => {
+                            dispatch(setLiquidity(jsonData));
                         })
                         .catch(console.log);
 
