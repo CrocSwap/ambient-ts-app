@@ -30,7 +30,7 @@ export interface tradeData {
     primaryQuantity: string;
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
-    limitTick: number;
+    limitTick: number | undefined;
     limitTickCopied: boolean;
     poolPriceNonDisplay: number;
     advancedLowTick: number;
@@ -68,7 +68,7 @@ const initialState: tradeData = {
     primaryQuantity: '',
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
-    limitTick: 0,
+    limitTick: undefined,
     limitTickCopied: false,
     poolPriceNonDisplay: 0,
     advancedLowTick: 0,

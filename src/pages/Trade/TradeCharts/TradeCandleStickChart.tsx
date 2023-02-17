@@ -46,7 +46,7 @@ interface ChartData {
     candleData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
-    limitTick: number;
+    limitTick: number | undefined;
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;

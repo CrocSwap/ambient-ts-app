@@ -272,7 +272,9 @@ export default function OrdersMenu(props: propsIF) {
                         '&tokenA=' +
                         (limitOrder.isBid ? limitOrder.base : limitOrder.quote) +
                         '&tokenB=' +
-                        (limitOrder.isBid ? limitOrder.quote : limitOrder.base),
+                        (limitOrder.isBid ? limitOrder.quote : limitOrder.base) +
+                        '&limitTick=' +
+                        (limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick),
                 );
                 handleCopyOrder();
             }}

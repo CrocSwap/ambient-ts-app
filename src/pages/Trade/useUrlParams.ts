@@ -11,14 +11,10 @@ export const useUrlParams = (
     // module: string,
     chainId: string,
     isInitialized: boolean,
-): [
-    string[],
-    Array<number|null>,
-    number|null
-] => {
+): [string[], Array<number | null>, number | null] => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
-    console.log({params});
+    // console.log({params});
 
     const dispatch = useAppDispatch();
 
@@ -52,21 +48,21 @@ export const useUrlParams = (
         return [getAddress('tokenA'), getAddress('tokenB')];
     }, [urlParams]);
 
-    const tickPair = useMemo<Array<number|null>>(() => {
-        const getTick = (tick: string): number|null => {
+    const tickPair = useMemo<Array<number | null>>(() => {
+        const getTick = (tick: string): number | null => {
             let neededTick: string;
             if (tick === 'low') {
                 neededTick = 'lowTick';
             } else if (tick === 'high') {
                 neededTick = 'highTick';
-            };
+            }
             const tickParam = urlParams.find((param) => param[0] === neededTick);
             return tickParam ? parseInt(tickParam[1]) : null;
-        }
+        };
         return [getTick('low') ?? 0, getTick('high') ?? 0];
     }, [urlParams]);
 
-    const limitTick = useMemo<number|null>(() => {
+    const limitTick = useMemo<number | null>(() => {
         const limitTickParam = urlParams.find((param) => param[0] === 'limitTick');
         return limitTickParam ? parseInt(limitTickParam[1]) : null;
     }, [urlParams]);
@@ -209,9 +205,5 @@ export const useUrlParams = (
         }
     }, [tokenList, urlParams]);
 
-    return [
-        tokenPair,
-        tickPair,
-        limitTick
-    ];
+    return [tokenPair, tickPair, limitTick];
 };

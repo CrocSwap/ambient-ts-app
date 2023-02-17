@@ -836,15 +836,18 @@ export default function App() {
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
-        console.log('resetting limit tick');
-        dispatch(setPoolPriceNonDisplay(0));
+        if (resetLimitTick) {
+            console.log('resetting limit tick');
+            dispatch(setPoolPriceNonDisplay(0));
 
-        dispatch(setLimitTick(0));
+            dispatch(setLimitTick(0));
+        }
         // }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
     }, [resetLimitTick]);
 
     useEffect(() => {
-        dispatch(setLimitTick(0));
+        // console.log('resetting limit');
+        // dispatch(setLimitTick(0));
         dispatch(setPrimaryQuantityRange(''));
         dispatch(setSimpleRangeWidth(10));
         dispatch(setAdvancedMode(false));
