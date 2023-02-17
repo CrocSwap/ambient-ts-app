@@ -45,6 +45,7 @@ import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 import { useUrlParams } from '../../InitPool/useUrlParams';
+import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 
 interface propsIF {
     account: string | undefined;
@@ -568,30 +569,39 @@ export default function Limit(props: propsIF) {
         // setTxErrorMessage('');
         resetConfirmation();
     };
+    const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
+
+    const handleLimitButtonClickWithBypass = () => {
+        setShowBypassConfirmButton(true);
+        sendLimitOrder();
+    };
+    const confirmLimitModalProps = {
+        onClose: handleModalClose,
+        tokenPair: tokenPair,
+        poolPriceDisplay: poolPriceDisplay || 0,
+        initiateLimitOrderMethod: sendLimitOrder,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
+        isTokenAPrimary: isTokenAPrimary,
+        insideTickDisplayPrice: endDisplayPrice,
+        newLimitOrderTransactionHash: newLimitOrderTransactionHash,
+        txErrorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
+        resetConfirmation: resetConfirmation,
+        startDisplayPrice: startDisplayPrice,
+        middleDisplayPrice: middleDisplayPrice,
+        endDisplayPrice: endDisplayPrice,
+        bypassConfirm: bypassConfirm,
+        toggleBypassConfirm: toggleBypassConfirm,
+        showBypassConfirmButton: showBypassConfirmButton,
+        setShowBypassConfirmButton: setShowBypassConfirmButton,
+    };
 
     const confirmLimitModalOrNull = isModalOpen ? (
         <Modal onClose={handleModalClose} title='Limit Confirmation'>
-            <ConfirmLimitModal
-                onClose={handleModalClose}
-                tokenPair={tokenPair}
-                poolPriceDisplay={poolPriceDisplay || 0}
-                initiateLimitOrderMethod={sendLimitOrder}
-                tokenAInputQty={tokenAInputQty}
-                tokenBInputQty={tokenBInputQty}
-                isTokenAPrimary={isTokenAPrimary}
-                insideTickDisplayPrice={endDisplayPrice}
-                newLimitOrderTransactionHash={newLimitOrderTransactionHash}
-                txErrorCode={txErrorCode}
-                txErrorMessage={txErrorMessage}
-                showConfirmation={showConfirmation}
-                setShowConfirmation={setShowConfirmation}
-                resetConfirmation={resetConfirmation}
-                startDisplayPrice={startDisplayPrice}
-                middleDisplayPrice={middleDisplayPrice}
-                endDisplayPrice={endDisplayPrice}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-            />
+            <ConfirmLimitModal {...confirmLimitModalProps} />
         </Modal>
     ) : null;
 
@@ -815,9 +825,11 @@ export default function Limit(props: propsIF) {
                 {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassLimitButton />
                     ) : (
                         <LimitButton
-                            onClickFn={bypassConfirm ? sendLimitOrder : openModal}
+                            onClickFn={bypassConfirm ? handleLimitButtonClickWithBypass : openModal}
                             limitAllowed={isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
                             bypassConfirm={bypassConfirm}
