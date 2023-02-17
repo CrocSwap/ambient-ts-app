@@ -152,7 +152,7 @@ export default function Limit(props: propsIF) {
         toggleBypassConfirm,
     } = props;
 
-    const { tradeData, navigationMenu } = useTradeData();
+    const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -181,7 +181,8 @@ export default function Limit(props: propsIF) {
     };
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
-    const limitTick = tradeData.limitTick;
+    const limitTick = limitTickFromParams || tradeData.limitTick;
+    console.log({limitTick});
     // const isSellTokenBase = tradeData.isTokenABase;
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
@@ -200,6 +201,9 @@ export default function Limit(props: propsIF) {
 
     const isDenomBase = tradeData.isDenomBase;
     const limitTickCopied = tradeData.limitTickCopied;
+    useEffect(() => {
+        limitTickFromParams && dispatch(setLimitTickCopied(true))
+    }, [limitTickFromParams]);
 
     const { tokenA, tokenB } = useUrlParams();
 

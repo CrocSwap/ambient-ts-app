@@ -162,7 +162,8 @@ export default function Trade(props: propsIF) {
 
     const [
         tokenPairFromParams,
-        tickPairFromParams
+        tickPairFromParams,
+        limitTickFromParams
     ] = useUrlParams(chainId, isInitialized);
 
     console.log({tickPairFromParams});
@@ -273,7 +274,8 @@ export default function Trade(props: propsIF) {
                 context={{
                     tradeData: tradeData,
                     navigationMenu: navigationMenu,
-                    tickPairFromParams: tickPairFromParams
+                    tickPairFromParams: tickPairFromParams,
+                    limitTickFromParams: limitTickFromParams
                 }}
             />
         </div>
@@ -652,6 +654,7 @@ type ContextType = {
     tradeData: TradeDataIF;
     navigationMenu: JSX.Element;
     tickPairFromParams: Array<number|null>;
+    limitTickFromParams: number;
 };
 
 export function useTradeData() {
