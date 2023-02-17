@@ -217,7 +217,7 @@ export default function Range(props: propsIF) {
     // }, [isAdd]);
 
     const { tradeData, navigationMenu, tickPairFromParams } = useTradeData();
-console.log({tickPairFromParams})
+
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
