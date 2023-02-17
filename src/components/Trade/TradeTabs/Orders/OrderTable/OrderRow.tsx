@@ -83,6 +83,7 @@ export default function OrderRow(props: propsIF) {
         isOwnerActiveAccount,
         ensName,
         // orderMatchesSelectedTokens,
+
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
@@ -140,6 +141,8 @@ export default function OrderRow(props: propsIF) {
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}
+                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
     };
@@ -451,7 +454,6 @@ export default function OrderRow(props: propsIF) {
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
     return (
         <ul
             onMouseEnter={() => setShowHighlightedButton(true)}
@@ -588,6 +590,8 @@ export default function OrderRow(props: propsIF) {
                     handlePulseAnimation={handlePulseAnimation}
                     lastBlockNumber={lastBlockNumber}
                     showHighlightedButton={showHighlightedButton}
+                    isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                    isOnPortfolioPage={isOnPortfolioPage}
                 />
             </li>
         </ul>

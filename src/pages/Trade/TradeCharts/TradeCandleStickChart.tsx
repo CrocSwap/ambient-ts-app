@@ -84,6 +84,7 @@ interface ChartData {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    showSidebar: boolean;
 }
 
 export interface ChartUtils {
@@ -121,6 +122,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
+        showSidebar,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -788,6 +790,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         maxPrice={maxPrice}
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        showSidebar={showSidebar}
                     />
                 ) : (
                     <>{loading}</>

@@ -17,12 +17,14 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     lastBlockNumber: number;
     closeGlobalModal: () => void;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    isOnPortfolioPage: boolean;
 }
 
 export default function OrderDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
-    const { limitOrder, account } = props;
+    const { limitOrder, account, isBaseTokenMoneynessGreaterOrEqual, isOnPortfolioPage } = props;
 
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
     const {
@@ -36,6 +38,7 @@ export default function OrderDetails(props: propsIF) {
         quoteTokenLogo,
         isOrderFilled,
         truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
     } = useProcessOrder(limitOrder, account);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
@@ -295,10 +298,18 @@ export default function OrderDetails(props: propsIF) {
                         quoteTokenSymbol={quoteTokenSymbol}
                         isFillStarted={isFillStarted}
                         truncatedDisplayPrice={truncatedDisplayPrice}
+                        truncatedDisplayPriceDenomByMoneyness={
+                            truncatedDisplayPriceDenomByMoneyness
+                        }
                     />
                 </div>
                 <div className={styles.right_container}>
-                    <TransactionDetailsGraph tx={limitOrder} transactionType={'limitOrder'} />
+                    <TransactionDetailsGraph
+                        tx={limitOrder}
+                        transactionType={'limitOrder'}
+                        isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                        isOnPortfolioPage={isOnPortfolioPage}
+                    />
                 </div>
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>

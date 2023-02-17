@@ -4,6 +4,7 @@ import styles from './RangePriceInfo.module.css';
 // import makeCurrentPrice from './makeCurrentPrice';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
+import { useLocation } from 'react-router-dom';
 
 // interface for component props
 interface propsIF {
@@ -15,6 +16,8 @@ interface propsIF {
     daysInRange: number | undefined;
     didUserFlipDenom: boolean;
     poolPriceCharacter: string;
+    minRangeDenomByMoneyness?: string;
+    maxRangeDenomByMoneyness?: string;
 }
 
 // central react functional component
@@ -26,7 +29,13 @@ export default function RangePriceInfo(props: propsIF) {
         minPriceDisplay,
         aprPercentage,
         daysInRange,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
     } = props;
+
+    const { pathname } = useLocation();
+
+    const isOnTradeRoute = pathname.includes('trade');
 
     const aprPercentageString = aprPercentage
         ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
@@ -48,7 +57,7 @@ export default function RangePriceInfo(props: propsIF) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Min Price</h4>
             <span className={styles.min_price}>
-                {minPriceDisplay}
+                {isOnTradeRoute ? minPriceDisplay : minRangeDenomByMoneyness}
                 {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
             </span>
         </div>
@@ -62,7 +71,7 @@ export default function RangePriceInfo(props: propsIF) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Max Price</h4>
             <span className={styles.max_price}>
-                {maxPriceDisplay}
+                {isOnTradeRoute ? maxPriceDisplay : maxRangeDenomByMoneyness}
                 {/* {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()} */}
             </span>
         </div>
