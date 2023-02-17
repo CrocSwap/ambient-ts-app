@@ -26,8 +26,8 @@
 
 .circle_failed{
 
-    min-width: 7rem;
-    min-height: 7rem;
+    /* min-width: 7rem;
+    min-height: 7rem; */
     background: red;
     display: flex;
     justify-content: center;

@@ -1,8 +1,7 @@
-import styles from './TransactionException.module.css';
+import styles from './TransactionFailed.module.css';
 // import Animation from '../Animation/Animation';
 // import NotFound from '../../../assets/animations/NotFound.json';
-// import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
-// import { Dispatch, SetStateAction } from 'react';
+import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
 import Button from '../Button/Button';
 
 // interface TransactionSubmittedProps {
@@ -19,13 +18,15 @@ interface TransactionSubmittedProps {
     initiateTx?: () => void;
 }
 
-export default function TransactionException(props: TransactionSubmittedProps) {
-    const { resetConfirmation, initiateTx } = props;
+export default function TransactionFailed(props: TransactionSubmittedProps) {
+    const { resetConfirmation, noAnimation, initiateTx } = props;
 
     return (
-        <div className={styles.removal_pending}>
-            <h2>Transaction Exception</h2>
-
+        <div className={styles.removal_pending} style={{ height: noAnimation ? 'auto' : '300px' }}>
+            <div className={styles.animation_container}>
+                {!noAnimation && <CircleLoaderFailed size='8rem' />}
+                <h2>Transaction Failed.</h2>
+            </div>
             <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;.
@@ -36,6 +37,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                     if (initiateTx) initiateTx();
                     resetConfirmation();
                 }}
+                flat
             />
         </div>
     );
