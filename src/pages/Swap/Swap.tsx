@@ -177,7 +177,7 @@ export default function Swap(props: propsIF) {
         ? useTradeData()
         : { navigationMenu: null };
 
-    const { tokenA, tokenB } = tradeData;
+    const { tokenA, tokenB, baseToken, quoteToken } = tradeData;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -215,6 +215,11 @@ export default function Swap(props: propsIF) {
         setTxErrorCode('');
         setTxErrorMessage('');
     };
+
+    useEffect(() => {
+        setNewSwapTransactionHash('');
+        setShowBypassConfirm(false);
+    }, [JSON.stringify({ base: baseToken.address, quote: quoteToken.address })]);
 
     async function initiateSwap() {
         resetConfirmation();
