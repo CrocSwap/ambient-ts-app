@@ -14,7 +14,7 @@ export const useUrlParams = (
 ): [
     string[],
     Array<number|null>,
-    number
+    number|null
 ] => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
@@ -66,9 +66,9 @@ export const useUrlParams = (
         return [getTick('low') ?? 0, getTick('high') ?? 0];
     }, [urlParams]);
 
-    const limitTick = useMemo<number>(() => {
+    const limitTick = useMemo<number|null>(() => {
         const limitTickParam = urlParams.find((param) => param[0] === 'limitTick');
-        return limitTickParam ? parseInt(limitTickParam[1]) : 0;
+        return limitTickParam ? parseInt(limitTickParam[1]) : null;
     }, [urlParams]);
 
     // make a list of params found in the URL queried

@@ -654,7 +654,7 @@ type ContextType = {
     tradeData: TradeDataIF;
     navigationMenu: JSX.Element;
     tickPairFromParams: Array<number|null>;
-    limitTickFromParams: number;
+    limitTickFromParams: number|null;
 };
 
 export function useTradeData() {

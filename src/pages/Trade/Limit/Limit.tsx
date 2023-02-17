@@ -181,7 +181,7 @@ export default function Limit(props: propsIF) {
     };
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
-    const limitTick = limitTickFromParams || tradeData.limitTick;
+    const limitTick: number = limitTickFromParams ?? tradeData.limitTick;
     console.log({limitTick});
     // const isSellTokenBase = tradeData.isTokenABase;
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
