@@ -16,6 +16,8 @@ interface TransactionDetailsGraphIF {
     tx: any;
     transactionType: string;
     useTx?: boolean;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    isOnPortfolioPage: boolean;
 }
 
 export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {

@@ -11,10 +11,12 @@ interface propsIF {
     account: string;
     tx: TransactionIF;
     closeGlobalModal: () => void;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    isOnPortfolioPage: boolean;
 }
 
 export default function TransactionDetails(props: propsIF) {
-    const { account, tx } = props;
+    const { account, tx, isBaseTokenMoneynessGreaterOrEqual, isOnPortfolioPage } = props;
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
@@ -64,7 +66,13 @@ export default function TransactionDetails(props: propsIF) {
                     />
                 </div>
                 <div className={styles.right_container}>
-                    <TransactionDetailsGraph tx={tx} transactionType={tx.entityType} useTx={true} />
+                    <TransactionDetailsGraph
+                        tx={tx}
+                        transactionType={tx.entityType}
+                        useTx={true}
+                        isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                        isOnPortfolioPage={isOnPortfolioPage}
+                    />
                 </div>
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>

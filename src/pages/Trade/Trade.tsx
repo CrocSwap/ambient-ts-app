@@ -548,9 +548,7 @@ export default function Trade(props: propsIF) {
         setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
-        // handleTxCopiedClick:handleTxCopiedClick,
-        // handleOrderCopiedClick:handleOrderCopiedClick,
-        // handleRangeCopiedClick:handleRangeCopiedClick,
+
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,

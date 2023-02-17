@@ -45,6 +45,7 @@ interface ConfirmRepositionModalProps {
     newQuoteQtyDisplay: string;
     isDenomBase: boolean;
     isTokenABase: boolean;
+    isPositionInRange: boolean;
 }
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
@@ -78,6 +79,7 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         newQuoteQtyDisplay,
         isDenomBase,
         isTokenABase,
+        isPositionInRange,
         // txErrorMessage,
     } = props;
 
@@ -93,12 +95,13 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
 
     const sendButton = (
         <Button
-            title='Send Reposition'
+            title={isPositionInRange ? 'Position Currently In Range' : 'Send Reposition'}
             action={() => {
                 setShowConfirmation(false);
 
                 onSend();
             }}
+            disabled={isPositionInRange}
             flat={true}
         />
     );

@@ -9,6 +9,7 @@
     flex-direction: column;
     background: var(--dark1);
     height: 100%;
+    align-items: center;
     /* height: calc(100vh - 17rem); */
     /* justify-content: center; */
     /* align-items: center; */

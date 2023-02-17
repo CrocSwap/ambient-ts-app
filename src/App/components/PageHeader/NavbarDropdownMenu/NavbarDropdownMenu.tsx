@@ -8,7 +8,7 @@ import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
 import { BiArrowBack, BiMessageCheck } from 'react-icons/bi';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
-import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
+import { FaDiscord, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { GoRequestChanges } from 'react-icons/go';
 import { HiOutlineDocumentText, HiDocumentDuplicate } from 'react-icons/hi';
 import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
@@ -54,8 +54,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         closeMenu,
         setIsAppOverlayActive,
         setIsNavbarMenuOpen,
-        switchTheme,
-        theme,
     } = props;
 
     const navigate = useNavigate();
@@ -137,9 +135,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
 
     const settingsItems = (
         <>
-            <NavbarDropdownItem leftIcon={<FaSun size={20} />} onClick={switchTheme}>
+            {/* <NavbarDropdownItem leftIcon={<FaSun size={20} />} onClick={switchTheme}>
                 {theme === 'dark' ? 'Light' : 'Dark'} Mode
-            </NavbarDropdownItem>
+            </NavbarDropdownItem> */}
             <NavbarDropdownItem
                 leftIcon={<MdLanguage size={20} />}
                 rightIcon={<MdArrowForwardIos />}
