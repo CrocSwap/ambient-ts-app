@@ -2,7 +2,7 @@ import styles from './BypassConfirmSwapButton.module.css';
 
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
-import { useState, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
 
 import {
@@ -42,18 +42,24 @@ interface propsIF {
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
     showBypassConfirm: boolean;
+    showExtraInfo: boolean;
+    setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
 }
 export default function BypassConfirmSwapButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
 
     const {
+        initiateSwapMethod,
         newSwapTransactionHash,
+        setNewSwapTransactionHash,
         txErrorCode,
         sellQtyString,
         buyQtyString,
         tokenPair,
         resetConfirmation,
         setShowBypassConfirm,
+        showExtraInfo,
+        setShowExtraInfo,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -79,13 +85,25 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     );
 
     const transactionDenied = (
-        <TransactionDenied noAnimation resetConfirmation={resetConfirmation} />
+        <TransactionDenied
+            noAnimation
+            resetConfirmation={resetConfirmation}
+            initiateTx={initiateSwapMethod}
+        />
     );
     const transactionFailed = (
-        <TransactionFailed noAnimation resetConfirmation={resetConfirmation} />
+        <TransactionFailed
+            noAnimation
+            resetConfirmation={resetConfirmation}
+            initiateTx={initiateSwapMethod}
+        />
     );
     const transactionException = (
-        <TransactionException noAnimation resetConfirmation={resetConfirmation} />
+        <TransactionException
+            noAnimation
+            resetConfirmation={resetConfirmation}
+            initiateTx={initiateSwapMethod}
+        />
     );
 
     const lastReceipt =
@@ -147,8 +165,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             ? 'Transaction Submitted'
             : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
 
-    const [showExtraInfo, setShowExtraInfo] = useState(false);
-
     return (
         <section className={styles.container}>
             <div className={styles.button_container}>
@@ -167,7 +183,13 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                     <section className={styles.extra_info_container}>{confirmationDisplay}</section>
                 )}
                 <span className={styles.close_icon_container}>
-                    <button onClick={() => setShowBypassConfirm(false)}>
+                    <button
+                        onClick={() => {
+                            resetConfirmation();
+                            setShowBypassConfirm(false);
+                            setNewSwapTransactionHash('');
+                        }}
+                    >
                         Submit another transaction
                     </button>
                 </span>

@@ -143,6 +143,21 @@ export default function Swap(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+
+    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
+    const [showExtraInfo, setShowExtraInfo] = useState(false);
+
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+    const receiveReceiptHashes: Array<string> = [];
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
     }, [tokenPairFromParams]);
@@ -187,6 +202,14 @@ export default function Swap(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<string | undefined>();
 
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length && !isWaitingForWallet && txErrorCode === '') {
+            setShowBypassConfirm(false);
+        }
+    }, [currentPendingTransactionsArray.length, isWaitingForWallet, txErrorCode === '']);
+
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
@@ -195,6 +218,7 @@ export default function Swap(props: propsIF) {
 
     async function initiateSwap() {
         resetConfirmation();
+        setIsWaitingForWallet(true);
         if (!crocEnv) return;
 
         const sellTokenAddress = tokenA.address;
@@ -216,12 +240,15 @@ export default function Swap(props: propsIF) {
             tx = await plan.swap({
                 surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
             });
+            setIsWaitingForWallet(false);
+
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
@@ -299,6 +326,7 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
+            setNewSwapTransactionHash('');
         }
     }
 
@@ -394,15 +422,7 @@ export default function Swap(props: propsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
 
-    const receiptData = useAppSelector((state) => state.receiptData);
-
-    const sessionReceipts = receiptData.sessionReceipts;
-
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    const receiveReceiptHashes: Array<string> = [];
     // eslint-disable-next-line
     function handleParseReceipt(receipt: any) {
         const parseReceipt = JSON.parse(receipt);
@@ -410,10 +430,6 @@ export default function Swap(props: propsIF) {
     }
 
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
-
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
 
     const confirmSwapModalProps = {
         poolPriceDisplay: poolPriceDisplay,
@@ -441,6 +457,8 @@ export default function Swap(props: propsIF) {
         setNewSwapTransactionHash: setNewSwapTransactionHash,
         currentPendingTransactionsArray: currentPendingTransactionsArray,
         showBypassConfirm,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -623,10 +641,6 @@ export default function Swap(props: propsIF) {
         setShowBypassConfirm(true);
         initiateSwap();
     };
-
-    useEffect(() => {
-        if (!currentPendingTransactionsArray.length) setShowBypassConfirm(false);
-    }, [currentPendingTransactionsArray.length]);
 
     return (
         <section data-testid={'swap'} className={swapPageStyle}>

@@ -16,10 +16,11 @@ import Button from '../Button/Button';
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;
     noAnimation?: boolean;
+    initiateTx?: () => void;
 }
 
 export default function TransactionException(props: TransactionSubmittedProps) {
-    const { resetConfirmation } = props;
+    const { resetConfirmation, initiateTx } = props;
 
     return (
         <div className={styles.removal_pending}>
@@ -29,7 +30,13 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;.
             </p>
-            <Button title='Try Again' action={resetConfirmation} />
+            <Button
+                title='Try Again'
+                action={() => {
+                    if (initiateTx) initiateTx();
+                    resetConfirmation();
+                }}
+            />
         </div>
     );
 }
