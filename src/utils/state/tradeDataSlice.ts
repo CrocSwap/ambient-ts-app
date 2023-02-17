@@ -173,7 +173,7 @@ export const tradeDataSlice = createSlice({
         setPrimaryQuantityRange: (state, action: PayloadAction<string>) => {
             state.primaryQuantityRange = action.payload;
         },
-        setLimitTick: (state, action: PayloadAction<number>) => {
+        setLimitTick: (state, action: PayloadAction<number | undefined>) => {
             state.limitTick = action.payload;
         },
         setLimitTickCopied: (state, action: PayloadAction<boolean>) => {
