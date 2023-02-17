@@ -16,6 +16,7 @@ import TransactionDenied from '../../../Global/TransactionDenied/TransactionDeni
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
 // import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
 
 interface propsIF {
@@ -76,7 +77,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
 
     const confirmSendMessage = (
         <WaitingConfirmation
-            // noAnimation
+            noAnimation
             content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
                 tokenBQty ? tokenBQty : '0'
             } ${
@@ -85,12 +86,32 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         />
     );
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionFailed = (
-        // <TransactionFailed  resetConfirmation={sendTransaction} />
-        <div>Transaction failed</div>
+    function handleReset() {
+        resetConfirmation();
+        setShowExtraInfo(false);
+    }
+
+    const transactionDenied = (
+        <TransactionDenied
+            resetConfirmation={handleReset}
+            initiateTx={sendTransaction}
+            noAnimation
+        />
     );
-    const transactionException = <TransactionException resetConfirmation={sendTransaction} />;
+    const transactionFailed = (
+        <TransactionFailed
+            noAnimation
+            resetConfirmation={handleReset}
+            initiateTx={sendTransaction}
+        />
+    );
+    const transactionException = (
+        <TransactionException
+            resetConfirmation={handleReset}
+            initiateTx={sendTransaction}
+            noAnimation
+        />
+    );
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
@@ -106,7 +127,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             tokenBAddress={tokenA.address}
             tokenBDecimals={tokenA.decimals}
             tokenBImage={tokenA.logoURI}
-            // noAnimation
+            noAnimation
         />
     );
     const confirmationDisplay =

@@ -475,10 +475,6 @@ export default function Limit(props: propsIF) {
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
 
-    useEffect(() => {
-        if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
-    }, [currentPendingTransactionsArray.length]);
-
     const handleLimitButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
         sendLimitOrder();

@@ -80,9 +80,15 @@ export default function BypassLimitButton(props: propsIF) {
             }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
     );
+
+    function handleReset() {
+        resetConfirmation();
+        setShowExtraInfo(false);
+    }
+
     const transactionDenied = (
         <TransactionDenied
-            resetConfirmation={resetConfirmation}
+            resetConfirmation={handleReset}
             noAnimation
             initiateTx={sendLimitOrder}
         />
@@ -90,13 +96,13 @@ export default function BypassLimitButton(props: propsIF) {
     const transactionFailed = (
         <TransactionFailed
             noAnimation
-            resetConfirmation={resetConfirmation}
+            resetConfirmation={handleReset}
             initiateTx={sendLimitOrder}
         />
     );
     const transactionException = (
         <TransactionException
-            resetConfirmation={resetConfirmation}
+            resetConfirmation={handleReset}
             noAnimation
             initiateTx={sendLimitOrder}
         />

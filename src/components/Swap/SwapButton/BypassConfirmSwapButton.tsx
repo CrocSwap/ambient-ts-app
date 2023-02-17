@@ -83,25 +83,29 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             `}
         />
     );
+    function handleReset() {
+        resetConfirmation();
+        setShowExtraInfo(false);
+    }
 
     const transactionDenied = (
         <TransactionDenied
             noAnimation
-            resetConfirmation={resetConfirmation}
+            resetConfirmation={handleReset}
             initiateTx={initiateSwapMethod}
         />
     );
     const transactionFailed = (
         <TransactionFailed
             noAnimation
-            resetConfirmation={resetConfirmation}
+            resetConfirmation={handleReset}
             initiateTx={initiateSwapMethod}
         />
     );
     const transactionException = (
         <TransactionException
             noAnimation
-            resetConfirmation={resetConfirmation}
+            resetConfirmation={handleReset}
             initiateTx={initiateSwapMethod}
         />
     );

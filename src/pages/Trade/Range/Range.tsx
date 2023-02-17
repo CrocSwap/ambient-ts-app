@@ -189,13 +189,6 @@ export default function Range(props: propsIF) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<string | undefined>();
 
-    const resetConfirmation = () => {
-        setShowConfirmation(true);
-        setTxErrorCode('');
-
-        setTxErrorMessage('');
-    };
-
     const userPositions = graphData.positionsByUser.positions;
     const [isAdd, setIsAdd] = useState<boolean>(false);
 
@@ -263,6 +256,8 @@ export default function Range(props: propsIF) {
               });
 
     const { tokenA, tokenB } = tradeData;
+    const { baseToken, quoteToken } = tradeData;
+
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
@@ -518,6 +513,46 @@ export default function Range(props: propsIF) {
     const highBoundOnBlur = () => {
         setRangeHighBoundFieldBlurred(true);
     };
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode('');
+
+        setTxErrorMessage('');
+    };
+
+    const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+
+    const receiveReceiptHashes: Array<string> = [];
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length && !isWaitingForWallet && txErrorCode === '') {
+            setShowBypassConfirmButton(false);
+        }
+    }, [currentPendingTransactionsArray.length, isWaitingForWallet, txErrorCode === '']);
+
+    useEffect(() => {
+        setNewRangeTransactionHash('');
+        setShowBypassConfirmButton(false);
+    }, [JSON.stringify({ base: baseToken.address, quote: quoteToken.address })]);
 
     useEffect(() => {
         if (tradeData.advancedMode) {
@@ -791,6 +826,7 @@ export default function Range(props: propsIF) {
         if (!crocEnv) return;
 
         resetConfirmation();
+        setIsWaitingForWallet(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
@@ -1025,30 +1061,28 @@ export default function Range(props: propsIF) {
         resetConfirmation();
     };
 
-    const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
+    // const receiptData = useAppSelector((state) => state.receiptData);
 
-    const receiptData = useAppSelector((state) => state.receiptData);
+    // const sessionReceipts = receiptData.sessionReceipts;
 
-    const sessionReceipts = receiptData.sessionReceipts;
+    // const pendingTransactions = receiptData.pendingTransactions;
 
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    const receiveReceiptHashes: Array<string> = [];
+    // const receiveReceiptHashes: Array<string> = [];
     // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    // function handleParseReceipt(receipt: any) {
+    //     const parseReceipt = JSON.parse(receipt);
+    //     receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    // }
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    // sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
+    // const currentPendingTransactionsArray = pendingTransactions.filter(
+    //     (hash: string) => !receiveReceiptHashes.includes(hash),
+    // );
 
-    useEffect(() => {
-        if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
-    }, [currentPendingTransactionsArray.length]);
+    // useEffect(() => {
+    //     if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
+    // }, [currentPendingTransactionsArray.length]);
 
     const handleRangeButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
