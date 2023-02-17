@@ -36,6 +36,7 @@ export default function RepositionHeader(props: propsIF) {
         const fixedParams = params ?? '';
         // break URL param string into parameter tuples
         const paramSets = fixedParams
+            // split the params string at the separator character
             .split('&')
             // remove any values missing an = symbol
             .filter((par) => par.includes('='))
@@ -48,7 +49,9 @@ export default function RepositionHeader(props: propsIF) {
         // fn to look up the value of any param
         // return empty string if param is not found
         const findParam = (name: string): string => {
+            // find param tuple with name provided as an arg
             const paramTuple = paramSets.find((param) => param[0] === name);
+            // return value from tuple or empty string in tuple is not found
             return paramTuple ? paramTuple[1] : '';
         };
         // generate and return nav path
