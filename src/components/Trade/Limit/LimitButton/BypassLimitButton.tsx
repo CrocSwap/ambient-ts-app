@@ -10,30 +10,30 @@ import TransactionDenied from '../../../Global/TransactionDenied/TransactionDeni
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
+// import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
 import { useState, Dispatch, SetStateAction } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { CrocImpact } from '@crocswap-libs/sdk';
+// import { CrocImpact } from '@crocswap-libs/sdk';
 
 interface propsIF {
     newLimitOrderTransactionHash: string;
-    tokenPair: TokenPairIF;
     txErrorCode: string;
-    txErrorMessage: string;
-    showConfirmation: boolean;
-    setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
-    resetConfirmation: () => void;
-    slippageTolerancePercentage: number;
-    effectivePrice: number;
-    isSellTokenBase: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
-    sellQtyString: string;
-    buyQtyString: string;
-    setShowBypassConfirmButton: Dispatch<SetStateAction<string>>;
-    showBypassConfirmButton: boolean;
     tokenAInputQty: string;
     tokenBInputQty: string;
+    tokenPair: TokenPairIF;
+    resetConfirmation: () => void;
+    showBypassConfirmButton: boolean;
+    setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
+    // txErrorMessage: string;
+    // setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
+    // showConfirmation: boolean;
+    // slippageTolerancePercentage: number;
+    // effectivePrice: number;
+    // isSellTokenBase: boolean;
+    // bypassConfirm: boolean;
+    // toggleBypassConfirm: (item: string, pref: boolean) => void;
+    // sellQtyString: string;
+    // buyQtyString: string;
 }
 export default function BypassLimitButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -44,7 +44,7 @@ export default function BypassLimitButton(props: propsIF) {
         tokenBInputQty,
         tokenPair,
         resetConfirmation,
-        setShowBypassConfirm,
+        // showBypassConfirmButton,
         setShowBypassConfirmButton,
     } = props;
 
@@ -61,9 +61,10 @@ export default function BypassLimitButton(props: propsIF) {
         ?.value;
     const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
 
-    const sellTokenData = tokenPair.dataTokenA;
+    console.log({ tokenPair });
+    const sellTokenData = tokenPair?.dataTokenA;
 
-    const buyTokenData = tokenPair.dataTokenB;
+    const buyTokenData = tokenPair?.dataTokenB;
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -158,7 +159,7 @@ export default function BypassLimitButton(props: propsIF) {
                     <section className={styles.extra_info_container}>{confirmationDisplay}</section>
                 )}
                 <span className={styles.close_icon_container}>
-                    <button onClick={() => setShowBypassConfirm(false)}>
+                    <button onClick={() => setShowBypassConfirmButton(false)}>
                         Submit another transaction
                     </button>
                 </span>

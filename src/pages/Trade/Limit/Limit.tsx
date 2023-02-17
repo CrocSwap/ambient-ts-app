@@ -29,7 +29,7 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 // START: Import Local Files
 import styles from './Limit.module.css';
 import { useTradeData } from '../Trade';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitTick, setLimitTickCopied } from '../../../utils/state/tradeDataSlice';
@@ -570,6 +570,28 @@ export default function Limit(props: propsIF) {
         resetConfirmation();
     };
     const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+
+    const receiveReceiptHashes: Array<string> = [];
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
+    }, [currentPendingTransactionsArray.length]);
 
     const handleLimitButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
@@ -597,6 +619,29 @@ export default function Limit(props: propsIF) {
         toggleBypassConfirm: toggleBypassConfirm,
         showBypassConfirmButton: showBypassConfirmButton,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
+    };
+    const bypassLimitProps = {
+        newLimitOrderTransactionHash: newLimitOrderTransactionHash,
+        txErrorCode: txErrorCode,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
+        tokenPair: tokenPair,
+        resetConfirmation: resetConfirmation,
+        showBypassConfirmButton: showBypassConfirmButton,
+        setShowBypassConfirmButton: setShowBypassConfirmButton,
+        // onClose: handleModalClose,
+        // poolPriceDisplay: poolPriceDisplay || 0,
+        // initiateLimitOrderMethod: sendLimitOrder,
+        // isTokenAPrimary: isTokenAPrimary,
+        // insideTickDisplayPrice: endDisplayPrice,
+        // txErrorMessage: txErrorMessage,
+        // showConfirmation: showConfirmation,
+        // setShowConfirmation: setShowConfirmation,
+        // startDisplayPrice: startDisplayPrice,
+        // middleDisplayPrice: middleDisplayPrice,
+        // endDisplayPrice: endDisplayPrice,
+        // bypassConfirm: bypassConfirm,
+        // toggleBypassConfirm: toggleBypassConfirm,
     };
 
     const confirmLimitModalOrNull = isModalOpen ? (
@@ -826,7 +871,7 @@ export default function Limit(props: propsIF) {
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
                     ) : showBypassConfirmButton ? (
-                        <BypassLimitButton />
+                        <BypassLimitButton {...bypassLimitProps} />
                     ) : (
                         <LimitButton
                             onClickFn={bypassConfirm ? handleLimitButtonClickWithBypass : openModal}
