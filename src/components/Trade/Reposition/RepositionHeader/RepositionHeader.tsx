@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import { RiSettings5Line } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import trimString from '../../../../utils/functions/trimString';
 import styles from './RepositionHeader.module.css';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
@@ -11,7 +12,6 @@ import { VscClose } from 'react-icons/vsc';
 
 interface propsIF {
     positionHash: string;
-    redirectPath: string;
     repoSlippage: SlippagePairIF;
     isPairStable: boolean;
     bypassConfirm: boolean;
@@ -21,12 +21,46 @@ interface propsIF {
 export default function RepositionHeader(props: propsIF) {
     const {
         positionHash,
-        redirectPath,
         repoSlippage,
         isPairStable,
         bypassConfirm,
         toggleBypassConfirm,
     } = props;
+
+    const { params } = useParams();
+
+    // generate a nav path for clicking the exit button
+    // regenerate value every time the URL params change (virtually never)
+    const exitPath = useMemo<string>(() => {
+        // get URL parameters or empty string if undefined
+        const fixedParams = params ?? '';
+        // break URL param string into parameter tuples
+        const paramSets = fixedParams
+            .split('&')
+            // remove any values missing an = symbol
+            .filter((par) => par.includes('='))
+            // split substrings at = symbols to make [key, value] tuples
+            .map((par) => par.split('='))
+            // remove empty strings created by extra = symbols
+            .map((par) => par.filter((e) => e !== ''))
+            // remove tuples with trisomy issues
+            .filter((par) => par.length === 2);
+        // fn to look up the value of any param
+        // return empty string if param is not found
+        const findParam = (name: string): string => {
+            const paramTuple = paramSets.find((param) => param[0] === name);
+            return paramTuple ? paramTuple[1] : '';
+        };
+        // generate and return nav path
+        return (
+            '/trade/range/chain=' +
+            findParam('chain') +
+            '&tokenA=' +
+            findParam('tokenA') +
+            '&tokenB=' +
+            findParam('tokenB')
+        );
+    }, [params]);
 
     const navigate = useNavigate();
 
@@ -53,7 +87,7 @@ export default function RepositionHeader(props: propsIF) {
                 </Modal>
             )}
             <div
-                onClick={() => navigate(redirectPath, { replace: true })}
+                onClick={() => navigate(exitPath, { replace: true })}
                 style={{ cursor: 'pointer', marginRight: '10px' }}
             >
                 <VscClose size={22} />

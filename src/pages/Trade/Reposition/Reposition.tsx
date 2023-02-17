@@ -478,7 +478,6 @@ export default function Reposition(props: propsIF) {
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 positionHash={position.positionStorageSlot}
-                redirectPath={redirectPath}
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
                 bypassConfirm={bypassConfirm}
