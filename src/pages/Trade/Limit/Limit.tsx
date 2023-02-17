@@ -203,6 +203,7 @@ export default function Limit(props: propsIF) {
     const limitTickCopied = tradeData.limitTickCopied;
 
     const { tokenA, tokenB } = useUrlParams();
+    const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(() => pool?.baseToken === tokenA, [pool?.baseToken, tokenA]);
 
@@ -454,6 +455,48 @@ export default function Limit(props: propsIF) {
         })();
     }, [limitTick, tokenAInputQty, tokenBInputQty]);
 
+    const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+
+    const receiveReceiptHashes: Array<string> = [];
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
+    }, [currentPendingTransactionsArray.length]);
+
+    const handleLimitButtonClickWithBypass = () => {
+        setShowBypassConfirmButton(true);
+        sendLimitOrder();
+    };
+
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length && !isWaitingForWallet && txErrorCode === '') {
+            setShowBypassConfirmButton(false);
+        }
+    }, [currentPendingTransactionsArray.length, isWaitingForWallet, txErrorCode === '']);
+
+    useEffect(() => {
+        setNewLimitOrderTransactionHash('');
+        setShowBypassConfirmButton(false);
+    }, [JSON.stringify({ base: baseToken.address, quote: quoteToken.address })]);
+
     const sendLimitOrder = async () => {
         console.log('Send limit');
         if (!crocEnv) return;
@@ -461,6 +504,7 @@ export default function Limit(props: propsIF) {
         //     return;
         // }
         resetConfirmation();
+        setIsWaitingForWallet(true);
 
         console.log({ limitTick });
 
@@ -569,34 +613,7 @@ export default function Limit(props: propsIF) {
         // setTxErrorMessage('');
         resetConfirmation();
     };
-    const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
-    const receiptData = useAppSelector((state) => state.receiptData);
 
-    const sessionReceipts = receiptData.sessionReceipts;
-
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
-
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
-
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
-
-    useEffect(() => {
-        if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
-    }, [currentPendingTransactionsArray.length]);
-
-    const handleLimitButtonClickWithBypass = () => {
-        setShowBypassConfirmButton(true);
-        sendLimitOrder();
-    };
     const confirmLimitModalProps = {
         onClose: handleModalClose,
         tokenPair: tokenPair,
@@ -629,6 +646,8 @@ export default function Limit(props: propsIF) {
         resetConfirmation: resetConfirmation,
         showBypassConfirmButton: showBypassConfirmButton,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
+        sendLimitOrder: sendLimitOrder,
+        setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
         // onClose: handleModalClose,
         // poolPriceDisplay: poolPriceDisplay || 0,
         // initiateLimitOrderMethod: sendLimitOrder,

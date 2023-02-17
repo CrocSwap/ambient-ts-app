@@ -31,7 +31,7 @@ import {
     roundDownTick,
     roundUpTick,
 } from './rangeFunctions';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -60,6 +60,7 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { graphData } from '../../../utils/state/graphDataSlice';
+import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 
 interface propsIF {
     account: string | undefined;
@@ -1024,6 +1025,35 @@ export default function Range(props: propsIF) {
         resetConfirmation();
     };
 
+    const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
+
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+
+    const receiveReceiptHashes: Array<string> = [];
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
+    }, [currentPendingTransactionsArray.length]);
+
+    const handleRangeButtonClickWithBypass = () => {
+        setShowBypassConfirmButton(true);
+        sendTransaction();
+    };
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
@@ -1051,6 +1081,15 @@ export default function Range(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
         bypassConfirm: bypassConfirm,
         toggleBypassConfirm: toggleBypassConfirm,
+    };
+    const bypassConfirmButtonProps = {
+        newRangeTransactionHash: newRangeTransactionHash,
+        txErrorCode: txErrorCode,
+        tokenPair: tokenPair,
+        resetConfirmation: resetConfirmation,
+        sendTransaction: sendTransaction,
+        setShowBypassConfirmButton: setShowBypassConfirmButton,
+        showBypassConfirmButton: showBypassConfirmButton,
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -1365,9 +1404,11 @@ export default function Range(props: propsIF) {
                       parseFloat(tokenBInputQty) > 0 &&
                       !isTokenBAllowanceSufficient ? (
                         tokenBApprovalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassConfirmRangeButton {...bypassConfirmButtonProps} />
                     ) : (
                         <RangeButton
-                            onClickFn={bypassConfirm ? sendTransaction : openModal}
+                            onClickFn={bypassConfirm ? handleRangeButtonClickWithBypass : openModal}
                             rangeAllowed={poolExists === true && rangeAllowed && !isInvalidRange}
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
                             bypassConfirm={bypassConfirm}
