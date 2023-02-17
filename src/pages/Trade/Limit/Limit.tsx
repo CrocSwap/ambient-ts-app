@@ -718,6 +718,58 @@ export default function Limit(props: propsIF) {
         </div>
     );
 
+    const currencyConverterProps = {
+        displayPrice: displayPrice,
+        previousDisplayPrice: previousDisplayPrice,
+        setDisplayPrice: setDisplayPrice,
+        setPreviousDisplayPrice: setPreviousDisplayPrice,
+        provider: provider,
+        setPriceInputFieldBlurred: setPriceInputFieldBlurred,
+        pool: pool,
+        gridSize: chainData.gridSize,
+        isUserLoggedIn: isUserLoggedIn,
+        tokenPair: tokenPair,
+        poolPriceNonDisplay: poolPriceNonDisplay,
+        isSellTokenBase: isSellTokenBase,
+        tokensBank: importedTokens,
+        setImportedTokens: setImportedTokens,
+        chainId: chainId,
+        setLimitAllowed: setLimitAllowed,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
+        setTokenAInputQty: setTokenAInputQty,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        setTokenBInputQty: setTokenBInputQty,
+        setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
+        setLimitButtonErrorMessage: setLimitButtonErrorMessage,
+        isWithdrawFromDexChecked: isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
+        limitTickDisplayPrice: endDisplayPrice,
+        isDenominationInBase: tradeData.isDenomBase,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        poolExists: poolExists,
+        gasPriceInGwei: gasPriceInGwei,
+        isOrderCopied: isOrderCopied,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: importedTokensPlus,
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
+        setResetLimitTick: setResetLimitTick,
+        openGlobalPopup: openGlobalPopup,
+    };
+
     // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
     return (
         <section className={styles.scrollable_container}>
@@ -738,57 +790,7 @@ export default function Limit(props: propsIF) {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <LimitCurrencyConverter
-                        displayPrice={displayPrice}
-                        previousDisplayPrice={previousDisplayPrice}
-                        setDisplayPrice={setDisplayPrice}
-                        setPreviousDisplayPrice={setPreviousDisplayPrice}
-                        provider={provider}
-                        setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                        pool={pool}
-                        gridSize={chainData.gridSize}
-                        isUserLoggedIn={isUserLoggedIn}
-                        tokenPair={tokenPair}
-                        poolPriceNonDisplay={poolPriceNonDisplay}
-                        isSellTokenBase={isSellTokenBase}
-                        tokensBank={importedTokens}
-                        setImportedTokens={setImportedTokens}
-                        chainId={chainId}
-                        setLimitAllowed={setLimitAllowed}
-                        baseTokenBalance={baseTokenBalance}
-                        quoteTokenBalance={quoteTokenBalance}
-                        baseTokenDexBalance={baseTokenDexBalance}
-                        quoteTokenDexBalance={quoteTokenDexBalance}
-                        tokenAInputQty={tokenAInputQty}
-                        tokenBInputQty={tokenBInputQty}
-                        setTokenAInputQty={setTokenAInputQty}
-                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                        setTokenBInputQty={setTokenBInputQty}
-                        setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                        setLimitButtonErrorMessage={setLimitButtonErrorMessage}
-                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                        setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                        limitTickDisplayPrice={endDisplayPrice}
-                        isDenominationInBase={tradeData.isDenomBase}
-                        activeTokenListsChanged={activeTokenListsChanged}
-                        indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                        poolExists={poolExists}
-                        gasPriceInGwei={gasPriceInGwei}
-                        isOrderCopied={isOrderCopied}
-                        verifyToken={verifyToken}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        importedTokensPlus={importedTokensPlus}
-                        getRecentTokens={getRecentTokens}
-                        addRecentToken={addRecentToken}
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        acknowledgeToken={acknowledgeToken}
-                        setResetLimitTick={setResetLimitTick}
-                        openGlobalPopup={openGlobalPopup}
-                    />
+                    <LimitCurrencyConverter {...currencyConverterProps} />
                 </motion.div>
                 <div className={styles.header_container}>
                     {/* <DividerDark addMarginTop /> */}
