@@ -2,7 +2,7 @@ import styles from './BypassConfirmSwapButton.module.css';
 
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
 
 import {
@@ -40,6 +40,8 @@ interface propsIF {
     toggleBypassConfirm: (item: string, pref: boolean) => void;
     sellQtyString: string;
     buyQtyString: string;
+    setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
+    showBypassConfirm: boolean;
 }
 export default function BypassConfirmSwapButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -92,10 +94,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
-
-    useEffect(() => {
-        if (isLastReceiptSuccess) setShowBypassConfirm(false), [lastReceipt];
-    });
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -177,3 +175,10 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         </section>
     );
 }
+
+// setShowBypassConfirm => True => Render the new button(tx denied)
+// setShowBypassConfirm => False => Render Open Confirmation button
+
+// For users with skip this confirmation
+// Click swap now button => initiates swap and renders new button => setShowBypassConfirm(true)
+// When receipt is successful, we render the old button => setShowBypassConfirm(false)

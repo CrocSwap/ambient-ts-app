@@ -396,6 +396,25 @@ export default function Swap(props: propsIF) {
               });
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
 
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+
+    const receiveReceiptHashes: Array<string> = [];
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
     const confirmSwapModalProps = {
         poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
@@ -419,6 +438,9 @@ export default function Swap(props: propsIF) {
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
+        setNewSwapTransactionHash: setNewSwapTransactionHash,
+        currentPendingTransactionsArray: currentPendingTransactionsArray,
+        showBypassConfirm,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -602,6 +624,10 @@ export default function Swap(props: propsIF) {
         initiateSwap();
     };
 
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length) setShowBypassConfirm(false);
+    }, [currentPendingTransactionsArray.length]);
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -650,6 +676,7 @@ export default function Swap(props: propsIF) {
                         ) : (
                             <>
                                 {!showBypassConfirm ? (
+                                    // user has hide confirmation modal off
                                     <SwapButton
                                         onClickFn={
                                             bypassConfirm
@@ -662,6 +689,7 @@ export default function Swap(props: propsIF) {
                                         bypassConfirm={bypassConfirm}
                                     />
                                 ) : (
+                                    // user has hide confirmation modal on
                                     <BypassConfirmSwapButton {...confirmSwapModalProps} />
                                 )}
                             </>
