@@ -140,7 +140,7 @@ export default function OrderRemoval(props: propsIF) {
 
             let tx;
             try {
-                if (limitOrder.isBid === true) {
+                if (limitOrder.isBid) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)

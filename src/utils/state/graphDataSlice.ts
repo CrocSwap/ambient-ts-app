@@ -9,7 +9,7 @@ export interface graphData {
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityForAllPools: LiquidityForAllPools;
+    liquidityData: LiquidityData;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
@@ -105,20 +105,20 @@ export interface VolumeByTimeData {
     method: string;
 }
 
-export interface LiquidityForAllPools {
-    pools: Array<LiquidityByPool>;
-}
+// export interface LiquidityForAllPools {
+//     pools: Array<LiquidityByPool>;
+// }
 
-export interface liquidityData {
+export interface LiquidityData {
     time: number;
     currentTick: number;
     ranges: Array<Range>;
 }
 
-export interface LiquidityByPool {
-    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
-    liquidityData: liquidityData;
-}
+// export interface LiquidityByPool {
+//     pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
+//     liquidityData: liquidityData;
+// }
 
 export interface Range {
     lowerBound: number | string;
@@ -247,7 +247,7 @@ const initialState: graphData = {
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
-    liquidityForAllPools: { pools: [] },
+    liquidityData: { time: 0, currentTick: 0, ranges: [] },
     poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
@@ -429,27 +429,10 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
-            const poolToFind = JSON.stringify(action.payload.pool);
-            const indexOfPool = state.liquidityForAllPools.pools
-                .map((item) => JSON.stringify(item.pool))
-                .findIndex((pool) => pool === poolToFind);
+        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
+            // console.log('pool found in RTK for new liquidity data');
 
-            // if candles for pool not yet saved in RTK, add to RTK
-            if (indexOfPool === -1) {
-                // console.log('pool not found in RTK for new candle data');
-
-                state.liquidityForAllPools.pools = state.liquidityForAllPools.pools.concat({
-                    pool: action.payload.pool,
-                    liquidityData: action.payload.liquidityData,
-                });
-                // else, check if duration exists
-            } else {
-                // console.log('pool found in RTK for new liquidity data');
-
-                state.liquidityForAllPools.pools[indexOfPool].liquidityData =
-                    action.payload.liquidityData;
-            }
+            state.liquidityData = action.payload;
         },
         setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool);

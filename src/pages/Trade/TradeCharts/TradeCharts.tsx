@@ -35,7 +35,7 @@ import {
 import {
     CandleData,
     CandlesByPoolAndDuration,
-    liquidityData,
+    LiquidityData,
 } from '../../../utils/state/graphDataSlice';
 // import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -73,7 +73,7 @@ interface propsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    limitTick: number;
+    limitTick: number | undefined;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -82,7 +82,7 @@ interface propsIF {
         chainId: string,
         poolId: number,
     ) => void;
-    liquidityData: liquidityData;
+    liquidityData: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -147,7 +147,7 @@ export interface FeeChartData {
     time: any;
     value: number;
 }
-export interface LiquidityData {
+export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -207,12 +207,8 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 <section>
                     <DefaultTooltip
                         interactive
-                        title={`${
-                            tradeData.baseToken.symbol !== 'ETH'
-                                ? tradeData.baseToken.symbol + ':'
-                                : ''
-                        } ${
-                            tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''
+                        title={`${tradeData.baseToken.symbol + ':'} ${
+                            tradeData.baseToken.address
                         } ${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}
                         placement={'top'}
                     >
@@ -240,12 +236,8 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     </DefaultTooltip>
                     <DefaultTooltip
                         interactive
-                        title={`${
-                            tradeData.baseToken.symbol !== 'ETH'
-                                ? tradeData.baseToken.symbol + ':'
-                                : ''
-                        } ${
-                            tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''
+                        title={`${tradeData.baseToken.symbol + ':'} ${
+                            tradeData.baseToken.address
                         } ${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}
                         placement={'top'}
                     >
@@ -271,9 +263,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             {favButton}
             <DefaultTooltip
                 interactive
-                title={`${
-                    tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
-                } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
+                title={`${tradeData.baseToken.symbol + ':'} ${tradeData.baseToken.address} ${
                     tradeData.quoteToken.symbol
                 }: ${tradeData.quoteToken.address}`}
                 placement={'top'}
@@ -296,9 +286,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={`${
-                    tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
-                } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
+                title={`${tradeData.baseToken.symbol + ':'} ${tradeData.baseToken.address} ${
                     tradeData.quoteToken.symbol
                 }: ${tradeData.quoteToken.address}`}
                 placement={'top'}
