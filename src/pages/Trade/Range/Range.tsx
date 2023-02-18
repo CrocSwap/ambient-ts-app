@@ -212,10 +212,6 @@ export default function Range(props: propsIF) {
         }
     };
 
-    // useEffect(() => {
-    //     console.log({ isAdd });
-    // }, [isAdd]);
-
     const { tradeData, navigationMenu, tickPairFromParams } = useTradeData();
 
     const tokenPair = {
@@ -307,9 +303,10 @@ export default function Range(props: propsIF) {
     const defaultMaxPriceDifferencePercentage = 10;
 
     // default low tick to seed in the DOM (range lower value)
-    const defaultLowTick = useMemo(
-        () => {
-            const value = tickPairFromParams[0] || (tradeData.advancedLowTick === 0 ||
+    const defaultLowTick = useMemo(() => {
+        const value =
+            tickPairFromParams[0] ||
+            (tradeData.advancedLowTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
                 ? roundDownTick(
@@ -317,18 +314,20 @@ export default function Range(props: propsIF) {
                       lookupChain(chainId).gridSize,
                   )
                 : tradeData.advancedLowTick);
-            return value;
+        return value;
     }, [tradeData.advancedLowTick, currentPoolPriceTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo(() => {
-        const value = tickPairFromParams[1] || (tradeData.advancedHighTick === 0 ||
+        const value =
+            tickPairFromParams[1] ||
+            (tradeData.advancedHighTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
                 ? roundUpTick(
-                    currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
-                    lookupChain(chainId).gridSize,
-                )
+                      currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
+                      lookupChain(chainId).gridSize,
+                  )
                 : tradeData.advancedHighTick);
         return value;
     }, [tradeData.advancedHighTick, currentPoolPriceTick]);
