@@ -608,7 +608,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [liquidityData]);
+    }, [liquidityData?.totalLiq]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         console.log('parse Liq Scale');
