@@ -12,8 +12,8 @@ import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF, setAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -155,7 +155,19 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
     } = props;
 
-    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    const dispatch = useAppDispatch();
+
+    const [tokenPairFromParams, tickPairFromParams, limitTickFromParams] = useUrlParams(
+        chainId,
+        isInitialized,
+    );
+
+    // console.log({tickPairFromParams});
+
+    if (!tickPairFromParams.includes(0)) {
+        dispatch(setAdvancedMode(true));
+    }
+
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
     }, [tokenPairFromParams]);
@@ -210,18 +222,18 @@ export default function Trade(props: propsIF) {
     const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
     const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
 
-    const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
-        (pool) =>
-            pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
-            pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
-            pool.pool.poolIdx === chainData.poolIndex &&
-            pool.pool.chainId === chainData.chainId,
-    );
+    // const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
+    //     (pool) =>
+    //         pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
+    //         pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
+    //         pool.pool.poolIdx === chainData.poolIndex &&
+    //         pool.pool.chainId === chainData.chainId,
+    // );
 
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
+    const liquidityData = graphData?.liquidityData;
 
-    const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
-    //    const liquidityData = activePoolLiquidityData?.liquidityData;
+    // const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
+    // //    const liquidityData = activePoolLiquidityData?.liquidityData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -239,13 +251,13 @@ export default function Trade(props: propsIF) {
         </div>
     );
 
-    useEffect(() => {
-        setLiquidityData(undefined);
-    }, [pool?.baseToken, pool?.quoteToken]);
+    // useEffect(() => {
+    //     setLiquidityData(undefined);
+    // }, [pool?.baseToken, pool?.quoteToken]);
 
-    useEffect(() => {
-        setLiquidityData(activePoolLiquidityData?.liquidityData);
-    }, [activePoolLiquidityData]);
+    // useEffect(() => {
+    //     setLiquidityData(activePoolLiquidityData?.liquidityData);
+    // }, [activePoolLiquidityData]);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (
@@ -254,7 +266,14 @@ export default function Trade(props: propsIF) {
                 activeMobileComponent !== 'trade' ? styles.hide : ''
             }`}
         >
-            <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
+            <Outlet
+                context={{
+                    tradeData: tradeData,
+                    navigationMenu: navigationMenu,
+                    tickPairFromParams: tickPairFromParams,
+                    limitTickFromParams: limitTickFromParams,
+                }}
+            />
         </div>
     );
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
@@ -628,7 +647,12 @@ export default function Trade(props: propsIF) {
     );
 }
 
-type ContextType = { tradeData: TradeDataIF; navigationMenu: JSX.Element };
+type ContextType = {
+    tradeData: TradeDataIF;
+    navigationMenu: JSX.Element;
+    tickPairFromParams: Array<number | null>;
+    limitTickFromParams: number | null;
+};
 
 export function useTradeData() {
     return useOutletContext<ContextType>();

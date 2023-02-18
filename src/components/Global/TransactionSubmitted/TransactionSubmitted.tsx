@@ -12,10 +12,11 @@ interface TransactionSubmittedProps {
     tokenBSymbol: string;
     tokenBDecimals: number;
     tokenBImage: string;
+    noAnimation?: boolean;
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
-    const { hash, tokenBAddress, tokenBSymbol, tokenBDecimals, tokenBImage } = props;
+    const { hash, tokenBAddress, tokenBSymbol, tokenBDecimals, tokenBImage, noAnimation } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
@@ -42,10 +43,15 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         </a>
     );
     return (
-        <div className={styles.transaction_submitted}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
+        <div
+            className={styles.transaction_submitted}
+            style={{ height: noAnimation ? 'auto' : '300px' }}
+        >
+            {!noAnimation && (
+                <div className={styles.completed_animation}>
+                    <Animation animData={completed} loop={false} />
+                </div>
+            )}
             <h2 style={{ marginBottom: '15px' }}>Transaction Submitted</h2>
             <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}

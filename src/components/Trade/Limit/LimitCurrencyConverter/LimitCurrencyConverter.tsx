@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 import {
     // reverseTokensInRTK,
     setIsTokenAPrimary,
+    setLimitTick,
     // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
@@ -224,6 +225,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setPoolPriceNonDisplay(0));
+        dispatch(setLimitTick(undefined));
 
         // setResetLimitTick((value) => !value);
     };
