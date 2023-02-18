@@ -162,8 +162,6 @@ export default function Trade(props: propsIF) {
         isInitialized,
     );
 
-    // console.log({tickPairFromParams});
-
     if (!tickPairFromParams.includes(0)) {
         dispatch(setAdvancedMode(true));
     }
@@ -603,7 +601,14 @@ export default function Trade(props: propsIF) {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
+                <Outlet
+                    context={{
+                        tradeData: tradeData,
+                        navigationMenu: navigationMenu,
+                        limitTick: limitTick,
+                        tickPairFromParams: tickPairFromParams,
+                    }}
+                />
             )}
         </section>
     );
