@@ -220,18 +220,18 @@ export default function Trade(props: propsIF) {
     const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
     const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
 
-    const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
-        (pool) =>
-            pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
-            pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
-            pool.pool.poolIdx === chainData.poolIndex &&
-            pool.pool.chainId === chainData.chainId,
-    );
+    // const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
+    //     (pool) =>
+    //         pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
+    //         pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
+    //         pool.pool.poolIdx === chainData.poolIndex &&
+    //         pool.pool.chainId === chainData.chainId,
+    // );
 
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
+    const liquidityData = graphData?.liquidityData;
 
-    const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
-    //    const liquidityData = activePoolLiquidityData?.liquidityData;
+    // const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
+    // //    const liquidityData = activePoolLiquidityData?.liquidityData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -249,13 +249,13 @@ export default function Trade(props: propsIF) {
         </div>
     );
 
-    useEffect(() => {
-        setLiquidityData(undefined);
-    }, [pool?.baseToken, pool?.quoteToken]);
+    // useEffect(() => {
+    //     setLiquidityData(undefined);
+    // }, [pool?.baseToken, pool?.quoteToken]);
 
-    useEffect(() => {
-        setLiquidityData(activePoolLiquidityData?.liquidityData);
-    }, [activePoolLiquidityData]);
+    // useEffect(() => {
+    //     setLiquidityData(activePoolLiquidityData?.liquidityData);
+    // }, [activePoolLiquidityData]);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (

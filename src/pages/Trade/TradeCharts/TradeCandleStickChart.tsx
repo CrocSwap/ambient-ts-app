@@ -8,7 +8,7 @@ import {
     CandleChartData,
     FeeChartData,
     LiqSnap,
-    LiquidityData,
+    LiquidityDataLocal,
     TvlChartData,
     VolumeChartData,
 } from './TradeCharts';
@@ -296,10 +296,10 @@ export default function TradeCandleStickChart(props: ChartData) {
             props.poolPriceDisplay > 0
         ) {
             console.log('parsing liquidity data');
-            const liqAskData: LiquidityData[] = [];
-            const liqBidData: LiquidityData[] = [];
-            const depthLiqBidData: LiquidityData[] = [];
-            const depthLiqAskData: LiquidityData[] = [];
+            const liqAskData: LiquidityDataLocal[] = [];
+            const liqBidData: LiquidityDataLocal[] = [];
+            const depthLiqBidData: LiquidityDataLocal[] = [];
+            const depthLiqAskData: LiquidityDataLocal[] = [];
 
             const liqSnapData: LiqSnap[] = [];
             let topBoundary = 0;
@@ -608,7 +608,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [liquidityData]);
+    }, [liquidityData?.totalLiq]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         console.log('parse Liq Scale');
