@@ -77,9 +77,7 @@ interface propsIF {
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
-    // handleTxCopiedClick: () => void;
-    // handleOrderCopiedClick: () => void;
-    // handleRangeCopiedClick: () => void;
+
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
 
@@ -135,9 +133,6 @@ export default function Trade(props: propsIF) {
         setTokenPairLocal,
         showSidebar,
         handlePulseAnimation,
-        // handleTxCopiedClick,
-        // handleOrderCopiedClick,
-        // handleRangeCopiedClick,
 
         setOutsideControl,
         setSelectedOutsideTab,
@@ -220,18 +215,7 @@ export default function Trade(props: propsIF) {
     const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
     const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
 
-    // const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
-    //     (pool) =>
-    //         pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
-    //         pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
-    //         pool.pool.poolIdx === chainData.poolIndex &&
-    //         pool.pool.chainId === chainData.chainId,
-    // );
-
     const liquidityData = graphData?.liquidityData;
-
-    // const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
-    // //    const liquidityData = activePoolLiquidityData?.liquidityData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -249,13 +233,6 @@ export default function Trade(props: propsIF) {
         </div>
     );
 
-    // useEffect(() => {
-    //     setLiquidityData(undefined);
-    // }, [pool?.baseToken, pool?.quoteToken]);
-
-    // useEffect(() => {
-    //     setLiquidityData(activePoolLiquidityData?.liquidityData);
-    // }, [activePoolLiquidityData]);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (
@@ -283,13 +260,6 @@ export default function Trade(props: propsIF) {
         setIsCandleSelected(isOpen);
 
         setHasInitialized(false);
-        // if (isOpen && isShowAllEnabled) {
-        //     setIsShowAllEnabled(false);
-        // } else if (!isOpen && !isShowAllEnabled) {
-        //     console.log('setting to show all');
-        //     setIsShowAllEnabled(true);
-        // }
-        // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
         if (isOpen) {
             setOutsideControl(true);
@@ -303,27 +273,12 @@ export default function Trade(props: propsIF) {
     const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
     const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
 
-    // const [upBodyColor] = useState<string>('#CDC1FF');
-    // const [upBorderColor] = useState<string>('#CDC1FF');
-    // const [downBodyColor] = useState<string>('#171D27');
-    // const [downBodyColor] = useState<string>('#24243e');
-    // const [downBorderColor] = useState<string>('#7371FC');
     const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
     const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
     const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
     const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
     const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.8)');
     const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.8)');
-
-    // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
-    // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
-    // const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
-    // const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
-
-    // console.log({ upBodyColor });
-    // console.log({ upBorderColor });
-    // console.log({ downBodyColor });
-    // console.log({ downBorderColor });
 
     const handleChartBgColorPickerChange = (color: any) => {
         setChartBg(color.hex);
