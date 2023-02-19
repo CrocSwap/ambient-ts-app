@@ -1817,8 +1817,10 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
+                        firstLocation = previousTouch.pageY;
+                    } else {
+                        firstLocation = event.sourceEvent.offsetY;
                     }
-                    firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
@@ -1887,7 +1889,7 @@ export default function Chart(props: ChartData) {
 
                     const size = (domainY[1] - domainY[0]) / factor;
 
-                    const newCenter = scaleData.yScale.invert(firstLocation.offsetY);
+                    const newCenter = scaleData.yScale.invert(firstLocation);
 
                     const diff = domainY[1] - domainY[0];
 
