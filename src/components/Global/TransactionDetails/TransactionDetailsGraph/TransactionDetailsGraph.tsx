@@ -316,7 +316,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             const yAxis = d3fc.axisRight().scale(yScale);
 
-            if (transactionType !== 'swap') {
+            if (transactionType !== 'swap' && tx.positionType !== 'ambient') {
                 const topLineTick = denominationsInBase
                     ? tx.bidTickInvPriceDecimalCorrected
                     : tx.bidTickPriceDecimalCorrected;
@@ -336,7 +336,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const lowValues: any = [];
 
-                if (lowerBoundaryFill > diff && tx.positionType !== 'ambient') {
+                if (lowerBoundaryFill > diff) {
                     if (lowerBoudnaryFactor < 2) {
                         lowValues[0] = Math.round((lowLineTick - lowerBoundaryFill / 2) / 10) * 10;
                     } else {
@@ -359,7 +359,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const topValues: any = [];
 
-                if (topBoundaryFill > diff && tx.positionType !== 'ambient') {
+                if (topBoundaryFill > diff) {
                     if (topBoudnaryFactor < 2) {
                         topValues[0] = Math.round((topLineTick + topBoundaryFill / 2) / 10) * 10;
                     } else {
@@ -377,7 +377,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const bandValues: any = [];
 
-                if (bandBoundaryFill > diff && tx.positionType !== 'ambient') {
+                if (bandBoundaryFill > diff) {
                     if (bandBoudnaryFactor < 2) {
                         bandValues[0] = Math.round((topLineTick - bandBoundaryFill / 2) / 10) * 10;
                     } else {
