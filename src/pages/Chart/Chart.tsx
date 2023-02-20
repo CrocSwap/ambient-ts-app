@@ -1083,6 +1083,9 @@ export default function Chart(props: ChartData) {
                         if (d === crosshairData[0].x) {
                             return 'crossHairText';
                         }
+                        if (moment(d).format('HH:mm') === '00:00') {
+                            return 'startDate';
+                        }
                     });
             });
         }

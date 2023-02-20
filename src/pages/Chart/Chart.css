@@ -43,6 +43,13 @@ text.crossHairText {
     font-weight: bold;
 }
 
+
+text.startDate {
+    font-size: 13px;
+    font-weight: bolder;
+}
+
+
 text.y_axis {
     font-size: 13px;
     font-weight: bold;
