@@ -2397,7 +2397,7 @@ export default function Chart(props: ChartData) {
         } else {
             setBoundaries(denomInBase);
         }
-    }, [isAdvancedModeActive, ranges, liquidityData.liqBidData, scaleData]);
+    }, [isAdvancedModeActive, ranges, liquidityData?.liqBidData, scaleData]);
 
     // Ghost Lines
     // useEffect(() => {
