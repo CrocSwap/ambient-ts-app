@@ -172,7 +172,7 @@ cursor: pointer;
 }
 
 .channels_dropdown .active_channel_dropdown{
-    background: var(--dark1);
+    background: var(--dark2);
     outline: none;
     border: none;
     color: var(--text-grey-light);
@@ -181,6 +181,7 @@ cursor: pointer;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     margin: 8px 0;
+    border-radius: var(--border-radius);
 }
 
 
@@ -206,7 +207,7 @@ cursor: pointer;
 opacity: 1;
 pointer-events: auto;
 }
-@media only screen and (min-width: 400px) {
+@media only screen and (min-width: 600px) {
 
     .channels_dropdown{
         display: none;
