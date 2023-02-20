@@ -36,6 +36,7 @@ import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 // import { calcImpact } from '../../App/functions/calcImpact';
 import { FiCopy } from 'react-icons/fi';
+import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -142,6 +143,21 @@ export default function Swap(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+
+    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
+    const [showExtraInfo, setShowExtraInfo] = useState(false);
+
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+    const receiveReceiptHashes: Array<string> = [];
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
     }, [tokenPairFromParams]);
@@ -161,7 +177,7 @@ export default function Swap(props: propsIF) {
         ? useTradeData()
         : { navigationMenu: null };
 
-    const { tokenA, tokenB } = tradeData;
+    const { tokenA, tokenB, baseToken, quoteToken } = tradeData;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -186,14 +202,28 @@ export default function Swap(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<string | undefined>();
 
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (!currentPendingTransactionsArray.length && !isWaitingForWallet && txErrorCode === '') {
+            setShowBypassConfirm(false);
+        }
+    }, [currentPendingTransactionsArray.length, isWaitingForWallet, txErrorCode === '']);
+
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
         setTxErrorMessage('');
     };
 
+    useEffect(() => {
+        setNewSwapTransactionHash('');
+        setShowBypassConfirm(false);
+    }, [JSON.stringify({ base: baseToken.address, quote: quoteToken.address })]);
+
     async function initiateSwap() {
         resetConfirmation();
+        setIsWaitingForWallet(true);
         if (!crocEnv) return;
 
         const sellTokenAddress = tokenA.address;
@@ -215,12 +245,15 @@ export default function Swap(props: propsIF) {
             tx = await plan.swap({
                 surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
             });
+            setIsWaitingForWallet(false);
+
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         const newSwapCacheEndpoint = 'https://809821320828123.de:5000/new_swap?';
@@ -298,6 +331,7 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
+            setNewSwapTransactionHash('');
         }
     }
 
@@ -394,33 +428,49 @@ export default function Swap(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const confirmSwapModalProps = {
+        poolPriceDisplay: poolPriceDisplay,
+        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
+        isDenomBase: tradeData.isDenomBase,
+        baseTokenSymbol: tradeData.baseToken.symbol,
+        quoteTokenSymbol: tradeData.quoteToken.symbol,
+        priceImpact: priceImpact,
+        initiateSwapMethod: initiateSwap,
+        onClose: handleModalClose,
+        newSwapTransactionHash: newSwapTransactionHash,
+        txErrorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
+        resetConfirmation: resetConfirmation,
+        slippageTolerancePercentage: slippageTolerancePercentage,
+        effectivePrice: effectivePrice,
+        isSellTokenBase: isSellTokenBase,
+        bypassConfirm: bypassConfirm,
+        toggleBypassConfirm: toggleBypassConfirm,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        setShowBypassConfirm: setShowBypassConfirm,
+        setNewSwapTransactionHash: setNewSwapTransactionHash,
+        currentPendingTransactionsArray: currentPendingTransactionsArray,
+        showBypassConfirm,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
+    };
+
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
         <Modal onClose={handleModalClose} title='Swap Confirmation'>
-            <ConfirmSwapModal
-                poolPriceDisplay={poolPriceDisplay}
-                tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                isDenomBase={tradeData.isDenomBase}
-                baseTokenSymbol={tradeData.baseToken.symbol}
-                quoteTokenSymbol={tradeData.quoteToken.symbol}
-                priceImpact={priceImpact}
-                initiateSwapMethod={initiateSwap}
-                onClose={handleModalClose}
-                newSwapTransactionHash={newSwapTransactionHash}
-                txErrorCode={txErrorCode}
-                txErrorMessage={txErrorMessage}
-                showConfirmation={showConfirmation}
-                setShowConfirmation={setShowConfirmation}
-                resetConfirmation={resetConfirmation}
-                slippageTolerancePercentage={slippageTolerancePercentage}
-                effectivePrice={effectivePrice}
-                isSellTokenBase={isSellTokenBase}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-                sellQtyString={sellQtyString}
-                buyQtyString={buyQtyString}
-            />
+            <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
     ) : null;
 
@@ -545,6 +595,58 @@ export default function Swap(props: propsIF) {
     // console.log({ swapAllowed });
     // console.log({ sellQtyString });
 
+    const currencyConverterProps = {
+        crocEnv: crocEnv,
+        poolExists: poolExists,
+        isUserLoggedIn: isUserLoggedIn,
+        provider: provider,
+        slippageTolerancePercentage: slippageTolerancePercentage,
+        setPriceImpact: setPriceImpact,
+        tokenPair: tokenPair,
+        tokensBank: importedTokens,
+        setImportedTokens: setImportedTokens,
+        chainId: chainId as string,
+        isLiq: false,
+        poolPriceDisplay: poolPriceDisplay,
+        isTokenAPrimary: isTokenAPrimary,
+        isSellTokenBase: isSellTokenBase,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        setSellQtyString: setSellQtyString,
+        setBuyQtyString: setBuyQtyString,
+        isWithdrawFromDexChecked: isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
+        setSwapAllowed: setSwapAllowed,
+        setSwapButtonErrorMessage: setSwapButtonErrorMessage,
+        activeTokenListsChanged: activeTokenListsChanged,
+        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        gasPriceInGwei: gasPriceInGwei,
+        isSwapCopied: isSwapCopied,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: importedTokensPlus,
+        addRecentToken: addRecentToken,
+        getRecentTokens: getRecentTokens,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
+        openGlobalPopup: openGlobalPopup,
+    };
+
+    const handleSwapButtonClickWithBypass = () => {
+        setShowBypassConfirm(true);
+        initiateSwap();
+    };
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -568,52 +670,7 @@ export default function Swap(props: propsIF) {
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <CurrencyConverter
-                            crocEnv={crocEnv}
-                            poolExists={poolExists}
-                            isUserLoggedIn={isUserLoggedIn}
-                            provider={provider}
-                            slippageTolerancePercentage={slippageTolerancePercentage}
-                            setPriceImpact={setPriceImpact}
-                            tokenPair={tokenPair}
-                            tokensBank={importedTokens}
-                            setImportedTokens={setImportedTokens}
-                            chainId={chainId as string}
-                            isLiq={false}
-                            poolPriceDisplay={poolPriceDisplay}
-                            isTokenAPrimary={isTokenAPrimary}
-                            isSellTokenBase={isSellTokenBase}
-                            baseTokenBalance={baseTokenBalance}
-                            quoteTokenBalance={quoteTokenBalance}
-                            baseTokenDexBalance={baseTokenDexBalance}
-                            quoteTokenDexBalance={quoteTokenDexBalance}
-                            sellQtyString={sellQtyString}
-                            buyQtyString={buyQtyString}
-                            setSellQtyString={setSellQtyString}
-                            setBuyQtyString={setBuyQtyString}
-                            isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                            setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                            isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                            setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                            setSwapAllowed={setSwapAllowed}
-                            setSwapButtonErrorMessage={setSwapButtonErrorMessage}
-                            activeTokenListsChanged={activeTokenListsChanged}
-                            indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                            gasPriceInGwei={gasPriceInGwei}
-                            isSwapCopied={isSwapCopied}
-                            verifyToken={verifyToken}
-                            getTokensByName={getTokensByName}
-                            getTokenByAddress={getTokenByAddress}
-                            importedTokensPlus={importedTokensPlus}
-                            addRecentToken={addRecentToken}
-                            getRecentTokens={getRecentTokens}
-                            outputTokens={outputTokens}
-                            validatedInput={validatedInput}
-                            setInput={setInput}
-                            searchType={searchType}
-                            acknowledgeToken={acknowledgeToken}
-                            openGlobalPopup={openGlobalPopup}
-                        />
+                        <CurrencyConverter {...currencyConverterProps} />
                     </motion.div>
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
@@ -636,13 +693,25 @@ export default function Swap(props: propsIF) {
                         sellQtyString !== 'Infinity' ? (
                             approvalButton
                         ) : (
-                            <SwapButton
-                                onClickFn={bypassConfirm ? initiateSwap : openModal}
-                                isSwapConfirmationBypassEnabled={bypassConfirm}
-                                swapAllowed={swapAllowed}
-                                swapButtonErrorMessage={swapButtonErrorMessage}
-                                bypassConfirm={bypassConfirm}
-                            />
+                            <>
+                                {!showBypassConfirm ? (
+                                    // user has hide confirmation modal off
+                                    <SwapButton
+                                        onClickFn={
+                                            bypassConfirm
+                                                ? handleSwapButtonClickWithBypass
+                                                : openModal
+                                        }
+                                        isSwapConfirmationBypassEnabled={bypassConfirm}
+                                        swapAllowed={swapAllowed}
+                                        swapButtonErrorMessage={swapButtonErrorMessage}
+                                        bypassConfirm={bypassConfirm}
+                                    />
+                                ) : (
+                                    // user has hide confirmation modal on
+                                    <BypassConfirmSwapButton {...confirmSwapModalProps} />
+                                )}
+                            </>
                         )
                     ) : (
                         loginButton

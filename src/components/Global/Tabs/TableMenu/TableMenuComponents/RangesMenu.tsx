@@ -58,14 +58,14 @@ export default function RangesMenu(props: propsIF) {
         rangeDetailsProps,
         posHash,
         position,
-        isOnPortfolioPage,
+        // isOnPortfolioPage,
         handlePulseAnimation,
         // showHighlightedButton,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
 
-    const currentLocation = location.pathname;
+    // const currentLocation = location.pathname;
 
     const { isAmbient, isPositionInRange } = rangeDetailsProps;
     // eslint-disable-next-line
@@ -157,7 +157,11 @@ export default function RangesMenu(props: propsIF) {
                 '&tokenA=' +
                 position.base +
                 '&tokenB=' +
-                position.quote
+                position.quote +
+                '&lowTick=' +
+                position.bidTick +
+                '&highTick=' +
+                position.askTick
             }
             state={{ position: position }}
         >
@@ -179,14 +183,19 @@ export default function RangesMenu(props: propsIF) {
             className={styles.option_button}
             to={
                 '/trade/range/' +
-                (isOnPortfolioPage
-                    ? 'chain=' +
-                      position.chainId +
-                      '&tokenA=' +
-                      position.base +
-                      '&tokenB=' +
-                      position.quote
-                    : currentLocation.slice(currentLocation.indexOf('chain')))
+                // (isOnPortfolioPage
+                // ?
+                'chain=' +
+                position.chainId +
+                '&tokenA=' +
+                position.base +
+                '&tokenB=' +
+                position.quote +
+                '&lowTick=' +
+                position.bidTick +
+                '&highTick=' +
+                position.askTick
+                // : currentLocation.slice(currentLocation.indexOf('chain')) )
             }
             onClick={handleCopyClick}
         >
@@ -200,14 +209,19 @@ export default function RangesMenu(props: propsIF) {
             className={styles.option_button}
             to={
                 '/trade/range/' +
-                (isOnPortfolioPage
-                    ? 'chain=' +
-                      position.chainId +
-                      '&tokenA=' +
-                      position.base +
-                      '&tokenB=' +
-                      position.quote
-                    : currentLocation.slice(currentLocation.indexOf('chain')))
+                // (isOnPortfolioPage
+                // ?
+                'chain=' +
+                position.chainId +
+                '&tokenA=' +
+                position.base +
+                '&tokenB=' +
+                position.quote +
+                '&lowTick=' +
+                position.bidTick +
+                '&highTick=' +
+                position.askTick
+                // : currentLocation.slice(currentLocation.indexOf('chain')))
             }
             onClick={handleCopyClick}
         >

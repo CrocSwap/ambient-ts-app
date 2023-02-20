@@ -11,15 +11,16 @@ export const useUrlParams = (
     // module: string,
     chainId: string,
     isInitialized: boolean,
-) => {
+): [string[], Array<number | null>, number | null] => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
+    // console.log({params});
 
     const dispatch = useAppDispatch();
 
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
-    const urlParams = useMemo(() => {
+    const urlParams = useMemo<string[][]>(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
@@ -45,6 +46,25 @@ export const useUrlParams = (
 
     const tokenPair = useMemo(() => {
         return [getAddress('tokenA'), getAddress('tokenB')];
+    }, [urlParams]);
+
+    const tickPair = useMemo<Array<number | null>>(() => {
+        const getTick = (tick: string): number | null => {
+            let neededTick: string;
+            if (tick === 'low') {
+                neededTick = 'lowTick';
+            } else if (tick === 'high') {
+                neededTick = 'highTick';
+            }
+            const tickParam = urlParams.find((param) => param[0] === neededTick);
+            return tickParam ? parseInt(tickParam[1]) : null;
+        };
+        return [getTick('low') ?? 0, getTick('high') ?? 0];
+    }, [urlParams]);
+
+    const limitTick = useMemo<number | null>(() => {
+        const limitTickParam = urlParams.find((param) => param[0] === 'limitTick');
+        return limitTickParam ? parseInt(limitTickParam[1]) : null;
     }, [urlParams]);
 
     // make a list of params found in the URL queried
@@ -90,7 +110,6 @@ export const useUrlParams = (
                 setTimeout(check, 100);
             }
         }
-
         setTimeout(check, 100);
     }, []);
 
@@ -176,23 +195,15 @@ export const useUrlParams = (
         const paramsIncludesToken = paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
-            console.log('going to new tokens!');
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB),
             ]).then((res) => {
-                res.forEach((tkn) =>
-                    console.assert(
-                        tkn,
-                        'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
-                    ),
-                );
-
                 res[0] && dispatch(setTokenA(res[0] as TokenIF));
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });
         }
     }, [tokenList, urlParams]);
 
-    return tokenPair;
+    return [tokenPair, tickPair, limitTick];
 };

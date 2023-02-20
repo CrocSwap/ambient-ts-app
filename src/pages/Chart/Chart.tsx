@@ -86,7 +86,7 @@ interface ChartData {
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
-    limitTick: number;
+    limitTick: number | undefined;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -1821,6 +1821,7 @@ export default function Chart(props: ChartData) {
                     } else {
                         firstLocation = event.sourceEvent.offsetY;
                     }
+                    firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
@@ -1889,7 +1890,7 @@ export default function Chart(props: ChartData) {
 
                     const size = (domainY[1] - domainY[0]) / factor;
 
-                    const newCenter = scaleData.yScale.invert(firstLocation);
+                    const newCenter = scaleData.yScale.invert(firstLocation.offsetY);
 
                     const diff = domainY[1] - domainY[0];
 
@@ -2113,6 +2114,7 @@ export default function Chart(props: ChartData) {
     }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
+        if (tradeData.limitTick === undefined) return;
         const limitDisplayPrice = pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
         limitDisplayPrice?.then((limit) => {
             setLimit([
@@ -2398,7 +2400,7 @@ export default function Chart(props: ChartData) {
         } else {
             setBoundaries(denomInBase);
         }
-    }, [isAdvancedModeActive, ranges, liquidityData.liqBidData, scaleData]);
+    }, [isAdvancedModeActive, ranges, liquidityData?.liqBidData, scaleData]);
 
     // Ghost Lines
     // useEffect(() => {
@@ -4919,22 +4921,22 @@ export default function Chart(props: ChartData) {
 
                 // handle the plot area measure event in order to compute the scale ranges
 
-                d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                    scaleData.xScale.range([0, event.detail.width]);
-                    scaleData.yScale.range([event.detail.height, 0]);
+                // d3.select(d3PlotArea.current).on('measure', function (event: any) {
+                //     scaleData.xScale.range([0, event.detail.width]);
+                //     scaleData.yScale.range([event.detail.height, 0]);
 
-                    scaleData.xScaleIndicator.range([
-                        (event.detail.width / 10) * 8,
-                        event.detail.width,
-                    ]);
+                //     scaleData.xScaleIndicator.range([
+                //         (event.detail.width / 10) * 8,
+                //         event.detail.width,
+                //     ]);
 
-                    liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+                //     liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
 
-                    scaleData.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height - event.detail.height / 10,
-                    ]);
-                });
+                //     scaleData.volumeScale.range([
+                //         event.detail.height,
+                //         event.detail.height - event.detail.height / 10,
+                //     ]);
+                // });
 
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
                     const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
@@ -5761,6 +5763,7 @@ export default function Chart(props: ChartData) {
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
+            console.log({ pinnedTick });
             dispatch(setLimitTick(pinnedTick));
 
             const tickPrice = tickToPrice(pinnedTick);
