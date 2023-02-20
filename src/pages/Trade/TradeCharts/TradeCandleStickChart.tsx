@@ -456,6 +456,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
                         liqUpperPrices !== '+inf' &&
+                        liqUpperPrices < liqBoundary * 10 &&
                         !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
                     ) {
                         depthLiqBidData.push({
@@ -573,6 +574,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
             depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
             depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+
+            console.log({ depthLiqBidData, liqBidData });
 
             return {
                 liqAskData: liqAskData,
