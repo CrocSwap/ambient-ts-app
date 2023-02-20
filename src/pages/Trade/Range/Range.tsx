@@ -300,9 +300,7 @@ export default function Range(props: propsIF) {
 
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo(() => {
-        const value =
-            tickPairFromParams[0] ||
-            (tradeData.advancedLowTick === 0 ||
+        const value = (tradeData.advancedLowTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
                 ? roundDownTick(
@@ -315,9 +313,7 @@ export default function Range(props: propsIF) {
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo(() => {
-        const value =
-            tickPairFromParams[1] ||
-            (tradeData.advancedHighTick === 0 ||
+        const value = (tradeData.advancedHighTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
                 ? roundUpTick(
