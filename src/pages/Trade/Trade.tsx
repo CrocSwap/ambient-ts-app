@@ -162,9 +162,9 @@ export default function Trade(props: propsIF) {
         isInitialized,
     );
 
-    if (!tickPairFromParams.includes(0)) {
-        dispatch(setAdvancedMode(true));
-    }
+    // if (!tickPairFromParams.includes(0)) {
+    //     dispatch(setAdvancedMode(true));
+    // }
 
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);

@@ -7,6 +7,7 @@ import { ethers } from 'ethers';
 import {
     setTokenA,
     setTokenB,
+    setAdvancedMode,
     setAdvancedLowTick,
     setAdvancedHighTick
 } from '../../utils/state/tradeDataSlice';
@@ -67,7 +68,13 @@ export const useUrlParams = (
         const advLowTick = getTick('low') ?? 0;
         const advHighTick = getTick('high') ?? 0;
         advLowTick && dispatch(setAdvancedLowTick(advLowTick));
-        advHighTick && dispatch(setAdvancedHighTick(advHighTick))
+        advHighTick && dispatch(setAdvancedHighTick(advHighTick));
+        console.log({advHighTick});
+        console.log({advLowTick});
+        if (![advLowTick, advHighTick].includes(0)) {
+            console.log('doing it!!');
+            dispatch(setAdvancedMode(true));
+        }
         return [advLowTick, advHighTick];
     }, [urlParams]);
 
