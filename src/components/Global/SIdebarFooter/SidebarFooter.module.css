@@ -4,7 +4,7 @@
     z-index: 999;
     width: 100vw;
     bottom: 0;
-    position: sticky;
+    /* position: sticky; */
     /* background-color: var(--dark1); */
     transition: width var(--animation-speed) ease;
 
@@ -13,6 +13,13 @@
     display: none;
 }
 
+.position_sticky{
+    position: sticky;
+}
+
+.position_absolute{
+    position: absolute;
+}
 .sidebar_footer a {
     cursor: pointer;
     display: flex;
