@@ -1,88 +1,86 @@
-import styles from './BypassConfirmSwapButton.module.css';
-
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
-import { Dispatch, SetStateAction } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
-
+import styles from './BypassLimitButton.module.css';
 import {
     CircleLoader,
     CircleLoaderCompleted,
     CircleLoaderFailed,
-} from '../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
-import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../../Global/TransactionException/TransactionException';
-import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
+} from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
+import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
+import TransactionException from '../../../Global/TransactionException/TransactionException';
+import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+// import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
+import { useState, Dispatch, SetStateAction } from 'react';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
+// import { CrocImpact } from '@crocswap-libs/sdk';
 
 interface propsIF {
-    initiateSwapMethod: () => void;
-    poolPriceDisplay: number | undefined;
-    isDenomBase: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    priceImpact: CrocImpact | undefined;
-    onClose: () => void;
-    newSwapTransactionHash: string;
-    tokenPair: TokenPairIF;
+    newLimitOrderTransactionHash: string;
     txErrorCode: string;
-    txErrorMessage: string;
-    showConfirmation: boolean;
-    setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
+    tokenPair: TokenPairIF;
     resetConfirmation: () => void;
-    slippageTolerancePercentage: number;
-    effectivePrice: number;
-    isSellTokenBase: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
-    sellQtyString: string;
-    buyQtyString: string;
-    setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
-    showBypassConfirm: boolean;
-    showExtraInfo: boolean;
-    setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
+    showBypassConfirmButton: boolean;
+    setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
+    sendLimitOrder: () => Promise<void>;
+    setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
+    // txErrorMessage: string;
+    // setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
+    // showConfirmation: boolean;
+    // slippageTolerancePercentage: number;
+    // effectivePrice: number;
+    // isSellTokenBase: boolean;
+    // bypassConfirm: boolean;
+    // toggleBypassConfirm: (item: string, pref: boolean) => void;
+    // sellQtyString: string;
+    // buyQtyString: string;
 }
-export default function BypassConfirmSwapButton(props: propsIF) {
+export default function BypassLimitButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
-
     const {
-        initiateSwapMethod,
-        newSwapTransactionHash,
-        setNewSwapTransactionHash,
+        newLimitOrderTransactionHash,
         txErrorCode,
-        sellQtyString,
-        buyQtyString,
+        tokenAInputQty,
+        tokenBInputQty,
         tokenPair,
         resetConfirmation,
-        setShowBypassConfirm,
-        showExtraInfo,
-        setShowExtraInfo,
+        sendLimitOrder,
+        // showBypassConfirmButton,
+        setShowBypassConfirmButton,
+        setNewLimitOrderTransactionHash,
     } = props;
 
-    const transactionApproved = newSwapTransactionHash !== '';
-    // console.log({ txErrorCode });
-    // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const transactionApproved = newLimitOrderTransactionHash !== '';
 
-    const sellTokenData = tokenPair.dataTokenA;
+    // const isTransactionDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
+        ?.value;
+    const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
 
-    const buyTokenData = tokenPair.dataTokenB;
+    const sellTokenData = tokenPair?.dataTokenA;
+
+    const buyTokenData = tokenPair?.dataTokenB;
 
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${
+            content={` Submitting Order to Swap ${sellTokenQty} ${
+                sellTokenData.symbol
+            } for ${buyTokenQty} ${
                 buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.
-            `}
+            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
     );
+
     function handleReset() {
         resetConfirmation();
         setShowExtraInfo(false);
@@ -90,23 +88,23 @@ export default function BypassConfirmSwapButton(props: propsIF) {
 
     const transactionDenied = (
         <TransactionDenied
-            noAnimation
             resetConfirmation={handleReset}
-            initiateTx={initiateSwapMethod}
+            noAnimation
+            initiateTx={sendLimitOrder}
         />
     );
     const transactionFailed = (
         <TransactionFailed
             noAnimation
             resetConfirmation={handleReset}
-            initiateTx={initiateSwapMethod}
+            initiateTx={sendLimitOrder}
         />
     );
     const transactionException = (
         <TransactionException
-            noAnimation
             resetConfirmation={handleReset}
-            initiateTx={initiateSwapMethod}
+            noAnimation
+            initiateTx={sendLimitOrder}
         />
     );
 
@@ -119,7 +117,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
 
     const transactionSubmitted = (
         <TransactionSubmitted
-            hash={newSwapTransactionHash}
+            hash={newLimitOrderTransactionHash}
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
@@ -127,6 +125,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             noAnimation
         />
     );
+
     const confirmationDisplay =
         isTransactionException || isGasLimitException || isInsufficientFundsException
             ? transactionException
@@ -167,7 +166,9 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             ? 'Transaction Failed'
             : transactionApproved
             ? 'Transaction Submitted'
-            : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
+            : `Submitting Order to swap ${tokenAInputQty} ${sellTokenData.symbol} for ${tokenBInputQty} ${buyTokenData.symbol}`;
+
+    const [showExtraInfo, setShowExtraInfo] = useState(false);
 
     return (
         <section className={styles.container}>
@@ -190,8 +191,8 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                     <button
                         onClick={() => {
                             resetConfirmation();
-                            setShowBypassConfirm(false);
-                            setNewSwapTransactionHash('');
+                            setShowBypassConfirmButton(false);
+                            setNewLimitOrderTransactionHash('');
                         }}
                     >
                         Submit another transaction
@@ -201,10 +202,3 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         </section>
     );
 }
-
-// setShowBypassConfirm => True => Render the new button(tx denied)
-// setShowBypassConfirm => False => Render Open Confirmation button
-
-// For users with skip this confirmation
-// Click swap now button => initiates swap and renders new button => setShowBypassConfirm(true)
-// When receipt is successful, we render the old button => setShowBypassConfirm(false)
