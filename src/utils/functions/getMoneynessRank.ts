@@ -9,11 +9,11 @@ export const getMoneynessRank = (addr: string): number => {
             90,
         ],
         [
-            '0x0000000000000000000000000000000000000000_0x5', // 'ETH' on Goerli
+            '0xc04b0d3107736c32e19f1c62b2af67be61d63a05_0x5', // 'WBTC' on Goerli
             60,
         ],
         [
-            '0xc04b0d3107736c32e19f1c62b2af67be61d63a05_0x5', // 'WBTC' on Goerli
+            '0x0000000000000000000000000000000000000000_0x5', // 'ETH' on Goerli
             50,
         ],
     ]);
