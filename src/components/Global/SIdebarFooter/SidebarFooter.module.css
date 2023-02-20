@@ -13,11 +13,12 @@
     display: none;
 }
 
-.position_sticky{
+.position_sticky {
     position: sticky;
 }
 
-.position_absolute{
+.position_absolute {
+    margin-left: 15px;
     position: absolute;
 }
 .sidebar_footer a {
@@ -47,7 +48,7 @@
 }
 
 /* Small screens */
-@media only screen and (max-width:600px) {
+@media only screen and (max-width: 600px) {
     .sidebar {
         display: none;
 
