@@ -1817,6 +1817,9 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
+                        firstLocation = previousTouch.pageY;
+                    } else {
+                        firstLocation = event.sourceEvent.offsetY;
                     }
                     firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
@@ -3266,7 +3269,7 @@ export default function Chart(props: ChartData) {
 
     function addDefsStyle() {
         const svgmain = d3.select(d3PlotArea.current).select('svg');
-        if (svgmain.select('defs').node() === null) {
+        if (svgmain.select('defs').select('#crossHairBg').node() === null) {
             const crosshairDefs = svgmain
                 .append('defs')
                 .append('filter')
