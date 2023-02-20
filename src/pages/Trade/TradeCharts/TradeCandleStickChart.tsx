@@ -456,6 +456,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
                         liqUpperPrices !== '+inf' &&
+                        liqUpperPrices < liqBoundary * 10 &&
                         !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
                     ) {
                         depthLiqBidData.push({
