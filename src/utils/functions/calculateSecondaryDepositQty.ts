@@ -44,9 +44,9 @@ export const calculateSecondaryDepositQty = (
     } else {
         if (depositSkew) {
             if (isPrimaryTokenBase) {
-                secondaryQuantity = (primInputValueNum / poolDisplayPrice) * depositSkew;
+                secondaryQuantity = primInputValueNum / (poolDisplayPrice * depositSkew);
             } else {
-                secondaryQuantity = (primInputValueNum / (1 / poolDisplayPrice)) * depositSkew;
+                secondaryQuantity = primInputValueNum * (poolDisplayPrice * depositSkew);
             }
         }
     }
