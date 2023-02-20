@@ -125,7 +125,7 @@ export default function TransactionRow(props: propsIF) {
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
+    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';

@@ -171,6 +171,7 @@ export default function Leaderboard(props: propsIF) {
     const ipadView = useMediaQuery('(max-width: 580px)');
     // const desktopView = useMediaQuery('(max-width: 768px)');
     const showColumns = useMediaQuery('(max-width: 1700px)');
+    const phoneScreen = useMediaQuery('(max-width: 500px)');
 
     // const showColumns = sidebarOpen || desktopView;
 
@@ -279,7 +280,7 @@ export default function Leaderboard(props: propsIF) {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns,
+            show: showColumns && !phoneScreen,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -293,9 +294,10 @@ export default function Leaderboard(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Status',
+            // name: ' ',
             className: '',
-            show: !ipadView,
+            show: true,
             slug: 'status',
             sortable: false,
         },
