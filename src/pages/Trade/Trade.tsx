@@ -268,7 +268,6 @@ export default function Trade(props: propsIF) {
                 context={{
                     tradeData: tradeData,
                     navigationMenu: navigationMenu,
-                    tickPairFromParams: tickPairFromParams,
                     limitTickFromParams: limitTickFromParams,
                 }}
             />
@@ -606,7 +605,6 @@ export default function Trade(props: propsIF) {
                         tradeData: tradeData,
                         navigationMenu: navigationMenu,
                         limitTick: limitTick,
-                        tickPairFromParams: tickPairFromParams,
                     }}
                 />
             )}
@@ -655,7 +653,6 @@ export default function Trade(props: propsIF) {
 type ContextType = {
     tradeData: TradeDataIF;
     navigationMenu: JSX.Element;
-    tickPairFromParams: Array<number | null>;
     limitTickFromParams: number | null;
 };
 

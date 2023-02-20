@@ -206,7 +206,7 @@ export default function Range(props: propsIF) {
         }
     };
 
-    const { tradeData, navigationMenu, tickPairFromParams } = useTradeData();
+    const { tradeData, navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
