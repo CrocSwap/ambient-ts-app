@@ -575,8 +575,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
             depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
 
-            console.log({ depthLiqBidData, liqBidData });
-
             return {
                 liqAskData: liqAskData,
                 liqBidData: liqBidData,
