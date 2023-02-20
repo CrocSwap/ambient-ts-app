@@ -189,7 +189,7 @@ export default function RangesRow(props: propsIF) {
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
+    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
@@ -634,7 +634,7 @@ export default function RangesRow(props: propsIF) {
             {ValueWithTooltip}
             {!showColumns && baseQtyDisplayWithTooltip}
             {!showColumns && quoteQtyDisplayWithTooltip}
-            {showColumns && (
+            {showColumns && !phoneScreen && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='base_color'
