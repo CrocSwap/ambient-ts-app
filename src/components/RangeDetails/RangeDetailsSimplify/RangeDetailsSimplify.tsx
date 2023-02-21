@@ -176,7 +176,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         },
         {
             title: 'Width ',
-            content: width + '%',
+            content: isAmbient ? 'Infinite' : width + '%',
             explanation: 'The geometric range width',
         },
         {
