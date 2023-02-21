@@ -5,7 +5,6 @@ import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-
 interface propsIF {
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
@@ -40,13 +39,23 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred,
         fieldId,
         disable,
+        poolPriceNonDisplay,
         // limitTickDisplayPrice,
         isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
     const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
-    // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
+    const limitTick = useAppSelector((state) => state.tradeData).limitTick;
+
+    const initialLimitRateNonDisplay =
+        (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
+
+    // console.log({ initialLimitRateNonDisplay });
+
+    const pinnedInitialTick: number = isSellTokenBase
+        ? pinTickLower(initialLimitRateNonDisplay, gridSize)
+        : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
     const handleLimitChange = (value: string) => {
         console.log({ value });
@@ -112,7 +121,20 @@ export default function LimitRate(props: propsIF) {
 
     return (
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
-            <span className={styles.direction}>Price</span>
+            <span className={styles.direction} style={{ display: 'flex', alignItems: 'center' }}>
+                <p style={{ fontSize: '14px' }}>Price</p>
+                {limitTick !== pinnedInitialTick ? (
+                    <button
+                        className={styles.reset_limit_button}
+                        onClick={() => {
+                            dispatch(setLimitTick(pinnedInitialTick));
+                            // console.log({ displayPrice });
+                        }}
+                    >
+                        Reset
+                    </button>
+                ) : null}
+            </span>
 
             <div className={`${styles.swap_input} `}>{rateInput}</div>
         </div>
