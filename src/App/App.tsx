@@ -163,6 +163,7 @@ import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
+import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2667,16 +2668,20 @@ export default function App() {
         // if pool price is < 0.1 then denom token will be quote (cheaper one)
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
-        if (!poolPriceDisplay) return;
+        const isBaseTokenMoneynessGreaterOrEqual =
+            getMoneynessRank(baseTokenAddress.toLowerCase() + '_' + chainData.chainId) -
+                getMoneynessRank(quoteTokenAddress.toLowerCase() + '_' + chainData.chainId) >=
+            0;
+        // if (!poolPriceDisplay) return;
 
-        const isDenomInBase =
-            poolPriceDisplay && poolPriceDisplay < 1
-                ? tradeData.didUserFlipDenom
-                    ? false
-                    : true
-                : tradeData.didUserFlipDenom
+        const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
+            ? tradeData.didUserFlipDenom
                 ? true
-                : false;
+                : false
+            : tradeData.didUserFlipDenom
+            ? false
+            : true;
+
         return isDenomInBase;
     }
 
