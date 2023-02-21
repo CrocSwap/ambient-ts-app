@@ -134,6 +134,8 @@ export const useProcessRange = (
     const ambientOrMin = position.positionType === 'ambient' ? '0.00' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
+    const width = (position.askTick - position.bidTick) / 100;
+
     const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
 
     const usdValueTruncated = !usdValueNum
@@ -224,7 +226,6 @@ export const useProcessRange = (
         apy,
         apyString,
         apyClassname,
-
         // range status
         isPositionInRange,
         isAmbient,
@@ -236,7 +237,7 @@ export const useProcessRange = (
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-
+        width,
         blockExplorer,
     };
 };
