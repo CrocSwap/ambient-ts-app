@@ -1,10 +1,11 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
-import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { AiOutlineInfoCircle, AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setRescaleRangeBoundaries } from '../../../../utils/state/tradeDataSlice';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
@@ -15,11 +16,16 @@ interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     isRangeCopied: boolean;
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // React functional component
 export default function RangeWidth(props: RangeWidthPropsIF) {
-    const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied } = props;
+    const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied, openGlobalPopup } = props;
 
     const dispatch = useAppDispatch();
 
@@ -81,6 +87,21 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
         </>
     );
 
+    const rangeWidthTooltip = (
+        <div
+            style={{ margin: '0 8px', cursor: 'pointer' }}
+            onClick={() =>
+                openGlobalPopup(
+                    <div>Range width percentage explanation goes here</div>,
+                    'Range Width',
+                    'right',
+                )
+            }
+        >
+            <AiOutlineInfoCircle size={17} />
+        </div>
+    );
+
     return (
         <div className={styles.range_width_container}>
             <div className={styles.range_width_content}>
@@ -92,6 +113,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     id='percentage-output'
                 >
                     {rangeWidthPercentage === 100 ? 'Ambient' : '± ' + rangeWidthPercentage + '%'}
+                    {rangeWidthTooltip}
                 </span>
                 <div className={styles.range_width_input}>
                     <input
