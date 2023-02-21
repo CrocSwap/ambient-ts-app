@@ -1298,7 +1298,7 @@ export default function Chart(props: ChartData) {
 
                     candleDomain = {
                         lastCandleDate: parsedChartData?.chartData[0].time,
-                        domainBoundry: maxBoundary < date.getTime() ? maxBoundary : date.getTime(),
+                        domainBoundry: maxBoundary > date.getTime() ? maxBoundary : date.getTime(),
                     };
 
                     props.setCandleDomains(candleDomain);

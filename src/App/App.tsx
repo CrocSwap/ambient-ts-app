@@ -1474,10 +1474,6 @@ export default function App() {
         domainBoundry: undefined,
     });
 
-    useEffect(() => {
-        console.log({ candleDomains });
-    }, [candleDomains]);
-
     const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
     const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
