@@ -1,11 +1,10 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
-import { AiOutlineInfoCircle, AiOutlineQuestionCircle } from 'react-icons/ai';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setRescaleRangeBoundaries } from '../../../../utils/state/tradeDataSlice';
-import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
