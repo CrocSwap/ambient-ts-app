@@ -118,26 +118,22 @@ export default function LimitRate(props: propsIF) {
             />
         </div>
     );
-    const yes = true;
 
     return (
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
             <span className={styles.direction} style={{ display: 'flex', alignItems: 'center' }}>
                 <p style={{ fontSize: '14px' }}>Price</p>
-                {
-                    // limitTick !== pinnedInitialTick ?
-                    yes ? (
-                        <button
-                            className={styles.reset_limit_button}
-                            onClick={() => {
-                                dispatch(setLimitTick(pinnedInitialTick));
-                                // console.log({ displayPrice });
-                            }}
-                        >
-                            Reset
-                        </button>
-                    ) : null
-                }
+                {limitTick !== pinnedInitialTick ? (
+                    <button
+                        className={styles.reset_limit_button}
+                        onClick={() => {
+                            dispatch(setLimitTick(pinnedInitialTick));
+                            // console.log({ displayPrice });
+                        }}
+                    >
+                        Reset
+                    </button>
+                ) : null}
             </span>
 
             <div className={`${styles.swap_input} `}>{rateInput}</div>
