@@ -95,3 +95,24 @@ aside.emoji-picker-react {
 .MuiTooltip-popper {
     z-index: 9999999 !important;
 }
+
+.introjs-tooltip{
+    background: var(--dark3) !important
+}
+.introjs-tooltip-header{
+    color: var(--text-grey-white);
+    font-weight: 200;
+font-size: 18px;
+line-height: 22px;
+}
+.introjs-tooltip-title{
+    color: var(--text-grey-light) !important;
+    font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+}
+.introjs-button{
+    background: var(--text-highlight) !important;
+    outline: none;
+    border: none;
+}
