@@ -5,7 +5,6 @@ import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-
 interface propsIF {
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
@@ -119,21 +118,26 @@ export default function LimitRate(props: propsIF) {
             />
         </div>
     );
+    const yes = true;
 
     return (
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
-            <span className={styles.direction}>
-                Price
-                {limitTick !== pinnedInitialTick ? (
-                    <button
-                        onClick={() => {
-                            dispatch(setLimitTick(pinnedInitialTick));
-                            // console.log({ displayPrice });
-                        }}
-                    >
-                        Reset
-                    </button>
-                ) : null}
+            <span className={styles.direction} style={{ display: 'flex', alignItems: 'center' }}>
+                <p style={{ fontSize: '14px' }}>Price</p>
+                {
+                    // limitTick !== pinnedInitialTick ?
+                    yes ? (
+                        <button
+                            className={styles.reset_limit_button}
+                            onClick={() => {
+                                dispatch(setLimitTick(pinnedInitialTick));
+                                // console.log({ displayPrice });
+                            }}
+                        >
+                            Reset
+                        </button>
+                    ) : null
+                }
             </span>
 
             <div className={`${styles.swap_input} `}>{rateInput}</div>
