@@ -24,7 +24,6 @@ import {
     setTargetData,
     targetData,
     candleDomain,
-    setCandleDomains,
     setRescaleRangeBoundaries,
     setIsLinesSwitched,
     // setIsTokenAPrimary,
@@ -124,6 +123,7 @@ interface ChartData {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     showSidebar: boolean;
 }
 
@@ -1280,17 +1280,29 @@ export default function Chart(props: ChartData) {
             };
 
             if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
-                date.setTime(
-                    new Date(event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]).getTime() -
-                        100 * parsedChartData?.period * 1000,
+                const filtered = parsedChartData?.chartData.filter(
+                    (data: any) => data.time !== undefined,
                 );
 
-                candleDomain = {
-                    lastCandleDate: parsedChartData?.chartData[0].time,
-                    domainBoundry: date.getTime(),
-                };
+                if (filtered) {
+                    const maxBoundary: any =
+                        d3.min(filtered, (d: any) => d.time) * 1000 -
+                        200 * parsedChartData?.period * 1000;
 
-                dispatch(setCandleDomains(candleDomain));
+                    date.setTime(
+                        new Date(
+                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
+                        ).getTime() -
+                            100 * parsedChartData?.period * 1000,
+                    );
+
+                    candleDomain = {
+                        lastCandleDate: parsedChartData?.chartData[0].time,
+                        domainBoundry: maxBoundary < date.getTime() ? maxBoundary : date.getTime(),
+                    };
+
+                    props.setCandleDomains(candleDomain);
+                }
             }
         }
     };

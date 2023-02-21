@@ -88,6 +88,7 @@ import {
     setSimpleRangeWidth,
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
+    candleDomain,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -1468,7 +1469,15 @@ export default function App() {
         isServerEnabled && mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
-    const candleDomains = tradeData.candleDomains;
+    const [candleDomains, setCandleDomains] = useState<candleDomain>({
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    });
+
+    useEffect(() => {
+        console.log({ candleDomains });
+    }, [candleDomains]);
+
     const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
     const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
@@ -2866,6 +2875,7 @@ export default function App() {
                                     seRescaleRangeBoundariesWithSlider={
                                         seRescaleRangeBoundariesWithSlider
                                     }
+                                    setCandleDomains={setCandleDomains}
                                 />
                             }
                         >
