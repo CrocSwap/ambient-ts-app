@@ -82,7 +82,17 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 >
                     Ambient
                 </button>
-                <AiOutlineInfoCircle color='#ffffff' />
+                <div
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>Ambient Range width percentage explanation goes here</div>,
+                            'Ambient Range Width',
+                            'right',
+                        )
+                    }
+                >
+                    <AiOutlineInfoCircle color='#ffffff' />
+                </div>
             </div>
         </>
     );
