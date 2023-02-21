@@ -62,9 +62,9 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
 
-    console.log({ truncatedDisplayPrice });
+    // console.log({ truncatedDisplayPrice });
 
-    console.log({ tx });
+    // console.log({ tx });
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -215,20 +215,20 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             content: isSwap
                 ? isOnPortfolioPage
                     ? isBaseTokenMoneynessGreaterOrEqual
-                        ? baseTokenCharacter + truncatedDisplayPriceDenomByMoneyness
-                        : quoteTokenCharacter + truncatedDisplayPriceDenomByMoneyness
+                        ? `${baseTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
+                        : `${quoteTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
                     : isDenomBase
-                    ? quoteTokenCharacter + truncatedDisplayPrice
-                    : baseTokenCharacter + truncatedDisplayPrice
+                    ? `${quoteTokenCharacter}${truncatedDisplayPrice} / ${baseTokenSymbol}`
+                    : `${baseTokenCharacter}${truncatedDisplayPrice} / ${quoteTokenSymbol}`
                 : isOnPortfolioPage
                 ? isBaseTokenMoneynessGreaterOrEqual
-                    ? baseTokenCharacter + truncatedLowDisplayPriceDenomByMoneyness
-                    : quoteTokenCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                    ? `${baseTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
+                    : `${quoteTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
                 : isAmbient
                 ? '0.00'
                 : isDenomBase
-                ? quoteTokenCharacter + truncatedLowDisplayPrice
-                : baseTokenCharacter + truncatedLowDisplayPrice,
+                ? `${quoteTokenCharacter}${truncatedLowDisplayPrice} / ${baseTokenSymbol}`
+                : `${baseTokenCharacter}${truncatedLowDisplayPrice} / ${quoteTokenSymbol}`,
             explanation: isSwap ? 'The transaction price' : 'The low price boundary',
         },
 
@@ -253,13 +253,13 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
                 title: 'High Price Boundary',
                 content: isOnPortfolioPage
                     ? isBaseTokenMoneynessGreaterOrEqual
-                        ? baseTokenCharacter + truncatedHighDisplayPriceDenomByMoneyness
-                        : quoteTokenCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        ? `${baseTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
+                        : `${quoteTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
                     : isAmbient
                     ? '∞'
                     : isDenomBase
-                    ? quoteTokenCharacter + truncatedHighDisplayPrice
-                    : baseTokenCharacter + truncatedHighDisplayPrice,
+                    ? `${quoteTokenCharacter}${truncatedHighDisplayPrice} / ${baseTokenSymbol}`
+                    : `${baseTokenCharacter}${truncatedHighDisplayPrice} / ${quoteTokenSymbol}`,
                 explanation: 'The high price boundary',
             },
             {
