@@ -350,6 +350,7 @@ export default function OrderDetails(props: propsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
+                    isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
         </div>

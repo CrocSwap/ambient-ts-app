@@ -451,9 +451,9 @@ export default function Limit(props: propsIF) {
                 setLimitButtonErrorMessage(
                     `Limit ${
                         (isSellTokenBase && !isDenomBase) || (!isSellTokenBase && isDenomBase)
-                            ? 'Above'
-                            : 'Below'
-                    } Market Price`,
+                            ? 'Above Maximum'
+                            : 'Below Minimum'
+                    }  Price`,
                 );
                 setIsOrderValid(false);
                 return;

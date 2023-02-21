@@ -5,6 +5,8 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
+import { priceHalfAboveTick, priceHalfBelowTick, toDisplayPrice } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -57,6 +59,13 @@ export const useProcessOrder = (
     );
 
     const [startPriceDisplay, setStartPriceDisplay] = useState<string | undefined>();
+    const [startPriceDisplayDenomByMoneyness, setStartPriceDisplayDenomByMoneyness] = useState<
+        string | undefined
+    >();
+    const [middlePriceDisplay, setMiddlePriceDisplay] = useState<string | undefined>();
+    const [middlePriceDisplayDenomByMoneyness, setMiddlePriceDisplayDenomByMoneyness] = useState<
+        string | undefined
+    >();
     const [finishPriceDisplay, setFinishPriceDisplay] = useState<string | undefined>();
 
     useEffect(() => {
@@ -108,9 +117,26 @@ export const useProcessOrder = (
         }
         const askTickInvPrice = limitOrder.askTickInvPriceDecimalCorrected;
         const askTickPrice = limitOrder.askTickPriceDecimalCorrected;
+        const bidTick = limitOrder.bidTick;
+        const askTick = limitOrder.askTick;
         const bidTickInvPrice = limitOrder.bidTickInvPriceDecimalCorrected;
         const bidTickPrice = limitOrder.bidTickPriceDecimalCorrected;
         const isBid = limitOrder.isBid;
+
+        const limitTick = isBid ? askTick : bidTick;
+
+        const gridSize = lookupChain(limitOrder.chainId).gridSize;
+
+        const priceHalfAbove = toDisplayPrice(
+            priceHalfAboveTick(limitTick, gridSize),
+            limitOrder.baseDecimals,
+            limitOrder.quoteDecimals,
+        );
+        const priceHalfBelow = toDisplayPrice(
+            priceHalfBelowTick(limitTick, gridSize),
+            limitOrder.baseDecimals,
+            limitOrder.quoteDecimals,
+        );
 
         if (askTickPrice && askTickInvPrice && bidTickPrice && bidTickInvPrice) {
             const startPriceDisplayNum = isDenomBase
@@ -120,14 +146,6 @@ export const useProcessOrder = (
                 : isBid
                 ? askTickPrice
                 : bidTickPrice;
-
-            const finishPriceDisplayNum = isDenomBase
-                ? isBid
-                    ? bidTickInvPrice
-                    : askTickInvPrice
-                : isBid
-                ? bidTickPrice
-                : askTickPrice;
 
             const startPriceDisplay =
                 startPriceDisplayNum === 0
@@ -145,6 +163,89 @@ export const useProcessOrder = (
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
+
+            const startPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? isBid
+                    ? askTickPrice
+                    : bidTickPrice
+                : isBid
+                ? askTickInvPrice
+                : bidTickInvPrice;
+
+            const startPriceDisplayDenomByMoneyness =
+                startPriceDenomByMoneyness === 0
+                    ? '0'
+                    : startPriceDenomByMoneyness < 0.0001
+                    ? startPriceDenomByMoneyness.toExponential(2)
+                    : startPriceDenomByMoneyness < 1
+                    ? startPriceDenomByMoneyness.toPrecision(3)
+                    : startPriceDenomByMoneyness < 2
+                    ? startPriceDenomByMoneyness.toPrecision(5)
+                    : startPriceDenomByMoneyness >= 100000
+                    ? formatAmountOld(startPriceDenomByMoneyness)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      startPriceDenomByMoneyness.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const middlePriceDisplayNum = isDenomBase
+                ? isBid
+                    ? 1 / priceHalfBelow
+                    : 1 / priceHalfAbove
+                : isBid
+                ? priceHalfBelow
+                : priceHalfAbove;
+
+            const middlePriceDisplay =
+                middlePriceDisplayNum === 0
+                    ? '0'
+                    : middlePriceDisplayNum < 0.0001
+                    ? middlePriceDisplayNum.toExponential(2)
+                    : middlePriceDisplayNum < 1
+                    ? middlePriceDisplayNum.toPrecision(3)
+                    : middlePriceDisplayNum < 2
+                    ? middlePriceDisplayNum.toPrecision(5)
+                    : middlePriceDisplayNum >= 100000
+                    ? formatAmountOld(middlePriceDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      middlePriceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const middlePriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? isBid
+                    ? priceHalfBelow
+                    : priceHalfAbove
+                : isBid
+                ? 1 / priceHalfBelow
+                : 1 / priceHalfAbove;
+
+            const middlePriceDisplayDenomByMoneyness =
+                middlePriceDenomByMoneyness === 0
+                    ? '0'
+                    : middlePriceDenomByMoneyness < 0.0001
+                    ? middlePriceDenomByMoneyness.toExponential(2)
+                    : middlePriceDenomByMoneyness < 1
+                    ? middlePriceDenomByMoneyness.toPrecision(3)
+                    : middlePriceDenomByMoneyness < 2
+                    ? middlePriceDenomByMoneyness.toPrecision(5)
+                    : middlePriceDenomByMoneyness >= 100000
+                    ? formatAmountOld(middlePriceDenomByMoneyness)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      middlePriceDenomByMoneyness.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const finishPriceDisplayNum = isDenomBase
+                ? isBid
+                    ? bidTickInvPrice
+                    : askTickInvPrice
+                : isBid
+                ? bidTickPrice
+                : askTickPrice;
 
             const finishPriceDisplay =
                 finishPriceDisplayNum === 0
@@ -164,6 +265,9 @@ export const useProcessOrder = (
                       });
 
             setStartPriceDisplay(startPriceDisplay);
+            setStartPriceDisplayDenomByMoneyness(startPriceDisplayDenomByMoneyness);
+            setMiddlePriceDisplayDenomByMoneyness(middlePriceDisplayDenomByMoneyness);
+            setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
     }, [JSON.stringify(limitOrder), isDenomBase, isOnPortfolioPage]);
@@ -411,6 +515,9 @@ export const useProcessOrder = (
 
         // price
         startPriceDisplay,
+        startPriceDisplayDenomByMoneyness,
+        middlePriceDisplay,
+        middlePriceDisplayDenomByMoneyness,
         finishPriceDisplay,
 
         // tik
