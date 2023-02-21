@@ -12,6 +12,10 @@ export default function SidebarFooter() {
     const location = useLocation();
 
     const currentLocation = location.pathname;
+    // console.log({ currentLocation });
+
+    const sidebarPositionStyle =
+        currentLocation === '/' ? styles.position_sticky : styles.position_absolute;
 
     const { paramsSlug } = useUrlParams();
 
@@ -34,7 +38,7 @@ export default function SidebarFooter() {
     ];
 
     return (
-        <div className={styles.sidebar_footer}>
+        <div className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}>
             {linksData.map((link) => (
                 <Link to={link.destination} key={link.destination}>
                     <link.icon

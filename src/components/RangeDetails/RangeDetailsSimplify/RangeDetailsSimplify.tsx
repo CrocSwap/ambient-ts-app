@@ -40,7 +40,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         ambientOrMax,
         ambientOrMin,
         apyString,
-
+        width,
         blockExplorer,
         tokenAAddressLowerCase,
         tokenBAddressLowerCase,
@@ -173,6 +173,11 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             title: 'Range Max ',
             content: ambientOrMax,
             explanation: 'The high price boundary of the range',
+        },
+        {
+            title: 'Width ',
+            content: width + '%',
+            explanation: 'The geometric range width',
         },
         {
             title: 'APR',

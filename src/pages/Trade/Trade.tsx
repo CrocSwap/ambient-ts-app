@@ -579,6 +579,7 @@ export default function Trade(props: propsIF) {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
+                padding: '0 8px',
             }}
         >
             {poolNotInitializedContent}
