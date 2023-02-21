@@ -103,8 +103,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : priceDecimalCorrected < 0.0001
                     ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 2
+                    : priceDecimalCorrected < 0.8
                     ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(5)
                     : priceDecimalCorrected >= 100000
                     ? formatAmountOld(priceDecimalCorrected)
                     : priceDecimalCorrected.toLocaleString(undefined, {
@@ -117,8 +119,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : invPriceDecimalCorrected < 0.0001
                     ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 2
+                    : invPriceDecimalCorrected < 0.8
                     ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(5)
                     : invPriceDecimalCorrected >= 100000
                     ? formatAmountOld(invPriceDecimalCorrected)
                     : invPriceDecimalCorrected.toLocaleString(undefined, {
@@ -154,8 +158,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : bidTickPriceDecimalCorrected < 0.0001
                     ? bidTickPriceDecimalCorrected.toExponential(2)
-                    : bidTickPriceDecimalCorrected < 2
+                    : bidTickPriceDecimalCorrected < 0.8
                     ? bidTickPriceDecimalCorrected.toPrecision(3)
+                    : bidTickPriceDecimalCorrected < 2
+                    ? bidTickPriceDecimalCorrected.toPrecision(5)
                     : bidTickPriceDecimalCorrected >= 100000
                     ? formatAmountOld(bidTickPriceDecimalCorrected, 1)
                     : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
@@ -169,8 +175,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : bidTickInvPriceDecimalCorrected < 0.0001
                     ? bidTickInvPriceDecimalCorrected.toExponential(2)
-                    : bidTickInvPriceDecimalCorrected < 2
+                    : bidTickInvPriceDecimalCorrected < 0.8
                     ? bidTickInvPriceDecimalCorrected.toPrecision(3)
+                    : bidTickInvPriceDecimalCorrected < 2
+                    ? bidTickInvPriceDecimalCorrected.toPrecision(5)
                     : bidTickInvPriceDecimalCorrected >= 100000
                     ? formatAmountOld(bidTickInvPriceDecimalCorrected, 1)
                     : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
@@ -184,8 +192,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : askTickPriceDecimalCorrected < 0.0001
                     ? askTickPriceDecimalCorrected.toExponential(2)
-                    : askTickPriceDecimalCorrected < 2
+                    : askTickPriceDecimalCorrected < 0.8
                     ? askTickPriceDecimalCorrected.toPrecision(3)
+                    : askTickPriceDecimalCorrected < 2
+                    ? askTickPriceDecimalCorrected.toPrecision(5)
                     : askTickPriceDecimalCorrected >= 100000
                     ? formatAmountOld(askTickPriceDecimalCorrected, 1)
                     : askTickPriceDecimalCorrected.toLocaleString(undefined, {
@@ -199,8 +209,10 @@ export const useProcessTransaction = (
                     ? '∞'
                     : askTickInvPriceDecimalCorrected < 0.0001
                     ? askTickInvPriceDecimalCorrected.toExponential(2)
-                    : askTickInvPriceDecimalCorrected < 2
+                    : askTickInvPriceDecimalCorrected < 0.8
                     ? askTickInvPriceDecimalCorrected.toPrecision(3)
+                    : askTickInvPriceDecimalCorrected < 2
+                    ? askTickInvPriceDecimalCorrected.toPrecision(5)
                     : askTickInvPriceDecimalCorrected >= 100000
                     ? formatAmountOld(askTickInvPriceDecimalCorrected, 1)
                     : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
@@ -209,10 +221,10 @@ export const useProcessTransaction = (
                       });
             truncatedLowDisplayPrice = isDenomBase
                 ? `${invertedAskPriceTruncated}`
-                : `${nonInvertedAskPriceTruncated}`;
+                : `${nonInvertedBidPriceTruncated}`;
             truncatedHighDisplayPrice = isDenomBase
                 ? `${invertedBidPriceTruncated}`
-                : `${nonInvertedBidPriceTruncated}`;
+                : `${nonInvertedAskPriceTruncated}`;
 
             truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
                 ? `${nonInvertedAskPriceTruncated}`
@@ -234,8 +246,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : priceDecimalCorrected < 0.0001
                     ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 2
+                    : priceDecimalCorrected < 0.8
                     ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(5)
                     : priceDecimalCorrected >= 100000
                     ? formatAmountOld(priceDecimalCorrected)
                     : priceDecimalCorrected.toLocaleString(undefined, {
@@ -248,8 +262,10 @@ export const useProcessTransaction = (
                     ? '0.00'
                     : invPriceDecimalCorrected < 0.0001
                     ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 2
+                    : invPriceDecimalCorrected < 0.8
                     ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(5)
                     : invPriceDecimalCorrected >= 100000
                     ? formatAmountOld(invPriceDecimalCorrected)
                     : invPriceDecimalCorrected.toLocaleString(undefined, {
