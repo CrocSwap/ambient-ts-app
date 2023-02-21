@@ -209,10 +209,10 @@ export const useProcessTransaction = (
                       });
             truncatedLowDisplayPrice = isDenomBase
                 ? `${invertedAskPriceTruncated}`
-                : `${nonInvertedAskPriceTruncated}`;
+                : `${nonInvertedBidPriceTruncated}`;
             truncatedHighDisplayPrice = isDenomBase
                 ? `${invertedBidPriceTruncated}`
-                : `${nonInvertedBidPriceTruncated}`;
+                : `${nonInvertedAskPriceTruncated}`;
 
             truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
                 ? `${nonInvertedAskPriceTruncated}`

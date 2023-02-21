@@ -17,9 +17,10 @@ interface ItemRowPropsIF {
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     account: string;
+    isOnPortfolioPage: boolean;
 }
 export default function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { account, tx } = props;
+    const { account, tx, isOnPortfolioPage } = props;
     const {
         userNameToDisplay,
         txHashTruncated,
@@ -27,11 +28,12 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        usdValue,
+        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
+        txUsdValueLocaleString,
 
         // isDenomBase,
         // baseTokenLogo,
@@ -51,9 +53,10 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
-        // truncatedLowDisplayPriceDenomByMoneyness,
-        // truncatedHighDisplayPriceDenomByMoneyness,
-        // truncatedDisplayPriceDenomByMoneyness,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        truncatedDisplayPriceDenomByMoneyness,
+
         // isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
@@ -61,6 +64,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     console.log({ truncatedDisplayPrice });
 
     console.log({ tx });
+
+    const isAmbient = tx.positionType === 'ambient';
 
     const isBuy = tx.isBid || tx.isBuy;
 
@@ -206,7 +211,15 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
 
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
-            content: isSwap ? truncatedDisplayPrice : truncatedLowDisplayPrice,
+            content: isSwap
+                ? isOnPortfolioPage
+                    ? truncatedDisplayPriceDenomByMoneyness
+                    : truncatedDisplayPrice
+                : isOnPortfolioPage
+                ? truncatedLowDisplayPriceDenomByMoneyness
+                : isAmbient
+                ? '0.00'
+                : truncatedLowDisplayPrice,
             explanation: isSwap ? 'The transaction price' : 'The low price boundary',
         },
 
@@ -222,19 +235,24 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     if (isSwap) {
         infoContent.push({
             title: 'Value ',
-            content: usdValue,
+            content: txUsdValueLocaleString,
             explanation: 'The appoximate US dollar value of the transaction',
         });
     } else {
         infoContent.push(
             {
                 title: 'High Price Boundary',
-                content: truncatedHighDisplayPrice,
+                content: isOnPortfolioPage
+                    ? truncatedHighDisplayPriceDenomByMoneyness
+                    : isAmbient
+                    ? '∞'
+                    : truncatedHighDisplayPrice,
                 explanation: 'The high price boundary',
             },
             {
                 title: 'Value ',
-                content: usdValue,
+                content: txUsdValueLocaleString,
+
                 explanation: 'The appoximate US dollar value of the transaction',
             },
         );
