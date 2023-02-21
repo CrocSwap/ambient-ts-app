@@ -1384,8 +1384,7 @@ export default function Chart(props: ChartData) {
                                     .range([0, domainX[1] - domainX[0]]);
 
                                 const deltaX = linearX(dx);
-
-                                if (event.sourceEvent.shiftKey) {
+                                if (event.sourceEvent.shiftKey || event.sourceEvent.altKey) {
                                     scaleData.xScale.domain([
                                         new Date(domainX[0].getTime() + deltaX),
                                         new Date(domainX[1].getTime() + deltaX),
