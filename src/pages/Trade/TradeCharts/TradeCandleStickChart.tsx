@@ -23,6 +23,8 @@ import * as d3fc from 'd3fc';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
+import { candleDomain } from '../../../utils/state/tradeDataSlice';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare global {
@@ -85,6 +87,7 @@ interface ChartData {
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
+    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
 }
 
 export interface ChartUtils {
@@ -123,6 +126,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
+        setCandleDomains,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -792,6 +796,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
+                        setCandleDomains={setCandleDomains}
                     />
                 ) : (
                     <>{loading}</>
