@@ -12,8 +12,8 @@ import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF, setAdvancedMode } from '../../utils/state/tradeDataSlice';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -155,16 +155,10 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
     } = props;
 
-    const dispatch = useAppDispatch();
-
-    const [tokenPairFromParams, tickPairFromParams, limitTickFromParams] = useUrlParams(
+    const [tokenPairFromParams, limitTickFromParams] = useUrlParams(
         chainId,
         isInitialized,
     );
-
-    // if (!tickPairFromParams.includes(0)) {
-    //     dispatch(setAdvancedMode(true));
-    // }
 
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);

@@ -78,7 +78,6 @@ import {
     // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
     setLimitTick,
