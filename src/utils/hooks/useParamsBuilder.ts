@@ -1,6 +1,6 @@
 import { useAppSelector } from './reduxToolkit';
 
-export const useParamsBuilder = (): (
+export const useParamsBuilder = (chainId: string): (
     (destination: string) => string
 ) => {
     console.log('ran custom hook useParamsBuilder()');
@@ -10,6 +10,9 @@ export const useParamsBuilder = (): (
     const makeParam = (paramKey: string): string => {
         let value: string;
         switch (paramKey) {
+            case 'chain':
+                value = chainId;
+                break;
             case 'tokenA':
                 value = tradeData.tokenA.address;
                 break;
