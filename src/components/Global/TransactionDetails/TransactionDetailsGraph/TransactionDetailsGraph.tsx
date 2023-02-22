@@ -391,14 +391,18 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     }
                 }
 
-                yAxis.tickValues([
-                    0,
-                    Math.round(topLineTick / 10) * 10,
-                    Math.round(lowLineTick / 10) * 10,
-                    ...lowValues,
-                    ...topValues,
-                    ...bandValues,
-                ]);
+                const linePrices =
+                    Math.abs(
+                        Math.round(topLineTick / 10) * 10 - Math.round(lowLineTick / 10) * 10,
+                    ) >
+                    diff / 2
+                        ? [Math.round(topLineTick / 10) * 10, Math.round(lowLineTick / 10) * 10]
+                        : [
+                              (Math.round(topLineTick / 10) * 10 +
+                                  Math.round(lowLineTick / 10) * 10) /
+                                  2,
+                          ];
+                yAxis.tickValues([0, ...linePrices, ...lowValues, ...topValues, ...bandValues]);
             }
 
             const scaleData = {
