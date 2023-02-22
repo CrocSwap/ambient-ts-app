@@ -722,18 +722,18 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
+    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(() => Math.floor(lastBlockNumber / 8), [lastBlockNumber]);
     // check for token balances every eight blocks
 
     const fetchLiquidity = async () => {
-        if (!baseTokenAddress || !quoteTokenAddress || !chainData || !everySecondBlock) return;
+        if (!baseTokenAddress || !quoteTokenAddress || !chainData || !lastBlockNumber) return;
         cachedLiquidityQuery(
             chainData.chainId,
             baseTokenAddress.toLowerCase(),
             quoteTokenAddress.toLowerCase(),
             chainData.poolIndex,
-            everySecondBlock,
+            lastBlockNumber,
         )
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
@@ -743,7 +743,7 @@ export default function App() {
 
     useEffect(() => {
         fetchLiquidity();
-    }, [everySecondBlock]);
+    }, [lastBlockNumber]);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
