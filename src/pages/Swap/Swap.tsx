@@ -37,6 +37,7 @@ import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareCo
 // import { calcImpact } from '../../App/functions/calcImpact';
 import { FiCopy } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
+import { useUrlParamsNew } from '../../utils/hooks/useUrlParamsNew';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -137,6 +138,11 @@ export default function Swap(props: propsIF) {
         bypassConfirm,
         toggleBypassConfirm,
     } = props;
+
+    useUrlParamsNew(
+        chainId,
+        getTokenByAddress
+    );
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
