@@ -287,7 +287,7 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                // onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={
@@ -296,7 +296,22 @@ export default function TransactionRow(props: propsIF) {
                         : undefined
                 }
             >
-                {userNameToDisplay}
+                <NavLink
+                    onClick={() => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'lookupUserTxData',
+                                loadingStatus: true,
+                            }),
+                        );
+                    }}
+                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                >
+                    {/* <p>{ensName ? ensName : ownerId}</p> */}
+                    {userNameToDisplay}
+                    {/* <FiExternalLink size={'12px'} /> */}
+                </NavLink>
+                {/* {userNameToDisplay} */}
             </li>
         </DefaultTooltip>
     );

@@ -245,12 +245,26 @@ export default function OrderRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                // onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
-                {userNameToDisplay}
+                <NavLink
+                    onClick={() => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'lookupUserTxData',
+                                loadingStatus: true,
+                            }),
+                        );
+                    }}
+                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                >
+                    {/* <p>{ensName ? ensName : ownerId}</p> */}
+                    {userNameToDisplay}
+                    {/* <FiExternalLink size={'12px'} /> */}
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
