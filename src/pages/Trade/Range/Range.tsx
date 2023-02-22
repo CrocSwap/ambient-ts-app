@@ -1155,6 +1155,7 @@ export default function Range(props: propsIF) {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
         isRangeCopied: isRangeCopied,
+        openGlobalPopup: openGlobalPopup,
     };
     // props for <RangeExtraInfo/> React element
 
