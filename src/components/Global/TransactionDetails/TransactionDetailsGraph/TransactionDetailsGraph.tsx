@@ -6,6 +6,7 @@ import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetc
 import { useAppChain } from '../../../../App/hooks/useAppChain';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
@@ -34,6 +35,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
     const chainId = tx.chainId;
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const denominationsInBase = tradeData.isDenomBase;
+
     // const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
     // const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
 
@@ -53,7 +57,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
     const fetchGraphData = memoizeFetchTransactionGraphData();
 
-    const [graphData, setGraphData] = useState();
+    const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
     const d3Yaxis = useRef(null);
@@ -156,7 +160,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
                 .crossValue((d: any) => d.time * 1000)
-                .mainValue((d: any) => d.invPriceCloseExclMEVDecimalCorrected)
+                .mainValue((d: any) =>
+                    denominationsInBase
+                        ? d.invPriceCloseExclMEVDecimalCorrected
+                        : d.priceCloseExclMEVDecimalCorrected,
+                )
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', '#7371FC');
                 });
@@ -211,13 +219,18 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 return horizontalBand;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, denominationsInBase]);
 
     useEffect(() => {
         if (graphData !== undefined) {
             const yExtent = d3fc
                 .extentLinear()
-                .accessors([(d: any) => d.invPriceCloseExclMEVDecimalCorrected])
+                .accessors([
+                    (d: any) =>
+                        denominationsInBase
+                            ? d.invPriceCloseExclMEVDecimalCorrected
+                            : d.priceCloseExclMEVDecimalCorrected,
+                ])
                 .pad([0.05, 0.1]);
 
             const xExtent = d3fc.extentDate().accessors([(d: any) => d.time * 1000]);
@@ -232,19 +245,27 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             } else if (transactionType === 'limitOrder') {
                 if (tx !== undefined) {
                     const lowBoundary = Math.min(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
                     const topBoundary = Math.max(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
 
                     const buffer =
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 50;
+                        ) / 6;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -258,19 +279,27 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             } else if (transactionType === 'liqchange') {
                 if (tx !== undefined && tx.positionType !== 'ambient') {
                     const lowBoundary = Math.min(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
                     const topBoundary = Math.max(
-                        tx.askTickInvPriceDecimalCorrected,
-                        tx.bidTickInvPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.askTickInvPriceDecimalCorrected
+                            : tx.askTickPriceDecimalCorrected,
+                        denominationsInBase
+                            ? tx.bidTickInvPriceDecimalCorrected
+                            : tx.bidTickPriceDecimalCorrected,
                     );
 
                     const buffer =
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 50;
+                        ) / 6;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -285,7 +314,96 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             const xScaleOriginal = xScale.copy();
 
-            const yAxis = d3fc.axisRight().scale(yScale).ticks(5);
+            const yAxis = d3fc.axisRight().scale(yScale);
+
+            if (transactionType !== 'swap' && tx.positionType !== 'ambient') {
+                const topLineTick = denominationsInBase
+                    ? tx.bidTickInvPriceDecimalCorrected
+                    : tx.bidTickPriceDecimalCorrected;
+
+                const lowLineTick = denominationsInBase
+                    ? tx.askTickInvPriceDecimalCorrected
+                    : tx.askTickPriceDecimalCorrected;
+
+                const diff = Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 4;
+
+                const lowerBoundaryFill = Math.abs(
+                    yScale.domain()[0] +
+                        diff / 3 -
+                        (lowLineTick < topLineTick ? lowLineTick : topLineTick),
+                );
+                const lowerBoudnaryFactor = Math.ceil(lowerBoundaryFill / diff);
+
+                const lowValues: any = [];
+
+                if (lowerBoundaryFill > diff) {
+                    if (lowerBoudnaryFactor < 2) {
+                        lowValues[0] = Math.round((lowLineTick - lowerBoundaryFill / 2) / 10) * 10;
+                    } else {
+                        for (let i = 1; i <= lowerBoudnaryFactor; i++) {
+                            lowValues[i - 1] =
+                                Math.round(
+                                    (lowLineTick - lowerBoundaryFill / (lowerBoudnaryFactor / i)) /
+                                        10,
+                                ) * 10;
+                        }
+                    }
+                }
+
+                const topBoundaryFill = Math.abs(
+                    yScale.domain()[1] -
+                        diff / 4 -
+                        (lowLineTick > topLineTick ? lowLineTick : topLineTick),
+                );
+                const topBoudnaryFactor = Math.ceil(topBoundaryFill / diff);
+
+                const topValues: any = [];
+
+                if (topBoundaryFill > diff) {
+                    if (topBoudnaryFactor < 2) {
+                        topValues[0] = Math.round((topLineTick + topBoundaryFill / 2) / 10) * 10;
+                    } else {
+                        for (let i = 1; i <= topBoudnaryFactor; i++) {
+                            topValues[i - 1] =
+                                Math.round(
+                                    (topLineTick + topBoundaryFill / (topBoudnaryFactor / i)) / 10,
+                                ) * 10;
+                        }
+                    }
+                }
+
+                const bandBoundaryFill = Math.abs(lowLineTick - topLineTick);
+                const bandBoudnaryFactor = Math.ceil(bandBoundaryFill / diff);
+
+                const bandValues: any = [];
+
+                if (bandBoundaryFill > diff) {
+                    if (bandBoudnaryFactor < 2) {
+                        bandValues[0] = Math.round((topLineTick - bandBoundaryFill / 2) / 10) * 10;
+                    } else {
+                        for (let i = 1; i < bandBoudnaryFactor; i++) {
+                            bandValues[i - 1] =
+                                Math.round(
+                                    (topLineTick - bandBoundaryFill / (bandBoudnaryFactor / i)) /
+                                        10,
+                                ) * 10;
+                        }
+                    }
+                }
+
+                const linePrices =
+                    Math.abs(
+                        Math.round(topLineTick / 10) * 10 - Math.round(lowLineTick / 10) * 10,
+                    ) >
+                    diff / 2
+                        ? [Math.round(topLineTick / 10) * 10, Math.round(lowLineTick / 10) * 10]
+                        : [
+                              (Math.round(topLineTick / 10) * 10 +
+                                  Math.round(lowLineTick / 10) * 10) /
+                                  2,
+                          ];
+                yAxis.tickValues([0, ...linePrices, ...lowValues, ...topValues, ...bandValues]);
+            }
 
             const scaleData = {
                 xScale: xScale,
@@ -385,28 +503,36 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                     if (transactionType === 'limitOrder' && tx !== undefined) {
                         horizontalBandData[0] = [
-                            tx.bidTickInvPriceDecimalCorrected,
-                            tx.askTickInvPriceDecimalCorrected,
+                            denominationsInBase
+                                ? tx.bidTickInvPriceDecimalCorrected
+                                : tx.bidTickPriceDecimalCorrected,
+                            denominationsInBase
+                                ? tx.askTickInvPriceDecimalCorrected
+                                : tx.askTickPriceDecimalCorrected,
                         ];
 
-                        // finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                        // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
                         //     priceLine,
                         // );
-                        // startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(priceLine);
+                        // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(priceLine);
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                     }
 
                     if (transactionType === 'liqchange' && tx !== undefined) {
                         if (tx.positionType !== 'ambient') {
                             horizontalBandData[0] = [
-                                tx.bidTickInvPriceDecimalCorrected,
-                                tx.askTickInvPriceDecimalCorrected,
+                                denominationsInBase
+                                    ? tx.bidTickInvPriceDecimalCorrected
+                                    : tx.bidTickPriceDecimalCorrected,
+                                denominationsInBase
+                                    ? tx.askTickInvPriceDecimalCorrected
+                                    : tx.askTickPriceDecimalCorrected,
                             ];
 
-                            // finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                            // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
                             //     priceLine,
                             // );
-                            // startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(
+                            // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(
                             //     priceLine,
                             // );
                             horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
@@ -418,7 +544,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     if (transactionType === 'swap' && tx !== undefined) {
                         // priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
                         crossPointJoin(svg, [
-                            [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
+                            [
+                                {
+                                    x: tx.time * 1000,
+                                    y: denominationsInBase
+                                        ? tx.invPriceDecimalCorrected
+                                        : tx.priceDecimalCorrected,
+                                },
+                            ],
                         ]).call(crossPoint);
                     }
 

@@ -3,5 +3,6 @@
     grid-template-rows: minmax(1em, max-content) auto 1fr auto;
     grid-template-columns: auto 1fr auto minmax(1em, max-content);
     height: 15%;
+    min-height: 3rem;
 }
 

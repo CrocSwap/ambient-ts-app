@@ -24,7 +24,6 @@ import {
     setTargetData,
     targetData,
     candleDomain,
-    setCandleDomains,
     setRescaleRangeBoundaries,
     setIsLinesSwitched,
     // setIsTokenAPrimary,
@@ -124,6 +123,7 @@ interface ChartData {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     showSidebar: boolean;
 }
 
@@ -268,7 +268,6 @@ export default function Chart(props: ChartData) {
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
-    const [isliqTextHasValue, setIsliqTextHasValue] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -1083,6 +1082,9 @@ export default function Chart(props: ChartData) {
                         if (d === crosshairData[0].x) {
                             return 'crossHairText';
                         }
+                        if (moment(d).format('HH:mm') === '00:00') {
+                            return 'startDate';
+                        }
                     });
             });
         }
@@ -1277,17 +1279,29 @@ export default function Chart(props: ChartData) {
             };
 
             if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
-                date.setTime(
-                    new Date(event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]).getTime() -
-                        100 * parsedChartData?.period * 1000,
+                const filtered = parsedChartData?.chartData.filter(
+                    (data: any) => data.time !== undefined,
                 );
 
-                candleDomain = {
-                    lastCandleDate: parsedChartData?.chartData[0].time,
-                    domainBoundry: date.getTime(),
-                };
+                if (filtered) {
+                    const maxBoundary: any =
+                        d3.min(filtered, (d: any) => d.time) * 1000 -
+                        200 * parsedChartData?.period * 1000;
 
-                dispatch(setCandleDomains(candleDomain));
+                    date.setTime(
+                        new Date(
+                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
+                        ).getTime() -
+                            100 * parsedChartData?.period * 1000,
+                    );
+
+                    candleDomain = {
+                        lastCandleDate: parsedChartData?.chartData[0].time,
+                        domainBoundry: maxBoundary > date.getTime() ? maxBoundary : date.getTime(),
+                    };
+
+                    props.setCandleDomains(candleDomain);
+                }
             }
         }
     };
@@ -1816,6 +1830,9 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent.type.includes('touch')) {
                         // mobile
                         previousTouch = event.sourceEvent.changedTouches[0];
+                        firstLocation = previousTouch.pageY;
+                    } else {
+                        firstLocation = event.sourceEvent.offsetY;
                     }
                     firstLocation = event.sourceEvent;
                     d3.select(d3PlotArea.current)
@@ -3265,7 +3282,7 @@ export default function Chart(props: ChartData) {
 
     function addDefsStyle() {
         const svgmain = d3.select(d3PlotArea.current).select('svg');
-        if (svgmain.select('defs').node() === null) {
+        if (svgmain.select('defs').select('#crossHairBg').node() === null) {
             const crosshairDefs = svgmain
                 .append('defs')
                 .append('filter')
@@ -4599,7 +4616,6 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
-                isliqTextHasValue,
             );
         }
     }, [
@@ -4830,7 +4846,6 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
-            isliqTextHasValue: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -5136,14 +5151,10 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        if (isliqTextHasValue) {
-                            liqTooltip
-                                .style('visibility', 'visible')
-                                .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
-                                .style('left', event.offsetX - 80 + 'px');
-                        } else {
-                            liqTooltip.style('visibility', 'hidden');
-                        }
+                        liqTooltip
+                            .style('visibility', 'visible')
+                            .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
+                            .style('left', event.offsetX - 80 + 'px');
 
                         const svgmain = d3.select(d3PlotArea.current).select('svg');
 
@@ -5259,14 +5270,10 @@ export default function Chart(props: ChartData) {
                         const topPlacement =
                             event.y - 80 - (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
 
-                        if (isliqTextHasValue) {
-                            liqTooltip
-                                .style('visibility', 'visible')
-                                .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
-                                .style('left', event.offsetX - 80 + 'px');
-                        } else {
-                            liqTooltip.style('visibility', 'hidden');
-                        }
+                        liqTooltip
+                            .style('visibility', 'visible')
+                            .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
+                            .style('left', event.offsetX - 80 + 'px');
 
                         liquidityData.liqHighligtedAskSeries = [];
 
@@ -5517,12 +5524,14 @@ export default function Chart(props: ChartData) {
             ranges,
             location.pathname,
             parsedChartData?.chartData,
+            liquidityData?.liqBidData,
+            liquidityData?.liqAskData,
+            liquidityData?.depthLiqBidData,
+            liquidityData?.depthLiqAskData,
             windowDimensions,
             showTvl,
             showVolume,
             showFeeRate,
-            isliqTextHasValue,
-            liqTooltipSelectedLiqBar,
         ],
     );
 
@@ -5646,26 +5655,16 @@ export default function Chart(props: ChartData) {
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
             ).toFixed(1);
 
-            if (percentage != null && liqTextData.totalValue != null) {
-                setIsliqTextHasValue(true);
-                liqTooltip.html(
-                    '<p>' +
-                        percentage +
-                        '%</p>' +
-                        '<p> $' +
-                        formatAmountWithoutDigit(liqTextData.totalValue, 0) +
-                        ' </p>',
-                );
-            } else {
-                liqTooltip.html('<p>' + 0 + '%</p>' + '<p> $' + 0 + ' </p>');
-                liqTooltip.style('visibility', 'hidden');
-            }
+            liqTooltip.html(
+                '<p>' +
+                    percentage +
+                    '%</p>' +
+                    '<p> $' +
+                    formatAmountWithoutDigit(liqTextData.totalValue, 0) +
+                    ' </p>',
+            );
         }
     }, [liqTooltipSelectedLiqBar]);
-
-    useEffect(() => {
-        render();
-    }, [isliqTextHasValue]);
 
     // Color Picker
     useEffect(() => {
