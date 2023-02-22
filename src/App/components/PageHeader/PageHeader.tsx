@@ -180,11 +180,11 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
+    const { baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseSymbol = tradeData.baseToken.symbol;
-    const quoteSymbol = tradeData.quoteToken.symbol;
+    const quoteSymbol = tradeData.quoteToken.symbol;3
     const isDenomBase = tradeData.isDenomBase;
     const baseAddressInRtk = tradeData.baseToken.address;
     const quoteAddressInRtk = tradeData.quoteToken.address;
