@@ -578,7 +578,7 @@ export default function App() {
                     if (lastBlockNumberHex) {
                         const newBlockNum = parseInt(lastBlockNumberHex);
                         if (lastBlockNumber !== newBlockNum) {
-                            console.log('setting new block number');
+                            // console.log('setting new block number');
                             setLastBlockNumber(parseInt(lastBlockNumberHex));
                             dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                         }
