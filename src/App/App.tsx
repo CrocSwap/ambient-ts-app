@@ -133,7 +133,6 @@ import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-// import { getTransactionData } from './functions/getTransactionData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
@@ -1214,7 +1213,7 @@ export default function App() {
 
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
-                        tokensOnActiveLists: tokensOnActiveLists,
+                        tokenList: searchableTokens,
                         base: sortedTokens[0],
                         quote: sortedTokens[1],
                         poolIdx: chainData.poolIndex,
@@ -1697,7 +1696,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokensOnActiveLists);
+                        return getTransactionData(tx, searchableTokens);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -2046,7 +2045,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    tokensOnActiveLists: tokensOnActiveLists,
+                    tokenList: searchableTokens,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -2800,6 +2799,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    tokenList={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     pool={pool}
                                     // poolPriceTick={poolPriceTick}
