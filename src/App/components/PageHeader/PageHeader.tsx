@@ -24,6 +24,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { useParamsBuilder } from '../../../utils/hooks/useParamsBuilder';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -85,6 +86,8 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
+
+    const getNavPath = useParamsBuilder(chainData.chainId);
 
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const modalTitle = 'Log in with Email';
@@ -258,22 +261,20 @@ export default function PageHeader(props: HeaderPropsIF) {
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
-    const tradeDestination = location.pathname.includes('trade/market')
-        ? '/trade/market'
-        : location.pathname.includes('trade/limit')
-        ? '/trade/limit'
-        : location.pathname.includes('trade/range')
-        ? '/trade/range'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit'
-        : '/trade/market';
-
     const linkData = [
-        { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap' + paramsSlug, shouldDisplay: true },
+        {
+            title: t('common:homeTitle'),
+            destination: getNavPath('index'),
+            shouldDisplay: true
+        },
+        {
+            title: t('common:swapTitle'),
+            destination: getNavPath('swap'),
+            shouldDisplay: true
+        },
         {
             title: t('common:tradeTitle'),
-            destination: tradeDestination + paramsSlug,
+            destination: getNavPath('trade'),
             shouldDisplay: true,
         },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
