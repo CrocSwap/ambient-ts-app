@@ -4,6 +4,7 @@ export const getTransactionData = async (
     tx: TransactionIF,
     tokenList: TokenIF[],
 ): Promise<TransactionIF> => {
+    // console.log({ tokenList });
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
