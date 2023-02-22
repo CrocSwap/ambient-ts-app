@@ -40,6 +40,7 @@ interface propsIF {
     account: string;
     lastBlockNumber: number;
     showSidebar: boolean;
+    showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
     // blockExplorer: string | undefined;
@@ -61,10 +62,11 @@ export default function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
-        showSidebar,
+        // showSidebar,
         account,
         ipadView,
         showColumns,
+        showPair,
         isShowAllEnabled,
         position,
         currentPositionActive,
@@ -351,21 +353,37 @@ export default function RangesRow(props: propsIF) {
 
     const tip = pair.join('\n');
 
+    const tradeLinkPath =
+        '/trade/range/' +
+        'chain=' +
+        position.chainId +
+        '&tokenA=' +
+        position.quote +
+        '&tokenB=' +
+        position.base;
+
     const tokenPair = (
         <DefaultTooltip
             interactive
             title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={150}
             leaveDelay={200}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
-                <p>
-                    {' '}
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                <NavLink
+                    // onClick={() => {
+                    //     console.log({ tx });
+                    //     console.log({ tradeLinkPath });
+                    // }}
+                    to={tradeLinkPath}
+                >
+                    <p>
+                        {baseTokenSymbol} / {quoteTokenSymbol}
+                    </p>
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -514,10 +532,11 @@ export default function RangesRow(props: propsIF) {
             }
             id={positionDomId}
             ref={currentPositionActive ? activePositionRef : null}
+            style={{ cursor: 'pointer' }}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
-            {isOnPortfolioPage && !showColumns && !showSidebar && tokenPair}
+            {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}

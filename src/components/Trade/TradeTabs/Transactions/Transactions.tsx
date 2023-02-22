@@ -383,7 +383,7 @@ export default function Transactions(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
     const showColumns = useMediaQuery('(max-width: 1700px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
 
@@ -421,7 +421,7 @@ export default function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView && !showSidebar,
+            show: isOnPortfolioPage && showPair,
             slug: 'pool',
             sortable: true,
         },
@@ -584,7 +584,7 @@ export default function Transactions(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
-            desktopView={desktopView}
+            showPair={showPair}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}

@@ -28,6 +28,7 @@ interface propsIF {
     ipadView: boolean;
     view2: boolean;
     limitOrder: LimitOrderIF;
+    showPair: boolean;
     showSidebar: boolean;
     lastBlockNumber: number;
     openGlobalModal: (content: React.ReactNode) => void;
@@ -49,6 +50,7 @@ export default function OrderRow(props: propsIF) {
         tradeData,
         showColumns,
         ipadView,
+        showPair,
         // view2,
         limitOrder,
         showSidebar,
@@ -297,21 +299,37 @@ export default function OrderRow(props: propsIF) {
             : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
     const tip = pair.join('\n');
 
+    const tradeLinkPath =
+        '/trade/limit/' +
+        'chain=' +
+        limitOrder.chainId +
+        '&tokenA=' +
+        limitOrder.quote +
+        '&tokenB=' +
+        limitOrder.base;
+
     const tokenPair = (
         <DefaultTooltip
             interactive
             title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={150}
             leaveDelay={200}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
-                <p>
-                    {' '}
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                <NavLink
+                    // onClick={() => {
+                    //     console.log({ tx });
+                    //     console.log({ tradeLinkPath });
+                    // }}
+                    to={tradeLinkPath}
+                >
+                    <p>
+                        {baseTokenSymbol} / {quoteTokenSymbol}
+                    </p>
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -470,7 +488,7 @@ export default function OrderRow(props: propsIF) {
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
-            {isOnPortfolioPage && !showSidebar && !showColumns && tokenPair}
+            {isOnPortfolioPage && showPair && tokenPair}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
