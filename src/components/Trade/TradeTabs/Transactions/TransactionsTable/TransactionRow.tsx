@@ -29,7 +29,7 @@ interface propsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
-    desktopView: boolean;
+    showPair: boolean;
     view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
@@ -59,8 +59,8 @@ export default function TransactionRow(props: propsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
-        desktopView,
-        showSidebar,
+        showPair,
+        // showSidebar,
     } = props;
 
     const {
@@ -287,7 +287,7 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                // onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={
@@ -296,7 +296,22 @@ export default function TransactionRow(props: propsIF) {
                         : undefined
                 }
             >
-                {userNameToDisplay}
+                <NavLink
+                    onClick={() => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'lookupUserTxData',
+                                loadingStatus: true,
+                            }),
+                        );
+                    }}
+                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                >
+                    {/* <p>{ensName ? ensName : ownerId}</p> */}
+                    {userNameToDisplay}
+                    {/* <FiExternalLink size={'12px'} /> */}
+                </NavLink>
+                {/* {userNameToDisplay} */}
             </li>
         </DefaultTooltip>
     );
@@ -383,21 +398,41 @@ export default function TransactionRow(props: propsIF) {
             : [`${tx.quoteSymbol}: ${tx.quote}`];
     const tip = pair.join('\n');
 
+    const tradeLinkPath =
+        (tx.entityType.toLowerCase() === 'limitorder'
+            ? '/trade/limit/'
+            : tx.entityType.toLowerCase() === 'liqchange'
+            ? '/trade/range/'
+            : '/trade/market/') +
+        'chain=' +
+        tx.chainId +
+        '&tokenA=' +
+        tx.quote +
+        '&tokenB=' +
+        tx.base;
+
     const tokenPair = (
         <DefaultTooltip
             interactive
             title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={150}
             leaveDelay={200}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
-                <p>
-                    {' '}
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                <NavLink
+                    // onClick={() => {
+                    //     console.log({ tx });
+                    //     console.log({ tradeLinkPath });
+                    // }}
+                    to={tradeLinkPath}
+                >
+                    <p>
+                        {baseTokenSymbol} / {quoteTokenSymbol}
+                    </p>
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -531,7 +566,7 @@ export default function TransactionRow(props: propsIF) {
             ref={currentTxActiveInTransactions ? activePositionRef : null}
         >
             {!showColumns && TxTimeWithTooltip}
-            {isOnPortfolioPage && !desktopView && !showSidebar && tokenPair}
+            {isOnPortfolioPage && showPair && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}

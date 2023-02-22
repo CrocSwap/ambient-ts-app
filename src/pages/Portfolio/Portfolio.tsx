@@ -23,7 +23,7 @@ import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
-    setSecondaryImageDataRedux,
+    // setSecondaryImageDataRedux,
 } from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -272,10 +272,11 @@ export default function Portfolio(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (resolvedAddress && !connectedAccountActive) {
+                // console.log('fetching NFTs belonging to resolved address');
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) {
                     setSecondaryImageData(imageLocalURLs);
-                    dispatch(setSecondaryImageDataRedux(imageLocalURLs));
+                    // dispatch(setSecondaryImageDataRedux(imageLocalURLs));
                 }
             }
         })();
@@ -563,6 +564,7 @@ export default function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
+        tokenList: searchableTokens,
         searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         crocEnv: crocEnv,

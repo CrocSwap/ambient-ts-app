@@ -99,12 +99,14 @@ interface propsIF {
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    tokenList: TokenIF[];
 }
 
 // React functional component
 export default function Trade(props: propsIF) {
     const {
         pool,
+        tokenList,
         cachedQuerySpotPrice,
         // poolPriceTick,
         isUserLoggedIn,
@@ -582,6 +584,7 @@ export default function Trade(props: propsIF) {
     };
 
     const tradeTabsProps = {
+        tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         isUserLoggedIn: isUserLoggedIn,
         isTokenABase: isTokenABase,

@@ -38,7 +38,7 @@ interface propsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
-
+    tokenList: TokenIF[];
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
@@ -150,7 +150,7 @@ export default function TradeTabs2(props: propsIF) {
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
-
+        tokenList,
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
@@ -306,7 +306,7 @@ export default function TradeTabs2(props: propsIF) {
         if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
-                    tokensOnActiveLists: tokenMap,
+                    tokenList: tokenList,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -339,7 +339,7 @@ export default function TradeTabs2(props: propsIF) {
         // console.log({ filter });
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
-                tokensOnActiveLists: tokenMap,
+                tokenList: tokenList,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
@@ -426,6 +426,7 @@ export default function TradeTabs2(props: propsIF) {
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
+        tokenList: tokenList,
         graphData: graphData,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,

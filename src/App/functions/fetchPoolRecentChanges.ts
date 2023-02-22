@@ -2,7 +2,7 @@ import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
 interface argsIF {
-    tokensOnActiveLists: Map<string, TokenIF>;
+    tokenList: TokenIF[];
 
     base: string;
     quote: string;
@@ -21,7 +21,7 @@ interface argsIF {
 
 export const fetchPoolRecentChanges = (args: argsIF) => {
     const {
-        tokensOnActiveLists,
+        tokenList,
         base,
         quote,
         poolIdx,
@@ -81,7 +81,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
 
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
-                    return getTransactionData(tx, tokensOnActiveLists);
+                    return getTransactionData(tx, tokenList);
                 }),
             ).then((updatedTransactions) => {
                 return updatedTransactions;
