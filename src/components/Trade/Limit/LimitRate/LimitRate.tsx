@@ -121,8 +121,11 @@ export default function LimitRate(props: propsIF) {
 
     return (
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
-            <span className={styles.direction} style={{ display: 'flex', alignItems: 'center' }}>
-                <p style={{ fontSize: '14px' }}>Price</p>
+            <span
+                className={styles.direction}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+            >
+                <p>Price</p>
                 {limitTick !== pinnedInitialTick ? (
                     <button
                         className={styles.reset_limit_button}
