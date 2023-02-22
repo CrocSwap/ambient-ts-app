@@ -174,16 +174,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             content: ambientOrMax,
             explanation: 'The high price boundary of the range',
         },
-        {
-            title: 'Low Tick ',
-            content: position.bidTick,
-            explanation: 'The low price boundary represented in a geometric scale',
-        },
-        {
-            title: 'High Tick ',
-            content: position.askTick,
-            explanation: 'The high price boundary represented in a geometric scale',
-        },
+
         {
             title: 'Width ',
             content: isAmbient ? 'Infinite' : width + '%',
@@ -224,6 +215,21 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
 
         // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
+
+    if (!isAmbient) {
+        infoContent.push(
+            {
+                title: 'Low Tick ',
+                content: position.bidTick.toString(),
+                explanation: 'The low price boundary represented in a geometric scale',
+            },
+            {
+                title: 'High Tick ',
+                content: position.askTick.toString(),
+                explanation: 'The high price boundary represented in a geometric scale',
+            },
+        );
+    }
 
     function InfoRow(props: ItemRowPropsIF) {
         const { title, content, explanation } = props;
