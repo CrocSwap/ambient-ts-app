@@ -370,9 +370,69 @@ export default function Trade(props: propsIF) {
 
     // const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
 
+    const [showMobileDropdown, setMobileDropdown] = useState(false);
+
+    const handleMobileDropdownClick = (component: string) => {
+        setActiveMobileComponent(component);
+        setMobileDropdown(false);
+    };
+
+    // const mobileDropdownData = [
+    //     { label: 'Trade' , display: true},
+    //     { label: 'Chart', display: !isCandleDataNull },
+    //     {label: 'Transactions', display: true}
+    // ]
+
+    const mobileTradeDropdown = (
+        <section
+            style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'flex-end',
+                padding: '0 2rem',
+            }}
+        >
+            <div className={styles.mobile_trades_dropdown}>
+                <button
+                    className={styles.active_mobile_trade_dropdown}
+                    style={{ textTransform: 'capitalize' }}
+                    onClick={() => setMobileDropdown(!showMobileDropdown)}
+                >
+                    {activeMobileComponent}
+                </button>
+                {showMobileDropdown && (
+                    <div
+                        className={
+                            showMobileDropdown
+                                ? styles.active_mobile_trade_dropdown_items_containers
+                                : styles.mobile_trade_dropdown_items_containers
+                        }
+                    >
+                        {activeMobileComponent !== 'trade' && (
+                            <button onClick={() => handleMobileDropdownClick('trade')}>
+                                Trade
+                            </button>
+                        )}
+
+                        {!isCandleDataNull && activeMobileComponent !== 'chart' && (
+                            <button onClick={() => handleMobileDropdownClick('chart')}>
+                                Chart
+                            </button>
+                        )}
+                        {activeMobileComponent !== 'transactions' && (
+                            <button onClick={() => handleMobileDropdownClick('transactions')}>
+                                Transactions
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
-            <button
+            {/* <button
                 onClick={() => setActiveMobileComponent('trade')}
                 className={
                     activeMobileComponent === 'trade'
@@ -381,8 +441,8 @@ export default function Trade(props: propsIF) {
                 }
             >
                 Trade
-            </button>
-            {!isCandleDataNull && (
+            </button> */}
+            {/* {!isCandleDataNull && (
                 <button
                     onClick={() => setActiveMobileComponent('chart')}
                     className={
@@ -393,8 +453,8 @@ export default function Trade(props: propsIF) {
                 >
                     Chart
                 </button>
-            )}
-            <button
+            )} */}
+            {/* <button
                 onClick={() => setActiveMobileComponent('transactions')}
                 className={
                     activeMobileComponent === 'transactions'
@@ -403,7 +463,7 @@ export default function Trade(props: propsIF) {
                 }
             >
                 Transactions
-            </button>
+            </button> */}
         </div>
     );
 
@@ -591,6 +651,7 @@ export default function Trade(props: propsIF) {
         >
             {poolNotInitializedContent}
             {mobileDataToggle}
+            {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && (
                 <div className={` ${fullScreenStyle}`} style={{ marginLeft: '2rem' }}>
                     {!isCandleDataNull && (
