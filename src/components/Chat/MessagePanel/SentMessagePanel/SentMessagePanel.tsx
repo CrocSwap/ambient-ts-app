@@ -7,7 +7,6 @@ import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarCompone
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
-import useSocket from '../../Service/useSocket';
 
 interface SentMessageProps {
     message: Message;
@@ -20,6 +19,7 @@ interface SentMessageProps {
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
     moderator: boolean;
+    getMsg: () => Promise<void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     room: any;
 }
@@ -54,7 +54,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
-    const { getMsg } = useSocket(props.room);
+    // console.log('running sent message panel');
+    // const { getMsg } = useSocket(props.room);
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -103,7 +104,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
         // eslint-disable-next-line
         deleteMessage(id).then((result: any) => {
             if (result.status === 'OK') {
-                getMsg();
+                props.getMsg();
 
                 return result;
             }
