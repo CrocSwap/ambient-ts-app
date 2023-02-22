@@ -277,10 +277,14 @@ export default function PageHeader(props: HeaderPropsIF) {
             destination: getNavPath('trade'),
             shouldDisplay: true,
         },
-        { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
+        {
+            title: t('common:analyticsTitle'),
+            destination: '/analytics',
+            shouldDisplay: false
+        },
         {
             title: t('common:accountTitle'),
-            destination: '/account',
+            destination: getNavPath('account'),
             shouldDisplay: isConnected,
         },
     ];
