@@ -131,7 +131,7 @@ export default function LimitRate(props: propsIF) {
                             // console.log({ displayPrice });
                         }}
                     >
-                        Reset
+                        Top of Book
                     </button>
                 ) : null}
             </span>
