@@ -175,6 +175,16 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             explanation: 'The high price boundary of the range',
         },
         {
+            title: 'Low Tick ',
+            content: position.bidTick,
+            explanation: 'The low price boundary represented in a geometric scale',
+        },
+        {
+            title: 'High Tick ',
+            content: position.askTick,
+            explanation: 'The high price boundary represented in a geometric scale',
+        },
+        {
             title: 'Width ',
             content: isAmbient ? 'Infinite' : width + '%',
             explanation: 'The geometric range width',
