@@ -46,7 +46,7 @@ export default function LimitRate(props: propsIF) {
 
     const dispatch = useAppDispatch();
     const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
-    const limitTick = useAppSelector((state) => state.tradeData).limitTick;
+    // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
 
     const initialLimitRateNonDisplay =
         (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
@@ -123,17 +123,15 @@ export default function LimitRate(props: propsIF) {
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
             <span className={styles.direction} style={{ display: 'flex', alignItems: 'center' }}>
                 <p style={{ fontSize: '14px' }}>Price</p>
-                {limitTick !== pinnedInitialTick ? (
-                    <button
-                        className={styles.reset_limit_button}
-                        onClick={() => {
-                            dispatch(setLimitTick(pinnedInitialTick));
-                            // console.log({ displayPrice });
-                        }}
-                    >
-                        Top of Book
-                    </button>
-                ) : null}
+                <button
+                    className={styles.reset_limit_button}
+                    onClick={() => {
+                        dispatch(setLimitTick(pinnedInitialTick));
+                        // console.log({ displayPrice });
+                    }}
+                >
+                    Top of Book
+                </button>
             </span>
 
             <div className={`${styles.swap_input} `}>{rateInput}</div>
