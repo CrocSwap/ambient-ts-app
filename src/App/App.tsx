@@ -2368,6 +2368,7 @@ export default function App() {
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
+        getTokenByAddress: getTokenByAddress
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2750,7 +2751,7 @@ export default function App() {
         : 'content-container';
 
     const defaultUrlParams = {
-        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
         market: `/trade/market/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
         limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
         range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,

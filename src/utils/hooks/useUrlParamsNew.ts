@@ -13,7 +13,7 @@ import { TokenIF } from '../interfaces/exports';
 export const useUrlParamsNew = (
     chainId: string,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined
-) => {
+): void => {
     const { params } = useParams();
 
     const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ export const useUrlParamsNew = (
         return output;
     }, [chainId, urlParams]);
     
-    const updateRTK = (key: string, val: string) => {
+    const updateRTK = (key: string, val: string): void => {
         const handleToken = (tkn: string, addr: string): void => {
             const tokenData = getTokenByAddress(addr, chainToUse);
             if (tokenData) {

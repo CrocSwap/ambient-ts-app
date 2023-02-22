@@ -24,7 +24,8 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { useParamsBuilder } from '../../../utils/hooks/useParamsBuilder';
+import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -53,6 +54,7 @@ interface HeaderPropsIF {
     switchTheme: () => void;
     theme: string;
     chainData: ChainSpec;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -79,6 +81,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
         // isUserLoggedIn,
         chainData,
+        getTokenByAddress
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -86,8 +89,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
-
-    const getNavPath = useParamsBuilder(chainData.chainId);
 
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const modalTitle = 'Log in with Email';
@@ -179,12 +180,16 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
+    useUrlParamsNew(
+        chainId,
+        getTokenByAddress
+    );
 
-    const { baseAddr, quoteAddr } = useUrlParams();
+    const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseSymbol = tradeData.baseToken.symbol;
-    const quoteSymbol = tradeData.quoteToken.symbol;3
+    const quoteSymbol = tradeData.quoteToken.symbol;
     const isDenomBase = tradeData.isDenomBase;
     const baseAddressInRtk = tradeData.baseToken.address;
     const quoteAddressInRtk = tradeData.quoteToken.address;
@@ -261,30 +266,28 @@ export default function PageHeader(props: HeaderPropsIF) {
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
+    const tradeDestination = location.pathname.includes('trade/market')
+        ? '/trade/market'
+        : location.pathname.includes('trade/limit')
+        ? '/trade/limit'
+        : location.pathname.includes('trade/range')
+        ? '/trade/range'
+        : location.pathname.includes('trade/edit')
+        ? '/trade/edit'
+        : '/trade/market';
+
     const linkData = [
-        {
-            title: t('common:homeTitle'),
-            destination: getNavPath('index'),
-            shouldDisplay: true
-        },
-        {
-            title: t('common:swapTitle'),
-            destination: getNavPath('swap'),
-            shouldDisplay: true
-        },
+        { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap' + paramsSlug, shouldDisplay: true },
         {
             title: t('common:tradeTitle'),
-            destination: getNavPath('trade'),
+            destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
-        {
-            title: t('common:analyticsTitle'),
-            destination: '/analytics',
-            shouldDisplay: false
-        },
+        { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
-            destination: getNavPath('account'),
+            destination: '/account',
             shouldDisplay: isConnected,
         },
     ];
