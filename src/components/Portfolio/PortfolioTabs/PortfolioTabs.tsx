@@ -52,6 +52,7 @@ interface propsIF {
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
+    tokenList: TokenIF[];
     tokenMap: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -89,6 +90,7 @@ export default function PortfolioTabs(props: propsIF) {
         crocEnv,
         isTokenABase,
         cachedFetchTokenPrice,
+        tokenMap,
         importedTokens,
         connectedUserTokens,
         resolvedAddressTokens,
@@ -97,7 +99,7 @@ export default function PortfolioTabs(props: propsIF) {
         activeAccount,
         connectedAccountActive,
         chainId,
-        tokenMap,
+        tokenList,
         selectedOutsideTab,
         setSelectedOutsideTab,
 
@@ -226,7 +228,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
-            tokensOnActiveLists: tokenMap,
+            tokenList: tokenList,
             user: accountToSearch,
             chainId: chainId,
             annotate: true,
@@ -384,7 +386,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
-        tokenMap: tokenMap,
+        tokenList: tokenList,
         graphData: graphData,
         chainData: props.chainData,
         blockExplorer: props.chainData.blockExplorer || undefined,
@@ -398,6 +400,7 @@ export default function PortfolioTabs(props: propsIF) {
         showSidebar: props.showSidebar,
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
+        tokenMap: tokenMap,
     };
 
     // Props for <Orders/> React Element

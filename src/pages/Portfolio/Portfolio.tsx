@@ -564,6 +564,7 @@ export default function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
+        tokenList: searchableTokens,
         searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         crocEnv: crocEnv,

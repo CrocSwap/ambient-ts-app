@@ -2,7 +2,8 @@ import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
 interface argsIF {
-    tokensOnActiveLists: Map<string, TokenIF>;
+    tokenList: TokenIF[];
+
     user: string;
     chainId: string;
     annotate: boolean;
@@ -16,7 +17,7 @@ interface argsIF {
 
 export const fetchUserRecentChanges = (args: argsIF) => {
     const {
-        tokensOnActiveLists,
+        tokenList,
         user,
         chainId,
         annotate,
@@ -53,7 +54,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
 
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
-                    return getTransactionData(tx, tokensOnActiveLists);
+                    return getTransactionData(tx, tokenList);
                 }),
             ).then((updatedTransactions) => {
                 return updatedTransactions;
