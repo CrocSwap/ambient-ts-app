@@ -5,7 +5,6 @@ export const useParamsBuilder = (chainId: string): (
 ) => {
     console.log('ran custom hook useParamsBuilder()');
     const { tradeData } = useAppSelector(state => state);
-    false && tradeData;
 
     const makeParam = (paramKey: string): string => {
         let value: string;
@@ -31,12 +30,48 @@ export const useParamsBuilder = (chainId: string): (
             default:
                 value = '';
         }
-        const output = paramKey + '=' + value;
+        const output = value ? paramKey + '=' + value : '';
         return output;
     }
 
-    const getNavPath = (destination: string) => {
-        return destination;
+    const getNavPath = (destination: string): string => {
+        let baseUrl: string;
+        let paramsNeeded: string[];
+        switch (destination) {
+            case 'index':
+                baseUrl = '';
+                paramsNeeded = [];
+                break;
+            case 'swap':
+                baseUrl = '/swap';
+                paramsNeeded = ['chain', 'tokenA', 'tokenB'];
+                break;
+            case 'trade':
+            case 'market':
+                baseUrl = '/trade/market';
+                paramsNeeded = ['chain', 'tokenA', 'tokenB'];
+                break;
+            case 'limit':
+                baseUrl = '/trade/limit';
+                paramsNeeded = ['chain', 'tokenA', 'tokenB'];
+                break;
+            case 'range':
+                baseUrl = '/trade/range';
+                paramsNeeded = ['chain', 'tokenA', 'tokenB', 'lowTick', 'highTick'];
+                break;
+            default:
+                baseUrl = '';
+                paramsNeeded = [];
+                break;
+        }
+
+        const paramsString = paramsNeeded
+            .map((param: string) => makeParam(param))
+            .join('&');
+
+        const navPath = baseUrl + '/' + paramsString;
+
+        return navPath;
     }
 
     return getNavPath;
