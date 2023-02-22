@@ -59,6 +59,11 @@ export const useParamsBuilder = (chainId: string): (
                 baseUrl = '/trade/range';
                 paramsNeeded = ['chain', 'tokenA', 'tokenB', 'lowTick', 'highTick'];
                 break;
+            case 'portfolio':
+            case 'account':
+                baseUrl = '/account';
+                paramsNeeded = [];
+                break;
             default:
                 baseUrl = '';
                 paramsNeeded = [];
