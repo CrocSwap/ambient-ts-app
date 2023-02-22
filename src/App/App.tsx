@@ -2707,7 +2707,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (account) {
-                console.log('fetching NFTs beloning to connected user');
+                // console.log('fetching NFTs belonging to connected user');
                 const imageLocalURLs = await getNFTs(account);
                 if (imageLocalURLs) setImageData(imageLocalURLs);
             }
