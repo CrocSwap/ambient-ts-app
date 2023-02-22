@@ -46,7 +46,7 @@ export const useUrlParamsNew = (
             output = chainId;
         }
         return output;
-    }, [urlParams]);
+    }, [chainId, urlParams]);
     
     const updateRTK = (key: string, val: string) => {
         const handleToken = (tkn: string, addr: string): void => {
