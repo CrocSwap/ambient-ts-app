@@ -5613,7 +5613,6 @@ export default function Chart(props: ChartData) {
                 //         );
                 //     }
                 // } else {
-                liqTooltip.style('visibility', 'visible');
                 if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
                     liquidityData.liqAskData.map((liqData: any) => {
                         if (
@@ -5636,8 +5635,6 @@ export default function Chart(props: ChartData) {
                     });
                 }
                 // }
-            } else {
-                liqTooltip.style('visibility', 'hidden');
             }
             // const absoluteDifference = Math.abs(difference)
 
