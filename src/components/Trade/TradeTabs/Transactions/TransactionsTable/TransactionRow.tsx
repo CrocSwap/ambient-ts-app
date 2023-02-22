@@ -243,6 +243,7 @@ export default function TransactionRow(props: propsIF) {
             title={txUsdValueLocaleString}
             placement={'right-end'}
             arrow
+            disableHoverListener={true}
             enterDelay={750}
             leaveDelay={200}
         >
@@ -313,7 +314,8 @@ export default function TransactionRow(props: propsIF) {
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
                 }
-                placement={'right'}
+                placement={'left'}
+                disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
                 leaveDelay={200}
@@ -338,7 +340,8 @@ export default function TransactionRow(props: propsIF) {
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
                 }
-                placement={'right'}
+                placement={'left'}
+                disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
                 leaveDelay={200}
@@ -533,12 +536,41 @@ export default function TransactionRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
-                    <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
-                        {userNameToDisplay}
-                    </p>
-                </li>
+                <DefaultTooltip
+                    interactive
+                    title={
+                        <div>
+                            <NavLink
+                                onClick={() => {
+                                    dispatch(
+                                        setDataLoadingStatus({
+                                            datasetName: 'lookupUserTxData',
+                                            loadingStatus: true,
+                                        }),
+                                    );
+                                }}
+                                to={`/${
+                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                                }`}
+                            >
+                                <p>{ensName ? ensName : ownerId}</p>
+                                {'View Account' + 'ㅤ'}
+                                <FiExternalLink size={'12px'} />
+                            </NavLink>
+                        </div>
+                    }
+                    placement={'right'}
+                    arrow
+                    enterDelay={750}
+                    leaveDelay={200}
+                >
+                    <li data-label='id' onClick={openDetailsModal}>
+                        <p className='base_color'>{txHashTruncated}</p>{' '}
+                        <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                            {userNameToDisplay}
+                        </p>
+                    </li>
+                </DefaultTooltip>
             )}
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
@@ -555,8 +587,7 @@ export default function TransactionRow(props: propsIF) {
                         >
                             ambient
                         </li>
-                    ) : (isDenomBase && !isOnPortfolioPage) ||
-                      (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
+                    ) : (
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
@@ -578,42 +609,6 @@ export default function TransactionRow(props: propsIF) {
                                         : truncatedHighDisplayPrice}
                                 </span>
                             </p>
-                        </li>
-                    ) : (
-                        <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
-                            <div className={`${styles.align_right} `}>
-                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
-                                <span style={{ fontFamily: 'monospace' }}>
-                                    {isOnPortfolioPage
-                                        ? truncatedHighDisplayPriceDenomByMoneyness
-                                        : truncatedHighDisplayPrice}
-                                </span>
-                            </div>
-                            <div className={`${styles.align_right} `}>
-                                <span style={{ fontFamily: 'monospace' }}>
-                                    {isOnPortfolioPage ? (
-                                        <p className={`${styles.align_right} `}>
-                                            <span>
-                                                {truncatedLowDisplayPriceDenomByMoneyness
-                                                    ? priceCharacter
-                                                    : '…'}
-                                            </span>
-                                            <span style={{ fontFamily: 'monospace' }}>
-                                                {truncatedLowDisplayPriceDenomByMoneyness}
-                                            </span>
-                                        </p>
-                                    ) : (
-                                        <p className={`${styles.align_right} `}>
-                                            <span>
-                                                {truncatedLowDisplayPrice ? priceCharacter : '…'}
-                                            </span>
-                                            <span style={{ fontFamily: 'monospace' }}>
-                                                {truncatedLowDisplayPrice}
-                                            </span>
-                                        </p>
-                                    )}
-                                </span>
-                            </div>
                         </li>
                     )
                 ) : (

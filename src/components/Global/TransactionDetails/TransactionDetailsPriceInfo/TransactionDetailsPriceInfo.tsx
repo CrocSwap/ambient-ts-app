@@ -6,11 +6,11 @@ import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { useMemo } from 'react';
+
 // import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
+import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 
 type ItemIF = {
     slug: string;
@@ -51,6 +51,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
+        txUsdValueLocaleString,
+        baseTokenCharacter,
+        quoteTokenCharacter,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
 
@@ -98,7 +101,16 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         >
             <Row>
                 <span>Total Value: </span>
-                <div className={styles.info_text}>{usdValue}</div>
+                <DefaultTooltip
+                    interactive
+                    title={txUsdValueLocaleString}
+                    placement={'right-end'}
+                    arrow
+                    enterDelay={750}
+                    leaveDelay={200}
+                >
+                    <div className={styles.info_text}>{usdValue}</div>
+                </DefaultTooltip>
             </Row>
         </motion.div>
     );
@@ -264,9 +276,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </div>
     );
 
-    const baseCharacter = useMemo(() => getUnicodeCharacter(tx.baseSymbol), [tx.baseSymbol]);
-    const quoteCharacter = useMemo(() => getUnicodeCharacter(tx.quoteSymbol), [tx.quoteSymbol]);
-
     const PriceDisplay = (
         <div className={styles.min_max_price}>
             <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
@@ -279,63 +288,57 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     {'∞'}
                 </span>
             ) : isOnTradeRoute ? (
-                isDenomBase ? (
-                    <span className={styles.min_price}>
-                        {truncatedDisplayPrice ? quoteCharacter + truncatedDisplayPrice : null}
+                <span className={styles.min_price}>
+                    {truncatedDisplayPrice
+                        ? isDenomBase
+                            ? quoteTokenCharacter + truncatedDisplayPrice
+                            : baseTokenCharacter + truncatedDisplayPrice
+                        : null}
 
-                        {truncatedLowDisplayPrice
-                            ? quoteCharacter + truncatedLowDisplayPrice
-                            : null}
-                        {!truncatedDisplayPrice ? (
-                            <AiOutlineLine style={{ paddingTop: '6px' }} />
-                        ) : null}
-                        {truncatedHighDisplayPrice
-                            ? quoteCharacter + truncatedHighDisplayPrice
-                            : null}
-                    </span>
-                ) : (
-                    <span className={styles.min_price}>
-                        {truncatedDisplayPrice ? baseCharacter + truncatedDisplayPrice : null}
-
-                        {truncatedHighDisplayPrice
-                            ? baseCharacter + truncatedHighDisplayPrice
-                            : null}
-                        {!truncatedDisplayPrice ? (
-                            <AiOutlineLine style={{ paddingTop: '6px' }} />
-                        ) : null}
-                        {truncatedLowDisplayPrice ? baseCharacter + truncatedLowDisplayPrice : null}
-                    </span>
-                )
+                    {truncatedLowDisplayPrice
+                        ? isDenomBase
+                            ? quoteTokenCharacter + truncatedLowDisplayPrice
+                            : baseTokenCharacter + truncatedLowDisplayPrice
+                        : null}
+                    {!truncatedDisplayPrice ? (
+                        <AiOutlineLine style={{ paddingTop: '6px' }} />
+                    ) : null}
+                    {truncatedHighDisplayPrice
+                        ? isDenomBase
+                            ? quoteTokenCharacter + truncatedHighDisplayPrice
+                            : baseTokenCharacter + truncatedHighDisplayPrice
+                        : null}
+                </span>
             ) : isBaseTokenMoneynessGreaterOrEqual ? (
                 <span className={styles.min_price}>
                     {truncatedDisplayPriceDenomByMoneyness
-                        ? baseCharacter + truncatedDisplayPriceDenomByMoneyness
+                        ? baseTokenCharacter + truncatedDisplayPriceDenomByMoneyness
                         : null}
 
                     {truncatedHighDisplayPriceDenomByMoneyness
-                        ? baseCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        ? baseTokenCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
                     {!truncatedDisplayPrice ? (
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
                     {truncatedLowDisplayPriceDenomByMoneyness
-                        ? baseCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                        ? baseTokenCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
                 </span>
             ) : (
                 <span className={styles.min_price}>
                     {truncatedDisplayPriceDenomByMoneyness
-                        ? quoteCharacter + truncatedDisplayPriceDenomByMoneyness
+                        ? quoteTokenCharacter + truncatedDisplayPriceDenomByMoneyness
                         : null}
 
                     {truncatedLowDisplayPriceDenomByMoneyness
-                        ? quoteCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                        ? quoteTokenCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
                     {!truncatedDisplayPrice ? (
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
                     {truncatedHighDisplayPriceDenomByMoneyness
-                        ? quoteCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        ? quoteTokenCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
                 </span>
             )}
