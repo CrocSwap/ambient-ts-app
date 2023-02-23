@@ -302,11 +302,9 @@ export default function Orders(props: propsIF) {
     // -----------------------------
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    // const desktopView = useMediaQuery('(max-width: 768px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
     const view2 = useMediaQuery('(max-width: 1568px)');
     const showColumns = useMediaQuery('(max-width: 1700px)');
-
-    // const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -354,7 +352,7 @@ export default function Orders(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !showSidebar && !showColumns,
+            show: isOnPortfolioPage && showPair,
             slug: 'pool',
             sortable: false,
         },
@@ -524,6 +522,7 @@ export default function Orders(props: propsIF) {
             chainData={chainData}
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
+            showPair={showPair}
             showSidebar={showSidebar}
             showColumns={showColumns}
             ipadView={ipadView}

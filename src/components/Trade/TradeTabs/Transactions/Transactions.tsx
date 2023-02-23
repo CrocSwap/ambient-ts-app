@@ -35,7 +35,8 @@ interface propsIF {
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
-    tokenMap: Map<string, TokenIF>;
+    tokenList: TokenIF[];
+
     changesInSelectedCandle: TransactionIF[] | undefined;
     graphData: graphData;
     chainData: ChainSpec;
@@ -67,7 +68,7 @@ export default function Transactions(props: propsIF) {
         account,
         changesInSelectedCandle,
         graphData,
-        tokenMap,
+        tokenList,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -261,7 +262,7 @@ export default function Transactions(props: propsIF) {
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {
             fetchPoolRecentChanges({
-                tokensOnActiveLists: tokenMap,
+                tokenList: tokenList,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: chainData.poolIndex,
@@ -366,7 +367,7 @@ export default function Transactions(props: propsIF) {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokenMap);
+                        return getTransactionData(tx, tokenList);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -383,7 +384,7 @@ export default function Transactions(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
     const showColumns = useMediaQuery('(max-width: 1700px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
 
@@ -421,7 +422,7 @@ export default function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView && !showSidebar,
+            show: isOnPortfolioPage && showPair,
             slug: 'pool',
             sortable: true,
         },
@@ -584,7 +585,7 @@ export default function Transactions(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
-            desktopView={desktopView}
+            showPair={showPair}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}

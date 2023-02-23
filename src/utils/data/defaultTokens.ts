@@ -105,6 +105,17 @@ export const goerliDAI = {
     fromList: '/ambient-token-list.json',
 };
 
+export const goerliWBTC = {
+    name: 'Wrapped BTC',
+    address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
+    symbol: 'WBTC',
+    decimals: 8,
+    chainId: 5,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    fromList: '/ambient-token-list.json',
+};
+
 export const defaultTokens = [
     ropstenETH,
     ropstenWBTC,
@@ -116,4 +127,5 @@ export const defaultTokens = [
     goerliDAI,
     goerliETH,
     goerliUSDC,
+    goerliWBTC,
 ];

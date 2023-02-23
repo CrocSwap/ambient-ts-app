@@ -169,7 +169,8 @@ export default function Leaderboard(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    // const desktopView = useMediaQuery('(max-width: 768px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+
     const showColumns = useMediaQuery('(max-width: 1700px)');
     const phoneScreen = useMediaQuery('(max-width: 500px)');
 
@@ -353,6 +354,7 @@ export default function Leaderboard(props: propsIF) {
             idx={idx + 1}
             handlePulseAnimation={handlePulseAnimation}
             // blockExplorer={blockExplorer}
+            showPair={showPair}
         />
     ));
 

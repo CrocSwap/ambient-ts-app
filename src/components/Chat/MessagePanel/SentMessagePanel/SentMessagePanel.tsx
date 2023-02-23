@@ -7,7 +7,6 @@ import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarCompone
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
-import useSocket from '../../Service/useSocket';
 
 interface SentMessageProps {
     message: Message;
@@ -20,6 +19,7 @@ interface SentMessageProps {
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
     moderator: boolean;
+    getMsg: () => Promise<void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     room: any;
     isDeleted: any;

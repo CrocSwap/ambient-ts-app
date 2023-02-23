@@ -72,6 +72,7 @@ export default function ChatPanel(props: ChatProps) {
     const [notification, setNotification] = useState(0);
     const [isDeleted, setIsDeleted] = useState(false);
 
+    // console.log('running ChatPanel');
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
@@ -175,6 +176,7 @@ export default function ChatPanel(props: ChatProps) {
     }, [address, props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
+        console.log('getting messages');
         setNotification(0);
         getMsg();
     }, [room]);
@@ -188,6 +190,7 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
         setNotification(0);
+        console.log('scrolling to bottom');
     }, [props.chatStatus]);
 
     function handleCloseChatPanel() {
@@ -292,6 +295,7 @@ export default function ChatPanel(props: ChatProps) {
                             room={room}
                             isDeleted={isDeleted}
                             setIsDeleted={setIsDeleted}
+                            getMsg={getMsg}
                         />
                         <hr />
                     </div>
