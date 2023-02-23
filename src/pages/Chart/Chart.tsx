@@ -1269,7 +1269,6 @@ export default function Chart(props: ChartData) {
             domainBoundry: lastCandleDate.getTime(),
         };
 
-        console.log({ newBoundary, lastCandleDate });
         if (newBoundary < lastCandleDate) {
             const filtered = parsedChartData?.chartData.filter(
                 (data: any) => data.time !== undefined,
