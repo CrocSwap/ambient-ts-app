@@ -139,11 +139,6 @@ export default function Swap(props: propsIF) {
         toggleBypassConfirm,
     } = props;
 
-    // useUrlParamsNew(
-    //     chainId,
-    //     getTokenByAddress
-    // );
-
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
