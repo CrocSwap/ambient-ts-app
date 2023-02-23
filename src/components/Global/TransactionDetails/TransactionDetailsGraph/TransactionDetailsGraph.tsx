@@ -380,7 +380,13 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const lowValues: any = [];
 
                 if (lowerBoudnaryFactor < 2) {
-                    lowValues[0] = Math.round((bottomLimit - lowerBoundaryFill) / 10) * 10;
+                    lowValues[0] = (
+                        !isOnPortfolioPage
+                            ? denominationsInBase
+                            : !isBaseTokenMoneynessGreaterOrEqual
+                    )
+                        ? Math.round((bottomLimit - lowerBoundaryFill) / 10) * 10
+                        : bottomLimit - lowerBoundaryFill;
                 } else {
                     for (let i = 1; i <= lowerBoudnaryFactor; i++) {
                         lowValues[i - 1] = (
@@ -406,7 +412,13 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const topValues: any = [];
 
                 if (topBoudnaryFactor < 2) {
-                    topValues[0] = Math.round((topLimit + topBoundaryFill) / 10) * 10;
+                    topValues[0] = (
+                        !isOnPortfolioPage
+                            ? denominationsInBase
+                            : !isBaseTokenMoneynessGreaterOrEqual
+                    )
+                        ? Math.round((topLimit + topBoundaryFill) / 10) * 10
+                        : topLimit + topBoundaryFill;
                 } else {
                     for (let i = 1; i <= topBoudnaryFactor; i++) {
                         topValues[i - 1] = (
@@ -428,7 +440,13 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 if (bandBoundaryFill > diff) {
                     if (bandBoudnaryFactor < 2) {
-                        bandValues[0] = Math.round((topLimit - bandBoundaryFill) / 10) * 10;
+                        bandValues[0] = (
+                            !isOnPortfolioPage
+                                ? denominationsInBase
+                                : !isBaseTokenMoneynessGreaterOrEqual
+                        )
+                            ? Math.round((topLimit - bandBoundaryFill) / 10) * 10
+                            : topLimit - bandBoundaryFill;
                     } else {
                         for (let i = 1; i < bandBoudnaryFactor; i++) {
                             bandValues[i - 1] = (
