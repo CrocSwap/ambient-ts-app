@@ -5470,9 +5470,6 @@ export default function Chart(props: ChartData) {
 
         const minYBoundary = d3.min(filtered, (d) => d.value);
         const maxYBoundary = d3.max(filtered, (d) => d.value);
-
-        console.log({ minYBoundary }, { maxYBoundary });
-
         if (minYBoundary !== undefined && maxYBoundary !== undefined) {
             const domain = [0, maxYBoundary];
             scaleData.volumeScale.domain(domain);
