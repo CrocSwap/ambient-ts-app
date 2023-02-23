@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
@@ -21,7 +21,9 @@ interface SentMessageProps {
     moderator: boolean;
     getMsg: () => Promise<void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    room: any;
+    room: string;
+    isDeleted: boolean;
+    setIsDeleted: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -54,8 +56,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
-    // console.log('running sent message panel');
-    // const { getMsg } = useSocket(props.room);
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -102,11 +102,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     function deleteMessages(id: string) {
         // eslint-disable-next-line
+        props.setIsDeleted(false);
+        // eslint-disable-next-line
         deleteMessage(id).then((result: any) => {
             if (result.status === 'OK') {
-                props.getMsg();
-
+                props.setIsDeleted(true);
                 return result;
+            } else {
+                props.setIsDeleted(false);
             }
         });
     }

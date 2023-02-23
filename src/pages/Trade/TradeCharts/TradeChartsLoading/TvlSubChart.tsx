@@ -188,8 +188,6 @@ export default function TvlSubChart(props: TvlData) {
                             }
                         })
                         .on('zoom', (event: any) => {
-                            getNewCandleData(event, date, scaleData.xScale);
-
                             const domainX = scaleData.xScale.domain();
                             const linearX = d3
                                 .scaleTime()
@@ -197,6 +195,9 @@ export default function TvlSubChart(props: TvlData) {
                                 .range([0, domainX[1] - domainX[0]]);
 
                             const deltaX = linearX(-event.sourceEvent.movementX);
+
+                            getNewCandleData(new Date(domainX[0].getTime() + deltaX), date);
+
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
