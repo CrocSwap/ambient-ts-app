@@ -277,7 +277,7 @@ export default function RangesMenu(props: propsIF) {
             {view2 && !isEmpty && removeButton}
             {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
-            {view3 && harvestButton}
+            {view3 && !isEmpty && harvestButton}
             {/* {view2 && removeButton} */}
             {/* {view3 && detailsButton} */}
             {!userMatchesConnectedAccount && copyButton}
@@ -292,7 +292,7 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {/* {!view1 && !isPositionInRange && repositionButton} */}
             {/* {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
-            {!view3 && harvestButton}
+            {!view3 && !isEmpty && harvestButton}
             {!view2 && !isEmpty && removeButton}
             {detailsButton}
             {userMatchesConnectedAccount && copyButton}
