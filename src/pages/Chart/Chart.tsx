@@ -334,8 +334,6 @@ export default function Chart(props: ChartData) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
-    const [yScaleDomain, setYcaleDomain] = useState(scaleData.yScale.domain());
-
     // useEffect(() => {
     //     if (scaleData !== undefined) {
     //         // d3.select(d3PlotArea.current).on('measure', function (event: any) {
@@ -2803,8 +2801,6 @@ export default function Chart(props: ChartData) {
                                 const buffer = Math.abs((low - high) / 6);
 
                                 const domain = [low - buffer, high + buffer / 2];
-                                setYcaleDomain(domain);
-
                                 scaleData.yScale.domain(domain);
                             }
                         }
