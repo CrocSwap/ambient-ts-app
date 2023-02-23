@@ -29,6 +29,7 @@ import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
 import {
+    candleDomain,
     // tradeData as TradeDataIF,
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
@@ -115,6 +116,7 @@ interface propsIF {
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
+    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
 }
 
 export interface CandleChartData {
@@ -202,6 +204,7 @@ export default function TradeCharts(props: propsIF) {
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
+        setCandleDomains,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -626,6 +629,7 @@ export default function TradeCharts(props: propsIF) {
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
+                        setCandleDomains={setCandleDomains}
                     />
                 </div>
             )}

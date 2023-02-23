@@ -254,6 +254,8 @@ export default function Ranges(props: propsIF) {
     const txView2 = useMediaQuery('(max-width: 720px)');
     const txView3 = useMediaQuery('(max-width: 1200px)');
     const txView4 = useMediaQuery('(max-width: 1800px)');
+    const phoneScreen = useMediaQuery('(max-width: 500px)');
+
     // const txView4 = useMediaQuery('(min-width: 2400px)');
 
     const rangesPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
@@ -291,10 +293,8 @@ export default function Ranges(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    // const desktopView = useMediaQuery('(max-width: 768px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
     const showColumns = useMediaQuery('(max-width: 1776px)');
-
-    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -340,9 +340,9 @@ export default function Ranges(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !showSidebar && !showColumns,
+            show: isOnPortfolioPage && showPair,
             slug: 'pool',
-            sortable: true,
+            sortable: false,
         },
         // {
         //     name: 'Pool',
@@ -424,7 +424,7 @@ export default function Ranges(props: propsIF) {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns,
+            show: showColumns && !phoneScreen,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -497,6 +497,7 @@ export default function Ranges(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
+            showPair={showPair}
         />
     ));
 

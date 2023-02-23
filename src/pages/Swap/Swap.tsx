@@ -11,7 +11,6 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-// import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -20,7 +19,6 @@ import { getRecentTokensParamsIF } from '../../App/hooks/useRecentTokens';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
-// import truncateDecimals from '../../utils/data/truncateDecimals';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -34,10 +32,8 @@ import { useRelativeModal } from '../../components/Global/RelativeModal/useRelat
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-// import { calcImpact } from '../../App/functions/calcImpact';
 import { FiCopy } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
-import { useUrlParamsNew } from '../../utils/hooks/useUrlParamsNew';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;

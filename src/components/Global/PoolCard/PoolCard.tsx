@@ -11,6 +11,7 @@ import { get24hChange, memoizePoolStats } from '../../../App/functions/getPoolSt
 import { formatAmountOld } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
+import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -87,7 +88,12 @@ export default function PoolCard(props: propsIF) {
                         quoteToken.decimals,
                     );
 
-                    const shouldInvertDisplay = displayPrice < 1;
+                    const isBaseTokenMoneynessGreaterOrEqual =
+                        getMoneynessRank(baseTokenAddress.toLowerCase() + '_' + chainId) -
+                            getMoneynessRank(quoteTokenAddress.toLowerCase() + '_' + chainId) >=
+                        0;
+
+                    const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
 
                     setShouldInvertDisplay(shouldInvertDisplay);
 
@@ -95,16 +101,25 @@ export default function PoolCard(props: propsIF) {
                         ? 1 / displayPrice
                         : displayPrice;
 
-                    const displayPriceWithFormatting =
-                        displayPriceWithInversion < 2
-                            ? displayPriceWithInversion.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithInversion.toLocaleString(undefined, {
+                    const displayPriceWithFormatting: string | undefined =
+                        displayPriceWithInversion === undefined
+                            ? undefined
+                            : displayPriceWithInversion === 0
+                            ? '0.00'
+                            : displayPriceWithInversion < 0.001
+                            ? displayPriceWithInversion.toExponential(2)
+                            : displayPriceWithInversion < 0.5
+                            ? displayPriceWithInversion.toPrecision(3)
+                            : displayPriceWithInversion < 2
+                            ? displayPriceWithInversion.toPrecision(6)
+                            : displayPriceWithInversion >= 100000
+                            ? formatAmountOld(displayPriceWithInversion, 1)
+                            : // ? baseLiqDisplayNum.toExponential(2)
+                              displayPriceWithInversion.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                               });
+
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {
                     setPoolPriceDisplay(undefined);

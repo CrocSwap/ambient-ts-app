@@ -40,6 +40,7 @@ interface propsIF {
     account: string;
     lastBlockNumber: number;
     showSidebar: boolean;
+    showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
     // blockExplorer: string | undefined;
@@ -61,10 +62,11 @@ export default function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
-        showSidebar,
+        // showSidebar,
         account,
         ipadView,
         showColumns,
+        showPair,
         isShowAllEnabled,
         position,
         currentPositionActive,
@@ -189,7 +191,7 @@ export default function RangesRow(props: propsIF) {
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const logoSizes = phoneScreen ? '1px' : smallScreen ? '15px' : '20px';
+    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
@@ -295,12 +297,26 @@ export default function RangesRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                // onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
-                {userNameToDisplay}
+                <NavLink
+                    onClick={() => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'lookupUserTxData',
+                                loadingStatus: true,
+                            }),
+                        );
+                    }}
+                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                >
+                    {/* <p>{ensName ? ensName : ownerId}</p> */}
+                    {userNameToDisplay}
+                    {/* <FiExternalLink size={'12px'} /> */}
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -351,21 +367,37 @@ export default function RangesRow(props: propsIF) {
 
     const tip = pair.join('\n');
 
+    const tradeLinkPath =
+        '/trade/range/' +
+        'chain=' +
+        position.chainId +
+        '&tokenA=' +
+        position.quote +
+        '&tokenB=' +
+        position.base;
+
     const tokenPair = (
         <DefaultTooltip
             interactive
             title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={150}
             leaveDelay={200}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
-                <p>
-                    {' '}
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                <NavLink
+                    // onClick={() => {
+                    //     console.log({ tx });
+                    //     console.log({ tradeLinkPath });
+                    // }}
+                    to={tradeLinkPath}
+                >
+                    <p>
+                        {baseTokenSymbol} / {quoteTokenSymbol}
+                    </p>
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -514,10 +546,11 @@ export default function RangesRow(props: propsIF) {
             }
             id={positionDomId}
             ref={currentPositionActive ? activePositionRef : null}
+            style={{ cursor: 'pointer' }}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
-            {isOnPortfolioPage && !showColumns && !showSidebar && tokenPair}
+            {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -634,7 +667,7 @@ export default function RangesRow(props: propsIF) {
             {ValueWithTooltip}
             {!showColumns && baseQtyDisplayWithTooltip}
             {!showColumns && quoteQtyDisplayWithTooltip}
-            {showColumns && (
+            {showColumns && !phoneScreen && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='base_color'
@@ -679,6 +712,7 @@ export default function RangesRow(props: propsIF) {
                 <RangesMenu
                     {...rangeMenuProps}
                     showSidebar={props.showSidebar}
+                    isEmpty={position.totalValueUSD === 0}
                     showHighlightedButton={showHighlightedButton}
                 />
             </li>

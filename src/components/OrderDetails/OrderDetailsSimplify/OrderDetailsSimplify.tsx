@@ -34,6 +34,7 @@ interface OrderDetailsSimplifyPropsIF {
     quoteTokenSymbol: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
+    isOnPortfolioPage: boolean;
 }
 export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
     const {
@@ -53,6 +54,7 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
         // isDenomBase,
         usdValue,
         limitOrder,
+        isOnPortfolioPage,
     } = props;
 
     const {
@@ -86,13 +88,18 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
 
         // truncatedLowDisplayPrice,
         // truncatedHighDisplayPrice,
-        // truncatedDisplayPrice,
+        startPriceDisplay,
+        middlePriceDisplay,
+        truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
+        startPriceDisplayDenomByMoneyness,
+        middlePriceDisplayDenomByMoneyness,
         // truncatedLowDisplayPriceDenomByMoneyness,
         // truncatedHighDisplayPriceDenomByMoneyness,
         // truncatedDisplayPriceDenomByMoneyness,
         // isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
     // console.log({ limitOrder });
 
@@ -227,9 +234,23 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
             explanation: 'The quantity of the to/buy token (scaled by its decimals value)',
         },
 
-        // { title: 'Realized Price ', content: 'price', explanation: 'this is explanation' },
-        // { title: 'Fill Start ', content: 'price', explanation: 'this is explanation' },
-        // { title: 'Fill End ', content: 'price', explanation: 'this is explanation' },
+        {
+            title: 'Fill Start ',
+            content: isOnPortfolioPage ? startPriceDisplayDenomByMoneyness : startPriceDisplay,
+            explanation: 'Price at which the limit order fill starts',
+        },
+        {
+            title: 'Fill Middle ',
+            content: isOnPortfolioPage ? middlePriceDisplayDenomByMoneyness : middlePriceDisplay,
+            explanation: 'The effective price - halfway between start and finish',
+        },
+        {
+            title: 'Fill End ',
+            content: isOnPortfolioPage
+                ? truncatedDisplayPriceDenomByMoneyness
+                : truncatedDisplayPrice,
+            explanation: 'Price at which limit order fill ends',
+        },
         {
             title: 'Value ',
             content: '$' + usdValue,
