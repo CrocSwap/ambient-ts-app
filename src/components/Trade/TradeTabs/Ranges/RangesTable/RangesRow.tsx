@@ -712,6 +712,7 @@ export default function RangesRow(props: propsIF) {
                 <RangesMenu
                     {...rangeMenuProps}
                     showSidebar={props.showSidebar}
+                    isEmpty={position.totalValueUSD === 0}
                     showHighlightedButton={showHighlightedButton}
                 />
             </li>
