@@ -22,6 +22,8 @@ interface SentMessageProps {
     getMsg: () => Promise<void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     room: any;
+    isDeleted: any;
+    setIsDeleted: any;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -54,8 +56,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
-    // console.log('running sent message panel');
-    // const { getMsg } = useSocket(props.room);
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -102,11 +102,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     function deleteMessages(id: string) {
         // eslint-disable-next-line
+        props.setIsDeleted(false);
         deleteMessage(id).then((result: any) => {
             if (result.status === 'OK') {
-                props.getMsg();
-
+                props.setIsDeleted(true);
                 return result;
+            } else {
+                props.setIsDeleted(false);
             }
         });
     }
