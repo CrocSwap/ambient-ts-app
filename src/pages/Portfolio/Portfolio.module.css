@@ -86,7 +86,7 @@
     flex-direction: row;
     background: var(--dark2);
     border-radius: 4px;
-    outline: 1px solid var(--text-grey-dark);
+    outline: 1px solid var(--text-grey-light);
     /* max-width: 200px; */
     margin: 10px auto;
 }
