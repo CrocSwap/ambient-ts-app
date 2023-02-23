@@ -90,7 +90,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     const branchName =
         process.env.REACT_APP_BRANCH_NAME !== undefined
             ? process.env.REACT_APP_BRANCH_NAME
-            : 'main';
+            : 'local';
 
     const showBranchName =
         branchName.toLowerCase() !== 'main' && branchName.toLowerCase() !== 'production';
