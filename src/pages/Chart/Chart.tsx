@@ -1820,6 +1820,8 @@ export default function Chart(props: ChartData) {
                         .selectChild()
                         .style('visibility', 'visible');
 
+                    props.setShowTooltip(true);
+
                     setIsMouseMoveCrosshair(false);
                 }) as any;
 
@@ -5572,6 +5574,8 @@ export default function Chart(props: ChartData) {
             .select('.crosshairHorizontal')
             .selectChild()
             .style('visibility', 'visible');
+
+        props.setShowTooltip(true);
     }
 
     useEffect(() => {
