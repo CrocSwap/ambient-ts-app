@@ -1261,43 +1261,38 @@ export default function Chart(props: ChartData) {
         return nearest;
     };
 
-    const getNewCandleData = (event: any, date: any, xScale: any) => {
+    const getNewCandleData = (newBoundary: any, lastCandleDate: any) => {
         let candleDomain: candleDomain;
-        let domainBoundary = scaleData.xScaleCopy.domain();
-        if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < domainBoundary[0]) {
-            domainBoundary = xScale.domain();
-        }
 
-        if (domainBoundary[0] > event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]) {
-            candleDomain = {
-                lastCandleDate: parsedChartData?.chartData[0].time,
-                domainBoundry: date.getTime(),
-            };
+        candleDomain = {
+            lastCandleDate: parsedChartData?.chartData[0].time,
+            domainBoundry: lastCandleDate.getTime(),
+        };
 
-            if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
-                const filtered = parsedChartData?.chartData.filter(
-                    (data: any) => data.time !== undefined,
+        console.log({ newBoundary, lastCandleDate });
+        if (newBoundary < lastCandleDate) {
+            const filtered = parsedChartData?.chartData.filter(
+                (data: any) => data.time !== undefined,
+            );
+
+            if (filtered) {
+                const maxBoundary: any =
+                    d3.min(filtered, (d: any) => d.time) * 1000 -
+                    200 * parsedChartData?.period * 1000;
+
+                lastCandleDate.setTime(
+                    new Date(newBoundary).getTime() - 100 * parsedChartData?.period * 1000,
                 );
 
-                if (filtered) {
-                    const maxBoundary: any =
-                        d3.min(filtered, (d: any) => d.time) * 1000 -
-                        200 * parsedChartData?.period * 1000;
+                candleDomain = {
+                    lastCandleDate: parsedChartData?.chartData[0].time,
+                    domainBoundry:
+                        maxBoundary > lastCandleDate.getTime()
+                            ? maxBoundary
+                            : lastCandleDate.getTime(),
+                };
 
-                    date.setTime(
-                        new Date(
-                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
-                        ).getTime() -
-                            100 * parsedChartData?.period * 1000,
-                    );
-
-                    candleDomain = {
-                        lastCandleDate: parsedChartData?.chartData[0].time,
-                        domainBoundry: maxBoundary > date.getTime() ? maxBoundary : date.getTime(),
-                    };
-
-                    props.setCandleDomains(candleDomain);
-                }
+                props.setCandleDomains(candleDomain);
             }
         }
     };
@@ -1305,7 +1300,7 @@ export default function Chart(props: ChartData) {
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && parsedChartData !== undefined) {
-            let date: any | undefined = undefined;
+            let lastCandleDate: any | undefined = undefined;
             let clickedForLine = false;
             let zoomTimeout: any | undefined = undefined;
             let previousTouch: any | undefined = undefined;
@@ -1334,8 +1329,12 @@ export default function Chart(props: ChartData) {
                             d3.select(d3Container.current).style('cursor', 'grabbing');
                         }
 
-                        if (date === undefined) {
-                            date = parsedChartData?.chartData[0].date;
+                        if (lastCandleDate === undefined) {
+                            const filtered = parsedChartData?.chartData.filter(
+                                (data: any) => data.time,
+                            );
+
+                            lastCandleDate = d3.min(filtered, (d) => d.date);
                         }
 
                         parsedChartData.chartData[0].date = new Date(
@@ -1382,8 +1381,6 @@ export default function Chart(props: ChartData) {
                 .on('zoom', (event: any) => {
                     async function newDomains(parsedChartData: any) {
                         if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
-                            getNewCandleData(event, date, scaleData.xScale);
-
                             if (event.sourceEvent.type === 'wheel') {
                                 const dx = event.sourceEvent.deltaY / 2;
 
@@ -1395,6 +1392,11 @@ export default function Chart(props: ChartData) {
 
                                 const deltaX = linearX(dx);
                                 if (event.sourceEvent.shiftKey || event.sourceEvent.altKey) {
+                                    getNewCandleData(
+                                        new Date(domainX[0].getTime() + deltaX),
+                                        lastCandleDate,
+                                    );
+
                                     scaleData.xScale.domain([
                                         new Date(domainX[0].getTime() + deltaX),
                                         new Date(domainX[1].getTime() + deltaX),
@@ -1433,16 +1435,21 @@ export default function Chart(props: ChartData) {
                                                 ].date.getTime() -
                                                     parsedChartData.period * 1000 * 2
                                             ) {
+                                                const leftBoudnary = new Date(
+                                                    parsedChartData.chartData[
+                                                        lastXIndex + 1
+                                                    ].date.getTime() -
+                                                        parsedChartData.period * 500,
+                                                );
+
+                                                getNewCandleData(leftBoudnary, lastCandleDate);
+
                                                 scaleData.xScale.domain([
-                                                    new Date(
-                                                        parsedChartData.chartData[
-                                                            lastXIndex + 1
-                                                        ].date.getTime() -
-                                                            parsedChartData.period * 500,
-                                                    ),
+                                                    leftBoudnary,
                                                     new Date(domainX[1].getTime() + deltaX),
                                                 ]);
                                             } else {
+                                                getNewCandleData(newBoundary, lastCandleDate);
                                                 scaleData.xScale.domain([newBoundary, domainX[1]]);
                                             }
                                         } else {
@@ -1507,6 +1514,10 @@ export default function Chart(props: ChartData) {
                                 }
 
                                 if (deltaX) {
+                                    getNewCandleData(
+                                        new Date(domainX[0].getTime() + deltaX),
+                                        lastCandleDate,
+                                    );
                                     scaleData.xScale.domain([
                                         new Date(domainX[0].getTime() + deltaX),
                                         new Date(domainX[1].getTime() + deltaX),
@@ -1719,11 +1730,19 @@ export default function Chart(props: ChartData) {
                         const baseMovement = deltaX / (maxGap / minGap + 1);
 
                         if (gapBot < gapTop) {
+                            getNewCandleData(
+                                new Date(domainX[0].getTime() - baseMovement),
+                                lastCandleDate,
+                            );
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() - baseMovement),
                                 new Date(domainX[1].getTime() + baseMovement * (maxGap / minGap)),
                             ]);
                         } else {
+                            getNewCandleData(
+                                new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
+                                lastCandleDate,
+                            );
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
                                 new Date(domainX[1].getTime() + baseMovement),
