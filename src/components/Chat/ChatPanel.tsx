@@ -70,6 +70,7 @@ export default function ChatPanel(props: ChatProps) {
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [scrollDirection, setScrollDirection] = useState(String);
     const [notification, setNotification] = useState(0);
+    const [isDeleted, setIsDeleted] = useState(false);
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
@@ -179,6 +180,12 @@ export default function ChatPanel(props: ChatProps) {
     }, [room]);
 
     useEffect(() => {
+        if (isDeleted === true) {
+            getMsg();
+        }
+    }, [isDeleted]);
+
+    useEffect(() => {
         scrollToBottom();
         setNotification(0);
     }, [props.chatStatus]);
@@ -283,6 +290,8 @@ export default function ChatPanel(props: ChatProps) {
                             connectedAccountActive={address}
                             moderator={moderator}
                             room={room}
+                            isDeleted={isDeleted}
+                            setIsDeleted={setIsDeleted}
                         />
                         <hr />
                     </div>
