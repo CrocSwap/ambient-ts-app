@@ -9,7 +9,7 @@ import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
@@ -269,6 +269,8 @@ export default function RangesRow(props: propsIF) {
         </DefaultTooltip>
     );
 
+    const navigate = useNavigate();
+
     const walletWithTooltip = (
         <DefaultTooltip
             interactive
@@ -297,26 +299,20 @@ export default function RangesRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                // onClick={openDetailsModal}
+                onClick={() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: true,
+                        }),
+                    );
+                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                }}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
-                <NavLink
-                    onClick={() => {
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'lookupUserTxData',
-                                loadingStatus: true,
-                            }),
-                        );
-                    }}
-                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
-                >
-                    {/* <p>{ensName ? ensName : ownerId}</p> */}
-                    {userNameToDisplay}
-                    {/* <FiExternalLink size={'12px'} /> */}
-                </NavLink>
+                {userNameToDisplay}
             </li>
         </DefaultTooltip>
     );

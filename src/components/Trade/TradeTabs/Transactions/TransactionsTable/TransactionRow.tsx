@@ -6,7 +6,7 @@ import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuCompone
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
@@ -259,11 +259,14 @@ export default function TransactionRow(props: propsIF) {
         </DefaultTooltip>
     );
 
+    const navigate = useNavigate();
+
     const walletWithTooltip = (
         <DefaultTooltip
             interactive
             title={
                 <div>
+                    <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
                             dispatch(
@@ -275,7 +278,6 @@ export default function TransactionRow(props: propsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
-                        <p>{ensName ? ensName : ownerId}</p>
                         {'View Account' + 'ㅤ'}
                         <FiExternalLink size={'12px'} />
                     </NavLink>
@@ -287,31 +289,20 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                // onClick={openDetailsModal}
+                onClick={() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: true,
+                        }),
+                    );
+                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                }}
                 data-label='wallet'
                 className={usernameStyle}
-                style={
-                    userNameToDisplay !== 'You'
-                        ? { textTransform: 'lowercase', fontFamily: 'monospace' }
-                        : undefined
-                }
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
-                <NavLink
-                    onClick={() => {
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'lookupUserTxData',
-                                loadingStatus: true,
-                            }),
-                        );
-                    }}
-                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
-                >
-                    {/* <p>{ensName ? ensName : ownerId}</p> */}
-                    {userNameToDisplay}
-                    {/* <FiExternalLink size={'12px'} /> */}
-                </NavLink>
-                {/* {userNameToDisplay} */}
+                {userNameToDisplay}
             </li>
         </DefaultTooltip>
     );
