@@ -206,7 +206,9 @@ export default function Range(props: propsIF) {
         }
     };
 
-    const { tradeData, navigationMenu } = useTradeData();
+    const { tradeData, receiptData } = useAppSelector((state) => state);
+
+    const { navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -494,7 +496,6 @@ export default function Range(props: propsIF) {
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
-    const receiptData = useAppSelector((state) => state.receiptData);
 
     const sessionReceipts = receiptData.sessionReceipts;
 
