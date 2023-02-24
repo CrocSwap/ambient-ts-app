@@ -255,10 +255,14 @@ export default function Portfolio(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
-                if (newResolvedAddress) {
-                    setResolvedAddress(newResolvedAddress);
-                    dispatch(setResolvedAddressRedux(newResolvedAddress));
+                try {
+                    const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
+                    if (newResolvedAddress) {
+                        setResolvedAddress(newResolvedAddress);
+                        dispatch(setResolvedAddressRedux(newResolvedAddress));
+                    }
+                } catch (error) {
+                    window.location.reload();
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
