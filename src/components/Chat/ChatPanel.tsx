@@ -275,7 +275,7 @@ export default function ChatPanel(props: ChatProps) {
             id='chatmessage'
         >
             {messages &&
-                messages.map((item) => (
+                messages.map((item, i) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         <SentMessagePanel
                             isUserLoggedIn={isUserLoggedIn as boolean}
@@ -292,6 +292,8 @@ export default function ChatPanel(props: ChatProps) {
                             room={room}
                             isDeleted={isDeleted}
                             setIsDeleted={setIsDeleted}
+                            previousMessage={i === messages.length - 1 ? null : messages[i + 1]}
+                            nextMessage={i === 0 ? null : messages[i - 1]}
                         />
                         <hr />
                     </div>
