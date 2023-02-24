@@ -164,6 +164,8 @@ import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
+import { Provider } from '@ethersproject/providers';
+import { ethers } from 'ethers';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -432,59 +434,6 @@ export default function App() {
         }
     }, [provider]);
 
-    // function exposeProviderUrl(provider?: ethers.providers.Provider): string {
-    //     if (provider && 'connection' in provider) {
-    //         return (provider as ethers.providers.WebSocketProvider).connection?.url;
-    //     } else {
-    //         return '';
-    //     }
-    // }
-
-    // function exposeProviderChain(provider?: ethers.providers.Provider): number {
-    //     if (provider && 'network' in provider) {
-    //         return (provider as ethers.providers.WebSocketProvider).network?.chainId;
-    //     } else {
-    //         return -1;
-    //     }
-    // }
-
-    // const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
-    // useEffect(() => {
-    //     try {
-    //         // console.log('Init provider' + provider);
-    //         const url = exposeProviderUrl(provider);
-    //         const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
-
-    //         // console.log('Exposed URL ' + url);
-
-    //         if (isAuthenticated) {
-    //             if (provider && url === 'metamask' && !metamaskLocked && onChain) {
-    //                 return;
-    //             } else if (provider && url === 'metamask' && metamaskLocked) {
-    //                 clickLogout();
-    //             } else if (
-    //                 window.ethereum &&
-    //                 !metamaskLocked &&
-    //                 validateChain(window.ethereum.chainId)
-    //             ) {
-    //                 console.log('use metamask as provider');
-    //                 // console.log(window.ethereum.chainId)
-    //                 const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-    //                 setProvider(metamaskProvider);
-    //             }
-    //         } else if (!provider || !onChain) {
-    //             // console.log('use infura as provider');
-    //             const chainSpec = lookupChain(chainData.chainId);
-    //             const url = chainSpec.nodeUrl;
-    //             // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-    //             console.log('setting up new provider: ' + url);
-    //             setProvider(new ethers.providers.JsonRpcProvider(url));
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
-
     useEffect(() => {
         console.log('resetting token data because chainId changed');
         dispatch(resetTokens(chainData.chainId));
@@ -573,6 +522,20 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
     );
+
+    const [mainnetProvider, setMainnetProvider] = useState<Provider | undefined>();
+
+    useEffect(() => {
+        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
+            ? process.env.REACT_APP_INFURA_KEY_2
+            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
+
+        const mainnetProvider = new ethers.providers.JsonRpcProvider(
+            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
+        );
+        console.log({ mainnetProvider });
+        setMainnetProvider(mainnetProvider);
+    }, []);
 
     useEffect(() => {
         if (lastNewHeadMessage !== null) {
@@ -3132,6 +3095,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
@@ -3190,6 +3154,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
@@ -3266,6 +3231,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
