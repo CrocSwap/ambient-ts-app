@@ -98,6 +98,9 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
 }
@@ -580,6 +583,9 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
         showSidebar: showSidebar,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
+
+        isTutorialMode: props.isTutorialMode,
+        setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
     };
 

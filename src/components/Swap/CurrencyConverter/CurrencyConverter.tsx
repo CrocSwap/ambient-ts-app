@@ -674,53 +674,55 @@ export default function CurrencyConverter(props: propsIF) {
                     </IconWithTooltip>
                 )}
             </div>
-            <CurrencySelector
-                provider={provider}
-                sellQtyString={sellQtyString}
-                setSellQtyString={setSellQtyString}
-                setBuyQtyString={setBuyQtyString}
-                buyQtyString={buyQtyString}
-                isUserLoggedIn={isUserLoggedIn}
-                tokenBQtyLocal={tokenBQtyLocal}
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                chainId={chainId}
-                direction={isLiq ? '' : 'To:'}
-                fieldId='buy'
-                tokenAorB={'B'}
-                userHasEnteredAmount={userHasEnteredAmount}
-                handleChangeEvent={handleTokenBChangeEvent}
-                tokenABalance={tokenABalance}
-                tokenBBalance={tokenBBalance}
-                tokenADexBalance={tokenADexBalance}
-                tokenBDexBalance={tokenBDexBalance}
-                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
-                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                reverseTokens={reverseTokens}
-                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                gasPriceInGwei={gasPriceInGwei}
-                isSwapCopied={isSwapCopied}
-                importedTokensPlus={importedTokensPlus}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
-                getRecentTokens={getRecentTokens}
-                addRecentToken={addRecentToken}
-                outputTokens={outputTokens}
-                validatedInput={validatedInput}
-                setInput={setInput}
-                searchType={searchType}
-                acknowledgeToken={acknowledgeToken}
-                openGlobalPopup={openGlobalPopup}
-            />
+            <div id='swap_currency_converter'>
+                <CurrencySelector
+                    provider={provider}
+                    sellQtyString={sellQtyString}
+                    setSellQtyString={setSellQtyString}
+                    setBuyQtyString={setBuyQtyString}
+                    buyQtyString={buyQtyString}
+                    isUserLoggedIn={isUserLoggedIn}
+                    tokenBQtyLocal={tokenBQtyLocal}
+                    tokenPair={tokenPair}
+                    tokensBank={tokensBank}
+                    setImportedTokens={setImportedTokens}
+                    chainId={chainId}
+                    direction={isLiq ? '' : 'To:'}
+                    fieldId='buy'
+                    tokenAorB={'B'}
+                    userHasEnteredAmount={userHasEnteredAmount}
+                    handleChangeEvent={handleTokenBChangeEvent}
+                    tokenABalance={tokenABalance}
+                    tokenBBalance={tokenBBalance}
+                    tokenADexBalance={tokenADexBalance}
+                    tokenBDexBalance={tokenBDexBalance}
+                    tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                    tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                    tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                    tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    reverseTokens={reverseTokens}
+                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                    activeTokenListsChanged={activeTokenListsChanged}
+                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    gasPriceInGwei={gasPriceInGwei}
+                    isSwapCopied={isSwapCopied}
+                    importedTokensPlus={importedTokensPlus}
+                    verifyToken={verifyToken}
+                    getTokensByName={getTokensByName}
+                    getTokenByAddress={getTokenByAddress}
+                    getRecentTokens={getRecentTokens}
+                    addRecentToken={addRecentToken}
+                    outputTokens={outputTokens}
+                    validatedInput={validatedInput}
+                    setInput={setInput}
+                    searchType={searchType}
+                    acknowledgeToken={acknowledgeToken}
+                    openGlobalPopup={openGlobalPopup}
+                />
+            </div>
         </section>
     );
 }

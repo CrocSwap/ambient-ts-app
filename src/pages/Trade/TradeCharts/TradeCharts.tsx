@@ -57,6 +57,8 @@ import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
 import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 import { useLocation } from 'react-router-dom';
+import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 
 // interface for React functional component props
 interface propsIF {
@@ -116,6 +118,9 @@ interface propsIF {
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
 }
 
@@ -390,11 +395,14 @@ export default function TradeCharts(props: propsIF) {
     );
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <div onClick={() => setFullScreenChart(!fullScreenChart)}>
+            <div
+                onClick={() => setFullScreenChart(!fullScreenChart)}
+                id='trade_chart_full_screen_button'
+            >
                 <AiOutlineFullscreen size={20} />
             </div>
             <DefaultTooltip interactive title={saveImageContent}>
-                <div>
+                <div id='trade_chart_save_image'>
                     <AiOutlineCamera size={20} />
                 </div>
             </DefaultTooltip>
@@ -460,7 +468,7 @@ export default function TradeCharts(props: propsIF) {
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
-            <div className={styles.chart_overlay_container}>
+            <div className={styles.chart_overlay_container} id='trade_charts_time_frame'>
                 <TimeFrame
                     activeTimeFrame={activeTimeFrame}
                     setActiveTimeFrame={setActiveTimeFrame}
@@ -473,6 +481,7 @@ export default function TradeCharts(props: propsIF) {
                     justifyContent: 'center',
                     alignItems: 'center',
                 }}
+                id='trade_charts_volume_tvl'
             >
                 <VolumeTVLFee
                     setShowVolume={setShowVolume}
@@ -489,6 +498,7 @@ export default function TradeCharts(props: propsIF) {
                     justifyContent: 'end',
                     alignItems: 'end',
                 }}
+                id='trade_charts_curve_depth'
             >
                 <CurveDepth setLiqMode={setLiqMode} liqMode={liqMode} />
             </div>
@@ -547,6 +557,8 @@ export default function TradeCharts(props: propsIF) {
         return () => clearTimeout(timer);
     }, []);
 
+    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
+
     return (
         <div
             className={styles.main_container_chart}
@@ -558,6 +570,16 @@ export default function TradeCharts(props: propsIF) {
         >
             {mainChartSettingsContent}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
+                )}
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
@@ -633,6 +655,11 @@ export default function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={tradeChartTutorialSteps}
+            />
         </div>
     );
 }

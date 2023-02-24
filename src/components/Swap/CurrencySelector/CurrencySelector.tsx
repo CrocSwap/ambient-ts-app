@@ -521,7 +521,7 @@ export default function CurrencySelector(props: propsIF) {
         <div className={styles.swapbox}>
             <div className={styles.direction}> </div>
             <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>
+                <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity
                         value={tokenAorB === 'A' ? sellQtyString : buyQtyString}
                         thisToken={thisToken}
@@ -541,6 +541,7 @@ export default function CurrencySelector(props: propsIF) {
                 <div
                     className={`${styles.token_select} ${isSwapCopied && styles.pulse_animation}`}
                     onClick={openTokenModal}
+                    id='swap_token_selector'
                 >
                     {thisToken.logoURI ? (
                         <img
