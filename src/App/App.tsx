@@ -78,7 +78,6 @@ import {
     // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
     setLimitTick,
@@ -89,6 +88,7 @@ import {
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
     candleDomain,
+    setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -164,6 +164,9 @@ import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
+import { Provider } from '@ethersproject/providers';
+import { ethers } from 'ethers';
+// import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -196,6 +199,7 @@ startMoralis();
 export default function App() {
     // console.log('rendering app');
     const { disconnect } = useDisconnect();
+    const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     const { address: account, isConnected } = useAccount();
 
@@ -207,6 +211,9 @@ export default function App() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
+
+    const ticksInParams =
+        location.pathname.includes('lowTick') && location.pathname.includes('highTick');
 
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
@@ -427,59 +434,6 @@ export default function App() {
         }
     }, [provider]);
 
-    // function exposeProviderUrl(provider?: ethers.providers.Provider): string {
-    //     if (provider && 'connection' in provider) {
-    //         return (provider as ethers.providers.WebSocketProvider).connection?.url;
-    //     } else {
-    //         return '';
-    //     }
-    // }
-
-    // function exposeProviderChain(provider?: ethers.providers.Provider): number {
-    //     if (provider && 'network' in provider) {
-    //         return (provider as ethers.providers.WebSocketProvider).network?.chainId;
-    //     } else {
-    //         return -1;
-    //     }
-    // }
-
-    // const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
-    // useEffect(() => {
-    //     try {
-    //         // console.log('Init provider' + provider);
-    //         const url = exposeProviderUrl(provider);
-    //         const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
-
-    //         // console.log('Exposed URL ' + url);
-
-    //         if (isAuthenticated) {
-    //             if (provider && url === 'metamask' && !metamaskLocked && onChain) {
-    //                 return;
-    //             } else if (provider && url === 'metamask' && metamaskLocked) {
-    //                 clickLogout();
-    //             } else if (
-    //                 window.ethereum &&
-    //                 !metamaskLocked &&
-    //                 validateChain(window.ethereum.chainId)
-    //             ) {
-    //                 console.log('use metamask as provider');
-    //                 // console.log(window.ethereum.chainId)
-    //                 const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-    //                 setProvider(metamaskProvider);
-    //             }
-    //         } else if (!provider || !onChain) {
-    //             // console.log('use infura as provider');
-    //             const chainSpec = lookupChain(chainData.chainId);
-    //             const url = chainSpec.nodeUrl;
-    //             // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-    //             console.log('setting up new provider: ' + url);
-    //             setProvider(new ethers.providers.JsonRpcProvider(url));
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
-
     useEffect(() => {
         console.log('resetting token data because chainId changed');
         dispatch(resetTokens(chainData.chainId));
@@ -568,6 +522,20 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
     );
+
+    const [mainnetProvider, setMainnetProvider] = useState<Provider | undefined>();
+
+    useEffect(() => {
+        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
+            ? process.env.REACT_APP_INFURA_KEY_2
+            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
+
+        const mainnetProvider = new ethers.providers.JsonRpcProvider(
+            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
+        );
+        console.log({ mainnetProvider });
+        setMainnetProvider(mainnetProvider);
+    }, []);
 
     useEffect(() => {
         if (lastNewHeadMessage !== null) {
@@ -872,12 +840,9 @@ export default function App() {
         // console.log('resetting limit');
         dispatch(setLimitTick(undefined));
         dispatch(setPrimaryQuantityRange(''));
-        dispatch(setSimpleRangeWidth(10));
-        dispatch(setAdvancedMode(false));
+        // dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-        const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
-        if (sliderInput) sliderInput.value = '10';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     useEffect(() => {
@@ -913,6 +878,17 @@ export default function App() {
         })();
     }, [isServerEnabled, JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
+    const resetAdvancedTicksIfNotCopy = () => {
+        if (!ticksInParams) {
+            dispatch(setAdvancedLowTick(0));
+            dispatch(setAdvancedHighTick(0));
+            dispatch(setAdvancedMode(false));
+            console.log('resetting to 10');
+            dispatch(setSimpleRangeWidth(10));
+            const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+            if (sliderInput) sliderInput.value = '10';
+        }
+    };
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams && crocEnv) {
@@ -932,8 +908,9 @@ export default function App() {
 
             // reset rtk values for user specified range in ticks
             console.log('resetting advanced ticks');
-            dispatch(setAdvancedLowTick(0));
-            dispatch(setAdvancedHighTick(0));
+
+            // reset advanced ticks if token pair change not the result of a 'copy trade'
+            resetAdvancedTicksIfNotCopy();
 
             const tokenAAddress = tokenPair?.dataTokenA?.address;
             const tokenBAddress = tokenPair?.dataTokenB?.address;
@@ -2374,6 +2351,10 @@ export default function App() {
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
+        getTokenByAddress: getTokenByAddress,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2431,6 +2412,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // props for <Swap/> React element on trade route
@@ -2480,6 +2464,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // props for <Limit/> React element on trade route
@@ -2536,6 +2523,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('limit'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // props for <Range/> React element
@@ -2597,6 +2587,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('range'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     function toggleSidebar() {
@@ -2704,6 +2697,10 @@ export default function App() {
     const [imageData, setImageData] = useState<string[]>([]);
 
     useEffect(() => {
+        dispatch(resetUserGraphData());
+    }, [account]);
+
+    useEffect(() => {
         (async () => {
             if (account) {
                 // console.log('fetching NFTs belonging to connected user');
@@ -2760,12 +2757,10 @@ export default function App() {
         : 'content-container';
 
     const defaultUrlParams = {
-        swap: '/swap/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
-        // swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-        market: '/trade/market/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
-        // market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-        limit: '/trade/limit/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
-        range: '/trade/range/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
+        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
+        market: `/trade/market/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };
 
     return (
@@ -2776,8 +2771,6 @@ export default function App() {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
-                {/* {currentLocation == '/' && <PhishingWarning />} */}
-
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
@@ -2853,10 +2846,6 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     isCandleSelected={isCandleSelected}
                                     setIsCandleSelected={setIsCandleSelected}
-                                    // handleTxCopiedClick={handleTxCopiedClick}
-                                    // handleOrderCopiedClick={handleOrderCopiedClick}
-                                    // handleRangeCopiedClick={handleRangeCopiedClick}
-
                                     fullScreenChart={fullScreenChart}
                                     setFullScreenChart={setFullScreenChart}
                                     fetchingCandle={fetchingCandle}
@@ -2871,6 +2860,8 @@ export default function App() {
                                     seRescaleRangeBoundariesWithSlider={
                                         seRescaleRangeBoundariesWithSlider
                                     }
+                                    isTutorialMode={isTutorialMode}
+                                    setIsTutorialMode={setIsTutorialMode}
                                     setCandleDomains={setCandleDomains}
                                 />
                             }
@@ -3104,6 +3095,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
@@ -3162,6 +3154,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
@@ -3238,6 +3231,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />

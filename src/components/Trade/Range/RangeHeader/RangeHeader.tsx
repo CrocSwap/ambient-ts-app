@@ -68,6 +68,7 @@ export default function RangeHeader(props: propsIF) {
             <div
                 className={styles.share_button}
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                id='range_share_button'
             >
                 <AiOutlineShareAlt />
             </div>
@@ -80,6 +81,7 @@ export default function RangeHeader(props: propsIF) {
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
                     className={`${styles.settings_container} ${styles.settings_icon}`}
+                    id='range_settings_button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
