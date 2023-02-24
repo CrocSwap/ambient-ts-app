@@ -541,10 +541,12 @@ export default function Limit(props: propsIF) {
             console.log(tx.hash);
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
+            setIsWaitingForWallet(false);
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         const newLimitOrderChangeCacheEndpoint =

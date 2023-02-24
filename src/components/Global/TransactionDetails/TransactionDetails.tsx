@@ -94,7 +94,11 @@ export default function TransactionDetails(props: propsIF) {
             {showShareComponent ? (
                 shareComponent
             ) : (
-                <TransactionDetailsSimplify account={account} tx={tx} />
+                <TransactionDetailsSimplify
+                    account={account}
+                    tx={tx}
+                    isOnPortfolioPage={isOnPortfolioPage}
+                />
             )}
         </div>
     );

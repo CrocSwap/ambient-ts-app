@@ -17,9 +17,10 @@ interface ItemRowPropsIF {
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     account: string;
+    isOnPortfolioPage: boolean;
 }
 export default function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { account, tx } = props;
+    const { account, tx, isOnPortfolioPage } = props;
     const {
         userNameToDisplay,
         txHashTruncated,
@@ -27,13 +28,14 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        usdValue,
+        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
+        txUsdValueLocaleString,
 
-        // isDenomBase,
+        isDenomBase,
         // baseTokenLogo,
         // quoteTokenLogo,
         // lowPriceDisplay,
@@ -51,16 +53,20 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
-        // truncatedLowDisplayPriceDenomByMoneyness,
-        // truncatedHighDisplayPriceDenomByMoneyness,
-        // truncatedDisplayPriceDenomByMoneyness,
-        // isBaseTokenMoneynessGreaterOrEqual,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        truncatedDisplayPriceDenomByMoneyness,
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
 
-    console.log({ truncatedDisplayPrice });
+    // console.log({ truncatedDisplayPrice });
 
-    console.log({ tx });
+    // console.log({ tx });
+
+    const isAmbient = tx.positionType === 'ambient';
 
     const isBuy = tx.isBid || tx.isBuy;
 
@@ -206,7 +212,23 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
 
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
-            content: isSwap ? truncatedDisplayPrice : truncatedLowDisplayPrice,
+            content: isSwap
+                ? isOnPortfolioPage
+                    ? isBaseTokenMoneynessGreaterOrEqual
+                        ? `${baseTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
+                        : `${quoteTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
+                    : isDenomBase
+                    ? `${quoteTokenCharacter}${truncatedDisplayPrice} / ${baseTokenSymbol}`
+                    : `${baseTokenCharacter}${truncatedDisplayPrice} / ${quoteTokenSymbol}`
+                : isOnPortfolioPage
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `${baseTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
+                    : `${quoteTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
+                : isAmbient
+                ? '0.00'
+                : isDenomBase
+                ? `${quoteTokenCharacter}${truncatedLowDisplayPrice} / ${baseTokenSymbol}`
+                : `${baseTokenCharacter}${truncatedLowDisplayPrice} / ${quoteTokenSymbol}`,
             explanation: isSwap ? 'The transaction price' : 'The low price boundary',
         },
 
@@ -222,19 +244,28 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     if (isSwap) {
         infoContent.push({
             title: 'Value ',
-            content: usdValue,
+            content: txUsdValueLocaleString,
             explanation: 'The appoximate US dollar value of the transaction',
         });
     } else {
         infoContent.push(
             {
                 title: 'High Price Boundary',
-                content: truncatedHighDisplayPrice,
+                content: isOnPortfolioPage
+                    ? isBaseTokenMoneynessGreaterOrEqual
+                        ? `${baseTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
+                        : `${quoteTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
+                    : isAmbient
+                    ? '∞'
+                    : isDenomBase
+                    ? `${quoteTokenCharacter}${truncatedHighDisplayPrice} / ${baseTokenSymbol}`
+                    : `${baseTokenCharacter}${truncatedHighDisplayPrice} / ${quoteTokenSymbol}`,
                 explanation: 'The high price boundary',
             },
             {
                 title: 'Value ',
-                content: usdValue,
+                content: txUsdValueLocaleString,
+
                 explanation: 'The appoximate US dollar value of the transaction',
             },
         );

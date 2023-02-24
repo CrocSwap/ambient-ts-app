@@ -81,15 +81,20 @@ export default function SidebarAccordion(props: propsIF) {
     //     </div>
     // )
     // console.log(props.openAllDefault);
-    function handleAccordionOpen() {
-        setIsOpen(!isOpen);
-        setShowSidebar(true);
+    function handleAccordionClick() {
+        if (showSidebar) {
+            setIsOpen(!isOpen);
+        } else {
+            setIsOpen(true);
+            setShowSidebar(true);
+        }
     }
 
     useEffect(() => {
-        setIsOpen(false);
         if (props.openAllDefault) {
             setIsOpen(true);
+        } else {
+            setIsOpen(false);
         }
     }, [props.openAllDefault]);
 
@@ -110,7 +115,7 @@ export default function SidebarAccordion(props: propsIF) {
                 className={styles.sidebar_item}
                 onClick={
                     // showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar
-                    () => handleAccordionOpen()
+                    () => handleAccordionClick()
                 }
             >
                 <div>

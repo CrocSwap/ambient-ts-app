@@ -88,6 +88,7 @@ import {
     setSimpleRangeWidth,
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
+    candleDomain,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -132,7 +133,6 @@ import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-// import { getTransactionData } from './functions/getTransactionData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
@@ -580,7 +580,7 @@ export default function App() {
                     if (lastBlockNumberHex) {
                         const newBlockNum = parseInt(lastBlockNumberHex);
                         if (lastBlockNumber !== newBlockNum) {
-                            console.log('setting new block number');
+                            // console.log('setting new block number');
                             setLastBlockNumber(parseInt(lastBlockNumberHex));
                             dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                         }
@@ -724,18 +724,18 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
+    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(() => Math.floor(lastBlockNumber / 8), [lastBlockNumber]);
     // check for token balances every eight blocks
 
     const fetchLiquidity = async () => {
-        if (!baseTokenAddress || !quoteTokenAddress || !chainData || !everySecondBlock) return;
+        if (!baseTokenAddress || !quoteTokenAddress || !chainData || !lastBlockNumber) return;
         cachedLiquidityQuery(
             chainData.chainId,
             baseTokenAddress.toLowerCase(),
             quoteTokenAddress.toLowerCase(),
             chainData.poolIndex,
-            everySecondBlock,
+            lastBlockNumber,
         )
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
@@ -745,7 +745,7 @@ export default function App() {
 
     useEffect(() => {
         fetchLiquidity();
-    }, [everySecondBlock]);
+    }, [lastBlockNumber]);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
@@ -1215,7 +1215,7 @@ export default function App() {
 
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
-                        tokensOnActiveLists: tokensOnActiveLists,
+                        tokenList: searchableTokens,
                         base: sortedTokens[0],
                         quote: sortedTokens[1],
                         poolIdx: chainData.poolIndex,
@@ -1470,7 +1470,11 @@ export default function App() {
         isServerEnabled && mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
-    const candleDomains = tradeData.candleDomains;
+    const [candleDomains, setCandleDomains] = useState<candleDomain>({
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    });
+
     const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
     const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
@@ -1694,7 +1698,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokensOnActiveLists);
+                        return getTransactionData(tx, searchableTokens);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -2043,7 +2047,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    tokensOnActiveLists: tokensOnActiveLists,
+                    tokenList: searchableTokens,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -2719,7 +2723,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (account) {
-                console.log('fetching NFTs beloning to connected user');
+                // console.log('fetching NFTs belonging to connected user');
                 const imageLocalURLs = await getNFTs(account);
                 if (imageLocalURLs) setImageData(imageLocalURLs);
             }
@@ -2812,6 +2816,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    tokenList={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     pool={pool}
                                     // poolPriceTick={poolPriceTick}
@@ -2885,6 +2890,7 @@ export default function App() {
                                     }
                                     isTutorialMode={isTutorialMode}
                                     setIsTutorialMode={setIsTutorialMode}
+                                    setCandleDomains={setCandleDomains}
                                 />
                             }
                         >
