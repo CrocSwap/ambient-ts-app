@@ -21,7 +21,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
-    mainnetProvider: ethers.providers.WebSocketProvider;
+    mainnetProvider: ethers.providers.WebSocketProvider | undefined;
     connectedAccount: string;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
@@ -97,7 +97,8 @@ export default function ExchangeBalance(props: propsIF) {
                 sendToAddress &&
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
-                sendToAddress.startsWith('0x')
+                sendToAddress.startsWith('0x') &&
+                mainnetProvider
             ) {
                 try {
                     const ensName = await fetchAddress(mainnetProvider, sendToAddress, '0x1');
