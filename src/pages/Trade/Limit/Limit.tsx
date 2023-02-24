@@ -46,6 +46,8 @@ import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 import { useUrlParams } from '../../InitPool/useUrlParams';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
+import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 
 interface propsIF {
     account: string | undefined;
@@ -101,6 +103,9 @@ interface propsIF {
     ) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -536,10 +541,12 @@ export default function Limit(props: propsIF) {
             console.log(tx.hash);
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
+            setIsWaitingForWallet(false);
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         const newLimitOrderChangeCacheEndpoint =
@@ -848,10 +855,21 @@ export default function Limit(props: propsIF) {
         setResetLimitTick: setResetLimitTick,
         openGlobalPopup: openGlobalPopup,
     };
+    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
     return (
         <section className={styles.scrollable_container}>
+            {props.isTutorialMode && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
+                    >
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}{' '}
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
                     chainId={chainId}
@@ -909,6 +927,11 @@ export default function Limit(props: propsIF) {
                 )}
             </ContentContainer>
             {confirmLimitModalOrNull}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={limitTutorialSteps}
+            />
         </section>
     );
 }

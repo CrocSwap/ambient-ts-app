@@ -34,6 +34,8 @@ import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 import { FiCopy } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
+import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
+import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -87,6 +89,9 @@ interface propsIF {
     acknowledgeToken: (tkn: TokenIF) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Swap(props: propsIF) {
@@ -133,6 +138,8 @@ export default function Swap(props: propsIF) {
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
+        // isTutorialMode,
+        // setIsTutorialMode
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -328,7 +335,7 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
-            setNewSwapTransactionHash('');
+            // setNewSwapTransactionHash('');
         }
     }
 
@@ -640,12 +647,25 @@ export default function Swap(props: propsIF) {
     };
 
     const handleSwapButtonClickWithBypass = () => {
+        console.log('setting to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
 
+    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
+            {props.isTutorialMode && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
+                    >
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer
                     isOnTradeRoute={isOnTradeRoute}
@@ -717,6 +737,11 @@ export default function Swap(props: propsIF) {
                 {confirmSwapModalOrNull}
                 {relativeModalOrNull}
             </div>
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={swapTutorialSteps}
+            />
         </section>
     );
 }

@@ -21,6 +21,8 @@
         "framer-motion": "4.1.17",
         "i18next": "^21.8.16",
         "i18next-browser-languagedetector": "^6.1.4",
+        "intro.js": "^6.0.0",
+        "intro.js-react": "^0.7.1",
         "moment": "^2.29.4",
         "moralis": "^2.11.0",
         "numbro": "^2.3.6",

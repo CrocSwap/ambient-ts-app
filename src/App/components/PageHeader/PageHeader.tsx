@@ -39,6 +39,8 @@ interface HeaderPropsIF {
     openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
 
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
@@ -81,7 +83,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
         // isUserLoggedIn,
         chainData,
-        getTokenByAddress
+        getTokenByAddress,
+        isTutorialMode,
+        setIsTutorialMode,
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -171,6 +175,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         theme: theme,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // End of Page Header Functions
@@ -189,10 +196,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
-    useUrlParamsNew(
-        chainId,
-        getTokenByAddress
-    );
+    useUrlParamsNew(chainId, getTokenByAddress);
 
     const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);

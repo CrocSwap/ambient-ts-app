@@ -165,7 +165,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             : addPoolToFaves(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
 
     const favButton = (
-        <button className={styles.favorite_button} onClick={handleFavButton}>
+        <button className={styles.favorite_button} onClick={handleFavButton} id='trade_fav_button'>
             {
                 <svg
                     width={smallScrenView ? '20px' : '30px'}
@@ -270,6 +270,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             >
                 <div
                     className={styles.tokens_images}
+                    id='trade_token_pair'
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
                     {topTokenLogo ? (

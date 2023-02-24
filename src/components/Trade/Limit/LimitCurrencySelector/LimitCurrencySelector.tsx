@@ -160,6 +160,7 @@ export default function LimitCurrencySelector(props: propsIF) {
         <div
             className={`${styles.token_select} ${isOrderCopied && styles.pulse_animation}`}
             onClick={openTokenModal}
+            id='limit_token_selector'
         >
             {thisToken.logoURI ? (
                 <img
@@ -436,7 +437,7 @@ export default function LimitCurrencySelector(props: propsIF) {
             <span className={styles.direction}> </span>
             {/* <span className={styles.direction}>{direction}</span> */}
             <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>
+                <div className={styles.swap_input} id='limit_sell_qty'>
                     <LimitCurrencyQuantity
                         value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
                         thisToken={thisToken}

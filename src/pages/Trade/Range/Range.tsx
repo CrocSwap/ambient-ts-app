@@ -61,6 +61,8 @@ import RangeShareControl from '../../../components/Trade/Range/RangeShareControl
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
+import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { rangeTutorialSteps, rangeTutorialStepsAdvanced } from '../../../utils/tutorial/Range';
 
 interface propsIF {
     account: string | undefined;
@@ -119,6 +121,9 @@ interface propsIF {
     ) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Range(props: propsIF) {
@@ -848,10 +853,12 @@ export default function Range(props: propsIF) {
                   ));
             setNewRangeTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            setIsWaitingForWallet(false);
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
@@ -1382,8 +1389,21 @@ export default function Range(props: propsIF) {
     );
 
     // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
+    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
+
     return (
         <section data-testid={'range'} className={styles.scrollable_container}>
+            {props.isTutorialMode && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
+                    >
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}
+
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     chainId={chainId}
@@ -1431,6 +1451,11 @@ export default function Range(props: propsIF) {
                 )}
             </ContentContainer>
             {confirmSwapModalOrNull}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={!tradeData.advancedMode ? rangeTutorialStepsAdvanced : rangeTutorialSteps}
+            />
         </section>
     );
 }

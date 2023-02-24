@@ -7,7 +7,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
@@ -216,6 +216,7 @@ export default function OrderRow(props: propsIF) {
             </li>
         </DefaultTooltip>
     );
+    const navigate = useNavigate();
 
     const walletWithTooltip = (
         <DefaultTooltip
@@ -245,26 +246,20 @@ export default function OrderRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                // onClick={openDetailsModal}
+                onClick={() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: true,
+                        }),
+                    );
+                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                }}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
-                <NavLink
-                    onClick={() => {
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'lookupUserTxData',
-                                loadingStatus: true,
-                            }),
-                        );
-                    }}
-                    to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
-                >
-                    {/* <p>{ensName ? ensName : ownerId}</p> */}
-                    {userNameToDisplay}
-                    {/* <FiExternalLink size={'12px'} /> */}
-                </NavLink>
+                {userNameToDisplay}
             </li>
         </DefaultTooltip>
     );
@@ -506,7 +501,26 @@ export default function OrderRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
+                <li
+                    data-label='id'
+                    onClick={() => {
+                        if (!isOnPortfolioPage) {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                            navigate(
+                                `/${
+                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                                }`,
+                            );
+                        } else {
+                            openDetailsModal();
+                        }
+                    }}
+                >
                     <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}
