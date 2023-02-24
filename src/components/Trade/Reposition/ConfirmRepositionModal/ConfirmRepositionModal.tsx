@@ -12,6 +12,7 @@ import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConf
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmRepositionModalProps {
     onClose: () => void;
@@ -46,6 +47,8 @@ interface ConfirmRepositionModalProps {
     isDenomBase: boolean;
     isTokenABase: boolean;
     isPositionInRange: boolean;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
@@ -81,6 +84,8 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
         isTokenABase,
         isPositionInRange,
         // txErrorMessage,
+        bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
     // const tokenA = tokenPair.dataTokenA;
@@ -242,11 +247,11 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
             {rangeHeader}
             {tokenAmountDisplay}
             {selectedRangeOrNull}
-            {/* <ConfirmationModalControl
+            <ConfirmationModalControl
                 bypassConfirm={bypassConfirm}
                 toggleBypassConfirm={toggleBypassConfirm}
-                toggleFor='range'
-            /> */}
+                toggleFor='repo'
+            />
         </>
     );
 

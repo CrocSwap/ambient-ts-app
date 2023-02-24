@@ -15,11 +15,16 @@ interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     isRangeCopied: boolean;
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // React functional component
 export default function RangeWidth(props: RangeWidthPropsIF) {
-    const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied } = props;
+    const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied, openGlobalPopup } = props;
 
     const dispatch = useAppDispatch();
 
@@ -76,9 +81,34 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 >
                     Ambient
                 </button>
-                <AiOutlineInfoCircle color='#ffffff' />
+                <div
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>Ambient Range width percentage explanation goes here</div>,
+                            'Ambient Range Width',
+                            'right',
+                        )
+                    }
+                >
+                    <AiOutlineInfoCircle color='#ffffff' />
+                </div>
             </div>
         </>
+    );
+
+    const rangeWidthTooltip = (
+        <div
+            style={{ margin: '0 8px', cursor: 'pointer' }}
+            onClick={() =>
+                openGlobalPopup(
+                    <div>Range width percentage explanation goes here</div>,
+                    'Range Width',
+                    'right',
+                )
+            }
+        >
+            <AiOutlineInfoCircle size={17} />
+        </div>
     );
 
     return (
@@ -92,6 +122,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     id='percentage-output'
                 >
                     {rangeWidthPercentage === 100 ? 'Ambient' : '± ' + rangeWidthPercentage + '%'}
+                    {rangeWidthTooltip}
                 </span>
                 <div className={styles.range_width_input}>
                     <input

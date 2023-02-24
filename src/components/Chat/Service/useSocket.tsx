@@ -8,8 +8,7 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const useSocket = (room: any) => {
+const useSocket = (room: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -17,9 +16,11 @@ const useSocket = (room: any) => {
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
 
+    // console.log('running useSocket');
+
     useEffect(() => {
         const roomId = room;
-
+        console.log('running chat socket connection for new room');
         socketRef.current = io(host, { query: { roomId } });
         socketRef.current.on('connection');
 
@@ -43,6 +44,7 @@ const useSocket = (room: any) => {
     }, [room]);
 
     async function getMsg() {
+        // console.log('running getMsg');
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });

@@ -9,7 +9,7 @@ import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
@@ -40,6 +40,7 @@ interface propsIF {
     account: string;
     lastBlockNumber: number;
     showSidebar: boolean;
+    showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
     // blockExplorer: string | undefined;
@@ -61,10 +62,11 @@ export default function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
-        showSidebar,
+        // showSidebar,
         account,
         ipadView,
         showColumns,
+        showPair,
         isShowAllEnabled,
         position,
         currentPositionActive,
@@ -267,6 +269,8 @@ export default function RangesRow(props: propsIF) {
         </DefaultTooltip>
     );
 
+    const navigate = useNavigate();
+
     const walletWithTooltip = (
         <DefaultTooltip
             interactive
@@ -295,7 +299,15 @@ export default function RangesRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                onClick={() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: true,
+                        }),
+                    );
+                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                }}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
@@ -351,21 +363,37 @@ export default function RangesRow(props: propsIF) {
 
     const tip = pair.join('\n');
 
+    const tradeLinkPath =
+        '/trade/range/' +
+        'chain=' +
+        position.chainId +
+        '&tokenA=' +
+        position.quote +
+        '&tokenB=' +
+        position.base;
+
     const tokenPair = (
         <DefaultTooltip
             interactive
             title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={150}
             leaveDelay={200}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
-                <p>
-                    {' '}
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                <NavLink
+                    // onClick={() => {
+                    //     console.log({ tx });
+                    //     console.log({ tradeLinkPath });
+                    // }}
+                    to={tradeLinkPath}
+                >
+                    <p>
+                        {baseTokenSymbol} / {quoteTokenSymbol}
+                    </p>
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -514,10 +542,11 @@ export default function RangesRow(props: propsIF) {
             }
             id={positionDomId}
             ref={currentPositionActive ? activePositionRef : null}
+            style={{ cursor: 'pointer' }}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
-            {isOnPortfolioPage && !showColumns && !showSidebar && tokenPair}
+            {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -679,6 +708,7 @@ export default function RangesRow(props: propsIF) {
                 <RangesMenu
                     {...rangeMenuProps}
                     showSidebar={props.showSidebar}
+                    isEmpty={position.totalValueUSD === 0}
                     showHighlightedButton={showHighlightedButton}
                 />
             </li>

@@ -6,7 +6,7 @@ import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuCompone
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
@@ -29,7 +29,7 @@ interface propsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
-    desktopView: boolean;
+    showPair: boolean;
     view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
@@ -59,8 +59,8 @@ export default function TransactionRow(props: propsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
-        desktopView,
-        showSidebar,
+        showPair,
+        // showSidebar,
     } = props;
 
     const {
@@ -243,6 +243,7 @@ export default function TransactionRow(props: propsIF) {
             title={txUsdValueLocaleString}
             placement={'right-end'}
             arrow
+            disableHoverListener={true}
             enterDelay={750}
             leaveDelay={200}
         >
@@ -258,11 +259,14 @@ export default function TransactionRow(props: propsIF) {
         </DefaultTooltip>
     );
 
+    const navigate = useNavigate();
+
     const walletWithTooltip = (
         <DefaultTooltip
             interactive
             title={
                 <div>
+                    <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
                             dispatch(
@@ -274,7 +278,6 @@ export default function TransactionRow(props: propsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
-                        <p>{ensName ? ensName : ownerId}</p>
                         {'View Account' + 'ㅤ'}
                         <FiExternalLink size={'12px'} />
                     </NavLink>
@@ -286,14 +289,18 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                onClick={() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: true,
+                        }),
+                    );
+                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                }}
                 data-label='wallet'
                 className={usernameStyle}
-                style={
-                    userNameToDisplay !== 'You'
-                        ? { textTransform: 'lowercase', fontFamily: 'monospace' }
-                        : undefined
-                }
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
@@ -313,7 +320,8 @@ export default function TransactionRow(props: propsIF) {
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
                 }
-                placement={'right'}
+                placement={'left'}
+                disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
                 leaveDelay={200}
@@ -338,7 +346,8 @@ export default function TransactionRow(props: propsIF) {
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
                 }
-                placement={'right'}
+                placement={'left'}
+                disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
                 leaveDelay={200}
@@ -380,21 +389,41 @@ export default function TransactionRow(props: propsIF) {
             : [`${tx.quoteSymbol}: ${tx.quote}`];
     const tip = pair.join('\n');
 
+    const tradeLinkPath =
+        (tx.entityType.toLowerCase() === 'limitorder'
+            ? '/trade/limit/'
+            : tx.entityType.toLowerCase() === 'liqchange'
+            ? '/trade/range/'
+            : '/trade/market/') +
+        'chain=' +
+        tx.chainId +
+        '&tokenA=' +
+        tx.quote +
+        '&tokenB=' +
+        tx.base;
+
     const tokenPair = (
         <DefaultTooltip
             interactive
             title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={150}
             leaveDelay={200}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
-                <p>
-                    {' '}
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                <NavLink
+                    // onClick={() => {
+                    //     console.log({ tx });
+                    //     console.log({ tradeLinkPath });
+                    // }}
+                    to={tradeLinkPath}
+                >
+                    <p>
+                        {baseTokenSymbol} / {quoteTokenSymbol}
+                    </p>
+                </NavLink>
             </li>
         </DefaultTooltip>
     );
@@ -528,17 +557,46 @@ export default function TransactionRow(props: propsIF) {
             ref={currentTxActiveInTransactions ? activePositionRef : null}
         >
             {!showColumns && TxTimeWithTooltip}
-            {isOnPortfolioPage && !desktopView && !showSidebar && tokenPair}
+            {isOnPortfolioPage && showPair && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
-                    <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
-                        {userNameToDisplay}
-                    </p>
-                </li>
+                <DefaultTooltip
+                    interactive
+                    title={
+                        <div>
+                            <NavLink
+                                onClick={() => {
+                                    dispatch(
+                                        setDataLoadingStatus({
+                                            datasetName: 'lookupUserTxData',
+                                            loadingStatus: true,
+                                        }),
+                                    );
+                                }}
+                                to={`/${
+                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                                }`}
+                            >
+                                <p>{ensName ? ensName : ownerId}</p>
+                                {'View Account' + 'ㅤ'}
+                                <FiExternalLink size={'12px'} />
+                            </NavLink>
+                        </div>
+                    }
+                    placement={'right'}
+                    arrow
+                    enterDelay={750}
+                    leaveDelay={200}
+                >
+                    <li data-label='id' onClick={openDetailsModal}>
+                        <p className='base_color'>{txHashTruncated}</p>{' '}
+                        <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                            {userNameToDisplay}
+                        </p>
+                    </li>
+                </DefaultTooltip>
             )}
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
@@ -555,8 +613,7 @@ export default function TransactionRow(props: propsIF) {
                         >
                             ambient
                         </li>
-                    ) : (isDenomBase && !isOnPortfolioPage) ||
-                      (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
+                    ) : (
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
@@ -578,42 +635,6 @@ export default function TransactionRow(props: propsIF) {
                                         : truncatedHighDisplayPrice}
                                 </span>
                             </p>
-                        </li>
-                    ) : (
-                        <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
-                            <div className={`${styles.align_right} `}>
-                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
-                                <span style={{ fontFamily: 'monospace' }}>
-                                    {isOnPortfolioPage
-                                        ? truncatedHighDisplayPriceDenomByMoneyness
-                                        : truncatedHighDisplayPrice}
-                                </span>
-                            </div>
-                            <div className={`${styles.align_right} `}>
-                                <span style={{ fontFamily: 'monospace' }}>
-                                    {isOnPortfolioPage ? (
-                                        <p className={`${styles.align_right} `}>
-                                            <span>
-                                                {truncatedLowDisplayPriceDenomByMoneyness
-                                                    ? priceCharacter
-                                                    : '…'}
-                                            </span>
-                                            <span style={{ fontFamily: 'monospace' }}>
-                                                {truncatedLowDisplayPriceDenomByMoneyness}
-                                            </span>
-                                        </p>
-                                    ) : (
-                                        <p className={`${styles.align_right} `}>
-                                            <span>
-                                                {truncatedLowDisplayPrice ? priceCharacter : '…'}
-                                            </span>
-                                            <span style={{ fontFamily: 'monospace' }}>
-                                                {truncatedLowDisplayPrice}
-                                            </span>
-                                        </p>
-                                    )}
-                                </span>
-                            </div>
                         </li>
                     )
                 ) : (

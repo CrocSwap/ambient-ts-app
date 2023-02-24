@@ -65,7 +65,7 @@ export default function Reposition(props: propsIF) {
 
     // current URL parameter string
     const { params } = useParams();
-    console.log({params});
+    // console.log({ params });
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
@@ -556,6 +556,8 @@ export default function Reposition(props: propsIF) {
                         isDenomBase={isDenomBase}
                         isTokenABase={isTokenABase}
                         poolPriceDisplayNum={poolPriceDisplay || 0}
+                        bypassConfirm={bypassConfirm}
+                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                 </Modal>
             )}

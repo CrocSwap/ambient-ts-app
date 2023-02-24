@@ -44,6 +44,7 @@ interface propsIF {
     isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
+    isEmpty: boolean;
 }
 
 // React functional component
@@ -52,6 +53,7 @@ export default function RangesMenu(props: propsIF) {
 
     const {
         crocEnv,
+        isEmpty,
         // chainData,
         isPositionEmpty,
         userMatchesConnectedAccount,
@@ -272,10 +274,10 @@ export default function RangesMenu(props: propsIF) {
             {/* {!showRepositionButton && view2 && detailsButton} */}
             {showRepositionButton && repositionButton}
             {!showRepositionButton && userMatchesConnectedAccount && addButton}
-            {view2 && removeButton}
+            {view2 && !isEmpty && removeButton}
             {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
-            {view3 && harvestButton}
+            {view3 && !isEmpty && harvestButton}
             {/* {view2 && removeButton} */}
             {/* {view3 && detailsButton} */}
             {!userMatchesConnectedAccount && copyButton}
@@ -290,8 +292,8 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {/* {!view1 && !isPositionInRange && repositionButton} */}
             {/* {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
-            {!view3 && harvestButton}
-            {!view2 && removeButton}
+            {!view3 && !isEmpty && harvestButton}
+            {!view2 && !isEmpty && removeButton}
             {detailsButton}
             {userMatchesConnectedAccount && copyButton}
         </div>

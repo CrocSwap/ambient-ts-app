@@ -840,10 +840,12 @@ export default function Range(props: propsIF) {
                   ));
             setNewRangeTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            setIsWaitingForWallet(false);
         } catch (error) {
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
@@ -1155,6 +1157,7 @@ export default function Range(props: propsIF) {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
         isRangeCopied: isRangeCopied,
+        openGlobalPopup: openGlobalPopup,
     };
     // props for <RangeExtraInfo/> React element
 
