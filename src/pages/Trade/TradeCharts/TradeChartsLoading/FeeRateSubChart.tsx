@@ -158,8 +158,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                             }
                         })
                         .on('zoom', (event: any) => {
-                            getNewCandleData(event, date, xScale);
-
                             const domainX = xScale.domain();
                             const linearX = d3
                                 .scaleTime()
@@ -167,6 +165,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                                 .range([0, domainX[1] - domainX[0]]);
 
                             const deltaX = linearX(-event.sourceEvent.movementX);
+                            getNewCandleData(new Date(domainX[0].getTime() + deltaX), date);
                             xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),

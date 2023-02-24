@@ -342,7 +342,7 @@ export default function Ranges(props: propsIF) {
             className: '',
             show: isOnPortfolioPage && showPair,
             slug: 'pool',
-            sortable: true,
+            sortable: false,
         },
         // {
         //     name: 'Pool',
