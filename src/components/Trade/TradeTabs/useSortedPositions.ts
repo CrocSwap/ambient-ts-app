@@ -81,17 +81,23 @@ export const useSortedPositions = (
         });
 
         const outOfRangeAfterSecondarySort: PositionIF[] = sortByTime(outOfRange);
-        const inRangeAfterSecondarySorte: PositionIF[] = sortByTime(inRange);
+        const inRangeAfterSecondarySort: PositionIF[] = sortByTime(inRange);
         const ambientAfterSecondarySort: PositionIF[] = sortByTime(ambient);
         const emptyAfterSecondarySort: PositionIF[] = sortByTime(empty);
         const huhAfterSecondarySort: PositionIF[] = sortByTime(huh);
 
+        const outOfRangeAfterTertiarySort: PositionIF[] = sortById(outOfRangeAfterSecondarySort);
+        const inRangeAfterTertiarySorte: PositionIF[] = sortById(inRangeAfterSecondarySort);
+        const ambientAfterTertiarySort: PositionIF[] = sortById(ambientAfterSecondarySort);
+        const emptyAfterTertiarySort: PositionIF[] = sortById(emptyAfterSecondarySort);
+        const huhAfterTertiarySort: PositionIF[] = sortById(huhAfterSecondarySort);
+
         return [
-            ...outOfRangeAfterSecondarySort,
-            ...inRangeAfterSecondarySorte,
-            ...ambientAfterSecondarySort,
-            ...emptyAfterSecondarySort,
-            ...huhAfterSecondarySort,
+            ...outOfRangeAfterTertiarySort,
+            ...inRangeAfterTertiarySorte,
+            ...ambientAfterTertiarySort,
+            ...emptyAfterTertiarySort,
+            ...huhAfterTertiarySort,
         ];
     };
 

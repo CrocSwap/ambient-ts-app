@@ -86,6 +86,15 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const { t } = useTranslation();
 
+    // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
+    const branchName =
+        process.env.REACT_APP_BRANCH_NAME !== undefined
+            ? process.env.REACT_APP_BRANCH_NAME
+            : 'local';
+
+    const showBranchName =
+        branchName.toLowerCase() !== 'main' && branchName.toLowerCase() !== 'production';
+
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const modalTitle = 'Log in with Email';
 
@@ -354,6 +363,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                     switchTheme={switchTheme}
                 /> */}
                 <div className={styles.account}>
+                    {showBranchName ? branchName : null}
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
                     {!isConnected && connectWagmiButton}

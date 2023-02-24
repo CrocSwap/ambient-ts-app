@@ -331,7 +331,7 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
-            setNewSwapTransactionHash('');
+            // setNewSwapTransactionHash('');
         }
     }
 
@@ -643,6 +643,7 @@ export default function Swap(props: propsIF) {
     };
 
     const handleSwapButtonClickWithBypass = () => {
+        console.log('setting to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
