@@ -78,7 +78,6 @@ import {
     // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
     setLimitTick,
@@ -89,6 +88,7 @@ import {
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
     candleDomain,
+    setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -209,6 +209,9 @@ export default function App() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
+
+    const ticksInParams =
+        location.pathname.includes('lowTick') && location.pathname.includes('highTick');
 
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
@@ -874,12 +877,9 @@ export default function App() {
         // console.log('resetting limit');
         dispatch(setLimitTick(undefined));
         dispatch(setPrimaryQuantityRange(''));
-        dispatch(setSimpleRangeWidth(10));
-        dispatch(setAdvancedMode(false));
+        // dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-        const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
-        if (sliderInput) sliderInput.value = '10';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     useEffect(() => {
@@ -915,6 +915,17 @@ export default function App() {
         })();
     }, [isServerEnabled, JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
+    const resetAdvancedTicksIfNotCopy = () => {
+        if (!ticksInParams) {
+            dispatch(setAdvancedLowTick(0));
+            dispatch(setAdvancedHighTick(0));
+            dispatch(setAdvancedMode(false));
+            console.log('resetting to 10');
+            dispatch(setSimpleRangeWidth(10));
+            const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+            if (sliderInput) sliderInput.value = '10';
+        }
+    };
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams && crocEnv) {
@@ -934,8 +945,9 @@ export default function App() {
 
             // reset rtk values for user specified range in ticks
             console.log('resetting advanced ticks');
-            dispatch(setAdvancedLowTick(0));
-            dispatch(setAdvancedHighTick(0));
+
+            // reset advanced ticks if token pair change not the result of a 'copy trade'
+            resetAdvancedTicksIfNotCopy();
 
             const tokenAAddress = tokenPair?.dataTokenA?.address;
             const tokenBAddress = tokenPair?.dataTokenB?.address;
@@ -2376,6 +2388,7 @@ export default function App() {
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
+        getTokenByAddress: getTokenByAddress,
 
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2781,12 +2794,10 @@ export default function App() {
         : 'content-container';
 
     const defaultUrlParams = {
-        swap: '/swap/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
-        // swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-        market: '/trade/market/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
-        // market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-        limit: '/trade/limit/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
-        range: '/trade/range/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
+        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
+        market: `/trade/market/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };
 
     return (
@@ -2797,8 +2808,6 @@ export default function App() {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
-                {/* {currentLocation == '/' && <PhishingWarning />} */}
-
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
@@ -2874,10 +2883,6 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     isCandleSelected={isCandleSelected}
                                     setIsCandleSelected={setIsCandleSelected}
-                                    // handleTxCopiedClick={handleTxCopiedClick}
-                                    // handleOrderCopiedClick={handleOrderCopiedClick}
-                                    // handleRangeCopiedClick={handleRangeCopiedClick}
-
                                     fullScreenChart={fullScreenChart}
                                     setFullScreenChart={setFullScreenChart}
                                     fetchingCandle={fetchingCandle}

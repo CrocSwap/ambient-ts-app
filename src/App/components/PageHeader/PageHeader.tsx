@@ -24,6 +24,8 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -54,6 +56,7 @@ interface HeaderPropsIF {
     switchTheme: () => void;
     theme: string;
     chainData: ChainSpec;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -80,6 +83,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
         // isUserLoggedIn,
         chainData,
+        getTokenByAddress,
         isTutorialMode,
         setIsTutorialMode,
     } = props;
@@ -192,6 +196,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
+    useUrlParamsNew(chainId, getTokenByAddress);
 
     const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);

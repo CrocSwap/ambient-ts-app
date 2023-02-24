@@ -211,7 +211,9 @@ export default function Range(props: propsIF) {
         }
     };
 
-    const { tradeData, navigationMenu, tickPairFromParams } = useTradeData();
+    const { tradeData, receiptData } = useAppSelector((state) => state);
+
+    const { navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -303,35 +305,42 @@ export default function Range(props: propsIF) {
     const defaultMinPriceDifferencePercentage = -10;
     const defaultMaxPriceDifferencePercentage = 10;
 
+    const ticksInParams =
+        location.pathname.includes('lowTick') && location.pathname.includes('highTick');
+
+    const shouldResetAdvancedLowTick =
+        !ticksInParams &&
+        (tradeData.advancedLowTick === 0 ||
+            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick - 100000);
+
+    const shouldResetAdvancedHighTick =
+        !ticksInParams &&
+        (tradeData.advancedHighTick === 0 ||
+            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick - 100000);
+
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo(() => {
-        const value =
-            tickPairFromParams[0] ||
-            (tradeData.advancedLowTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick - 100000
-                ? roundDownTick(
-                      currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100,
-                      lookupChain(chainId).gridSize,
-                  )
-                : tradeData.advancedLowTick);
+        const value = shouldResetAdvancedLowTick
+            ? roundDownTick(
+                  currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100,
+                  lookupChain(chainId).gridSize,
+              )
+            : tradeData.advancedLowTick;
         return value;
-    }, [tradeData.advancedLowTick, currentPoolPriceTick]);
+    }, [tradeData.advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo(() => {
-        const value =
-            tickPairFromParams[1] ||
-            (tradeData.advancedHighTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick - 100000
-                ? roundUpTick(
-                      currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
-                      lookupChain(chainId).gridSize,
-                  )
-                : tradeData.advancedHighTick);
+        const value = shouldResetAdvancedHighTick
+            ? roundUpTick(
+                  currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
+                  lookupChain(chainId).gridSize,
+              )
+            : tradeData.advancedHighTick;
         return value;
-    }, [tradeData.advancedHighTick, currentPoolPriceTick]);
+    }, [tradeData.advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
     useEffect(() => {
         const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
@@ -503,7 +512,6 @@ export default function Range(props: propsIF) {
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
-    const receiptData = useAppSelector((state) => state.receiptData);
 
     const sessionReceipts = receiptData.sessionReceipts;
 
