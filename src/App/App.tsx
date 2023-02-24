@@ -88,6 +88,7 @@ import {
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
     candleDomain,
+    setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -874,12 +875,9 @@ export default function App() {
         // console.log('resetting limit');
         dispatch(setLimitTick(undefined));
         dispatch(setPrimaryQuantityRange(''));
-        dispatch(setSimpleRangeWidth(10));
         // dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-        const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
-        if (sliderInput) sliderInput.value = '10';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     useEffect(() => {
@@ -919,6 +917,11 @@ export default function App() {
         if (!ticksInParams) {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
+            dispatch(setAdvancedMode(false));
+            console.log('resetting to 10');
+            dispatch(setSimpleRangeWidth(10));
+            const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
+            if (sliderInput) sliderInput.value = '10';
         }
     };
     // useEffect that runs when token pair changes
