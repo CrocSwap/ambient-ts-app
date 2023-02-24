@@ -67,7 +67,7 @@
 }
 
 ul.tab_navs {
-    color: var(--text-grey-dark);
+    color: var(--text-grey-light);
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
