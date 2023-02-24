@@ -10,7 +10,30 @@
 .graph_style {
     z-index: 2;
 }
+.tutorial_button_container{
 
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 0 8px;
+}
+.tutorial_button{
+    outline: none;
+    background: var(--dark3);
+    border: 1px solid var(--text-highlight-dark);
+    color: var(--text-grey-light);
+    border-radius: 4px;
+    padding: 0 4px;
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+
+    box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca,
+    0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
+}
+.tutorial_button:hover{
+    color: var(--text-grey-white)
+}
 .token_info_container,
 .time_frame_container {
     display: flex;
