@@ -2704,6 +2704,10 @@ export default function App() {
     const [imageData, setImageData] = useState<string[]>([]);
 
     useEffect(() => {
+        dispatch(resetUserGraphData());
+    }, [account]);
+
+    useEffect(() => {
         (async () => {
             if (account) {
                 // console.log('fetching NFTs belonging to connected user');
