@@ -593,17 +593,25 @@ export default function TransactionRow(props: propsIF) {
                     <li
                         data-label='id'
                         onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                            navigate(
-                                `/${
-                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-                                }`,
-                            );
+                            if (!isOnPortfolioPage) {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'lookupUserTxData',
+                                        loadingStatus: true,
+                                    }),
+                                );
+                                navigate(
+                                    `/${
+                                        isOwnerActiveAccount
+                                            ? 'account'
+                                            : ensName
+                                            ? ensName
+                                            : ownerId
+                                    }`,
+                                );
+                            } else {
+                                openDetailsModal();
+                            }
                         }}
                     >
                         <p className='base_color'>{txHashTruncated}</p>{' '}
