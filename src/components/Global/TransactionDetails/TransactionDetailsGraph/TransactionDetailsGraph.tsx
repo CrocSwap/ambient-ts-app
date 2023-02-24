@@ -161,7 +161,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 .yScale(scaleData.yScale)
                 .crossValue((d: any) => d.time * 1000)
                 .mainValue((d: any) =>
-                    (!isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual)
+                    (!isOnPortfolioPage ? denominationsInBase : isBaseTokenMoneynessGreaterOrEqual)
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected,
                 )
@@ -219,7 +219,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 return horizontalBand;
             });
         }
-    }, [scaleData, denominationsInBase, isOnPortfolioPage, !isBaseTokenMoneynessGreaterOrEqual]);
+    }, [scaleData, denominationsInBase, isOnPortfolioPage, isBaseTokenMoneynessGreaterOrEqual]);
 
     useEffect(() => {
         if (graphData !== undefined) {
@@ -230,7 +230,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? d.invPriceCloseExclMEVDecimalCorrected
                             : d.priceCloseExclMEVDecimalCorrected,
@@ -252,14 +252,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
                             : tx.bidTickPriceDecimalCorrected,
@@ -268,14 +268,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
                             : tx.bidTickPriceDecimalCorrected,
@@ -302,14 +302,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
                             : tx.bidTickPriceDecimalCorrected,
@@ -318,14 +318,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.bidTickInvPriceDecimalCorrected
                             : tx.bidTickPriceDecimalCorrected,
@@ -354,13 +354,13 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             if (transactionType !== 'swap' && tx.positionType !== 'ambient') {
                 const topLineTick = (
-                    !isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual
+                    !isOnPortfolioPage ? denominationsInBase : isBaseTokenMoneynessGreaterOrEqual
                 )
                     ? tx.bidTickInvPriceDecimalCorrected
                     : tx.bidTickPriceDecimalCorrected;
 
                 const lowLineTick = (
-                    !isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual
+                    !isOnPortfolioPage ? denominationsInBase : isBaseTokenMoneynessGreaterOrEqual
                 )
                     ? tx.askTickInvPriceDecimalCorrected
                     : tx.askTickPriceDecimalCorrected;
@@ -370,11 +370,8 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const diff = Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 8;
 
-                const lowerBoundaryFill = Math.abs(
-                    yScale.domain()[0] +
-                        diff / 2 -
-                        (bottomLimit < topLimit ? bottomLimit : topLimit),
-                );
+                const lowerBoundaryFill = Math.abs(yScale.domain()[0] - bottomLimit);
+
                 const lowerBoudnaryFactor = Math.ceil(lowerBoundaryFill / diff);
 
                 const lowValues: any = [];
@@ -383,7 +380,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     lowValues[0] = (
                         !isOnPortfolioPage
                             ? denominationsInBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
+                            : isBaseTokenMoneynessGreaterOrEqual
                     )
                         ? Math.round((bottomLimit - lowerBoundaryFill) / 10) * 10
                         : bottomLimit - lowerBoundaryFill;
@@ -392,21 +389,20 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         lowValues[i - 1] = (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? Math.round(
-                                  (bottomLimit - lowerBoundaryFill / (lowerBoudnaryFactor / i)) /
+                                  ((i === 1 ? bottomLimit : lowValues[i - 2]) -
+                                      Math.round(lowerBoundaryFill / lowerBoudnaryFactor / 10) *
+                                          10) /
                                       10,
                               ) * 10
-                            : bottomLimit - lowerBoundaryFill / (lowerBoudnaryFactor / i);
+                            : (i === 1 ? bottomLimit : lowValues[i - 2]) -
+                              lowerBoundaryFill / lowerBoudnaryFactor;
                     }
                 }
 
-                const topBoundaryFill = Math.abs(
-                    yScale.domain()[1] -
-                        diff / 2 -
-                        (bottomLimit > topLimit ? bottomLimit : topLimit),
-                );
+                const topBoundaryFill = Math.abs(yScale.domain()[1] - diff / 2 - topLimit);
                 const topBoudnaryFactor = Math.ceil(topBoundaryFill / diff);
 
                 const topValues: any = [];
@@ -415,7 +411,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     topValues[0] = (
                         !isOnPortfolioPage
                             ? denominationsInBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
+                            : isBaseTokenMoneynessGreaterOrEqual
                     )
                         ? Math.round((topLimit + topBoundaryFill) / 10) * 10
                         : topLimit + topBoundaryFill;
@@ -424,12 +420,15 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         topValues[i - 1] = (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? Math.round(
-                                  (topLimit + topBoundaryFill / (topBoudnaryFactor / i)) / 10,
+                                  ((i === 1 ? topLimit : topValues[i - 2]) +
+                                      Math.round(topBoundaryFill / topBoudnaryFactor / 10) * 10) /
+                                      10,
                               ) * 10
-                            : topLimit + topBoundaryFill / (topBoudnaryFactor / i);
+                            : (i === 1 ? topLimit : topValues[i - 2]) +
+                              topBoundaryFill / topBoudnaryFactor;
                     }
                 }
 
@@ -443,7 +442,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         bandValues[0] = (
                             !isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
+                                : isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? Math.round((topLimit - bandBoundaryFill) / 10) * 10
                             : topLimit - bandBoundaryFill;
@@ -452,7 +451,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                             bandValues[i - 1] = (
                                 !isOnPortfolioPage
                                     ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual
+                                    : isBaseTokenMoneynessGreaterOrEqual
                             )
                                 ? Math.round(
                                       (topLimit - bandBoundaryFill / (bandBoudnaryFactor / i)) / 10,
@@ -464,9 +463,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 let linePrices = [];
 
-                if (
-                    !isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual
-                ) {
+                if (!isOnPortfolioPage ? denominationsInBase : isBaseTokenMoneynessGreaterOrEqual) {
                     linePrices =
                         Math.abs(
                             Math.round(topLimit / 10) * 10 - Math.round(bottomLimit / 10) * 10,
@@ -589,14 +586,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                             (
                                 !isOnPortfolioPage
                                     ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual
+                                    : isBaseTokenMoneynessGreaterOrEqual
                             )
                                 ? tx.bidTickInvPriceDecimalCorrected
                                 : tx.bidTickPriceDecimalCorrected,
                             (
                                 !isOnPortfolioPage
                                     ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual
+                                    : isBaseTokenMoneynessGreaterOrEqual
                             )
                                 ? tx.askTickInvPriceDecimalCorrected
                                 : tx.askTickPriceDecimalCorrected,
@@ -615,14 +612,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                                 (
                                     !isOnPortfolioPage
                                         ? denominationsInBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
+                                        : isBaseTokenMoneynessGreaterOrEqual
                                 )
                                     ? tx.bidTickInvPriceDecimalCorrected
                                     : tx.bidTickPriceDecimalCorrected,
                                 (
                                     !isOnPortfolioPage
                                         ? denominationsInBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
+                                        : isBaseTokenMoneynessGreaterOrEqual
                                 )
                                     ? tx.askTickInvPriceDecimalCorrected
                                     : tx.askTickPriceDecimalCorrected,
@@ -649,7 +646,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                                     y: (
                                         !isOnPortfolioPage
                                             ? denominationsInBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                            : isBaseTokenMoneynessGreaterOrEqual
                                     )
                                         ? tx.invPriceDecimalCorrected
                                         : tx.priceDecimalCorrected,
