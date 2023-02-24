@@ -207,6 +207,9 @@ export default function App() {
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
 
+    const ticksInParams =
+        location.pathname.includes('lowTick') && location.pathname.includes('highTick');
+
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
         // output value, false is default return
@@ -912,6 +915,12 @@ export default function App() {
         })();
     }, [isServerEnabled, JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
+    const resetAdvancedTicksIfNotCopy = () => {
+        if (!ticksInParams) {
+            dispatch(setAdvancedLowTick(0));
+            dispatch(setAdvancedHighTick(0));
+        }
+    };
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams && crocEnv) {
@@ -931,8 +940,9 @@ export default function App() {
 
             // reset rtk values for user specified range in ticks
             console.log('resetting advanced ticks');
-            dispatch(setAdvancedLowTick(0));
-            dispatch(setAdvancedHighTick(0));
+
+            // reset advanced ticks if token pair change not the result of a 'copy trade'
+            resetAdvancedTicksIfNotCopy();
 
             const tokenAAddress = tokenPair?.dataTokenA?.address;
             const tokenBAddress = tokenPair?.dataTokenB?.address;
@@ -2373,7 +2383,7 @@ export default function App() {
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
-        getTokenByAddress: getTokenByAddress
+        getTokenByAddress: getTokenByAddress,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
