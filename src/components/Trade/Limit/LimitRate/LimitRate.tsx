@@ -114,7 +114,9 @@ export default function LimitRate(props: propsIF) {
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
             <span className={styles.direction}>Price</span>
 
-            <div className={`${styles.swap_input} `}>{rateInput}</div>
+            <div className={`${styles.swap_input} `} id='limit_rate'>
+                {rateInput}
+            </div>
         </div>
     );
 }

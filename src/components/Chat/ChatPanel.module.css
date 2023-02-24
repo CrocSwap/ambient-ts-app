@@ -17,31 +17,23 @@
     border: solid 1px transparent;
     background: var(--dark3);
     cursor: pointer;
-    /* height: 479px; */
-    /* width: 378px; */
+
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
     color: white;
     position: sticky;
-    /* bottom: 100px; */
     aspect-ratio: 5/6;
     transition: all var(--animation-speed) ease-in-out;
 
     overflow: auto;
 
-    background: rgba(23, 29, 39, 0.65);
+    background: rgba(23, 29, 39, 1);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(19px);
-    -webkit-backdrop-filter: blur(19px);
+
     border-top: 1px solid var(--text-highlight-dark);
     border-left: 1px solid var(--text-highlight-dark);
     border-right: 1px solid var(--text-highlight-dark);
 
-    /* border: 1px solid var(--text-highlight-dark); */
-
-    /* box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
-        0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2); */
 }
 
 .chat_body {

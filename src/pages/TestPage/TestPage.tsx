@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import Medal from '../../components/Global/Medal/Medal';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
-import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
+// import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { Steps, Hints } from 'intro.js-react';

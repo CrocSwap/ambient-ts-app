@@ -164,6 +164,7 @@ import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
+// import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -196,6 +197,7 @@ startMoralis();
 export default function App() {
     // console.log('rendering app');
     const { disconnect } = useDisconnect();
+    const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     const { address: account, isConnected } = useAccount();
 
@@ -2370,6 +2372,9 @@ export default function App() {
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2427,6 +2432,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // props for <Swap/> React element on trade route
@@ -2476,6 +2484,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // props for <Limit/> React element on trade route
@@ -2532,6 +2543,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('limit'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // props for <Range/> React element
@@ -2593,6 +2607,9 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('range'),
         toggleBypassConfirm: updateBypassConfirm,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     function toggleSidebar() {
@@ -2866,6 +2883,8 @@ export default function App() {
                                     seRescaleRangeBoundariesWithSlider={
                                         seRescaleRangeBoundariesWithSlider
                                     }
+                                    isTutorialMode={isTutorialMode}
+                                    setIsTutorialMode={setIsTutorialMode}
                                 />
                             }
                         >

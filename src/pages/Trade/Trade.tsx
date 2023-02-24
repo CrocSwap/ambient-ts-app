@@ -94,6 +94,9 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -512,6 +515,9 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
         showSidebar: showSidebar,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
+
+        isTutorialMode: props.isTutorialMode,
+        setIsTutorialMode: props.setIsTutorialMode,
     };
 
     const tradeTabsProps = {

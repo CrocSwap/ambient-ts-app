@@ -82,7 +82,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
     );
 
     return (
-        <div className={styles.range_width_container}>
+        <div className={styles.range_width_container} id='range_width'>
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
                 <span
