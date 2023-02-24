@@ -501,7 +501,20 @@ export default function OrderRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
+                <li
+                    data-label='id'
+                    onClick={() => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'lookupUserTxData',
+                                loadingStatus: true,
+                            }),
+                        );
+                        navigate(
+                            `/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`,
+                        );
+                    }}
+                >
                     <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}
