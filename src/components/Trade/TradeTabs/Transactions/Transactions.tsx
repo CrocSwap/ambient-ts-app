@@ -224,13 +224,23 @@ export default function Transactions(props: propsIF) {
     const [currentPage, setCurrentPage] = useState(1);
 
     // transactions per page media queries
-    const txView1 = useMediaQuery('(max-width: 580px)');
-    const txView2 = useMediaQuery('(max-width: 720px)');
-    const txView3 = useMediaQuery('(max-width: 1200px)');
-    const txView4 = useMediaQuery('(max-width: 1800px)');
-    // const txView4 = useMediaQuery('(min-width: 2400px)');
 
-    const transactionsPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
+    const txView1 = useMediaQuery('(max-width: 1200px)');
+    const txView2 = useMediaQuery('(max-width: 1400px)');
+    const txView3 = useMediaQuery('(max-width: 1800px)');
+    const txView4 = useMediaQuery('(min-width: 2000px)');
+
+    const transactionsPerPage = txView1
+        ? 3
+        : txView2
+        ? 10
+        : txView3
+        ? 11
+        : txView3
+        ? 13
+        : txView4
+        ? 15
+        : 18;
 
     // const [transactionsPerPage] = useState(15);
 
