@@ -164,7 +164,7 @@ import { checkBlacklist } from '../utils/data/blacklist';
 import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
-import { WebSocketProvider } from '@ethersproject/providers';
+import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
@@ -523,19 +523,19 @@ export default function App() {
         },
     );
 
-    const [mainnetWsProvider, setMainnetWsProvider] = useState<WebSocketProvider | undefined>();
+    const [mainnetProvider, setMainnetProvider] = useState<Provider | undefined>();
 
     useEffect(() => {
         const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
             ? process.env.REACT_APP_INFURA_KEY_2
             : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
 
-        const mainnetProvider = new ethers.providers.WebSocketProvider(
-            'wss://mainnet.infura.io/ws/v3/' + infuraKey2, // croc labs #2
+        const mainnetProvider = new ethers.providers.JsonRpcProvider(
+            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
         );
         console.log({ mainnetProvider });
-        setMainnetWsProvider(mainnetProvider);
-    }, [chainData]);
+        setMainnetProvider(mainnetProvider);
+    }, []);
 
     useEffect(() => {
         if (lastNewHeadMessage !== null) {
@@ -3095,7 +3095,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
-                                    mainnetWsProvider={mainnetWsProvider}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
@@ -3154,7 +3154,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
-                                    mainnetWsProvider={mainnetWsProvider}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />
@@ -3231,7 +3231,7 @@ export default function App() {
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
-                                    mainnetWsProvider={mainnetWsProvider}
+                                    mainnetProvider={mainnetProvider}
                                 />
                             }
                         />

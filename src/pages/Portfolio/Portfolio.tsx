@@ -19,7 +19,7 @@ import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
-import { WebSocketProvider } from '@ethersproject/providers';
+import { Provider } from '@ethersproject/providers';
 import {
     setErc20Tokens,
     setNativeToken,
@@ -81,7 +81,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
-    mainnetWsProvider: WebSocketProvider | undefined;
+    mainnetProvider: Provider | undefined;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -130,7 +130,7 @@ export default function Portfolio(props: propsIF) {
         setInput,
         searchType,
         chainData,
-        mainnetWsProvider,
+        mainnetProvider,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -246,28 +246,26 @@ export default function Portfolio(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            console.log({ mainnetWsProvider });
-            if (addressFromParams && isAddressEns && mainnetWsProvider) {
+            // console.log({ mainnetProvider });
+            if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    console.log({ addressFromParams });
-                    const newResolvedAddress = await mainnetWsProvider.resolveName(
-                        addressFromParams,
-                    );
-                    console.log({ newResolvedAddress });
+                    // console.log({ addressFromParams });
+                    const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
+                    // console.log({ newResolvedAddress });
                     if (newResolvedAddress) {
                         setResolvedAddress(newResolvedAddress);
                         dispatch(setResolvedAddressRedux(newResolvedAddress));
                     }
                 } catch (error) {
                     console.log({ error });
-                    window.location.reload();
+                    // window.location.reload();
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
                 dispatch(setResolvedAddressRedux(addressFromParams));
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, mainnetWsProvider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
 
@@ -288,10 +286,10 @@ export default function Portfolio(props: propsIF) {
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (addressFromParams && !isAddressEns && mainnetWsProvider) {
+            if (addressFromParams && !isAddressEns && mainnetProvider) {
                 try {
                     const ensName = await fetchAddress(
-                        mainnetWsProvider,
+                        mainnetProvider,
                         addressFromParams,
                         chainData.chainId,
                     );
@@ -306,7 +304,7 @@ export default function Portfolio(props: propsIF) {
                 setSecondaryEnsName(addressFromParams);
             }
         })();
-    }, [addressFromParams, isAddressEns, mainnetWsProvider]);
+    }, [addressFromParams, isAddressEns, mainnetProvider]);
 
     const modalCloseCustom = (): void => setInput('');
 
@@ -317,7 +315,7 @@ export default function Portfolio(props: propsIF) {
         <div className={styles.exchange_balance}>
             <ExchangeBalance
                 crocEnv={crocEnv}
-                mainnetProvider={mainnetWsProvider}
+                mainnetProvider={mainnetProvider}
                 connectedAccount={connectedAccount || ''}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 setOutsideControl={setOutsideControl}

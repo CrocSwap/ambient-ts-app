@@ -21,7 +21,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
-    mainnetProvider: ethers.providers.WebSocketProvider | undefined;
+    mainnetProvider: ethers.providers.Provider | undefined;
     connectedAccount: string;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
