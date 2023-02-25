@@ -232,33 +232,8 @@ export default function Orders(props: propsIF) {
             // share:  true,
             onOpen: () => {
                 console.log('pool limit orders subscription opened');
-
-                // // repeat fetch with the interval of 30 seconds
-                // const timerId = setInterval(() => {
-                //     fetchPoolLimitOrderStates({
-                //         chainId: chainData.chainId,
-                //         base: tradeData.baseToken.address,
-                //         quote: tradeData.quoteToken.address,
-                //         poolIdx: chainData.poolIndex,
-                //         ensResolution: true,
-                //     })
-                //         .then((poolChangesJsonData) => {
-                //             if (poolChangesJsonData) {
-                //                 // console.log({ poolChangesJsonData });
-                //                 dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
-                //             }
-                //         })
-                //         .catch(console.log);
-                // }, 30000);
-
-                // // after 90 seconds stop
-                // setTimeout(() => {
-                //     clearInterval(timerId);
-                // }, 90000);
             },
             onClose: (event: CloseEvent) => console.log({ event }),
-            // onClose: () => console.log('allPositions websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
@@ -282,25 +257,6 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
-    // console.log({ limitOrderData });
-
-    // -----------------------------
-    // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
-    // const [isDataLoading, setIsDataLoading] = useState(true);
-    // const [dataToDisplay, setDataToDisplay] = useState(false);
-    // const [dataReceived] = useState(limitOrderData.length > 0);
-
-    // function handleDataReceived() {
-    //     setIsDataLoading(false);
-    //     limitOrderData.length ? setDataToDisplay(true) : setDataToDisplay(false);
-    // }
-
-    // useEffect(() => {
-    //     dataReceived ? handleDataReceived() : setIsDataLoading(true);
-    // }, [graphData, limitOrderData, dataReceived]);
-
-    // -----------------------------
-
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
     const view2 = useMediaQuery('(max-width: 1568px)');
@@ -311,8 +267,6 @@ export default function Orders(props: propsIF) {
 
     const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
-
-    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -354,7 +308,7 @@ export default function Orders(props: propsIF) {
             className: '',
             show: isOnPortfolioPage && showPair,
             slug: 'pool',
-            sortable: false,
+            sortable: true,
         },
         {
             name: 'ID',
