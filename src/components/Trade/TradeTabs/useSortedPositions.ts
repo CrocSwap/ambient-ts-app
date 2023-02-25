@@ -32,6 +32,12 @@ export const useSortedPositions = (
             const usernameB: string = b.ensResolution ?? b.user;
             return usernameA.localeCompare(usernameB);
         });
+    const sortByPool = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort((a, b) => {
+            const poolA = a.base + a.quote;
+            const poolB = b.base + b.quote;
+            return poolA.localeCompare(poolB);
+        });
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
             (a, b) =>
@@ -119,6 +125,10 @@ export const useSortedPositions = (
             // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
+                break;
+            // sort by token pair
+            case 'pool':
+                sortedData = sortByPool(data);
                 break;
             // sort by APR
             case 'apy':
