@@ -17,18 +17,15 @@ export const useSortedLimits = (
         [...unsortedData].sort((a, b) => {
             const aTime = a.latestUpdateTime || a.timeFirstMint || Date.now();
             const bTime = b.latestUpdateTime || b.timeFirstMint || Date.now();
-
             return bTime - aTime;
         });
-    // const sortByTime = (unsortedData: LimitOrderIF[]) =>
-    //     [...unsortedData].sort(
-    //         (a, b) =>
-    //             (b.latestUpdateTime !== 0 ? b.latestUpdateTime : b.timeFirstMint) -
-    //             (a.latestUpdateTime !== 0 ? a.latestUpdateTime : a.timeFirstMint),
-    //     );
-    // const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
-    //     [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
-    // sort by wallet or ens address
+    // sort by token pair
+    const sortByPool = (unsortedData: LimitOrderIF[]) =>
+        [...unsortedData].sort((a, b) => {
+            const poolA = a.base + a.quote;
+            const poolB = b.base + b.quote;
+            return poolA.localeCompare(poolB);
+        });
     const sortByWallet = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
@@ -60,6 +57,9 @@ export const useSortedLimits = (
         switch (sortBy) {
             case 'wallet':
                 sortedData = sortByWallet(data);
+                break;
+            case 'pool':
+                sortedData = sortByPool(data);
                 break;
             case 'price':
                 sortedData = sortByPrice(data);
