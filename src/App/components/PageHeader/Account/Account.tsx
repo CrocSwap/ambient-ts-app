@@ -31,6 +31,8 @@ interface AccountPropsIF {
     ethMainnetUsdPrice?: number;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
 
     switchTheme: () => void;
     theme: string;
@@ -187,6 +189,8 @@ export default function Account(props: AccountPropsIF) {
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
                     switchTheme={switchTheme}
                     theme={theme}
+                    isTutorialMode={props.isTutorialMode}
+                    setIsTutorialMode={props.setIsTutorialMode}
                 />
             </NavItem>
             {snackbarContent}

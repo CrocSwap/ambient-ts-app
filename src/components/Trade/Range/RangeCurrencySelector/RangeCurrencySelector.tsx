@@ -527,7 +527,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
             <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>
+                <div className={styles.swap_input} id='range_sell_qty'>
                     <RangeCurrencyQuantity
                         value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
                         thisToken={thisToken}
@@ -540,6 +540,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                 <div
                     className={`${styles.token_select} ${isRangeCopied && styles.pulse_animation}`}
                     onClick={() => openTokenModal()}
+                    id='range_token_selector'
                 >
                     {thisToken.logoURI ? (
                         <img

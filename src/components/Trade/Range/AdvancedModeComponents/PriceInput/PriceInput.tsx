@@ -52,7 +52,7 @@ export default function PriceInput(props: priceInputProps) {
         percentageDifference >= 0 ? '+' + percentageDifference : percentageDifference.toString();
 
     return (
-        <div className={styles.minMax_container}>
+        <div className={styles.minMax_container} id={`range_${fieldId}_price`}>
             {/* {disable && disabledContent} */}
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>

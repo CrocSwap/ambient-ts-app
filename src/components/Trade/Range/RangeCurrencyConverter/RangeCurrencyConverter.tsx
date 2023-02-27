@@ -797,14 +797,16 @@ export default function RangeCurrencyConverter(props: propsIF) {
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
-            <RangeCurrencySelector
-                fieldId='B'
-                updateOtherQuantity={(event) => handleTokenBQtyFieldUpdate(event)}
-                {...rangeCurrencySelectorCommonProps}
-                isAdvancedMode={isAdvancedMode}
-                handleChangeClick={handleTokenBChangeClick}
-                tokenAorB={'B'}
-            />
+            <div id='range_currency_converter'>
+                <RangeCurrencySelector
+                    fieldId='B'
+                    updateOtherQuantity={(event) => handleTokenBQtyFieldUpdate(event)}
+                    {...rangeCurrencySelectorCommonProps}
+                    isAdvancedMode={isAdvancedMode}
+                    handleChangeClick={handleTokenBChangeClick}
+                    tokenAorB={'B'}
+                />
+            </div>
         </section>
     );
 }

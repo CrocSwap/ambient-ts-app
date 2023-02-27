@@ -14,13 +14,14 @@ export const useSortedTransactions = (
     // default sort function
     const sortByUpdateTime = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => b.time - a.time);
-    // sort by wallet or ens address
+    // sort by token pair
     const sortByPool = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
             const poolA = a.base + a.quote;
             const poolB = b.base + b.quote;
             return poolA.localeCompare(poolB);
         });
+    // sort by wallet or ens address
     const sortByWallet = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;

@@ -24,6 +24,8 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -37,6 +39,8 @@ interface HeaderPropsIF {
     openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
 
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
@@ -52,6 +56,7 @@ interface HeaderPropsIF {
     switchTheme: () => void;
     theme: string;
     chainData: ChainSpec;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -78,6 +83,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
         // isUserLoggedIn,
         chainData,
+        getTokenByAddress,
+        isTutorialMode,
+        setIsTutorialMode,
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -167,6 +175,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         theme: theme,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
+
+        isTutorialMode: isTutorialMode,
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     // End of Page Header Functions
@@ -185,6 +196,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
+    useUrlParamsNew(chainId, getTokenByAddress);
 
     const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
