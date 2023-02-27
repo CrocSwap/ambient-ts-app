@@ -61,6 +61,8 @@ import RangeShareControl from '../../../components/Trade/Range/RangeShareControl
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
+import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { rangeTutorialSteps, rangeTutorialStepsAdvanced } from '../../../utils/tutorial/Range';
 
 interface propsIF {
     account: string | undefined;
@@ -119,6 +121,9 @@ interface propsIF {
     ) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Range(props: propsIF) {
@@ -206,7 +211,9 @@ export default function Range(props: propsIF) {
         }
     };
 
-    const { tradeData, navigationMenu, tickPairFromParams } = useTradeData();
+    const { tradeData, receiptData } = useAppSelector((state) => state);
+
+    const { navigationMenu } = useTradeData();
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -298,35 +305,42 @@ export default function Range(props: propsIF) {
     const defaultMinPriceDifferencePercentage = -10;
     const defaultMaxPriceDifferencePercentage = 10;
 
+    const ticksInParams =
+        location.pathname.includes('lowTick') && location.pathname.includes('highTick');
+
+    const shouldResetAdvancedLowTick =
+        !ticksInParams &&
+        (tradeData.advancedLowTick === 0 ||
+            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick - 100000);
+
+    const shouldResetAdvancedHighTick =
+        !ticksInParams &&
+        (tradeData.advancedHighTick === 0 ||
+            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick - 100000);
+
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo(() => {
-        const value =
-            tickPairFromParams[0] ||
-            (tradeData.advancedLowTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick - 100000
-                ? roundDownTick(
-                      currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100,
-                      lookupChain(chainId).gridSize,
-                  )
-                : tradeData.advancedLowTick);
+        const value = shouldResetAdvancedLowTick
+            ? roundDownTick(
+                  currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100,
+                  lookupChain(chainId).gridSize,
+              )
+            : tradeData.advancedLowTick;
         return value;
-    }, [tradeData.advancedLowTick, currentPoolPriceTick]);
+    }, [tradeData.advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo(() => {
-        const value =
-            tickPairFromParams[1] ||
-            (tradeData.advancedHighTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick - 100000
-                ? roundUpTick(
-                      currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
-                      lookupChain(chainId).gridSize,
-                  )
-                : tradeData.advancedHighTick);
+        const value = shouldResetAdvancedHighTick
+            ? roundUpTick(
+                  currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
+                  lookupChain(chainId).gridSize,
+              )
+            : tradeData.advancedHighTick;
         return value;
-    }, [tradeData.advancedHighTick, currentPoolPriceTick]);
+    }, [tradeData.advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
     useEffect(() => {
         const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
@@ -498,7 +512,6 @@ export default function Range(props: propsIF) {
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] = useState(false);
-    const receiptData = useAppSelector((state) => state.receiptData);
 
     const sessionReceipts = receiptData.sessionReceipts;
 
@@ -1376,8 +1389,21 @@ export default function Range(props: propsIF) {
     );
 
     // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
+    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
+
     return (
         <section data-testid={'range'} className={styles.scrollable_container}>
+            {props.isTutorialMode && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
+                    >
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}
+
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     chainId={chainId}
@@ -1425,6 +1451,11 @@ export default function Range(props: propsIF) {
                 )}
             </ContentContainer>
             {confirmSwapModalOrNull}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={!tradeData.advancedMode ? rangeTutorialStepsAdvanced : rangeTutorialSteps}
+            />
         </section>
     );
 }

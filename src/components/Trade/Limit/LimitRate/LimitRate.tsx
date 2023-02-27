@@ -137,7 +137,9 @@ export default function LimitRate(props: propsIF) {
                 </button>
             </span>
 
-            <div className={`${styles.swap_input} `}>{rateInput}</div>
+            <div className={`${styles.swap_input} `} id='limit_rate'>
+                {rateInput}
+            </div>
         </div>
     );
 }

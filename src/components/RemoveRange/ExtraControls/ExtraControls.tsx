@@ -44,56 +44,60 @@ export default function ExtraControls(props: CurrencyConverterPropsIF) {
     const combinedBaseDexBalanceAndRemovalNum = baseTokenDexBalanceNum + baseRemovalNum;
     const combinedQuoteDexBalanceAndRemovalNum = quoteTokenDexBalanceNum + quoteRemovalNum;
 
-    const truncatedWalletBaseQty = baseTokenWalletBalanceNum.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+    const truncatedWalletBaseQty = isNaN(baseTokenWalletBalanceNum)
+        ? '...'
+        : baseTokenWalletBalanceNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
-    const truncatedWalletQuoteQty = quoteTokenWalletBalanceNum.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+    const truncatedWalletQuoteQty = isNaN(quoteTokenWalletBalanceNum)
+        ? '...'
+        : quoteTokenWalletBalanceNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
-    const truncatedDexBaseQty = baseTokenDexBalanceNum.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+    const truncatedDexBaseQty = isNaN(baseTokenDexBalanceNum)
+        ? '...'
+        : baseTokenDexBalanceNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
-    const truncatedDexQuoteQty = quoteTokenDexBalanceNum.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
-    const truncatedCombinedWalletBaseQty = combinedBaseWalletBalanceAndRemovalNum.toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const truncatedDexQuoteQty = isNaN(quoteTokenDexBalanceNum)
+        ? '...'
+        : quoteTokenDexBalanceNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+    const truncatedCombinedWalletBaseQty = isNaN(combinedBaseWalletBalanceAndRemovalNum)
+        ? '...'
+        : combinedBaseWalletBalanceAndRemovalNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
-    const truncatedCombinedWalletQuoteQty = combinedQuoteWalletBalanceAndRemovalNum.toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const truncatedCombinedWalletQuoteQty = isNaN(combinedQuoteWalletBalanceAndRemovalNum)
+        ? '...'
+        : combinedQuoteWalletBalanceAndRemovalNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
-    const truncatedCombinedDexBaseQty = combinedBaseDexBalanceAndRemovalNum.toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const truncatedCombinedDexBaseQty = isNaN(combinedBaseDexBalanceAndRemovalNum)
+        ? '...'
+        : combinedBaseDexBalanceAndRemovalNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
-    const truncatedCombinedDexQuoteQty = combinedQuoteDexBalanceAndRemovalNum.toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
+    const truncatedCombinedDexQuoteQty = isNaN(combinedQuoteDexBalanceAndRemovalNum)
+        ? '...'
+        : combinedQuoteDexBalanceAndRemovalNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const walletBalanceWithTooltip = (
         <DefaultTooltip

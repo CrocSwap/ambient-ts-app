@@ -154,18 +154,6 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
 
-    // const top3Positions = useMemo(() => {
-    //     const sortByApy = (unsortedData: PositionIF[]) =>
-    //         [...unsortedData].sort((a, b) => b.apy - a.apy);
-    //     const dataByApy = sortByApy(rangeData);
-    //     const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
-    //     return topThree;
-    // }, [rangeData]);
-
-    // useEffect(() => {
-    //     false && console.log(top3Positions);
-    // }, [top3Positions]);
-
     useEffect(() => {
         if (
             isOnPortfolioPage &&
@@ -195,17 +183,9 @@ export default function Ranges(props: propsIF) {
         rangeData,
     );
 
-    // useEffect(() => {
-    //     console.log({ sortedPositions });
-    // }, [sortedPositions]);
-
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        // console.log({ sortedPositions });
-        // console.log({ isShowAllEnabled });
-        // console.log({ isOnPortfolioPage });
-        // console.log({ topThreePositions });
         const topThreePositions = sortedPositions.slice(0, 3);
 
         if (topThreePositions) {
@@ -288,10 +268,6 @@ export default function Ranges(props: propsIF) {
         </div>
     );
 
-    // ----------------------
-
-    // const sidebarOpen = false;
-
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
     const showColumns = useMediaQuery('(max-width: 1776px)');
@@ -323,13 +299,6 @@ export default function Ranges(props: propsIF) {
         </>
     );
     const headerColumns = [
-        // {
-        //     name: '',
-        //     className: '',
-        //     show: isOnPortfolioPage,
-        //     slug: 'token_images',
-        //     sortable: false,
-        // },
         {
             name: 'Last Updated',
             className: '',
@@ -342,15 +311,8 @@ export default function Ranges(props: propsIF) {
             className: '',
             show: isOnPortfolioPage && showPair,
             slug: 'pool',
-            sortable: false,
+            sortable: true,
         },
-        // {
-        //     name: 'Pool',
-        //     className: '',
-        //     show: isOnPortfolioPage,
-        //     slug: 'pool',
-        //     sortable: false,
-        // },
         {
             name: 'ID',
             className: 'ID',
@@ -374,7 +336,6 @@ export default function Ranges(props: propsIF) {
         },
         {
             name: 'Min',
-
             show: !showColumns,
             slug: 'min',
             sortable: false,
@@ -388,7 +349,6 @@ export default function Ranges(props: propsIF) {
             sortable: false,
             alignRight: true,
         },
-
         {
             name: minMax,
             className: 'side_type',

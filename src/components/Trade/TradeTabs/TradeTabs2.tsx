@@ -180,9 +180,13 @@ export default function TradeTabs2(props: propsIF) {
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     const userPositions = graphData?.positionsByUser?.positions;
+
+    const userPositionsDataReceived = graphData?.positionsByUser.dataReceived;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
+
+    const [hasUserSelectedViewAll, setHasUserSelectedViewAll] = useState<boolean>(false);
 
     const selectedBase = tradeData.baseToken.address;
     const selectedQuote = tradeData.quoteToken.address;
@@ -204,7 +208,8 @@ export default function TradeTabs2(props: propsIF) {
     const userPositionsMatchingTokenSelection = userPositions.filter((userPosition) => {
         return (
             userPosition.base.toLowerCase() === selectedBase.toLowerCase() &&
-            userPosition.quote.toLowerCase() === selectedQuote.toLowerCase()
+            userPosition.quote.toLowerCase() === selectedQuote.toLowerCase() &&
+            userPosition.totalValueUSD !== 0
         );
     });
 
@@ -214,23 +219,23 @@ export default function TradeTabs2(props: propsIF) {
 
     useEffect(() => {
         setHasInitialized(false);
+        setHasUserSelectedViewAll(false);
     }, [
         account,
         isUserLoggedIn,
         // userData.isLoggedIn,
-        matchingUserChangesLength,
-        matchingUserLimitOrdersLength,
-        matchingUserPositionsLength,
+        // matchingUserChangesLength,
+        // matchingUserLimitOrdersLength,
+        // matchingUserPositionsLength,
         // selectedOutsideTab,
         selectedBase,
         selectedQuote,
     ]);
 
     useEffect(() => {
-        if (!hasInitialized) {
-            // console.log({ outsideControl });
-            // console.log({ selectedOutsideTab });
-            // console.log({ selectedInsideTab });
+        if (!hasInitialized && !hasUserSelectedViewAll && userPositionsDataReceived) {
+            console.log({ outsideControl });
+            console.log({ selectedOutsideTab });
             if (
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
@@ -241,13 +246,11 @@ export default function TradeTabs2(props: propsIF) {
                     (!isUserLoggedIn && !isCandleSelected) ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
                 ) {
-                    // console.log('1');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
                     // console.log('2');
                     return;
                 } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
-                    // console.log('3');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -258,36 +261,34 @@ export default function TradeTabs2(props: propsIF) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
                 ) {
-                    // console.log('4');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
-                    // console.log('5');
                     return;
                 } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
-                    // console.log('6');
                     setIsShowAllEnabled(false);
                 }
             } else if (
                 (outsideControl && selectedOutsideTab === 2) ||
                 (!outsideControl && selectedInsideTab === 2)
             ) {
+                // console.log({ isShowAllEnabled });
+                // console.log({ matchingUserPositionsLength });
                 if (
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
                 ) {
-                    // console.log('7');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserPositionsLength < 1) {
-                    // console.log('8');
                     return;
                 } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
-                    // console.log('9');
                     setIsShowAllEnabled(false);
                 }
             }
             setHasInitialized(true);
         }
     }, [
+        userPositionsDataReceived,
+        hasUserSelectedViewAll,
         isUserLoggedIn,
         hasInitialized,
         isCandleSelected,
@@ -475,6 +476,7 @@ export default function TradeTabs2(props: propsIF) {
     const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] = useState(true);
 
     const positionsOnlyToggleProps = {
+        setHasUserSelectedViewAll: setHasUserSelectedViewAll,
         changeState: changeState,
         isShowAllEnabled: isShowAllEnabled,
         isUserLoggedIn: isUserLoggedIn,

@@ -1,0 +1,46 @@
+export const swapTutorialSteps = [
+    {
+        title: ' Welcome',
+        intro: 'Welcome to the tutorial mode for submitting a limit order on Ambient.',
+    },
+    {
+        element: '#swap_share_button',
+        title: 'Share button',
+        intro: 'This is the share button ',
+        position: 'right',
+        tooltipClass: 'myTooltipClass',
+        highlightClass: 'myHighlightClass',
+    },
+    {
+        element: '#swap_settings_button',
+        title: 'Swap Settings',
+        intro: 'Use this menu to adjust your slippage tolerance, as well as control your confirmation methods. ',
+        position: 'right',
+        tooltipClass: 'myTooltipClass',
+        highlightClass: 'myHighlightClass',
+    },
+    {
+        element: '#swap_sell_qty',
+        title: 'Sell Quantity',
+        intro: 'Enter your sell amount here ',
+        position: 'right',
+        tooltipClass: 'myTooltipClass',
+        highlightClass: 'myHighlightClass',
+    },
+    {
+        element: '#swap_token_selector',
+        title: 'Sell Token',
+        intro: 'Select your sell token',
+        position: 'right',
+        tooltipClass: 'myTooltipClass',
+        highlightClass: 'myHighlightClass',
+    },
+    {
+        element: '#swap_currency_converter',
+        title: 'Buy',
+        intro: 'Repeat the same step for your buy token and quantity',
+        position: 'right',
+        tooltipClass: 'myTooltipClass',
+        highlightClass: 'myHighlightClass',
+    },
+];

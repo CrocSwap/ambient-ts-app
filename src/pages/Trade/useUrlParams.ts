@@ -4,7 +4,13 @@ import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import Moralis from 'moralis';
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
-import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
+import {
+    setTokenA,
+    setTokenB,
+    setAdvancedMode,
+    setAdvancedLowTick,
+    setAdvancedHighTick
+} from '../../utils/state/tradeDataSlice';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 export const useUrlParams = (
@@ -59,7 +65,17 @@ export const useUrlParams = (
             const tickParam = urlParams.find((param) => param[0] === neededTick);
             return tickParam ? parseInt(tickParam[1]) : null;
         };
-        return [getTick('low') ?? 0, getTick('high') ?? 0];
+        const advLowTick = getTick('low') ?? 0;
+        const advHighTick = getTick('high') ?? 0;
+        advLowTick && dispatch(setAdvancedLowTick(advLowTick));
+        advHighTick && dispatch(setAdvancedHighTick(advHighTick));
+        console.log({advHighTick});
+        console.log({advLowTick});
+        if (![advLowTick, advHighTick].includes(0)) {
+            console.log('doing it!!');
+            dispatch(setAdvancedMode(true));
+        }
+        return [advLowTick, advHighTick];
     }, [urlParams]);
 
     const limitTick = useMemo<number | null>(() => {

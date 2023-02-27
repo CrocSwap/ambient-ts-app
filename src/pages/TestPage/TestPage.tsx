@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import Medal from '../../components/Global/Medal/Medal';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
-import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
+// import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { Steps, Hints } from 'intro.js-react';
+import 'intro.js/introjs.css';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -38,11 +40,51 @@ export default function TestPage(props: TestPageProps) {
     const menuButtonStyle = {
         marginLeft: '2rem',
     };
+    const steps = [
+        {
+            title: ' Welcome',
+            intro: 'Welcome to react INTRO JS app',
+        },
+        {
+            element: '.hello',
+            title: 'first tutorual',
+            intro: 'This is intro example',
+            position: 'right',
+            tooltipClass: 'myTooltipClass',
+            highlightClass: 'myHighlightClass',
+        },
+        {
+            element: '.tosText',
+            title: 'second tutorual',
+            intro: 'This is second example',
+            position: 'right',
+            tooltipClass: 'myTooltipClass',
+            highlightClass: 'myHighlightClass',
+        },
+    ];
+
+    const hints = [
+        {
+            element: '.hello',
+            hint: 'Hello hint',
+            hintPosition: 'middle-right',
+        },
+    ];
+
+    const [tutorialEnabled, setTutorialEnabled] = useState(true);
 
     return (
         <section className={styles.main}>
-            <h1>Hi there!</h1>
-            <p>{tosText}</p>
+            <button onClick={() => setTutorialEnabled(true)}>Set tutorial true</button>
+            <Steps
+                enabled={tutorialEnabled}
+                steps={steps}
+                initialStep={0}
+                onExit={() => setTutorialEnabled(false)}
+            />
+            <Hints enabled={true} hints={hints} />
+            <h1 className='hello'>Hi there!</h1>
+            <p className='tosText'>{tosText}</p>
             <p>
                 You {agreement ? 'accepted' : 'rejected'} the Terms of Service on {agreementDate}
             </p>
@@ -73,7 +115,7 @@ export default function TestPage(props: TestPageProps) {
                 style={menuButtonStyle}
             />
             <Medal ranking={1} />
-            <PulseLoading />
+            {/* <PulseLoading /> */}
         </section>
     );
 }

@@ -12,12 +12,8 @@ import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    tradeData as TradeDataIF,
-    setAdvancedMode,
-    candleDomain,
-} from '../../utils/state/tradeDataSlice';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { tradeData as TradeDataIF, candleDomain } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -98,6 +94,9 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+
+    isTutorialMode: boolean;
+    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
 }
@@ -163,16 +162,7 @@ export default function Trade(props: propsIF) {
         setCandleDomains,
     } = props;
 
-    const dispatch = useAppDispatch();
-
-    const [tokenPairFromParams, tickPairFromParams, limitTickFromParams] = useUrlParams(
-        chainId,
-        isInitialized,
-    );
-
-    if (!tickPairFromParams.includes(0)) {
-        dispatch(setAdvancedMode(true));
-    }
+    const [tokenPairFromParams, limitTickFromParams] = useUrlParams(chainId, isInitialized);
 
     useEffect(() => {
         setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
@@ -276,7 +266,6 @@ export default function Trade(props: propsIF) {
                 context={{
                     tradeData: tradeData,
                     navigationMenu: navigationMenu,
-                    tickPairFromParams: tickPairFromParams,
                     limitTickFromParams: limitTickFromParams,
                 }}
             />
@@ -580,6 +569,9 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
         showSidebar: showSidebar,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
+
+        isTutorialMode: props.isTutorialMode,
+        setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
     };
 
@@ -657,12 +649,7 @@ export default function Trade(props: propsIF) {
             {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && (
                 <div className={` ${fullScreenStyle}`} style={{ marginLeft: '2rem' }}>
-                    {!isCandleDataNull && (
-                        <TradeCharts
-                            // poolPriceTick={poolPriceTick}
-                            {...tradeChartsProps}
-                        />
-                    )}
+                    {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
 
@@ -678,7 +665,6 @@ export default function Trade(props: propsIF) {
                         tradeData: tradeData,
                         navigationMenu: navigationMenu,
                         limitTick: limitTick,
-                        tickPairFromParams: tickPairFromParams,
                     }}
                 />
             )}
@@ -727,7 +713,6 @@ export default function Trade(props: propsIF) {
 type ContextType = {
     tradeData: TradeDataIF;
     navigationMenu: JSX.Element;
-    tickPairFromParams: Array<number | null>;
     limitTickFromParams: number | null;
 };
 
