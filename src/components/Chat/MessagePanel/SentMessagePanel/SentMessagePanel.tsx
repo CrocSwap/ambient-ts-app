@@ -22,13 +22,11 @@ interface SentMessageProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     room: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    isDeleted: any;
+    isMessageDeleted: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setIsDeleted: any;
+    setIsMessageDeleted: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     previousMessage: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    nextMessage: any;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -37,66 +35,23 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const [showName, setShowName] = useState<boolean>(true);
 
     useEffect(() => {
-        if (
-            props.nextMessage?.sender === props.message?.sender &&
-            props.previousMessage?.sender === props.message?.sender
-        ) {
-            const date1 = new Date(props.nextMessage?.createdAt);
-            const date2 = new Date(props.message?.createdAt);
-            const diffInMs = Math.abs(date1.getTime() - date2.getTime());
-            const date11 = new Date(props.message?.createdAt);
-            const date22 = new Date(props.previousMessage?.createdAt);
-            const diffInMs2 = Math.abs(date11.getTime() - date22.getTime());
-            if (diffInMs < 10 * 60 * 1000 && diffInMs2 < 10 * 60 * 1000) {
+        const previousMessageDate = new Date(props.previousMessage?.createdAt);
+        const currentMessageDate = new Date(props.message?.createdAt);
+        const currentPreviousDiffInMs = Math.abs(
+            currentMessageDate.getTime() - previousMessageDate.getTime(),
+        );
+
+        if (props.previousMessage?.sender === props.message?.sender) {
+            if (currentPreviousDiffInMs < 10 * 60 * 1000) {
                 setShowAvatar(false);
                 setShowName(false);
-            } else {
-                if (diffInMs < 10 * 60 * 1000 && diffInMs2 < 10 * 60 * 1000) {
-                    setShowAvatar(false);
-                    setShowName(true);
-                } else {
-                    if (diffInMs > 10 * 60 * 1000 && diffInMs2 < 10 * 60 * 1000) {
-                        setShowAvatar(true);
-                        setShowName(false);
-                    } else {
-                        setShowAvatar(false);
-                        setShowName(false);
-                    }
-                }
-            }
-        } else {
-            if (
-                props.nextMessage?.sender === props.message?.sender &&
-                props.previousMessage?.sender !== props.message?.sender
-            ) {
-                const date1 = new Date(props.nextMessage?.createdAt);
-                const date2 = new Date(props.message?.createdAt);
-                const diffInMs = Math.abs(date1.getTime() - date2.getTime());
-                if (diffInMs < 10 * 60 * 1000) {
-                    setShowAvatar(false);
-                    setShowName(true);
-                } else {
-                    setShowAvatar(true);
-                    setShowName(true);
-                }
-            } else if (
-                props.nextMessage?.sender !== props.message?.sender &&
-                props.previousMessage?.sender === props.message?.sender
-            ) {
-                const date1 = new Date(props.message?.createdAt);
-                const date2 = new Date(props.previousMessage?.createdAt);
-                const diffInMs = Math.abs(date1.getTime() - date2.getTime());
-                if (diffInMs < 10 * 60 * 1000) {
-                    setShowAvatar(true);
-                    setShowName(false);
-                } else {
-                    setShowAvatar(true);
-                    setShowName(true);
-                }
             } else {
                 setShowAvatar(true);
                 setShowName(true);
             }
+        } else {
+            setShowAvatar(true);
+            setShowName(true);
         }
     }, [props.message]);
 
@@ -197,14 +152,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     function deleteMessages(id: string) {
         // eslint-disable-next-line
-        props.setIsDeleted(false);
+        props.setIsMessageDeleted(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         deleteMessage(id).then((result: any) => {
             if (result.status === 'OK') {
-                props.setIsDeleted(true);
+                props.setIsMessageDeleted(true);
                 return result;
             } else {
-                props.setIsDeleted(false);
+                props.setIsMessageDeleted(false);
             }
         });
     }
