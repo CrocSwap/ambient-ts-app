@@ -148,6 +148,7 @@
 .name {
     width: 82px;
     height: 14px;
+    cursor: pointer;
 
     /* small */
 
@@ -176,7 +177,7 @@
 .current_user_name {
     width: 82px;
     height: 14px;
-
+    cursor: pointer;
     /* small */
 
     font-family: 'Lexend Deca';
