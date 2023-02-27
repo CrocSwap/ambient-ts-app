@@ -149,7 +149,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                 chainData.poolIndex,
                 Math.floor(lastBlockNumber / 4),
             );
-            const volume = poolStatsFresh?.volume;
+            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
             const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
