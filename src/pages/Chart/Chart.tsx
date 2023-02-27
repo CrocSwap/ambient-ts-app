@@ -5487,7 +5487,7 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]) - 3600 * 1000);
 
         const filtered = volumeData?.filter((data: any) => data.time >= xmin);
 
