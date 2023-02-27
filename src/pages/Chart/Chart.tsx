@@ -2124,6 +2124,11 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    // set default limit tick
+    useEffect(() => {
+        if (tradeData.limitTick === Infinity) dispatch(setLimitTick(undefined));
+    }, []);
+
     useEffect(() => {
         setLimitLineValue();
     }, [tradeData.limitTick, denomInBase]);
@@ -4415,7 +4420,12 @@ export default function Chart(props: ChartData) {
 
                         const high = maxYBoundary > value ? maxYBoundary : value;
                         const bufferForLimit = Math.abs((low - high) / 6);
-                        if (value > 0 && tradeData.limitTick && tradeData.limitTick > 0) {
+                        if (
+                            value > 0 &&
+                            value !== Infinity &&
+                            tradeData.limitTick &&
+                            tradeData.limitTick > 0
+                        ) {
                             const domain = [low - bufferForLimit, high + bufferForLimit / 2];
 
                             scaleData.yScale.domain(domain);
