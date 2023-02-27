@@ -2124,10 +2124,10 @@ export default function Chart(props: ChartData) {
         });
     };
 
-    // set default limit tick
-    useEffect(() => {
-        if (tradeData.limitTick === Infinity) dispatch(setLimitTick(undefined));
-    }, []);
+    // // set default limit tick
+    // useEffect(() => {
+    //     if (tradeData.limitTick === Infinity) dispatch(setLimitTick(undefined));
+    // }, []);
 
     useEffect(() => {
         setLimitLineValue();
@@ -5488,17 +5488,16 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
-        const filtered = volumeData?.filter((data: any) => data.time >= xmin && data.time <= xmax);
+        const filtered = volumeData?.filter((data: any) => data.time >= xmin);
 
         const minYBoundary = d3.min(filtered, (d) => d.value);
         const maxYBoundary = d3.max(filtered, (d) => d.value);
         if (minYBoundary !== undefined && maxYBoundary !== undefined) {
-            const domain = [0, maxYBoundary];
+            const domain = [0, maxYBoundary / 1.05];
             scaleData.volumeScale.domain(domain);
         }
-    }, [volumeData.length, scaleData && scaleData.yScale.domain()]);
+    }, [scaleData && scaleData.xScale.domain()]);
 
     useEffect(() => {
         if (
