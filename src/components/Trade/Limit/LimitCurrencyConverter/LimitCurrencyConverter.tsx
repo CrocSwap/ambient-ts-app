@@ -225,7 +225,10 @@ export default function LimitCurrencyConverter(props: propsIF) {
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setPoolPriceNonDisplay(0));
-        dispatch(setLimitTick(undefined));
+
+        if (!tradeData.shouldLimitDirectionReverse) {
+            dispatch(setLimitTick(undefined));
+        }
 
         // setResetLimitTick((value) => !value);
     };
