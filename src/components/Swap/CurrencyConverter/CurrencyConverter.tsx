@@ -690,9 +690,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 onClick={reverseTokens}
             >
-                {isLiq ? null : disableReverseTokens ? (
-                    <TokensArrow />
-                ) : (
+                {isLiq ? null : (
                     <IconWithTooltip title='Reverse tokens' placement='left'>
                         <TokensArrow />
                     </IconWithTooltip>

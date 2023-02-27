@@ -588,13 +588,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     }
                 }}
             >
-                {disableReverseTokens ? (
+                <IconWithTooltip title='Reverse tokens' placement='left'>
                     <TokensArrow />
-                ) : (
-                    <IconWithTooltip title='Reverse tokens' placement='left'>
-                        <TokensArrow />
-                    </IconWithTooltip>
-                )}
+                </IconWithTooltip>
             </div>
             <div id='limit_currency_converter'>
                 <LimitCurrencySelector
