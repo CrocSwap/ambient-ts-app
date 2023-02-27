@@ -320,7 +320,7 @@ export default function Orders(props: propsIF) {
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns,
+            show: !isOnPortfolioPage && !showColumns,
             slug: 'wallet',
             sortable: isShowAllEnabled,
         },
