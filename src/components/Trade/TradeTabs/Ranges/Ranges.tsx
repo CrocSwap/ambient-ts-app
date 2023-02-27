@@ -270,7 +270,7 @@ export default function Ranges(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
-    const showColumns = useMediaQuery('(max-width: 1776px)');
+    const showColumns = useMediaQuery('(max-width: 1900px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
