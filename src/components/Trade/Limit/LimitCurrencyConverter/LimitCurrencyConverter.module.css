@@ -1,9 +1,19 @@
 .arrow_container {
+    cursor: pointer;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
+.arrow_container_disabled {
+    cursor: default;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .arrow {
     height: 1.3rem;
     width: 1.3rem;

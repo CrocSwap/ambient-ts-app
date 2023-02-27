@@ -202,32 +202,49 @@ export default function LimitCurrencyConverter(props: propsIF) {
         }
     }, []);
 
+    const [disableReverseTokens, setDisableReverseTokens] = useState(false);
+
+    useEffect(() => {
+        console.log({ disableReverseTokens });
+        if (disableReverseTokens) {
+            const timer = setTimeout(() => {
+                setDisableReverseTokens(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [disableReverseTokens]);
+
     const navigate = useNavigate();
 
     const reverseTokens = (): void => {
-        // dispatch(reverseTokensInRTK());
-        // console.log('reversing');
-        console.log({ isTokenAPrimaryLocal });
-        navigate(
-            '/trade/limit/chain=0x5&tokenA=' +
-                tokenPair.dataTokenB.address +
-                '&tokenB=' +
-                tokenPair.dataTokenA.address,
-        );
-        if (!isTokenAPrimaryLocal) {
-            // console.log('setting a to' + tradeData.primaryQuantity);
-            setTokenAQtyLocal(tradeData.primaryQuantity);
-            setTokenAInputQty(tradeData.primaryQuantity);
+        if (disableReverseTokens) {
+            return;
         } else {
-            // console.log('setting b to' + tradeData.primaryQuantity);
-            // setTokenBQtyLocal(tradeData.primaryQuantity);
-            setTokenBInputQty(tradeData.primaryQuantity);
-        }
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        dispatch(setPoolPriceNonDisplay(0));
-        dispatch(setLimitTick(undefined));
+            setDisableReverseTokens(true);
+            // dispatch(reverseTokensInRTK());
+            // console.log('reversing');
+            console.log({ isTokenAPrimaryLocal });
+            navigate(
+                '/trade/limit/chain=0x5&tokenA=' +
+                    tokenPair.dataTokenB.address +
+                    '&tokenB=' +
+                    tokenPair.dataTokenA.address,
+            );
+            if (!isTokenAPrimaryLocal) {
+                // console.log('setting a to' + tradeData.primaryQuantity);
+                setTokenAQtyLocal(tradeData.primaryQuantity);
+                setTokenAInputQty(tradeData.primaryQuantity);
+            } else {
+                // console.log('setting b to' + tradeData.primaryQuantity);
+                // setTokenBQtyLocal(tradeData.primaryQuantity);
+                setTokenBInputQty(tradeData.primaryQuantity);
+            }
+            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+            dispatch(setPoolPriceNonDisplay(0));
+            dispatch(setLimitTick(undefined));
 
-        // setResetLimitTick((value) => !value);
+            // setResetLimitTick((value) => !value);
+        }
     };
 
     useEffect(() => {
@@ -560,13 +577,16 @@ export default function LimitCurrencyConverter(props: propsIF) {
             />
 
             <div
-                className={styles.arrow_container}
+                className={
+                    disableReverseTokens ? styles.arrow_container_disabled : styles.arrow_container
+                }
                 onClick={() => {
-                    setResetLimitTick((value) => !value);
-                    setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-                    reverseTokens();
+                    if (!disableReverseTokens) {
+                        setResetLimitTick((value) => !value);
+                        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+                        reverseTokens();
+                    }
                 }}
-                style={{ cursor: 'pointer' }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
                     <TokensArrow />
