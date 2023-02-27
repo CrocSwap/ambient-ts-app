@@ -111,6 +111,8 @@ export default function Pagination(props: PaginationPropsIF) {
         </div>
     );
 
+    console.log(totalPages);
+
     return (
         <>
             <nav className={styles.pagination_container}>
@@ -145,7 +147,7 @@ export default function Pagination(props: PaginationPropsIF) {
                         </div>
                     )} */}
 
-                    {expandPaginationContainer && lastPageClick}
+                    {expandPaginationContainer && currentPage !== totalPages && lastPageClick}
                     {currentPage !== totalPages && rightButton}
                 </motion.div>
             </nav>

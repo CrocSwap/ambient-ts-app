@@ -45,7 +45,8 @@ width: 100px;
 
 
 .pagination_content::-webkit-scrollbar {
-    display: none;
+    width: 5px;
+    height: 5px;
  }
 
 .pagination_content li{
