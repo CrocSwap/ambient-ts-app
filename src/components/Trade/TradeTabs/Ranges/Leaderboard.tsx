@@ -171,7 +171,7 @@ export default function Leaderboard(props: propsIF) {
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
 
-    const showColumns = useMediaQuery('(max-width: 1700px)');
+    const showColumns = useMediaQuery('(max-width: 1900px)');
     const phoneScreen = useMediaQuery('(max-width: 500px)');
 
     // const showColumns = sidebarOpen || desktopView;

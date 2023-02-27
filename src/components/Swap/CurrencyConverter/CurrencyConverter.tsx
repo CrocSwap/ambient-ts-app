@@ -233,29 +233,46 @@ export default function CurrencyConverter(props: propsIF) {
 
     const [switchBoxes, setSwitchBoxes] = useState(false);
 
-    const reverseTokens = (): void => {
-        setSwitchBoxes(!switchBoxes);
-        dispatch(reverseTokensInRTK());
-        navigate(linkPath);
-        if (!isTokenAPrimaryLocal) {
-            console.log('setting token a');
-            setTokenAQtyLocal(tokenBQtyLocal);
-            setSellQtyString(tokenBQtyLocal);
+    const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
-            setBuyQtyString('');
-
-            setSellQtyString(tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal);
-        } else {
-            console.log('setting token a');
-            setTokenBQtyLocal(tokenAQtyLocal);
-            setBuyQtyString(tokenAQtyLocal);
-
-            setSellQtyString('');
-
-            setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
+    useEffect(() => {
+        console.log({ disableReverseTokens });
+        if (disableReverseTokens) {
+            const timer = setTimeout(() => {
+                setDisableReverseTokens(false);
+            }, 3000);
+            return () => clearTimeout(timer);
         }
-        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+    }, [disableReverseTokens]);
+
+    const reverseTokens = (): void => {
+        if (disableReverseTokens) {
+            return;
+        } else {
+            setDisableReverseTokens(true);
+            setSwitchBoxes(!switchBoxes);
+            dispatch(reverseTokensInRTK());
+            navigate(linkPath);
+            if (!isTokenAPrimaryLocal) {
+                console.log('setting token a');
+                setTokenAQtyLocal(tokenBQtyLocal);
+                setSellQtyString(tokenBQtyLocal);
+
+                setBuyQtyString('');
+
+                setSellQtyString(tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal);
+            } else {
+                console.log('setting token a');
+                setTokenBQtyLocal(tokenAQtyLocal);
+                setBuyQtyString(tokenAQtyLocal);
+
+                setSellQtyString('');
+
+                setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
+            }
+            setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        }
     };
 
     useEffect(() => {
@@ -667,7 +684,12 @@ export default function CurrencyConverter(props: propsIF) {
                 acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
             />
-            <div className={styles.arrow_container} onClick={reverseTokens}>
+            <div
+                className={
+                    disableReverseTokens ? styles.arrow_container_disabled : styles.arrow_container
+                }
+                onClick={reverseTokens}
+            >
                 {isLiq ? null : (
                     <IconWithTooltip title='Reverse tokens' placement='left'>
                         <TokensArrow />

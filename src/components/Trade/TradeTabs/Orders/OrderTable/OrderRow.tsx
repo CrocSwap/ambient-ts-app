@@ -499,7 +499,7 @@ export default function OrderRow(props: propsIF) {
             {!showColumns && OrderTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {!showColumns && IDWithTooltip}
-            {!showColumns && walletWithTooltip}
+            {!isOnPortfolioPage && !showColumns && walletWithTooltip}
             {showColumns && (
                 <li
                     data-label='id'

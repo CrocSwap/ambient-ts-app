@@ -461,10 +461,10 @@ export const useProcessOrder = (
     const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 10
-            ? trimString(ensName, 5, 3, '…')
+        ? ensName.length > 15
+            ? trimString(ensName, 9, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 0, '…');
+        : trimString(ownerId, 7, 4, '…');
     const posHashTruncated = trimString(posHash ?? '', 6, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;

@@ -62,7 +62,7 @@ export default function PoolLI(props: propsIF) {
                 pool.poolIdx ?? 36000,
                 1,
             );
-            const volume = poolStatsFresh?.volume;
+            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
             const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
