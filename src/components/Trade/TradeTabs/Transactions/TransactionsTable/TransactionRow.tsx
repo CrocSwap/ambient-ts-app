@@ -590,7 +590,30 @@ export default function TransactionRow(props: propsIF) {
                     enterDelay={750}
                     leaveDelay={200}
                 >
-                    <li data-label='id' onClick={openDetailsModal}>
+                    <li
+                        data-label='id'
+                        onClick={() => {
+                            if (!isOnPortfolioPage) {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'lookupUserTxData',
+                                        loadingStatus: true,
+                                    }),
+                                );
+                                navigate(
+                                    `/${
+                                        isOwnerActiveAccount
+                                            ? 'account'
+                                            : ensName
+                                            ? ensName
+                                            : ownerId
+                                    }`,
+                                );
+                            } else {
+                                openDetailsModal();
+                            }
+                        }}
+                    >
                         <p className='base_color'>{txHashTruncated}</p>{' '}
                         <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                             {userNameToDisplay}

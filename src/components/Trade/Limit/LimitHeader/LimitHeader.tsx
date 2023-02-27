@@ -64,6 +64,7 @@ export default function LimitHeader(props: propsIF) {
             <div
                 className={styles.share_button}
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                id='limit_share_button'
             >
                 <AiOutlineShareAlt />
             </div>
@@ -76,6 +77,7 @@ export default function LimitHeader(props: propsIF) {
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
                     className={styles.settings_icon}
+                    id='limit_settings_button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>

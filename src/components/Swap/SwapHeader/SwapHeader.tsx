@@ -68,6 +68,7 @@ export default function SwapHeader(props: propsIF) {
             <div
                 className={styles.share_button}
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                id='swap_share_button'
             >
                 <AiOutlineShareAlt />
             </div>
@@ -81,6 +82,7 @@ export default function SwapHeader(props: propsIF) {
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
                     className={`${styles.settings_container} ${styles.settings_icon}`}
+                    id='swap_settings_button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
@@ -92,6 +94,7 @@ export default function SwapHeader(props: propsIF) {
         <ContentHeader>
             <div
                 className={styles.share_button}
+                id='swap_share_button'
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
             >
                 <AiOutlineShareAlt />
@@ -103,6 +106,7 @@ export default function SwapHeader(props: propsIF) {
                     ${styles.settings_icon}`}
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
+                    id='swap_settings_button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>

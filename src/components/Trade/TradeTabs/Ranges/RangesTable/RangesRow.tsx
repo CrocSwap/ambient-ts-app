@@ -551,7 +551,26 @@ export default function RangesRow(props: propsIF) {
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
+                <li
+                    data-label='id'
+                    onClick={() => {
+                        if (!isOnPortfolioPage) {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                            navigate(
+                                `/${
+                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                                }`,
+                            );
+                        } else {
+                            openDetailsModal();
+                        }
+                    }}
+                >
                     <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}

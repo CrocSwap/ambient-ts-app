@@ -38,8 +38,10 @@ interface NavbarDropdownMenuPropsIF {
     closeMenu?: () => void;
     chainId: string;
     isAppOverlayActive: boolean;
-
     setIsAppOverlayActive: React.Dispatch<React.SetStateAction<boolean>>;
+    isTutorialMode: boolean;
+    setIsTutorialMode: React.Dispatch<React.SetStateAction<boolean>>;
+
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
     switchTheme: () => void;
     theme: string;
@@ -52,8 +54,10 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         clickLogout,
         // openModal,
         closeMenu,
-        setIsAppOverlayActive,
+        // setIsAppOverlayActive,
         setIsNavbarMenuOpen,
+        isTutorialMode,
+        setIsTutorialMode,
     } = props;
 
     const navigate = useNavigate();
@@ -167,8 +171,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     );
 
     const handleWalkthroughClick = () => {
-        navigate('/trade/market');
-        setIsAppOverlayActive(true);
+        setIsTutorialMode(!isTutorialMode);
         setIsNavbarMenuOpen(false);
     };
     const supportItems = (

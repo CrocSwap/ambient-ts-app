@@ -84,10 +84,10 @@ export default function RemoveRange(props: propsIF) {
         // askTick,
         // baseTokenAddress,
         // quoteTokenAddress,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
+        // baseTokenBalance,
+        // quoteTokenBalance,
+        // baseTokenDexBalance,
+        // quoteTokenDexBalance,
         closeGlobalModal,
         chainData,
         // provider,
@@ -119,6 +119,61 @@ export default function RemoveRange(props: propsIF) {
     const positionsPendingUpdate = useAppSelector(
         (state) => state.receiptData,
     ).positionsPendingUpdate;
+
+    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
+    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
+    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
+
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && position.user && position.base && position.quote) {
+                crocEnv
+                    .token(position.base)
+                    .walletDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenBalance) {
+                            console.log('setting base token wallet balance');
+                            setBaseTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.log);
+                crocEnv
+                    .token(position.base)
+                    .balanceDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenDexBalance) {
+                            console.log('setting base token dex balance');
+                            setBaseTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.log);
+                crocEnv
+                    .token(position.quote)
+                    .walletDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenBalance) {
+                            console.log('setting quote token balance');
+
+                            setQuoteTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.log);
+                crocEnv
+                    .token(position.quote)
+                    .balanceDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenDexBalance) {
+                            console.log('setting quote token dex balance');
+
+                            setQuoteTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.log);
+            }
+        })();
+    }, [crocEnv, position.user, position.base, position.quote, lastBlockNumber]);
 
     useEffect(() => {
         if (

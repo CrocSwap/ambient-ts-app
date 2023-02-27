@@ -28,6 +28,7 @@ interface PositionsOnlyToggleProps {
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
+    setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
@@ -38,7 +39,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         isCandleSelected,
         setIsCandleSelected,
         setTransactionFilter,
-        setHasInitialized,
+        // setHasInitialized,
         expandTradeTable,
         setExpandTradeTable,
         showPositionsOnlyToggle,
@@ -50,6 +51,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
+        setHasUserSelectedViewAll,
         // setShowPositionsOnlyToggle
     } = props;
 
@@ -82,9 +84,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             <Toggle2
                 isOn={!isShowAllEnabled}
                 handleToggle={() => {
-                    setHasInitialized(true);
+                    setHasUserSelectedViewAll(true);
                     // console.log('toggle on', !isShowAllEnabled);
-                    console.log('toggling show all');
+                    // console.log('toggling show all');
                     setIsShowAllEnabled(!isShowAllEnabled);
                     if (!isShowAllEnabled) {
                         setIsCandleSelected(false);
