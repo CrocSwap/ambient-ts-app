@@ -7,6 +7,9 @@ import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarCompone
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 
 interface SentMessageProps {
     message: Message;
@@ -113,6 +116,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
             }
         });
     }
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
 
@@ -139,13 +144,26 @@ export default function SentMessagePanel(props: SentMessageProps) {
             <div className={styles.message_item}>
                 <div
                     className={props.isCurrentUser ? styles.current_user_name : styles.name}
-                    onClick={() =>
+                    onClick={() => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'lookupUserTxData',
+                                loadingStatus: true,
+                            }),
+                        );
                         handleCopyAddress(
                             props.message.ensName === 'defaultValue'
                                 ? props.message.walletID
                                 : props.message.ensName,
-                        )
-                    }
+                        );
+                        navigate(
+                            `/${
+                                props.message.ensName === 'defaultValue'
+                                    ? props.message.walletID
+                                    : props.message.ensName
+                            }`,
+                        );
+                    }}
                 >
                     {getName()}
                 </div>
