@@ -240,7 +240,7 @@ export default function CurrencyConverter(props: propsIF) {
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
-            }, 4000);
+            }, 3000);
             return () => clearTimeout(timer);
         }
     }, [disableReverseTokens]);
