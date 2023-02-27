@@ -157,7 +157,7 @@ export default function PoolCard(props: propsIF) {
                 );
 
                 const tvlResult = poolStats?.tvl;
-                const volumeResult = poolStats?.volume;
+                const volumeResult = poolStats?.volume; // display the 24 hour volume
                 const apyResult = poolStats?.apy;
 
                 if (tvlResult) {

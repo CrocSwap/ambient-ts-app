@@ -49,7 +49,7 @@ export default function RecentPoolsCard(props: propsIF) {
                 pool.poolId ?? 36000,
                 Math.floor(lastBlockNumber / 4),
             );
-            const volume = poolStatsFresh?.volume;
+            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
             const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
