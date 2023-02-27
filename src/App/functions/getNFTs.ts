@@ -18,10 +18,11 @@ export async function getNFTs(account: string) {
             chain,
         });
 
-        // console.log(response?.result);
+        const result = response?.result;
 
-        const userEthNFTs = response?.result.filter((nft) => nft.contractType === 'ERC1155');
+        const userEthNFTs = result.filter((nft) => nft.contractType === 'ERC1155');
 
+        console.log({ userEthNFTs });
         if (userEthNFTs) {
             // console.log({ userEthNFTs });
             const imageLocalURLs: string[] = [];
@@ -30,19 +31,42 @@ export async function getNFTs(account: string) {
 
                 if (metadata) {
                     // const parsedMetadata = JSON.parse(metadata);
-                    const imageIpfsUrl = (metadata as unknown as metadata).image;
-                    const imageUrlNoProtocol = imageIpfsUrl.substring(12);
-                    const imageGatewayURL =
-                        'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
-                    // const imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
+                    let imageGatewayURL;
+                    const imageUrl = (metadata as unknown as metadata).image;
+                    if (imageUrl.includes('lotterynft')) {
+                        return;
+                    } else if (
+                        !nft.symbol ||
+                        ![
+                            'RARI',
+                            'Save Fud NFT Lab',
+                            'ICE',
+                            'OPENSTORE',
+                            // 'ToshimonMinter',
+                        ].includes(nft.symbol)
+                    ) {
+                        return;
+                    } else if (imageUrl.startsWith('https://')) {
+                        imageGatewayURL = imageUrl;
+                    } else if (imageUrl.startsWith('ipfs://')) {
+                        const imageUrlNoProtocol = imageUrl.substring(12);
+                        // const imageGatewayURL =
+                        //     'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
+                        imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
+                    }
+                    console.log({ nftMatchingAllowList: nft });
                     // console.log({ imageGatewayURL });
-                    fetch(imageGatewayURL)
-                        .then((response) => response.blob())
-                        .then((image) => {
-                            // Create a local URL of that image
-                            const localUrl = URL.createObjectURL(image);
-                            imageLocalURLs.push(localUrl);
-                        });
+                    if (imageGatewayURL)
+                        fetch(imageGatewayURL)
+                            .then((response) => response.blob())
+                            .then((image) => {
+                                if (image.type.includes('image')) {
+                                    // Create a local URL of that image
+                                    const localUrl = URL.createObjectURL(image);
+                                    imageLocalURLs.push(localUrl);
+                                }
+                            })
+                            .catch(console.log);
                 }
             });
             // console.log({ imageLocalURLs });
