@@ -34,8 +34,8 @@ export const useSortedPositions = (
         });
     const sortByPool = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => {
-            const poolA = a.base + a.quote;
-            const poolB = b.base + b.quote;
+            const poolA = a.baseSymbol + a.quoteSymbol;
+            const poolB = b.baseSymbol + b.quoteSymbol;
             return poolA.localeCompare(poolB);
         });
     const sortByApy = (unsortedData: PositionIF[]) =>
