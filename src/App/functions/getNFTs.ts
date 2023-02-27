@@ -33,7 +33,12 @@ export async function getNFTs(account: string) {
                     // const parsedMetadata = JSON.parse(metadata);
                     let imageGatewayURL;
                     const imageUrl = (metadata as unknown as metadata).image;
-                    if (imageUrl.includes('lotterynft')) {
+                    if (
+                        imageUrl.includes('lotterynft') ||
+                        [
+                            '88279830972223375506659847640588682494880443313199730925423741164868176183297',
+                        ].includes(nft.result.tokenId.toString())
+                    ) {
                         return;
                     } else if (
                         !nft.symbol ||
