@@ -12,6 +12,7 @@ const getPoolLiquidity = async (chainId: string, base: string, quote: string, po
                 quote: quote,
                 poolIdx: poolIdx.toString(),
                 concise: 'true',
+                tickSource: 'all',
             }),
     )
         .then((response) => response.json())
