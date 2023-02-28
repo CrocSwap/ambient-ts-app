@@ -13,9 +13,10 @@ interface TestPageProps {
     openSidebar: () => void;
     closeSidebar: () => void;
     togggggggleSidebar: () => void;
+    acceptToS: () => void;
 }
 export default function TestPage(props: TestPageProps) {
-    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar } = props;
+    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar, acceptToS } = props;
     const [isOpen, setOpen] = React.useState(false);
 
     // const { tosText, agreement, agreementDate } = useTermsOfService();
@@ -116,6 +117,7 @@ export default function TestPage(props: TestPageProps) {
             />
             <Medal ranking={1} />
             {/* <PulseLoading /> */}
+            <button onClick={() => acceptToS()}>Accept ToS!</button>
         </section>
     );
 }

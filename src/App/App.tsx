@@ -3177,6 +3177,7 @@ export default function App() {
                                     openSidebar={openSidebar}
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
+                                    acceptToS={tos.acceptAgreement}
                                 />
                             }
                         />
