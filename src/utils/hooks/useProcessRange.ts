@@ -179,7 +179,7 @@ export const useProcessRange = (
             ? trimString(ensName, 9, 3, '…')
             : ensName
         : trimString(ownerId, 7, 4, '…');
-    const posHashTruncated = trimString(posHash.toString(), 6, 0, '…');
+    const posHashTruncated = trimString(posHash.toString(), 6, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 

@@ -42,8 +42,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
         // baseDisplay,
         // quoteDisplay,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+        baseQuantityDisplayShort,
+        quoteQuantityDisplayShort,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -215,7 +215,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Buy: '}</p>
 
                 <div>
-                    {quoteDisplayFrontend.replace(/[()]/g, '')}
+                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {quoteTokenLogo ? (
                         <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
@@ -228,7 +228,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <Row>
                 <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Sell: '}</p>
                 <div>
-                    {baseDisplayFrontend.replace(/[()]/g, '')}
+                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {baseTokenLogo ? (
                         <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
@@ -251,7 +251,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}</p>
 
                 <div>
-                    {baseDisplayFrontend.replace(/[()]/g, '')}
+                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {baseTokenLogo ? (
                         <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
@@ -264,7 +264,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <Row>
                 <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Sell: '}</p>
                 <div>
-                    {quoteDisplayFrontend.replace(/[()]/g, '')}
+                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {quoteTokenLogo ? (
                         <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />

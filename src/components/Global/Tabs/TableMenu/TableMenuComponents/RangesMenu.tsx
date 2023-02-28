@@ -113,7 +113,6 @@ export default function RangesMenu(props: propsIF) {
     const handleCopyClick = () => {
         // console.log('copy clicked');
         // console.log({ positionData });
-        console.log('wooooohooooo');
         {
             handlePulseAnimation ? handlePulseAnimation('range') : null;
         }

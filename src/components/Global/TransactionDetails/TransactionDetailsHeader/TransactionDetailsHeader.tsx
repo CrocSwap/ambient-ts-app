@@ -1,9 +1,8 @@
 import styles from './TransactionDetailsHeader.module.css';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
 // import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
@@ -15,13 +14,18 @@ interface TransactionDetailsHeaderPropsIF {
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     tx: TransactionIF;
+    handleCopyAddress(): void;
 }
 export default function TransactionDetailsHeader(props: TransactionDetailsHeaderPropsIF) {
-    const { tx, onClose, downloadAsImage, showShareComponent, setShowShareComponent } = props;
+    const {
+        // tx,
+        handleCopyAddress,
+        onClose,
+        downloadAsImage,
+        showShareComponent,
+        setShowShareComponent,
+    } = props;
     // eslint-disable-next-line
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
 
     const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
 
@@ -40,22 +44,6 @@ export default function TransactionDetailsHeader(props: TransactionDetailsHeader
             </div>
         </IconWithTooltip>
     );
-
-    function handleCopyAddress() {
-        const txHash = tx.tx;
-        copy(txHash);
-        setOpenSnackbar(true);
-    }
-
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value} copied
-    //     </SnackbarComponent>
-    // );
 
     return (
         <div className={styles.container}>
