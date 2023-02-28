@@ -237,7 +237,9 @@ export default function Transactions(props: propsIF) {
     // 30 => Height of each paginated row item
 
     // const regularTransactionItems = Math.round((height - 250) / 30);
-    const showColumnTransactionItems = Math.round((height - 250) / 39);
+    const showColumnTransactionItems = showColumns
+        ? Math.round((height - 250) / 50)
+        : Math.round((height - 250) / 38);
     const transactionsPerPage = showColumnTransactionItems;
 
     useEffect(() => {
