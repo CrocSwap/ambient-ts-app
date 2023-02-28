@@ -14,23 +14,32 @@ export interface termsOfServiceIF {
 }
 
 export const useTermsOfService = () => {
-    const getCurrentAgreement = (): (sectionTermsIF|undefined) => {
-        return JSON.parse(localStorage.getItem('termsOfService') as string);
+    const getCurrentAgreement = (section: string): (sectionTermsIF|undefined) => {
+        const allAgreements = JSON.parse(localStorage.getItem('termsOfService') as string);
+        if (section === 'transaction') {
+            return allAgreements?.transaction;
+        } else if (section === 'chat') {
+            return allAgreements?.chat;
+        }
     };
 
     const [txAgreement, setTxAgreement] = useState<sectionTermsIF|undefined>(
-        getCurrentAgreement()
+        getCurrentAgreement('transaction')
     );
 
     useEffect(() => {
-        txAgreement && localStorage.setItem('tos', JSON.stringify(txAgreement));
+        txAgreement && localStorage.setItem('tos', JSON.stringify({
+            transaction: txAgreement
+        }));
     }, [txAgreement]);
 
     const output = {
-        currentToS: () => transactionToS,
+        getCurrentToS: () => transactionToS,
         getLastAgreement: () => txAgreement,
         checkAgreement: () => txAgreement?.version === transactionToS.version,
-        acceptAgreement: () => setTxAgreement({...transactionToS, acceptedOn: new Date().toISOString()})
+        acceptAgreement: () => setTxAgreement(
+            {...transactionToS, acceptedOn: new Date().toISOString()}
+        )
     };
 
     return output;
