@@ -15,6 +15,9 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
+import { useProcessRange } from '../../utils/hooks/useProcessRange';
+import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -99,6 +102,26 @@ export default function RangeDetails(props: propsIF) {
     const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+
+    const { posHash } = useProcessRange(position, account);
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // eslint-disable-next-line
+    const [value, copy] = useCopyToClipboard();
+
+    function handleCopyPositionId() {
+        copy(posHash.toString());
+        setOpenSnackbar(true);
+    }
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
@@ -342,6 +365,7 @@ export default function RangeDetails(props: propsIF) {
                 downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
+                handleCopyPositionId={handleCopyPositionId}
             />
             {showShareComponent ? (
                 shareComponent
@@ -353,6 +377,7 @@ export default function RangeDetails(props: propsIF) {
                     quoteFeesDisplay={quoteFeesDisplay}
                 />
             )}
+            {snackbarContent}
         </div>
     );
 }

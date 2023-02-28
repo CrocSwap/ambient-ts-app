@@ -11,6 +11,8 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { formatAmountOld } from '../../utils/numbers';
+import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
     account: string;
@@ -39,9 +41,29 @@ export default function OrderDetails(props: propsIF) {
         isOrderFilled,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
+        // posHashTruncated,
+        posHash,
     } = useProcessOrder(limitOrder, account);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // eslint-disable-next-line
+    const [value, copy] = useCopyToClipboard();
+
+    function handleCopyPositionId() {
+        copy(posHash);
+        setOpenSnackbar(true);
+    }
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
 
     const [usdValue, setUsdValue] = useState<string>('...');
     // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
@@ -326,6 +348,7 @@ export default function OrderDetails(props: propsIF) {
                 downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
+                handleCopyPositionId={handleCopyPositionId}
             />
 
             {showShareComponent ? (
@@ -353,6 +376,7 @@ export default function OrderDetails(props: propsIF) {
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
+            {snackbarContent}
         </div>
     );
 }
