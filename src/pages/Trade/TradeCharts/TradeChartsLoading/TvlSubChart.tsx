@@ -79,21 +79,28 @@ export default function TvlSubChart(props: TvlData) {
         (tvlData: any) => {
             if (tvlData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const yExtent = d3fc
-                    .extentLinear()
-                    .accessors([(d: any) => d.value])
-                    .pad([0, 0.7]);
-
                 const yScale = d3.scaleLinear();
-                yScale.domain(yExtent(tvlData));
 
-                const highest = d3.max(tvlData, (d: any) => d.value) as any;
-                const lowest = d3.min(tvlData, (d: any) => d.value) as any;
+                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+                const filtered = tvlData?.filter(
+                    (data: any) => data.time >= xmin && data.time <= xmax,
+                );
+
+                const minYBoundary = d3.min(filtered, (d: any) => d.value) as any;
+                const maxYBoundary = d3.max(filtered, (d: any) => d.value) as any;
+
+                const domain = [0, maxYBoundary * 2];
+                yScale.domain(domain);
 
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
-                    .tickValues([lowest + (highest - lowest) / 2, highest])
+                    .tickValues([
+                        minYBoundary + (maxYBoundary - minYBoundary) / 2,
+                        maxYBoundary / minYBoundary < 2 ? '' : maxYBoundary * 1.5,
+                    ])
                     .tickFormat(formatDollarAmountAxis);
 
                 const crosshairDataLocal = [
@@ -308,7 +315,7 @@ export default function TvlSubChart(props: TvlData) {
         <div ref={tvlMainDiv} id='tvl_chart' data-testid={'chart'}>
             <d3fc-svg id='d3PlotTvl' ref={d3PlotTvl} style={{ overflow: 'hidden' }}></d3fc-svg>
             <label style={{ position: 'absolute', left: '0%' }}>
-                TVL{' '}
+                TVL:{' '}
                 {formatDollarAmountAxis(
                     subChartValues.filter((value: any) => value.name === 'tvl')[0].value,
                 )}

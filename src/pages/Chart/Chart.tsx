@@ -239,15 +239,15 @@ export default function Chart(props: ChartData) {
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
-            value: 0,
+            value: undefined,
         },
         {
             name: 'tvl',
-            value: 0,
+            value: undefined,
         },
         {
             name: 'volume',
-            value: 0,
+            value: undefined,
         },
     ]);
 
@@ -5422,6 +5422,21 @@ export default function Chart(props: ChartData) {
                         .style('visibility', 'hidden');
 
                     setIsMouseMoveCrosshair(false);
+
+                    setsubChartValues([
+                        {
+                            name: 'feeRate',
+                            value: undefined,
+                        },
+                        {
+                            name: 'tvl',
+                            value: undefined,
+                        },
+                        {
+                            name: 'volume',
+                            value: undefined,
+                        },
+                    ]);
 
                     if (selectedDate === undefined) {
                         props.setShowTooltip(false);
