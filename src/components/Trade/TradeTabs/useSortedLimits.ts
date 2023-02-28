@@ -22,8 +22,8 @@ export const useSortedLimits = (
     // sort by token pair
     const sortByPool = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => {
-            const poolA = a.base + a.quote;
-            const poolB = b.base + b.quote;
+            const poolA = a.baseSymbol + a.quoteSymbol;
+            const poolB = b.baseSymbol + b.quoteSymbol;
             return poolA.localeCompare(poolB);
         });
     const sortByWallet = (unsortedData: LimitOrderIF[]) =>

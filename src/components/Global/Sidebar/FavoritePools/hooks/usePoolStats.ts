@@ -6,13 +6,10 @@ import { PoolStatsFn } from '../../../../../App/functions/getPoolStats';
 export const usePoolStats = (
     pool: PoolIF,
     lastBlockNumber: number,
-    cachedPoolStatsFetch: PoolStatsFn
-): [
-    string,
-    string
-] => {
-    const [poolVolume, setPoolVolume] = useState<string|undefined>();
-    const [poolTvl, setPoolTvl] = useState<string|undefined>();
+    cachedPoolStatsFetch: PoolStatsFn,
+): [string, string] => {
+    const [poolVolume, setPoolVolume] = useState<string | undefined>();
+    const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
     const fetchPoolStats = () => {
         (async () => {
@@ -23,7 +20,7 @@ export const usePoolStats = (
                 pool.poolId,
                 Math.floor(lastBlockNumber / 4),
             );
-            const volume = poolStatsFresh?.volume;
+            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
             const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
@@ -36,8 +33,5 @@ export const usePoolStats = (
         fetchPoolStats();
     }, [lastBlockNumber]);
 
-    return [
-        poolVolume ?? '…',
-        poolTvl ?? '…'
-    ];
-}
+    return [poolVolume ?? '…', poolTvl ?? '…'];
+};

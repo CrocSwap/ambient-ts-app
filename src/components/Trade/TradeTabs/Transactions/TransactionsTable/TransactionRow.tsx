@@ -217,7 +217,7 @@ export default function TransactionRow(props: propsIF) {
             interactive
             title={
                 <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
-                    {txHash + 'ㅤ'}
+                    {'View transaction on Etherscan: ' + txHash + 'ㅤ'}
                     <FiExternalLink size={'12px'} />
                 </div>
             } // invisible space character added
@@ -227,7 +227,7 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                onClick={handleOpenExplorer}
                 data-label='id'
                 className='base_color'
                 style={{ fontFamily: 'monospace' }}
@@ -566,23 +566,34 @@ export default function TransactionRow(props: propsIF) {
                     interactive
                     title={
                         <div>
-                            <NavLink
-                                onClick={() => {
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName: 'lookupUserTxData',
-                                            loadingStatus: true,
-                                        }),
-                                    );
-                                }}
-                                to={`/${
-                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-                                }`}
-                            >
-                                <p>{ensName ? ensName : ownerId}</p>
-                                {'View Account' + 'ㅤ'}
-                                <FiExternalLink size={'12px'} />
-                            </NavLink>
+                            {isOnPortfolioPage ? (
+                                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
+                                    {'View transaction on Etherscan: ' + txHash + 'ㅤ'}
+                                    <FiExternalLink size={'12px'} />
+                                </div>
+                            ) : (
+                                <NavLink
+                                    onClick={() => {
+                                        dispatch(
+                                            setDataLoadingStatus({
+                                                datasetName: 'lookupUserTxData',
+                                                loadingStatus: true,
+                                            }),
+                                        );
+                                    }}
+                                    to={`/${
+                                        isOwnerActiveAccount
+                                            ? 'account'
+                                            : ensName
+                                            ? ensName
+                                            : ownerId
+                                    }`}
+                                >
+                                    <p>{ensName ? ensName : ownerId}</p>
+                                    {'View Account' + 'ㅤ'}
+                                    <FiExternalLink size={'12px'} />
+                                </NavLink>
+                            )}
                         </div>
                     }
                     placement={'right'}
@@ -610,7 +621,7 @@ export default function TransactionRow(props: propsIF) {
                                     }`,
                                 );
                             } else {
-                                openDetailsModal();
+                                handleOpenExplorer();
                             }
                         }}
                     >

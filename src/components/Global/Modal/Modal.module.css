@@ -76,7 +76,7 @@
     cursor: pointer;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 1380px) {
     .modal_body {
         top: 10rem;
 
