@@ -236,9 +236,9 @@ export default function Transactions(props: propsIF) {
     // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
     // 30 => Height of each paginated row item
 
-    const regularTransactionItems = Math.round((height - 250) / 30);
-    const showColumnTransactionItems = Math.round((height - 250) / 50);
-    const transactionsPerPage = showColumns ? showColumnTransactionItems : regularTransactionItems;
+    // const regularTransactionItems = Math.round((height - 250) / 30);
+    const showColumnTransactionItems = Math.round((height - 250) / 39);
+    const transactionsPerPage = showColumnTransactionItems;
 
     useEffect(() => {
         setCurrentPage(1);
