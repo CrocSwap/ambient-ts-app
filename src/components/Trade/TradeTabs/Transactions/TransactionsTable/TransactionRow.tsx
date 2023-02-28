@@ -69,8 +69,8 @@ export default function TransactionRow(props: propsIF) {
         userNameToDisplay,
         quoteTokenLogo,
         baseTokenLogo,
-        baseDisplay,
-        quoteDisplay,
+        baseQuantityDisplayShort,
+        quoteQuantityDisplayShort,
         // isBaseFlowPositive,
         // isQuoteFlowPositive,
         // baseDisplayFrontend,
@@ -148,7 +148,7 @@ export default function TransactionRow(props: propsIF) {
     const isOrderRemove = tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
-        baseDisplay === '0.00' ||
+        baseQuantityDisplayShort === '0.00' ||
         !valueArrows ||
         (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
         tx.source === 'manual'
@@ -156,7 +156,9 @@ export default function TransactionRow(props: propsIF) {
             : styles.positive_value;
     // baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
     const negativeDisplayStyle =
-        quoteDisplay === '0.00' || !valueArrows || (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
+        quoteQuantityDisplayShort === '0.00' ||
+        !valueArrows ||
+        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
             ? styles.light_grey
             : styles.negative_value;
     // const baseDisplayStyle =
@@ -507,7 +509,7 @@ export default function TransactionRow(props: propsIF) {
                     fontFamily: 'monospace',
                 }}
             >
-                {baseDisplay}
+                {baseQuantityDisplayShort}
                 {baseTokenLogoComponent}
                 {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
@@ -535,7 +537,7 @@ export default function TransactionRow(props: propsIF) {
                     fontFamily: 'monospace',
                 }}
             >
-                {quoteDisplay}
+                {quoteQuantityDisplayShort}
                 {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
                 {quoteTokenLogoComponent}
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
@@ -766,11 +768,11 @@ export default function TransactionRow(props: propsIF) {
                     >
                         {isBuy
                             ? isOrderRemove
-                                ? baseDisplay
-                                : quoteDisplay
+                                ? baseQuantityDisplayShort
+                                : quoteQuantityDisplayShort
                             : isOrderRemove
-                            ? quoteDisplay
-                            : baseDisplay}
+                            ? quoteQuantityDisplayShort
+                            : baseQuantityDisplayShort}
                         {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy
@@ -787,12 +789,16 @@ export default function TransactionRow(props: propsIF) {
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {isBuy
-                            ? `${isOrderRemove ? quoteDisplay : baseDisplay}${
-                                  valueArrows ? negativeArrow : ' '
-                              }`
-                            : `${isOrderRemove ? baseDisplay : quoteDisplay}${
-                                  valueArrows ? negativeArrow : ' '
-                              }`}
+                            ? `${
+                                  isOrderRemove
+                                      ? quoteQuantityDisplayShort
+                                      : baseQuantityDisplayShort
+                              }${valueArrows ? negativeArrow : ' '}`
+                            : `${
+                                  isOrderRemove
+                                      ? baseQuantityDisplayShort
+                                      : quoteQuantityDisplayShort
+                              }${valueArrows ? negativeArrow : ' '}`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy
                             ? isOrderRemove
