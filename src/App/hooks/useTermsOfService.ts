@@ -26,9 +26,6 @@ export const useTermsOfService = () => {
         agreement && localStorage.setItem('tos', JSON.stringify(agreement));
     }, [agreement]);
 
-    false && agreement;
-    false && setAgreement;
-
     const output = {
         currentToS: () => transactionToS,
         getLastAgreement: () => agreement,
