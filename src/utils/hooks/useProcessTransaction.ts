@@ -518,7 +518,7 @@ export const useProcessTransaction = (
             : ensName
         : trimString(ownerId, 7, 4, '…');
 
-    const txHashTruncated = trimString(txHash, 6, 0, '…');
+    const txHashTruncated = trimString(txHash, 6, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 

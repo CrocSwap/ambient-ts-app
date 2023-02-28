@@ -217,7 +217,8 @@ export default function TransactionRow(props: propsIF) {
             interactive
             title={
                 <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
-                    {'View transaction on Etherscan: ' + txHash + 'ㅤ'}
+                    {txHash + 'ㅤ'}
+                    {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
                     <FiExternalLink size={'12px'} />
                 </div>
             } // invisible space character added
@@ -568,7 +569,8 @@ export default function TransactionRow(props: propsIF) {
                         <div>
                             {isOnPortfolioPage ? (
                                 <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
-                                    {'View transaction on Etherscan: ' + txHash + 'ㅤ'}
+                                    {txHash + 'ㅤ'}
+                                    {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
                                     <FiExternalLink size={'12px'} />
                                 </div>
                             ) : (
