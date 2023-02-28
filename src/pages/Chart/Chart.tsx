@@ -239,15 +239,15 @@ export default function Chart(props: ChartData) {
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
-            value: 0,
+            value: undefined,
         },
         {
             name: 'tvl',
-            value: 0,
+            value: undefined,
         },
         {
             name: 'volume',
-            value: 0,
+            value: undefined,
         },
     ]);
 
@@ -334,6 +334,9 @@ export default function Chart(props: ChartData) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
+    // Subcharts
+
+    const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
     // useEffect(() => {
     //     if (scaleData !== undefined) {
     //         // d3.select(d3PlotArea.current).on('measure', function (event: any) {
@@ -485,7 +488,7 @@ export default function Chart(props: ChartData) {
 
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
-        nd.requestRedraw();
+        if (nd) nd.requestRedraw();
     }, []);
 
     useEffect(() => {
@@ -2123,6 +2126,12 @@ export default function Chart(props: ChartData) {
             ];
         });
     };
+
+    // set default limit tick
+    useEffect(() => {
+        if (tradeData.limitTick && Math.abs(tradeData.limitTick) === Infinity)
+            dispatch(setLimitTick(undefined));
+    }, []);
 
     useEffect(() => {
         setLimitLineValue();
@@ -4415,7 +4424,7 @@ export default function Chart(props: ChartData) {
 
                         const high = maxYBoundary > value ? maxYBoundary : value;
                         const bufferForLimit = Math.abs((low - high) / 6);
-                        if (value > 0) {
+                        if (value > 0 && Math.abs(value) !== Infinity) {
                             const domain = [low - bufferForLimit, high + bufferForLimit / 2];
 
                             scaleData.yScale.domain(domain);
@@ -4706,6 +4715,29 @@ export default function Chart(props: ChartData) {
         }
     }, [crosshairData]);
 
+    const findTvlNearest = (point: any) => {
+        const tvlData = parsedChartData?.tvlChartData;
+        const series = tvlAreaSeries;
+        if (point == undefined) return 0;
+        if (series && tvlData) {
+            const xScale = series.xScale(),
+                xValue = series.crossValue();
+
+            const filtered =
+                tvlData.length > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
+
+            const nearest = minimum(filtered, (d: any) =>
+                Math.abs(point.layerX - xScale(xValue(d))),
+            )[1];
+
+            if (nearest) {
+                return nearest.value;
+            } else {
+                return 0;
+            }
+        }
+    };
+
     // Draw Chart
     const drawChart = useCallback(
         (
@@ -4794,11 +4826,7 @@ export default function Chart(props: ChartData) {
                         const newData = [...prevState];
 
                         newData.filter((target: any) => target.name === 'tvl')[0].value =
-                            tvlChartData.find(
-                                (item: any) =>
-                                    moment(item.time.getTime()).add(30, 'm').toDate().getTime() ===
-                                    nearest?.date.getTime(),
-                            )?.value;
+                            findTvlNearest(point);
 
                         newData.filter((target: any) => target.name === 'feeRate')[0].value =
                             feeChartData.find(
@@ -5393,6 +5421,21 @@ export default function Chart(props: ChartData) {
 
                     setIsMouseMoveCrosshair(false);
 
+                    setsubChartValues([
+                        {
+                            name: 'feeRate',
+                            value: undefined,
+                        },
+                        {
+                            name: 'tvl',
+                            value: undefined,
+                        },
+                        {
+                            name: 'volume',
+                            value: undefined,
+                        },
+                    ]);
+
                     if (selectedDate === undefined) {
                         props.setShowTooltip(false);
                     }
@@ -5432,6 +5475,7 @@ export default function Chart(props: ChartData) {
             showTvl,
             showVolume,
             showFeeRate,
+            tvlAreaSeries,
         ],
     );
 
@@ -5477,18 +5521,17 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]) - 3600 * 1000);
 
-        const filtered = volumeData?.filter((data: any) => data.time >= xmin && data.time <= xmax);
+        const filtered = volumeData?.filter((data: any) => data.time >= xmin);
 
         const minYBoundary = d3.min(filtered, (d) => d.value);
         const maxYBoundary = d3.max(filtered, (d) => d.value);
         if (minYBoundary !== undefined && maxYBoundary !== undefined) {
-            const domain = [0, maxYBoundary];
+            const domain = [0, maxYBoundary / 1.05];
             scaleData.volumeScale.domain(domain);
         }
-    }, [volumeData.length, scaleData && scaleData.yScale.domain()]);
+    }, [scaleData && scaleData.xScale.domain()]);
 
     useEffect(() => {
         if (
@@ -5816,6 +5859,7 @@ export default function Chart(props: ChartData) {
                                 setTransformX={setTransformX}
                                 transformX={transformX}
                                 yAxisWidth={yAxisWidth}
+                                setTvlAreaSeries={setTvlAreaSeries}
                             />
                         </>
                     )}

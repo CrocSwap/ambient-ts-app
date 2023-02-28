@@ -21,6 +21,7 @@ export const formatDollarAmount = (num: number | undefined, digits = 2, round = 
 export const formatDollarAmountAxis = (num: number | undefined) => {
     const digits = num != undefined ? num.toString().length : 0;
     if (num === 0) return '$0.00';
+    if (num === undefined) return '-';
     if (!num) return '-';
     if (num < 0.001 && digits <= 3) {
         return '<$0.001';

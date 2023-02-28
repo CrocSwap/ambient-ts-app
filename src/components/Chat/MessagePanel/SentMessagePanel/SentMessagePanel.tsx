@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useEffect, useState } from 'react';
 // import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 // import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
@@ -22,17 +22,41 @@ interface SentMessageProps {
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
     moderator: boolean;
-    getMsg: () => Promise<void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    room: string;
-    isDeleted: boolean;
-    setIsDeleted: Dispatch<SetStateAction<boolean>>;
+    room: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isMessageDeleted: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setIsMessageDeleted: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    previousMessage: any;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
+    const [showAvatar, setShowAvatar] = useState<boolean>(true);
+    const [showName, setShowName] = useState<boolean>(true);
 
-    // const { userImageData } = props;
+    useEffect(() => {
+        const previousMessageDate = new Date(props.previousMessage?.createdAt);
+        const currentMessageDate = new Date(props.message?.createdAt);
+        const currentPreviousDiffInMs = Math.abs(
+            currentMessageDate.getTime() - previousMessageDate.getTime(),
+        );
+
+        if (props.previousMessage?.sender === props.message?.sender) {
+            if (currentPreviousDiffInMs < 10 * 60 * 1000) {
+                setShowAvatar(false);
+                setShowName(false);
+            } else {
+                setShowAvatar(true);
+                setShowName(true);
+            }
+        } else {
+            setShowAvatar(true);
+            setShowName(true);
+        }
+    }, [props.message]);
 
     const { deleteMessage } = useChatApi();
 
@@ -78,41 +102,67 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     function mentionedMessage() {
         const messagesArray = props.message.message.split(' ');
-        if (props.message.isMentionMessage === true) {
-            return (
-                <p>
-                    {messagesArray.map((word, index) => (
-                        <span
-                            key={index}
-                            className={` ${
-                                props.isUserLoggedIn
-                                    ? word.slice(1) === props.ensName ||
-                                      word.slice(1) === props.connectedAccountActive
-                                        ? styles.mention_message
+        if (showAvatar === true) {
+            if (props.message.isMentionMessage === true) {
+                return (
+                    <p>
+                        {messagesArray.map((word, index) => (
+                            <span
+                                key={index}
+                                className={` ${
+                                    props.isUserLoggedIn
+                                        ? word.slice(1) === props.ensName ||
+                                          word.slice(1) === props.connectedAccountActive
+                                            ? styles.mention_message
+                                            : styles.message
                                         : styles.message
-                                    : styles.message
-                            }`}
-                        >
-                            {'' + word}
-                        </span>
-                    ))}
-                </p>
-            );
+                                }`}
+                            >
+                                {'' + word}
+                            </span>
+                        ))}
+                    </p>
+                );
+            } else {
+                return <p className={styles.message}>{props.message.message}</p>;
+            }
         } else {
-            return <p className={styles.message}>{props.message.message}</p>;
+            if (props.message.isMentionMessage === true) {
+                return (
+                    <p>
+                        {messagesArray.map((word, index) => (
+                            <span
+                                key={index}
+                                className={` ${
+                                    props.isUserLoggedIn
+                                        ? word.slice(1) === props.ensName ||
+                                          word.slice(1) === props.connectedAccountActive
+                                            ? styles.mention_message
+                                            : styles.message
+                                        : styles.message
+                                }`}
+                            >
+                                {'' + word}
+                            </span>
+                        ))}
+                    </p>
+                );
+            } else {
+                return <p className={styles.message_without_avatar}>{props.message.message}</p>;
+            }
         }
     }
 
     function deleteMessages(id: string) {
         // eslint-disable-next-line
-        props.setIsDeleted(false);
-        // eslint-disable-next-line
+        props.setIsMessageDeleted(false);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         deleteMessage(id).then((result: any) => {
             if (result.status === 'OK') {
-                props.setIsDeleted(true);
+                props.setIsMessageDeleted(true);
                 return result;
             } else {
-                props.setIsDeleted(false);
+                props.setIsMessageDeleted(false);
             }
         });
     }
@@ -138,12 +188,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     : styles.sent_message_body
             }
         >
-            <div className={styles.nft_container}>
-                {/* {userImageData[1] ? <img src={userImageData[1]} alt='nft' /> : null}
-                {userImageData[2] ? <img src={userImageData[2]} alt='nft' /> : null}
-                {userImageData[3] ? <img src={userImageData[3]} alt='nft' /> : null} */}
-                {myBlockies}
-            </div>
+            {showAvatar && <div className={styles.nft_container}>{myBlockies}</div>}
             <div className={styles.message_item}>
                 <div
                     className={props.isCurrentUser ? styles.current_user_name : styles.name}
@@ -177,7 +222,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         }
                     }}
                 >
-                    {getName()}
+                    {showName && getName()}
                 </div>
                 <PositionBox
                     message={props.message.message}
