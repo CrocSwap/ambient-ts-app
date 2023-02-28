@@ -54,20 +54,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
         getDayAndName(props.previousMessage?.createdAt, props.message?.createdAt);
 
-        console.log(
-            'önce: ',
-            previousMessageDate.getDay(),
-            ' şimdi: ',
-            currentMessageDate.getDay(),
-        );
-        console.log(
-            'Prev: ',
-            props.previousMessage,
-            ' curr: ',
-            props.message,
-            ' next: ',
-            props.nextMessage,
-        );
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 10 * 60 * 1000) {
                 setShowAvatar(false);
