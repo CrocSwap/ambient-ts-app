@@ -18,19 +18,19 @@ export const useTermsOfService = () => {
         return JSON.parse(localStorage.getItem('termsOfService') as string);
     };
 
-    const [agreement, setAgreement] = useState<sectionTermsIF|undefined>(
+    const [txAgreement, setTxAgreement] = useState<sectionTermsIF|undefined>(
         getCurrentAgreement()
     );
 
     useEffect(() => {
-        agreement && localStorage.setItem('tos', JSON.stringify(agreement));
-    }, [agreement]);
+        txAgreement && localStorage.setItem('tos', JSON.stringify(txAgreement));
+    }, [txAgreement]);
 
     const output = {
         currentToS: () => transactionToS,
-        getLastAgreement: () => agreement,
-        checkAgreement: () => agreement?.version === transactionToS.version,
-        acceptAgreement: () => setAgreement({...transactionToS, acceptedOn: new Date().toISOString()})
+        getLastAgreement: () => txAgreement,
+        checkAgreement: () => txAgreement?.version === transactionToS.version,
+        acceptAgreement: () => setTxAgreement({...transactionToS, acceptedOn: new Date().toISOString()})
     };
 
     return output;
