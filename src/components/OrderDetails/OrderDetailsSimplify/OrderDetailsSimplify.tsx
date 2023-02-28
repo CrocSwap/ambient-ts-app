@@ -5,6 +5,10 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import moment from 'moment';
+import { FiCopy } from 'react-icons/fi';
+import { useState } from 'react';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
 
 interface ItemRowPropsIF {
     title: string;
@@ -59,7 +63,7 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
 
     const {
         userNameToDisplay,
-        // posHashTruncated,
+        posHashTruncated,
         posHash,
         // blockExplorer,
         isOwnerActiveAccount,
@@ -103,6 +107,27 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
 
     // console.log({ limitOrder });
 
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const [value, copy] = useCopyToClipboard();
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
+
+    function handleCopyPositionHash() {
+        copy(posHash.toString());
+        // setCopiedData(posHash.toString());
+
+        setOpenSnackbar(true);
+    }
+
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
@@ -142,6 +167,13 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
         </div>
     );
 
+    const posHashContent = (
+        <div className={styles.link_row} onClick={handleCopyPositionHash}>
+            <p>{posHashTruncated}</p>
+            <FiCopy />
+        </div>
+    );
+
     const baseAddressContent = (
         <div onClick={handleOpenBaseAddress} className={styles.link_row}>
             <p>{baseTokenAddressTruncated}</p>
@@ -166,7 +198,12 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
             content: 'Limit',
             explanation: 'A limit order is a type of range position ',
         },
-
+        {
+            title: 'Position Slot ID ',
+            content: posHashContent,
+            // eslint-disable-next-line quotes
+            explanation: "A unique identifier for this user's position",
+        },
         {
             title: 'Wallet ',
             content: walletContent,
@@ -306,6 +343,7 @@ export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF)
                     ))}
                 </section>
             </div>
+            {snackbarContent}
         </div>
     );
 }
