@@ -30,11 +30,10 @@ export const useTermsOfService = () => {
     false && setAgreement;
 
     const output = {
-        getCurrentTOS: () => tos,
+        currentToS: () => tos,
+        getLastAgreement: () => agreement,
         checkAgreement: () => agreement?.version === tos.version,
-        acceptAgreement: () => {
-            setAgreement({...tos, acceptedOn: new Date().toISOString()});
-        }
+        acceptAgreement: () => setAgreement({...tos, acceptedOn: new Date().toISOString()})
     };
 
     return output;
