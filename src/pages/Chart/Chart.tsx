@@ -488,7 +488,7 @@ export default function Chart(props: ChartData) {
 
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
-        nd.requestRedraw();
+        if (nd) nd.requestRedraw();
     }, []);
 
     useEffect(() => {
@@ -4424,12 +4424,7 @@ export default function Chart(props: ChartData) {
 
                         const high = maxYBoundary > value ? maxYBoundary : value;
                         const bufferForLimit = Math.abs((low - high) / 6);
-                        if (
-                            value > 0 &&
-                            Math.abs(value) !== Infinity &&
-                            tradeData.limitTick &&
-                            tradeData.limitTick > 0
-                        ) {
+                        if (value > 0 && Math.abs(value) !== Infinity) {
                             const domain = [low - bufferForLimit, high + bufferForLimit / 2];
 
                             scaleData.yScale.domain(domain);
