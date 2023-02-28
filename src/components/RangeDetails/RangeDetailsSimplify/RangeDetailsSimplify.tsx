@@ -6,6 +6,10 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import moment from 'moment';
 // import Apy from '../../Global/Tabs/Apy/Apy';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { useState } from 'react';
+import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
+import { FiCopy } from 'react-icons/fi';
 
 interface ItemRowPropsIF {
     title: string;
@@ -25,7 +29,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
 
     const {
         userNameToDisplay,
-        // posHashTruncated,
+        posHashTruncated,
         posHash,
         // blockExplorer,
         isOwnerActiveAccount,
@@ -49,6 +53,20 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
     } = useProcessRange(position, account);
 
     // console.log({ isAmbient });
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const [value, copy] = useCopyToClipboard();
+    const [copiedData, setCopiedData] = useState('');
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {copiedData} copied
+        </SnackbarComponent>
+    );
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
@@ -60,8 +78,16 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
     //         window.open(explorerUrl);
     //     }
     // }
+
+    function handleCopyPositionHash() {
+        copy(posHash.toString());
+        setCopiedData(posHash.toString());
+
+        setOpenSnackbar(true);
+    }
+
     function handleOpenBaseAddress() {
-        if (posHash && blockExplorer) {
+        if (tokenAAddressLowerCase && blockExplorer) {
             const adressUrl =
                 tokenAAddressLowerCase === ZERO_ADDRESS
                     ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
@@ -70,7 +96,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         }
     }
     function handleOpenQuoteAddress() {
-        if (posHash && blockExplorer) {
+        if (tokenBAddressLowerCase && blockExplorer) {
             const adressUrl = `${blockExplorer}token/${tokenBAddressLowerCase}`;
             window.open(adressUrl);
         }
@@ -82,6 +108,12 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
     //     </div>
     // );
 
+    const posHashContent = (
+        <div className={styles.link_row} onClick={handleCopyPositionHash}>
+            <p>{posHashTruncated}</p>
+            <FiCopy />
+        </div>
+    );
     const walletContent = (
         <div className={styles.link_row} onClick={handleOpenWallet}>
             <p>{userNameToDisplay}</p>
@@ -112,6 +144,12 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             title: 'Position Type ',
             content: isAmbient ? 'Ambient' : 'Range',
             explanation: 'e.g. Range / Ambient ',
+        },
+        {
+            title: 'Position ID ',
+            content: posHashContent,
+            // eslint-disable-next-line quotes
+            explanation: "A unique identifier for this user's position",
         },
 
         {
@@ -273,6 +311,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
                         ))}
                 </section>
             </div>
+            {snackbarContent}
         </div>
     );
 }
