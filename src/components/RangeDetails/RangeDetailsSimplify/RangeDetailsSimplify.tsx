@@ -146,7 +146,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             explanation: 'e.g. Range / Ambient ',
         },
         {
-            title: 'Position ID ',
+            title: 'Position Slot ID ',
             content: posHashContent,
             // eslint-disable-next-line quotes
             explanation: "A unique identifier for this user's position",
