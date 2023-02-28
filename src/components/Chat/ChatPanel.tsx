@@ -57,6 +57,7 @@ export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // const navigate = useNavigate();
+
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
@@ -296,8 +297,8 @@ export default function ChatPanel(props: ChatProps) {
                             isMessageDeleted={isMessageDeleted}
                             setIsMessageDeleted={setIsMessageDeleted}
                             previousMessage={i === messages.length - 1 ? null : messages[i + 1]}
+                            nextMessage={i === 0 ? null : messages[i - 1]}
                         />
-                        <hr />
                     </div>
                 ))}
         </div>

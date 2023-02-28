@@ -30,31 +30,72 @@ interface SentMessageProps {
     setIsMessageDeleted: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     previousMessage: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    nextMessage: any;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
+    const [hasSeparator, sethasSeparator] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
+    const [daySeparator, setdaySeparator] = useState('');
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
+        const nextMessageDate = new Date(props.nextMessage?.createdAt);
         const currentPreviousDiffInMs = Math.abs(
             currentMessageDate.getTime() - previousMessageDate.getTime(),
         );
+        const nextCurrentDiffInMs = Math.abs(
+            nextMessageDate.getTime() - currentMessageDate.getTime(),
+        );
 
+        getDayAndName(props.previousMessage?.createdAt, props.message?.createdAt);
+
+        console.log(
+            'önce: ',
+            previousMessageDate.getDay(),
+            ' şimdi: ',
+            currentMessageDate.getDay(),
+        );
+        console.log(
+            'Prev: ',
+            props.previousMessage,
+            ' curr: ',
+            props.message,
+            ' next: ',
+            props.nextMessage,
+        );
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 10 * 60 * 1000) {
                 setShowAvatar(false);
                 setShowName(false);
+                if (
+                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    props.nextMessage?.sender === props.message?.sender
+                ) {
+                    sethasSeparator(false);
+                } else {
+                    sethasSeparator(true);
+                }
             } else {
                 setShowAvatar(true);
                 setShowName(true);
+                sethasSeparator(true);
             }
         } else {
             setShowAvatar(true);
             setShowName(true);
+            if (
+                nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                props.nextMessage?.sender === props.message?.sender
+            ) {
+                sethasSeparator(false);
+            } else {
+                sethasSeparator(true);
+            }
         }
     }, [props.message]);
 
@@ -70,6 +111,19 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const _min = minutes.toString().padStart(2, '0');
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
+    };
+
+    const getDayAndName = (previousDay: string, currentDay: string) => {
+        const previousMessageDate = new Date(previousDay);
+        const currentMessageDate = new Date(currentDay);
+        const previousDayNumber = previousMessageDate.getUTCDate();
+        const currentDayNumber = currentMessageDate.getUTCDate();
+        const currentDayMonthNumber = currentMessageDate.toLocaleString('default', {
+            month: 'long',
+        });
+        if (previousDayNumber !== currentDayNumber) {
+            setdaySeparator(currentDayNumber + ' ' + currentDayMonthNumber);
+        }
     };
 
     function getName() {
@@ -175,71 +229,81 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
 
     return (
-        <div
-            className={
-                props.isUserLoggedIn
-                    ? props.message.isMentionMessage === false
-                        ? styles.sent_message_body
-                        : props.message.mentionedName?.trim() === props.ensName?.trim() ||
-                          props.message.mentionedName?.trim() ===
-                              props.connectedAccountActive?.trim()
-                        ? styles.sent_message_body_with_mention
+        <div>
+            {daySeparator === '' ? (
+                ''
+            ) : daySeparator !== '' ? (
+                <p className={styles.seperator}>{daySeparator}</p>
+            ) : (
+                ''
+            )}
+            <div
+                className={
+                    props.isUserLoggedIn
+                        ? props.message.isMentionMessage === false
+                            ? styles.sent_message_body
+                            : props.message.mentionedName?.trim() === props.ensName?.trim() ||
+                              props.message.mentionedName?.trim() ===
+                                  props.connectedAccountActive?.trim()
+                            ? styles.sent_message_body_with_mention
+                            : styles.sent_message_body
                         : styles.sent_message_body
-                    : styles.sent_message_body
-            }
-        >
-            {showAvatar && <div className={styles.nft_container}>{myBlockies}</div>}
-            <div className={styles.message_item}>
-                <div
-                    className={props.isCurrentUser ? styles.current_user_name : styles.name}
-                    onClick={() => {
-                        if (
-                            location.pathname !==
-                            `/${
-                                props.message.ensName === 'defaultValue'
-                                    ? props.message.walletID
-                                    : props.message.ensName
-                            }`
-                        ) {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                            // handleCopyAddress(
-                            //     props.message.ensName === 'defaultValue'
-                            //         ? props.message.walletID
-                            //         : props.message.ensName,
-                            // );
-                            navigate(
+                }
+            >
+                {showAvatar && <div className={styles.nft_container}>{myBlockies}</div>}
+                <div className={styles.message_item}>
+                    <div
+                        className={props.isCurrentUser ? styles.current_user_name : styles.name}
+                        onClick={() => {
+                            if (
+                                location.pathname !==
                                 `/${
                                     props.message.ensName === 'defaultValue'
                                         ? props.message.walletID
                                         : props.message.ensName
-                                }`,
-                            );
-                        }
-                    }}
-                >
-                    {showName && getName()}
+                                }`
+                            ) {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'lookupUserTxData',
+                                        loadingStatus: true,
+                                    }),
+                                );
+                                // handleCopyAddress(
+                                //     props.message.ensName === 'defaultValue'
+                                //         ? props.message.walletID
+                                //         : props.message.ensName,
+                                // );
+                                navigate(
+                                    `/${
+                                        props.message.ensName === 'defaultValue'
+                                            ? props.message.walletID
+                                            : props.message.ensName
+                                    }`,
+                                );
+                            }
+                        }}
+                    >
+                        {showName && getName()}
+                    </div>
+                    <PositionBox
+                        message={props.message.message}
+                        isInput={false}
+                        isPosition={isPosition}
+                        setIsPosition={setIsPosition}
+                    />
+                    {!isPosition && mentionedMessage()}
                 </div>
-                <PositionBox
-                    message={props.message.message}
-                    isInput={false}
-                    isPosition={isPosition}
-                    setIsPosition={setIsPosition}
-                />
-                {!isPosition && mentionedMessage()}
-            </div>
-            {props.moderator ? (
-                <FiDelete color='red' onClick={() => deleteMessages(props.message._id)} />
-            ) : (
-                ''
-            )}
-            <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
+                {props.moderator ? (
+                    <FiDelete color='red' onClick={() => deleteMessages(props.message._id)} />
+                ) : (
+                    ''
+                )}
+                <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
 
-            {/* {snackbarContent} */}
+                {/* {snackbarContent} */}
+            </div>
+            {hasSeparator ? <hr /> : ''}
         </div>
     );
 }
