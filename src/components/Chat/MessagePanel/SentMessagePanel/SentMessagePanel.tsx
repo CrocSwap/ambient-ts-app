@@ -1,12 +1,15 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useState, useEffect } from 'react';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
+import { useEffect, useState } from 'react';
+// import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+// import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 
 interface SentMessageProps {
     message: Message;
@@ -81,21 +84,21 @@ export default function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
-        </SnackbarComponent>
-    );
-    function handleCopyAddress(item: string) {
-        copy(item);
-        setOpenSnackbar(true);
-    }
+    // const [value, copy] = useCopyToClipboard();
+    // const [openSnackbar, setOpenSnackbar] = useState(false);
+    // const snackbarContent = (
+    //     <SnackbarComponent
+    //         severity='info'
+    //         setOpenSnackbar={setOpenSnackbar}
+    //         openSnackbar={openSnackbar}
+    //     >
+    //         {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
+    //     </SnackbarComponent>
+    // );
+    // function handleCopyAddress(item: string) {
+    //     copy(item);
+    //     setOpenSnackbar(true);
+    // }
 
     function mentionedMessage() {
         const messagesArray = props.message.message.split(' ');
@@ -163,6 +166,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
             }
         });
     }
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // console.log({ location });
 
     const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
 
@@ -184,13 +192,35 @@ export default function SentMessagePanel(props: SentMessageProps) {
             <div className={styles.message_item}>
                 <div
                     className={props.isCurrentUser ? styles.current_user_name : styles.name}
-                    onClick={() =>
-                        handleCopyAddress(
-                            props.message.ensName === 'defaultValue'
-                                ? props.message.walletID
-                                : props.message.ensName,
-                        )
-                    }
+                    onClick={() => {
+                        if (
+                            location.pathname !==
+                            `/${
+                                props.message.ensName === 'defaultValue'
+                                    ? props.message.walletID
+                                    : props.message.ensName
+                            }`
+                        ) {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                            // handleCopyAddress(
+                            //     props.message.ensName === 'defaultValue'
+                            //         ? props.message.walletID
+                            //         : props.message.ensName,
+                            // );
+                            navigate(
+                                `/${
+                                    props.message.ensName === 'defaultValue'
+                                        ? props.message.walletID
+                                        : props.message.ensName
+                                }`,
+                            );
+                        }
+                    }}
                 >
                     {showName && getName()}
                 </div>
@@ -209,7 +239,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             )}
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
 
-            {snackbarContent}
+            {/* {snackbarContent} */}
         </div>
     );
 }
