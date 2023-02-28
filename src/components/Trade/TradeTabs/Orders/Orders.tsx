@@ -419,10 +419,7 @@ export default function Orders(props: propsIF) {
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
     // orders per page media queries
-    const txView1 = useMediaQuery('(max-width: 1200px)');
-    const txView2 = useMediaQuery('(max-width: 1400px)');
-    const txView3 = useMediaQuery('(max-width: 1800px)');
-    const txView4 = useMediaQuery('(min-width: 2000px)');
+
     const { height } = useWindowDimensions();
 
     // const ordersPerPage = Math.round(((0.7 * height) / 33) )

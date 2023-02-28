@@ -32,6 +32,7 @@ import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
+import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -230,24 +231,19 @@ export default function Ranges(props: propsIF) {
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
     // transactions per page media queries
+    const showColumns = useMediaQuery('(max-width: 1900px)');
+
     const phoneScreen = useMediaQuery('(max-width: 500px)');
 
-    const txView1 = useMediaQuery('(max-width: 1200px)');
-    const txView2 = useMediaQuery('(max-width: 1400px)');
-    const txView3 = useMediaQuery('(max-width: 1800px)');
-    const txView4 = useMediaQuery('(min-width: 2000px)');
+    const { height } = useWindowDimensions();
+    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
+    // height => current height of the viewport
+    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
+    // 30 => Height of each paginated row item
 
-    const rangesPerPage = txView1
-        ? 3
-        : txView2
-        ? 8
-        : txView3
-        ? 9
-        : txView3
-        ? 13
-        : txView4
-        ? 15
-        : 18;
+    const regularRangesItems = Math.round((height - 250) / 36);
+    const showColumnRangesItems = Math.round((height - 250) / 60);
+    const rangesPerPage = showColumns ? showColumnRangesItems : regularRangesItems;
 
     useEffect(() => {
         setCurrentPage(1);
@@ -279,7 +275,6 @@ export default function Ranges(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
-    const showColumns = useMediaQuery('(max-width: 1900px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
