@@ -10,6 +10,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import styles from './Home.module.css';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import Home1 from '../../components/Home/Landing/Home1';
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -52,6 +53,7 @@ export default function Home(props: propsIF) {
                     />
                 </div>
                 <DividerDark />
+                <Home1 />
 
                 {/* <Investors /> */}
                 {/* <DividerDark /> */}
