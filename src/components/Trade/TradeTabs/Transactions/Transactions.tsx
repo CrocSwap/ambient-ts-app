@@ -259,7 +259,9 @@ export default function Transactions(props: propsIF) {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : sortedTransactions;
+    const largeScreenView = useMediaQuery('(min-width: 1200px)');
+    const usePaginateDataOrNull =
+        expandTradeTable && largeScreenView ? currentTransactions : sortedTransactions;
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {

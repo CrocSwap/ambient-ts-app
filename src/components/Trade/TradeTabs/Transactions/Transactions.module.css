@@ -53,6 +53,8 @@
       bottom: 0;
       box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
       margin: 0 auto;
+
+      
   }
 /* width */
 .main_list_container::-webkit-scrollbar {
@@ -264,6 +266,8 @@ text-transform: capitalize;
 }
 
 @media only screen and (max-width: 768px) {
+
+
   .header li {
       font-weight: 300;
       font-size: 8px;
@@ -275,4 +279,11 @@ text-transform: capitalize;
       font-size: 10px;
       
   }
+}
+
+@media only screen and (max-width: 1200px){
+.footer{
+  display: none;
+}
+
 }

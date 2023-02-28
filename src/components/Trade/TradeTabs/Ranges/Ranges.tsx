@@ -256,9 +256,10 @@ export default function Ranges(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+    const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
     const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage ? currentRanges : sortedPositions;
+        expandTradeTable && !isOnPortfolioPage && largeScreenView ? currentRanges : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
