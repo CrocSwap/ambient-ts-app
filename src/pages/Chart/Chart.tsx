@@ -4725,7 +4725,10 @@ export default function Chart(props: ChartData) {
 
             const filtered =
                 tvlData.length > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
-            const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
+
+            const nearest = minimum(filtered, (d: any) =>
+                Math.abs(point.layerX - xScale(xValue(d))),
+            )[1];
 
             if (nearest) {
                 return nearest.value;
