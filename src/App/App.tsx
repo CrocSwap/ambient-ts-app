@@ -203,7 +203,7 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     const tos = useTermsOfService();
-    console.log(tos.getCurrentTOS());
+    console.log(tos.checkAgreement());
 
     const { address: account, isConnected } = useAccount();
 

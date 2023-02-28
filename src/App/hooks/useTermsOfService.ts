@@ -24,12 +24,9 @@ export const useTermsOfService = () => {
     false && agreement;
     false && setAgreement;
 
-    function getCurrentTOS(): termsOfServiceIF {
-        return tos;
-    }
-
     const output = {
-        getCurrentTOS
+        getCurrentTOS: () => tos,
+        checkAgreement: () => agreement?.version === tos.version
     };
 
     return output;
