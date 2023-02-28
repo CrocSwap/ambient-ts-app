@@ -56,7 +56,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
     const [value, copy] = useCopyToClipboard();
-    const [copiedData, setCopiedData] = useState('');
+    // const [copiedData, setCopiedData] = useState('');
 
     const snackbarContent = (
         <SnackbarComponent
@@ -64,7 +64,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {copiedData} copied
+            {value} copied
         </SnackbarComponent>
     );
 
@@ -81,7 +81,7 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
-        setCopiedData(posHash.toString());
+        // setCopiedData(posHash.toString());
 
         setOpenSnackbar(true);
     }
