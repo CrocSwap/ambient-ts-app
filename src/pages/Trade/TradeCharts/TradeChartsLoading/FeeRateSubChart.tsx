@@ -266,9 +266,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
             ></d3fc-svg>
             <label style={{ position: 'absolute', left: '0%' }}>
                 Fee Rate:{' '}
-                {(
-                    subChartValues.filter((value: any) => value.name === 'feeRate')[0].value * 100
-                ).toString() + '%'}
+                {subChartValues.filter((value: any) => value.name === 'feeRate')[0].value
+                    ? (
+                          subChartValues.filter((value: any) => value.name === 'feeRate')[0].value *
+                          100
+                      ).toString() + '%'
+                    : '-'}
             </label>
             <d3fc-svg
                 className='y-axis'

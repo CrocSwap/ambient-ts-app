@@ -368,68 +368,70 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const topLimit = topLineTick > lowLineTick ? topLineTick : lowLineTick;
                 const bottomLimit = topLineTick < lowLineTick ? topLineTick : lowLineTick;
 
+                const shouldRound = topLimit > 1 && bottomLimit > 1;
+
                 const diff = Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 8;
 
-                const lowerBoundaryFill = Math.abs(
-                    yScale.domain()[0] +
-                        diff / 2 -
-                        (bottomLimit < topLimit ? bottomLimit : topLimit),
-                );
+                const lowerBoundaryFill = Math.abs(yScale.domain()[0] - bottomLimit);
+
                 const lowerBoudnaryFactor = Math.ceil(lowerBoundaryFill / diff);
 
                 const lowValues: any = [];
 
                 if (lowerBoudnaryFactor < 2) {
-                    lowValues[0] = (
-                        !isOnPortfolioPage
+                    lowValues[0] =
+                        shouldRound &&
+                        (!isOnPortfolioPage
                             ? denominationsInBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
-                    )
-                        ? Math.round((bottomLimit - lowerBoundaryFill) / 10) * 10
-                        : bottomLimit - lowerBoundaryFill;
+                            : !isBaseTokenMoneynessGreaterOrEqual)
+                            ? Math.round((bottomLimit - lowerBoundaryFill) / 10) * 10
+                            : bottomLimit - lowerBoundaryFill;
                 } else {
                     for (let i = 1; i <= lowerBoudnaryFactor; i++) {
-                        lowValues[i - 1] = (
-                            !isOnPortfolioPage
+                        lowValues[i - 1] =
+                            shouldRound &&
+                            (!isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? Math.round(
-                                  (bottomLimit - lowerBoundaryFill / (lowerBoudnaryFactor / i)) /
-                                      10,
-                              ) * 10
-                            : bottomLimit - lowerBoundaryFill / (lowerBoudnaryFactor / i);
+                                : !isBaseTokenMoneynessGreaterOrEqual)
+                                ? Math.round(
+                                      ((i === 1 ? bottomLimit : lowValues[i - 2]) -
+                                          Math.round(lowerBoundaryFill / lowerBoudnaryFactor / 10) *
+                                              10) /
+                                          10,
+                                  ) * 10
+                                : (i === 1 ? bottomLimit : lowValues[i - 2]) -
+                                  lowerBoundaryFill / lowerBoudnaryFactor;
                     }
                 }
 
-                const topBoundaryFill = Math.abs(
-                    yScale.domain()[1] -
-                        diff / 2 -
-                        (bottomLimit > topLimit ? bottomLimit : topLimit),
-                );
+                const topBoundaryFill = Math.abs(yScale.domain()[1] - diff / 2 - topLimit);
                 const topBoudnaryFactor = Math.ceil(topBoundaryFill / diff);
 
                 const topValues: any = [];
 
                 if (topBoudnaryFactor < 2) {
-                    topValues[0] = (
-                        !isOnPortfolioPage
+                    topValues[0] =
+                        shouldRound &&
+                        (!isOnPortfolioPage
                             ? denominationsInBase
-                            : !isBaseTokenMoneynessGreaterOrEqual
-                    )
-                        ? Math.round((topLimit + topBoundaryFill) / 10) * 10
-                        : topLimit + topBoundaryFill;
+                            : !isBaseTokenMoneynessGreaterOrEqual)
+                            ? Math.round((topLimit + topBoundaryFill) / 10) * 10
+                            : topLimit + topBoundaryFill;
                 } else {
                     for (let i = 1; i <= topBoudnaryFactor; i++) {
-                        topValues[i - 1] = (
-                            !isOnPortfolioPage
+                        topValues[i - 1] =
+                            shouldRound &&
+                            (!isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? Math.round(
-                                  (topLimit + topBoundaryFill / (topBoudnaryFactor / i)) / 10,
-                              ) * 10
-                            : topLimit + topBoundaryFill / (topBoudnaryFactor / i);
+                                : !isBaseTokenMoneynessGreaterOrEqual)
+                                ? Math.round(
+                                      ((i === 1 ? topLimit : topValues[i - 2]) +
+                                          Math.round(topBoundaryFill / topBoudnaryFactor / 10) *
+                                              10) /
+                                          10,
+                                  ) * 10
+                                : (i === 1 ? topLimit : topValues[i - 2]) +
+                                  topBoundaryFill / topBoudnaryFactor;
                     }
                 }
 
@@ -440,24 +442,25 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 if (bandBoundaryFill > diff) {
                     if (bandBoudnaryFactor < 2) {
-                        bandValues[0] = (
-                            !isOnPortfolioPage
+                        bandValues[0] =
+                            shouldRound &&
+                            (!isOnPortfolioPage
                                 ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual
-                        )
-                            ? Math.round((topLimit - bandBoundaryFill) / 10) * 10
-                            : topLimit - bandBoundaryFill;
+                                : !isBaseTokenMoneynessGreaterOrEqual)
+                                ? Math.round((topLimit - bandBoundaryFill) / 10) * 10
+                                : topLimit - bandBoundaryFill;
                     } else {
                         for (let i = 1; i < bandBoudnaryFactor; i++) {
-                            bandValues[i - 1] = (
-                                !isOnPortfolioPage
+                            bandValues[i - 1] =
+                                shouldRound &&
+                                (!isOnPortfolioPage
                                     ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual
-                            )
-                                ? Math.round(
-                                      (topLimit - bandBoundaryFill / (bandBoudnaryFactor / i)) / 10,
-                                  ) * 10
-                                : topLimit - bandBoundaryFill / (bandBoudnaryFactor / i);
+                                    : !isBaseTokenMoneynessGreaterOrEqual)
+                                    ? Math.round(
+                                          (topLimit - bandBoundaryFill / (bandBoudnaryFactor / i)) /
+                                              10,
+                                      ) * 10
+                                    : topLimit - bandBoundaryFill / (bandBoudnaryFactor / i);
                         }
                     }
                 }
@@ -465,7 +468,8 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 let linePrices = [];
 
                 if (
-                    !isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual
+                    shouldRound &&
+                    (!isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual)
                 ) {
                     linePrices =
                         Math.abs(

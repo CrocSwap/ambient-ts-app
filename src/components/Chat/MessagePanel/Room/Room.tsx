@@ -52,7 +52,7 @@ export default function RoomDropdown(props: RoomProps) {
     } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray, setRoomArray] = useState<string[]>([]);
-    const [favePools, setFavePools] = useState<string[]>([]);
+    const [favoritePoolsArray, setFavoritePoolsArray] = useState<string[]>([]);
     // const [isCurrentPool, setIsCurrentPool] = useState(false);
     // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
@@ -104,7 +104,7 @@ export default function RoomDropdown(props: RoomProps) {
             favePoolsArr.push(pool.base.symbol + '/' + pool.quote.symbol);
         });
 
-        setFavePools(() => {
+        setFavoritePoolsArray(() => {
             return favePoolsArr;
         });
 
@@ -139,7 +139,7 @@ export default function RoomDropdown(props: RoomProps) {
             });
 
             for (let x = 0; x < roomArr.length; x++) {
-                if (!favePools.includes(roomArr[x])) {
+                if (!favoritePoolsArray.includes(roomArr[x])) {
                     roomArr.push(roomArr.splice(x, 1)[0]);
                 } else {
                     // do nothing
@@ -156,7 +156,7 @@ export default function RoomDropdown(props: RoomProps) {
                     roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
                 });
                 for (let x = 0; x < roomArr.length; x++) {
-                    if (!favePools.includes(roomArr[x])) {
+                    if (!favoritePoolsArray.includes(roomArr[x])) {
                         roomArr.push(roomArr.splice(x, 1)[0]);
                     } else {
                         // do nothing
@@ -171,7 +171,7 @@ export default function RoomDropdown(props: RoomProps) {
                     // only splice array when item is found
 
                     for (let x = 0; x < roomArr.length; x++) {
-                        if (!favePools.includes(roomArr[x])) {
+                        if (!favoritePoolsArray.includes(roomArr[x])) {
                             roomArr.push(roomArr.splice(x, 1)[0]);
                         } else {
                             // do nothing
@@ -189,7 +189,7 @@ export default function RoomDropdown(props: RoomProps) {
                 });
 
                 for (let x = 0; x < roomArr.length; x++) {
-                    if (!favePools.includes(roomArr[x])) {
+                    if (!favoritePoolsArray.includes(roomArr[x])) {
                         roomArr.push(roomArr.splice(x, 1)[0]);
                     } else {
                         // do nothing
@@ -203,7 +203,7 @@ export default function RoomDropdown(props: RoomProps) {
                 roomArr.splice(index, 1);
                 if (index > -1) {
                     for (let x = 0; x < roomArr.length; x++) {
-                        if (!favePools.includes(roomArr[x])) {
+                        if (!favoritePoolsArray.includes(roomArr[x])) {
                             roomArr.push(roomArr.splice(x, 1)[0]);
                         } else {
                             // do nothing
@@ -350,7 +350,7 @@ export default function RoomDropdown(props: RoomProps) {
                                 data-icon='glyphicon glyphicon-eye-open'
                                 onClick={(event: any) => handleRoomClick(event, pool)}
                             >
-                                {favePools.includes(pool) ? (
+                                {favoritePoolsArray.includes(pool) ? (
                                     <svg
                                         width={smallScrenView ? '15px' : '20px'}
                                         height={smallScrenView ? '15px' : '20px'}

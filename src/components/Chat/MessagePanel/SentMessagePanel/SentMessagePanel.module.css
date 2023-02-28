@@ -72,11 +72,66 @@
     white-space: normal;
 }
 
+.message_without_avatar {
+    width: 80%;
+    height: 80%;
+
+    bottom: -100%;
+    padding: 0px 23px;
+    white-space: pre-line;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    /* font-size: calc(1vw - 2px); */
+    line-height: 15px;
+    flex-grow: 5px !important;
+    margin: 10px;
+    width: 85%;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 15px;
+    color: #ebebff;
+    white-space: pre-line;
+    align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
+}
+
 .mention_message {
     color: red;
     width: 80%;
     height: 80%;
 
+    bottom: -100%;
+
+    white-space: pre-line;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 2px);
+    line-height: 15px;
+    flex-grow: 5px !important;
+    margin: 10px;
+    width: 85%;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 15px;
+    white-space: pre-line;
+    align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.mention_message_without_avatar {
+    color: red;
+    width: 80%;
+    height: 80%;
+    padding: 0px 23px;
     bottom: -100%;
 
     white-space: pre-line;

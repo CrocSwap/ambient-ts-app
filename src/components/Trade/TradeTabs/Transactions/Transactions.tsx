@@ -168,7 +168,7 @@ export default function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
             'time',
-            isShowAllEnabled ? changesByPoolWithoutFills : transactionData,
+            isShowAllEnabled && !isCandleSelected ? changesByPoolWithoutFills : transactionData,
         );
 
     function handleUserSelected() {
