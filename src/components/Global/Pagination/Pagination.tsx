@@ -111,8 +111,6 @@ export default function Pagination(props: PaginationPropsIF) {
         </div>
     );
 
-    console.log(totalPages);
-
     return (
         <>
             <nav className={styles.pagination_container}>
