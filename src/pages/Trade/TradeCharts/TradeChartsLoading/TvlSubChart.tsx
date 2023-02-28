@@ -26,6 +26,7 @@ interface TvlData {
     setTransformX: React.Dispatch<React.SetStateAction<any>>;
     transformX: any;
     yAxisWidth: string;
+    setTvlAreaSeries: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -46,6 +47,7 @@ export default function TvlSubChart(props: TvlData) {
         mouseMoveChartName,
         subChartValues,
         yAxisWidth,
+        setTvlAreaSeries,
     } = props;
 
     const tvlMainDiv = useRef(null);
@@ -159,6 +161,8 @@ export default function TvlSubChart(props: TvlData) {
                             return 'url(#mygrad)';
                         });
                     });
+
+                setTvlAreaSeries(() => areaSeries);
 
                 const lineSeries = d3fc
                     .seriesSvgLine()
