@@ -239,15 +239,15 @@ export default function Chart(props: ChartData) {
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
-            value: 0,
+            value: undefined,
         },
         {
             name: 'tvl',
-            value: 0,
+            value: undefined,
         },
         {
             name: 'volume',
-            value: 0,
+            value: undefined,
         },
     ]);
 
@@ -334,6 +334,9 @@ export default function Chart(props: ChartData) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
+    // Subcharts
+
+    const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
     // useEffect(() => {
     //     if (scaleData !== undefined) {
     //         // d3.select(d3PlotArea.current).on('measure', function (event: any) {
@@ -4717,6 +4720,26 @@ export default function Chart(props: ChartData) {
         }
     }, [crosshairData]);
 
+    const findTvlNearest = (point: any) => {
+        const tvlData = parsedChartData?.tvlChartData;
+        const series = tvlAreaSeries;
+        if (point == undefined) return 0;
+        if (series && tvlData) {
+            const xScale = series.xScale(),
+                xValue = series.crossValue();
+
+            const filtered =
+                tvlData.length > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
+            const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
+
+            if (nearest) {
+                return nearest.value;
+            } else {
+                return 0;
+            }
+        }
+    };
+
     // Draw Chart
     const drawChart = useCallback(
         (
@@ -4805,11 +4828,7 @@ export default function Chart(props: ChartData) {
                         const newData = [...prevState];
 
                         newData.filter((target: any) => target.name === 'tvl')[0].value =
-                            tvlChartData.find(
-                                (item: any) =>
-                                    moment(item.time.getTime()).add(30, 'm').toDate().getTime() ===
-                                    nearest?.date.getTime(),
-                            )?.value;
+                            findTvlNearest(point);
 
                         newData.filter((target: any) => target.name === 'feeRate')[0].value =
                             feeChartData.find(
@@ -5404,6 +5423,21 @@ export default function Chart(props: ChartData) {
 
                     setIsMouseMoveCrosshair(false);
 
+                    setsubChartValues([
+                        {
+                            name: 'feeRate',
+                            value: undefined,
+                        },
+                        {
+                            name: 'tvl',
+                            value: undefined,
+                        },
+                        {
+                            name: 'volume',
+                            value: undefined,
+                        },
+                    ]);
+
                     if (selectedDate === undefined) {
                         props.setShowTooltip(false);
                     }
@@ -5443,6 +5477,7 @@ export default function Chart(props: ChartData) {
             showTvl,
             showVolume,
             showFeeRate,
+            tvlAreaSeries,
         ],
     );
 
@@ -5826,6 +5861,7 @@ export default function Chart(props: ChartData) {
                                 setTransformX={setTransformX}
                                 transformX={transformX}
                                 yAxisWidth={yAxisWidth}
+                                setTvlAreaSeries={setTvlAreaSeries}
                             />
                         </>
                     )}
