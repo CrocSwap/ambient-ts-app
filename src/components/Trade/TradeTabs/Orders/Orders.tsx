@@ -28,6 +28,7 @@ import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
+import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -418,22 +419,17 @@ export default function Orders(props: propsIF) {
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
     // orders per page media queries
-    const txView1 = useMediaQuery('(max-width: 1200px)');
-    const txView2 = useMediaQuery('(max-width: 1400px)');
-    const txView3 = useMediaQuery('(max-width: 1800px)');
-    const txView4 = useMediaQuery('(min-width: 2000px)');
 
-    const ordersPerPage = txView1
-        ? 3
-        : txView2
-        ? 10
-        : txView3
-        ? 11
-        : txView3
-        ? 13
-        : txView4
-        ? 15
-        : 18;
+    const { height } = useWindowDimensions();
+
+    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
+    // height => current height of the viewport
+    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
+    // 30 => Height of each paginated row item
+
+    const regularOrdersItems = Math.round((height - 250) / 30);
+    const showColumnOrdersItems = Math.round((height - 250) / 50);
+    const ordersPerPage = showColumns ? showColumnOrdersItems : regularOrdersItems;
 
     useEffect(() => {
         setCurrentPage(1);
@@ -446,8 +442,10 @@ export default function Orders(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+    const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
-    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedLimits;
+    const usePaginateDataOrNull =
+        expandTradeTable && largeScreenView ? currentRangess : sortedLimits;
 
     const footerDisplay = (
         <div className={styles.footer}>

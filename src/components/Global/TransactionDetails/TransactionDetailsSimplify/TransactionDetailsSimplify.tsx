@@ -44,12 +44,13 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         // askTick,
         // positionLiqTotalUSD,
 
-        // baseDisplay,
-        // quoteDisplay,
+        // baseQuantityDisplayShort,
+        // quoteQuantityDisplayShort,
+        baseQuantityDisplayLong,
+        quoteQuantityDisplayLong,
         baseTokenAddress,
         quoteTokenAddress,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -61,6 +62,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
+
+    // console.log({ baseDisplay });
 
     // console.log({ truncatedDisplayPrice });
 
@@ -185,8 +188,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         {
             title: isSwap ? 'From Qty ' : 'Token 1 Qty',
             content: isBuy
-                ? `${baseDisplayFrontend} ${baseTokenSymbol}`
-                : `${quoteDisplayFrontend} ${quoteTokenSymbol}`,
+                ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
+                : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`,
             explanation: 'The quantity of the sell token (scaled by its decimals value)',
         },
 
@@ -205,8 +208,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
         {
             title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
             content: !isBuy
-                ? `${baseDisplayFrontend} ${baseTokenSymbol}`
-                : `${quoteDisplayFrontend} ${quoteTokenSymbol}`,
+                ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
+                : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`,
             explanation: 'The quantity of the to/buy token (scaled by its decimals value)',
         },
 

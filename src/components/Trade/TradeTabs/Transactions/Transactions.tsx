@@ -26,6 +26,7 @@ import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { getTransactionData } from '../../../../App/functions/getTransactionData';
+import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface propsIF {
@@ -168,7 +169,7 @@ export default function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
             'time',
-            isShowAllEnabled ? changesByPoolWithoutFills : transactionData,
+            isShowAllEnabled && !isCandleSelected ? changesByPoolWithoutFills : transactionData,
         );
 
     function handleUserSelected() {
@@ -218,31 +219,28 @@ export default function Transactions(props: propsIF) {
         JSON.stringify(changesByPoolWithoutFills),
     ]);
 
+    const ipadView = useMediaQuery('(max-width: 580px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showColumns = useMediaQuery('(max-width: 1700px)');
+    const view2 = useMediaQuery('(max-width: 1568px)');
+
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const [currentPage, setCurrentPage] = useState(1);
 
-    // transactions per page media queries
+    const { height } = useWindowDimensions();
 
-    const txView1 = useMediaQuery('(max-width: 1200px)');
-    const txView2 = useMediaQuery('(max-width: 1400px)');
-    const txView3 = useMediaQuery('(max-width: 1800px)');
-    const txView4 = useMediaQuery('(min-width: 2000px)');
+    // const transactionsPerPage = Math.round(((0.7 * height) / 33) )
+    // height => current height of the viewport
+    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
+    // 30 => Height of each paginated row item
 
-    const transactionsPerPage = txView1
-        ? 3
-        : txView2
-        ? 10
-        : txView3
-        ? 11
-        : txView3
-        ? 13
-        : txView4
-        ? 15
-        : 18;
-
-    // const [transactionsPerPage] = useState(15);
+    // const regularTransactionItems = Math.round((height - 250) / 30);
+    const showColumnTransactionItems = showColumns
+        ? Math.round((height - 250) / 50)
+        : Math.round((height - 250) / 38);
+    const transactionsPerPage = showColumnTransactionItems;
 
     useEffect(() => {
         setCurrentPage(1);
@@ -261,7 +259,9 @@ export default function Transactions(props: propsIF) {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : sortedTransactions;
+    const largeScreenView = useMediaQuery('(min-width: 1200px)');
+    const usePaginateDataOrNull =
+        expandTradeTable && largeScreenView ? currentTransactions : sortedTransactions;
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -392,11 +392,6 @@ export default function Transactions(props: propsIF) {
     // const [expanded, setExpanded] = useState<false | number>(false);
 
     // const sidebarOpen = false;
-
-    const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
-    const showColumns = useMediaQuery('(max-width: 1700px)');
-    const view2 = useMediaQuery('(max-width: 1568px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;

@@ -5,6 +5,7 @@
     justify-content: center;
     align-items: center;
 
+
 }
 
 .pagination_inside_container{
@@ -45,7 +46,8 @@ width: 100px;
 
 
 .pagination_content::-webkit-scrollbar {
-    display: none;
+    width: 5px;
+    height: 5px;
  }
 
 .pagination_content li{

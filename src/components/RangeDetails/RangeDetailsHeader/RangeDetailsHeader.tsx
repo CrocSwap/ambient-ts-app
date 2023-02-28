@@ -16,9 +16,16 @@ interface RangeDetailsPropsIF {
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     position: PositionIF;
+    handleCopyPositionId(): void;
 }
 export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
-    const { onClose, downloadAsImage, showShareComponent, setShowShareComponent } = props;
+    const {
+        onClose,
+        handleCopyPositionId,
+        downloadAsImage,
+        showShareComponent,
+        setShowShareComponent,
+    } = props;
     // const [openSnackbar, setOpenSnackbar] = useState(false);
     const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
 
@@ -30,13 +37,13 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     //        setOpenSnackbar(true);
     //    }
 
-    // const copyIconWithTooltip = (
-    //     <IconWithTooltip title='Copy transaction hash to clipboard' placement='bottom'>
-    //         <div onClick={handleCopyAddress}>
-    //             <FiCopy size={25} color='var(--text-grey-dark)' />
-    //         </div>
-    //     </IconWithTooltip>
-    // );
+    const copyIconWithTooltip = (
+        <IconWithTooltip title='Copy position slot ID to clipboard' placement='bottom'>
+            <div onClick={handleCopyPositionId}>
+                <FiCopy size={25} color='var(--text-grey-dark)' />
+            </div>
+        </IconWithTooltip>
+    );
 
     const downloadIconWithTooltip = (
         <IconWithTooltip title='Download shareable image' placement='bottom'>
@@ -79,6 +86,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
                 ) : (
                     phIcon
                 )} */}
+                {showShareComponent ? copyIconWithTooltip : phIcon}
 
                 {showShareComponent ? downloadIconWithTooltip : phIcon}
 

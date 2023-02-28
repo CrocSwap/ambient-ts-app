@@ -14,25 +14,25 @@ interface OrderDetailsPropsIF {
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     limitOrder: LimitOrderIF;
+    handleCopyPositionId(): void;
 }
 export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
-    const { limitOrder, onClose, downloadAsImage, showShareComponent, setShowShareComponent } =
-        props;
+    const {
+        handleCopyPositionId,
+        onClose,
+        downloadAsImage,
+        showShareComponent,
+        setShowShareComponent,
+    } = props;
     // eslint-disable-next-line
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
     // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
 
-    function handleCopyAddress() {
-        const txHash = limitOrder.tx;
-        copy(txHash);
-        setOpenSnackbar(true);
-    }
-
     const copyIconWithTooltip = (
-        <IconWithTooltip title='Copy transaction hash to clipboard' placement='bottom'>
-            <div onClick={handleCopyAddress}>
+        <IconWithTooltip title='Copy position slot ID to clipboard' placement='bottom'>
+            <div onClick={handleCopyPositionId}>
                 <FiCopy size={25} color='var(--text-grey-dark)' />
             </div>
         </IconWithTooltip>
