@@ -202,7 +202,8 @@ export default function App() {
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
-    useTermsOfService();
+    const tos = useTermsOfService();
+    console.log(tos.getCurrentTOS());
 
     const { address: account, isConnected } = useAccount();
 

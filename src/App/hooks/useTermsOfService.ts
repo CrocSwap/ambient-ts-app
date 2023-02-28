@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export interface termsOfServiceIF {
     text: string;
     version: number;
@@ -11,5 +13,24 @@ export const useTermsOfService = () => {
         published: new Date('05 October 2019 14:48 UTC').toISOString()
     };
 
-    console.log(tos);
+    const getCurrentAgreement = (): (termsOfServiceIF|undefined) => {
+        return JSON.parse(localStorage.getItem('termsOfService') as string);
+    };
+
+    const [agreement, setAgreement] = useState<termsOfServiceIF|undefined>(
+        getCurrentAgreement()
+    );
+
+    false && agreement;
+    false && setAgreement;
+
+    function getCurrentTOS(): termsOfServiceIF {
+        return tos;
+    }
+
+    const output = {
+        getCurrentTOS
+    };
+
+    return output;
 };
