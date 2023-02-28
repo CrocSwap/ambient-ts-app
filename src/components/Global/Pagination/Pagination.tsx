@@ -101,15 +101,15 @@ export default function Pagination(props: PaginationPropsIF) {
         </div>
     );
 
-    const lastPageClick = (
-        <div
-            onClick={() => paginate(totalPages)}
-            className={totalPages === currentPage ? styles.page_active : styles.page}
-            style={{ cursor: 'pointer' }}
-        >
-            {totalPages > 10 && totalPages}
-        </div>
-    );
+    // const lastPageClick = (
+    //     <div
+    //         onClick={() => paginate(totalPages)}
+    //         className={totalPages === currentPage ? styles.page_active : styles.page}
+    //         style={{ cursor: 'pointer' }}
+    //     >
+    //         {totalPages > 10 && totalPages}
+    //     </div>
+    // );
 
     return (
         <>
@@ -145,7 +145,7 @@ export default function Pagination(props: PaginationPropsIF) {
                         </div>
                     )} */}
 
-                    {expandPaginationContainer && lastPageClick}
+                    {/* {expandPaginationContainer && currentPage !== totalPages && lastPageClick} */}
                     {currentPage !== totalPages && rightButton}
                 </motion.div>
             </nav>
