@@ -1,6 +1,6 @@
 .main_container{
     background: linear-gradient(180deg, rgba(13, 17, 23, 0) 0%, #0D1117 88.54%);
-    background: darkblue;
+    /* background: darkblue; */
     height: 500px;
 }
 
@@ -12,6 +12,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 2rem;
 }
 
 .content_container h1{

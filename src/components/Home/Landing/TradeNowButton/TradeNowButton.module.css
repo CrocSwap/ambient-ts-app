@@ -3,15 +3,17 @@
     z-index: 2;
 
     max-width: 16rem;
-    padding: 8px 16px;
+    max-height: 3rem;
+    /* width: 238px; */
+    height: 54px;
+    padding: 8px 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 16px;
+    /* font-size: 16px;
 
-    line-height: 24px;
+    line-height: 24px; */
 
-    max-height: 3rem;
     cursor: pointer;
     text-align: center;
 
@@ -35,4 +37,41 @@
 
 .button_text{
     font-family: var(--font-logo);
+    font-weight: 100;
+font-size: 30px;
+line-height: 38px;
+
+background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
 }
+
+
+
+.action_button:hover {
+    border: 1px solid rgba(223, 190, 106, 0);
+    background-position: 99% 50%;
+    /* color: black; */
+    animation-play-state: paused;
+}
+
+.action_button:hover .button_text{
+    /* color: var(--dark2) !important; */
+    background:var(--dark2);
+    -webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+
+
+}
+.action_button p {
+  color: var(--text-highlight);
+    font-weight: 100;
+    font-size: 30px;
+    line-height: 38px;
+}
+
+
