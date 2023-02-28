@@ -166,6 +166,7 @@ import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
+import { useTermsOfService } from './hooks/useTermsOfService';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -200,6 +201,8 @@ export default function App() {
     // console.log('rendering app');
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
+
+    useTermsOfService();
 
     const { address: account, isConnected } = useAccount();
 
