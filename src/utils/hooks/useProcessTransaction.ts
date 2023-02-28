@@ -306,9 +306,9 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        const baseFlowDisplayStringShort =
-            tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedShort}`;
-        baseFlowDisplayShort = baseFlowDisplayStringShort;
+        // const baseFlowDisplayStringShort =
+        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedShort}`;
+        baseFlowDisplayShort = baseFlowDisplayTruncatedShort;
 
         const baseFlowDisplayTruncatedLong =
             baseFlowAbsNum === 0
@@ -324,9 +324,9 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        const baseFlowDisplayStringLong =
-            tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
-        baseFlowDisplayLong = baseFlowDisplayStringLong;
+        // const baseFlowDisplayStringLong =
+        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
+        baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
     if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
         const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
@@ -346,9 +346,7 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        const quoteFlowDisplayStringShort =
-            tx.entityType !== 'liqchange' && `${quoteFlowDisplayTruncatedShort}`;
-        quoteFlowDisplayShort = quoteFlowDisplayStringShort;
+        quoteFlowDisplayShort = quoteFlowDisplayTruncatedShort;
         const quoteFlowDisplayTruncatedLong =
             quoteFlowAbsNum === 0
                 ? '0.00 '
@@ -363,9 +361,7 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        const quoteFlowDisplayStringLong =
-            tx.entityType !== 'liqchange' && `${quoteFlowDisplayTruncatedLong}`;
-        quoteFlowDisplayLong = quoteFlowDisplayStringLong;
+        quoteFlowDisplayLong = quoteFlowDisplayTruncatedLong;
     }
 
     const priceType =
