@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTermsOfService } from '../../App/hooks/useTermsOfService';
+// import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import Medal from '../../components/Global/Medal/Medal';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 // import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
@@ -18,7 +18,7 @@ export default function TestPage(props: TestPageProps) {
     const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar } = props;
     const [isOpen, setOpen] = React.useState(false);
 
-    const { tosText, agreement, agreementDate } = useTermsOfService();
+    // const { tosText, agreement, agreementDate } = useTermsOfService();
 
     const exampleTest = (
         <div className={styles.example_container}>
@@ -84,10 +84,10 @@ export default function TestPage(props: TestPageProps) {
             />
             <Hints enabled={true} hints={hints} />
             <h1 className='hello'>Hi there!</h1>
-            <p className='tosText'>{tosText}</p>
-            <p>
+            {/* <p className='tosText'>{tosText}</p> */}
+            {/* <p>
                 You {agreement ? 'accepted' : 'rejected'} the Terms of Service on {agreementDate}
-            </p>
+            </p> */}
             {/* <button onClick={() => acceptToS()}>Agree to ToS</button>
             <button onClick={() => rejectToS()}>Reject ToS</button> */}
             <button onClick={() => openGlobalModal(exampleTest, 'this is title')}>
