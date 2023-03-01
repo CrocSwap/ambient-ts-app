@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 export interface tosIF {
+    for: string,
     text: string;
     version: number;
     publishedOn: string | Date;
@@ -20,7 +21,9 @@ export const useTermsOfService = (
     );
 
     useEffect(() => {
-        agreement && localStorage.setItem('tos', JSON.stringify(agreement));
+        agreement && localStorage.setItem(
+            `tos_${agreement.for}`, JSON.stringify(agreement)
+        );
     }, [agreement]);
 
     const output = {
