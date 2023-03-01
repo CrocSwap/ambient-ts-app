@@ -64,7 +64,7 @@ export default function ChatPanel(props: ChatProps) {
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH/USDC');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -153,21 +153,30 @@ export default function ChatPanel(props: ChatProps) {
                         return result;
                     });
                 } else {
+                    setUserCurrentPool(
+                        currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+                    );
                     result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                     setCurrentUser(result.userData._id);
-                    if (result.userData.ensName !== ensName) {
+                    if (
+                        result.userData.ensName !== ensName ||
+                        result.userData.userCurrentPool !== userCurrentPool
+                    ) {
                         // eslint-disable-next-line
-                        updateUser(currentUser as string, ensName).then((result: any) => {
-                            if (result.status === 'OK') {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                updateMessageUser(currentUser as string, ensName).then(
+                        updateUser(currentUser as string, ensName, userCurrentPool).then(
+                            (result: any) => {
+                                if (result.status === 'OK') {
+                                    console.log(result);
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    (result: any) => {
-                                        return result;
-                                    },
-                                );
-                            }
-                        });
+                                    updateMessageUser(currentUser as string, ensName).then(
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        (result: any) => {
+                                            return result;
+                                        },
+                                    );
+                                }
+                            },
+                        );
                     }
                 }
             });
@@ -181,6 +190,32 @@ export default function ChatPanel(props: ChatProps) {
         setNotification(0);
         getMsg();
     }, [room]);
+
+    useEffect(() => {
+        console.log(
+            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            ' ',
+            userCurrentPool,
+        );
+        if (
+            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol !==
+            userCurrentPool
+        ) {
+            updateUser(
+                currentUser as string,
+                ensName,
+                currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            ).then((result: any) => {
+                if (result.status === 'OK') {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    setUserCurrentPool(
+                        currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+                    );
+                    console.log(result);
+                }
+            });
+        }
+    }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -363,6 +398,7 @@ export default function ChatPanel(props: ChatProps) {
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 currentPool={currentPool}
                 favePools={favePools}
+                userCurrentPool={userCurrentPool}
             />
         );
 
@@ -387,6 +423,7 @@ export default function ChatPanel(props: ChatProps) {
                         isCurrentPool={isCurrentPool}
                         showCurrentPoolButton={showCurrentPoolButton}
                         setShowCurrentPoolButton={setShowCurrentPoolButton}
+                        userCurrentPool={userCurrentPool}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

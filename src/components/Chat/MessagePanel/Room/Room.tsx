@@ -7,6 +7,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { topPools } from '../../../../App/mockData';
+import useChatApi from '../../Service/ChatApi';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -40,6 +41,7 @@ interface RoomProps {
     setIsCurrentPool: any;
     showCurrentPoolButton: any;
     setShowCurrentPoolButton: any;
+    userCurrentPool: string;
 }
 export default function RoomDropdown(props: RoomProps) {
     const {
@@ -80,11 +82,15 @@ export default function RoomDropdown(props: RoomProps) {
     ];
 
     useEffect(() => {
-        if (
-            isCurrentPool ||
-            props.selectedRoom ===
-                currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol
-        ) {
+        console.log(
+            'eee ',
+            props.userCurrentPool,
+            ' ',
+            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            ' ',
+            isCurrentPool,
+        );
+        if (props.selectedRoom === props.userCurrentPool) {
             setShowCurrentPoolButton(false);
         } else {
             setShowCurrentPoolButton(true);
@@ -94,6 +100,7 @@ export default function RoomDropdown(props: RoomProps) {
         currentPool.baseToken.symbol,
         currentPool.quoteToken.symbol,
         props.selectedRoom,
+        props.userCurrentPool,
     ]);
 
     useEffect(() => {
@@ -130,6 +137,37 @@ export default function RoomDropdown(props: RoomProps) {
 
     const rooms = topPools;
     const favepools = props.favePools;
+    useEffect(() => {
+        const roomArr: string[] = [];
+        const favePoolsArr: string[] = [];
+
+        favepools?.map((pool: PoolIF) => {
+            favePoolsArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+        });
+
+        setFavoritePoolsArray(() => {
+            return favePoolsArr;
+        });
+
+        rooms?.map((pool: PoolIF) => {
+            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+        });
+
+        for (let x = 0; x < roomArr.length; x++) {
+            if (!favePoolsArr.includes(roomArr[x])) {
+                roomArr.push(roomArr.splice(x, 1)[0]);
+            } else {
+                // do nothing
+            }
+        }
+
+        setRoomArray(() => {
+            return roomArr;
+        });
+
+        const middleIndex = Math.ceil(roomArray.length / 2);
+        roomArray.splice(0, middleIndex);
+    }, [favepools]);
 
     useEffect(() => {
         if (props.selectedRoom === 'Global') {
