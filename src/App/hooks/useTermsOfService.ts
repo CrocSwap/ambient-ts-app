@@ -8,9 +8,14 @@ export interface tosIF {
     acceptedOn?: string | Date;
 };
 
-export const useTermsOfService = (
-    tos: tosIF
-) => {
+export interface tosMethodsIF {
+    isAgreed: boolean,
+    getCurrentToS: () => tosIF,
+    getLastAgreement: () => tosIF | undefined,
+    acceptAgreement: () => void,
+}
+
+export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
     const getCurrentAgreement = (): (tosIF|undefined) => {
         const agreement = JSON.parse(localStorage.getItem('termsOfService') as string);
         return agreement;
@@ -34,7 +39,7 @@ export const useTermsOfService = (
         return agreement?.version === tos.version
     }, [agreement]);
 
-    const output = {
+    const tosMethods = {
         isAgreed,
         getCurrentToS: () => tos,
         getLastAgreement: () => agreement,
@@ -43,5 +48,5 @@ export const useTermsOfService = (
         )
     };
 
-    return output;
+    return tosMethods;
 };
