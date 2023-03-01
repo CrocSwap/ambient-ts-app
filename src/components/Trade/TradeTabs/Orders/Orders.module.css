@@ -195,3 +195,10 @@
         
     }
   }
+
+  @media only screen and (max-width: 1200px){
+    .footer{
+      display: none;
+    }
+    
+    }
