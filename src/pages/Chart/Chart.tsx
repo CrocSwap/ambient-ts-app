@@ -284,6 +284,8 @@ export default function Chart(props: ChartData) {
 
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
+    const [aa, setaa] = useState<any>();
+
     // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     // const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
@@ -570,16 +572,20 @@ export default function Chart(props: ChartData) {
         const sameLocationData = scaleData.yScale.invert(
             scaleData.yScale(market[0].value) + resultLocationData,
         );
-        yAxis.tickFormat((d: any) =>
-            isSameLocation && d === sameLocationData
-                ? formatAmountChartData(limit[0].value)
-                : formatAmountChartData(
-                      d,
-                      d === market[0].value || d === limit[0].value || d === crosshairData[0].y
-                          ? undefined
-                          : d.toString().split('.')[1]?.length,
-                  ),
-        );
+        yAxis.tickFormat((d: any) => {
+            if (d === crosshairData[0].y) {
+                return formatAmountChartData(crosshairData[0].y);
+            } else {
+                return isSameLocation && d === sameLocationData
+                    ? formatAmountChartData(limit[0].value)
+                    : formatAmountChartData(
+                          d,
+                          d === market[0].value || d === limit[0].value
+                              ? undefined
+                              : d.toString().split('.')[1]?.length,
+                      );
+            }
+        });
 
         yAxis.tickValues([
             ...scale.ticks(),
@@ -1148,6 +1154,8 @@ export default function Chart(props: ChartData) {
         market,
         crosshairData,
         isMouseMoveCrosshair,
+        aa,
+        scaleData,
     ]);
 
     const showHighlightedLines = () => {
@@ -2711,7 +2719,11 @@ export default function Chart(props: ChartData) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: scaleData.yScale.invert(event.sourceEvent.layerY),
+                            y: Number(
+                                formatAmountChartData(
+                                    scaleData.yScale.invert(event.sourceEvent.layerY),
+                                ),
+                            ),
                         },
                     ]);
                     setIsLineDrag(false);
@@ -2792,7 +2804,11 @@ export default function Chart(props: ChartData) {
                             y:
                                 isMouseMoveForSubChart || isZoomForSubChart
                                     ? -1
-                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                                    : Number(
+                                          formatAmountChartData(
+                                              scaleData.yScale.invert(event.sourceEvent.layerY),
+                                          ),
+                                      ),
                         },
                     ]);
 
@@ -4713,7 +4729,7 @@ export default function Chart(props: ChartData) {
                     crosshairHorizontalJoin(svgTvlSub, [crosshairData]).call(crosshairHorizontal);
             });
         }
-    }, [crosshairData]);
+    }, [crosshairData, scaleData]);
 
     const findTvlNearest = (point: any) => {
         const tvlData = parsedChartData?.tvlChartData;
@@ -4917,6 +4933,7 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
+                        // Burası
                         const svg = d3.select(event.target).select('svg');
                         // svg.attr('preserveAspectRatio','xMidyMid');
                         svg.attr('preserveAspectRatio', 'xMidYMid meet');
@@ -4988,6 +5005,8 @@ export default function Chart(props: ChartData) {
                         }
 
                         setDragControl(true);
+
+                        setaa(event);
                     }
 
                     const mouseOutFunc = () => {
@@ -5333,7 +5352,11 @@ export default function Chart(props: ChartData) {
                                 y:
                                     isMouseMoveForSubChart || isZoomForSubChart
                                         ? -1
-                                        : scaleData.yScale.invert(event.layerY),
+                                        : Number(
+                                              formatAmountChartData(
+                                                  scaleData.yScale.invert(event.layerY),
+                                              ),
+                                          ),
                             },
                         ]);
 
