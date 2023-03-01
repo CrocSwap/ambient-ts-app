@@ -23,7 +23,7 @@ export interface tosMethodsIF {
 export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
     // fn to get the current user agreement from local storage
     const getCurrentAgreement = (): (tosIF|undefined) => {
-        const agreement = JSON.parse(localStorage.getItem('termsOfService') as string);
+        const agreement = JSON.parse(localStorage.getItem(`tos_${tos.for}`) as string);
         return agreement;
     };
 
