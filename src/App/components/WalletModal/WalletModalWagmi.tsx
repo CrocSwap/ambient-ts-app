@@ -13,7 +13,7 @@ import {
 import styles from './WalletModal.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
-import { useTermsOfService } from '../../hooks/useTermsOfService';
+// import { useTermsOfService } from '../../hooks/useTermsOfService';
 // import validateEmail from './validateEmail';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
@@ -53,7 +53,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const { data: ensName } = useEnsName({ address });
 
     // eslint-disable-next-line
-    const { tosText, acceptToS } = useTermsOfService();
+    // const { tosText, acceptToS } = useTermsOfService();
 
     const [page, setPage] = useState('wallets');
     // const [email, setEmail] = useState('');
@@ -124,7 +124,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                             : connector.name === 'Coinbase Wallet'
                             ? setPage('coinbaseWalletPending')
                             : setPage('metamaskPending');
-                        acceptToS();
+                        // acceptToS();
                     }}
                     logo={
                         connector.name.toLowerCase() === 'metamask'
@@ -194,7 +194,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                     connect({ connector });
                     // handleMetamaskAuthentication();
                     setPage('metamaskPending');
-                    acceptToS();
+                    // acceptToS();
                 }}
             />
         </div>

@@ -78,8 +78,8 @@ export default function Reposition(props: propsIF) {
         setTxErrorMessage('');
     };
 
-    // location object (we need this mainly for position data)
-    const location = useLocation();
+    // locationHook object (we need this mainly for position data)
+    const locationHook = useLocation();
 
     // fn to conditionally navigate the user
     const navigate = useNavigate();
@@ -90,23 +90,23 @@ export default function Reposition(props: propsIF) {
     // will try to preserve current params, will use default path otherwise
     const redirectPath = '/trade/range/' + (params ?? '');
 
-    // navigate the user to the redirect URL path if location.state has no data
+    // navigate the user to the redirect URL path if locationHook.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link
     // ... inside the app, but will be empty if they navigated manually to the path
-    if (!location.state) {
+    if (!locationHook.state) {
         // log in console if conditions are such to trigger an automatic URL redirect
         // this will help troubleshoot if we ever break functionality to link this page
         console.assert(
-            location.state,
-            `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in location.state as returned by the useLocation() hook. Actual value received is <<${location.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
+            locationHook.state,
+            `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in locationHook.state as returned by the uselocationHook() hook. Actual value received is <<${locationHook.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
         );
         // IMPORTANT!! we must use this pathway, other implementations will not immediately
         // ... stop code in the rest of the file from running
         return <Navigate to={redirectPath} replace />;
     }
 
-    // position data from the location object
-    const { position } = location.state as { position: PositionIF };
+    // position data from the locationHook object
+    const { position } = locationHook.state as { position: PositionIF };
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -163,7 +163,7 @@ export default function Reposition(props: propsIF) {
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
 
-    // const currentLocation = location.pathname;
+    // const currentlocationHook = locationHook.pathname;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const handleModalClose = () => {
@@ -233,6 +233,9 @@ export default function Reposition(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             navigate(redirectPath, { replace: true });
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);

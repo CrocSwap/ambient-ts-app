@@ -261,6 +261,9 @@ export default function InitPool(props: propsIF) {
                 dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.log({ error });
         } finally {
             setIsApprovalPending(false);
@@ -316,6 +319,9 @@ export default function InitPool(props: propsIF) {
                         );
                     }
                 } catch (error) {
+                    if (error.reason === 'sending a transaction requires a signer') {
+                        location.reload();
+                    }
                     console.error({ error });
                 } finally {
                     setIsInitPending(false);

@@ -263,6 +263,9 @@ export default function HarvestPosition(props: propsIF) {
                 setTxErrorCode(error?.code);
                 // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                }
             }
         } else {
             console.log('unsupported position type for harvest');
