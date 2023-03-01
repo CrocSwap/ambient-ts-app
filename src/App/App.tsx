@@ -203,9 +203,8 @@ export default function App() {
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
-    // hook to manage ToS agreement in the app for wallet connection
+    // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
-    // hook to manage ToS agreement in the app for chat access 
     const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
 
     const { address: account, isConnected } = useAccount();
