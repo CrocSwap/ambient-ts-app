@@ -166,7 +166,7 @@ import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { useTermsOfService } from './hooks/useTermsOfService';
+import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
@@ -204,9 +204,9 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hook to manage ToS agreement in the app for wallet connection
-    const walletToS = useTermsOfService(termsOfService.wallet);
+    const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
     // hook to manage ToS agreement in the app for chat access 
-    const chatToS = useTermsOfService(termsOfService.chat);
+    const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
 
     const { address: account, isConnected } = useAccount();
 
