@@ -1,30 +1,21 @@
 import { useEffect, useState } from 'react';
 import { transactionToS } from '../../utils/data/termsOfService';
 
-export interface sectionTermsIF {
+export interface tosIF {
     text: string;
     version: number;
     publishedOn: string | Date;
     acceptedOn?: string | Date;
 };
 
-export interface termsOfServiceIF {
-    transaction: sectionTermsIF,
-    chat: sectionTermsIF
-}
-
 export const useTermsOfService = () => {
-    const getCurrentAgreement = (section: string): (sectionTermsIF|undefined) => {
-        const allAgreements = JSON.parse(localStorage.getItem('termsOfService') as string);
-        if (section === 'transaction') {
-            return allAgreements?.transaction;
-        } else if (section === 'chat') {
-            return allAgreements?.chat;
-        }
+    const getCurrentAgreement = (): (tosIF|undefined) => {
+        const agreement = JSON.parse(localStorage.getItem('termsOfService') as string);
+        return agreement;
     };
 
-    const [agreement, setAgreement] = useState<sectionTermsIF|undefined>(
-        getCurrentAgreement('transaction')
+    const [agreement, setAgreement] = useState<tosIF|undefined>(
+        getCurrentAgreement()
     );
 
     useEffect(() => {
