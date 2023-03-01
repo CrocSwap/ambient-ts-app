@@ -15,7 +15,23 @@ export const useSlippageNew = (
         return pair ?? defaults;
     }
 
-    const [slippage, setSlippage] = useState(getSlippage());
-    false && slippage;
+    const [slippage, setSlippage] = useState<SlippageNewIF>(getSlippage());
+
+    const checkSlippage = (type: string): number => {
+        let output: number;
+        switch (type) {
+            case 'stable':
+                output = slippage.stable;
+                break;
+            case 'volatile':
+                output = slippage.volatile;
+                break;
+            default:
+                output = 0;
+        }
+        return output;
+    }
+
     false && setSlippage;
+    false && checkSlippage;
 }
