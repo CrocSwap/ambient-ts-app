@@ -44,6 +44,24 @@
     order: 0;
 }
 
+.seperator {
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    /* font-size: calc(1vw - 8px); */
+    line-height: 12px;
+    text-align: center;
+
+    /* text/grey dark */
+
+    color: rgba(235, 235, 255, 0.25);
+
+    /* Inside auto layout */
+    order: 0;
+}
+
 .message {
     width: 80%;
     height: 80%;
