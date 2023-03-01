@@ -160,7 +160,9 @@ export default function OrderRemoval(props: propsIF) {
             } catch (error) {
                 console.log({ error });
                 setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                } // setTxErrorMessage(error?.message);
             }
 
             const newLimitOrderChangeCacheEndpoint =

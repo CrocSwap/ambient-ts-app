@@ -855,6 +855,9 @@ export default function Range(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             setIsWaitingForWallet(false);
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -1306,6 +1309,9 @@ export default function Range(props: propsIF) {
                 dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.log({ error });
         } finally {
             setIsApprovalPending(false);

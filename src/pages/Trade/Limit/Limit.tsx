@@ -543,10 +543,16 @@ export default function Limit(props: propsIF) {
             setNewLimitOrderTransactionHash(tx.hash);
             setIsWaitingForWallet(false);
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.log({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
+            setTxErrorCode(error.code);
+            setTxErrorMessage(error.message);
             setIsWaitingForWallet(false);
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
         }
 
         const newLimitOrderChangeCacheEndpoint =
@@ -723,6 +729,9 @@ export default function Limit(props: propsIF) {
                 dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.log({ error });
         } finally {
             setIsApprovalPending(false);
