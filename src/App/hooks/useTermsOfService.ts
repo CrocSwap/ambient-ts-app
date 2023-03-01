@@ -54,8 +54,6 @@ export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
         isAgreed,
         getCurrentToS: () => tos,
         getCurrentAgreement: () => agreement,
-        acceptAgreement: () => setAgreement(
-            {...tos, acceptedOn: new Date().toISOString()}
-        )
+        acceptAgreement: () => setAgreement({...tos, acceptedOn: new Date().toISOString()})
     };
 };
