@@ -7,18 +7,19 @@ import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { Steps, Hints } from 'intro.js-react';
 import 'intro.js/introjs.css';
+import { tosMethodsIF } from '../../App/hooks/useTermsOfService';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     openSidebar: () => void;
     closeSidebar: () => void;
     togggggggleSidebar: () => void;
-    acceptWalletToS: () => void;
-    acceptChatToS: () => void;
+    walletToS: tosMethodsIF;
+    chatToS: tosMethodsIF;
 }
 
 export default function TestPage(props: TestPageProps) {
-    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar, acceptWalletToS, acceptChatToS } = props;
+    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar, walletToS, chatToS } = props;
     const [isOpen, setOpen] = React.useState(false);
 
     // const { tosText, agreement, agreementDate } = useTermsOfService();
@@ -119,8 +120,8 @@ export default function TestPage(props: TestPageProps) {
             />
             <Medal ranking={1} />
             {/* <PulseLoading /> */}
-            <button onClick={() => acceptWalletToS()}>Accept Wallet ToS!</button>
-            <button onClick={() => acceptChatToS()}>Accept Chat ToS!</button>
+            <button onClick={() => walletToS.acceptAgreement()}>Accept Wallet ToS!</button>
+            <button onClick={() => chatToS.acceptAgreement()}>Accept Chat ToS!</button>
         </section>
     );
 }

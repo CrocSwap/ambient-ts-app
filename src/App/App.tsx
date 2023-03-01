@@ -203,9 +203,10 @@ export default function App() {
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
+    // hook to manage ToS agreement in the app for wallet connection
     const walletToS = useTermsOfService(termsOfService.wallet);
+    // hook to manage ToS agreement in the app for chat access 
     const chatToS = useTermsOfService(termsOfService.chat);
-    console.log(walletToS.isAgreed);
 
     const { address: account, isConnected } = useAccount();
 
@@ -3179,8 +3180,8 @@ export default function App() {
                                     openSidebar={openSidebar}
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
-                                    acceptWalletToS={walletToS.acceptAgreement}
-                                    acceptChatToS={chatToS.acceptAgreement}
+                                    walletToS={walletToS}
+                                    chatToS={chatToS}
                                 />
                             }
                         />
