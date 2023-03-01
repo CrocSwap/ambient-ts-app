@@ -1,65 +1,59 @@
-import { useEffect, useState } from 'react';
+// START: Import React and Dongles
+import { useEffect, useMemo, useState } from 'react';
 
-export const useTermsOfService = (): {
-    tosText: string;
-    agreement: boolean;
-    agreementDate: string;
-    acceptToS: () => void;
-    rejectToS: () => void;
-} => {
-    // user data object from local storage
-    const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('user') as string));
-    // boolean agreement status whether user has accepted ToS
-    const [agreement, setAgreement] = useState(userData?.termsOfService?.agreed);
-    // ISO date string representing when the user accepted or rejected ToS
-    const [agreementDate, setAgreementDate] = useState(userData?.termsOfService?.date);
-    // recursive function to query local storage until current user agreement is returned
+// exportable interface for Terms of Service data object
+export interface tosIF {
+    for: string,
+    text: string;
+    version: number;
+    publishedOn: string | Date;
+    acceptedOn?: string | Date;
+};
+
+// exportable interface for methods to interact with Terms of Service
+// this is the object returned by this hook
+export interface tosMethodsIF {
+    isAgreed: boolean,
+    currentToS: tosIF,
+    currentAgreement: tosIF | undefined,
+    acceptAgreement: () => void,
+}
+
+// central react hook in this file
+export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
+    // fn to get the current user agreement from local storage
+    const getLastAgreement = (): (tosIF|undefined) => {
+        const agreement = JSON.parse(localStorage.getItem(`tos_${tos.for}`) as string);
+        return agreement;
+    };
+
+    // hook to memoize most recent user agreement data in local state
+    const [agreement, setAgreement] = useState<tosIF|undefined>(getLastAgreement());
+
+    // sync `agreement` into local storage when user newly agrees 
     useEffect(() => {
-        function getUserData() {
-            localStorage.user
-                ? setUserData(JSON.parse(localStorage.getItem('user') as string))
-                : setTimeout(() => getUserData(), 500);
-        }
-        getUserData();
-    }, []);
-    // recursive function to set agreement details once user object is received
-    useEffect(() => {
-        userData && setAgreement(userData.termsOfService.agreed);
-        userData && setAgreementDate(userData.termsOfService.date);
-    }, [userData]);
+        // check that `agreement` is not undefined
+        // if it is a defined value, update local storage
+        agreement && localStorage.setItem(`tos_${agreement.for}`, JSON.stringify(agreement));
+    }, [agreement]);
 
-    // text of the ToS
-    // we may want to put this in its own data file and import it
-    const tosText = 'By connecting a wallet you agree to the Terms of Service.';
+    // memoize check as to whether user agreement is current
+    // memoization matters because some app functionalities will check frequently
+    const isAgreed = useMemo<boolean>(() => {
+        // log rechecks at the debug level
+        console.debug(
+            `rechecking agreement for ${tos.for} terms of service`,
+            tos
+        );
+        // return whether agreement matches the current tos (version number)
+        return agreement?.version === tos.version
+    }, [agreement]);
 
-    // meta functions to reflect user accepting or rejecting ToS
-    const acceptToS = () => updateUserAgreement(true);
-    const rejectToS = () => updateUserAgreement(false);
-
-    // function to update the app for ToS being rejected or accepted
-    function updateUserAgreement(didUserAgree: boolean) {
-        // data conformed to shape used in local storage
-        const details = {
-            agreed: didUserAgree,
-            date: new Date().toISOString(),
-        };
-        // update agreement status in local state
-        setAgreement(details.agreed);
-        // update agreement date in local state
-        setAgreementDate(details.date);
-        // make a local copy of the userData value from local state
-        const newUserData = userData;
-        // update terms of service in copy of user data object
-        newUserData.termsOfService = details;
-        // send updated user data to local storage
-        localStorage.setItem('user', JSON.stringify(newUserData));
-    }
-
+    // return methods for the app to interact with this instance of ToS
     return {
-        tosText,
-        agreement,
-        agreementDate,
-        acceptToS,
-        rejectToS,
+        isAgreed,
+        currentToS: tos,
+        currentAgreement: agreement,
+        acceptAgreement: () => setAgreement({...tos, acceptedOn: new Date().toISOString()})
     };
 };

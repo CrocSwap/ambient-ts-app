@@ -166,6 +166,8 @@ import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
+import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
+import { termsOfService } from '../utils/data/termsOfService';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -200,6 +202,10 @@ export default function App() {
     // console.log('rendering app');
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
+
+    // hooks to manage ToS agreements in the app
+    const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
+    const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
 
     const { address: account, isConnected } = useAccount();
 
@@ -3176,6 +3182,8 @@ export default function App() {
                                     openSidebar={openSidebar}
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
+                                    walletToS={walletToS}
+                                    chatToS={chatToS}
                                 />
                             }
                         />
