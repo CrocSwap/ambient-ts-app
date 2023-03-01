@@ -125,6 +125,9 @@ export default function ClaimOrder(props: propsIF) {
             } catch (error) {
                 console.log({ error });
                 setTxErrorCode(error?.code);
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                }
                 // setTxErrorMessage(error?.message);
             }
             //  const newLimitOrderChangeCacheEndpoint =

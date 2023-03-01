@@ -267,6 +267,9 @@ export default function Transfer(props: propsIF) {
                     resetTransferQty();
                 }
             } catch (error) {
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                }
                 console.warn({ error });
             } finally {
                 setIsTransferPending(false);
