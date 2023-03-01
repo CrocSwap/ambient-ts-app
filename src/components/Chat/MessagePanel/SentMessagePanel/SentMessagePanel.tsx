@@ -100,15 +100,30 @@ export default function SentMessagePanel(props: SentMessageProps) {
     };
 
     const getDayAndName = (previousDay: string, currentDay: string) => {
+        const today = new Date();
         const previousMessageDate = new Date(previousDay);
         const currentMessageDate = new Date(currentDay);
+        const todayDayNumber = today.getUTCDate();
+        const todayMonthNumber = today.toLocaleString('default', {
+            month: 'long',
+        });
         const previousDayNumber = previousMessageDate.getUTCDate();
         const currentDayNumber = currentMessageDate.getUTCDate();
         const currentDayMonthNumber = currentMessageDate.toLocaleString('default', {
             month: 'long',
         });
-        if (previousDayNumber !== currentDayNumber) {
-            setdaySeparator(currentDayNumber + ' ' + currentDayMonthNumber);
+        if (
+            todayDayNumber === currentDayNumber &&
+            todayMonthNumber === currentDayMonthNumber &&
+            previousDayNumber !== currentDayNumber
+        ) {
+            setdaySeparator('Today');
+        } else {
+            if (previousDayNumber !== currentDayNumber) {
+                setdaySeparator(currentDayNumber + ' ' + currentDayMonthNumber);
+            } else {
+                setdaySeparator('');
+            }
         }
     };
 
@@ -239,7 +254,15 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 {showAvatar && <div className={styles.nft_container}>{myBlockies}</div>}
                 <div className={styles.message_item}>
                     <div
-                        className={props.isCurrentUser ? styles.current_user_name : styles.name}
+                        className={
+                            showName && props.isCurrentUser
+                                ? styles.current_user_name
+                                : showName && !props.isCurrentUser
+                                ? styles.name
+                                : !showName && !props.isCurrentUser
+                                ? ''
+                                : ''
+                        }
                         onClick={() => {
                             if (
                                 location.pathname !==
