@@ -85,8 +85,11 @@ export const useProcessTransaction = (
     let truncatedLowDisplayPriceDenomByMoneyness;
     let truncatedHighDisplayPriceDenomByMoneyness;
 
-    let baseFlowDisplay;
-    let quoteFlowDisplay;
+    let baseFlowDisplayLong;
+    let quoteFlowDisplayLong;
+    let baseFlowDisplayShort;
+    let quoteFlowDisplayShort;
+
     let isBaseFlowPositive = false;
     let isQuoteFlowPositive = false;
 
@@ -289,7 +292,7 @@ export const useProcessTransaction = (
         const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
         const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
         isBaseFlowPositive = baseFlowDisplayNum > 0;
-        const baseFlowDisplayTruncated =
+        const baseFlowDisplayTruncatedShort =
             baseFlowAbsNum === 0
                 ? '0.00 '
                 : baseFlowAbsNum < 0.0001
@@ -303,17 +306,33 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        const baseFlowDisplayString =
-            tx.entityType !== 'liqchange' && isBaseFlowPositive
-                ? `${baseFlowDisplayTruncated}`
-                : `${baseFlowDisplayTruncated}`;
-        baseFlowDisplay = baseFlowDisplayString;
+        // const baseFlowDisplayStringShort =
+        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedShort}`;
+        baseFlowDisplayShort = baseFlowDisplayTruncatedShort;
+
+        const baseFlowDisplayTruncatedLong =
+            baseFlowAbsNum === 0
+                ? '0.00 '
+                : baseFlowAbsNum < 0.0001
+                ? baseFlowAbsNum.toExponential(2)
+                : baseFlowAbsNum < 0.01
+                ? baseFlowAbsNum.toPrecision(3)
+                : baseFlowAbsNum >= 1000000000
+                ? formatAmountOld(baseFlowAbsNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  baseFlowAbsNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  }) + ' ';
+        // const baseFlowDisplayStringLong =
+        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
+        baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
     if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
         const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
         const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
         isQuoteFlowPositive = quoteFlowDisplayNum > 0;
-        const quoteFlowDisplayTruncated =
+        const quoteFlowDisplayTruncatedShort =
             quoteFlowAbsNum === 0
                 ? '0.00 '
                 : quoteFlowAbsNum < 0.0001
@@ -327,13 +346,22 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        const quoteFlowDisplayString =
-            tx.entityType !== 'liqchange' && isQuoteFlowPositive
-                ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-                  // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                  `${quoteFlowDisplayTruncated}`
-                : `${quoteFlowDisplayTruncated}`;
-        quoteFlowDisplay = quoteFlowDisplayString;
+        quoteFlowDisplayShort = quoteFlowDisplayTruncatedShort;
+        const quoteFlowDisplayTruncatedLong =
+            quoteFlowAbsNum === 0
+                ? '0.00 '
+                : quoteFlowAbsNum < 0.0001
+                ? quoteFlowAbsNum.toExponential(2)
+                : quoteFlowAbsNum < 0.01
+                ? quoteFlowAbsNum.toPrecision(3)
+                : quoteFlowAbsNum >= 1000000000
+                ? formatAmountOld(quoteFlowAbsNum)
+                : // ? quoteLiqDisplayNum.toExponential(2)
+                  quoteFlowAbsNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  }) + ' ';
+        quoteFlowDisplayLong = quoteFlowDisplayTruncatedLong;
     }
 
     const priceType =
@@ -482,15 +510,20 @@ export const useProcessTransaction = (
 
     // --------------------------------------------------------
 
-    const quantitiesAvailable = baseFlowDisplay !== undefined || quoteFlowDisplay !== undefined;
+    const quantitiesAvailable =
+        baseFlowDisplayShort !== undefined || quoteFlowDisplayShort !== undefined;
 
-    const baseDisplay = quantitiesAvailable ? baseFlowDisplay || '0.00' : '…';
+    const baseQuantityDisplayLong = quantitiesAvailable ? baseFlowDisplayLong || '0.00' : '…';
 
-    const quoteDisplay = quantitiesAvailable ? quoteFlowDisplay || '0.00' : '…';
+    const quoteQuantityDisplayLong = quantitiesAvailable ? quoteFlowDisplayLong || '0.00' : '…';
 
-    const baseDisplayFrontend = quantitiesAvailable ? `${baseFlowDisplay || '0.00'}` : '…';
+    const baseQuantityDisplayShort = quantitiesAvailable
+        ? `${baseFlowDisplayShort || '0.00'}`
+        : '…';
 
-    const quoteDisplayFrontend = quantitiesAvailable ? `${quoteFlowDisplay || '0.00'}` : '…';
+    const quoteQuantityDisplayShort = quantitiesAvailable
+        ? `${quoteFlowDisplayShort || '0.00'}`
+        : '…';
 
     // --------------------------------------------------------
 
@@ -518,7 +551,7 @@ export const useProcessTransaction = (
             : ensName
         : trimString(ownerId, 7, 4, '…');
 
-    const txHashTruncated = trimString(txHash, 6, 0, '…');
+    const txHashTruncated = trimString(txHash, 6, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
@@ -550,11 +583,13 @@ export const useProcessTransaction = (
 
         // Token Qty data
         baseTokenCharacter,
-        baseDisplay,
-        quoteDisplay,
+        baseQuantityDisplayShort,
+        quoteQuantityDisplayShort,
+        baseQuantityDisplayLong,
+        quoteQuantityDisplayLong,
         quoteTokenCharacter,
-        baseFlowDisplay,
-        quoteFlowDisplay,
+        // baseFlowDisplay,
+        // quoteFlowDisplay,
         baseTokenSymbol,
         baseTokenAddress,
         baseTokenAddressTruncated,
@@ -562,8 +597,6 @@ export const useProcessTransaction = (
         quoteTokenAddress,
         quoteTokenAddressTruncated,
 
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         quoteTokenLogo,
         baseTokenLogo,
         isBaseFlowPositive,

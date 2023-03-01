@@ -33,8 +33,8 @@ export default function TransactionAccordions(props: propsIF) {
         usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+        baseQuantityDisplayShort,
+        quoteQuantityDisplayShort,
         blockExplorer,
         quoteTokenLogo,
         baseTokenLogo,
@@ -83,13 +83,13 @@ export default function TransactionAccordions(props: propsIF) {
     const baseTokenDisplay = (
         <div className={styles.base_display}>
             <img src={baseTokenLogo} alt='base token logo' width='20px' />
-            <p>{baseDisplayFrontend}</p>
+            <p>{baseQuantityDisplayShort}</p>
         </div>
     );
     const quoteTokenDisplay = (
         <div className={styles.quote_display}>
             <img src={quoteTokenLogo} alt='quote token logo' width='20px' />
-            <p>{quoteDisplayFrontend}</p>
+            <p>{quoteQuantityDisplayShort}</p>
         </div>
     );
 
@@ -150,8 +150,8 @@ export default function TransactionAccordions(props: propsIF) {
                             value={usdValue}
                             baseTokenSymbol={baseTokenSymbol}
                             quoteTokenSymbol={quoteTokenSymbol}
-                            baseDisplay={baseDisplayFrontend}
-                            quoteDisplay={quoteDisplayFrontend}
+                            baseDisplay={baseQuantityDisplayShort}
+                            quoteDisplay={quoteQuantityDisplayShort}
                             blockExplorer={blockExplorer}
                         />
                     </motion.section>

@@ -6,6 +6,8 @@ import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/Transacti
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
 import { TransactionIF } from '../../../utils/interfaces/exports';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
     account: string;
@@ -33,6 +35,25 @@ export default function TransactionDetails(props: propsIF) {
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // eslint-disable-next-line
+    const [value, copy] = useCopyToClipboard();
+
+    function handleCopyAddress() {
+        const txHash = tx.tx;
+        copy(txHash);
+        setOpenSnackbar(true);
+    }
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
 
     // const handleChange = (slug: string) => {
     //     const copyControlItems = [...controlItems];
@@ -89,6 +110,7 @@ export default function TransactionDetails(props: propsIF) {
                 downloadAsImage={downloadAsImage}
                 setShowShareComponent={setShowShareComponent}
                 showShareComponent={showShareComponent}
+                handleCopyAddress={handleCopyAddress}
             />
 
             {showShareComponent ? (
@@ -100,6 +122,7 @@ export default function TransactionDetails(props: propsIF) {
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
+            {snackbarContent}
         </div>
     );
 }

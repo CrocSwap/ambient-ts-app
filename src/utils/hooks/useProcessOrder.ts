@@ -5,7 +5,12 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
-import { priceHalfAboveTick, priceHalfBelowTick, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    concPosSlot,
+    priceHalfAboveTick,
+    priceHalfBelowTick,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 export const useProcessOrder = (
@@ -37,7 +42,26 @@ export const useProcessOrder = (
     const isOrderFilled = limitOrder.claimableLiq !== '0';
     // const isOrderFilled = !!limitOrder.latestCrossPivotTime;
 
-    const posHash = limitOrder.limitOrderIdentifier?.slice(42);
+    // const posHash = limitOrder.limitOrderIdentifier?.slice(42);
+
+    const posHash =
+        limitOrder.user &&
+        limitOrder.base &&
+        limitOrder.quote &&
+        limitOrder.bidTick &&
+        limitOrder.askTick
+            ? concPosSlot(
+                  limitOrder.user,
+                  limitOrder.base,
+                  limitOrder.quote,
+                  limitOrder.bidTick,
+                  limitOrder.askTick,
+                  36000,
+              ).toString()
+            : '…';
+
+    const posHashTruncated = trimString(posHash ?? '', 6, 4, '…');
+
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
 
     const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
@@ -465,7 +489,6 @@ export const useProcessOrder = (
             ? trimString(ensName, 9, 3, '…')
             : ensName
         : trimString(ownerId, 7, 4, '…');
-    const posHashTruncated = trimString(posHash ?? '', 6, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
