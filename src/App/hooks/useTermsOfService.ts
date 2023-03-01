@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface tosIF {
     for: string,
@@ -26,10 +26,18 @@ export const useTermsOfService = (
         );
     }, [agreement]);
 
+    const isAgreed = useMemo<boolean>(() => {
+        console.debug(
+            `rechecking agreement for ${tos.for} terms of service`,
+            tos
+        );
+        return agreement?.version === tos.version
+    }, [agreement]);
+
     const output = {
+        isAgreed,
         getCurrentToS: () => tos,
         getLastAgreement: () => agreement,
-        checkAgreement: () => agreement?.version === tos.version,
         acceptAgreement: () => setAgreement(
             {...tos, acceptedOn: new Date().toISOString()}
         )
