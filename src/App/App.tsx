@@ -169,6 +169,7 @@ import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippageNew } from './hooks/useSlippageNew';
+import { slippage } from '../utils/data/slippage';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -209,7 +210,9 @@ export default function App() {
     const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
 
     // hook to manage slippage in the app
-    useSlippageNew();
+    useSlippageNew('swap', slippage.swap);
+    useSlippageNew('mint', slippage.mint);
+    useSlippageNew('reposition', slippage.reposition);
 
     const { address: account, isConnected } = useAccount();
 
