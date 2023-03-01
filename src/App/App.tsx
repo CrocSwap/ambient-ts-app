@@ -168,6 +168,7 @@ import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
+import { useSlippageNew } from './hooks/useSlippageNew';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -206,6 +207,9 @@ export default function App() {
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
     const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
+
+    // hook to manage slippage in the app
+    useSlippageNew();
 
     const { address: account, isConnected } = useAccount();
 
