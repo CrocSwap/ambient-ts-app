@@ -14,8 +14,8 @@ export interface tosIF {
 // this is the object returned by this hook
 export interface tosMethodsIF {
     isAgreed: boolean,
-    getCurrentToS: () => tosIF,
-    getCurrentAgreement: () => tosIF | undefined,
+    currentToS: tosIF,
+    currentAgreement: tosIF | undefined,
     acceptAgreement: () => void,
 }
 
@@ -52,8 +52,8 @@ export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
     // return methods for the app to interact with this instance of ToS
     return {
         isAgreed,
-        getCurrentToS: () => tos,
-        getCurrentAgreement: () => agreement,
+        currentToS: tos,
+        currentAgreement: agreement,
         acceptAgreement: () => setAgreement({...tos, acceptedOn: new Date().toISOString()})
     };
 };
