@@ -15,20 +15,20 @@ export interface tosIF {
 export interface tosMethodsIF {
     isAgreed: boolean,
     getCurrentToS: () => tosIF,
-    getLastAgreement: () => tosIF | undefined,
+    getCurrentAgreement: () => tosIF | undefined,
     acceptAgreement: () => void,
 }
 
 // central react hook in this file
 export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
     // fn to get the current user agreement from local storage
-    const getCurrentAgreement = (): (tosIF|undefined) => {
+    const getLastAgreement = (): (tosIF|undefined) => {
         const agreement = JSON.parse(localStorage.getItem(`tos_${tos.for}`) as string);
         return agreement;
     };
 
     // hook to memoize most recent user agreement data in local state
-    const [agreement, setAgreement] = useState<tosIF|undefined>(getCurrentAgreement());
+    const [agreement, setAgreement] = useState<tosIF|undefined>(getLastAgreement());
 
     // sync `agreement` into local storage when user newly agrees 
     useEffect(() => {
@@ -53,7 +53,7 @@ export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
     return {
         isAgreed,
         getCurrentToS: () => tos,
-        getLastAgreement: () => agreement,
+        getCurrentAgreement: () => agreement,
         acceptAgreement: () => setAgreement(
             {...tos, acceptedOn: new Date().toISOString()}
         )
