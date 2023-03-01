@@ -252,6 +252,9 @@ export default function Deposit(props: propsIF) {
                     resetDepositQty();
                 }
             } catch (error) {
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                }
                 console.warn({ error });
             } finally {
                 setIsDepositPending(false);
@@ -300,6 +303,9 @@ export default function Deposit(props: propsIF) {
                 dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
             console.warn({ error });
         } finally {
             setIsApprovalPending(false);

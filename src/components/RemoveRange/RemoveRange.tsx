@@ -287,6 +287,9 @@ export default function RemoveRange(props: propsIF) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    if (error.reason === 'sending a transaction requires a signer') {
+                        location.reload();
+                    }
                     console.log({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
@@ -304,6 +307,9 @@ export default function RemoveRange(props: propsIF) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    if (error.reason === 'sending a transaction requires a signer') {
+                        location.reload();
+                    }
                     console.log({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
@@ -338,6 +344,9 @@ export default function RemoveRange(props: propsIF) {
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                }
                 console.log({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
