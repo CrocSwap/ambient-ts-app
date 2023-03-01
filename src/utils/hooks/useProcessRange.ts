@@ -66,14 +66,17 @@ export const useProcessRange = (
     if (position.positionType == 'ambient') {
         posHash = ambientPosSlot(ownerId, position.base, position.quote, 36000);
     } else {
-        posHash = concPosSlot(
-            ownerId,
-            position.base,
-            position.quote,
-            position.bidTick,
-            position.askTick,
-            36000,
-        );
+        posHash =
+            position.user && position.base && position.quote && position.bidTick && position.askTick
+                ? concPosSlot(
+                      position.user,
+                      position.base,
+                      position.quote,
+                      position.bidTick,
+                      position.askTick,
+                      36000,
+                  ).toString()
+                : '…';
     }
 
     // -----------------------------POSITIONS RANGE--------------------
