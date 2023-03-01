@@ -167,6 +167,7 @@ import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService } from './hooks/useTermsOfService';
+import { transactionToS } from '../utils/data/termsOfService';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -202,7 +203,7 @@ export default function App() {
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
-    const tos = useTermsOfService();
+    const tos = useTermsOfService(transactionToS);
     console.log(tos.checkAgreement());
 
     const { address: account, isConnected } = useAccount();

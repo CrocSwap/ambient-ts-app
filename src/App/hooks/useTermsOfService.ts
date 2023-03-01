@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { transactionToS } from '../../utils/data/termsOfService';
 
 export interface tosIF {
     text: string;
@@ -8,7 +7,9 @@ export interface tosIF {
     acceptedOn?: string | Date;
 };
 
-export const useTermsOfService = () => {
+export const useTermsOfService = (
+    tos: tosIF
+) => {
     const getCurrentAgreement = (): (tosIF|undefined) => {
         const agreement = JSON.parse(localStorage.getItem('termsOfService') as string);
         return agreement;
@@ -23,11 +24,11 @@ export const useTermsOfService = () => {
     }, [agreement]);
 
     const output = {
-        getCurrentToS: () => transactionToS,
+        getCurrentToS: () => tos,
         getLastAgreement: () => agreement,
-        checkAgreement: () => agreement?.version === transactionToS.version,
+        checkAgreement: () => agreement?.version === tos.version,
         acceptAgreement: () => setAgreement(
-            {...transactionToS, acceptedOn: new Date().toISOString()}
+            {...tos, acceptedOn: new Date().toISOString()}
         )
     };
 
