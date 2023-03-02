@@ -169,6 +169,7 @@ import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
+import { useChartSettings } from './hooks/useChartSettings';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -212,6 +213,9 @@ export default function App() {
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
     const mintSlippage: SlippageMethodsIF = useSlippage('mint', slippage.mint);
     const repoSlippage: SlippageMethodsIF = useSlippage('repo', slippage.reposition);
+
+    // hook to manage chart settings
+    const chartSettings = useChartSettings();
 
     const { address: account, isConnected } = useAccount();
 
@@ -3186,6 +3190,7 @@ export default function App() {
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
                                     chatToS={chatToS}
+                                    chartSettings={chartSettings}
                                 />
                             }
                         />
