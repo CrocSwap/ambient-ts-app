@@ -22,34 +22,45 @@ export const useChartSettings = () => {
         return output;
     };
 
-    const [
-        volumeSubchartEnabled,
-        setVolumeSubchartEnabled
-    ] = useState<boolean>(getPreference('volume') ?? true);
-    const [
-        tvlSubchartEnabled,
-        setTvlSubchartEnabled
-    ] = useState<boolean>(getPreference('tvl') ?? false);
-    const [
-        feeRateSubchartEnabled,
-        setFeeRateSubchartEnabled
-    ] = useState<boolean>(getPreference('feeRate') ?? false);
+    const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] = useState<boolean>(
+        getPreference('volume') ?? true
+    );
+    const [isTvlSubchartEnabled, setIsTvlSubchartEnabled] = useState<boolean>(
+        getPreference('tvl') ?? false
+    );
+    const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] = useState<boolean>(
+        getPreference('feeRate') ?? false
+    );
 
     useEffect(() => {
         localStorage.setItem(
             'chart_settings',
             JSON.stringify({
-                volumeSubchartEnabled,
-                tvlSubchartEnabled,
-                feeRateSubchartEnabled
+                isVolumeSubchartEnabled,
+                isTvlSubchartEnabled,
+                isFeeRateSubchartEnabled
             })
         );
-    }, [volumeSubchartEnabled, tvlSubchartEnabled, feeRateSubchartEnabled]);
+    }, [isVolumeSubchartEnabled, isTvlSubchartEnabled, isFeeRateSubchartEnabled]);
 
-    false && volumeSubchartEnabled;
-    false && setVolumeSubchartEnabled;
-    false && tvlSubchartEnabled;
-    false && setTvlSubchartEnabled;
-    false && feeRateSubchartEnabled;
-    false && setFeeRateSubchartEnabled;
+    return {
+        volumeSubchart: {
+            isEnabled: isVolumeSubchartEnabled,
+            enable: () => setIsVolumeSubchartEnabled(true),
+            disable: () => setIsVolumeSubchartEnabled(false),
+            toggle: () => setIsVolumeSubchartEnabled(!isVolumeSubchartEnabled)
+        },
+        tvlSubchart: {
+            isEnabled: isTvlSubchartEnabled,
+            enable: () => setIsTvlSubchartEnabled(true),
+            disable: () => setIsTvlSubchartEnabled(false),
+            toggle: () => setIsTvlSubchartEnabled(!isTvlSubchartEnabled)
+        },
+        feeRateSubchart: {
+            isEnabled: isFeeRateSubchartEnabled,
+            enable: () => setIsFeeRateSubchartEnabled(true),
+            disable: () => setIsFeeRateSubchartEnabled(false),
+            toggle: () => setIsFeeRateSubchartEnabled(!isFeeRateSubchartEnabled)
+        }
+    };
 }
