@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useChartSettings = () => {
     const getPreference = (subchart: string) => {
@@ -8,13 +8,13 @@ export const useChartSettings = () => {
         let output: boolean;
         switch (subchart) {
             case 'volume':
-                output = allPreferences.volume;
+                output = allPreferences?.volume;
                 break;
             case 'tvl':
-                output = allPreferences.tvl;
+                output = allPreferences?.tvl;
                 break;
             case 'feeRate':
-                output = allPreferences.feeRate;
+                output = allPreferences?.feeRate;
                 break;
             default:
                 return;
@@ -34,6 +34,17 @@ export const useChartSettings = () => {
         feeRateSubchartEnabled,
         setFeeRateSubchartEnabled
     ] = useState<boolean>(getPreference('feeRate') ?? false);
+
+    useEffect(() => {
+        localStorage.setItem(
+            'chart_settings',
+            JSON.stringify({
+                volumeSubchartEnabled,
+                tvlSubchartEnabled,
+                feeRateSubchartEnabled
+            })
+        );
+    }, [volumeSubchartEnabled, tvlSubchartEnabled, feeRateSubchartEnabled]);
 
     false && volumeSubchartEnabled;
     false && setVolumeSubchartEnabled;
