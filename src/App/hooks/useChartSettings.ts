@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 // interface for shape of data held in local storage
 interface chartSettingsLocalStorageIF {
@@ -10,7 +10,7 @@ interface chartSettingsLocalStorageIF {
 
 // interface for class to manage a given subchart setting
 interface subchartSettingsIF {
-    isEnabled: boolean,
+    readonly isEnabled: boolean,
     enable: () => void,
     disable: () => void,
     toggle: () => void
@@ -77,13 +77,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // checked against subchartSettingsIF
     class Subchart implements subchartSettingsIF {
         // base value of the preference
-        isEnabled: boolean;
+        public readonly isEnabled: boolean;
         // state setter fn
-        setter: (val: SetStateAction<boolean>) => void;
-        // constructor
+        private readonly setter: Dispatch<SetStateAction<boolean>>;
         // @param enabled ➡ current value from local state
         // @param setterFn ➡ fn to update local state
-        constructor(enabled: boolean, setterFn: (val: SetStateAction<boolean>) => void) {
+        constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>
+            ) {
             this.isEnabled = enabled;
             this.setter = setterFn;
         }
