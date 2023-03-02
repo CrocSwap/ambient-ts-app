@@ -62,14 +62,8 @@ export const useSlippage = (
     // @param slipType ➡ denotes stable vs volatile and is hardcoded into fn calls
     // @param newVal ➡ new value supplied by the user through the DOM
     const updateSlippage = (slipType: string, newVal: number) => {
-        switch (slipType) {
-            case 'stable':
-                setStable(newVal);
-                break;
-            case 'volatile':
-                setVolatile(newVal);
-                break;
-        }
+        slipType === 'stable' && setStable(newVal);
+        slipType === 'volatile' && setVolatile(newVal);
     }
 
     // return data object
