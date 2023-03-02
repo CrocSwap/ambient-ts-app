@@ -7,12 +7,12 @@ import styles from './RepositionHeader.module.css';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { SlippagePairIF } from '../../../../utils/interfaces/exports';
 import { VscClose } from 'react-icons/vsc';
+import { SlippageMethodsIF } from '../../../../App/hooks/useSlippageNew';
 
 interface propsIF {
     positionHash: string;
-    repoSlippage: SlippagePairIF;
+    repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;

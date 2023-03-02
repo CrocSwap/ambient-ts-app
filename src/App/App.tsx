@@ -101,7 +101,6 @@ import {
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
 // import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
@@ -168,7 +167,7 @@ import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
-import { useSlippageNew } from './hooks/useSlippageNew';
+import { useSlippageNew, SlippageMethodsIF } from './hooks/useSlippageNew';
 import { slippage } from '../utils/data/slippage';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
@@ -209,10 +208,10 @@ export default function App() {
     const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
     const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
 
-    // hook to manage slippage in the app
-    useSlippageNew('swap', slippage.swap);
-    useSlippageNew('mint', slippage.mint);
-    useSlippageNew('reposition', slippage.reposition);
+    // hooks to manage slippage in the app
+    const swapSlippage: SlippageMethodsIF = useSlippageNew('swap', slippage.swap);
+    const mintSlippage: SlippageMethodsIF = useSlippageNew('mint', slippage.mint);
+    const repoSlippage: SlippageMethodsIF = useSlippageNew('repo', slippage.reposition);
 
     const { address: account, isConnected } = useAccount();
 
@@ -571,10 +570,6 @@ export default function App() {
             }
         }
     }, [lastNewHeadMessage]);
-
-    // hook holding values and setter functions for slippage
-    // holds stable and volatile values for swap and mint transactions
-    const [swapSlippage, mintSlippage, repoSlippage] = useSlippage();
 
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 

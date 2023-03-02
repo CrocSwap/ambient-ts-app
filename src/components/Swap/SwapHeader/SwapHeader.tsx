@@ -7,25 +7,22 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { SlippagePairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../Global/ShareModal/ShareModal';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippageNew';
 
 // interface for props
 interface propsIF {
-    // tokenPair: TokenPairIF;
-    swapSlippage: SlippagePairIF;
+    swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
     shareOptionsDisplay: JSX.Element;
-    // isDenomBase: boolean;
-    // isTokenABase: boolean;
 }
 
 // main react functional component

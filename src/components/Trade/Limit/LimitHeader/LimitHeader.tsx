@@ -6,7 +6,6 @@ import TransactionSettings from '../../../Global/TransactionSettings/Transaction
 
 // START: Import Local Files
 import styles from './LimitHeader.module.css';
-import { SlippagePairIF } from '../../../../utils/interfaces/exports';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -15,20 +14,17 @@ import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
+import { SlippageMethodsIF } from '../../../../App/hooks/useSlippageNew';
 
 // interface for component props
 interface propsIF {
     chainId: string;
-    // tokenPair: TokenPairIF;
-    mintSlippage: SlippagePairIF;
+    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-
     shareOptionsDisplay: JSX.Element;
-    // isDenomBase: boolean;
-    // isTokenABase: boolean;
 }
 
 // central react functional component
@@ -43,7 +39,6 @@ export default function LimitHeader(props: propsIF) {
     const isDenomBase = tradeData.isDenomBase;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
-    // const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
     const settingsModalOrNull = isModalOpen ? (
         <Modal noHeader title='modal' onClose={closeModal}>

@@ -16,7 +16,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF, SlippagePairIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { PositionIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { BigNumber } from 'ethers';
@@ -27,13 +27,14 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippageNew';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     isDenomBase: boolean;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    repoSlippage: SlippagePairIF;
+    repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
