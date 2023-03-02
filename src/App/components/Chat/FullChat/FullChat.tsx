@@ -21,12 +21,8 @@ interface FullChatPropsIF {
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
-    // eslint-disable-next-line
-    currentPool: any;
     favePools: PoolIF[];
     userCurrentPool: string;
-    setUserCurrentPool: Dispatch<SetStateAction<string>>;
-    currentUser: string | undefined;
 }
 
 interface ChannelDisplayPropsIF {
@@ -35,16 +31,7 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     // eslint-disable-next-line
-    const {
-        messageList,
-        chatNotification,
-        messageInput,
-        userName,
-        currentPool,
-        userCurrentPool,
-        setUserCurrentPool,
-        currentUser,
-    } = props;
+    const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
 
