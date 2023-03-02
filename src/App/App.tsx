@@ -167,7 +167,7 @@ import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
-import { useSlippageNew, SlippageMethodsIF } from './hooks/useSlippageNew';
+import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
@@ -209,9 +209,9 @@ export default function App() {
     const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
 
     // hooks to manage slippage in the app
-    const swapSlippage: SlippageMethodsIF = useSlippageNew('swap', slippage.swap);
-    const mintSlippage: SlippageMethodsIF = useSlippageNew('mint', slippage.mint);
-    const repoSlippage: SlippageMethodsIF = useSlippageNew('repo', slippage.reposition);
+    const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
+    const mintSlippage: SlippageMethodsIF = useSlippage('mint', slippage.mint);
+    const repoSlippage: SlippageMethodsIF = useSlippage('repo', slippage.reposition);
 
     const { address: account, isConnected } = useAccount();
 

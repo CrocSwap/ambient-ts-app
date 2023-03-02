@@ -14,7 +14,7 @@ import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
-import { SlippageMethodsIF } from '../../../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 
 // interface for component props
 interface propsIF {

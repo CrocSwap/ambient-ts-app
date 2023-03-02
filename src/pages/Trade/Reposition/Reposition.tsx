@@ -27,7 +27,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;

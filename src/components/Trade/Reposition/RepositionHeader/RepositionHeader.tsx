@@ -8,7 +8,7 @@ import TransactionSettings from '../../../Global/TransactionSettings/Transaction
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { VscClose } from 'react-icons/vsc';
-import { SlippageMethodsIF } from '../../../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 
 interface propsIF {
     positionHash: string;

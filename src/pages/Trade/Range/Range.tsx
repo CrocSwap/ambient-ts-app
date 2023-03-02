@@ -63,7 +63,7 @@ import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { rangeTutorialSteps, rangeTutorialStepsAdvanced } from '../../../utils/tutorial/Range';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 interface propsIF {
     account: string | undefined;

@@ -12,7 +12,7 @@ export interface SlippageMethodsIF {
     updateVolatile: (val: number) => void;
 }
 
-export const useSlippageNew = (
+export const useSlippage = (
     slippageType: string,
     defaults: SlippageNewIF
 ): SlippageMethodsIF => {

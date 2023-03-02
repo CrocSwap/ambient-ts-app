@@ -48,7 +48,7 @@ import { useUrlParams } from '../../InitPool/useUrlParams';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 interface propsIF {
     account: string | undefined;

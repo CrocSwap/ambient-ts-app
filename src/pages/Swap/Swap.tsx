@@ -36,7 +36,7 @@ import { FiCopy } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
-import { SlippageMethodsIF } from '../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;

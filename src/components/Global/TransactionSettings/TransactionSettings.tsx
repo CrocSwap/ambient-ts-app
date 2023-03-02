@@ -7,7 +7,7 @@ import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import DividerDark from '../DividerDark/DividerDark';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippageNew';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 // interface for component props
 interface propsIF {
