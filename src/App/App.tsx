@@ -169,8 +169,8 @@ import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
-import { useChartSettings } from './hooks/useChartSettings';
-import { useSkin } from './hooks/useSkin';
+import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
+import { useSkin, skinMethodsIF } from './hooks/useSkin';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -216,10 +216,10 @@ export default function App() {
     const repoSlippage: SlippageMethodsIF = useSlippage('repo', slippage.reposition);
 
     // hook to manage chart settings
-    const chartSettings = useChartSettings();
+    const chartSettings: chartSettingsMethodsIF = useChartSettings();
 
     // hook to manage app skin
-    const skin = useSkin('purple_dark');
+    const skin: skinMethodsIF = useSkin('purple_dark');
     false && skin;
 
     const { address: account, isConnected } = useAccount();

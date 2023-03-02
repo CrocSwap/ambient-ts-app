@@ -1,18 +1,24 @@
 import { useMemo, useState } from 'react';
 
+export interface skinMethodsIF {
+    colors: object,
+    choosePurpleDark: () => void,
+    choosePurpleLight: () => void
+};
+
 // TODO:   @Junior  this is the file we'll use to manage the current color
 // TODO:   @Junior  ... theme in the app, the useMemo() hook should be able
 // TODO:   @Junior  ... to read the current value of `skin` & return the
 // TODO:   @Junior  ... correct JSON color set
 
-export const useSkin = (defaultSkin: string) => {
+export const useSkin = (defaultSkin: string): skinMethodsIF => {
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<string>(localStorage.skin ?? defaultSkin);
 
     // hook to hold a single color set for the app to return
     // updates local storage when needed as an accessory function
-    const colors = useMemo(() => {
+    const colors = useMemo<object>(() => {
         localStorage.setItem('skin', skin);
         return {};
     }, [skin]);
