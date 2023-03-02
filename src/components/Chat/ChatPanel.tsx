@@ -394,11 +394,8 @@ export default function ChatPanel(props: ChatProps) {
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
-                currentPool={currentPool}
                 favePools={favePools}
                 userCurrentPool={userCurrentPool}
-                setUserCurrentPool={setUserCurrentPool}
-                currentUser={currentUser}
             />
         );
 
