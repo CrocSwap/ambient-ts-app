@@ -1,11 +1,14 @@
+// START: Import React and Dongles
 import { useEffect, useState, SetStateAction } from 'react';
 
+// interface for shape of data held in local storage
 interface chartSettingsLocalStorageIF {
     volume: boolean,
     tvl: boolean,
     feeRate: boolean
 }
 
+// interface for class to manage a given subchart setting
 interface subchartSettingsIF {
     isEnabled: boolean,
     enable: () => void,
@@ -13,27 +16,31 @@ interface subchartSettingsIF {
     toggle: () => void
 }
 
+// interface for return value of this hool
 export interface chartSettingsMethodsIF {
     volumeSubchart: subchartSettingsIF,
     tvlSubchart: subchartSettingsIF,
     feeRateSubchart: subchartSettingsIF
 }
 
+// hook to manage user preferences for chart settings
 export const useChartSettings = (): chartSettingsMethodsIF => {
+    // fn to check a user preference for any given subchart
     const getPreference = (subchart: string): boolean|undefined => {
-        const allPreferences: chartSettingsLocalStorageIF|null = JSON.parse(
+        // persisted data from local storage, returns undefined if not present
+        const chartSettings: chartSettingsLocalStorageIF|null = JSON.parse(
             localStorage.getItem('chartSettings') as string
         );
         let output: boolean|undefined;
         switch (subchart) {
             case 'volume':
-                output = allPreferences?.volume;
+                output = chartSettings?.volume;
                 break;
             case 'tvl':
-                output = allPreferences?.tvl;
+                output = chartSettings?.tvl;
                 break;
             case 'feeRate':
-                output = allPreferences?.feeRate;
+                output = chartSettings?.feeRate;
                 break;
             default:
                 return;
@@ -41,6 +48,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         return output;
     };
 
+    // hooks to memoize user preferences in local state
+    // initializer fallback value is default setting for new users
     const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] = useState<boolean>(
         getPreference('volume') ?? true
     );
@@ -51,6 +60,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getPreference('feeRate') ?? false
     );
 
+    // hook to update local storage any time one of the preference primitives changes
+    // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
         localStorage.setItem(
             'chart_settings',
@@ -62,13 +73,22 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         );
     }, [isVolumeSubchartEnabled, isTvlSubchartEnabled, isFeeRateSubchartEnabled]);
 
+    // class definition for subchart setting and methods
+    // checked against subchartSettingsIF
     class Subchart implements subchartSettingsIF {
+        // base value of the preference
         isEnabled: boolean;
+        // state setter fn
         setter: (val: SetStateAction<boolean>) => void;
+        // constructor
+        // @param enabled ➡ current value from local state
+        // @param setterFn ➡ fn to update local state
         constructor(enabled: boolean, setterFn: (val: SetStateAction<boolean>) => void) {
             this.isEnabled = enabled;
             this.setter = setterFn;
         }
+        // methods to assign a new value of the variable
+        // code in this file will carry through new value to local storage
         enable() {this.setter(true);}
         disable() {this.setter(false);}
         toggle() {this.setter(!this.isEnabled);}
