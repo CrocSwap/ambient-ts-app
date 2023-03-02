@@ -170,7 +170,7 @@ import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
-import { useSkin, skinMethodsIF } from './hooks/useSkin';
+import { useSkin } from './hooks/useSkin';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -219,7 +219,7 @@ export default function App() {
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
 
     // hook to manage app skin
-    const skin: skinMethodsIF = useSkin('purple_dark');
+    const skin = useSkin('purple_dark');
     false && skin;
 
     const { address: account, isConnected } = useAccount();
