@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, SetStateAction } from 'react';
 
 interface chartSettingsLocalStorageIF {
     volume: boolean,
@@ -62,24 +62,21 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         );
     }, [isVolumeSubchartEnabled, isTvlSubchartEnabled, isFeeRateSubchartEnabled]);
 
-    return {
-        volumeSubchart: {
-            isEnabled: isVolumeSubchartEnabled,
-            enable: () => setIsVolumeSubchartEnabled(true),
-            disable: () => setIsVolumeSubchartEnabled(false),
-            toggle: () => setIsVolumeSubchartEnabled(!isVolumeSubchartEnabled)
-        },
-        tvlSubchart: {
-            isEnabled: isTvlSubchartEnabled,
-            enable: () => setIsTvlSubchartEnabled(true),
-            disable: () => setIsTvlSubchartEnabled(false),
-            toggle: () => setIsTvlSubchartEnabled(!isTvlSubchartEnabled)
-        },
-        feeRateSubchart: {
-            isEnabled: isFeeRateSubchartEnabled,
-            enable: () => setIsFeeRateSubchartEnabled(true),
-            disable: () => setIsFeeRateSubchartEnabled(false),
-            toggle: () => setIsFeeRateSubchartEnabled(!isFeeRateSubchartEnabled)
+    class Subchart implements subchartSettingsIF {
+        isEnabled: boolean;
+        setter: (val: SetStateAction<boolean>) => void;
+        constructor(enabled: boolean, setterFn: (val: SetStateAction<boolean>) => void) {
+            this.isEnabled = enabled;
+            this.setter = setterFn;
         }
+        enable() {this.setter(true);}
+        disable() {this.setter(false);}
+        toggle() {this.setter(!this.isEnabled);}
+    }
+
+    return {
+        volumeSubchart: new Subchart(isVolumeSubchartEnabled, setIsVolumeSubchartEnabled),
+        tvlSubchart: new Subchart(isTvlSubchartEnabled, setIsTvlSubchartEnabled),
+        feeRateSubchart: new Subchart(isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled)
     };
 }

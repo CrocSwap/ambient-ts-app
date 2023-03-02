@@ -215,7 +215,7 @@ export default function App() {
     const repoSlippage: SlippageMethodsIF = useSlippage('repo', slippage.reposition);
 
     // hook to manage chart settings
-    useChartSettings();
+    const chartSettings = useChartSettings();
 
     const { address: account, isConnected } = useAccount();
 
@@ -3190,6 +3190,7 @@ export default function App() {
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
                                     chatToS={chatToS}
+                                    chartSettings={chartSettings}
                                 />
                             }
                         />
