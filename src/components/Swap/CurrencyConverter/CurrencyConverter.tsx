@@ -386,23 +386,27 @@ export default function CurrencyConverter(props: propsIF) {
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
-            const impact =
-                input !== ''
-                    ? await calcImpact(
-                          true,
-                          crocEnv,
-                          tokenPair.dataTokenA.address,
-                          tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage / 100,
-                          input,
-                      )
-                    : undefined;
+            try {
+                const impact =
+                    input !== ''
+                        ? await calcImpact(
+                              true,
+                              crocEnv,
+                              tokenPair.dataTokenA.address,
+                              tokenPair.dataTokenB.address,
+                              slippageTolerancePercentage / 100,
+                              input,
+                          )
+                        : undefined;
 
-            // console.log({ impact });
-            setPriceImpact(impact);
-            // impact ? setPriceImpact(impact) : null;
+                // console.log({ impact });
+                setPriceImpact(impact);
+                // impact ? setPriceImpact(impact) : null;
 
-            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+            } catch (error) {
+                console.log({ error });
+            }
         } else {
             // console.log('token a change event triggered - no event');
 
@@ -417,22 +421,27 @@ export default function CurrencyConverter(props: propsIF) {
             // console.log(tokenPair.dataTokenA.address);
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
-            const impact =
-                tokenAQtyLocal !== ''
-                    ? await calcImpact(
-                          true,
-                          crocEnv,
-                          tokenPair.dataTokenA.address,
-                          tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage / 100,
-                          tokenAQty,
-                      )
-                    : undefined;
-            // console.log({ impact });
-            setPriceImpact(impact);
-            // impact ? setPriceImpact(impact) : null;
 
-            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+            try {
+                const impact =
+                    tokenAQtyLocal !== ''
+                        ? await calcImpact(
+                              true,
+                              crocEnv,
+                              tokenPair.dataTokenA.address,
+                              tokenPair.dataTokenB.address,
+                              slippageTolerancePercentage / 100,
+                              tokenAQty,
+                          )
+                        : undefined;
+                // console.log({ impact });
+                setPriceImpact(impact);
+                // impact ? setPriceImpact(impact) : null;
+
+                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+            } catch (error) {
+                console.log({ error });
+            }
         }
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 2
@@ -469,40 +478,48 @@ export default function CurrencyConverter(props: propsIF) {
             handleSwapButtonMessage(parseFloat(input));
 
             if (!poolPriceDisplay) return;
-            const impact =
-                input !== ''
-                    ? await calcImpact(
-                          true,
-                          crocEnv,
-                          tokenPair.dataTokenA.address,
-                          tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage / 100,
-                          input,
-                      )
-                    : undefined;
-            setPriceImpact(impact);
-            // impact ? setPriceImpact(impact) : null;
 
-            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+            try {
+                const impact =
+                    input !== ''
+                        ? await calcImpact(
+                              true,
+                              crocEnv,
+                              tokenPair.dataTokenA.address,
+                              tokenPair.dataTokenB.address,
+                              slippageTolerancePercentage / 100,
+                              input,
+                          )
+                        : undefined;
+                setPriceImpact(impact);
+                // impact ? setPriceImpact(impact) : null;
+
+                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+            } catch (error) {
+                console.log({ error });
+            }
         } else {
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+            try {
+                const impact =
+                    tokenAQtyLocal !== ''
+                        ? await calcImpact(
+                              true,
+                              crocEnv,
+                              tokenPair.dataTokenA.address,
+                              tokenPair.dataTokenB.address,
+                              slippageTolerancePercentage / 100,
+                              tokenAQtyLocal,
+                          )
+                        : undefined;
 
-            const impact =
-                tokenAQtyLocal !== ''
-                    ? await calcImpact(
-                          true,
-                          crocEnv,
-                          tokenPair.dataTokenA.address,
-                          tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage / 100,
-                          tokenAQtyLocal,
-                      )
-                    : undefined;
+                setPriceImpact(impact);
+                // impact ? setPriceImpact(impact) : null;
 
-            setPriceImpact(impact);
-            // impact ? setPriceImpact(impact) : null;
-
-            rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+            } catch (error) {
+                console.log({ error });
+            }
         }
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 2
@@ -559,22 +576,26 @@ export default function CurrencyConverter(props: propsIF) {
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
-            const impact =
-                input !== ''
-                    ? await calcImpact(
-                          false,
-                          crocEnv,
-                          tokenPair.dataTokenA.address,
-                          tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage / 100,
-                          input,
-                      )
-                    : undefined;
+            try {
+                const impact =
+                    input !== ''
+                        ? await calcImpact(
+                              false,
+                              crocEnv,
+                              tokenPair.dataTokenA.address,
+                              tokenPair.dataTokenB.address,
+                              slippageTolerancePercentage / 100,
+                              input,
+                          )
+                        : undefined;
 
-            setPriceImpact(impact);
-            // impact ? setPriceImpact(impact) : null;
+                setPriceImpact(impact);
+                // impact ? setPriceImpact(impact) : null;
 
-            rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+                rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+            } catch (error) {
+                console.log({ error });
+            }
 
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         } else {
@@ -590,23 +611,29 @@ export default function CurrencyConverter(props: propsIF) {
             handleSwapButtonMessage(parseFloat(tokenBQty));
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
-            const impact =
-                tokenBQty !== ''
-                    ? await calcImpact(
-                          false,
-                          crocEnv,
-                          tokenPair.dataTokenA.address,
-                          tokenPair.dataTokenB.address,
-                          slippageTolerancePercentage / 100,
-                          tokenBQty,
-                      )
-                    : undefined;
 
-            setPriceImpact(impact);
+            try {
+                const impact =
+                    tokenBQty !== ''
+                        ? await calcImpact(
+                              false,
+                              crocEnv,
+                              tokenPair.dataTokenA.address,
+                              tokenPair.dataTokenB.address,
+                              slippageTolerancePercentage / 100,
+                              tokenBQty,
+                          )
+                        : undefined;
 
-            // impact ? setPriceImpact(impact) : null;
+                setPriceImpact(impact);
 
-            rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+                // impact ? setPriceImpact(impact) : null;
+
+                rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+            } catch (error) {
+                console.log({ error });
+            }
+
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         }
 

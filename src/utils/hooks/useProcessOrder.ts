@@ -44,14 +44,21 @@ export const useProcessOrder = (
 
     // const posHash = limitOrder.limitOrderIdentifier?.slice(42);
 
-    const posHash = concPosSlot(
-        limitOrder.user,
-        limitOrder.base,
-        limitOrder.quote,
-        limitOrder.bidTick,
-        limitOrder.askTick,
-        36000,
-    ).toString();
+    const posHash =
+        limitOrder.user &&
+        limitOrder.base &&
+        limitOrder.quote &&
+        limitOrder.bidTick &&
+        limitOrder.askTick
+            ? concPosSlot(
+                  limitOrder.user,
+                  limitOrder.base,
+                  limitOrder.quote,
+                  limitOrder.bidTick,
+                  limitOrder.askTick,
+                  36000,
+              ).toString()
+            : '…';
 
     const posHashTruncated = trimString(posHash ?? '', 6, 4, '…');
 

@@ -297,7 +297,7 @@ export const useProcessTransaction = (
                 ? '0.00 '
                 : baseFlowAbsNum < 0.0001
                 ? baseFlowAbsNum.toExponential(2)
-                : baseFlowAbsNum < 0.01
+                : baseFlowAbsNum < 0.1
                 ? baseFlowAbsNum.toPrecision(3)
                 : baseFlowAbsNum >= 10000
                 ? formatAmountOld(baseFlowAbsNum)
@@ -315,7 +315,7 @@ export const useProcessTransaction = (
                 ? '0.00 '
                 : baseFlowAbsNum < 0.0001
                 ? baseFlowAbsNum.toExponential(2)
-                : baseFlowAbsNum < 0.01
+                : baseFlowAbsNum < 0.1
                 ? baseFlowAbsNum.toPrecision(3)
                 : baseFlowAbsNum >= 1000000000
                 ? formatAmountOld(baseFlowAbsNum)
@@ -337,7 +337,7 @@ export const useProcessTransaction = (
                 ? '0.00 '
                 : quoteFlowAbsNum < 0.0001
                 ? quoteFlowAbsNum.toExponential(2)
-                : quoteFlowAbsNum < 0.01
+                : quoteFlowAbsNum < 0.1
                 ? quoteFlowAbsNum.toPrecision(3)
                 : quoteFlowAbsNum >= 10000
                 ? formatAmountOld(quoteFlowAbsNum)
@@ -352,7 +352,7 @@ export const useProcessTransaction = (
                 ? '0.00 '
                 : quoteFlowAbsNum < 0.0001
                 ? quoteFlowAbsNum.toExponential(2)
-                : quoteFlowAbsNum < 0.01
+                : quoteFlowAbsNum < 0.1
                 ? quoteFlowAbsNum.toPrecision(3)
                 : quoteFlowAbsNum >= 1000000000
                 ? formatAmountOld(quoteFlowAbsNum)

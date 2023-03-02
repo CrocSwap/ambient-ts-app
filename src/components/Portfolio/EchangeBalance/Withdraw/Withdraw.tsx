@@ -327,6 +327,9 @@ export default function Withdraw(props: propsIF) {
                     resetWithdrawQty();
                 }
             } catch (error) {
+                if (error.reason === 'sending a transaction requires a signer') {
+                    location.reload();
+                }
                 console.warn({ error });
             } finally {
                 setIsWithdrawPending(false);
