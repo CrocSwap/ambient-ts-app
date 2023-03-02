@@ -26,7 +26,7 @@ import {
 } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
@@ -36,6 +36,7 @@ import { FiCopy } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
+import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -43,7 +44,7 @@ interface propsIF {
     account: string | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    swapSlippage: SlippagePairIF;
+    swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -189,10 +190,8 @@ export default function Swap(props: propsIF) {
     const [buyQtyString, setBuyQtyString] = useState<string>('');
 
     const slippageTolerancePercentage = isPairStable
-        ? parseFloat(swapSlippage.stable.value)
-        : parseFloat(swapSlippage.volatile.value);
-
-    // <Button title='Connect Wallet' action={openModalWallet} />;
+        ? swapSlippage.stable
+        : swapSlippage.volatile;
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
