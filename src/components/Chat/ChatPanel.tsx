@@ -64,7 +64,7 @@ export default function ChatPanel(props: ChatProps) {
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH/USDC');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -155,10 +155,51 @@ export default function ChatPanel(props: ChatProps) {
                 } else {
                     result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                     setCurrentUser(result.userData._id);
+                    setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
-                        // eslint-disable-next-line
-                        updateUser(currentUser as string, ensName).then((result: any) => {
+                        updateUser(currentUser as string, ensName, userCurrentPool).then(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (result: any) => {
+                                if (result.status === 'OK') {
+                                    console.log(result);
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    updateMessageUser(currentUser as string, ensName).then(
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        (result: any) => {
+                                            return result;
+                                        },
+                                    );
+                                }
+                            },
+                        );
+                    }
+                }
+            });
+        } else {
+            setCurrentUser(undefined);
+        }
+    }, [address, props.chatStatus, props.isFullScreen, userCurrentPool]);
+
+    useEffect(() => {
+        console.log('getting messages');
+        setNotification(0);
+        getMsg();
+    }, [room]);
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getID().then((result: any) => {
+            if (result.status === 'OK') {
+                result.userData.isModerator === true ? setModerator(true) : setModerator(false);
+                setCurrentUser(result.userData._id);
+                setUserCurrentPool(result.userData.userCurrentPool);
+                if (result.userData.ensName !== ensName) {
+                    // eslint-disable-next-line
+                    updateUser(currentUser as string, ensName, userCurrentPool).then(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (result: any) => {
                             if (result.status === 'OK') {
+                                console.log(result);
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(currentUser as string, ensName).then(
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -167,20 +208,12 @@ export default function ChatPanel(props: ChatProps) {
                                     },
                                 );
                             }
-                        });
-                    }
+                        },
+                    );
                 }
-            });
-        } else {
-            setCurrentUser(undefined);
-        }
-    }, [address, props.chatStatus, props.isFullScreen]);
-
-    useEffect(() => {
-        console.log('getting messages');
-        setNotification(0);
-        getMsg();
-    }, [room]);
+            }
+        });
+    }, [userCurrentPool]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -361,8 +394,8 @@ export default function ChatPanel(props: ChatProps) {
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
-                currentPool={currentPool}
                 favePools={favePools}
+                userCurrentPool={userCurrentPool}
             />
         );
 
@@ -387,6 +420,10 @@ export default function ChatPanel(props: ChatProps) {
                         isCurrentPool={isCurrentPool}
                         showCurrentPoolButton={showCurrentPoolButton}
                         setShowCurrentPoolButton={setShowCurrentPoolButton}
+                        userCurrentPool={userCurrentPool}
+                        setUserCurrentPool={setUserCurrentPool}
+                        currentUser={currentUser}
+                        ensName={ensName}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

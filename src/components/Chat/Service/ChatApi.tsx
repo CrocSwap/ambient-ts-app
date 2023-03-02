@@ -53,13 +53,14 @@ const useChatApi = () => {
         return data;
     }
 
-    async function updateUser(_id: string, ensName: string) {
+    async function updateUser(_id: string, ensName: string, userCurrentPool: string) {
         const response = await fetch(host + '/api/auth/updateUser', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 _id: _id,
                 ensName: ensName,
+                userCurrentPool: userCurrentPool,
             }),
         });
         const data = await response.json();
