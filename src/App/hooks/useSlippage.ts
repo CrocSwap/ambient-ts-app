@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export interface SlippageNewIF {
+export interface SlippageIF {
     stable: number,
     volatile: number
 }
@@ -14,10 +14,10 @@ export interface SlippageMethodsIF {
 
 export const useSlippage = (
     slippageType: string,
-    defaults: SlippageNewIF
+    defaults: SlippageIF
 ): SlippageMethodsIF => {
     const getSlippage = (whichOne: string): number => {
-        const pair: SlippageNewIF|null = JSON.parse(
+        const pair: SlippageIF|null = JSON.parse(
             localStorage.getItem(`slippage_${slippageType}`) as string
         );
         let output: number;
