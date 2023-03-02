@@ -5,5 +5,8 @@ export const useSkin = (defaultSkin: string) => {
     useEffect(() => {
         localStorage.setItem('skin', skin);
     }, [skin]);
-    false && setSkin;
+    return {
+        choosePurpleDark: () => setSkin('purple_dark'),
+        choosePurpleLight: () => setSkin('purple_light')
+    };
 }
