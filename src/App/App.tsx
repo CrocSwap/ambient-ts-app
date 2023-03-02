@@ -219,7 +219,7 @@ export default function App() {
     const chartSettings = useChartSettings();
 
     // hook to manage app skin
-    useSkin();
+    useSkin('purple_dark');
 
     const { address: account, isConnected } = useAccount();
 
