@@ -82,8 +82,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         private readonly setter: Dispatch<SetStateAction<boolean>>;
         // @param enabled ➡ current value from local state
         // @param setterFn ➡ fn to update local state
-        constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>
-            ) {
+        constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>) {
             this.isEnabled = enabled;
             this.setter = setterFn;
         }
