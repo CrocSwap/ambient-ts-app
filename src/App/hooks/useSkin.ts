@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useSkin = (defaultSkin: string) => {
     const [skin, setSkin] = useState<string>(localStorage.skin ?? defaultSkin);
-    console.log({skin});
+    useEffect(() => {
+        localStorage.setItem('skin', skin);
+    }, [skin]);
     false && setSkin;
 }
