@@ -42,6 +42,9 @@ interface RoomProps {
     showCurrentPoolButton: any;
     setShowCurrentPoolButton: any;
     userCurrentPool: string;
+    setUserCurrentPool: any;
+    ensName: any;
+    currentUser: any;
 }
 export default function RoomDropdown(props: RoomProps) {
     const {
@@ -58,6 +61,7 @@ export default function RoomDropdown(props: RoomProps) {
     // const [isCurrentPool, setIsCurrentPool] = useState(false);
     // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
+    const { updateUser } = useChatApi();
 
     // non-empty space
     const defaultRooms = [
@@ -82,14 +86,18 @@ export default function RoomDropdown(props: RoomProps) {
     ];
 
     useEffect(() => {
-        console.log(
-            'eee ',
-            props.userCurrentPool,
-            ' ',
+        props.setUserCurrentPool(
             currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-            ' ',
-            isCurrentPool,
         );
+        updateUser(props.currentUser as string, props.ensName, props.userCurrentPool).then(
+            (result: any) => {
+                if (result.status === 'OK') {
+                    console.log(result);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                }
+            },
+        );
+
         if (props.selectedRoom === props.userCurrentPool) {
             setShowCurrentPoolButton(false);
         } else {

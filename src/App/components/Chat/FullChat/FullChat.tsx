@@ -23,9 +23,10 @@ interface FullChatPropsIF {
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line
     currentPool: any;
-
     favePools: PoolIF[];
     userCurrentPool: string;
+    setUserCurrentPool: Dispatch<SetStateAction<string>>;
+    currentUser: string | undefined;
 }
 
 interface ChannelDisplayPropsIF {
@@ -34,8 +35,16 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     // eslint-disable-next-line
-    const { messageList, chatNotification, messageInput, userName, currentPool, userCurrentPool } =
-        props;
+    const {
+        messageList,
+        chatNotification,
+        messageInput,
+        userName,
+        currentPool,
+        userCurrentPool,
+        setUserCurrentPool,
+        currentUser,
+    } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
 
@@ -70,7 +79,6 @@ export default function FullChat(props: FullChatPropsIF) {
     }
 
     function handleCurrentPoolClick() {
-        console.log(userCurrentPool);
         props.setRoom(userCurrentPool);
         setReadableName(userCurrentPool);
     }
@@ -79,8 +87,7 @@ export default function FullChat(props: FullChatPropsIF) {
         const { pool, isDropdown } = props;
 
         const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
-        const poolIsCurrentPool =
-            pool.name === `${currentPool.baseToken.symbol}/${currentPool.quoteToken.symbol}`;
+        const poolIsCurrentPool = pool.name === userCurrentPool;
         const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
 
         return (

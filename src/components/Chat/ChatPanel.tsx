@@ -153,17 +153,12 @@ export default function ChatPanel(props: ChatProps) {
                         return result;
                     });
                 } else {
-                    setUserCurrentPool(
-                        currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-                    );
                     result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                     setCurrentUser(result.userData._id);
-                    if (
-                        result.userData.ensName !== ensName ||
-                        result.userData.userCurrentPool !== userCurrentPool
-                    ) {
-                        // eslint-disable-next-line
+                    setUserCurrentPool(result.userData.userCurrentPool);
+                    if (result.userData.ensName !== ensName) {
                         updateUser(currentUser as string, ensName, userCurrentPool).then(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
                                 if (result.status === 'OK') {
                                     console.log(result);
@@ -183,7 +178,7 @@ export default function ChatPanel(props: ChatProps) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [address, props.chatStatus, props.isFullScreen]);
+    }, [address, props.chatStatus, props.isFullScreen, userCurrentPool]);
 
     useEffect(() => {
         console.log('getting messages');
@@ -192,30 +187,33 @@ export default function ChatPanel(props: ChatProps) {
     }, [room]);
 
     useEffect(() => {
-        console.log(
-            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-            ' ',
-            userCurrentPool,
-        );
-        if (
-            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol !==
-            userCurrentPool
-        ) {
-            updateUser(
-                currentUser as string,
-                ensName,
-                currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-            ).then((result: any) => {
-                if (result.status === 'OK') {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    setUserCurrentPool(
-                        currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getID().then((result: any) => {
+            if (result.status === 'OK') {
+                result.userData.isModerator === true ? setModerator(true) : setModerator(false);
+                setCurrentUser(result.userData._id);
+                setUserCurrentPool(result.userData.userCurrentPool);
+                if (result.userData.ensName !== ensName) {
+                    // eslint-disable-next-line
+                    updateUser(currentUser as string, ensName, userCurrentPool).then(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (result: any) => {
+                            if (result.status === 'OK') {
+                                console.log(result);
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                updateMessageUser(currentUser as string, ensName).then(
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    (result: any) => {
+                                        return result;
+                                    },
+                                );
+                            }
+                        },
                     );
-                    console.log(result);
                 }
-            });
-        }
-    }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
+            }
+        });
+    }, [userCurrentPool]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -399,6 +397,8 @@ export default function ChatPanel(props: ChatProps) {
                 currentPool={currentPool}
                 favePools={favePools}
                 userCurrentPool={userCurrentPool}
+                setUserCurrentPool={setUserCurrentPool}
+                currentUser={currentUser}
             />
         );
 
@@ -424,6 +424,9 @@ export default function ChatPanel(props: ChatProps) {
                         showCurrentPoolButton={showCurrentPoolButton}
                         setShowCurrentPoolButton={setShowCurrentPoolButton}
                         userCurrentPool={userCurrentPool}
+                        setUserCurrentPool={setUserCurrentPool}
+                        currentUser={currentUser}
+                        ensName={ensName}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
