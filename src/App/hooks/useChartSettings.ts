@@ -1,11 +1,30 @@
 import { useEffect, useState } from 'react';
 
-export const useChartSettings = () => {
-    const getPreference = (subchart: string) => {
-        const allPreferences = JSON.parse(
+interface chartSettingsLocalStorageIF {
+    volume: boolean,
+    tvl: boolean,
+    feeRate: boolean
+}
+
+interface subchartSettingsIF {
+    isEnabled: boolean,
+    enable: () => void,
+    disable: () => void,
+    toggle: () => void
+}
+
+export interface chartSettingsMethodsIF {
+    volumeSubchart: subchartSettingsIF,
+    tvlSubchart: subchartSettingsIF,
+    feeRateSubchart: subchartSettingsIF
+}
+
+export const useChartSettings = (): chartSettingsMethodsIF => {
+    const getPreference = (subchart: string): boolean|undefined => {
+        const allPreferences: chartSettingsLocalStorageIF|null = JSON.parse(
             localStorage.getItem('chartSettings') as string
         );
-        let output: boolean;
+        let output: boolean|undefined;
         switch (subchart) {
             case 'volume':
                 output = allPreferences?.volume;
