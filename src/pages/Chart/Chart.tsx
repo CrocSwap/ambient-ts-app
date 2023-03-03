@@ -284,7 +284,6 @@ export default function Chart(props: ChartData) {
 
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
-    const [aa, setaa] = useState<any>();
 
     // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     // const [indicatorLine, setIndicatorLine] = useState<any>();
@@ -1154,7 +1153,6 @@ export default function Chart(props: ChartData) {
         market,
         crosshairData,
         isMouseMoveCrosshair,
-        aa,
         scaleData,
     ]);
 
@@ -5005,8 +5003,6 @@ export default function Chart(props: ChartData) {
                         }
 
                         setDragControl(true);
-
-                        setaa(event);
                     }
 
                     const mouseOutFunc = () => {
