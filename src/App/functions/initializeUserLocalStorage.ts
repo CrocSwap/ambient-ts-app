@@ -62,12 +62,6 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    // create a favorite pools value on the user object
-    if (!user.favePools) {
-        user.favePools = [];
-        userUpdated = true;
-    }
-
     // create a value to track whether the sidebar is open or closed
     if (!user.sidebar) {
         user.sidebar = 'open';
