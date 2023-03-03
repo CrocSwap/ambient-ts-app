@@ -9,36 +9,20 @@ import { useAppSelector, useAppDispatch } from '../../../../utils/hooks/reduxToo
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { Dispatch, SetStateAction } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
-
-import {
-    // tradeData as TradeDataIF,
-    toggleDidUserFlipDenom,
-} from '../../../../utils/state/tradeDataSlice';
+import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
-
     poolPriceDisplay: number;
-
     poolPriceChangePercent: string | undefined;
-
     setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
-
-    favePools: PoolIF[];
-
+    favePools: favePoolsMethodsIF;
     chainId: string;
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
-
     simplifyVersion?: boolean;
 }
+
 export default function TradeChartsTokenInfo(props: propsIF) {
     const {
         isPoolPriceChangePositive,
@@ -46,8 +30,6 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         poolPriceChangePercent,
         favePools,
         chainId,
-        addPoolToFaves,
-        removePoolFromFaves,
         simplifyVersion,
     } = props;
     const dispatch = useAppDispatch();
@@ -68,22 +50,22 @@ export default function TradeChartsTokenInfo(props: propsIF) {
 
     const currencyCharacter = denomInBase
         ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.quoteToken.symbol)
+        getUnicodeCharacter(tradeData.quoteToken.symbol)
         : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.baseToken.symbol);
+        getUnicodeCharacter(tradeData.baseToken.symbol);
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+            })
             : poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
@@ -106,13 +88,8 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <span
-            // className={
-            //     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
-            // }
-            >
+            <span>
                 {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
-                {/* {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'} */}
             </span>
         </NoColorTooltip>
     );
@@ -151,18 +128,17 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         poolId: 36000,
     };
 
-    const isButtonFavorited = favePools?.some(
-        (pool: PoolIF) =>
-            pool.base.address === currentPoolData.base.address &&
-            pool.quote.address === currentPoolData.quote.address &&
-            pool.poolId === currentPoolData.poolId &&
-            pool.chainId.toString() === currentPoolData.chainId.toString(),
+    const isButtonFavorited = favePools.check(
+        currentPoolData.base.address,
+        currentPoolData.quote.address,
+        currentPoolData.chainId,
+        currentPoolData.poolId
     );
 
     const handleFavButton = () =>
         isButtonFavorited
-            ? removePoolFromFaves(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
-            : addPoolToFaves(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
+            ? favePools.remove(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
+            : favePools.add(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
 
     const favButton = (
         <button className={styles.favorite_button} onClick={handleFavButton} id='trade_fav_button'>

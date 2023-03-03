@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useMemo, useState } from 'react';
+import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { TOKEN_HIDE } from '../../constants';
-import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import PoolCardHeader from './PoolCardHeader';
 import PoolRow from './PoolRow';
 import styles from './Pools.module.css';
@@ -18,34 +18,28 @@ interface propsIF {
     pools: any[];
     maxItems?: number;
     poolType: string;
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
+    favePools: favePoolsMethodsIF;
 }
 
 export default function Pools(props: propsIF) {
+    const {pools, poolType, favePools} = props;
+
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
-    const pools = props.pools;
 
     const sortedPools = useMemo(() => {
         return pools
             ? pools
-                  .filter((x) => !!x && !TOKEN_HIDE.includes(x.address))
-                  .sort((a, b) => {
-                      if (a && b) {
-                          return a[sortField as keyof any] > b[sortField as keyof any]
-                              ? (sortDirection ? -1 : 1) * 1
-                              : (sortDirection ? -1 : 1) * -1;
-                      } else {
-                          return -1;
-                      }
-                  })
+                .filter((x) => !!x && !TOKEN_HIDE.includes(x.address))
+                .sort((a, b) => {
+                    if (a && b) {
+                        return a[sortField as keyof any] > b[sortField as keyof any]
+                            ? (sortDirection ? -1 : 1) * 1
+                            : (sortDirection ? -1 : 1) * -1;
+                    } else {
+                        return -1;
+                    }
+                })
             : [];
     }, [pools, sortDirection, sortField]);
 
@@ -66,19 +60,17 @@ export default function Pools(props: propsIF) {
 
     const poolsDisplay = sortedPools.map((pool) => (
         <PoolRow
-            poolType={props.poolType}
+            poolType={poolType}
             pool={pool}
             key={pool.address}
-            favePools={props.favePools}
-            removePoolFromFaves={props.removePoolFromFaves}
-            addPoolToFaves={props.addPoolToFaves}
+            favePools={favePools}
         />
     ));
 
     return (
         <div className={styles.container}>
             <div className={styles.container}>
-                <PoolCardHeader poolType={props.poolType} arrow={arrow} sort={handleSort} />
+                <PoolCardHeader poolType={poolType} arrow={arrow} sort={handleSort} />
                 {poolsDisplay}
             </div>
         </div>
