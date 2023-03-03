@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
+import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -390,6 +391,8 @@ export default function Trade(props: propsIF) {
                     onClick={() => setMobileDropdown(!showMobileDropdown)}
                 >
                     {activeMobileComponent}
+
+                    <BsCaretDownFill />
                 </button>
                 {showMobileDropdown && (
                     <div
