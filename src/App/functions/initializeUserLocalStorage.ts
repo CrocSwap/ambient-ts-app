@@ -59,11 +59,6 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    if (!user.theme) {
-        user.theme = 'purple_dark';
-        userUpdated = true;
-    }
-
     if (!user.ackTokens) {
         user.ackTokens = [];
         userUpdated = true;
