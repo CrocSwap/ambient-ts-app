@@ -7,7 +7,7 @@ export const useFavePools = () => {
         JSON.parse(localStorage.getItem('favePools') as string) ?? []
     );
 
-    const addPoolToFaves = (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => {
+    function addPoolToFaves (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) {
         const [baseAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
         const [baseToken, quoteToken] =
             baseAddr === tokenA.address ? [tokenA, tokenB] : [tokenB, tokenA];
@@ -40,8 +40,24 @@ export const useFavePools = () => {
         localStorage.setItem('favePools', JSON.stringify(updatedPoolsArray));
     };
 
+    const checkFavePools = (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => {
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
+        return favePools.some((favePool: PoolIF) => (
+            favePool.base.address === baseAddr &&
+            favePool.quote.address === quoteAddr &&
+            favePool.chainId === chainId &&
+            favePool.poolId === poolId
+        ));
+    };
+
     return {
         favePools,
+        checkFavePools,
         addPoolToFaves,
         removePoolFromFaves
     };
