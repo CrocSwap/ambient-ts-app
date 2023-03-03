@@ -2,12 +2,40 @@ import { useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 
-export const useFavePools = () => {
+export interface favePoolsMethodsIF {
+    pools: PoolIF[];
+    check: (
+        addrTokenA: string,
+        addrTokenB: string,
+        chainId: string,
+        poolId: number
+    ) => boolean,
+    add: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number
+    ) => void,
+    remove: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number
+    ) => void,
+}
+
+export const useFavePools = (): favePoolsMethodsIF => {
     const [favePools, setFavePools] = useState<PoolIF[]>(
         JSON.parse(localStorage.getItem('favePools') as string) ?? []
     );
 
-    function addPoolToFaves (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) {
+    // TODO:   @Emily  this fn needs logic to not add a pool if it exists already
+    const addPoolToFaves = (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number
+    ) => {
         const [baseAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
         const [baseToken, quoteToken] =
             baseAddr === tokenA.address ? [tokenA, tokenB] : [tokenB, tokenA];
@@ -31,8 +59,8 @@ export const useFavePools = () => {
         const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
         const updatedPoolsArray = favePools.filter(
             (pool: PoolIF) =>
-                pool.base.address !== baseAddr ||
-                pool.quote.address !== quoteAddr ||
+                pool.base.address.toLowerCase() !== baseAddr.toLowerCase() ||
+                pool.quote.address.toLowerCase() !== quoteAddr.toLowerCase() ||
                 pool.chainId !== chainId ||
                 pool.poolId !== poolId,
         );
@@ -41,24 +69,24 @@ export const useFavePools = () => {
     };
 
     const checkFavePools = (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
+        addrTokenA: string,
+        addrTokenB: string,
         chainId: string,
         poolId: number,
     ) => {
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addrTokenA, addrTokenB);
         return favePools.some((favePool: PoolIF) => (
-            favePool.base.address === baseAddr &&
-            favePool.quote.address === quoteAddr &&
+            favePool.base.address.toLowerCase() === baseAddr.toLowerCase() &&
+            favePool.quote.address.toLowerCase() === quoteAddr.toLowerCase() &&
             favePool.chainId === chainId &&
             favePool.poolId === poolId
         ));
     };
 
     return {
-        favePools,
-        checkFavePools,
-        addPoolToFaves,
-        removePoolFromFaves
+        pools: favePools,
+        check: checkFavePools,
+        add: addPoolToFaves,
+        remove: removePoolFromFaves
     };
 };

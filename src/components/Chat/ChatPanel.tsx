@@ -18,6 +18,7 @@ import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from '../../App/components/Chat/FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
+import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -40,10 +41,10 @@ interface currentPoolInfo {
     targetData: targetData[];
 }
 
-interface ChatProps {
+interface propsIF {
     chatStatus: boolean;
     onClose: () => void;
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     setChatStatus: Dispatch<SetStateAction<boolean>>;
@@ -53,7 +54,7 @@ interface ChatProps {
     username?: string | undefined | null;
 }
 
-export default function ChatPanel(props: ChatProps) {
+export default function ChatPanel(props: propsIF) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // const navigate = useNavigate();
@@ -361,7 +362,6 @@ export default function ChatPanel(props: ChatProps) {
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 currentPool={currentPool}
-                favePools={favePools}
             />
         );
 

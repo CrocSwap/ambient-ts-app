@@ -101,7 +101,7 @@ import {
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
 // import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useFavePools } from './hooks/useFavePools';
+import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
@@ -217,6 +217,9 @@ export default function App() {
 
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
+
+    // hook to manage favorite pools in the app
+    const favePools: favePoolsMethodsIF = useFavePools();
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -579,8 +582,6 @@ export default function App() {
             }
         }
     }, [lastNewHeadMessage]);
-
-    const {favePools, addPoolToFaves, removePoolFromFaves} = useFavePools();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId),
@@ -2661,8 +2662,6 @@ export default function App() {
         tokenPair: tokenPair,
         getRecentPools: getRecentPools,
         isConnected: isConnected,
-        addPoolToFaves: addPoolToFaves,
-        removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
@@ -2671,9 +2670,7 @@ export default function App() {
     const analyticsProps = {
         setSelectedOutsideTab: setSelectedOutsideTab,
         setOutsideControl: setOutsideControl,
-        favePools: favePools,
-        removePoolFromFaves: removePoolFromFaves,
-        addPoolToFaves: addPoolToFaves,
+        favePools: favePools
     };
 
     function updateDenomIsInBase() {
@@ -2843,8 +2840,6 @@ export default function App() {
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokensOnActiveLists}
                                     favePools={favePools}
-                                    addPoolToFaves={addPoolToFaves}
-                                    removePoolFromFaves={removePoolFromFaves}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -3263,34 +3258,7 @@ export default function App() {
                 </section>
                 {snackbarContent}
             </div>
-
             <div className='footer_container'>
-                {/* {currentLocation !== '/' && (
-                    <PageFooter
-                        isUserIdle={isUserIdle}
-                        lastBlockNumber={lastBlockNumber}
-                        userIsOnline={userIsOnline}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        chatStatus={chatStatus}
-                    />
-                )} */}
-                {/* {currentLocation !== '/app/chat' && (
-                    <Chat
-                        ensName={ensName}
-                        connectedAccount={account ? account : ''}
-                        fullScreen={false}
-                    />
-                )}
-                {currentLocation !== '/app/chat' && currentLocation !== '/' && (
-                    <Chat
-                        ensName={ensName}
-                        connectedAccount={account ? account : ''}
-                        fullScreen={false}
-                    />
-                )} */}
-
                 {currentLocation !== '/' &&
                     currentLocation !== '/app/chat' &&
                     currentLocation !== '/chat' && (
@@ -3325,11 +3293,7 @@ export default function App() {
             />
 
             {isWagmiModalOpenWallet && (
-                <WalletModalWagmi
-                    closeModalWallet={closeWagmiModalWallet}
-
-                    // authError={authError}
-                />
+                <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
             )}
         </>
     );

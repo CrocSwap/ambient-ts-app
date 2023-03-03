@@ -7,23 +7,19 @@ import Pools from '../../Pools/Pools';
 import TopRanges from '../../TopRanges/TopRanges';
 import { notEmpty } from '../../../utils';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { BiSearch } from 'react-icons/bi';
+import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
-interface AnalyticsProps {
+interface propsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
+    favePools: favePoolsMethodsIF;
+
 }
-export default function AnalyticsTabs(props: AnalyticsProps) {
+export default function AnalyticsTabs(props: propsIF) {
+    const {setSelectedOutsideTab, setOutsideControl, favePools} = props;
+
     const allTokens: any = [];
     const allPoolData: any = [];
 
@@ -96,9 +92,7 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
                 <Pools
                     poolType='top'
                     pools={searchWord.length > 0 ? pools : poolsResult}
-                    favePools={props.favePools}
-                    removePoolFromFaves={props.removePoolFromFaves}
-                    addPoolToFaves={props.addPoolToFaves}
+                    favePools={favePools}
                 />
             ),
         },
@@ -108,9 +102,7 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
                 <Pools
                     poolType='trend'
                     pools={searchWord.length > 0 ? pools : poolsResult}
-                    favePools={props.favePools}
-                    removePoolFromFaves={props.removePoolFromFaves}
-                    addPoolToFaves={props.addPoolToFaves}
+                    favePools={favePools}
                 />
             ),
         },
@@ -124,8 +116,8 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
                 rightTabOptions={searchContainer}
                 selectedOutsideTab={0}
                 outsideControl={false}
-                setOutsideControl={props.setOutsideControl}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
+                setOutsideControl={setOutsideControl}
+                setSelectedOutsideTab={setSelectedOutsideTab}
             />
         </div>
     );

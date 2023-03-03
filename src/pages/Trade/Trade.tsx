@@ -21,6 +21,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
+import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
 // interface for React functional component props
 interface propsIF {
@@ -51,22 +52,13 @@ interface propsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
-
     limitRate: string;
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
+    favePools: favePoolsMethodsIF;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
-
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
@@ -107,7 +99,6 @@ export default function Trade(props: propsIF) {
         pool,
         tokenList,
         cachedQuerySpotPrice,
-        // poolPriceTick,
         isUserLoggedIn,
         crocEnv,
         candleData,
@@ -124,8 +115,6 @@ export default function Trade(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         favePools,
-        addPoolToFaves,
-        removePoolFromFaves,
         isInitialized,
         importedTokens,
         expandTradeTable,
@@ -141,15 +130,10 @@ export default function Trade(props: propsIF) {
         setTokenPairLocal,
         showSidebar,
         handlePulseAnimation,
-        // handleTxCopiedClick,
-        // handleOrderCopiedClick,
-        // handleRangeCopiedClick,
-
         setOutsideControl,
         setSelectedOutsideTab,
         isCandleSelected,
         setIsCandleSelected,
-
         fullScreenChart,
         setFullScreenChart,
         fetchingCandle,
@@ -218,18 +202,7 @@ export default function Trade(props: propsIF) {
     const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
     const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
 
-    // const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
-    //     (pool) =>
-    //         pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
-    //         pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
-    //         pool.pool.poolIdx === chainData.poolIndex &&
-    //         pool.pool.chainId === chainData.chainId,
-    // );
-
     const liquidityData = graphData?.liquidityData;
-
-    // const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
-    // //    const liquidityData = activePoolLiquidityData?.liquidityData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -247,13 +220,6 @@ export default function Trade(props: propsIF) {
         </div>
     );
 
-    // useEffect(() => {
-    //     setLiquidityData(undefined);
-    // }, [pool?.baseToken, pool?.quoteToken]);
-
-    // useEffect(() => {
-    //     setLiquidityData(activePoolLiquidityData?.liquidityData);
-    // }, [activePoolLiquidityData]);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (
@@ -278,15 +244,7 @@ export default function Trade(props: propsIF) {
 
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
-
         setHasInitialized(false);
-        // if (isOpen && isShowAllEnabled) {
-        //     setIsShowAllEnabled(false);
-        // } else if (!isOpen && !isShowAllEnabled) {
-        //     console.log('setting to show all');
-        //     setIsShowAllEnabled(true);
-        // }
-        // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
         if (isOpen) {
             setOutsideControl(true);
@@ -367,12 +325,6 @@ export default function Trade(props: propsIF) {
         setActiveMobileComponent(component);
         setMobileDropdown(false);
     };
-
-    // const mobileDropdownData = [
-    //     { label: 'Trade' , display: true},
-    //     { label: 'Chart', display: !isCandleDataNull },
-    //     {label: 'Transactions', display: true}
-    // ]
 
     const mobileTradeDropdown = (
         <section
@@ -517,8 +469,6 @@ export default function Trade(props: propsIF) {
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
-    // const expandTableHeightStyle = expandTradeTable ? styles.full_height : styles.min_height;
-
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
@@ -538,8 +488,6 @@ export default function Trade(props: propsIF) {
         chainId: chainId,
         limitTick: limitTick,
         favePools: favePools,
-        addPoolToFaves: addPoolToFaves,
-        removePoolFromFaves: removePoolFromFaves,
         isAdvancedModeActive: advancedMode,
         simpleRangeWidth: simpleRangeWidth,
         pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
@@ -620,8 +568,6 @@ export default function Trade(props: propsIF) {
         activeTimeFrame: activeTimeFrame,
         unselectCandle: unselectCandle,
         favePools: favePools,
-        addPoolToFaves: addPoolToFaves,
-        removePoolFromFaves: removePoolFromFaves,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         poolPriceChangePercent: poolPriceChangePercent,
         setPoolPriceChangePercent: setPoolPriceChangePercent,
@@ -688,7 +634,6 @@ export default function Trade(props: propsIF) {
                     <div className={styles.main__chart_container}>
                         {!isCandleDataNull && (
                             <TradeCharts
-                                // poolPriceTick={poolPriceTick}
                                 {...tradeChartsProps}
                             />
                         )}
