@@ -580,7 +580,7 @@ export default function App() {
         }
     }, [lastNewHeadMessage]);
 
-    const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
+    const {favePools, addPoolToFaves, removePoolFromFaves} = useFavePools();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId),

@@ -1,21 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 
 export const useFavePools = () => {
-    const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('user') as string));
-    const [favePools, setFavePools] = useState(userData?.favePools);
-    useEffect(() => {
-        function getUserData() {
-            localStorage.user
-                ? setUserData(JSON.parse(localStorage.getItem('user') as string))
-                : getUserData();
-        }
-        getUserData();
-    }, []);
-    useEffect(() => {
-        userData && setFavePools(userData.favePools);
-    }, [userData]);
+    const [favePools, setFavePools] = useState<PoolIF[]>(
+        JSON.parse(localStorage.getItem('favePools') as string) ?? []
+    );
 
     const addPoolToFaves = (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => {
         const [baseAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
@@ -29,8 +19,7 @@ export const useFavePools = () => {
         };
         const updatedPoolsArray = [newPool, ...favePools];
         setFavePools(updatedPoolsArray);
-        userData.favePools = updatedPoolsArray;
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('favePools', JSON.stringify(updatedPoolsArray));
     };
 
     const removePoolFromFaves = (
@@ -48,9 +37,12 @@ export const useFavePools = () => {
                 pool.poolId !== poolId,
         );
         setFavePools(updatedPoolsArray);
-        userData.favePools = updatedPoolsArray;
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('favePools', JSON.stringify(updatedPoolsArray));
     };
 
-    return [favePools, addPoolToFaves, removePoolFromFaves];
+    return {
+        favePools,
+        addPoolToFaves,
+        removePoolFromFaves
+    };
 };
