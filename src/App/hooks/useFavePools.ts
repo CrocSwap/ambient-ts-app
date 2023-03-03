@@ -29,7 +29,18 @@ export const useFavePools = (): favePoolsMethodsIF => {
         JSON.parse(localStorage.getItem('favePools') as string) ?? []
     );
 
-    // TODO:   @Emily  this fn needs logic to not add a pool if it exists already
+    const removePoolFromArray = (targetPool: PoolIF, poolsArray: PoolIF[]) => {
+        const comparePools = (pool1: PoolIF, pool2: PoolIF) => (
+            pool1.base.address.toLowerCase() !== pool2.base.address.toLowerCase() ||
+            pool1.quote.address.toLowerCase() !== pool2.quote.address.toLowerCase() ||
+            pool1.chainId !== pool2.chainId ||
+            pool1.poolId !== pool2.poolId
+        );
+        return poolsArray.filter(
+            (poolFromArray: PoolIF) => comparePools(poolFromArray, targetPool)
+        );
+    }
+
     const addPoolToFaves = (
         tokenA: TokenIF,
         tokenB: TokenIF,
@@ -45,7 +56,8 @@ export const useFavePools = (): favePoolsMethodsIF => {
             chainId: chainId,
             poolId: poolId,
         };
-        const updatedPoolsArray = [newPool, ...favePools];
+        const favesWithNewRemoved = removePoolFromArray(newPool, favePools);
+        const updatedPoolsArray = [newPool, ...favesWithNewRemoved];
         setFavePools(updatedPoolsArray);
         localStorage.setItem('favePools', JSON.stringify(updatedPoolsArray));
     };
