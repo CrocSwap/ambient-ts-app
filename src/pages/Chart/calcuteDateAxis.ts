@@ -92,6 +92,10 @@ const correctStyleForData = (startDate: Date, endDate: Date, data: any) => {
         data = data.map((item: any) => {
             return { date: item.date, style: item.date.getMinutes() === 45 };
         });
+    } else {
+        data = data.map((item: any) => {
+            return { date: item.date, style: item.date.getMinutes() === 45 };
+        });
     }
 
     return data;
