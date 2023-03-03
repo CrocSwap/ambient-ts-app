@@ -15,7 +15,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF, candleDomain } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
-import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
@@ -69,27 +69,23 @@ interface propsIF {
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
-    // handleTxCopiedClick: () => void;
-    // handleOrderCopiedClick: () => void;
-    // handleRangeCopiedClick: () => void;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
-
     fullScreenChart: boolean;
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     cachedQuerySpotPrice: SpotPriceFn;
     fetchingCandle: boolean;
-    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
+    setFetchingCandle: Dispatch<SetStateAction<boolean>>;
     isCandleDataNull: boolean;
-    setIsCandleDataNull: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
-    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
 }
 
@@ -632,11 +628,7 @@ export default function Trade(props: propsIF) {
                     }}
                 >
                     <div className={styles.main__chart_container}>
-                        {!isCandleDataNull && (
-                            <TradeCharts
-                                {...tradeChartsProps}
-                            />
-                        )}
+                        {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                     </div>
                 </div>
 

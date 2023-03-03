@@ -24,7 +24,6 @@ import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransac
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     LimitOrderIF,
-    PoolIF,
     PositionIF,
     TokenIF,
     TokenPairIF,
