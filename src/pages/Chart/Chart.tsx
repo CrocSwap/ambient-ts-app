@@ -4931,7 +4931,6 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
-                        // Burası
                         const svg = d3.select(event.target).select('svg');
                         // svg.attr('preserveAspectRatio','xMidyMid');
                         svg.attr('preserveAspectRatio', 'xMidYMid meet');
