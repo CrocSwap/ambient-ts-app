@@ -141,6 +141,7 @@ export default function Swap(props: propsIF) {
         toggleBypassConfirm,
         // isTutorialMode,
         // setIsTutorialMode
+        lastBlockNumber,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -189,9 +190,7 @@ export default function Swap(props: propsIF) {
     const [sellQtyString, setSellQtyString] = useState<string>('');
     const [buyQtyString, setBuyQtyString] = useState<string>('');
 
-    const slippageTolerancePercentage = isPairStable
-        ? swapSlippage.stable
-        : swapSlippage.volatile;
+    const slippageTolerancePercentage = isPairStable ? swapSlippage.stable : swapSlippage.volatile;
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
@@ -649,6 +648,7 @@ export default function Swap(props: propsIF) {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        lastBlockNumber: lastBlockNumber,
     };
 
     const handleSwapButtonClickWithBypass = () => {
