@@ -189,7 +189,7 @@ export default function ChatPanel(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getID().then((result: any) => {
-            if (result.status === 'OK') {
+            if (result?.status === 'OK') {
                 result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                 setCurrentUser(result.userData._id);
                 setUserCurrentPool(result.userData.userCurrentPool);
