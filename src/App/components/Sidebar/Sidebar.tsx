@@ -352,10 +352,12 @@ export default function Sidebar(props: propsIF) {
 
     // console.log(searchInput);
     const [openAllDefault, setOpenAllDefault] = useState(false);
+    const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
 
     const openAllButton = (
         <button
             onClick={() => {
+                setIsDefaultOverridden(true);
                 if (!showSidebar) {
                     setShowSidebar(true);
                 }
@@ -371,6 +373,7 @@ export default function Sidebar(props: propsIF) {
     const collapseButton = (
         <button
             onClick={() => {
+                setIsDefaultOverridden(true);
                 setOpenAllDefault(false);
             }}
             className={styles.open_all_button}
@@ -447,6 +450,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                     // mostRecent={['should open automatically']}
                 />
             ))}
@@ -461,6 +465,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
             {recentPools.map((item, idx) => (
@@ -474,6 +479,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
 
                     // mostRecent={mostRecentPositions}
                 />
@@ -494,6 +500,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                     // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
@@ -508,6 +515,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
@@ -521,6 +529,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
         </div>
