@@ -71,6 +71,7 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    lastBlockNumber: number;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -118,6 +119,7 @@ export default function CurrencyConverter(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        lastBlockNumber,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -235,15 +237,15 @@ export default function CurrencyConverter(props: propsIF) {
 
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
-    useEffect(() => {
-        console.log({ disableReverseTokens });
-        if (disableReverseTokens) {
-            const timer = setTimeout(() => {
-                setDisableReverseTokens(false);
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [disableReverseTokens]);
+    // useEffect(() => {
+    //     console.log({ disableReverseTokens });
+    //     if (disableReverseTokens) {
+    //         const timer = setTimeout(() => {
+    //             setDisableReverseTokens(false);
+    //         }, 1500);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [disableReverseTokens]);
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
@@ -276,18 +278,22 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        if (crocEnv && poolExists) {
+            // console.log('firing');
+            isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        }
     }, [
         crocEnv,
+        lastBlockNumber,
         poolExists,
-        poolPriceDisplay,
-        isSellTokenBase,
-        isTokenAPrimary,
-        tokenABalance,
-        isWithdrawFromDexChecked,
-        tokenPair.dataTokenA.address,
-        tokenPair.dataTokenB.address,
-        slippageTolerancePercentage,
+        // poolPriceDisplay,
+        // isSellTokenBase,
+        // isTokenAPrimary,
+        // tokenABalance,
+        // isWithdrawFromDexChecked,
+        // // tokenPair.dataTokenA.address,
+        // // tokenPair.dataTokenB.address,
+        // slippageTolerancePercentage,
         shouldSwapConverterUpdate,
     ]);
 
@@ -401,6 +407,7 @@ export default function CurrencyConverter(props: propsIF) {
 
                 // console.log({ impact });
                 setPriceImpact(impact);
+
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -436,6 +443,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
                 // console.log({ impact });
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -457,6 +467,9 @@ export default function CurrencyConverter(props: propsIF) {
         // if (buyQtyField) {
         //     buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
         // }
+        if (disableReverseTokens) {
+            setDisableReverseTokens(false);
+        }
         dispatch(setShouldSwapConverterUpdate(false));
     };
 
@@ -492,6 +505,9 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -514,6 +530,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -590,6 +609,7 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
@@ -649,6 +669,9 @@ export default function CurrencyConverter(props: propsIF) {
         // if (sellQtyField) {
         //     sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
         // }
+        if (disableReverseTokens) {
+            setDisableReverseTokens(false);
+        }
         dispatch(setShouldSwapConverterUpdate(false));
     };
 
