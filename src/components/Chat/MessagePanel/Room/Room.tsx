@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { topPools } from '../../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import useChatApi from '../../Service/ChatApi';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -41,6 +42,10 @@ interface propsIF {
     setIsCurrentPool: any;
     showCurrentPoolButton: any;
     setShowCurrentPoolButton: any;
+    userCurrentPool: string;
+    setUserCurrentPool: any;
+    ensName: any;
+    currentUser: any;
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -59,6 +64,7 @@ export default function RoomDropdown(props: propsIF) {
     // const [isCurrentPool, setIsCurrentPool] = useState(false);
     // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
+    const { updateUser } = useChatApi();
 
     // non-empty space
     const defaultRooms = [
@@ -83,11 +89,19 @@ export default function RoomDropdown(props: propsIF) {
     ];
 
     useEffect(() => {
-        if (
-            isCurrentPool ||
-            props.selectedRoom ===
-                currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol
-        ) {
+        props.setUserCurrentPool(
+            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+        );
+        updateUser(props.currentUser as string, props.ensName, props.userCurrentPool).then(
+            (result: any) => {
+                if (result.status === 'OK') {
+                    console.log(result);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                }
+            },
+        );
+
+        if (props.selectedRoom === props.userCurrentPool) {
             setShowCurrentPoolButton(false);
         } else {
             setShowCurrentPoolButton(true);
@@ -97,6 +111,7 @@ export default function RoomDropdown(props: propsIF) {
         currentPool.baseToken.symbol,
         currentPool.quoteToken.symbol,
         props.selectedRoom,
+        props.userCurrentPool,
     ]);
 
     useEffect(() => {
@@ -132,6 +147,38 @@ export default function RoomDropdown(props: propsIF) {
     }, []);
 
     const rooms = topPools;
+    const favepools = props.favePools.pools;
+    useEffect(() => {
+        const roomArr: string[] = [];
+        const favePoolsArr: string[] = [];
+
+        favepools?.map((pool: PoolIF) => {
+            favePoolsArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+        });
+
+        setFavoritePoolsArray(() => {
+            return favePoolsArr;
+        });
+
+        rooms?.map((pool: PoolIF) => {
+            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
+        });
+
+        for (let x = 0; x < roomArr.length; x++) {
+            if (!favePoolsArr.includes(roomArr[x])) {
+                roomArr.push(roomArr.splice(x, 1)[0]);
+            } else {
+                // do nothing
+            }
+        }
+
+        setRoomArray(() => {
+            return roomArr;
+        });
+
+        const middleIndex = Math.ceil(roomArray.length / 2);
+        roomArray.splice(0, middleIndex);
+    }, [favepools]);
 
     useEffect(() => {
         if (props.selectedRoom === 'Global') {
