@@ -79,7 +79,6 @@ export const useToken = (chainId: string): tokenMethodsIF => {
             }
         };
         checkForTokenLists();
-
         dispatch(setShouldRecheckLocalStorage(false));
     }, [shouldRecheckLocalStorage]);
 
@@ -166,18 +165,15 @@ export const useToken = (chainId: string): tokenMethodsIF => {
     // fn to add a token to the acknowledged list in local storage
     const acknowledgeToken = (tkn: TokenIF): void => {
         // retrieve and parse user data object from local storage
-        const userData = JSON.parse(localStorage.getItem('user') as string);
+        const ackTokens: TokenIF[] = JSON.parse(localStorage.getItem('ackTokens') as string) ?? [];
         // determine whether token is already in the acknowledged tokens array
-        const isTokenNew = !userData.ackTokens.some(
+        const isTokenNew = !ackTokens.some(
             (ackToken: TokenIF) =>
                 tkn.address.toLowerCase() === ackToken.address.toLowerCase() &&
                 tkn.chainId === ackToken.chainId,
         );
         // if token is not yet in the array, add it and update local storage
-        if (isTokenNew) {
-            userData.ackTokens = [...userData.ackTokens, tkn];
-            localStorage.setItem('user', JSON.stringify(userData));
-        }
+        isTokenNew && localStorage.setItem('ackTokens', JSON.stringify([...ackTokens, tkn]));
         // mutable copy of the current token map
         const newTokenMap = tokenMap;
         // update the map with the new token
