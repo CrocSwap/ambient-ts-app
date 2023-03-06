@@ -63,8 +63,7 @@ export const useToken = (chainId: string): tokenMethodsIF => {
                     // this will by nature remove duplicate entries across lists
                     ?.forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // get 'ackTokens' from user data object in local storage
-                JSON.parse(localStorage.getItem('user') as string)
-                    ?.ackTokens // add each token to the map
+                JSON.parse(localStorage.getItem('ackTokens') as string)
                     // this will also remove duplicates intelligently
                     ?.forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // send token map to be memoized in local state
@@ -164,7 +163,7 @@ export const useToken = (chainId: string): tokenMethodsIF => {
 
     // fn to add a token to the acknowledged list in local storage
     const acknowledgeToken = (tkn: TokenIF): void => {
-        // retrieve and parse user data object from local storage
+        // retrieve and parse `ackTokens` data object from local storage
         const ackTokens: TokenIF[] = JSON.parse(localStorage.getItem('ackTokens') as string) ?? [];
         // determine whether token is already in the acknowledged tokens array
         const isTokenNew = !ackTokens.some(
