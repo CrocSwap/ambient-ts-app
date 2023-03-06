@@ -235,15 +235,15 @@ export default function CurrencyConverter(props: propsIF) {
 
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
-    useEffect(() => {
-        console.log({ disableReverseTokens });
-        if (disableReverseTokens) {
-            const timer = setTimeout(() => {
-                setDisableReverseTokens(false);
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [disableReverseTokens]);
+    // useEffect(() => {
+    //     console.log({ disableReverseTokens });
+    //     if (disableReverseTokens) {
+    //         const timer = setTimeout(() => {
+    //             setDisableReverseTokens(false);
+    //         }, 1500);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [disableReverseTokens]);
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
@@ -401,6 +401,9 @@ export default function CurrencyConverter(props: propsIF) {
 
                 // console.log({ impact });
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -436,6 +439,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
                 // console.log({ impact });
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -492,6 +498,9 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -514,6 +523,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -590,6 +602,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
@@ -626,7 +641,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
-
+                if (disableReverseTokens) {
+                    setDisableReverseTokens(false);
+                }
                 // impact ? setPriceImpact(impact) : null;
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
