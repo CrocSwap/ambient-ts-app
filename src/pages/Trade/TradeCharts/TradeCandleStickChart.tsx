@@ -605,7 +605,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChart(parsedChartData);
-    }, [parsedChartData?.period]);
+    }, [parsedChartData?.period, parsedChartData && parsedChartData.chartData.length === 0]);
 
     // Liq Scale
     useEffect(() => {
