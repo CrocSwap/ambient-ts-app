@@ -1459,7 +1459,7 @@ export default function App() {
         {
             onOpen: () => {
                 // console.log({ candleSubscriptionEndpoint });
-                fetchCandles();
+                // fetchCandles();
             },
             onClose: (event) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
