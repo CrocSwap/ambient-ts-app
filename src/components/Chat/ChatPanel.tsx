@@ -136,6 +136,9 @@ export default function ChatPanel(props: propsIF) {
         }
     }, [lastMessage]);
 
+    // console.log({ ens });
+    // console.log({ ensName });
+
     useEffect(() => {
         setScrollDirection('Scroll Down');
         if (address) {
@@ -178,7 +181,7 @@ export default function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [address, props.chatStatus, props.isFullScreen, userCurrentPool]);
+    }, [ens, address, props.chatStatus, props.isFullScreen, userCurrentPool]);
 
     useEffect(() => {
         console.log('getting messages');
