@@ -5550,9 +5550,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]) - 3600 * 1000);
 
-        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
-
-        const filtered = volumeData?.filter((data: any) => data.time >= xmin && data.time <= xmax);
+        const filtered = volumeData?.filter((data: any) => data.time >= xmin);
 
         const minYBoundary = d3.min(filtered, (d) => d.value);
         const maxYBoundary = d3.max(filtered, (d) => d.value);
