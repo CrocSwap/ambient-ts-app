@@ -19,6 +19,18 @@ const addFirstDayMonth = (data: any[]) => {
     return tempArray;
 };
 
+const filterYears = (startDate: Date, endDate: Date, data: any) => {
+    return (
+        data.filter(
+            (item: any) =>
+                startDate < item.date &&
+                endDate > item.date &&
+                (item.date.getDate() === 1 &&
+                    item.date.getMonth() === 0 &&
+                    item.date.getHours()) === 0,
+        ).length === 0
+    );
+};
 const filteredFirstDay = (startDate: Date, endDate: Date, data: any) => {
     return (
         data.filter(
@@ -54,7 +66,17 @@ const filteredMinute = (startDate: Date, endDate: Date, data: any, minuteControl
 };
 
 const correctStyleForData = (startDate: Date, endDate: Date, data: any) => {
-    if (!filteredFirstDay(startDate, endDate, data)) {
+    if (!filterYears(startDate, endDate, data)) {
+        data = data.map((item: any) => {
+            return {
+                date: item.date,
+                style:
+                    item.date.getHours() === 0 &&
+                    item.date.getMonth() === 0 &&
+                    item.date.getDate() === 1,
+            };
+        });
+    } else if (!filteredFirstDay(startDate, endDate, data)) {
         data = data.map((item: any) => {
             return {
                 date: item.date,
