@@ -50,10 +50,9 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     get15MinutesAxisTicks,
     get1MinuteAxisTicks,
-    get4HoursAxisTicks,
     get5MinutesAxisTicks,
+    getHourAxisTicks,
     getOneDayAxisTicks,
-    getOneHourAxisTicks,
 } from './calcuteDateAxis';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -284,6 +283,7 @@ export default function Chart(props: ChartData) {
 
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
+
     // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     // const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
@@ -570,16 +570,20 @@ export default function Chart(props: ChartData) {
         const sameLocationData = scaleData.yScale.invert(
             scaleData.yScale(market[0].value) + resultLocationData,
         );
-        yAxis.tickFormat((d: any) =>
-            isSameLocation && d === sameLocationData
-                ? formatAmountChartData(limit[0].value)
-                : formatAmountChartData(
-                      d,
-                      d === market[0].value || d === limit[0].value || d === crosshairData[0].y
-                          ? undefined
-                          : d.toString().split('.')[1]?.length,
-                  ),
-        );
+        yAxis.tickFormat((d: any) => {
+            if (d === crosshairData[0].y) {
+                return formatAmountChartData(crosshairData[0].y);
+            } else {
+                return isSameLocation && d === sameLocationData
+                    ? formatAmountChartData(limit[0].value)
+                    : formatAmountChartData(
+                          d,
+                          d === market[0].value || d === limit[0].value
+                              ? undefined
+                              : d.toString().split('.')[1]?.length,
+                      );
+            }
+        });
 
         yAxis.tickValues([
             ...scale.ticks(),
@@ -997,28 +1001,30 @@ export default function Chart(props: ChartData) {
     async function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
         let result = oldTickValues;
+
+        const domainX = scaleData.xScale.domain();
         if (activeTimeFrame === '1h') {
-            result = await getOneHourAxisTicks(oldTickValues, bandwidth);
+            result = await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 1);
         }
 
         if (activeTimeFrame === '1d') {
-            result = await getOneDayAxisTicks(oldTickValues, bandwidth);
+            result = await getOneDayAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '4h') {
-            result = await get4HoursAxisTicks(oldTickValues, bandwidth);
+            result = await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 4);
         }
 
         if (activeTimeFrame === '15m') {
-            result = get15MinutesAxisTicks(oldTickValues, bandwidth);
+            result = get15MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '5m') {
-            result = get5MinutesAxisTicks(oldTickValues, bandwidth);
+            result = get5MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '1m') {
-            result = get1MinuteAxisTicks(oldTickValues, bandwidth);
+            result = get1MinuteAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         return result;
@@ -1035,8 +1041,9 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData && xAxis) {
             getXAxisTick().then((res) => {
+                const _res = res.map((item: any) => item.date);
                 xAxis
-                    .tickValues([...res, ...(isMouseMoveCrosshair ? [crosshairData[0].x] : [])])
+                    .tickValues([..._res, ...(isMouseMoveCrosshair ? [crosshairData[0].x] : [])])
                     .tickFormat((d: any) => {
                         if (d === crosshairData[0].x) {
                             if (activeTimeFrame === '1d') {
@@ -1068,24 +1075,27 @@ export default function Chart(props: ChartData) {
                             return moment(d).format('HH:mm');
                         }
                     });
-            });
 
-            xAxis.decorate((selection: any) => {
-                selection
-                    .attr('filter', (d: any) => {
-                        if (d === crosshairData[0].x) {
-                            return 'url(#crossHairBg)';
-                        }
-                    })
-                    .select('text')
-                    .attr('class', (d: any) => {
-                        if (d === crosshairData[0].x) {
-                            return 'crossHairText';
-                        }
-                        if (moment(d).format('HH:mm') === '00:00') {
-                            return 'startDate';
-                        }
-                    });
+                xAxis.decorate((selection: any) => {
+                    selection
+                        .attr('filter', (d: any) => {
+                            if (d === crosshairData[0].x) {
+                                return 'url(#crossHairBg)';
+                            }
+                        })
+                        .select('text')
+                        .attr('class', (d: any) => {
+                            if (d === crosshairData[0].x) {
+                                return 'crossHairText';
+                            }
+
+                            if (
+                                res.find((item: any) => item.date.getTime() === d.getTime())?.style
+                            ) {
+                                return 'startDate';
+                            }
+                        });
+                });
             });
         }
     }, [
@@ -1103,24 +1113,24 @@ export default function Chart(props: ChartData) {
     ]);
 
     function changeyAxisWidth() {
-        let yTickValueLenght = scaleData.yScale.ticks()[0]?.toString().length;
+        let yTickValueLength = scaleData.yScale.ticks()[0]?.toString().length;
         let result = false;
         scaleData.yScale.ticks().forEach((element: any) => {
             if (element.toString().length > 4) {
                 result = true;
-                yTickValueLenght =
-                    yTickValueLenght > element.toString().length
-                        ? yTickValueLenght
+                yTickValueLength =
+                    yTickValueLength > element.toString().length
+                        ? yTickValueLength
                         : element.toString().length;
             }
         });
         if (result) {
-            if (yTickValueLenght > 4 && yTickValueLenght < 8) setYaxisWidth('6rem');
-            if (yTickValueLenght >= 8) setYaxisWidth('7rem');
-            if (yTickValueLenght >= 15) setYaxisWidth('10rem');
-            if (yTickValueLenght >= 20) setYaxisWidth('11rem');
+            if (yTickValueLength > 4 && yTickValueLength < 8) setYaxisWidth('6rem');
+            if (yTickValueLength >= 8) setYaxisWidth('7rem');
+            if (yTickValueLength >= 15) setYaxisWidth('10rem');
+            if (yTickValueLength >= 20) setYaxisWidth('11rem');
         }
-        if (yTickValueLenght <= 4) setYaxisWidth('5rem');
+        if (yTickValueLength <= 4) setYaxisWidth('5rem');
     }
     useEffect(() => {
         if (scaleData && yAxis) {
@@ -1148,6 +1158,7 @@ export default function Chart(props: ChartData) {
         market,
         crosshairData,
         isMouseMoveCrosshair,
+        scaleData,
     ]);
 
     const showHighlightedLines = () => {
@@ -1257,11 +1268,15 @@ export default function Chart(props: ChartData) {
             xValue = series.crossValue();
 
         const filtered = data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
-        const nearest = minimum(filtered, (d: any) =>
-            Math.abs(point.offsetX - xScale(xValue(d))),
-        )[1];
 
-        return nearest;
+        if (filtered.length > 1) {
+            const nearest = minimum(filtered, (d: any) =>
+                Math.abs(point.offsetX - xScale(xValue(d))),
+            )[1];
+            return nearest;
+        }
+
+        return filtered[0];
     };
 
     const getNewCandleData = (newBoundary: any, lastCandleDate: any) => {
@@ -2711,7 +2726,11 @@ export default function Chart(props: ChartData) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: scaleData.yScale.invert(event.sourceEvent.layerY),
+                            y: Number(
+                                formatAmountChartData(
+                                    scaleData.yScale.invert(event.sourceEvent.layerY),
+                                ),
+                            ),
                         },
                     ]);
                     setIsLineDrag(false);
@@ -2792,7 +2811,11 @@ export default function Chart(props: ChartData) {
                             y:
                                 isMouseMoveForSubChart || isZoomForSubChart
                                     ? -1
-                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                                    : Number(
+                                          formatAmountChartData(
+                                              scaleData.yScale.invert(event.sourceEvent.layerY),
+                                          ),
+                                      ),
                         },
                     ]);
 
@@ -4713,7 +4736,7 @@ export default function Chart(props: ChartData) {
                     crosshairHorizontalJoin(svgTvlSub, [crosshairData]).call(crosshairHorizontal);
             });
         }
-    }, [crosshairData]);
+    }, [crosshairData, scaleData]);
 
     const findTvlNearest = (point: any) => {
         const tvlData = parsedChartData?.tvlChartData;
@@ -5333,7 +5356,11 @@ export default function Chart(props: ChartData) {
                                 y:
                                     isMouseMoveForSubChart || isZoomForSubChart
                                         ? -1
-                                        : scaleData.yScale.invert(event.layerY),
+                                        : Number(
+                                              formatAmountChartData(
+                                                  scaleData.yScale.invert(event.layerY),
+                                              ),
+                                          ),
                             },
                         ]);
 

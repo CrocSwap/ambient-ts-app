@@ -1330,8 +1330,10 @@ export default function App() {
                         .then((response) => response?.json())
                         .then((json) => {
                             const candles = json?.data;
-
-                            if (candles) {
+                            if (candles?.length === 0) {
+                                setIsCandleDataNull(true);
+                                setExpandTradeTable(true);
+                            } else if (candles) {
                                 // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                                 if (JSON.stringify(candleData) !== JSON.stringify(candles)) {
                                     setCandleData({
@@ -1446,7 +1448,7 @@ export default function App() {
         {
             onOpen: () => {
                 // console.log({ candleSubscriptionEndpoint });
-                fetchCandles();
+                // fetchCandles();
             },
             onClose: (event) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
@@ -2632,7 +2634,7 @@ export default function App() {
     const analyticsProps = {
         setSelectedOutsideTab: setSelectedOutsideTab,
         setOutsideControl: setOutsideControl,
-        favePools: favePools
+        favePools: favePools,
     };
 
     function updateDenomIsInBase() {

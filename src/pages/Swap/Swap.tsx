@@ -132,7 +132,8 @@ export default function Swap(props: propsIF) {
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
-        uTokens
+        uTokens,
+        lastBlockNumber,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -181,9 +182,7 @@ export default function Swap(props: propsIF) {
     const [sellQtyString, setSellQtyString] = useState<string>('');
     const [buyQtyString, setBuyQtyString] = useState<string>('');
 
-    const slippageTolerancePercentage = isPairStable
-        ? swapSlippage.stable
-        : swapSlippage.volatile;
+    const slippageTolerancePercentage = isPairStable ? swapSlippage.stable : swapSlippage.volatile;
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
@@ -637,7 +636,8 @@ export default function Swap(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         openGlobalPopup: openGlobalPopup,
-        uTokens: uTokens
+        uTokens: uTokens,
+        lastBlockNumber: lastBlockNumber,
     };
 
     const handleSwapButtonClickWithBypass = () => {
@@ -674,7 +674,6 @@ export default function Swap(props: propsIF) {
                         bypassConfirm={bypassConfirm}
                         toggleBypassConfirm={toggleBypassConfirm}
                     />
-                    {/* <DividerDark addMarginTop /> */}
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}
