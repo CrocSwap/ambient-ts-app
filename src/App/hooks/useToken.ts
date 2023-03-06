@@ -5,16 +5,16 @@ import { setShouldRecheckLocalStorage } from '../../utils/state/userDataSlice';
 
 export const useToken = (
     chainId: string,
-): [
-    tokenMap: Map<string, TokenIF>,
+): {
+    localTokens: Map<string, TokenIF>,
     verifyToken: (addr: string, chn: string) => boolean,
     getAllTokens: () => TokenIF[],
     getAmbientTokens: () => TokenIF[],
     getTokensOnChain: (chn: string) => TokenIF[],
-    getToken: (addr: string, chn: string) => TokenIF | undefined,
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
     acknowledgeToken: (tkn: TokenIF) => void,
-] => {
+} => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
     // abstracted logic to add a new token to the map
@@ -187,8 +187,8 @@ export const useToken = (
     };
 
     // return functions to verify a token and retrieve token metadata
-    return [
-        tokenMap,
+    return {
+        localTokens: tokenMap,
         verifyToken,
         getAllTokens,
         getAmbientTokens,
@@ -196,5 +196,5 @@ export const useToken = (
         getTokenByAddress,
         getTokensByName,
         acknowledgeToken,
-    ];
+    };
 };

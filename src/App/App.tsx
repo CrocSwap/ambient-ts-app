@@ -385,7 +385,7 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
-    const [
+    const {
         localTokens,
         verifyToken,
         getAllTokens,
@@ -394,7 +394,7 @@ export default function App() {
         getTokenByAddress,
         getTokensByName,
         acknowledgeToken,
-    ] = useToken(chainData.chainId);
+    } = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
     false && getTokensOnChain;
