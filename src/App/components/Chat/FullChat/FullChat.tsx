@@ -7,6 +7,7 @@ import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
+import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 
 interface FullChatPropsIF {
@@ -21,10 +22,8 @@ interface FullChatPropsIF {
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
-    // eslint-disable-next-line
-    currentPool: any;
-
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
+    userCurrentPool: string;
 }
 
 interface ChannelDisplayPropsIF {
@@ -33,7 +32,7 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     // eslint-disable-next-line
-    const { messageList, chatNotification, messageInput, userName, currentPool, favePools } = props;
+    const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
 
@@ -68,17 +67,15 @@ export default function FullChat(props: FullChatPropsIF) {
     }
 
     function handleCurrentPoolClick() {
-        // console.log(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
-        props.setRoom(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
-        setReadableName(`${currentPool.baseToken.symbol}/${currentPool.quoteToken.symbol}`);
+        props.setRoom(userCurrentPool);
+        setReadableName(userCurrentPool);
     }
 
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
         const { pool, isDropdown } = props;
 
         const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
-        const poolIsCurrentPool =
-            pool.name === `${currentPool.baseToken.symbol}/${currentPool.quoteToken.symbol}`;
+        const poolIsCurrentPool = pool.name === userCurrentPool;
         const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
 
         return (

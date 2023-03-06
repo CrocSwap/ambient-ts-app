@@ -1,20 +1,13 @@
 import styles from './FavoritePools.module.css';
 import FavoritePoolsCard from './FavoritePoolsCard';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 
 interface propsIF {
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
     chainId: string;
 }
 
@@ -23,28 +16,16 @@ export default function FavoritePools(props: propsIF) {
         favePools,
         lastBlockNumber,
         cachedPoolStatsFetch,
-        addPoolToFaves,
-        // removePoolFromFaves,
         chainId,
     } = props;
 
     const { tradeData } = useAppSelector((state) => state);
 
-    const isAlreadyFavorited = favePools?.some(
-        (pool: PoolIF) =>
-            pool.base.address === tradeData.baseToken.address &&
-            pool.quote.address === tradeData.quoteToken.address &&
-            pool.poolId === 36000 &&
-            pool.chainId.toString() === chainId,
-    );
-
-    const handleFavButton = () =>
-        addPoolToFaves(tradeData.baseToken, tradeData.quoteToken, chainId, 36000);
-
-    const addCurrentPoolLinkOrNull = isAlreadyFavorited ? null : (
-        <div className={styles.view_more} onClick={handleFavButton}>
-            Add Current Pool
-        </div>
+    const isAlreadyFavorited = favePools.check(
+        tradeData.baseToken.address,
+        tradeData.quoteToken.address,
+        chainId,
+        36000
     );
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
@@ -56,9 +37,23 @@ export default function FavoritePools(props: propsIF) {
                 <div>Volume</div>
                 <div>TVL</div>
             </div>
-            {addCurrentPoolLinkOrNull}
+            {
+                isAlreadyFavorited || (
+                    <div
+                        className={styles.view_more}
+                        onClick={() => favePools.add(
+                            tradeData.baseToken,
+                            tradeData.quoteToken,
+                            chainId,
+                            36000
+                        )}
+                    >
+                        Add Current Pool
+                    </div>
+                )
+            }
             <div className={styles.content}>
-                {favePools.map((pool, idx) => (
+                {favePools.pools.map((pool, idx) => (
                     <FavoritePoolsCard
                         key={idx}
                         chainId={chainId}

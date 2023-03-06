@@ -24,7 +24,6 @@ import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransac
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     LimitOrderIF,
-    PoolIF,
     PositionIF,
     TokenIF,
     TokenPairIF,
@@ -43,6 +42,7 @@ import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -54,7 +54,6 @@ interface propsIF {
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
-
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
@@ -67,12 +66,11 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
     selectedOutsideTab: number;
     outsideControl: boolean;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     openModalWallet: () => void;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
@@ -80,13 +78,6 @@ interface propsIF {
     tokenPair: TokenPairIF;
     getRecentPools: (count: number) => SmallerPoolIF[];
     isConnected: boolean;
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
     positionsByUser: PositionIF[];
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
@@ -118,8 +109,6 @@ export default function Sidebar(props: propsIF) {
         tokenPair,
         getRecentPools,
         isConnected,
-        addPoolToFaves,
-        removePoolFromFaves,
         positionsByUser,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -227,8 +216,6 @@ export default function Sidebar(props: propsIF) {
                     favePools={favePools}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
-                    addPoolToFaves={addPoolToFaves}
-                    removePoolFromFaves={removePoolFromFaves}
                     chainId={chainId}
                 />
             ),
@@ -365,10 +352,12 @@ export default function Sidebar(props: propsIF) {
 
     // console.log(searchInput);
     const [openAllDefault, setOpenAllDefault] = useState(false);
+    const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
 
     const openAllButton = (
         <button
             onClick={() => {
+                setIsDefaultOverridden(true);
                 if (!showSidebar) {
                     setShowSidebar(true);
                 }
@@ -384,6 +373,7 @@ export default function Sidebar(props: propsIF) {
     const collapseButton = (
         <button
             onClick={() => {
+                setIsDefaultOverridden(true);
                 setOpenAllDefault(false);
             }}
             className={styles.open_all_button}
@@ -460,6 +450,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                     // mostRecent={['should open automatically']}
                 />
             ))}
@@ -474,6 +465,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
             {recentPools.map((item, idx) => (
@@ -487,6 +479,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
 
                     // mostRecent={mostRecentPositions}
                 />
@@ -507,6 +500,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                     // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
@@ -521,6 +515,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
@@ -534,6 +529,7 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
+                    isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
         </div>

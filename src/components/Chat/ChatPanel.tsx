@@ -6,8 +6,7 @@ import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import { TbTableExport } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
@@ -18,6 +17,7 @@ import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from '../../App/components/Chat/FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
+import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -40,10 +40,10 @@ interface currentPoolInfo {
     targetData: targetData[];
 }
 
-interface ChatProps {
+interface propsIF {
     chatStatus: boolean;
     onClose: () => void;
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     setChatStatus: Dispatch<SetStateAction<boolean>>;
@@ -53,17 +53,18 @@ interface ChatProps {
     username?: string | undefined | null;
 }
 
-export default function ChatPanel(props: ChatProps) {
+export default function ChatPanel(props: propsIF) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // const navigate = useNavigate();
+
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH/USDC');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -135,6 +136,9 @@ export default function ChatPanel(props: ChatProps) {
         }
     }, [lastMessage]);
 
+    // console.log({ ens });
+    // console.log({ ensName });
+
     useEffect(() => {
         setScrollDirection('Scroll Down');
         if (address) {
@@ -154,10 +158,51 @@ export default function ChatPanel(props: ChatProps) {
                 } else {
                     result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                     setCurrentUser(result.userData._id);
+                    setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
-                        // eslint-disable-next-line
-                        updateUser(currentUser as string, ensName).then((result: any) => {
+                        updateUser(currentUser as string, ensName, userCurrentPool).then(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (result: any) => {
+                                if (result.status === 'OK') {
+                                    console.log(result);
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    updateMessageUser(currentUser as string, ensName).then(
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        (result: any) => {
+                                            return result;
+                                        },
+                                    );
+                                }
+                            },
+                        );
+                    }
+                }
+            });
+        } else {
+            setCurrentUser(undefined);
+        }
+    }, [ens, address, props.chatStatus, props.isFullScreen, userCurrentPool]);
+
+    useEffect(() => {
+        console.log('getting messages');
+        setNotification(0);
+        getMsg();
+    }, [room]);
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getID().then((result: any) => {
+            if (result?.status === 'OK') {
+                result.userData.isModerator === true ? setModerator(true) : setModerator(false);
+                setCurrentUser(result.userData._id);
+                setUserCurrentPool(result.userData.userCurrentPool);
+                if (result.userData.ensName !== ensName) {
+                    // eslint-disable-next-line
+                    updateUser(currentUser as string, ensName, userCurrentPool).then(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (result: any) => {
                             if (result.status === 'OK') {
+                                console.log(result);
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(currentUser as string, ensName).then(
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -166,20 +211,12 @@ export default function ChatPanel(props: ChatProps) {
                                     },
                                 );
                             }
-                        });
-                    }
+                        },
+                    );
                 }
-            });
-        } else {
-            setCurrentUser(undefined);
-        }
-    }, [address, props.chatStatus, props.isFullScreen]);
-
-    useEffect(() => {
-        console.log('getting messages');
-        setNotification(0);
-        getMsg();
-    }, [room]);
+            }
+        });
+    }, [userCurrentPool]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -296,8 +333,8 @@ export default function ChatPanel(props: ChatProps) {
                             isMessageDeleted={isMessageDeleted}
                             setIsMessageDeleted={setIsMessageDeleted}
                             previousMessage={i === messages.length - 1 ? null : messages[i + 1]}
+                            nextMessage={i === 0 ? null : messages[i - 1]}
                         />
-                        <hr />
                     </div>
                 ))}
         </div>
@@ -360,8 +397,8 @@ export default function ChatPanel(props: ChatProps) {
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
-                currentPool={currentPool}
                 favePools={favePools}
+                userCurrentPool={userCurrentPool}
             />
         );
 
@@ -386,6 +423,10 @@ export default function ChatPanel(props: ChatProps) {
                         isCurrentPool={isCurrentPool}
                         showCurrentPoolButton={showCurrentPoolButton}
                         setShowCurrentPoolButton={setShowCurrentPoolButton}
+                        userCurrentPool={userCurrentPool}
+                        setUserCurrentPool={setUserCurrentPool}
+                        currentUser={currentUser}
+                        ensName={ensName}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
