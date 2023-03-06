@@ -53,31 +53,9 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    if (!user.slippage) {
-        user.slippage = {
-            swap: { stable: '0.1', volatile: '0.5' },
-            mint: { stable: '1', volatile: '3' },
-            repo: { stable: '0.1', volatile: '0.5' },
-        };
-        userUpdated = true;
-    }
-
     // create a value to track whether the sidebar is open or closed
     if (!user.sidebar) {
         user.sidebar = 'open';
-        userUpdated = true;
-    }
-
-    if (!user.termsOfService) {
-        user.termsOfService = {
-            agreed: false,
-            date: null,
-        };
-        userUpdated = true;
-    }
-
-    if (!user.theme) {
-        user.theme = 'purple_dark';
         userUpdated = true;
     }
 
