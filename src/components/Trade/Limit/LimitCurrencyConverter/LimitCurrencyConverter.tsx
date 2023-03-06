@@ -209,7 +209,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
-            }, 1000);
+            }, 200);
             return () => clearTimeout(timer);
         }
     }, [disableReverseTokens]);
