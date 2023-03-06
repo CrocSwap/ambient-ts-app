@@ -11,6 +11,7 @@ import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
+import { tokenMethodsIF } from '../../../App/hooks/useToken';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -22,13 +23,8 @@ interface propsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     // TODO: rewrite logic to build this Map from all lists not just active ones
     closeModal: () => void;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
-
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -39,37 +35,28 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
-    acknowledgeToken: (tkn: TokenIF) => void;
+    uTokens: tokenMethodsIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
         modalCloseCustom,
         provider,
-        // importedTokens,
         chainId,
-        // setImportedTokens,
         closeModal,
-        // getTokensByName,
-        // getTokenByAddress,
-        verifyToken,
-
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
-
         outputTokens,
         validatedInput,
         setInput,
         searchType,
-
-        // verifyToken,
         addRecentToken,
         getRecentTokens,
         isSingleToken,
         tokenAorB,
         reverseTokens,
         tokenPair,
-        acknowledgeToken,
+        uTokens
     } = props;
 
     // add an event listener for custom functionalities on modal close
@@ -89,8 +76,8 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
-        if (isCustom && acknowledgeToken) {
-            acknowledgeToken(tkn);
+        if (isCustom) {
+            uTokens.acknowledgeToken(tkn);
             dispatch(setShouldRecheckLocalStorage(true));
         }
         // dispatch token data object to RTK
@@ -178,7 +165,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         // make sure a provider exists
         // validated input must appear to be a valid contract address
         // app must fail to find token in local data
-        if (provider && searchType === 'address' && !verifyToken(validatedInput, chainId)) {
+        if (provider && searchType === 'address' && !uTokens.verifyToken(validatedInput, chainId)) {
             // local instance of function to pull back token data from chain
             const cachedFetchContractDetails = memoizeFetchContractDetails();
             // promise holding query to get token metadata from on-chain
@@ -223,7 +210,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
                 if (
-                    verifyToken(validatedInput, chainId) ||
+                    uTokens.verifyToken(validatedInput, chainId) ||
                     JSON.parse(localStorage.getItem('user') as string).tokens.some(
                         (tkn: TokenIF) =>
                             tkn.address.toLowerCase() === validatedInput.toLowerCase(),
@@ -279,23 +266,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         document.getElementById('token_select_input_field')?.focus();
     };
 
-    // const [ isLoading, setIsLoading] = useState(false)
-
-    // function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-    //     setInput(e.target.value)
-
-    //     if (e.target.value.length > 2) {
-    //         setIsLoading(true)
-    //     }
-
-    //     setTimeout(() => {
-    //       setIsLoading(false)
-    //       }, 1500);
-    // }
-
-    // if (isLoading) return <div className={styles.loader}> <SimpleLoader /></div>
-
-    // console.log({ customToken });
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>
@@ -307,7 +277,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                     onChange={(e) => setInput(e.target.value)}
                 />
                 {input?.value && <button onClick={clearInputField}>Clear</button>}
-                {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (

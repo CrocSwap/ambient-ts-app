@@ -21,6 +21,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
+import { tokenMethodsIF } from '../../../../App/hooks/useToken';
 
 // interface for component props
 interface propsIF {
@@ -38,7 +39,6 @@ interface propsIF {
     isAdvancedMode: boolean;
     tokenPair: TokenPairIF;
     isTokenAPrimaryLocal: boolean;
-    // setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -61,15 +61,11 @@ interface propsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
-
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -77,13 +73,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    uTokens: tokenMethodsIF;
 }
 
 // central React functional component
@@ -99,7 +94,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenPair,
         isTokenABase,
         isTokenAPrimaryLocal,
-        // setIsTokenAPrimaryLocal,
         isAmbient,
         depositSkew,
         isWithdrawTokenAFromDexChecked,
@@ -128,9 +122,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -138,8 +129,8 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
+        uTokens
     } = props;
 
     const dispatch = useAppDispatch();
@@ -517,11 +508,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const tokenAInputField = document.getElementById('A-range-quantity');
-            // if (tokenAInputField) {
-            //     (tokenAInputField as HTMLInputElement).value = input;
-            // }
-
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value
                 : evt.target.value;
@@ -686,8 +672,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         }
     };
 
-    // const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
-
     useEffect(() => {
         tradeData.isTokenAPrimaryRange
             ? handleTokenAQtyFieldUpdate()
@@ -769,9 +753,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         isRangeCopied: isRangeCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -779,8 +760,8 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        uTokens: uTokens
     };
 
     return (

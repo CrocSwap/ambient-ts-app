@@ -6,49 +6,38 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import JSX Elements
 import Account from './Account/Account';
-// import MagicLogin from './MagicLogin';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
-// import Modal from '../../../components/Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-// import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
-// import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
-// import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { tokenMethodsIF } from '../../hooks/useToken';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
-    // nativeBalance: string | undefined;
     clickLogout: () => void;
-    // metamaskLocked: boolean;
     ensName: string;
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
     openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
-
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
-
     openGlobalModal: (content: React.ReactNode) => void;
-
     closeGlobalModal: () => void;
-
     isAppOverlayActive: boolean;
     poolPriceDisplay: number | undefined;
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
@@ -56,36 +45,26 @@ interface HeaderPropsIF {
     switchTheme: () => void;
     theme: string;
     chainData: ChainSpec;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    uTokens: tokenMethodsIF;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
-        // isUserLoggedIn,
-        // ensName,
-        // nativeBalance,
-        // clickLogout,
-        // metamaskLocked,
-        // shouldDisplayAccountTab,
         ethMainnetUsdPrice,
         chainId,
         isChainSupported,
-        // openMoralisModalWallet,
         openWagmiModalWallet,
         lastBlockNumber,
-        // isMobileSidebarOpen,
-        // setIsMobileSidebarOpen,
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
         addRecentPool,
         theme,
         poolPriceDisplay,
-        // isUserLoggedIn,
         chainData,
-        getTokenByAddress,
         isTutorialMode,
         setIsTutorialMode,
+        uTokens
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -103,55 +82,10 @@ export default function PageHeader(props: HeaderPropsIF) {
     const showBranchName =
         branchName.toLowerCase() !== 'main' && branchName.toLowerCase() !== 'production';
 
-    // const [isModalOpen, openModal, closeModal] = useModal();
-    // const modalTitle = 'Log in with Email';
-
-    // const mainModal = (
-    //     <Modal onClose={closeModal} title={modalTitle}>
-    //         <MagicLogin closeModal={closeModal} />
-    //     </Modal>
-    // );
-
-    // const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
-
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         setConnectButtonDelayElapsed(true);
-    //     }, 3000);
-    //     return () => clearTimeout(timer);
-    // }, []);
-
-    // const modalOrNull = isModalOpen ? mainModal : null;
-
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         reenableWeb3();
-    //     }, 100);
-    //     return () => clearTimeout(timer);
-    // }, [user, account, metamaskLocked]);
-
-    // const reenableWeb3 = useCallback(async () => {
-    //     // console.log('enabling web3');
-    //     try {
-    //         if (user && !account && !metamaskLocked) {
-    //             await enableWeb3();
-    //         }
-    //     } catch (err) {
-    //         console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
-    //     }
-    // }, [user, account, metamaskLocked]);
-
-    // end of rive component
-
     // Page Header states
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
     // End of Page Header States
-
-    // Page Header functions
-    // function handleMobileNavToggle() {
-    //     setMobileNavToggle(!mobileNavToggle);
-    // }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isConnected && address ? trimString(address, 6, 6) : '';
@@ -166,7 +100,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: disconnect,
-        // openModal: openModal,
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
@@ -175,18 +108,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         theme: theme,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
     };
-
-    // End of Page Header Functions
-
-    // const connectMoralisButton = (
-    //     <button className={styles.authenticate_button} onClick={() => openMoralisModalWallet()}>
-    //         Connect Moralis
-    //     </button>
-    // );
 
     const connectWagmiButton = (
         <button className={styles.authenticate_button} onClick={() => openWagmiModalWallet()}>
@@ -196,7 +120,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
-    useUrlParamsNew(chainId, getTokenByAddress);
+    useUrlParamsNew(chainId, uTokens.getTokenByAddress);
 
     const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -344,40 +268,12 @@ export default function PageHeader(props: HeaderPropsIF) {
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
                 <img src={headerLogo} alt='ambient' />
-                {/* <h1>ambient</h1> */}
             </Link>
-            {/* <div
-                className={styles.mobile_nav_toggle}
-                style={{ cursor: 'pointer' }}
-                aria-controls='primary_navigation'
-                aria-expanded={mobileNavToggle}
-            >
-                <MenuButton
-                    isOpen={mobileNavToggle}
-                    onClick={handleMobileNavToggle}
-                    strokeWidth='2'
-                    color='#cdc1ff'
-                    transition={{ ease: 'easeOut', duration: 0.2 }}
-                    width='24'
-                    height='18'
-                />
-                <span className='sr-only'>Menu</span>
-            </div> */}
-
             {routeDisplay}
             <div>
-                {/* <MobileSidebar
-                    lastBlockNumber={lastBlockNumber}
-                    chainId={chainId}
-                    isMobileSidebarOpen={isMobileSidebarOpen}
-                    setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-                    theme={theme}
-                    switchTheme={switchTheme}
-                /> */}
                 <div className={styles.account}>
                     {showBranchName ? branchName : null}
                     <NetworkSelector chainId={chainId} />
-                    {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
                     {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
                     <NotificationCenter
@@ -388,7 +284,6 @@ export default function PageHeader(props: HeaderPropsIF) {
                 </div>
             </div>
             {isChainSupported || <SwitchNetwork />}
-            {/* {modalOrNull} */}
         </header>
     );
 }

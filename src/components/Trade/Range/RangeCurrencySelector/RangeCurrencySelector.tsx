@@ -16,6 +16,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { tokenMethodsIF } from '../../../../App/hooks/useToken';
 
 // import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
@@ -50,7 +51,6 @@ interface propsIF {
     reverseTokens: () => void;
     tokenAInputQty: string;
     tokenBInputQty: string;
-
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -63,9 +63,6 @@ interface propsIF {
     isRangeCopied: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -74,13 +71,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    uTokens: tokenMethodsIF;
 }
 
 export default function RangeCurrencySelector(props: propsIF) {
@@ -88,9 +84,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         gasPriceInGwei,
-        // resetTokenQuantities,
         tokenPair,
-        // tokensBank,
         setImportedTokens,
         chainId,
         isTokenAEth,
@@ -99,8 +93,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenBWalletMinusTokenBQtyNum,
         fieldId,
         sellToken,
         updateOtherQuantity,
@@ -110,8 +102,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenADexBalance,
         tokenAInputQty,
         tokenBInputQty,
-        // tokenAQtyLocal,
-        // tokenBQtyLocal,
         tokenBDexBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
@@ -119,18 +109,11 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenBQtyCoveredBySurplusBalance,
         tokenASurplusMinusTokenARemainderNum,
         tokenBSurplusMinusTokenBRemainderNum,
-        // tokenASurplusMinusTokenAQtyNum,
-        // tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         handleChangeClick,
         isRangeCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -139,8 +122,8 @@ export default function RangeCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
+        uTokens
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -158,34 +141,6 @@ export default function RangeCurrencySelector(props: propsIF) {
             setIsWithdrawTokenBFromDexChecked(false);
         }
     }, [tokenBDexBalance]);
-
-    // const DexBalanceContent = (
-    //     <span className={styles.surplus_toggle}>
-    //         <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-    //             {isTokenASelector ? (
-    //                 <Toggle2
-    //                     isOn={isWithdrawTokenAFromDexChecked}
-    //                     handleToggle={() =>
-    //                         setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-    //                     }
-    //                     id='withdraw_from_dex'
-    //                     disabled={false}
-    //                     // disabled={parseFloat(tokenADexBalance) <= 0}
-    //                 />
-    //             ) : (
-    //                 <Toggle2
-    //                     isOn={isWithdrawTokenBFromDexChecked}
-    //                     handleToggle={() =>
-    //                         setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-    //                     }
-    //                     id='withdraw_to_wallet'
-    //                     disabled={false}
-    //                     // disabled={parseFloat(tokenBDexBalance) <= 0}
-    //                 />
-    //             )}
-    //         </IconWithTooltip>
-    //     </span>
-    // );
 
     const walletBalanceNonLocaleString = isTokenASelector
         ? tokenABalance && gasPriceInGwei
@@ -279,8 +234,6 @@ export default function RangeCurrencySelector(props: propsIF) {
               ')'
             : '';
 
-    // console.log({ fieldId });
-    // console.log({ tokenBSurplusMinusTokenBRemainderNum });
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
 
@@ -288,13 +241,6 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-    //     chainId,
-    //     tokensBank,
-    //     verifyToken,
-    //     getTokenByAddress,
-    //     getTokensByName,
-    // );
 
     const handleInputClear = (): void => {
         setInput('');
@@ -312,16 +258,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         <button
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
-                // if (props.sellToken) {
-                //     setIsWithdrawFromDexChecked(false);
-                // } else {
-                //     setIsSaveAsDexSurplusChecked(false);
-                // }
-                // if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                //     handleChangeClick(walletBalanceNonLocaleString);
-                // }
                 handleChangeClick(walletBalanceNonLocaleString);
-
                 console.log('max button clicked');
             }}
         >
@@ -336,23 +273,11 @@ export default function RangeCurrencySelector(props: propsIF) {
         : isWithdrawTokenBFromDexChecked && surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton =
-        // isSellTokenSelector &&
-        // isWithdrawFromDexChecked &&
-        //         surplusBalanceNonLocaleString !== '0.0'
         displaySurplusMaxButton ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => {
-                    // if (props.sellToken) {
-                    //     setIsWithdrawFromDexChecked(true);
-                    // } else {
-                    //     setIsSaveAsDexSurplusChecked(true);
-                    // }
-                    // if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                    //     handleChangeClick(surplusBalanceNonLocaleStringOffset);
-                    // }
                     handleChangeClick(surplusBalanceNonLocaleString);
-
                     console.log('clicked');
                 }}
             >
@@ -377,7 +302,6 @@ export default function RangeCurrencySelector(props: propsIF) {
             <DefaultTooltip
                 interactive
                 title={exchangeBalanceTitle}
-                // placement={'bottom'}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
@@ -396,7 +320,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                         } else {
                             setIsWithdrawTokenBFromDexChecked(true);
                         }
-                        // handleChangeClick(surplusBalanceNonLocaleString);
                     }}
                     style={{
                         color:
@@ -514,12 +437,8 @@ export default function RangeCurrencySelector(props: propsIF) {
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
-            {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
             {walletContent}
             {surplusContent}
-            {/* </div> */}
-
-            {/* {DexBalanceContent} */}
         </div>
     );
 
@@ -573,9 +492,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                         chainId={chainId}
                         importedTokens={importedTokensPlus}
                         setImportedTokens={setImportedTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
                         outputTokens={outputTokens}
@@ -588,7 +504,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        uTokens={uTokens}
                     />
                 </Modal>
             )}

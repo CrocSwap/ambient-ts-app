@@ -19,6 +19,7 @@ import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
+import { tokenMethodsIF } from '../../../App/hooks/useToken';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -63,9 +64,6 @@ interface propsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -73,12 +71,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    uTokens: tokenMethodsIF;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -119,9 +117,6 @@ export default function CurrencySelector(props: propsIF) {
         // activeTokenListsChanged,
         // indicateActiveTokenListsChanged,
         gasPriceInGwei,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
         getRecentTokens,
@@ -129,8 +124,8 @@ export default function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
+        uTokens
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -575,9 +570,6 @@ export default function CurrencySelector(props: propsIF) {
                         chainId={chainId}
                         importedTokens={importedTokensPlus}
                         setImportedTokens={setImportedTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
                         outputTokens={outputTokens}
@@ -590,7 +582,7 @@ export default function CurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        uTokens={uTokens}
                     />
                 </Modal>
             )}

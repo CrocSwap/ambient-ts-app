@@ -49,6 +49,7 @@ import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/Bypas
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { tokenMethodsIF } from '../../../App/hooks/useToken';
 
 interface propsIF {
     account: string | undefined;
@@ -84,9 +85,6 @@ interface propsIF {
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -94,9 +92,7 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -104,9 +100,9 @@ interface propsIF {
     ) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
-
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
+    uTokens: tokenMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -122,7 +118,6 @@ export default function Limit(props: propsIF) {
         mintSlippage,
         isPairStable,
         setImportedTokens,
-        // isSellTokenBase,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -131,7 +126,6 @@ export default function Limit(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         poolPriceDisplay,
-        // poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
@@ -142,9 +136,6 @@ export default function Limit(props: propsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -152,11 +143,11 @@ export default function Limit(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
+        uTokens
     } = props;
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
@@ -851,9 +842,6 @@ export default function Limit(props: propsIF) {
         poolExists: poolExists,
         gasPriceInGwei: gasPriceInGwei,
         isOrderCopied: isOrderCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -861,9 +849,9 @@ export default function Limit(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         setResetLimitTick: setResetLimitTick,
         openGlobalPopup: openGlobalPopup,
+        uTokens: uTokens
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

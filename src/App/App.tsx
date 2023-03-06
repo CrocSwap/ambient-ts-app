@@ -385,25 +385,14 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
-    const {
-        localTokens,
-        verifyToken,
-        getAllTokens,
-        getAmbientTokens,
-        getTokensOnChain,
-        getTokenByAddress,
-        getTokensByName,
-        acknowledgeToken,
-    }: tokenMethodsIF = useToken(chainData.chainId);
-    false && localTokens;
-    false && getAllTokens;
-    false && getTokensOnChain;
+    // hook to manage token data
+    const uTokens: tokenMethodsIF = useToken(chainData.chainId);
 
     const { addRecentPool, getRecentPools } = useRecentPools(
         chainData.chainId,
         tradeData.tokenA.address,
         tradeData.tokenB.address,
-        verifyToken,
+        uTokens.verifyToken,
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
@@ -2070,7 +2059,7 @@ export default function App() {
                         }
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
-                        const ambientTokens = getAmbientTokens();
+                        const ambientTokens = uTokens.getAmbientTokens();
                         for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
                                 const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
@@ -2290,10 +2279,9 @@ export default function App() {
     // --------------END OF THEME--------------------------
 
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
-    // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
         // array of all tokens on Ambient list
-        const ambientTokens = getAmbientTokens();
+        const ambientTokens = uTokens.getAmbientTokens();
         // array of addresses on Ambient list
         const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
         // use Ambient token list as scaffold to build larger token array
@@ -2372,7 +2360,7 @@ export default function App() {
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
-        getTokenByAddress: getTokenByAddress,
+        uTokens: uTokens,
 
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2380,16 +2368,17 @@ export default function App() {
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
         chainData.chainId,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-        getAmbientTokens(),
+        uTokens.verifyToken,
+        uTokens.getTokenByAddress,
+        uTokens.getTokensByName,
+        uTokens.getAmbientTokens(),
         connectedUserErc20Tokens ?? [],
         getRecentTokens(),
     );
 
     // props for <Swap/> React element
     const swapProps = {
+        uTokens: uTokens,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
@@ -2418,9 +2407,6 @@ export default function App() {
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
         openGlobalModal: openGlobalModal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2428,7 +2414,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
 
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
@@ -2470,9 +2455,6 @@ export default function App() {
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
         isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2480,14 +2462,12 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        uTokens: uTokens
     };
 
     // props for <Limit/> React element on trade route
@@ -2526,11 +2506,6 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
-        // limitRate: limitRate,
-        // setLimitRate: setLimitRate,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2539,14 +2514,12 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('limit'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        uTokens: uTokens
     };
 
     // props for <Range/> React element
@@ -2586,16 +2559,12 @@ export default function App() {
         dailyVol: dailyVol,
         graphData: graphData,
         openGlobalModal: openGlobalModal,
-
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
         tokenBQtyLocal: rangetokenBQtyLocal,
         setTokenAQtyLocal: setRangeTokenAQtyLocal,
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2603,14 +2572,12 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('range'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        uTokens: uTokens
     };
 
     function toggleSidebar() {
@@ -2634,7 +2601,6 @@ export default function App() {
         toggleSidebar: toggleSidebar,
         setShowSidebar: setShowSidebar,
         chainId: chainData.chainId,
-
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
@@ -2644,27 +2610,23 @@ export default function App() {
         tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         favePools: favePools,
-
         selectedOutsideTab: selectedOutsideTab,
         setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: outsideControl,
         setOutsideControl: setOutsideControl,
-
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
-        verifyToken: verifyToken,
-        getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
         getRecentPools: getRecentPools,
         isConnected: isConnected,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
+        uTokens: uTokens
     };
 
     const analyticsProps = {
@@ -3064,10 +3026,6 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
-                                    getAmbientTokens={getAmbientTokens}
-                                    getTokensByName={getTokensByName}
-                                    verifyToken={verifyToken}
-                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -3104,13 +3062,13 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
+                                    uTokens={uTokens}
                                 />
                             }
                         />
@@ -3123,10 +3081,6 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
-                                    getAmbientTokens={getAmbientTokens}
-                                    getTokensByName={getTokensByName}
-                                    verifyToken={verifyToken}
-                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -3163,13 +3117,13 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
+                                    uTokens={uTokens}
                                 />
                             }
                         />
@@ -3203,10 +3157,6 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
-                                    getAmbientTokens={getAmbientTokens}
-                                    getTokensByName={getTokensByName}
-                                    verifyToken={verifyToken}
-                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -3243,13 +3193,13 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
+                                    uTokens={uTokens}
                                 />
                             }
                         />

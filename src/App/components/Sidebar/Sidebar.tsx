@@ -43,6 +43,7 @@ import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
+import { tokenMethodsIF } from '../../hooks/useToken';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -73,14 +74,13 @@ interface propsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     poolList: TempPoolIF[];
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     getRecentPools: (count: number) => SmallerPoolIF[];
     isConnected: boolean;
     positionsByUser: PositionIF[];
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
+    uTokens: tokenMethodsIF;
 }
 
 export default function Sidebar(props: propsIF) {
@@ -104,8 +104,6 @@ export default function Sidebar(props: propsIF) {
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
-        verifyToken,
-        getTokenByAddress,
         tokenPair,
         getRecentPools,
         isConnected,
@@ -114,6 +112,7 @@ export default function Sidebar(props: propsIF) {
         setSelectedOutsideTab,
         txsByUser,
         limitsByUser,
+        uTokens
     } = props;
 
     const location = useLocation();
@@ -134,7 +133,7 @@ export default function Sidebar(props: propsIF) {
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     getRecentPools={getRecentPools}
-                    getTokenByAddress={getTokenByAddress}
+                    getTokenByAddress={uTokens.getTokenByAddress}
                 />
             ),
         },
@@ -264,7 +263,7 @@ export default function Sidebar(props: propsIF) {
         positionsByUser,
         txsByUser,
         limitsByUser,
-        verifyToken,
+        uTokens.verifyToken,
         shouldRecheckLocalStorage,
     );
 
@@ -541,7 +540,7 @@ export default function Sidebar(props: propsIF) {
                     {isInputValid && showSidebar && searchMode ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
-                            getTokenByAddress={getTokenByAddress}
+                            getTokenByAddress={uTokens.getTokenByAddress}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             chainId={chainId}

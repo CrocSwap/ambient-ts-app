@@ -18,6 +18,7 @@ import { calcImpact } from '../../../App/functions/calcImpact';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
+import { tokenMethodsIF } from '../../../App/hooks/useToken';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -54,9 +55,6 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
 
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -64,13 +62,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    uTokens: tokenMethodsIF;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -106,9 +103,6 @@ export default function CurrencyConverter(props: propsIF) {
         indicateActiveTokenListsChanged,
         gasPriceInGwei,
         isSwapCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -116,8 +110,8 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
+        uTokens
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -699,17 +693,14 @@ export default function CurrencyConverter(props: propsIF) {
                 gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
                 outputTokens={outputTokens}
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
+                uTokens={uTokens}
             />
             <div
                 className={
@@ -759,17 +750,14 @@ export default function CurrencyConverter(props: propsIF) {
                     gasPriceInGwei={gasPriceInGwei}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}
-                    verifyToken={verifyToken}
-                    getTokensByName={getTokensByName}
-                    getTokenByAddress={getTokenByAddress}
                     getRecentTokens={getRecentTokens}
                     addRecentToken={addRecentToken}
                     outputTokens={outputTokens}
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    acknowledgeToken={acknowledgeToken}
                     openGlobalPopup={openGlobalPopup}
+                    uTokens={uTokens}
                 />
             </div>
         </section>

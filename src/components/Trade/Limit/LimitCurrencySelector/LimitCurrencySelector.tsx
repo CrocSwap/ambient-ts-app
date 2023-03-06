@@ -11,17 +11,17 @@ import styles from './LimitCurrencySelector.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-// import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
-// import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { tokenMethodsIF } from '../../../../App/hooks/useToken';
+
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -57,11 +57,7 @@ interface propsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
-
     isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -70,13 +66,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    uTokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -85,35 +80,25 @@ export default function LimitCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         tokenPair,
-        // tokensBank,
         setImportedTokens,
         chainId,
         tokenAInputQty,
         tokenBInputQty,
         fieldId,
-        // direction,
         handleChangeEvent,
         reverseTokens,
         tokenABalance,
-        // tokenBBalance,
         tokenADexBalance,
-        // tokenBDexBalance,
         isSellTokenEth,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
-        // isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         tokenAQtyCoveredBySurplusBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenASurplusMinusTokenARemainderNum,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         gasPriceInGwei,
         handleChangeClick,
         isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -122,8 +107,8 @@ export default function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
+        uTokens
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -426,8 +411,6 @@ export default function LimitCurrencySelector(props: propsIF) {
             <div className={styles.swapbox_bottom}>
                 {walletContent}
                 {surplusContent}
-
-                {/* {isSellTokenSelector ? WithdrawTokensContent : null} */}
             </div>
         )
     ) : null;
@@ -464,9 +447,6 @@ export default function LimitCurrencySelector(props: propsIF) {
                         chainId={chainId}
                         importedTokens={importedTokensPlus}
                         setImportedTokens={setImportedTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
                         outputTokens={outputTokens}
@@ -479,7 +459,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        uTokens={uTokens}
                     />
                 </Modal>
             )}

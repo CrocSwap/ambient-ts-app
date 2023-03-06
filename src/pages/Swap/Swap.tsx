@@ -37,6 +37,7 @@ import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConf
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { tokenMethodsIF } from '../../App/hooks/useToken';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -50,7 +51,6 @@ interface propsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    // nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -77,9 +77,6 @@ interface propsIF {
     ) => void;
 
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
@@ -87,12 +84,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
 
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
+    uTokens: tokenMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -125,9 +122,6 @@ export default function Swap(props: propsIF) {
         poolExists,
         setTokenPairLocal,
         isSwapCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
         getRecentTokens,
@@ -135,12 +129,10 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
-        // isTutorialMode,
-        // setIsTutorialMode
+        uTokens
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -637,9 +629,6 @@ export default function Swap(props: propsIF) {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         gasPriceInGwei: gasPriceInGwei,
         isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         addRecentToken: addRecentToken,
         getRecentTokens: getRecentTokens,
@@ -647,8 +636,8 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        uTokens: uTokens
     };
 
     const handleSwapButtonClickWithBypass = () => {
