@@ -10,23 +10,19 @@ import Apy from '../Global/Tabs/Apy/Apy';
 import styles from './PoolRow.module.css';
 import { motion } from 'framer-motion';
 import { MouseEvent } from 'react';
+import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
 interface propsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pool: any;
     poolType: string;
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
+    favePools: favePoolsMethodsIF;
 }
 
 export default function PoolRow(props: propsIF) {
-    const poolData = props.pool;
+    const {pool, favePools} = props;
+
+    const poolData = pool;
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -54,7 +50,7 @@ export default function PoolRow(props: propsIF) {
         navigate('/trade/market');
     }
 
-    const isButtonFavorited = props.favePools.some(
+    const isButtonFavorited = favePools.pools.some(
         (pool: PoolIF) =>
             pool.base.address === poolData.token0.address &&
             pool.quote.address === poolData.token1.address,
@@ -65,23 +61,20 @@ export default function PoolRow(props: propsIF) {
 
     const handleFavButton = (event: MouseEvent<HTMLDivElement>) => {
         isButtonFavorited
-            ? props.removePoolFromFaves(
-                  { address: poolData.token0.address } as TokenIF,
-                  { address: poolData.token1.address } as TokenIF,
-                  '',
-                  36000,
-              )
-            : props.addPoolToFaves(
-                  { address: poolData.token0.address } as TokenIF,
-                  { address: poolData.token1.address } as TokenIF,
-                  '',
-                  36000,
-              );
+            ? favePools.remove(
+                { address: poolData.token0.address } as TokenIF,
+                { address: poolData.token1.address } as TokenIF,
+                '',
+                36000,
+            )
+            : favePools.add(
+                { address: poolData.token0.address } as TokenIF,
+                { address: poolData.token1.address } as TokenIF,
+                '',
+                36000,
+            );
         event.stopPropagation();
     };
-    // function handleFavButton(event: MouseEvent<HTMLDivElement>) {
-    //     event.stopPropagation();
-    // }
 
     const favButton = (
         <motion.div

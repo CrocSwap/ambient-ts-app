@@ -13,7 +13,7 @@ import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent'
 interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: string;
-    slippageTolerance: string;
+    slippageTolerance: number;
     liquidityProviderFee: number;
     quoteTokenIsBuy?: boolean;
     rangeGasPriceinDollars: string | undefined;

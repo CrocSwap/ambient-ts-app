@@ -4,21 +4,14 @@ import {
     SetStateAction,
     useState,
     useEffect,
-    //  useMemo,
     useRef,
 } from 'react';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
     AiOutlineDownload,
-    // AiOutlineCopy,
-    // AiOutlineLink,
-    // AiOutlineTwitter,
-    // AiOutlineSetting,
 } from 'react-icons/ai';
 import { VscClose } from 'react-icons/vsc';
-
-// import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
@@ -30,7 +23,6 @@ import printDomToImage from '../../../utils/functions/printDomToImage';
 
 import {
     candleDomain,
-    // tradeData as TradeDataIF,
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
 import {
@@ -38,14 +30,9 @@ import {
     CandlesByPoolAndDuration,
     LiquidityData,
 } from '../../../utils/state/graphDataSlice';
-// import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
-import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
-import {
-    get24hChange,
-    // getPoolTVL
-} from '../../../App/functions/getPoolStats';
+import { get24hChange } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
@@ -59,6 +46,7 @@ import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
+import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 
 // interface for React functional component props
 interface propsIF {
@@ -77,14 +65,7 @@ interface propsIF {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
     limitTick: number | undefined;
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
+    favePools: favePoolsMethodsIF;
     liquidityData: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
@@ -179,7 +160,6 @@ export default function TradeCharts(props: propsIF) {
     const {
         isUserLoggedIn,
         pool,
-        // liquidityData,
         chainData,
         isTokenABase,
         poolPriceDisplay,
@@ -187,8 +167,6 @@ export default function TradeCharts(props: propsIF) {
         setFullScreenChart,
         lastBlockNumber,
         chainId,
-        addPoolToFaves,
-        removePoolFromFaves,
         favePools,
         expandTradeTable,
         selectedDate,
@@ -196,7 +174,6 @@ export default function TradeCharts(props: propsIF) {
         activeTimeFrame,
         setActiveTimeFrame,
         TradeSettingsColor,
-
         poolPriceChangePercent,
         setPoolPriceChangePercent,
         isPoolPriceChangePositive,
@@ -237,9 +214,6 @@ export default function TradeCharts(props: propsIF) {
         dispatch(setActiveChartPeriod(period));
     };
     const denomInBase = tradeData.isDenomBase;
-    // const denomInTokenA = (denomInBase && isTokenABase) || (!denomInBase && !isTokenABase);
-    // const tokenASymbol = tradeData.tokenA.symbol;
-    // const tokenBSymbol = tradeData.tokenB.symbol;
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
@@ -248,13 +222,13 @@ export default function TradeCharts(props: propsIF) {
             ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+            })
             : poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
@@ -406,19 +380,10 @@ export default function TradeCharts(props: propsIF) {
                     <AiOutlineCamera size={20} />
                 </div>
             </DefaultTooltip>
-            {/* <div onClick={() => setShowChartSettings(!showChartSettings)}>
-                <AiOutlineSetting size={20} />
-            </div> */}
         </div>
     );
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
-
-    // const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
-    // const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
-
-    // const [poolTvl, setPoolTvl] = useState<string | undefined>();
-    // const [tvlAtTick, setTvlAtTick] = useState<string | undefined>();
 
     const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
     const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
@@ -522,26 +487,18 @@ export default function TradeCharts(props: propsIF) {
                 setPoolPriceChangePercent={setPoolPriceChangePercent}
                 favePools={favePools}
                 chainId={chainId}
-                addPoolToFaves={addPoolToFaves}
-                removePoolFromFaves={removePoolFromFaves}
             />
-
             <div
                 style={{
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-
                     gap: '8px',
                 }}
             >
                 <div>{tvlDisplay}</div>
             </div>
             <div>{graphSettingsContent}</div>
-
-            {/* {tvlTickDisplay} */}
-            {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
@@ -580,7 +537,6 @@ export default function TradeCharts(props: propsIF) {
                         </button>
                     </div>
                 )}
-                {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
 
@@ -595,7 +551,6 @@ export default function TradeCharts(props: propsIF) {
                     rescale={rescale}
                     reset={reset}
                 />
-                {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
                 <TradeChartsLoading />
@@ -605,10 +560,7 @@ export default function TradeCharts(props: propsIF) {
                         isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
                         chainData={chainData}
-                        // tvlData={formattedTvlData}
                         expandTradeTable={expandTradeTable}
-                        // volumeData={formattedVolumeData}
-                        // feeData={formattedFeesUSD}
                         candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}

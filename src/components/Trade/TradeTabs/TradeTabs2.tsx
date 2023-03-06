@@ -7,13 +7,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import { PoolIF, TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
-
-// import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
-// import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
-// import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
-// import { BiDownArrow } from 'react-icons/bi';
-
+import { TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
 import leaderboard from '../../../assets/images/leaderboard.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -24,13 +18,12 @@ import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { CandleData, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
-
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
-// import PoolInfo from './PoolInfo/PoolInfo';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
+import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -75,20 +68,9 @@ interface propsIF {
     setSelectedDate: React.Dispatch<Date | undefined>;
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
-    // handleTxCopiedClick: () => void;
-    // handleOrderCopiedClick: () => void;
-    // handleRangeCopiedClick: () => void;
     activeTimeFrame: string;
     unselectCandle: () => void;
-
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
+    favePools: favePoolsMethodsIF;
     poolPriceDisplay: number;
 
     poolPriceChangePercent: string | undefined;
@@ -147,19 +129,12 @@ export default function TradeTabs2(props: propsIF) {
         setHasInitialized,
         activeTimeFrame,
         unselectCandle,
-        // handleTxCopiedClick,
-        // handleOrderCopiedClick,
-        // handleRangeCopiedClick,
         tokenList,
         favePools,
-        addPoolToFaves,
-        removePoolFromFaves,
         poolPriceDisplay,
-
         poolPriceChangePercent,
         setPoolPriceChangePercent,
         isPoolPriceChangePositive,
-        // setIsPoolPriceChangePositive
         isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
@@ -223,11 +198,6 @@ export default function TradeTabs2(props: propsIF) {
     }, [
         account,
         isUserLoggedIn,
-        // userData.isLoggedIn,
-        // matchingUserChangesLength,
-        // matchingUserLimitOrdersLength,
-        // matchingUserPositionsLength,
-        // selectedOutsideTab,
         selectedBase,
         selectedQuote,
     ]);
@@ -501,8 +471,6 @@ export default function TradeTabs2(props: propsIF) {
     const TradeChartsTokenInfoProps = {
         chainId: chainId,
         favePools: favePools,
-        addPoolToFaves: addPoolToFaves,
-        removePoolFromFaves: removePoolFromFaves,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,
         setPoolPriceChangePercent: setPoolPriceChangePercent,
@@ -512,12 +480,12 @@ export default function TradeTabs2(props: propsIF) {
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
         ? [
-              {
-                  label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
-                  icon: recentTransactionsImage,
-                  showRightSideOption: true,
-              },
+            {
+                label: 'Transactions',
+                content: <Transactions {...transactionsProps} />,
+                icon: recentTransactionsImage,
+                showRightSideOption: true,
+            },
               //   {
               //       label: 'Limits',
               //       content: <Orders {...ordersProps} />,
@@ -542,39 +510,39 @@ export default function TradeTabs2(props: propsIF) {
               //       icon: rangePositionsImage,
               //       showRightSideOption: false,
               //   },
-          ]
+        ]
         : [
-              {
-                  label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
-                  icon: recentTransactionsImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Limits',
-                  content: <Orders {...ordersProps} />,
-                  icon: openOrdersImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Ranges',
-                  content: <Ranges {...rangesProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
-                  icon: leaderboard,
-                  showRightSideOption: false,
-              },
+            {
+                label: 'Transactions',
+                content: <Transactions {...transactionsProps} />,
+                icon: recentTransactionsImage,
+                showRightSideOption: true,
+            },
+            {
+                label: 'Limits',
+                content: <Orders {...ordersProps} />,
+                icon: openOrdersImage,
+                showRightSideOption: true,
+            },
+            {
+                label: 'Ranges',
+                content: <Ranges {...rangesProps} />,
+                icon: rangePositionsImage,
+                showRightSideOption: true,
+            },
+            {
+                label: 'Leaderboard',
+                content: <Leaderboard {...rangesProps} />,
+                icon: leaderboard,
+                showRightSideOption: false,
+            },
               //   {
               //       label: 'Info',
               //       content: <PoolInfo {...poolInfoProps} />,
               //       icon: rangePositionsImage,
               //       showRightSideOption: false,
               //   },
-          ];
+        ];
 
     // -------------------------------END OF DATA-----------------------------------------
     const tabComponentRef = useRef<HTMLDivElement>(null);
@@ -649,21 +617,19 @@ export default function TradeTabs2(props: propsIF) {
 
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
-            <>
-                {isCandleSelected ? selectedMessageContent : null}
-                {expandTradeTable && <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />}
-                <TabComponent
-                    data={tradeTabData}
-                    rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
-                    selectedOutsideTab={selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    outsideControl={outsideControl}
-                    setOutsideControl={setOutsideControl}
-                    setSelectedInsideTab={setSelectedInsideTab}
-                    showPositionsOnlyToggle={showPositionsOnlyToggle}
-                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
-                />
-            </>
+            {isCandleSelected ? selectedMessageContent : null}
+            {expandTradeTable && <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />}
+            <TabComponent
+                data={tradeTabData}
+                rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
+                selectedOutsideTab={selectedOutsideTab}
+                setSelectedOutsideTab={setSelectedOutsideTab}
+                outsideControl={outsideControl}
+                setOutsideControl={setOutsideControl}
+                setSelectedInsideTab={setSelectedInsideTab}
+                showPositionsOnlyToggle={showPositionsOnlyToggle}
+                setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
+            />
         </div>
     );
 }

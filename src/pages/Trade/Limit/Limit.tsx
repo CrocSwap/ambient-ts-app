@@ -31,7 +31,7 @@ import styles from './Limit.module.css';
 import { useTradeData } from '../Trade';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitTick, setLimitTickCopied } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import {
@@ -48,6 +48,7 @@ import { useUrlParams } from '../../InitPool/useUrlParams';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 interface propsIF {
     account: string | undefined;
@@ -55,7 +56,7 @@ interface propsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
-    mintSlippage: SlippagePairIF;
+    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
