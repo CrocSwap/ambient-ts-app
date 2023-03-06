@@ -146,7 +146,7 @@ import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 // import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
-import { useToken } from './hooks/useToken';
+import { useToken, tokenMethodsIF } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
@@ -394,7 +394,7 @@ export default function App() {
         getTokenByAddress,
         getTokensByName,
         acknowledgeToken,
-    } = useToken(chainData.chainId);
+    }: tokenMethodsIF = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
     false && getTokensOnChain;
