@@ -54,6 +54,7 @@ import {
     getHourAxisTicks,
     getOneDayAxisTicks,
 } from './calcuteDateAxis';
+import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -382,6 +383,10 @@ export default function Chart(props: ChartData) {
 
         return () => window.removeEventListener('resize', handleResize);
     }, [d3PlotArea]);
+
+    useEffect(() => {
+        useHandleSwipeBack(d3Container);
+    }, [d3Container === null]);
 
     useEffect(() => {
         const { width, height } = getWindowDimensions();
