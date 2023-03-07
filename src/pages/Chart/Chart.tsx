@@ -4932,9 +4932,15 @@ export default function Chart(props: ChartData) {
 
                         return newData;
                     });
+
+                    const returnXdata =
+                        parsedChartData?.chartData[0].date <= scaleData.xScale.invert(point.offsetX)
+                            ? scaleData.xScale.invert(point.offsetX)
+                            : nearest?.date;
+
                     return [
                         {
-                            x: nearest?.date,
+                            x: returnXdata,
                             y: scaleData.yScale.invert(point.offsetY),
                         },
                     ];
