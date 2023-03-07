@@ -6,8 +6,7 @@ import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import { TbTableExport } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
@@ -18,6 +17,7 @@ import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from '../../App/components/Chat/FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
+import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -40,10 +40,10 @@ interface currentPoolInfo {
     targetData: targetData[];
 }
 
-interface ChatProps {
+interface propsIF {
     chatStatus: boolean;
     onClose: () => void;
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     setChatStatus: Dispatch<SetStateAction<boolean>>;
@@ -53,7 +53,7 @@ interface ChatProps {
     username?: string | undefined | null;
 }
 
-export default function ChatPanel(props: ChatProps) {
+export default function ChatPanel(props: propsIF) {
     const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // const navigate = useNavigate();
@@ -136,6 +136,9 @@ export default function ChatPanel(props: ChatProps) {
         }
     }, [lastMessage]);
 
+    // console.log({ ens });
+    // console.log({ ensName });
+
     useEffect(() => {
         setScrollDirection('Scroll Down');
         if (address) {
@@ -178,7 +181,7 @@ export default function ChatPanel(props: ChatProps) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [address, props.chatStatus, props.isFullScreen, userCurrentPool]);
+    }, [ens, address, props.chatStatus, props.isFullScreen, userCurrentPool]);
 
     useEffect(() => {
         console.log('getting messages');
@@ -189,7 +192,7 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getID().then((result: any) => {
-            if (result.status === 'OK') {
+            if (result?.status === 'OK') {
                 result.userData.isModerator === true ? setModerator(true) : setModerator(false);
                 setCurrentUser(result.userData._id);
                 setUserCurrentPool(result.userData.userCurrentPool);

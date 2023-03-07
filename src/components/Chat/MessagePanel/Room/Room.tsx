@@ -7,6 +7,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { topPools } from '../../../../App/mockData';
+import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import useChatApi from '../../Service/ChatApi';
 
 interface currentPoolInfo {
@@ -30,8 +31,8 @@ interface currentPoolInfo {
     targetData: targetData[];
 }
 
-interface RoomProps {
-    favePools: PoolIF[];
+interface propsIF {
+    favePools: favePoolsMethodsIF;
     selectedRoom: any;
     setRoom: any;
     currentPool: currentPoolInfo;
@@ -46,8 +47,10 @@ interface RoomProps {
     ensName: any;
     currentUser: any;
 }
-export default function RoomDropdown(props: RoomProps) {
+
+export default function RoomDropdown(props: propsIF) {
     const {
+        favePools,
         currentPool,
         isFullScreen,
         isCurrentPool,
@@ -115,7 +118,7 @@ export default function RoomDropdown(props: RoomProps) {
         const roomArr: string[] = [];
         const favePoolsArr: string[] = [];
 
-        favepools?.map((pool: PoolIF) => {
+        favePools.pools.map((pool: PoolIF) => {
             favePoolsArr.push(pool.base.symbol + '/' + pool.quote.symbol);
         });
 
@@ -144,7 +147,7 @@ export default function RoomDropdown(props: RoomProps) {
     }, []);
 
     const rooms = topPools;
-    const favepools = props.favePools;
+    const favepools = props.favePools.pools;
     useEffect(() => {
         const roomArr: string[] = [];
         const favePoolsArr: string[] = [];
@@ -428,8 +431,6 @@ export default function RoomDropdown(props: RoomProps) {
                                 ) : (
                                     ''
                                 )}
-
-                                {/* {favePools.includes(pool) ?  pool : '  \t'+pool} */}
                                 {pool}
                             </div>
                         ))}

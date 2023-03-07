@@ -38,7 +38,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { PositionIF, SlippagePairIF, TokenIF } from '../../../utils/interfaces/exports';
+import { PositionIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
@@ -63,6 +63,7 @@ import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { rangeTutorialSteps, rangeTutorialStepsAdvanced } from '../../../utils/tutorial/Range';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 interface propsIF {
     account: string | undefined;
@@ -70,7 +71,7 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    mintSlippage: SlippagePairIF;
+    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     gasPriceInGwei: number | undefined;
@@ -235,8 +236,8 @@ export default function Range(props: propsIF) {
     const isTokenABase = tradeData.tokenA.address === baseTokenAddress;
 
     const slippageTolerancePercentage = isPairStable
-        ? mintSlippage.stable.value
-        : mintSlippage.volatile.value;
+        ? mintSlippage.stable
+        : mintSlippage.volatile;
 
     const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
 
@@ -821,8 +822,8 @@ export default function Range(props: propsIF) {
 
         const spot = await pool.displayPrice();
 
-        const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
-        const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
+        const minPrice = spot * (1 - slippageTolerancePercentage / 100);
+        const maxPrice = spot * (1 + slippageTolerancePercentage / 100);
 
         let tx;
         try {

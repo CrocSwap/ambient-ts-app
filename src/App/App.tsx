@@ -101,8 +101,7 @@ import {
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
 // import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useSlippage } from './useSlippage';
-import { useFavePools } from './hooks/useFavePools';
+import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
@@ -168,6 +167,10 @@ import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
 import { termsOfService } from '../utils/data/termsOfService';
+import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
+import { slippage } from '../utils/data/slippage';
+import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
+import { useSkin } from './hooks/useSkin';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -206,6 +209,21 @@ export default function App() {
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
     const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
+
+    // hooks to manage slippage in the app
+    const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
+    const mintSlippage: SlippageMethodsIF = useSlippage('mint', slippage.mint);
+    const repoSlippage: SlippageMethodsIF = useSlippage('repo', slippage.reposition);
+
+    // hook to manage chart settings
+    const chartSettings: chartSettingsMethodsIF = useChartSettings();
+
+    // hook to manage favorite pools in the app
+    const favePools: favePoolsMethodsIF = useFavePools();
+
+    // hook to manage app skin
+    const skin = useSkin('purple_dark');
+    false && skin;
 
     const { address: account, isConnected } = useAccount();
 
@@ -564,12 +582,6 @@ export default function App() {
             }
         }
     }, [lastNewHeadMessage]);
-
-    // hook holding values and setter functions for slippage
-    // holds stable and volatile values for swap and mint transactions
-    const [swapSlippage, mintSlippage, repoSlippage] = useSlippage();
-
-    const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
     const isPairStable = useMemo(
         () => checkIsStable(tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId),
@@ -1329,8 +1341,10 @@ export default function App() {
                         .then((response) => response?.json())
                         .then((json) => {
                             const candles = json?.data;
-
-                            if (candles) {
+                            if (candles?.length === 0) {
+                                setIsCandleDataNull(true);
+                                setExpandTradeTable(true);
+                            } else if (candles) {
                                 // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                                 if (JSON.stringify(candleData) !== JSON.stringify(candles)) {
                                     setCandleData({
@@ -1445,7 +1459,7 @@ export default function App() {
         {
             onOpen: () => {
                 // console.log({ candleSubscriptionEndpoint });
-                fetchCandles();
+                // fetchCandles();
             },
             onClose: (event) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
@@ -2650,8 +2664,6 @@ export default function App() {
         tokenPair: tokenPair,
         getRecentPools: getRecentPools,
         isConnected: isConnected,
-        addPoolToFaves: addPoolToFaves,
-        removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
@@ -2661,8 +2673,6 @@ export default function App() {
         setSelectedOutsideTab: setSelectedOutsideTab,
         setOutsideControl: setOutsideControl,
         favePools: favePools,
-        removePoolFromFaves: removePoolFromFaves,
-        addPoolToFaves: addPoolToFaves,
     };
 
     function updateDenomIsInBase() {
@@ -2832,8 +2842,6 @@ export default function App() {
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokensOnActiveLists}
                                     favePools={favePools}
-                                    addPoolToFaves={addPoolToFaves}
-                                    removePoolFromFaves={removePoolFromFaves}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -3184,6 +3192,7 @@ export default function App() {
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
                                     chatToS={chatToS}
+                                    chartSettings={chartSettings}
                                 />
                             }
                         />
@@ -3251,34 +3260,7 @@ export default function App() {
                 </section>
                 {snackbarContent}
             </div>
-
             <div className='footer_container'>
-                {/* {currentLocation !== '/' && (
-                    <PageFooter
-                        isUserIdle={isUserIdle}
-                        lastBlockNumber={lastBlockNumber}
-                        userIsOnline={userIsOnline}
-                        favePools={favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        chatStatus={chatStatus}
-                    />
-                )} */}
-                {/* {currentLocation !== '/app/chat' && (
-                    <Chat
-                        ensName={ensName}
-                        connectedAccount={account ? account : ''}
-                        fullScreen={false}
-                    />
-                )}
-                {currentLocation !== '/app/chat' && currentLocation !== '/' && (
-                    <Chat
-                        ensName={ensName}
-                        connectedAccount={account ? account : ''}
-                        fullScreen={false}
-                    />
-                )} */}
-
                 {currentLocation !== '/' &&
                     currentLocation !== '/app/chat' &&
                     currentLocation !== '/chat' && (
@@ -3313,11 +3295,7 @@ export default function App() {
             />
 
             {isWagmiModalOpenWallet && (
-                <WalletModalWagmi
-                    closeModalWallet={closeWagmiModalWallet}
-
-                    // authError={authError}
-                />
+                <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
             )}
         </>
     );

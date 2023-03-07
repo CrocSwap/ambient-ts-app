@@ -7,7 +7,7 @@
 }
 
 .arrow_container_disabled {
-    cursor: default;
+    cursor: wait;
     width: 100%;
     display: flex;
     justify-content: center;

@@ -7,6 +7,7 @@ import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
+import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 
 interface FullChatPropsIF {
@@ -21,7 +22,7 @@ interface FullChatPropsIF {
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
-    favePools: PoolIF[];
+    favePools: favePoolsMethodsIF;
     userCurrentPool: string;
 }
 

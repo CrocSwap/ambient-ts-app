@@ -298,9 +298,15 @@
     margin: 8px 0;
     border-radius: var(--border-radius);
     text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
 }
 
-
+.mobile_trades_dropdown .active_mobile_trade_dropdown:hover{
+    color: var(--text-grey-white)
+}
 
 
 .mobile_trade_dropdown_items_containers, 

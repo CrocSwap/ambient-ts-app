@@ -20,7 +20,7 @@ interface propsIF {
     shouldDisplayContentWhenUserNotLoggedIn: boolean;
 
     openModalWallet: () => void;
-
+    isDefaultOverridden: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
         name: string;
@@ -39,12 +39,19 @@ export default function SidebarAccordion(props: propsIF) {
         item,
         setShowSidebar,
         openModalWallet,
+        isDefaultOverridden,
     } = props;
 
     const { isConnected } = useAccount();
+    const isTopPools = item.name === 'Top Pools';
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(isTopPools);
 
+    useEffect(() => {
+        if (isTopPools) {
+            console.log({ isOpen });
+        }
+    }, [isTopPools, isOpen]);
     const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
 
     const openStateContent = (
@@ -88,15 +95,18 @@ export default function SidebarAccordion(props: propsIF) {
             setIsOpen(true);
             setShowSidebar(true);
         }
+        console.log('clicked');
     }
 
     useEffect(() => {
-        if (props.openAllDefault) {
-            setIsOpen(true);
-        } else {
-            setIsOpen(false);
+        if (isDefaultOverridden) {
+            if (props.openAllDefault) {
+                setIsOpen(true);
+            } else {
+                setIsOpen(false);
+            }
         }
-    }, [props.openAllDefault]);
+    }, [props.openAllDefault, isDefaultOverridden]);
 
     const accordionContentToShow =
         !isConnected && !shouldDisplayContentWhenUserNotLoggedIn && showSidebar ? (

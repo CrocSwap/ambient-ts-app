@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import Medal from '../../components/Global/Medal/Medal';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 // import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
@@ -8,6 +7,7 @@ import styles from './TestPage.module.css';
 import { Steps, Hints } from 'intro.js-react';
 import 'intro.js/introjs.css';
 import { tosMethodsIF } from '../../App/hooks/useTermsOfService';
+import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -16,13 +16,12 @@ interface TestPageProps {
     togggggggleSidebar: () => void;
     walletToS: tosMethodsIF;
     chatToS: tosMethodsIF;
+    chartSettings: chartSettingsMethodsIF;
 }
 
 export default function TestPage(props: TestPageProps) {
-    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar, walletToS, chatToS } = props;
+    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar, walletToS, chatToS, chartSettings } = props;
     const [isOpen, setOpen] = React.useState(false);
-
-    // const { tosText, agreement, agreementDate } = useTermsOfService();
 
     const exampleTest = (
         <div className={styles.example_container}>
@@ -122,6 +121,18 @@ export default function TestPage(props: TestPageProps) {
             {/* <PulseLoading /> */}
             <button onClick={() => walletToS.acceptAgreement()}>Accept Wallet ToS!</button>
             <button onClick={() => chatToS.acceptAgreement()}>Accept Chat ToS!</button>
+            <br />
+            <br />
+            <button onClick={() => chartSettings.volumeSubchart.enable()}>
+                Enable Volume!
+            </button>
+            <button onClick={() => chartSettings.volumeSubchart.disable()}>
+                Disable Volume!
+            </button>
+            <button onClick={() => chartSettings.volumeSubchart.toggle()}>
+                Toggle Volume!
+            </button>
+            <div>Is Volume Subchart Enabled: {JSON.stringify(chartSettings.volumeSubchart.isEnabled)}</div>
         </section>
     );
 }
