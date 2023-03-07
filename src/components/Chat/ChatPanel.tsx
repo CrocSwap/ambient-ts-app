@@ -343,24 +343,60 @@ export default function ChatPanel(props: propsIF) {
     const chatNotification = (
         <div className={styles.chat_notification}>
             {notification > 0 && scrollDirection === 'Scroll Up' ? (
-                <div className={styles.chat_notification}>
-                    <span onClick={() => scrollToBottomButton()}>
-                        <BsChatLeftFill size={25} color='#7371fc' />
-                        <span className={styles.text}>{notification}</span>
-                    </span>
-                    <RiArrowDownSLine
-                        role='button'
-                        size={27}
-                        color='#7371fc'
-                        onClick={() => scrollToBottomButton()}
-                    />
-                </div>
+                props.isFullScreen ? (
+                    <div className={styles.chat_notification}>
+                        <span
+                            style={{ marginTop: '-18px', cursor: 'pointer' }}
+                            onClick={() => scrollToBottomButton()}
+                        >
+                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <span className={styles.text}>{notification}</span>
+                        </span>
+                        <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
+                            <RiArrowDownSLine
+                                role='button'
+                                size={27}
+                                color='#7371fc'
+                                onClick={() => scrollToBottomButton()}
+                            />
+                        </span>
+                    </div>
+                ) : (
+                    <div className={styles.chat_notification}>
+                        <span onClick={() => scrollToBottomButton()}>
+                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <span className={styles.text}>{notification}</span>
+                        </span>
+                        <span>
+                            <RiArrowDownSLine
+                                role='button'
+                                size={27}
+                                color='#7371fc'
+                                onClick={() => scrollToBottomButton()}
+                            />
+                        </span>
+                    </div>
+                )
             ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
-                <RiArrowDownSLine
-                    size={27}
-                    color='#7371fc'
-                    onClick={() => scrollToBottomButton()}
-                />
+                props.isFullScreen ? (
+                    <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
+                        <RiArrowDownSLine
+                            role='button'
+                            size={27}
+                            color='#7371fc'
+                            onClick={() => scrollToBottomButton()}
+                        />
+                    </span>
+                ) : (
+                    <span>
+                        <RiArrowDownSLine
+                            role='button'
+                            size={27}
+                            color='#7371fc'
+                            onClick={() => scrollToBottomButton()}
+                        />
+                    </span>
+                )
             ) : (
                 ''
             )}
