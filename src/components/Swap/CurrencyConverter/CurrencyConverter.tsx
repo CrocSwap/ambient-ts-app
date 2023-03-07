@@ -155,6 +155,8 @@ export default function CurrencyConverter(props: propsIF) {
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
 
+    const combinedTokenABalance = tokenABalance + tokenADexBalance;
+
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
     const tokenASurplusMinusTokenAQtyNum =
@@ -291,9 +293,10 @@ export default function CurrencyConverter(props: propsIF) {
         poolExists,
         // poolPriceDisplay,
         // isSellTokenBase,
+        disableReverseTokens,
         isTokenAPrimary,
-        // tokenABalance,
-        // isWithdrawFromDexChecked,
+        combinedTokenABalance,
+        isWithdrawFromDexChecked,
         // // tokenPair.dataTokenA.address,
         // // tokenPair.dataTokenB.address,
         // slippageTolerancePercentage,
@@ -301,6 +304,7 @@ export default function CurrencyConverter(props: propsIF) {
     ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
+        // console.log({ tokenABalance });
         if (!poolExists) {
             setSwapAllowed(false);
             if (poolExists === undefined) setSwapButtonErrorMessage('...');
@@ -521,7 +525,10 @@ export default function CurrencyConverter(props: propsIF) {
             }
         } else {
             // console.log({ tokenAQtyLocal });
-            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+            if (!disableReverseTokens) {
+                // console.log({ tokenAQtyLocal });
+                handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+            }
             try {
                 const impact =
                     tokenAQtyLocal !== ''
@@ -634,8 +641,10 @@ export default function CurrencyConverter(props: propsIF) {
             // if (buyQtyField) {
             //     buyQtyField.value = tokenBQty === 'NaN' ? '' : tokenBQty;
             // }
-            // console.log({ tokenAQty });
-            // handleSwapButtonMessage(parseFloat(tokenAQty));
+            if (!disableReverseTokens) {
+                // console.log({ tokenAQtyLocal });
+                handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+            }
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
