@@ -4807,7 +4807,6 @@ export default function Chart(props: ChartData) {
             liqMode: any,
             liquidityScale: any,
         ) => {
-            // Burası
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const snap = (series: any, data: any, point: any) => {
