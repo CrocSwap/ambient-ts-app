@@ -1823,12 +1823,29 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             let firstLocation: any;
+            let newCenter: any;
+            let previousDeltaTouchYaxis: any;
 
             const startZoom = (event: any) => {
                 if (event.sourceEvent.type.includes('touch')) {
                     // mobile
                     previousTouch = event.sourceEvent.changedTouches[0];
                     firstLocation = previousTouch.pageY;
+                    newCenter = scaleData.yScale.invert(firstLocation);
+
+                    if (event.sourceEvent.touches.length > 1) {
+                        firstLocation =
+                            (event.sourceEvent.touches[0].pageY -
+                                event.sourceEvent.touches[1].pageY) /
+                            2;
+
+                        previousDeltaTouchYaxis = Math.hypot(
+                            0,
+                            event.sourceEvent.touches[0].pageY - event.sourceEvent.touches[1].pageY,
+                        );
+
+                        newCenter = scaleData.yScale.invert(firstLocation);
+                    }
                 } else {
                     firstLocation = event.sourceEvent.offsetY;
                 }
@@ -1889,6 +1906,7 @@ export default function Chart(props: ChartData) {
                         deltaY = _movementY;
                     } else {
                         deltaY = event.sourceEvent.movementY / 1.5;
+                        newCenter = scaleData.yScale.invert(firstLocation);
                     }
 
                     const dy = event.sourceEvent.deltaY / 3;
@@ -1905,8 +1923,6 @@ export default function Chart(props: ChartData) {
                     );
 
                     const size = (domainY[1] - domainY[0]) / factor;
-
-                    const newCenter = scaleData.yScale.invert(firstLocation);
 
                     const diff = domainY[1] - domainY[0];
 
