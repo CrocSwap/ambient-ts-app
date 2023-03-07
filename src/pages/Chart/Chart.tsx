@@ -1329,8 +1329,8 @@ export default function Chart(props: ChartData) {
 
                 const minGap = Math.min(gapTop, gapBot);
                 const maxGap = Math.max(gapTop, gapBot);
-                const baseMovement = deltaX / (maxGap / minGap + 1);
-
+                let baseMovement = deltaX / (maxGap / minGap + 1);
+                baseMovement = baseMovement === 0 ? deltaX : baseMovement;
                 if (gapBot < gapTop) {
                     getNewCandleData(new Date(domainX[0].getTime() - baseMovement), lastCandleDate);
                     scaleData.xScale.domain([
@@ -1342,10 +1342,18 @@ export default function Chart(props: ChartData) {
                         new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
                         lastCandleDate,
                     );
-                    scaleData.xScale.domain([
-                        new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
-                        new Date(domainX[1].getTime() + baseMovement),
-                    ]);
+
+                    let minX = new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap));
+                    let maxX = new Date(domainX[1].getTime() + baseMovement);
+
+                    if (minX.toString() === 'Invalid Date') {
+                        minX = new Date(domainX[0].getTime() - parsedChartData.period * 1000 * 300);
+                    }
+
+                    if (maxX.toString() === 'Invalid Date') {
+                        maxX = new Date(domainX[1].getTime() + parsedChartData.period * 1000);
+                    }
+                    scaleData.xScale.domain([minX, maxX]);
                 }
             };
 
@@ -1587,11 +1595,11 @@ export default function Chart(props: ChartData) {
                                 let movement = Math.abs(touch1.pageX - touch2.pageX);
 
                                 if (previousDeltaTouch > deltaTouch) {
-                                    // zoom out
+                                    // zoom in
                                     movement = movement / 10;
                                 }
                                 if (previousDeltaTouch < deltaTouch) {
-                                    // zoom in
+                                    // zoom out
                                     movement = -movement / 10;
                                 }
                                 const deltaX = linearX(movement);
@@ -1645,7 +1653,10 @@ export default function Chart(props: ChartData) {
                                     .domain(scaleData.yScale.range())
                                     .range([domainY[1] - domainY[0], 0]);
                                 let deltaY;
-                                if (event.sourceEvent.type === 'touchmove') {
+                                if (
+                                    event.sourceEvent.type === 'touchmove' &&
+                                    event.sourceEvent.touches.length === 1
+                                ) {
                                     const touch = event.sourceEvent.changedTouches[0];
 
                                     const _currentPageY = touch.pageY;
@@ -1834,16 +1845,13 @@ export default function Chart(props: ChartData) {
                     newCenter = scaleData.yScale.invert(firstLocation);
 
                     if (event.sourceEvent.touches.length > 1) {
-                        firstLocation =
-                            (event.sourceEvent.touches[0].pageY -
-                                event.sourceEvent.touches[1].pageY) /
-                            2;
-
+                        const touch1Y = event.sourceEvent.touches[0].pageY;
+                        const touch2Y = event.sourceEvent.touches[1].pageY;
                         previousDeltaTouchYaxis = Math.hypot(
                             0,
                             event.sourceEvent.touches[0].pageY - event.sourceEvent.touches[1].pageY,
                         );
-
+                        firstLocation = previousDeltaTouchYaxis;
                         newCenter = scaleData.yScale.invert(firstLocation);
                     }
                 } else {
@@ -1892,63 +1900,110 @@ export default function Chart(props: ChartData) {
                     startZoom(event);
                 })
                 .on('zoom', async (event: any) => {
-                    const domainY = scaleData.yScale.domain();
-                    const center =
-                        domainY[1] !== domainY[0] ? (domainY[1] + domainY[0]) / 2 : domainY[0] / 2;
-                    let deltaY;
+                    (async () => {
+                        const domainY = scaleData.yScale.domain();
+                        const center =
+                            domainY[1] !== domainY[0]
+                                ? (domainY[1] + domainY[0]) / 2
+                                : domainY[0] / 2;
+                        let deltaY;
 
-                    if (event.sourceEvent.type === 'touchmove') {
-                        const touch = event.sourceEvent.changedTouches[0];
+                        if (event.sourceEvent.type === 'touchmove') {
+                            const touch = event.sourceEvent.changedTouches[0];
 
-                        const _currentPageY = touch.pageY;
-                        const previousTouchPageY = previousTouch.pageY;
-                        const _movementY = _currentPageY - previousTouchPageY;
-                        deltaY = _movementY;
-                    } else {
-                        deltaY = event.sourceEvent.movementY / 1.5;
-                        newCenter = scaleData.yScale.invert(firstLocation);
-                    }
+                            const _currentPageY = touch.pageY;
+                            const previousTouchPageY = previousTouch.pageY;
+                            const _movementY = _currentPageY - previousTouchPageY;
+                            deltaY = _movementY;
+                        } else {
+                            deltaY = event.sourceEvent.movementY / 1.5;
+                            newCenter = scaleData.yScale.invert(firstLocation);
+                        }
 
-                    const dy = event.sourceEvent.deltaY / 3;
+                        const dy = event.sourceEvent.deltaY / 3;
 
-                    const factor = Math.pow(
-                        2,
-                        event.sourceEvent.type === 'wheel'
-                            ? -dy * 0.003
-                            : event.sourceEvent.type === 'mousemove'
-                            ? -deltaY * 0.003
-                            : event.sourceEvent.type === 'touchmove'
-                            ? -deltaY * 0.005
-                            : 1,
-                    );
+                        const factor = Math.pow(
+                            2,
+                            event.sourceEvent.type === 'wheel'
+                                ? -dy * 0.003
+                                : event.sourceEvent.type === 'mousemove'
+                                ? -deltaY * 0.003
+                                : event.sourceEvent.type === 'touchmove'
+                                ? -deltaY * 0.005
+                                : 1,
+                        );
 
-                    const size = (domainY[1] - domainY[0]) / factor;
+                        if (
+                            event.sourceEvent.type !== 'touchmove' ||
+                            event.sourceEvent.touches.length === 1
+                        ) {
+                            const size = (domainY[1] - domainY[0]) / factor;
 
-                    const diff = domainY[1] - domainY[0];
+                            const diff = domainY[1] - domainY[0];
 
-                    const distance =
-                        newCenter > center
-                            ? Math.abs(newCenter - scaleData.yScale.domain()[1])
-                            : Math.abs(newCenter - scaleData.yScale.domain()[0]);
-                    const diffFactor = (diff - distance) / distance;
+                            const distance =
+                                newCenter > center
+                                    ? Math.abs(newCenter - scaleData.yScale.domain()[1])
+                                    : Math.abs(newCenter - scaleData.yScale.domain()[0]);
+                            const diffFactor = (diff - distance) / distance;
 
-                    const bottomDiff = size / (diffFactor + 1);
-                    const topDiff = size - bottomDiff;
+                            const bottomDiff = size / (diffFactor + 1);
+                            const topDiff = size - bottomDiff;
 
-                    if (newCenter > center) {
-                        const domain = [newCenter - topDiff, newCenter + bottomDiff];
+                            if (newCenter > center) {
+                                const domain = [newCenter - topDiff, newCenter + bottomDiff];
 
-                        await scaleData.yScale.domain(domain);
-                    } else {
-                        const domain = [newCenter - bottomDiff, newCenter + topDiff];
+                                await scaleData.yScale.domain(domain);
+                            } else {
+                                const domain = [newCenter - bottomDiff, newCenter + topDiff];
 
-                        await scaleData.yScale.domain(domain);
-                    }
+                                await scaleData.yScale.domain(domain);
+                            }
+                        } else if (event.sourceEvent.touches.length > 1) {
+                            const touch1 = event.sourceEvent.touches[0];
+                            const touch2 = event.sourceEvent.touches[1];
+                            const deltaTouch = Math.hypot(0, touch1.pageY - touch2.pageY);
 
-                    if (event.sourceEvent.type.includes('touch')) {
-                        // mobile
-                        previousTouch = event.sourceEvent.changedTouches[0];
-                    }
+                            const currentDelta = scaleData.yScale.invert(deltaTouch);
+                            const delta = Math.abs(currentDelta - newCenter) * 0.03;
+
+                            if (previousDeltaTouchYaxis > deltaTouch) {
+                                let domainMax = scaleData.yScale.domain()[1] + delta;
+                                let domainMin = scaleData.yScale.domain()[0] - delta;
+
+                                domainMax = domainMin > domainMax ? domainMin : domainMax;
+                                domainMin = domainMin > domainMax ? domainMax : domainMin;
+
+                                scaleData.yScale.domain([domainMin, domainMax]);
+                            }
+                            if (previousDeltaTouchYaxis < deltaTouch) {
+                                let domainMax = scaleData.yScale.domain()[1] - delta * 0.5;
+                                let domainMin = scaleData.yScale.domain()[0] + delta * 0.5;
+
+                                domainMax = domainMin > domainMax ? domainMin : domainMax;
+                                domainMin = domainMin > domainMax ? domainMax : domainMin;
+
+                                if (domainMax === domainMin) {
+                                    scaleData.yScale.domain([domainMin + delta, domainMax - delta]);
+                                } else {
+                                    scaleData.yScale.domain([domainMin, domainMax]);
+                                }
+                            }
+                        }
+                    })().then(() => {
+                        if (event.sourceEvent.type.includes('touch')) {
+                            // mobile
+                            previousTouch = event.sourceEvent.changedTouches[0];
+
+                            if (event.sourceEvent.touches.length > 1) {
+                                previousDeltaTouchYaxis = Math.hypot(
+                                    0,
+                                    event.sourceEvent.touches[0].pageY -
+                                        event.sourceEvent.touches[1].pageY,
+                                );
+                            }
+                        }
+                    });
                     if (isAdvancedModeActive && liquidityData) {
                         const liqAllBidPrices = liquidityData.liqBidData.map(
                             (liqPrices: any) => liqPrices.liqPrices,
