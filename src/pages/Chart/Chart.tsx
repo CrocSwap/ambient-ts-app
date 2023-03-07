@@ -1322,6 +1322,171 @@ export default function Chart(props: ChartData) {
             let zoomTimeout: any | undefined = undefined;
             let previousTouch: any | undefined = undefined;
             let previousDeltaTouch: any = undefined;
+
+            const changeCandleSize = (domainX: any, deltaX: number, offsetX: number) => {
+                const gapTop = domainX[1].getTime() - scaleData.xScale.invert(offsetX).getTime();
+                const gapBot = scaleData.xScale.invert(offsetX).getTime() - domainX[0].getTime();
+
+                const minGap = Math.min(gapTop, gapBot);
+                const maxGap = Math.max(gapTop, gapBot);
+                const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                if (gapBot < gapTop) {
+                    getNewCandleData(new Date(domainX[0].getTime() - baseMovement), lastCandleDate);
+                    scaleData.xScale.domain([
+                        new Date(domainX[0].getTime() - baseMovement),
+                        new Date(domainX[1].getTime() + baseMovement * (maxGap / minGap)),
+                    ]);
+                } else {
+                    getNewCandleData(
+                        new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
+                        lastCandleDate,
+                    );
+                    scaleData.xScale.domain([
+                        new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
+                        new Date(domainX[1].getTime() + baseMovement),
+                    ]);
+                }
+            };
+
+            const rescaleYAxis = () => {
+                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+                const filtered = parsedChartData?.chartData.filter(
+                    (data: any) => data.date >= xmin && data.date <= xmax,
+                );
+
+                if (rescale && filtered && filtered?.length > 10) {
+                    if (filtered !== undefined) {
+                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                        const minYBoundary: any = d3.min(filtered, (d: any) => d.low);
+                        const maxYBoundary: any = d3.max(filtered, (d: any) => d.high);
+
+                        if (
+                            (location.pathname.includes('range') ||
+                                location.pathname.includes('reposition')) &&
+                            (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                        ) {
+                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                const buffer = Math.abs(
+                                    (Math.min(low, minYBoundary) - Math.max(high, maxYBoundary)) /
+                                        6,
+                                );
+
+                                const domain = [
+                                    Math.min(low, minYBoundary) - buffer,
+                                    Math.max(high, maxYBoundary) + buffer / 2,
+                                ];
+                                scaleData.yScale.domain(domain);
+                            }
+                        } else if (location.pathname.includes('limit')) {
+                            if (
+                                maxYBoundary !== undefined &&
+                                minYBoundary !== undefined &&
+                                poolPriceDisplay
+                            ) {
+                                const value = limit[0].value;
+
+                                if (value > 0) {
+                                    const low = minYBoundary < value ? minYBoundary : value;
+
+                                    const high = maxYBoundary > value ? maxYBoundary : value;
+
+                                    const buffer = Math.abs((low - high) / 6);
+                                    const domain = [low - buffer, high + buffer / 2];
+
+                                    scaleData.yScale.domain(domain);
+                                } else {
+                                    const buffer = Math.abs((minYBoundary - maxYBoundary) / 6);
+
+                                    const domain = [
+                                        minYBoundary - buffer,
+                                        maxYBoundary + buffer / 2,
+                                    ];
+
+                                    scaleData.yScale.domain(domain);
+                                }
+                            }
+                        } else {
+                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+
+                                const domain = [minYBoundary - buffer, maxYBoundary + buffer / 2];
+
+                                scaleData.yScale.domain(domain);
+                            }
+                        }
+                    }
+                }
+            };
+
+            const zoomWithWhell = (event: any, parsedChartData: any) => {
+                const dx = event.sourceEvent.deltaY / 2;
+
+                const domainX = scaleData.xScale.domain();
+                const linearX = d3
+                    .scaleTime()
+                    .domain(scaleData.xScale.range())
+                    .range([0, domainX[1] - domainX[0]]);
+
+                const deltaX = linearX(dx);
+                if (event.sourceEvent.shiftKey || event.sourceEvent.altKey) {
+                    getNewCandleData(new Date(domainX[0].getTime() + deltaX), lastCandleDate);
+
+                    scaleData.xScale.domain([
+                        new Date(domainX[0].getTime() + deltaX),
+                        new Date(domainX[1].getTime() + deltaX),
+                    ]);
+                } else {
+                    if (
+                        (deltaX < 0 ||
+                            Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
+                                parsedChartData.period * 1000 * 300) &&
+                        (deltaX > 0 ||
+                            Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
+                                parsedChartData.period * 1000 * 2)
+                    ) {
+                        if (
+                            (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
+                            (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
+                        ) {
+                            const newBoundary = new Date(domainX[0].getTime() - deltaX);
+                            const lastXIndex = parsedChartData.chartData.findIndex(
+                                (d: any) =>
+                                    d.date ===
+                                    d3.max(parsedChartData.chartData, (d: any) => d.date),
+                            );
+
+                            if (
+                                newBoundary.getTime() >
+                                parsedChartData.chartData[lastXIndex].date.getTime() -
+                                    parsedChartData.period * 1000 * 2
+                            ) {
+                                const leftBoudnary = new Date(
+                                    parsedChartData.chartData[lastXIndex + 1].date.getTime() -
+                                        parsedChartData.period * 500,
+                                );
+
+                                getNewCandleData(leftBoudnary, lastCandleDate);
+
+                                scaleData.xScale.domain([
+                                    leftBoudnary,
+                                    new Date(domainX[1].getTime() + deltaX),
+                                ]);
+                            } else {
+                                getNewCandleData(newBoundary, lastCandleDate);
+                                scaleData.xScale.domain([newBoundary, domainX[1]]);
+                            }
+                        } else {
+                            changeCandleSize(domainX, deltaX, event.sourceEvent.offsetX);
+                        }
+                    }
+                }
+            };
+
             const zoom = d3
                 .zoom()
                 .on('start', (event: any) => {
@@ -1399,85 +1564,7 @@ export default function Chart(props: ChartData) {
                     async function newDomains(parsedChartData: any) {
                         if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                             if (event.sourceEvent.type === 'wheel') {
-                                const dx = event.sourceEvent.deltaY / 2;
-
-                                const domainX = scaleData.xScale.domain();
-                                const linearX = d3
-                                    .scaleTime()
-                                    .domain(scaleData.xScale.range())
-                                    .range([0, domainX[1] - domainX[0]]);
-
-                                const deltaX = linearX(dx);
-                                if (event.sourceEvent.shiftKey || event.sourceEvent.altKey) {
-                                    getNewCandleData(
-                                        new Date(domainX[0].getTime() + deltaX),
-                                        lastCandleDate,
-                                    );
-
-                                    scaleData.xScale.domain([
-                                        new Date(domainX[0].getTime() + deltaX),
-                                        new Date(domainX[1].getTime() + deltaX),
-                                    ]);
-                                } else {
-                                    if (
-                                        (deltaX < 0 ||
-                                            Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
-                                                parsedChartData.period * 1000 * 300) &&
-                                        (deltaX > 0 ||
-                                            Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
-                                                parsedChartData.period * 1000 * 2)
-                                    ) {
-                                        if (
-                                            (!event.sourceEvent.ctrlKey ||
-                                                event.sourceEvent.metaKey) &&
-                                            (event.sourceEvent.ctrlKey ||
-                                                !event.sourceEvent.metaKey)
-                                        ) {
-                                            const newBoundary = new Date(
-                                                domainX[0].getTime() - deltaX,
-                                            );
-                                            const lastXIndex = parsedChartData.chartData.findIndex(
-                                                (d: any) =>
-                                                    d.date ===
-                                                    d3.max(
-                                                        parsedChartData.chartData,
-                                                        (d: any) => d.date,
-                                                    ),
-                                            );
-
-                                            if (
-                                                newBoundary.getTime() >
-                                                parsedChartData.chartData[
-                                                    lastXIndex
-                                                ].date.getTime() -
-                                                    parsedChartData.period * 1000 * 2
-                                            ) {
-                                                const leftBoudnary = new Date(
-                                                    parsedChartData.chartData[
-                                                        lastXIndex + 1
-                                                    ].date.getTime() -
-                                                        parsedChartData.period * 500,
-                                                );
-
-                                                getNewCandleData(leftBoudnary, lastCandleDate);
-
-                                                scaleData.xScale.domain([
-                                                    leftBoudnary,
-                                                    new Date(domainX[1].getTime() + deltaX),
-                                                ]);
-                                            } else {
-                                                getNewCandleData(newBoundary, lastCandleDate);
-                                                scaleData.xScale.domain([newBoundary, domainX[1]]);
-                                            }
-                                        } else {
-                                            changeCandleSize(
-                                                domainX,
-                                                deltaX,
-                                                event.sourceEvent.offsetX,
-                                            );
-                                        }
-                                    }
-                                }
+                                zoomWithWhell(event, parsedChartData);
                             } else if (
                                 event.sourceEvent.type === 'touchmove' &&
                                 event.sourceEvent.touches.length > 1
@@ -1541,97 +1628,8 @@ export default function Chart(props: ChartData) {
                                     ]);
                                 }
                             }
-                            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
-                            const filtered = parsedChartData?.chartData.filter(
-                                (data: any) => data.date >= xmin && data.date <= xmax,
-                            );
-
-                            if (rescale && filtered && filtered?.length > 10) {
-                                if (filtered !== undefined) {
-                                    const low = ranges.filter(
-                                        (target: any) => target.name === 'Min',
-                                    )[0].value;
-                                    const high = ranges.filter(
-                                        (target: any) => target.name === 'Max',
-                                    )[0].value;
-
-                                    const minYBoundary: any = d3.min(filtered, (d: any) => d.low);
-                                    const maxYBoundary: any = d3.max(filtered, (d: any) => d.high);
-
-                                    if (
-                                        (location.pathname.includes('range') ||
-                                            location.pathname.includes('reposition')) &&
-                                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
-                                    ) {
-                                        if (
-                                            maxYBoundary !== undefined &&
-                                            minYBoundary !== undefined
-                                        ) {
-                                            const buffer = Math.abs(
-                                                (Math.min(low, minYBoundary) -
-                                                    Math.max(high, maxYBoundary)) /
-                                                    6,
-                                            );
-
-                                            const domain = [
-                                                Math.min(low, minYBoundary) - buffer,
-                                                Math.max(high, maxYBoundary) + buffer / 2,
-                                            ];
-                                            scaleData.yScale.domain(domain);
-                                        }
-                                    } else if (location.pathname.includes('limit')) {
-                                        if (
-                                            maxYBoundary !== undefined &&
-                                            minYBoundary !== undefined &&
-                                            poolPriceDisplay
-                                        ) {
-                                            const value = limit[0].value;
-
-                                            if (value > 0) {
-                                                const low =
-                                                    minYBoundary < value ? minYBoundary : value;
-
-                                                const high =
-                                                    maxYBoundary > value ? maxYBoundary : value;
-
-                                                const buffer = Math.abs((low - high) / 6);
-                                                const domain = [low - buffer, high + buffer / 2];
-
-                                                scaleData.yScale.domain(domain);
-                                            } else {
-                                                const buffer = Math.abs(
-                                                    (minYBoundary - maxYBoundary) / 6,
-                                                );
-
-                                                const domain = [
-                                                    minYBoundary - buffer,
-                                                    maxYBoundary + buffer / 2,
-                                                ];
-
-                                                scaleData.yScale.domain(domain);
-                                            }
-                                        }
-                                    } else {
-                                        if (
-                                            maxYBoundary !== undefined &&
-                                            minYBoundary !== undefined
-                                        ) {
-                                            const buffer = Math.abs(
-                                                (maxYBoundary - minYBoundary) / 6,
-                                            );
-
-                                            const domain = [
-                                                minYBoundary - buffer,
-                                                maxYBoundary + buffer / 2,
-                                            ];
-
-                                            scaleData.yScale.domain(domain);
-                                        }
-                                    }
-                                }
-                            }
+                            rescaleYAxis();
 
                             // PANNING
                             if (
@@ -1736,37 +1734,6 @@ export default function Chart(props: ChartData) {
                         }
                     }
 
-                    function changeCandleSize(domainX: any, deltaX: number, offsetX: number) {
-                        const gapTop =
-                            domainX[1].getTime() - scaleData.xScale.invert(offsetX).getTime();
-                        const gapBot =
-                            scaleData.xScale.invert(offsetX).getTime() - domainX[0].getTime();
-
-                        const minGap = Math.min(gapTop, gapBot);
-                        const maxGap = Math.max(gapTop, gapBot);
-                        const baseMovement = deltaX / (maxGap / minGap + 1);
-
-                        if (gapBot < gapTop) {
-                            getNewCandleData(
-                                new Date(domainX[0].getTime() - baseMovement),
-                                lastCandleDate,
-                            );
-                            scaleData.xScale.domain([
-                                new Date(domainX[0].getTime() - baseMovement),
-                                new Date(domainX[1].getTime() + baseMovement * (maxGap / minGap)),
-                            ]);
-                        } else {
-                            getNewCandleData(
-                                new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
-                                lastCandleDate,
-                            );
-                            scaleData.xScale.domain([
-                                new Date(domainX[0].getTime() - baseMovement * (maxGap / minGap)),
-                                new Date(domainX[1].getTime() + baseMovement),
-                            ]);
-                        }
-                    }
-
                     newDomains(parsedChartData).then(() => {
                         // mobile
                         if (event.sourceEvent.type.includes('touch')) {
@@ -1856,51 +1823,56 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             let firstLocation: any;
+
+            const startZoom = (event: any) => {
+                if (event.sourceEvent.type.includes('touch')) {
+                    // mobile
+                    previousTouch = event.sourceEvent.changedTouches[0];
+                    firstLocation = previousTouch.pageY;
+                } else {
+                    firstLocation = event.sourceEvent.offsetY;
+                }
+                d3.select(d3PlotArea.current)
+                    .select('svg')
+                    .select('.crosshairHorizontal')
+                    .selectChild()
+                    .style('visibility', 'hidden');
+
+                d3.select('#tvl_chart')
+                    .select('svg')
+                    .select('.crosshairHorizontal')
+                    .selectChild()
+                    .style('visibility', 'hidden');
+
+                d3.select(d3PlotArea.current)
+                    .select('svg')
+                    .select('.crosshairVertical')
+                    .selectChild()
+                    .style('visibility', 'hidden');
+
+                d3.select('#tvl_chart')
+                    .select('svg')
+                    .select('.crosshairVertical')
+                    .selectChild()
+                    .style('visibility', 'hidden');
+
+                d3.select('#fee_rate_chart')
+                    .select('svg')
+                    .select('.crosshairHorizontal')
+                    .selectChild()
+                    .style('visibility', 'hidden');
+
+                d3.select('#fee_rate_chart')
+                    .select('svg')
+                    .select('.crosshairVertical')
+                    .selectChild()
+                    .style('visibility', 'hidden');
+            };
+
             const yAxisZoom = d3
                 .zoom()
                 .on('start', (event) => {
-                    if (event.sourceEvent.type.includes('touch')) {
-                        // mobile
-                        previousTouch = event.sourceEvent.changedTouches[0];
-                        firstLocation = previousTouch.pageY;
-                    } else {
-                        firstLocation = event.sourceEvent.offsetY;
-                    }
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
+                    startZoom(event);
                 })
                 .on('zoom', async (event: any) => {
                     const domainY = scaleData.yScale.domain();
@@ -1998,10 +1970,107 @@ export default function Chart(props: ChartData) {
                     render();
                 }) as any;
 
+            const xAxisZoom = d3
+                .zoom()
+                .on('start', (event) => {
+                    startZoom(event);
+
+                    if (lastCandleDate === undefined) {
+                        const filtered = parsedChartData?.chartData.filter(
+                            (data: any) => data.time,
+                        );
+
+                        lastCandleDate = d3.min(filtered, (d) => d.date);
+                    }
+                })
+                .on('zoom', async (event: any) => {
+                    if (event.sourceEvent.type === 'wheel') {
+                        zoomWithWhell(event, parsedChartData);
+                    } else if (
+                        event.sourceEvent.type === 'touchmove' &&
+                        event.sourceEvent.touches.length > 1
+                    ) {
+                        const domainX = scaleData.xScale.domain();
+                        const linearX = d3
+                            .scaleTime()
+                            .domain(scaleData.xScale.range())
+                            .range([0, domainX[1] - domainX[0]]);
+
+                        // mobile
+                        const touch1 = event.sourceEvent.touches[0];
+                        const touch2 = event.sourceEvent.touches[1];
+
+                        const deltaTouch = Math.hypot(
+                            touch1.pageX - touch2.pageX,
+                            touch1.pageY - touch2.pageY,
+                        );
+
+                        let movement = Math.abs(touch1.pageX - touch2.pageX);
+
+                        if (previousDeltaTouch > deltaTouch) {
+                            // zoom out
+                            movement = movement / 10;
+                        }
+                        if (previousDeltaTouch < deltaTouch) {
+                            // zoom in
+                            movement = -movement / 10;
+                        }
+                        const deltaX = linearX(movement);
+
+                        changeCandleSize(domainX, deltaX, touch1.clientX);
+                    } else {
+                        const domainX = scaleData.xScale.domain();
+
+                        const linearX = d3
+                            .scaleTime()
+                            .domain(scaleData.xScale.range())
+                            .range([0, domainX[1] - domainX[0]]);
+
+                        const deltaX = linearX(-event.sourceEvent.movementX);
+
+                        if (deltaX !== undefined) {
+                            getNewCandleData(
+                                new Date(domainX[0].getTime() + deltaX),
+                                lastCandleDate,
+                            );
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() + deltaX),
+                                domainX[1],
+                            ]);
+                        }
+                    }
+                    rescaleYAxis();
+
+                    setBandwidth(candlestick.bandwidth());
+                    render();
+                    renderCanvas();
+
+                    setZoomAndYdragControl(event);
+                })
+                .on('end', () => {
+                    const latestCandle = d3.max(parsedChartData.chartData, (d) => d.date);
+
+                    if (
+                        !showLatest &&
+                        latestCandle &&
+                        (scaleData.xScale.domain()[1] < latestCandle ||
+                            scaleData.xScale.domain()[0] > latestCandle)
+                    ) {
+                        setShowLatest(true);
+                    } else if (
+                        showLatest &&
+                        !(scaleData.xScale.domain()[1] < latestCandle) &&
+                        !(scaleData.xScale.domain()[0] > latestCandle)
+                    ) {
+                        setShowLatest(false);
+                    }
+                });
+
             setZoomUtils(() => {
                 return {
                     zoom: zoom,
                     yAxisZoom: yAxisZoom,
+                    xAxisZoom: xAxisZoom,
                 };
             });
         }
@@ -5403,6 +5472,19 @@ export default function Chart(props: ChartData) {
                     const svg = d3.select(event.target).select('svg');
 
                     svg.call(zoomUtils.yAxisZoom)
+                        .on('dblclick.zoom', null)
+                        .on('dblclick.drag', null);
+                });
+
+                d3.select(d3Xaxis.current).on('mouseover', (event: any) => {
+                    d3.select(event.currentTarget).style('cursor', 'col-resize');
+                    crosshairData[0].x = -1;
+                });
+
+                d3.select(d3Xaxis.current).on('measure.range', function (event: any) {
+                    const svg = d3.select(event.target).select('svg');
+
+                    svg.call(zoomUtils.xAxisZoom)
                         .on('dblclick.zoom', null)
                         .on('dblclick.drag', null);
                 });
