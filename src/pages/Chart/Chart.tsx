@@ -1429,7 +1429,9 @@ export default function Chart(props: ChartData) {
             };
 
             const zoomWithWhell = (event: any, parsedChartData: any) => {
-                const dx = event.sourceEvent.deltaY / 2;
+                let dx = event.sourceEvent.deltaY / 2;
+
+                dx = Math.abs(dx) === 0 ? -event.sourceEvent.deltaX / 2 : dx;
 
                 const domainX = scaleData.xScale.domain();
                 const linearX = d3
