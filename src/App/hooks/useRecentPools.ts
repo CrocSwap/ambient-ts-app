@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { tokenMethodsIF } from './useToken';
 
 export interface SmallerPoolIF {
     base: string;
@@ -12,7 +12,7 @@ export const useRecentPools = (
     chainId: string,
     addressTokenA: string,
     addressTokenB: string,
-    verifyToken: (addr: string, chn: string) => boolean,
+    uTokens: tokenMethodsIF
 ): {
     addRecentPool: (pool: SmallerPoolIF) => void;
     getRecentPools: (count: number) => SmallerPoolIF[];
@@ -20,32 +20,25 @@ export const useRecentPools = (
 } => {
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
-    // recentPools.length || setRecentPools([{
-    //     base: sortBaseQuoteTokens(addressTokenA, addressTokenB)[0],
-    //     quote: sortBaseQuoteTokens(addressTokenA, addressTokenB)[1]
-    // }]);
 
+    // TODO:   @Emily  does this really need to be in a useEffect() hook? if it
+    // TODO:   @Emily  ... needs to be recalculated when either base or quote
+    // TODO:   @Emily  ... tokens change that should happen automatically
     // add pools to the recent pools list (in-session)
     // runs every time to the current token pair changes
     // later this will need more logic for a Pool ID value
     useEffect(() => {
         // sort current token pair as base and quote
         const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addressTokenA, addressTokenB);
-        const { ackTokens } = JSON.parse(localStorage.getItem('user') as string) ?? [];
-        const checkToken = (addr: string) => {
-            const isListed = verifyToken(addr.toLowerCase(), chainId);
-            const isAcknowledged = ackTokens?.some(
-                (ackTkn: TokenIF) =>
-                    ackTkn.address.toLowerCase() === addr.toLowerCase() &&
-                    ackTkn.chainId === parseInt(chainId),
-            );
-            return isListed || isAcknowledged;
-        };
+        // check whether both tokens are on a known list or user-acknowledged
+        const tokensVerified = [baseAddr, quoteAddr].every(
+            (addr: string) => uTokens.verifyToken(addr, chainId)
+        );
+            // uTokens.verifyToken(baseAddr, chainId) &&
+            // uTokens.verifyToken(quoteAddr, chainId);
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
-        if (checkToken(baseAddr) && checkToken(quoteAddr)) {
-            addRecentPool({ base: baseAddr, quote: quoteAddr });
-        }
+        tokensVerified && addRecentPool({ base: baseAddr, quote: quoteAddr });
     }, [addressTokenA, addressTokenB]);
 
     // hook to reset recent tokens when the user switches chains

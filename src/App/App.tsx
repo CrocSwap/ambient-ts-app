@@ -392,7 +392,7 @@ export default function App() {
         chainData.chainId,
         tradeData.tokenA.address,
         tradeData.tokenB.address,
-        uTokens.verifyToken,
+        uTokens
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
