@@ -255,9 +255,9 @@ export default function TradeCharts(props: propsIF) {
     );
     // CHART SETTINGS------------------------------------------------------------
     // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
-    const [showTvl, setShowTvl] = useState(false);
-    const [showFeeRate, setShowFeeRate] = useState(false);
-    const [showVolume, setShowVolume] = useState(true);
+    const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
+    const [showFeeRate, setShowFeeRate] = useState(chartSettings.feeRateSubchart.isEnabled);
+    const [showVolume, setShowVolume] = useState(chartSettings.volumeSubchart.isEnabled);
 
     const [liqMode, setLiqMode] = useState('Depth');
 
