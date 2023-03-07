@@ -4807,6 +4807,7 @@ export default function Chart(props: ChartData) {
             liqMode: any,
             liquidityScale: any,
         ) => {
+            // Burası
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const snap = (series: any, data: any, point: any) => {
@@ -4860,8 +4861,11 @@ export default function Chart(props: ChartData) {
                     });
                     return [
                         {
-                            x: scaleData.xScale.invert(point.offsetX),
-                            // x: nearest?.date,
+                            x:
+                                parsedChartData?.chartData[0].date <
+                                scaleData.xScale.invert(point.offsetX)
+                                    ? scaleData.xScale.invert(point.offsetX)
+                                    : nearest?.date,
                             y: scaleData.yScale.invert(point.offsetY),
                         },
                     ];
