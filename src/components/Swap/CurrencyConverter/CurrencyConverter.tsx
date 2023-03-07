@@ -391,6 +391,7 @@ export default function CurrencyConverter(props: propsIF) {
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
+            // console.log({ input });
             handleSwapButtonMessage(parseFloat(input));
             if (!poolPriceDisplay) return;
 
@@ -428,6 +429,7 @@ export default function CurrencyConverter(props: propsIF) {
             //     sellQtyField.value = tokenAQty === 'NaN' ? '' : tokenAQty;
             // }
 
+            // console.log({ tokenAQty });
             handleSwapButtonMessage(parseFloat(tokenAQty));
             // console.log(tokenPair.dataTokenA.address);
 
@@ -490,6 +492,7 @@ export default function CurrencyConverter(props: propsIF) {
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
+            // console.log({ input });
             handleSwapButtonMessage(parseFloat(input));
 
             if (!poolPriceDisplay) return;
@@ -517,6 +520,7 @@ export default function CurrencyConverter(props: propsIF) {
                 console.log({ error });
             }
         } else {
+            // console.log({ tokenAQtyLocal });
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
             try {
                 const impact =
@@ -618,7 +622,7 @@ export default function CurrencyConverter(props: propsIF) {
             } catch (error) {
                 console.log({ error });
             }
-
+            // console.log({ rawTokenAQty });
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         } else {
             // console.log('token B change event triggered - no event');
@@ -630,7 +634,8 @@ export default function CurrencyConverter(props: propsIF) {
             // if (buyQtyField) {
             //     buyQtyField.value = tokenBQty === 'NaN' ? '' : tokenBQty;
             // }
-            handleSwapButtonMessage(parseFloat(tokenBQty));
+            // console.log({ tokenAQty });
+            // handleSwapButtonMessage(parseFloat(tokenAQty));
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
@@ -656,6 +661,7 @@ export default function CurrencyConverter(props: propsIF) {
                 console.log({ error });
             }
 
+            // console.log({ rawTokenAQty });
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         }
 
