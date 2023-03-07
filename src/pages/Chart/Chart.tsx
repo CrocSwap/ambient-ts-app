@@ -4860,14 +4860,14 @@ export default function Chart(props: ChartData) {
                         return newData;
                     });
 
-                    const retrunXdata =
+                    const returnXdata =
                         parsedChartData?.chartData[0].date <= scaleData.xScale.invert(point.offsetX)
                             ? scaleData.xScale.invert(point.offsetX)
                             : nearest?.date;
 
                     return [
                         {
-                            x: retrunXdata,
+                            x: returnXdata,
                             y: scaleData.yScale.invert(point.offsetY),
                         },
                     ];
