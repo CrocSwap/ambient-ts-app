@@ -4860,7 +4860,8 @@ export default function Chart(props: ChartData) {
                     });
                     return [
                         {
-                            x: nearest?.date,
+                            x: scaleData.xScale.invert(point.offsetX),
+                            // x: nearest?.date,
                             y: scaleData.yScale.invert(point.offsetY),
                         },
                     ];
