@@ -11,6 +11,7 @@ interface propsIF {
     setSellQtyString: Dispatch<SetStateAction<string>>;
     setBuyQtyString: Dispatch<SetStateAction<string>>;
     thisToken: TokenIF;
+    setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencyQuantity(props: propsIF) {
@@ -22,6 +23,7 @@ export default function CurrencyQuantity(props: propsIF) {
         handleChangeEvent,
         setSellQtyString,
         setBuyQtyString,
+        setDisableReverseTokens,
     } = props;
 
     const [newChangeEvent, setNewChangeEvent] = useState<
@@ -49,6 +51,7 @@ export default function CurrencyQuantity(props: propsIF) {
             setSellQtyString('');
         }
 
+        setDisableReverseTokens(true);
         setNewChangeEvent(event);
 
         const input = event.target.value.startsWith('.')
