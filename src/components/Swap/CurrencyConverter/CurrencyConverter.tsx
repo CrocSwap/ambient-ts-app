@@ -283,15 +283,15 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
-        if (crocEnv && poolExists) {
-            // console.log('firing');
-            isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-        }
+        // if (crocEnv && poolExists) {
+        // console.log('firing');
+        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        // }
     }, [
         crocEnv,
         lastBlockNumber,
         poolExists,
-        // poolPriceDisplay,
+        // poolPriceDisplay === 0,
         // isSellTokenBase,
         disableReverseTokens,
         isTokenAPrimary,
@@ -304,15 +304,22 @@ export default function CurrencyConverter(props: propsIF) {
     ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
-        // console.log({ tokenABalance });
         if (!poolExists) {
+            console.log({ poolExists });
             setSwapAllowed(false);
-            if (poolExists === undefined) setSwapButtonErrorMessage('...');
-            if (poolExists === false) setSwapButtonErrorMessage('Pool Not Initialized');
-        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Invalid Token Pair');
-        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+
+            if (poolExists === undefined) {
+                setSwapButtonErrorMessage('...');
+            } else if (poolExists === false) {
+                setSwapButtonErrorMessage('Pool Not Initialized');
+            }
+        }
+        // else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+        //     console.log({ poolPriceDisplay });
+        //     setSwapAllowed(false);
+        //     setSwapButtonErrorMessage('Invalid Token Pair');
+        // }
+        else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
         } else {

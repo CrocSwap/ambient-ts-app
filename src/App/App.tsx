@@ -825,7 +825,7 @@ export default function App() {
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        setPoolExists(undefined);
+        // setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
             console.log('checking if pool exists');
             if (tokenPairLocal[0].toLowerCase() === tokenPairLocal[1].toLowerCase()) return;
