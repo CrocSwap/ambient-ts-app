@@ -344,6 +344,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
                 <img src={headerLogo} alt='ambient' />
+                <img src='./ambient_logo_1.png' alt='' width='35' />
                 {/* <h1>ambient</h1> */}
             </Link>
             {/* <div
@@ -375,7 +376,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                     switchTheme={switchTheme}
                 /> */}
                 <div className={styles.account}>
-                    {showBranchName ? branchName : null}
+                    <p className={styles.branch_name}>{showBranchName ? branchName : null}</p>
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
                     {!isConnected && connectWagmiButton}
