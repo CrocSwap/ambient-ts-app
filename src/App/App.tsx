@@ -2811,6 +2811,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    chartSettings={chartSettings}
                                     tokenList={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     pool={pool}

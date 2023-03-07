@@ -1,16 +1,6 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useEffect,
-    useRef,
-} from 'react';
-import {
-    AiOutlineCamera,
-    AiOutlineFullscreen,
-    AiOutlineDownload,
-} from 'react-icons/ai';
+import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import { AiOutlineCamera, AiOutlineFullscreen, AiOutlineDownload } from 'react-icons/ai';
 import { VscClose } from 'react-icons/vsc';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -21,10 +11,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import {
-    candleDomain,
-    setActiveChartPeriod,
-} from '../../../utils/state/tradeDataSlice';
+import { candleDomain, setActiveChartPeriod } from '../../../utils/state/tradeDataSlice';
 import {
     CandleData,
     CandlesByPoolAndDuration,
@@ -47,6 +34,7 @@ import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
+import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 
 // interface for React functional component props
 interface propsIF {
@@ -103,6 +91,7 @@ interface propsIF {
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    chartSettings: chartSettingsMethodsIF;
 }
 
 export interface CandleChartData {
@@ -187,6 +176,7 @@ export default function TradeCharts(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
+        chartSettings,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -222,13 +212,13 @@ export default function TradeCharts(props: propsIF) {
             ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-            })
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
             : poolPriceDisplay.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
@@ -265,9 +255,9 @@ export default function TradeCharts(props: propsIF) {
     );
     // CHART SETTINGS------------------------------------------------------------
     // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
-    const [showTvl, setShowTvl] = useState(false);
-    const [showFeeRate, setShowFeeRate] = useState(false);
-    const [showVolume, setShowVolume] = useState(true);
+    const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
+    const [showFeeRate, setShowFeeRate] = useState(chartSettings.feeRateSubchart.isEnabled);
+    const [showVolume, setShowVolume] = useState(chartSettings.volumeSubchart.isEnabled);
 
     const [liqMode, setLiqMode] = useState('Depth');
 
@@ -455,6 +445,7 @@ export default function TradeCharts(props: propsIF) {
                     showVolume={showVolume}
                     showTvl={showTvl}
                     showFeeRate={showFeeRate}
+                    chartSettings={chartSettings}
                 />
             </div>
             <div
