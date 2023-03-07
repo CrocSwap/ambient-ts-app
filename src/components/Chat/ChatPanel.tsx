@@ -110,6 +110,14 @@ export default function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
+            console.log(
+                'message user: ',
+                messageUser,
+                ' current user: ',
+                currentUser,
+                ' last message: ',
+                lastMessage,
+            );
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
@@ -118,6 +126,7 @@ export default function ChatPanel(props: propsIF) {
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
+                console.log('evet');
                 const timer = setTimeout(() => {
                     messageEnd.current?.scrollTo(
                         messageEnd.current?.scrollHeight,
