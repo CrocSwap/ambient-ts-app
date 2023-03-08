@@ -272,7 +272,7 @@ export default function Limit(props: propsIF) {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                               });
-                    // console.log({ limitRateTruncated });
+                    console.log({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                     // const limitRateInputField = document.getElementById('limit-rate-quantity');

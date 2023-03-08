@@ -46,9 +46,17 @@ export default function CurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         if (event && fieldId === 'sell') {
-            setBuyQtyString('');
+            if (event.target.value === '') {
+                setBuyQtyString('');
+            } else {
+                setBuyQtyString('');
+            }
         } else if (event && fieldId === 'buy') {
-            setSellQtyString('');
+            if (event.target.value === '') {
+                setSellQtyString('');
+            } else {
+                setSellQtyString('');
+            }
         }
 
         setDisableReverseTokens(true);

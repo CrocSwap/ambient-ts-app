@@ -104,7 +104,7 @@ export default function LimitRate(props: propsIF) {
                         setPreviousDisplayPrice(targetValue);
                     }
                 }}
-                value={displayPrice}
+                value={displayPrice === 'NaN' ? '...' : displayPrice}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
