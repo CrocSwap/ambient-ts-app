@@ -86,7 +86,6 @@ interface ChartData {
     denomInBase: boolean;
     limitTick: number | undefined;
     isAdvancedModeActive: boolean | undefined;
-    simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
@@ -124,7 +123,10 @@ interface ChartData {
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     showSidebar: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    setRangeSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    rangeSimpleRangeWidth: number | undefined;
+    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
+    repositionRangeWidth: number;
 }
 
 function getWindowDimensions() {
@@ -145,7 +147,6 @@ export default function Chart(props: ChartData) {
         isAdvancedModeActive,
         pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated,
-        simpleRangeWidth,
         poolPriceDisplay,
         expandTradeTable,
         setIsCandleAdded,
@@ -171,7 +172,10 @@ export default function Chart(props: ChartData) {
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
-        setSimpleRangeWidth,
+        setRangeSimpleRangeWidth,
+        rangeSimpleRangeWidth,
+        setRepositionRangeWidth,
+        repositionRangeWidth,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -206,6 +210,16 @@ export default function Chart(props: ChartData) {
 
     const location = useLocation();
     const position = location?.state?.position;
+
+    const simpleRangeWidth = location.pathname.includes('reposition')
+        ? repositionRangeWidth
+        : rangeSimpleRangeWidth;
+    const setSimpleRangeWidth = location.pathname.includes('reposition')
+        ? setRepositionRangeWidth
+        : setRangeSimpleRangeWidth;
+
+    // const simpleRangeWidth = rangeSimpleRangeWidth;
+    // const setSimpleRangeWidth = setRangeSimpleRangeWidth;
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -895,7 +909,8 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickValues([
             ...scale.ticks(),
-            ...(simpleRangeWidth === 100 && !isAdvancedModeActive
+            ...(simpleRangeWidth === 100 &&
+            (!isAdvancedModeActive || location.pathname.includes('reposition'))
                 ? [market[0].value]
                 : [
                       isSameLocationMin ? sameLocationDataMin : low,
@@ -2370,7 +2385,7 @@ export default function Chart(props: ChartData) {
                 return newTargets;
             });
 
-            setSimpleRangeWidth(10);
+            // setSimpleRangeWidth(10);
         } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
@@ -2505,7 +2520,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         console.log('setting range lines');
         if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
-            if (!isAdvancedModeActive) {
+            if (!isAdvancedModeActive || location.pathname.includes('reposition')) {
                 setBalancedLines();
             } else if (isAdvancedModeActive) {
                 if (
@@ -3207,7 +3222,9 @@ export default function Chart(props: ChartData) {
                 if (
                     (location.pathname.includes('range') ||
                         location.pathname.includes('reposition')) &&
-                    (isAdvancedModeActive || (!isAdvancedModeActive && simpleRangeWidth !== 100))
+                    (isAdvancedModeActive ||
+                        ((!isAdvancedModeActive || location.pathname.includes('reposition')) &&
+                            simpleRangeWidth !== 100))
                 ) {
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
