@@ -84,11 +84,13 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    poolExists: boolean | undefined;
 }
 
 // central React functional component
 export default function RangeCurrencyConverter(props: propsIF) {
     const {
+        poolExists,
         isUserLoggedIn,
         gasPriceInGwei,
         chainId,
@@ -689,10 +691,13 @@ export default function RangeCurrencyConverter(props: propsIF) {
     // const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
 
     useEffect(() => {
-        tradeData.isTokenAPrimaryRange
-            ? handleTokenAQtyFieldUpdate()
-            : handleTokenBQtyFieldUpdate();
+        if (poolExists) {
+            tradeData.isTokenAPrimaryRange
+                ? handleTokenAQtyFieldUpdate()
+                : handleTokenBQtyFieldUpdate();
+        }
     }, [
+        poolExists,
         poolPriceNonDisplay,
         depositSkew,
         primaryQuantityRange,

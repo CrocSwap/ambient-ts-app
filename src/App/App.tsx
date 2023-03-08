@@ -408,6 +408,9 @@ export default function App() {
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
+    useEffect(() => {
+        console.log({ tokenPairLocal });
+    }, [tokenPairLocal]);
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
@@ -822,18 +825,19 @@ export default function App() {
     // ... null => no crocEnv to check if pool exists
     const [poolExists, setPoolExists] = useState<boolean | undefined>();
     useEffect(() => console.log({ poolExists }), [poolExists]);
+    const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        setPoolExists(undefined);
-        if (crocEnv && tokenPairLocal) {
+        if (crocEnv && baseTokenAddress && quoteTokenAddress) {
+            // setPoolExists(undefined);
             console.log('checking if pool exists');
-            if (tokenPairLocal[0].toLowerCase() === tokenPairLocal[1].toLowerCase()) return;
+            if (baseTokenAddress.toLowerCase() === quoteTokenAddress.toLowerCase()) return;
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
                 // TODO: make this function pill addresses directly from URL params
-                .pool(tokenPairLocal[0], tokenPairLocal[1])
+                .pool(baseTokenAddress, quoteTokenAddress)
                 .isInit();
             // resolve the promise object to see if pool exists
             Promise.resolve(doesPoolExist)
@@ -842,9 +846,7 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [crocEnv, tokenPairLocal]);
-
-    const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+    }, [crocEnv, JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -2392,6 +2394,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
@@ -2490,6 +2493,7 @@ export default function App() {
 
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        tokenPairLocal: tokenPairLocal,
     };
 
     // props for <Limit/> React element on trade route
