@@ -58,6 +58,7 @@ interface propsIF {
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 export default function Transactions(props: propsIF) {
     const {
@@ -87,6 +88,7 @@ export default function Transactions(props: propsIF) {
         changeState,
         setSelectedDate,
         // setExpandTradeTable,
+        setSimpleRangeWidth,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -596,6 +598,7 @@ export default function Transactions(props: propsIF) {
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
+            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
 

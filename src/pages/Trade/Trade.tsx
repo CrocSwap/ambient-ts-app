@@ -88,6 +88,8 @@ interface propsIF {
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    simpleRangeWidth: number;
 }
 
 // React functional component
@@ -141,6 +143,8 @@ export default function Trade(props: propsIF) {
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
         setCandleDomains,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(chainId, isInitialized);
@@ -188,7 +192,6 @@ export default function Trade(props: propsIF) {
         isDenomBase,
         limitTick,
         advancedMode,
-        simpleRangeWidth,
         activeChartPeriod,
         pinnedMaxPriceDisplayTruncated,
         pinnedMinPriceDisplayTruncated,
@@ -520,6 +523,7 @@ export default function Trade(props: propsIF) {
         isTutorialMode: props.isTutorialMode,
         setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
+        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     const tradeTabsProps = {
@@ -576,6 +580,7 @@ export default function Trade(props: propsIF) {
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
+        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     const mobileTrade = (

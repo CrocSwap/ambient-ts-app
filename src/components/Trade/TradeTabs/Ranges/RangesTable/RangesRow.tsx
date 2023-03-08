@@ -56,6 +56,7 @@ interface propsIF {
     idx: number;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 export default function RangesRow(props: propsIF) {
@@ -75,6 +76,7 @@ export default function RangesRow(props: propsIF) {
         isOnPortfolioPage,
         isLeaderboard,
         handlePulseAnimation,
+        setSimpleRangeWidth,
     } = props;
 
     const {
@@ -729,6 +731,7 @@ export default function RangesRow(props: propsIF) {
                     showSidebar={props.showSidebar}
                     isEmpty={position.totalValueUSD === 0}
                     showHighlightedButton={showHighlightedButton}
+                    setSimpleRangeWidth={setSimpleRangeWidth}
                 />
             </li>
         </ul>
