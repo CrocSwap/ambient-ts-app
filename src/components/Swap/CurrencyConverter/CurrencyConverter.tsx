@@ -291,9 +291,10 @@ export default function CurrencyConverter(props: propsIF) {
         crocEnv,
         lastBlockNumber,
         poolExists,
+        tokenPair,
         // poolPriceDisplay === 0,
         // isSellTokenBase,
-        disableReverseTokens,
+        // disableReverseTokens,
         isTokenAPrimary,
         combinedTokenABalance,
         isWithdrawFromDexChecked,
@@ -455,7 +456,7 @@ export default function CurrencyConverter(props: propsIF) {
                               tokenPair.dataTokenA.address,
                               tokenPair.dataTokenB.address,
                               slippageTolerancePercentage / 100,
-                              tokenAQty,
+                              tokenAQtyLocal,
                           )
                         : undefined;
                 // console.log({ impact });
@@ -652,7 +653,7 @@ export default function CurrencyConverter(props: propsIF) {
                 // console.log({ tokenAQtyLocal });
                 handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
             }
-
+            // console.log({ tokenPair });
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
             try {
