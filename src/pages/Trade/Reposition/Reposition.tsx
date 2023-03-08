@@ -28,7 +28,6 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
