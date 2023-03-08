@@ -1,16 +1,6 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useEffect,
-    useRef,
-} from 'react';
-import {
-    AiOutlineCamera,
-    AiOutlineFullscreen,
-    AiOutlineDownload,
-} from 'react-icons/ai';
+import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import { AiOutlineCamera, AiOutlineFullscreen, AiOutlineDownload } from 'react-icons/ai';
 import { VscClose } from 'react-icons/vsc';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -21,10 +11,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import {
-    candleDomain,
-    setActiveChartPeriod,
-} from '../../../utils/state/tradeDataSlice';
+import { candleDomain, setActiveChartPeriod } from '../../../utils/state/tradeDataSlice';
 import {
     CandleData,
     CandlesByPoolAndDuration,
@@ -103,6 +90,7 @@ interface propsIF {
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface CandleChartData {
@@ -187,6 +175,7 @@ export default function TradeCharts(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
+        setSimpleRangeWidth,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -222,13 +211,13 @@ export default function TradeCharts(props: propsIF) {
             ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-            })
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
             : poolPriceDisplay.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
@@ -604,6 +593,7 @@ export default function TradeCharts(props: propsIF) {
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
+                        setSimpleRangeWidth={setSimpleRangeWidth}
                     />
                 </div>
             )}

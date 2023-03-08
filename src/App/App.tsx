@@ -84,7 +84,6 @@ import {
     setLiquidityFee,
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
-    setSimpleRangeWidth,
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
     candleDomain,
@@ -375,6 +374,7 @@ export default function App() {
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
+    const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(0);
     const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
         useState<boolean>(false);
 
@@ -905,7 +905,7 @@ export default function App() {
             dispatch(setAdvancedHighTick(0));
             dispatch(setAdvancedMode(false));
             console.log('resetting to 10');
-            dispatch(setSimpleRangeWidth(10));
+            setSimpleRangeWidth(10);
             const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
             if (sliderInput) sliderInput.value = '10';
         }
@@ -2613,6 +2613,8 @@ export default function App() {
 
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        setSimpleRangeWidth: setSimpleRangeWidth,
+        simpleRangeWidth: simpleRangeWidth,
     };
 
     function toggleSidebar() {
@@ -2880,6 +2882,8 @@ export default function App() {
                                     isTutorialMode={isTutorialMode}
                                     setIsTutorialMode={setIsTutorialMode}
                                     setCandleDomains={setCandleDomains}
+                                    setSimpleRangeWidth={setSimpleRangeWidth}
+                                    simpleRangeWidth={simpleRangeWidth}
                                 />
                             }
                         >
@@ -2926,6 +2930,8 @@ export default function App() {
                                             seRescaleRangeBoundariesWithSlider
                                         }
                                         poolPriceDisplay={poolPriceDisplay}
+                                        setSimpleRangeWidth={setSimpleRangeWidth}
+                                        simpleRangeWidth={simpleRangeWidth}
                                     />
                                 }
                             />
@@ -3113,6 +3119,7 @@ export default function App() {
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
+                                    setSimpleRangeWidth={setSimpleRangeWidth}
                                 />
                             }
                         />
@@ -3172,6 +3179,7 @@ export default function App() {
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
+                                    setSimpleRangeWidth={setSimpleRangeWidth}
                                 />
                             }
                         />
@@ -3252,6 +3260,7 @@ export default function App() {
                                     searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
+                                    setSimpleRangeWidth={setSimpleRangeWidth}
                                 />
                             }
                         />

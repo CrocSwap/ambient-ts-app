@@ -20,7 +20,6 @@ import {
     setRangeHighLineTriggered,
     setRangeLowLineTriggered,
     setRangeModuleTriggered,
-    setSimpleRangeWidth,
     setTargetData,
     targetData,
     candleDomain,
@@ -125,6 +124,7 @@ interface ChartData {
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     showSidebar: boolean;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 function getWindowDimensions() {
@@ -171,6 +171,7 @@ export default function Chart(props: ChartData) {
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
+        setSimpleRangeWidth,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -407,7 +408,7 @@ export default function Chart(props: ChartData) {
                 newTargets.filter((target: any) => target.name === 'Max')[0].value = maxPrice;
                 newTargets.filter((target: any) => target.name === 'Min')[0].value = minPrice;
 
-                setLiqHighlightedLinesAndArea(newTargets);
+                setLiqHighlightedLinesAndArea(newTargets, true);
 
                 scaleWithButtons(minPrice, maxPrice);
 
@@ -2300,7 +2301,7 @@ export default function Chart(props: ChartData) {
                 return newTargets;
             });
 
-            dispatch(setSimpleRangeWidth(10));
+            setSimpleRangeWidth(10);
         } else if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
@@ -2819,15 +2820,13 @@ export default function Chart(props: ChartData) {
                         (!isAdvancedModeActive || location.pathname.includes('reposition')) &&
                         rangeWidthPercentage
                     ) {
-                        dispatch(
-                            setSimpleRangeWidth(
-                                Math.floor(
-                                    rangeWidthPercentage < 1
-                                        ? 1
-                                        : rangeWidthPercentage > 100
-                                        ? 100
-                                        : rangeWidthPercentage,
-                                ),
+                        setSimpleRangeWidth(
+                            Math.floor(
+                                rangeWidthPercentage < 1
+                                    ? 1
+                                    : rangeWidthPercentage > 100
+                                    ? 100
+                                    : rangeWidthPercentage,
                             ),
                         );
                     }
@@ -3671,15 +3670,13 @@ export default function Chart(props: ChartData) {
                 }
             }
 
-            dispatch(
-                setSimpleRangeWidth(
-                    Math.floor(
-                        rangeWidthPercentage < 1
-                            ? 1
-                            : rangeWidthPercentage > 100
-                            ? 100
-                            : rangeWidthPercentage,
-                    ),
+            setSimpleRangeWidth(
+                Math.floor(
+                    rangeWidthPercentage < 1
+                        ? 1
+                        : rangeWidthPercentage > 100
+                        ? 100
+                        : rangeWidthPercentage,
                 ),
             );
         } else {
@@ -4493,7 +4490,8 @@ export default function Chart(props: ChartData) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
 
                     if (
-                        location.pathname.includes('range') &&
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')) &&
                         (simpleRangeWidth !== 100 || isAdvancedModeActive)
                     ) {
                         const min = ranges.filter((target: any) => target.name === 'Min')[0].value;

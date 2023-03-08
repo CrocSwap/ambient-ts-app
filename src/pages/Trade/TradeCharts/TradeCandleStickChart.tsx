@@ -88,6 +88,7 @@ interface ChartData {
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface ChartUtils {
@@ -127,6 +128,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
+        setSimpleRangeWidth,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -797,6 +799,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
+                        setSimpleRangeWidth={setSimpleRangeWidth}
                     />
                 ) : (
                     <>{loading}</>

@@ -44,6 +44,8 @@ interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    simpleRangeWidth: number;
 }
 
 export default function Reposition(props: propsIF) {
@@ -62,6 +64,8 @@ export default function Reposition(props: propsIF) {
         tokenPair,
         poolPriceDisplay,
         lastBlockNumber,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
     } = props;
 
     // current URL parameter string
@@ -113,7 +117,6 @@ export default function Reposition(props: propsIF) {
 
     const isTokenABase = tradeData.isTokenABase;
 
-    const simpleRangeWidth = tradeData.simpleRangeWidth;
     const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     const currentPoolPriceTick = Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -174,7 +177,15 @@ export default function Reposition(props: propsIF) {
     };
 
     useEffect(() => {
-        setRangeWidthPercentage(() => simpleRangeWidth);
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            console.log('simpleRangeWidth', { simpleRangeWidth, rangeWidthPercentage });
+            setSimpleRangeWidth(simpleRangeWidth);
+            setRangeWidthPercentage(simpleRangeWidth);
+            const sliderInput = document.getElementById(
+                'reposition-input-slider-range',
+            ) as HTMLInputElement;
+            if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
+        }
     }, [simpleRangeWidth]);
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
@@ -208,10 +219,10 @@ export default function Reposition(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
-            console.log('set Range');
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            console.log('set Range', { rangeWidthPercentage, simpleRangeWidth });
             // dispatch(setRangeModuleTriggered(true));
-            // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+            // setSimpleRangeWidth(rangeWidthPercentage);
         }
     }, [rangeWidthPercentage]);
 
