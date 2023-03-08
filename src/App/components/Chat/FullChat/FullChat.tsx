@@ -7,9 +7,8 @@ import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
-import { useFavePools, favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../../utils/interfaces/exports';
-import FavoritePools from '../../../../components/Global/Sidebar/FavoritePools/FavoritePools';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -36,10 +35,7 @@ export default function FullChat(props: FullChatPropsIF) {
     const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
-    const [favoritePoolsArray, setFavoritePoolsArray] = useState<string[]>([]);
-    const [roomArray, setRoomArray] = useState<string[]>([]);
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
-    const rooms = topPools;
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
