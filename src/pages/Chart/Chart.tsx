@@ -2447,6 +2447,32 @@ export default function Chart(props: ChartData) {
                 });
             }
             dispatch(setRangeModuleTriggered(false));
+        } else {
+            const lowTick = currentPoolPriceTick - (simpleRangeWidth || 10) * 100;
+            const highTick = currentPoolPriceTick + (simpleRangeWidth || 10) * 100;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                denomInBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                lowTick,
+                highTick,
+                lookupChain(chainId).gridSize,
+            );
+
+            setRanges((prevState) => {
+                const newTargets = [...prevState];
+
+                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                    parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay) || 0.0;
+
+                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                    parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay) || 0.0;
+
+                setLiqHighlightedLinesAndArea(newTargets, true);
+
+                return newTargets;
+            });
         }
     };
 
@@ -2524,24 +2550,24 @@ export default function Chart(props: ChartData) {
         if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
             if (!isAdvancedModeActive || location.pathname.includes('reposition')) {
                 setBalancedLines();
-            } else if (isAdvancedModeActive) {
-                if (
-                    rangeLowLineTriggered === undefined ||
-                    rangeHighLineTriggered === undefined ||
-                    rangeModuleTriggered
-                ) {
-                    setAdvancedLines();
-                }
             }
         }
-    }, [
-        location,
-        targetData,
-        denomInBase,
-        isAdvancedModeActive,
-        simpleRangeWidth,
-        rangeModuleTriggered,
-    ]);
+    }, [location, denomInBase, isAdvancedModeActive, simpleRangeWidth]);
+
+    useEffect(() => {
+        if (
+            (location.pathname.includes('range') || location.pathname.includes('reposition')) &&
+            isAdvancedModeActive
+        ) {
+            if (
+                rangeLowLineTriggered === undefined ||
+                rangeHighLineTriggered === undefined ||
+                rangeModuleTriggered
+            ) {
+                setAdvancedLines();
+            }
+        }
+    }, [location, denomInBase, targetData, rangeModuleTriggered, isAdvancedModeActive]);
 
     useEffect(() => {
         if (location.pathname.includes('reposition')) {
