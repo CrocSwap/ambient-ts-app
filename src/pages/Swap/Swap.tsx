@@ -194,7 +194,7 @@ export default function Swap(props: propsIF) {
 
     const slippageTolerancePercentage = isPairStable ? swapSlippage.stable : swapSlippage.volatile;
 
-    const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
+    const [swapAllowed, setSwapAllowed] = useState<boolean>(tradeData.primaryQuantity !== '');
 
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;

@@ -145,17 +145,17 @@ export default function CurrencyConverter(props: propsIF) {
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
     const isSellTokenBase = tradeData.baseToken.address === tradeData.tokenA.address;
 
-    const isTokenAPrimary = tradeData.isTokenAPrimary;
-
     const shouldSwapConverterUpdate = tradeData.shouldSwapConverterUpdate;
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(isTokenAPrimary);
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimary,
+    );
 
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
-        isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
-        !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
 
     const userHasEnteredAmount = tokenAQtyLocal !== '';
