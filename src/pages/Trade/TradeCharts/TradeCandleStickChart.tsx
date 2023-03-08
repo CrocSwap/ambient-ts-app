@@ -619,7 +619,13 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [liquidityData === undefined]);
+    }, [
+        liquidityData === undefined,
+        liquidityData?.liqAskData.length === 0,
+        liquidityData?.liqBidData.length === 0,
+        liquidityData?.depthLiqAskData.length === 0,
+        liquidityData?.depthLiqAskData.length === 0,
+    ]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         console.log('parse Liq Scale');

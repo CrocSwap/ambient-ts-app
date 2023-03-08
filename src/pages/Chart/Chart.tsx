@@ -1751,7 +1751,9 @@ export default function Chart(props: ChartData) {
                             }
 
                             clickedForLine = true;
-                            setBandwidth(candlestick.bandwidth());
+                            if (candlestick) {
+                                setBandwidth(candlestick.bandwidth());
+                            }
                             render();
                             renderCanvas();
 
@@ -4560,7 +4562,7 @@ export default function Chart(props: ChartData) {
     ]);
 
     function changeScale() {
-        if (poolPriceDisplay) {
+        if (poolPriceDisplay && scaleData) {
             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
             const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
@@ -5727,15 +5729,17 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]) - 3600 * 1000);
+        if (scaleData && scaleData.xScale) {
+            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]) - 3600 * 1000);
 
-        const filtered = volumeData?.filter((data: any) => data.time >= xmin);
+            const filtered = volumeData?.filter((data: any) => data.time >= xmin);
 
-        const minYBoundary = d3.min(filtered, (d) => d.value);
-        const maxYBoundary = d3.max(filtered, (d) => d.value);
-        if (minYBoundary !== undefined && maxYBoundary !== undefined) {
-            const domain = [0, maxYBoundary / 1.05];
-            scaleData.volumeScale.domain(domain);
+            const minYBoundary = d3.min(filtered, (d) => d.value);
+            const maxYBoundary = d3.max(filtered, (d) => d.value);
+            if (minYBoundary !== undefined && maxYBoundary !== undefined) {
+                const domain = [0, maxYBoundary / 1.05];
+                scaleData.volumeScale.domain(domain);
+            }
         }
     }, [scaleData && scaleData.xScale.domain()]);
 
