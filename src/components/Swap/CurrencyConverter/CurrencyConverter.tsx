@@ -651,7 +651,6 @@ export default function CurrencyConverter(props: propsIF) {
 
                 return;
             }
-            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
             try {
                 const impact =
@@ -679,6 +678,7 @@ export default function CurrencyConverter(props: propsIF) {
 
             clearTimeout(timer);
         }
+        if (rawTokenAQty) handleSwapButtonMessage(rawTokenAQty);
 
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2
