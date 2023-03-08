@@ -861,7 +861,9 @@ export default function App() {
 
     useEffect(() => {
         // console.log('resetting limit');
-        dispatch(setLimitTick(undefined));
+        if (!location.pathname.includes('limitTick')) {
+            dispatch(setLimitTick(undefined));
+        }
         dispatch(setPrimaryQuantityRange(''));
         // dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
