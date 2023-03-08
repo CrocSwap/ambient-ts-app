@@ -20,7 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
@@ -151,7 +151,9 @@ export default function CurrencyConverter(props: propsIF) {
     }, [tradeData.tokenB.address]);
 
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
-    const isSellTokenBase = tradeData.baseToken.address === tradeData.tokenA.address;
+
+    const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
+    const isSellTokenBase = tokenALocal === sortedTokens[0];
 
     const shouldSwapConverterUpdate = tradeData.shouldSwapConverterUpdate;
 
