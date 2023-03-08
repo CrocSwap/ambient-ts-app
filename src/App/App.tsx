@@ -408,6 +408,9 @@ export default function App() {
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
+    useEffect(() => {
+        console.log({ tokenPairLocal });
+    }, [tokenPairLocal]);
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
