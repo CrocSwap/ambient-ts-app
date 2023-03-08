@@ -402,12 +402,6 @@ export default function CurrencyConverter(props: propsIF) {
             const input = targetValue.startsWith('.') ? '0' + targetValue : targetValue;
 
             const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                // console.log({ input });
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                if (isNaN(parsedInput)) return;
-            }
 
             setTokenAQtyLocal(input);
             setSellQtyString(input);
@@ -419,7 +413,12 @@ export default function CurrencyConverter(props: propsIF) {
             if (!poolPriceDisplay) return;
 
             // if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
-
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                // console.log({ input });
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                if (isNaN(parsedInput)) return;
+            }
             try {
                 const impact =
                     input !== ''
@@ -444,10 +443,15 @@ export default function CurrencyConverter(props: propsIF) {
             }
         } else {
             console.log('token a change event triggered - no event');
+            // console.log({ tokenAQtyLocal });
             if (tokenAQtyLocal === '') {
                 // console.log({ tokenAQtyLocal });
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
+                setTokenBQtyLocal('');
+                setBuyQtyString('');
+                setDisableReverseTokens(false);
+
                 return;
             }
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
@@ -597,13 +601,6 @@ export default function CurrencyConverter(props: propsIF) {
             //     (tokenBInputField as HTMLInputElement).value = input;
             // }
 
-            const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                if (isNaN(parsedInput)) return;
-            }
-
             setTokenBQtyLocal(input);
             setBuyQtyString(input);
             setIsTokenAPrimaryLocal(false);
@@ -612,6 +609,12 @@ export default function CurrencyConverter(props: propsIF) {
 
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
+            const parsedInput = parseFloat(input);
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                if (isNaN(parsedInput)) return;
+            }
             try {
                 const impact =
                     input !== ''
@@ -638,6 +641,16 @@ export default function CurrencyConverter(props: propsIF) {
         } else {
             console.log('token B change event triggered - no event');
 
+            if (tokenBQtyLocal === '') {
+                // console.log({ tokenAQtyLocal });
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                setTokenAQtyLocal('');
+                setSellQtyString('');
+                setDisableReverseTokens(false);
+
+                return;
+            }
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
             try {
