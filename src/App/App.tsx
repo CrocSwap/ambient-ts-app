@@ -2394,6 +2394,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
@@ -2492,6 +2493,7 @@ export default function App() {
 
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        tokenPairLocal: tokenPairLocal,
     };
 
     // props for <Limit/> React element on trade route
