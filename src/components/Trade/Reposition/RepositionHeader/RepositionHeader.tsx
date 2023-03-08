@@ -9,6 +9,8 @@ import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { VscClose } from 'react-icons/vsc';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     positionHash: string;
@@ -19,15 +21,10 @@ interface propsIF {
 }
 
 export default function RepositionHeader(props: propsIF) {
-    const {
-        positionHash,
-        repoSlippage,
-        isPairStable,
-        bypassConfirm,
-        toggleBypassConfirm,
-    } = props;
+    const { positionHash, repoSlippage, isPairStable, bypassConfirm, toggleBypassConfirm } = props;
 
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     // navpath for when user clicks the exit button
     const exitPath = useRepoExitPath();
@@ -55,7 +52,10 @@ export default function RepositionHeader(props: propsIF) {
                 </Modal>
             )}
             <div
-                onClick={() => navigate(exitPath, { replace: true })}
+                onClick={() => {
+                    dispatch(setAdvancedMode(false));
+                    navigate(exitPath, { replace: true });
+                }}
                 style={{ cursor: 'pointer', marginRight: '10px' }}
             >
                 <VscClose size={22} />
