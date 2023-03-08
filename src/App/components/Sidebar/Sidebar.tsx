@@ -263,7 +263,7 @@ export default function Sidebar(props: propsIF) {
         positionsByUser,
         txsByUser,
         limitsByUser,
-        uTokens.verifyToken,
+        uTokens,
         shouldRecheckLocalStorage,
     );
 
@@ -540,7 +540,6 @@ export default function Sidebar(props: propsIF) {
                     {isInputValid && showSidebar && searchMode ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
-                            getTokenByAddress={uTokens.getTokenByAddress}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             chainId={chainId}
@@ -554,6 +553,7 @@ export default function Sidebar(props: propsIF) {
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             searchedTxs={searchedTxs}
                             searchedLimitOrders={searchedLimitOrders}
+                            uTokens={uTokens}
                         />
                     ) : (
                         regularSidebarDisplay

@@ -3,19 +3,20 @@ import { useNavigate } from 'react-router-dom';
 // START: Import Local Files
 import PoolLI from './PoolLI';
 import styles from '../SidebarSearchResults.module.css';
-import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
+import { tokenMethodsIF } from '../../../../hooks/useToken';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
+    uTokens: tokenMethodsIF;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
+    const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch, uTokens } = props;
 
     const navigate = useNavigate();
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
@@ -56,8 +57,8 @@ export default function PoolsSearchResults(props: propsIF) {
                                 chainId={chainId}
                                 handleClick={handleClick}
                                 pool={pool}
-                                getTokenByAddress={getTokenByAddress}
                                 cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                uTokens={uTokens}
                             />
                         ))}
                     </div>

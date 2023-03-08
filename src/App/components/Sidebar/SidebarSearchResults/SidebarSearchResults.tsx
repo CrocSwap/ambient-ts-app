@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from 'react';
 import {
     LimitOrderIF,
     PositionIF,
-    TokenIF,
     TokenPairIF,
     TempPoolIF,
     TransactionIF,
@@ -13,10 +12,10 @@ import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResu
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
+import { tokenMethodsIF } from '../../../hooks/useToken';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     isConnected: boolean;
@@ -30,12 +29,12 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     searchedTxs: TransactionIF[];
     searchedLimitOrders: LimitOrderIF[];
+    uTokens: tokenMethodsIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
     const {
         searchedPools,
-        getTokenByAddress,
         tokenPair,
         chainId,
         isConnected,
@@ -49,6 +48,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setIsShowAllEnabled,
         searchedTxs,
         searchedLimitOrders,
+        uTokens
     } = props;
 
     return (
@@ -56,10 +56,10 @@ export default function SidebarSearchResults(props: propsIF) {
             <div className={styles.search_result_title}>Search Results</div>
             <PoolsSearchResults
                 searchedPools={searchedPools}
-                getTokenByAddress={getTokenByAddress}
                 tokenPair={tokenPair}
                 chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
+                uTokens={uTokens}
             />
             {isConnected && (
                 <>

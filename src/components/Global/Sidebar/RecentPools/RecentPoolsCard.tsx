@@ -58,8 +58,6 @@ export default function RecentPoolsCard(props: propsIF) {
         })();
     };
 
-    // TODO:   @Emily the two functions below need to check ackTokens as well
-
     const baseTokenData = getTokenByAddress(pool.base, chainId);
     const quoteTokenData = getTokenByAddress(pool.quote, chainId);
 
