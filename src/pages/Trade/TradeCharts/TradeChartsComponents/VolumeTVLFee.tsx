@@ -2,27 +2,45 @@ import styles from './VolumeTVLFee.module.css';
 import { Dispatch, SetStateAction, useState, useRef } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { chartSettingsMethodsIF } from '../../../../App/hooks/useChartSettings';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;
     setShowTvl: Dispatch<SetStateAction<boolean>>;
     setShowFeeRate: Dispatch<SetStateAction<boolean>>;
-
+    chartSettings: chartSettingsMethodsIF;
     showVolume: boolean;
     showTvl: boolean;
     showFeeRate: boolean;
 }
 export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
-    const { setShowVolume, setShowTvl, setShowFeeRate, showVolume, showTvl, showFeeRate } = props;
+    const {
+        chartSettings,
+        setShowVolume,
+        setShowTvl,
+        setShowFeeRate,
+        showVolume,
+        showTvl,
+        showFeeRate,
+    } = props;
 
     const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] = useState(false);
 
     const desktopView = useMediaQuery('(max-width: 968px)');
 
-    const handleVolumeToggle = () => setShowVolume(!showVolume);
+    const handleVolumeToggle = () => {
+        setShowVolume(!showVolume);
+        chartSettings.volumeSubchart.toggle();
+    };
 
-    const handleTvlToggle = () => setShowTvl(!showTvl);
-    const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
+    const handleTvlToggle = () => {
+        setShowTvl(!showTvl);
+        chartSettings.tvlSubchart.toggle();
+    };
+    const handleFeeRateToggle = () => {
+        setShowFeeRate(!showFeeRate);
+        chartSettings.feeRateSubchart.toggle();
+    };
 
     const volumeTvlAndFeeData = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },

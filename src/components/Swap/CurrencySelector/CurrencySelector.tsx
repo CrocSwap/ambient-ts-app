@@ -77,10 +77,12 @@ interface propsIF {
         popupPlacement?: string,
     ) => void;
     uTokens: tokenMethodsIF;
+    setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencySelector(props: propsIF) {
     const {
+        setDisableReverseTokens,
         provider,
         sellQtyString,
         setSellQtyString,
@@ -524,6 +526,7 @@ export default function CurrencySelector(props: propsIF) {
                         setBuyQtyString={setBuyQtyString}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
+                        setDisableReverseTokens={setDisableReverseTokens}
 
                         // handleChangeEvent={(evt) => {
                         //     // console.log('change triggered from selector');
