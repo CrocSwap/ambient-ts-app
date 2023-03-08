@@ -1157,7 +1157,7 @@ export default function Chart(props: ChartData) {
         if (scaleData && yAxis) {
             if (location.pathname.includes('market')) {
                 addTextMarket(scaleData.yScale);
-            } else if (location.pathname.includes('limit')) {
+            } else if (location.pathname.includes('/limit')) {
                 addTextLimit(scaleData.yScale);
             } else if (
                 location.pathname.includes('range') ||
@@ -1231,7 +1231,7 @@ export default function Chart(props: ChartData) {
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'hidden');
-        } else if (location.pathname.includes('limit')) {
+        } else if (location.pathname.includes('/limit')) {
             d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
 
             d3.select(d3PlotArea.current)
@@ -1271,7 +1271,13 @@ export default function Chart(props: ChartData) {
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
         }
-    }, [location.pathname, parsedChartData?.period, simpleRangeWidth, isAdvancedModeActive]);
+    }, [
+        location,
+        location.pathname,
+        parsedChartData?.period,
+        simpleRangeWidth,
+        isAdvancedModeActive,
+    ]);
 
     useEffect(() => {
         setRescale(true);
@@ -1411,7 +1417,7 @@ export default function Chart(props: ChartData) {
                                 ];
                                 scaleData.yScale.domain(domain);
                             }
-                        } else if (location.pathname.includes('limit')) {
+                        } else if (location.pathname.includes('/limit')) {
                             if (
                                 maxYBoundary !== undefined &&
                                 minYBoundary !== undefined &&
@@ -2250,7 +2256,7 @@ export default function Chart(props: ChartData) {
                             });
                         }
                         setLiqHighlightedLinesAndArea(ranges);
-                    } else if (location.pathname.includes('limit')) {
+                    } else if (location.pathname.includes('/limit')) {
                         if (
                             maxYBoundary !== undefined &&
                             minYBoundary !== undefined &&
@@ -2540,7 +2546,7 @@ export default function Chart(props: ChartData) {
     // Targets
     useEffect(() => {
         setMarketLineValue();
-        if (location.pathname.includes('limit')) {
+        if (location.pathname.includes('/limit')) {
             setLimitLineValue();
         }
     }, [location, props.limitTick, denomInBase]);
@@ -3119,7 +3125,10 @@ export default function Chart(props: ChartData) {
             limitLine.decorate((selection: any) => {
                 selection
                     .enter()
-                    .style('visibility', location.pathname.includes('limit') ? 'visible' : 'hidden')
+                    .style(
+                        'visibility',
+                        location.pathname.includes('/limit') ? 'visible' : 'hidden',
+                    )
                     .attr('id', (d: any) => d.name)
                     .select('g.left-handle')
                     .attr('x', 5)
@@ -3269,7 +3278,7 @@ export default function Chart(props: ChartData) {
 
                         scaleData.yScale.domain(domain);
                     }
-                } else if (location.pathname.includes('limit')) {
+                } else if (location.pathname.includes('/limit')) {
                     if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                         const value = limit[0].value;
 
@@ -3346,7 +3355,7 @@ export default function Chart(props: ChartData) {
                                 ];
                                 scaleData.yScale.domain(domain);
                             }
-                        } else if (location.pathname.includes('limit')) {
+                        } else if (location.pathname.includes('/limit')) {
                             if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                                 const value = limit[0].value;
 
@@ -3642,7 +3651,7 @@ export default function Chart(props: ChartData) {
                     );
             }
 
-            if (location.pathname.includes('limit')) {
+            if (location.pathname.includes('/limit')) {
                 d3.select(d3Container.current)
                     .select('.limit')
                     .on('mouseover', (event: any) => {
@@ -4629,7 +4638,7 @@ export default function Chart(props: ChartData) {
                         const domain = [low - bufferForRange, high + bufferForRange / 2];
 
                         scaleData.yScale.domain(domain);
-                    } else if (location.pathname.includes('limit')) {
+                    } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
                         const low = minYBoundary < value ? minYBoundary : value;
 
@@ -5114,7 +5123,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     if (
-                        location.pathname.includes('limit') &&
+                        location.pathname.includes('/limit') &&
                         scaleData !== undefined &&
                         !isHoverCandleOrVolumeData
                     ) {
