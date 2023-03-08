@@ -1735,7 +1735,9 @@ export default function Chart(props: ChartData) {
                             }
 
                             clickedForLine = true;
-                            setBandwidth(candlestick.bandwidth());
+                            if (candlestick) {
+                                setBandwidth(candlestick.bandwidth());
+                            }
                             render();
                             renderCanvas();
 
