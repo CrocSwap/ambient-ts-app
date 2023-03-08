@@ -1,5 +1,5 @@
 import styles from './FullChat.module.css';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
@@ -7,8 +7,9 @@ import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { useFavePools, favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../../utils/interfaces/exports';
+import FavoritePools from '../../../../components/Global/Sidebar/FavoritePools/FavoritePools';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -35,8 +36,10 @@ export default function FullChat(props: FullChatPropsIF) {
     const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
-
+    const [favoritePoolsArray, setFavoritePoolsArray] = useState<string[]>([]);
+    const [roomArray, setRoomArray] = useState<string[]>([]);
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
+    const rooms = topPools;
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
@@ -60,6 +63,17 @@ export default function FullChat(props: FullChatPropsIF) {
 
         // handleDropdownMenu();
     }
+    useEffect(() => {
+        props.favePools.pools.map((pool: PoolIF) => {
+            for (let x = 0; x < topPools.length; x++) {
+                if (pool.base.symbol + '/' + pool.quote.symbol === topPools[x].name) {
+                    topPools.push(topPools.splice(x, 1)[0]);
+                } else {
+                    // do nothing
+                }
+            }
+        });
+    }, []);
 
     function handleGlobalClick() {
         props.setRoom('Global');
