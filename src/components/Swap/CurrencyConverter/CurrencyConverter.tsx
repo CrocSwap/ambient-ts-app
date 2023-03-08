@@ -1,4 +1,12 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    // useRef,
+    useState,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
@@ -286,7 +294,7 @@ export default function CurrencyConverter(props: propsIF) {
     useEffect(() => {
         // if (crocEnv && poolExists) {
         // console.log(priceImpact?.percentChange);
-        // console.log({ isTokenAPrimaryLocal });
+        // console.log({ combinedTokenABalance });
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
         if (shouldUpdate) setShouldUpdate(false);
 
@@ -352,6 +360,7 @@ export default function CurrencyConverter(props: propsIF) {
                         setSwapAllowed(true);
                     }
                 } else {
+                    // console.log({ tokenABalance });
                     const roundedTokenAWalletBalance =
                         Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
                     if (tokenAAmount >= roundedTokenAWalletBalance) {
@@ -417,7 +426,7 @@ export default function CurrencyConverter(props: propsIF) {
                 // console.log({ input });
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
-                if (isNaN(parsedInput)) return;
+                if (isNaN(parsedInput) || parsedInput === 0) return;
             }
             try {
                 const impact =
@@ -444,6 +453,17 @@ export default function CurrencyConverter(props: propsIF) {
         } else {
             console.log('token a change event triggered - no event');
             // console.log({ tokenAQtyLocal });
+            if (!poolExists) {
+                // console.log({ poolExists });
+                setSwapAllowed(false);
+
+                if (poolExists === undefined) {
+                    setSwapButtonErrorMessage('...');
+                } else if (poolExists === false) {
+                    setSwapButtonErrorMessage('Pool Not Initialized');
+                }
+                return;
+            }
             if (tokenAQtyLocal === '') {
                 // console.log({ tokenAQtyLocal });
                 setSwapAllowed(false);
@@ -536,7 +556,7 @@ export default function CurrencyConverter(props: propsIF) {
             }
         } else {
             // if (!disableReverseTokens) {
-            if (tokenAQtyLocal === '') {
+            if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
                 // console.log({ tokenAQtyLocal });
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
@@ -580,12 +600,16 @@ export default function CurrencyConverter(props: propsIF) {
         // if (shouldSwapConverterUpdate) dispatch(setShouldSwapConverterUpdate(false));
     };
 
+    // const timerRef = useRef<NodeJS.Timeout>();
+    // useEffect(() => {
+    //     // Clear the interval when the component unmounts
+    //     return () => clearTimeout(timerRef.current);
+    // }, []);
+
     const handleTokenBChangeEvent = async (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (!poolPriceDisplay) return;
         if (!crocEnv) return;
 
-        let rawTokenAQty;
-
+        let rawTokenAQty: number | undefined;
         if (evt) {
             // const tokenAInputField = document.getElementById('sell-quantity');
             // if (tokenAInputField) {
@@ -610,10 +634,11 @@ export default function CurrencyConverter(props: propsIF) {
             if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
 
             const parsedInput = parseFloat(input);
+            // console.log({ parsedInput });
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
-                if (isNaN(parsedInput)) return;
+                if (isNaN(parsedInput) || parsedInput === 0) return;
             }
             try {
                 const impact =
@@ -640,8 +665,18 @@ export default function CurrencyConverter(props: propsIF) {
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         } else {
             console.log('token B change event triggered - no event');
+            if (!poolExists) {
+                // console.log({ poolExists });
+                setSwapAllowed(false);
 
-            if (tokenBQtyLocal === '') {
+                if (poolExists === undefined) {
+                    setSwapButtonErrorMessage('...');
+                } else if (poolExists === false) {
+                    setSwapButtonErrorMessage('Pool Not Initialized');
+                }
+                return;
+            }
+            if (tokenBQtyLocal === '' && tokenAQtyLocal === '') {
                 // console.log({ tokenAQtyLocal });
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
@@ -672,13 +707,9 @@ export default function CurrencyConverter(props: propsIF) {
                 console.log({ error });
             }
 
-            const timer = setTimeout((rawTokenAQty) => {
-                rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
-            }, 1000);
-
-            clearTimeout(timer);
+            // timerRef.current = setTimeout(() => handleSwapButtonMessage(rawTokenAQty ?? 0), 2500);
+            handleSwapButtonMessage(rawTokenAQty ?? 0);
         }
-        if (rawTokenAQty) handleSwapButtonMessage(rawTokenAQty);
 
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2
