@@ -90,6 +90,8 @@ interface propsIF {
     tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
+    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
+    repositionRangeWidth: number;
 }
 
 // React functional component
@@ -145,6 +147,8 @@ export default function Trade(props: propsIF) {
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
+        setRepositionRangeWidth,
+        repositionRangeWidth,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(chainId, isInitialized);
@@ -524,6 +528,8 @@ export default function Trade(props: propsIF) {
         setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        setRepositionRangeWidth: setRepositionRangeWidth,
+        repositionRangeWidth: repositionRangeWidth,
     };
 
     const tradeTabsProps = {

@@ -375,6 +375,7 @@ export default function App() {
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
+    const [repositionRangeWidth, setRepositionRangeWidth] = useState<number>(10);
     const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
         useState<boolean>(false);
 
@@ -2884,6 +2885,8 @@ export default function App() {
                                     setCandleDomains={setCandleDomains}
                                     setSimpleRangeWidth={setSimpleRangeWidth}
                                     simpleRangeWidth={simpleRangeWidth}
+                                    setRepositionRangeWidth={setRepositionRangeWidth}
+                                    repositionRangeWidth={repositionRangeWidth}
                                 />
                             }
                         >
@@ -2930,8 +2933,8 @@ export default function App() {
                                             seRescaleRangeBoundariesWithSlider
                                         }
                                         poolPriceDisplay={poolPriceDisplay}
-                                        setSimpleRangeWidth={setSimpleRangeWidth}
-                                        simpleRangeWidth={simpleRangeWidth}
+                                        setSimpleRangeWidth={setRepositionRangeWidth}
+                                        simpleRangeWidth={repositionRangeWidth}
                                     />
                                 }
                             />

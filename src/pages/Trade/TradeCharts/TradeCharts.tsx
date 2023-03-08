@@ -91,6 +91,8 @@ interface propsIF {
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    repositionRangeWidth: number;
 }
 
 export interface CandleChartData {
@@ -594,6 +596,8 @@ export default function TradeCharts(props: propsIF) {
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
                         setSimpleRangeWidth={setSimpleRangeWidth}
+                        setRepositionRangeWidth={props.setRepositionRangeWidth}
+                        repositionRangeWidth={props.repositionRangeWidth}
                     />
                 </div>
             )}

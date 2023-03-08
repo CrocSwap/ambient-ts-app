@@ -89,6 +89,8 @@ interface ChartData {
     showSidebar: boolean;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    repositionRangeWidth: number;
 }
 
 export interface ChartUtils {
@@ -129,6 +131,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
+        setRepositionRangeWidth,
+        repositionRangeWidth,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -762,7 +766,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
-                        simpleRangeWidth={props.simpleRangeWidth}
+                        rangeSimpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         poolPriceDisplay={props.poolPriceDisplay}
@@ -799,7 +803,9 @@ export default function TradeCandleStickChart(props: ChartData) {
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
-                        setSimpleRangeWidth={setSimpleRangeWidth}
+                        setRangeSimpleRangeWidth={setSimpleRangeWidth}
+                        setRepositionRangeWidth={setRepositionRangeWidth}
+                        repositionRangeWidth={repositionRangeWidth}
                     />
                 ) : (
                     <>{loading}</>

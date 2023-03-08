@@ -28,6 +28,7 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -176,6 +177,10 @@ export default function Reposition(props: propsIF) {
         resetConfirmation();
     };
 
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+    const [pinnedLowTick, setPinnedLowTick] = useState(0);
+    const [pinnedHighTick, setPinnedHighTick] = useState(0);
+
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
             setSimpleRangeWidth(simpleRangeWidth);
@@ -187,9 +192,12 @@ export default function Reposition(props: propsIF) {
         }
     }, [simpleRangeWidth]);
 
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
-    const [pinnedLowTick, setPinnedLowTick] = useState(0);
-    const [pinnedHighTick, setPinnedHighTick] = useState(0);
+    useEffect(() => {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(rangeWidthPercentage);
+            setRangeWidthPercentage(rangeWidthPercentage);
+        }
+    }, [rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -216,14 +224,6 @@ export default function Reposition(props: propsIF) {
         position?.base,
         position?.quote,
     ]);
-
-    useEffect(() => {
-        if (simpleRangeWidth !== rangeWidthPercentage) {
-            console.log('set Range');
-            // dispatch(setRangeModuleTriggered(true));
-            // setSimpleRangeWidth(rangeWidthPercentage);
-        }
-    }, [rangeWidthPercentage]);
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
