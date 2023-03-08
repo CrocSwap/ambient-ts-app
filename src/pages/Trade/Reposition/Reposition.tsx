@@ -178,7 +178,6 @@ export default function Reposition(props: propsIF) {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            console.log('simpleRangeWidth', { simpleRangeWidth, rangeWidthPercentage });
             setSimpleRangeWidth(simpleRangeWidth);
             setRangeWidthPercentage(simpleRangeWidth);
             const sliderInput = document.getElementById(
@@ -220,7 +219,7 @@ export default function Reposition(props: propsIF) {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            console.log('set Range', { rangeWidthPercentage, simpleRangeWidth });
+            console.log('set Range');
             // dispatch(setRangeModuleTriggered(true));
             // setSimpleRangeWidth(rangeWidthPercentage);
         }

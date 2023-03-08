@@ -374,7 +374,7 @@ export default function App() {
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
-    const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(0);
+    const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
     const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
         useState<boolean>(false);
 
