@@ -93,6 +93,7 @@ interface propsIF {
 
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
+    tokenPairLocal: string[] | null;
 }
 
 export default function Swap(props: propsIF) {
@@ -142,6 +143,7 @@ export default function Swap(props: propsIF) {
         // isTutorialMode,
         // setIsTutorialMode
         lastBlockNumber,
+        tokenPairLocal,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -192,7 +194,8 @@ export default function Swap(props: propsIF) {
 
     const slippageTolerancePercentage = isPairStable ? swapSlippage.stable : swapSlippage.volatile;
 
-    const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
+    const [swapAllowed, setSwapAllowed] = useState<boolean>(tradeData.primaryQuantity !== '');
+
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
@@ -604,6 +607,7 @@ export default function Swap(props: propsIF) {
     // console.log({ sellQtyString });
 
     const currencyConverterProps = {
+        tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         poolExists: poolExists,
         isUserLoggedIn: isUserLoggedIn,
@@ -612,6 +616,7 @@ export default function Swap(props: propsIF) {
         setPriceImpact: setPriceImpact,
         tokenPair: tokenPair,
         tokensBank: importedTokens,
+        priceImpact: priceImpact,
         setImportedTokens: setImportedTokens,
         chainId: chainId as string,
         isLiq: false,
