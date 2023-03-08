@@ -221,7 +221,7 @@ export default function Transactions(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
-    const showColumns = useMediaQuery('(max-width: 1700px)');
+    const showColumns = useMediaQuery('(max-width: 1400px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
 
     const baseTokenAddress = tradeData.baseToken.address;
