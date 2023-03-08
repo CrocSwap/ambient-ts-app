@@ -1852,8 +1852,6 @@ export default function Chart(props: ChartData) {
                     newCenter = scaleData.yScale.invert(firstLocation);
 
                     if (event.sourceEvent.touches.length > 1) {
-                        const touch1Y = event.sourceEvent.touches[0].pageY;
-                        const touch2Y = event.sourceEvent.touches[1].pageY;
                         previousDeltaTouchYaxis = Math.hypot(
                             0,
                             event.sourceEvent.touches[0].pageY - event.sourceEvent.touches[1].pageY,
