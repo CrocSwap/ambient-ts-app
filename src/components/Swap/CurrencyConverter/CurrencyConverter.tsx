@@ -263,17 +263,17 @@ export default function CurrencyConverter(props: propsIF) {
             if (!isTokenAPrimaryLocal) {
                 console.log('setting token a');
                 setTokenAQtyLocal(tokenBQtyLocal);
-                setSellQtyString(tokenBQtyLocal);
+                // setSellQtyString(tokenBQtyLocal);
 
-                setBuyQtyString('');
+                setBuyQtyString('......');
 
                 setSellQtyString(tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal);
             } else {
                 console.log('setting token b');
                 setTokenBQtyLocal(tokenAQtyLocal);
-                setBuyQtyString(tokenAQtyLocal);
+                // setBuyQtyString(tokenAQtyLocal);
 
-                setSellQtyString('');
+                setSellQtyString('......');
 
                 setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
             }
@@ -767,7 +767,7 @@ export default function CurrencyConverter(props: propsIF) {
                 onClick={reverseTokens}
             >
                 {isLiq ? null : (
-                    <IconWithTooltip title='Reverse tokens' placement='left'>
+                    <IconWithTooltip title='Reverse tokens' placement='left' enterDelay='1000'>
                         <TokensArrow />
                     </IconWithTooltip>
                 )}
