@@ -2377,8 +2377,8 @@ export default function Chart(props: ChartData) {
             }
             dispatch(setRangeModuleTriggered(false));
         } else {
-            const lowTick = currentPoolPriceTick - simpleRangeWidth! * 100;
-            const highTick = currentPoolPriceTick + simpleRangeWidth! * 100;
+            const lowTick = currentPoolPriceTick - (simpleRangeWidth || 10) * 100;
+            const highTick = currentPoolPriceTick + (simpleRangeWidth || 10) * 100;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denomInBase,
