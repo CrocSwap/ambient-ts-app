@@ -344,7 +344,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
                 <img src={headerLogo} alt='ambient' />
-                <img src='./ambient_logo_1.png' alt='' width='35' />
+                <img src='./ambient_logo_1.png' alt='' width='25' />
                 {/* <h1>ambient</h1> */}
             </Link>
             {/* <div
