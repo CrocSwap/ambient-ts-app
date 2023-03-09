@@ -40,14 +40,15 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
 
     class DexBalPref implements dexBalancePrefIF {
         public readonly isEnabled: boolean;
-        private readonly setter: Dispatch<SetStateAction<boolean>>;
+        public readonly enable: () => void;
+        public readonly disable: () => void;
+        public readonly toggle: () => void;
         constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>) {
             this.isEnabled = enabled;
-            this.setter = setterFn;
+            this.enable = () => setterFn(true);
+            this.disable = () => setterFn(false);
+            this.toggle = () => setterFn(!this.isEnabled);
         };
-        public enable() {this.setter(true)};
-        public disable() {this.setter(false)};
-        public toggle() {this.setter(!this.isEnabled)};
     }
 
     return {
