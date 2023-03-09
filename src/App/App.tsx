@@ -171,6 +171,7 @@ import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
+import { useExchangePrefs } from './hooks/useExchangePrefs';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -220,6 +221,9 @@ export default function App() {
 
     // hook to manage favorite pools in the app
     const favePools: favePoolsMethodsIF = useFavePools();
+
+    // hook to manage exchange balance preferences
+    useExchangePrefs();
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
