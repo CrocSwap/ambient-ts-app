@@ -1,3 +1,3 @@
-export const useExchangePrefs = () => {
-    console.log('fired custom hook useExchangePrefs() in App.tsx!');
+export const useExchangePrefs = (txType: string) => {
+    console.log('exchange balance pref for txType: ' + txType);
 }

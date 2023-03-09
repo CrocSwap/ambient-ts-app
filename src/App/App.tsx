@@ -223,7 +223,9 @@ export default function App() {
     const favePools: favePoolsMethodsIF = useFavePools();
 
     // hook to manage exchange balance preferences
-    useExchangePrefs();
+    useExchangePrefs('swap');
+    useExchangePrefs('limit');
+    useExchangePrefs('range');
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
