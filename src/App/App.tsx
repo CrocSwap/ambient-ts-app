@@ -119,12 +119,10 @@ import {
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-// import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
-
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
@@ -145,7 +143,6 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
-// import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
@@ -172,10 +169,6 @@ import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
 import { useExchangePrefs, dexBalanceMethodsIF } from './hooks/useExchangePrefs';
-// import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
-
-// import { memoizeQuerySpotTick } from './functions/querySpotTick';
-// import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -183,8 +176,6 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
-// const cachedFetchContractDetails = memoizeFetchContractDetails();
-// const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';

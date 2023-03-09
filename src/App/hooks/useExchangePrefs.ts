@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 export interface dexBalancePrefIF {
     isEnabled: boolean,
@@ -38,6 +38,13 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
         getPersistedData('drawFromDexBal') ?? false
     );
 
+    useEffect(() => {
+        localStorage.setItem(
+            `dex_bal_pref_${txType}`,
+            JSON.stringify({outputToDexBal, drawFromDexBal})
+        );
+    }, [outputToDexBal, drawFromDexBal]);
+
     class DexBalPref implements dexBalancePrefIF {
         public readonly isEnabled: boolean;
         public readonly enable: () => void;
@@ -49,7 +56,7 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
             this.disable = () => setterFn(false);
             this.toggle = () => setterFn(!this.isEnabled);
         };
-    }
+    };
 
     return {
         outputTo: new DexBalPref(outputToDexBal, setOutputToDexBal),
