@@ -27,6 +27,7 @@ interface propsIF {
     isDenomBase: boolean;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
+    account: string | undefined;
 }
 
 // central react functional component
@@ -43,6 +44,7 @@ export default function ExtraInfo(props: propsIF) {
         // didUserFlipDenom,
         // isTokenABase,
         isOnTradeRoute,
+        account,
         // isDenomBase,
     } = props;
 
@@ -95,18 +97,10 @@ export default function ExtraInfo(props: propsIF) {
 
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined
-        : isDenomBase
-        ? priceImpact.percentChange * 100
-        : -1 * priceImpact.percentChange * 100;
+        : Math.abs(priceImpact.percentChange) * 100;
 
     const priceImpactString = !priceImpactNum
         ? '…'
-        : priceImpactNum > 0
-        ? '+' +
-          priceImpactNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 3,
-          })
         : priceImpactNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 3,
@@ -116,7 +110,7 @@ export default function ExtraInfo(props: propsIF) {
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `±${slippageTolerance}%`,
+            data: `${slippageTolerance}%`,
         },
         {
             title: 'Liquidity Provider Fee',
@@ -144,13 +138,7 @@ export default function ExtraInfo(props: propsIF) {
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
-        {
-            title: 'Final Price',
-            tooltipTitle: 'Expected Price After Swap',
-            data: isDenomBase
-                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
+
         {
             title: 'Price Impact',
             tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
@@ -158,6 +146,20 @@ export default function ExtraInfo(props: propsIF) {
             placement: 'bottom',
         },
     ];
+    if (
+        [
+            '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc',
+            '0xa86dabfbb529a4c8186bdd52bd226ac81757e090',
+        ].includes(account?.toLowerCase() ?? '')
+    ) {
+        extraInfoData.push({
+            title: 'Final Price',
+            tooltipTitle: 'Expected Price After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        });
+    }
     const extraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) =>

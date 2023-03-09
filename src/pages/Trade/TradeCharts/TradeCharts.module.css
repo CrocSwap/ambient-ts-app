@@ -10,15 +10,14 @@
 .graph_style {
     z-index: 2;
 }
-.tutorial_button_container{
-
+.tutorial_button_container {
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
     padding: 0 8px;
 }
-.tutorial_button{
+.tutorial_button {
     outline: none;
     background: var(--dark3);
     border: 1px solid var(--text-highlight-dark);
@@ -28,11 +27,11 @@
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 
-    box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca,
-    0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
+    box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca, 0 0 50px #0ba9ca,
+        0 0 80px #0ba9ca;
 }
-.tutorial_button:hover{
-    color: var(--text-grey-white)
+.tutorial_button:hover {
+    color: var(--text-grey-white);
 }
 .token_info_container,
 .time_frame_container {
@@ -85,7 +84,6 @@
     /* background: var(--title-gradient); */
     color: var(--text-grey-white);
 
-
     /* box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
     0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
     0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2); */
@@ -105,6 +103,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-light);
+    margin-top: 2px;
 }
 
 .token_info_container .change_positive {
@@ -181,7 +180,7 @@
     padding: 1rem;
 }
 
-.chart_ite_container input[type='checkbox']+label {
+.chart_ite_container input[type='checkbox'] + label {
     display: block;
     margin: 0.2em;
     cursor: pointer;
@@ -192,7 +191,7 @@
     display: none;
 }
 
-.chart_item_container input[type='checkbox']+label:before {
+.chart_item_container input[type='checkbox'] + label:before {
     content: '\2714';
     border: 0.1em solid var(--text-grey-light);
     border-radius: 0.2em;
@@ -207,11 +206,11 @@
     transition: 0.2s;
 }
 
-.chart_item_container input[type='checkbox']+label:active:before {
+.chart_item_container input[type='checkbox'] + label:active:before {
     transform: scale(0);
 }
 
-.chart_item_container input[type='checkbox']:checked+label:before {
+.chart_item_container input[type='checkbox']:checked + label:before {
     background: var(--title-gradient);
     border-color: #7371fc;
     color: #fff;

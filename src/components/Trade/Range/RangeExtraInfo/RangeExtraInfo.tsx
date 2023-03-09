@@ -55,7 +55,7 @@ export default function RangeExtraInfo(props: propsIF) {
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'slippage tolerance explanation',
-            data: `${slippageTolerance}%`,
+            data: `±${slippageTolerance}%`,
         },
         {
             title: 'Current Provider Fee',
@@ -75,7 +75,7 @@ export default function RangeExtraInfo(props: propsIF) {
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'slippage tolerance explanation',
-            data: `${slippageTolerance}%`,
+            data: `±${slippageTolerance}%`,
         },
         {
             title: 'Current Provider Fee',

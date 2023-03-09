@@ -702,6 +702,7 @@ export default function Swap(props: propsIF) {
                         <CurrencyConverter {...currencyConverterProps} />
                     </motion.div>
                     <ExtraInfo
+                        account={account}
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
                         isTokenABase={isSellTokenBase}
