@@ -17,6 +17,7 @@ import { calcImpact } from '../../../App/functions/calcImpact';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
+import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -71,6 +72,7 @@ interface propsIF {
         popupPlacement?: string,
     ) => void;
     lastBlockNumber: number;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -118,6 +120,7 @@ export default function CurrencyConverter(props: propsIF) {
         acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
+        dexBalancePrefs
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -700,7 +703,6 @@ export default function CurrencyConverter(props: propsIF) {
                 userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
-                // nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
@@ -735,6 +737,7 @@ export default function CurrencyConverter(props: propsIF) {
                 acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
+                dexBalancePrefs={dexBalancePrefs}
             />
             <div
                 className={
@@ -796,6 +799,7 @@ export default function CurrencyConverter(props: propsIF) {
                     acknowledgeToken={acknowledgeToken}
                     openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
+                    dexBalancePrefs={dexBalancePrefs}
                 />
             </div>
         </section>

@@ -7,18 +7,16 @@ import { useState, ChangeEvent, Dispatch, SetStateAction, useEffect } from 'reac
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
-// import Toggle2 from '../../Global/Toggle/Toggle2';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
-// import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
-// import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
+import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -36,7 +34,6 @@ interface propsIF {
     buyQtyString: string;
     setBuyQtyString: Dispatch<SetStateAction<string>>;
     tokenBQtyLocal?: string;
-    // nativeBalance: string;
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -80,6 +77,7 @@ interface propsIF {
         popupPlacement?: string,
     ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -133,6 +131,7 @@ export default function CurrencySelector(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        dexBalancePrefs
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -269,8 +268,10 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleWalletBalanceClick() {
         if (props.sellToken) {
+            dexBalancePrefs.swap.drawFromDexBal.disable();
             setIsWithdrawFromDexChecked(false);
         } else {
+            dexBalancePrefs.swap.outputToDexBal.disable();
             setIsSaveAsDexSurplusChecked(false);
         }
     }
@@ -361,8 +362,10 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleSurplusClick() {
         if (props.sellToken) {
+            dexBalancePrefs.swap.drawFromDexBal.enable();
             setIsWithdrawFromDexChecked(true);
         } else {
+            dexBalancePrefs.swap.outputToDexBal.enable();
             setIsSaveAsDexSurplusChecked(true);
         }
     }
@@ -419,7 +422,6 @@ export default function CurrencySelector(props: propsIF) {
             <DefaultTooltip
                 interactive
                 title={exchangeBalanceTitle}
-                // placement={'bottom'}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
@@ -453,49 +455,17 @@ export default function CurrencySelector(props: propsIF) {
                     </div>
                 </div>
             </DefaultTooltip>
-
-            {/* <IconWithTooltip title={'Exchange Balance'} placement='bottom' explanation>
-                <div
-                    className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
-                    style={{ color: surplusColorStyle }}
-                    onClick={() => handleSurplusClick()}
-                >
-                    <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
-                        <img
-                            src={ambientLogo}
-                            width='20'
-                            alt='surplus'
-                            color='var(--text-highlight)'
-                        />
-                    </div>
-                    <div className={styles.balance_column}>
-                        {isUserLoggedIn && surplusBalanceLocaleString}
-                        <div
-                            style={{
-                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
-                                fontSize: '9px',
-                                // width: '50px'
-                            }}
-                        >
-                            {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange}
-                        </div>
-                    </div>
-                    {surplusMaxButton}
-                </div>
-            </IconWithTooltip> */}
         </div>
     );
 
     // End of  Surplus content function and styles-----------------------------
 
     const swapboxBottomOrNull = !isUserLoggedIn ? (
-        // || (isUserLoggedIn && !userHasEnteredAmount) ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>
             {walletContent}
             {surplusContent}
-            {/* {WithdrawTokensContent} */}
         </div>
     );
 
@@ -503,13 +473,6 @@ export default function CurrencySelector(props: propsIF) {
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-    //     chainId,
-    //     tokensBank,
-    //     verifyToken,
-    //     getTokenByAddress,
-    //     getTokensByName,
-    // );
 
     const handleInputClear = (): void => {
         setInput('');
@@ -532,13 +495,6 @@ export default function CurrencySelector(props: propsIF) {
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
                         setDisableReverseTokens={setDisableReverseTokens}
-
-                        // handleChangeEvent={(evt) => {
-                        //     // console.log('change triggered from selector');
-                        //     // console.log({ evt });
-                        //     if (evt === undefined) return;
-                        //     handleChangeEvent(evt);
-                        // }}
                     />
                 </div>
                 <div
