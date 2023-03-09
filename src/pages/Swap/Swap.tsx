@@ -503,7 +503,9 @@ export default function Swap(props: propsIF) {
 
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
 
-    const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
+    const swapPageStyle = pathname.startsWith('/swap')
+        ? styles.swap_page
+        : styles.scrollable_container;
 
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([
