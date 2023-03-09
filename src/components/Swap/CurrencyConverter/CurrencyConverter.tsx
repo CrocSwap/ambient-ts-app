@@ -432,7 +432,6 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
 
-                console.log({ impact });
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -441,7 +440,6 @@ export default function CurrencyConverter(props: propsIF) {
             }
         } else {
             console.log('token a change event triggered - no event');
-            console.log({ tokenAQtyLocal });
             if (!poolExists) {
                 setSwapAllowed(false);
 
