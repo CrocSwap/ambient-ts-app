@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -9,9 +9,10 @@ import styles from './ExtraInfo.module.css';
 // import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+// import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props in this file
 interface propsIF {
@@ -27,6 +28,7 @@ interface propsIF {
     isDenomBase: boolean;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
+    account: string | undefined;
 }
 
 // central react functional component
@@ -43,6 +45,7 @@ export default function ExtraInfo(props: propsIF) {
         // didUserFlipDenom,
         // isTokenABase,
         isOnTradeRoute,
+        account,
         // isDenomBase,
     } = props;
 
@@ -95,18 +98,10 @@ export default function ExtraInfo(props: propsIF) {
 
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined
-        : isDenomBase
-        ? priceImpact.percentChange * 100
-        : -1 * priceImpact.percentChange * 100;
+        : Math.abs(priceImpact.percentChange) * 100;
 
     const priceImpactString = !priceImpactNum
         ? '…'
-        : priceImpactNum > 0
-        ? '+' +
-          priceImpactNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 3,
-          })
         : priceImpactNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 3,
@@ -116,7 +111,7 @@ export default function ExtraInfo(props: propsIF) {
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `±${slippageTolerance}%`,
+            data: `${slippageTolerance}%`,
         },
         {
             title: 'Liquidity Provider Fee',
@@ -144,13 +139,7 @@ export default function ExtraInfo(props: propsIF) {
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
-        {
-            title: 'Final Price',
-            tooltipTitle: 'Expected Price After Swap',
-            data: isDenomBase
-                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
+
         {
             title: 'Price Impact',
             tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
@@ -158,6 +147,20 @@ export default function ExtraInfo(props: propsIF) {
             placement: 'bottom',
         },
     ];
+    if (
+        [
+            '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc',
+            '0xa86dabfbb529a4c8186bdd52bd226ac81757e090',
+        ].includes(account?.toLowerCase() ?? '')
+    ) {
+        extraInfoData.push({
+            title: 'Final Price',
+            tooltipTitle: 'Expected Price After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        });
+    }
     const extraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) =>
@@ -223,6 +226,21 @@ export default function ExtraInfo(props: propsIF) {
             <RiArrowDownSLine size={20} />
         </div>
     ) : null;
+    const dispatch = useAppDispatch();
+
+    const updateShowExtraDetails = () => {
+        if (
+            !showExtraDetails &&
+            priceImpact?.percentChange &&
+            Math.abs(priceImpact?.percentChange) > 0.02
+        ) {
+            setShowExtraDetails(true);
+        }
+    };
+
+    useEffect(() => {
+        updateShowExtraDetails();
+    }, [priceImpact?.percentChange]);
 
     const extraDetailsDropdown = (
         <div
@@ -237,12 +255,18 @@ export default function ExtraInfo(props: propsIF) {
                 <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
                 {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
             </div>
-            <div className={styles.token_amount}>
+            <div
+                className={styles.token_amount}
+                onClick={(e) => {
+                    dispatch(toggleDidUserFlipDenom());
+                    e.stopPropagation();
+                }}
+            >
                 {isDenomBase
                     ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
             </div>
-            <DenominationSwitch />
+            {/* <DenominationSwitch /> */}
 
             {dropDownOrNull}
         </div>

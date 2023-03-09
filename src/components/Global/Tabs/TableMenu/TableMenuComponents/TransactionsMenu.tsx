@@ -331,7 +331,8 @@ export default function TransactionsMenu(props: propsIF) {
                 className={styles.option_button}
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
-                    dispatch(setLimitTick(0));
+                    dispatch(setLimitTick(undefined));
+
                     navigate(
                         '/trade/limit/' +
                             'chain=' +

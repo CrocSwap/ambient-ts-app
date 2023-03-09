@@ -4,14 +4,13 @@ import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom'
 import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
 import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import Modal from '../../../components/Global/Modal/Modal';
-
+import Button from '../../../components/Global/Button/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -529,12 +528,20 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                 />
-                <RepositionButton
-                    isPositionInRange={isPositionInRange}
-                    bypassConfirm={bypassConfirm}
-                    onClickFn={openModal}
-                    sendRepositionTransaction={sendRepositionTransaction}
-                />
+                <div className={styles.button_container}>
+                    <Button
+                        title={
+                            isPositionInRange
+                                ? 'Position Currently In Range'
+                                : bypassConfirm
+                                ? 'Reposition'
+                                : 'Open Confirmation'
+                        }
+                        action={bypassConfirm ? sendRepositionTransaction : openModal}
+                        disabled={isPositionInRange}
+                        flat={true}
+                    />
+                </div>
             </div>
             {isModalOpen && (
                 <Modal onClose={handleModalClose} title=' Confirm Reposition'>

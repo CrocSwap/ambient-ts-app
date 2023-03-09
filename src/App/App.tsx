@@ -118,12 +118,10 @@ import {
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-// import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
-
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
@@ -144,7 +142,6 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
-// import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
@@ -170,10 +167,7 @@ import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
-// import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
-
-// import { memoizeQuerySpotTick } from './functions/querySpotTick';
-// import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
+import { useExchangePrefs, dexBalanceMethodsIF } from './hooks/useExchangePrefs';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -181,8 +175,6 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
-// const cachedFetchContractDetails = memoizeFetchContractDetails();
-// const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -219,6 +211,15 @@ export default function App() {
 
     // hook to manage favorite pools in the app
     const favePools: favePoolsMethodsIF = useFavePools();
+
+    // hook to manage exchange balance preferences
+    const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
+    const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
+    const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
+
+    false && dexBalPrefSwap;
+    false && dexBalPrefLimit;
+    false && dexBalPrefRange;
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -409,9 +410,6 @@ export default function App() {
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
-    useEffect(() => {
-        console.log({ tokenPairLocal });
-    }, [tokenPairLocal]);
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
@@ -862,7 +860,9 @@ export default function App() {
 
     useEffect(() => {
         // console.log('resetting limit');
-        dispatch(setLimitTick(undefined));
+        if (!location.pathname.includes('limitTick')) {
+            dispatch(setLimitTick(undefined));
+        }
         dispatch(setPrimaryQuantityRange(''));
         // dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
@@ -1273,7 +1273,6 @@ export default function App() {
                                         return getLimitOrderData(limitOrder, searchableTokens);
                                     }),
                                 ).then((updatedLimitOrderStates) => {
-                                    console.log({ updatedLimitOrderStates });
                                     dispatch(
                                         setLimitOrdersByPool({
                                             dataReceived: true,
@@ -2378,9 +2377,8 @@ export default function App() {
         theme: theme,
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
-
         isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
+        setIsTutorialMode: setIsTutorialMode
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2435,13 +2433,16 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange
+        }
     };
 
     // props for <Swap/> React element on trade route
@@ -2487,14 +2488,17 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange
+        }
     };
 
     // props for <Limit/> React element on trade route
