@@ -13,9 +13,11 @@ export interface dexBalanceMethodsIF {
 }
 
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
+    const localStorageSlug = 'dex_bal_pref_' + txType;
+
     const getPersistedData = (type: string) => {
         const preferences = JSON.parse(
-            localStorage.getItem(`dex_bal_pref_${txType}`) as string
+            localStorage.getItem(localStorageSlug) as string
         );
         let userPref: boolean|undefined;
         switch (type) {
@@ -40,7 +42,7 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
 
     useEffect(() => {
         localStorage.setItem(
-            `dex_bal_pref_${txType}`,
+            localStorageSlug,
             JSON.stringify({outputToDexBal, drawFromDexBal})
         );
     }, [outputToDexBal, drawFromDexBal]);
