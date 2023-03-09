@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -9,9 +9,10 @@ import styles from './ExtraInfo.module.css';
 // import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+// import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props in this file
 interface propsIF {
@@ -225,6 +226,21 @@ export default function ExtraInfo(props: propsIF) {
             <RiArrowDownSLine size={20} />
         </div>
     ) : null;
+    const dispatch = useAppDispatch();
+
+    const updateShowExtraDetails = () => {
+        if (
+            !showExtraDetails &&
+            priceImpact?.percentChange &&
+            Math.abs(priceImpact?.percentChange) > 0.02
+        ) {
+            setShowExtraDetails(true);
+        }
+    };
+
+    useEffect(() => {
+        updateShowExtraDetails();
+    }, [priceImpact?.percentChange]);
 
     const extraDetailsDropdown = (
         <div
@@ -239,12 +255,18 @@ export default function ExtraInfo(props: propsIF) {
                 <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
                 {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
             </div>
-            <div className={styles.token_amount}>
+            <div
+                className={styles.token_amount}
+                onClick={(e) => {
+                    dispatch(toggleDidUserFlipDenom());
+                    e.stopPropagation();
+                }}
+            >
                 {isDenomBase
                     ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
             </div>
-            <DenominationSwitch />
+            {/* <DenominationSwitch /> */}
 
             {dropDownOrNull}
         </div>

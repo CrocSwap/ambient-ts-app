@@ -428,6 +428,7 @@ export default function CurrencyConverter(props: propsIF) {
                 // console.log({ input });
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
+                setPriceImpact(undefined);
                 if (isNaN(parsedInput) || parsedInput === 0) return;
             }
             try {
@@ -443,10 +444,10 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
 
-                // console.log({ impact });
+                console.log({ impact });
                 setPriceImpact(impact);
 
-                // impact ? setPriceImpact(impact) : null;
+                // impact ? setPriceImpact(impact) : setPriceImpact(undefined);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
