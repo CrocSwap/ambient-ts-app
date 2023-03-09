@@ -318,7 +318,15 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             className={
-                                location.pathname === link.destination
+                                link.destination.includes('/trade')
+                                    ? location.pathname.includes(tradeDestination)
+                                        ? styles.active
+                                        : styles.inactive
+                                    : link.destination.includes('/swap')
+                                    ? location.pathname.includes('/swap')
+                                        ? styles.active
+                                        : styles.inactive
+                                    : location.pathname === link.destination
                                     ? styles.active
                                     : styles.inactive
                             }
@@ -327,9 +335,16 @@ export default function PageHeader(props: HeaderPropsIF) {
                         >
                             {link.title}
 
-                            {location.pathname === link.destination && (
+                            {((link.destination.includes('/trade') &&
+                                location.pathname.includes(tradeDestination)) ||
+                                (location.pathname.includes('/swap') &&
+                                    link.destination.includes('/swap')) ||
+                                location.pathname === link.destination) && (
                                 <motion.div className={styles.underline} layoutId='underline' />
                             )}
+                            {/* {location.pathname === link.destination && (
+                                <motion.div className={styles.underline} layoutId='underline' />
+                            )} */}
                         </Link>
                     ) : null,
                 )}

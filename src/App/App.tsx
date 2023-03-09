@@ -409,9 +409,6 @@ export default function App() {
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
-    useEffect(() => {
-        console.log({ tokenPairLocal });
-    }, [tokenPairLocal]);
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
@@ -1275,7 +1272,6 @@ export default function App() {
                                         return getLimitOrderData(limitOrder, searchableTokens);
                                     }),
                                 ).then((updatedLimitOrderStates) => {
-                                    console.log({ updatedLimitOrderStates });
                                     dispatch(
                                         setLimitOrdersByPool({
                                             dataReceived: true,
