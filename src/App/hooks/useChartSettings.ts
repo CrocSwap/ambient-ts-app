@@ -3,44 +3,44 @@ import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 // interface for shape of data held in local storage
 interface chartSettingsLocalStorageIF {
-    volume: boolean,
-    tvl: boolean,
-    feeRate: boolean
+    isVolumeSubchartEnabled: boolean;
+    isTvlSubchartEnabled: boolean;
+    isFeeRateSubchartEnabled: boolean;
 }
 
 // interface for class to manage a given subchart setting
 interface subchartSettingsIF {
-    readonly isEnabled: boolean,
-    enable: () => void,
-    disable: () => void,
-    toggle: () => void
+    readonly isEnabled: boolean;
+    enable: () => void;
+    disable: () => void;
+    toggle: () => void;
 }
 
 // interface for return value of this hool
 export interface chartSettingsMethodsIF {
-    volumeSubchart: subchartSettingsIF,
-    tvlSubchart: subchartSettingsIF,
-    feeRateSubchart: subchartSettingsIF
+    volumeSubchart: subchartSettingsIF;
+    tvlSubchart: subchartSettingsIF;
+    feeRateSubchart: subchartSettingsIF;
 }
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (): chartSettingsMethodsIF => {
     // fn to check a user preference for any given subchart
-    const getPreference = (subchart: string): boolean|undefined => {
+    const getPreference = (subchart: string): boolean | undefined => {
         // persisted data from local storage, returns undefined if not present
-        const chartSettings: chartSettingsLocalStorageIF|null = JSON.parse(
-            localStorage.getItem('chartSettings') as string
+        const chartSettings: chartSettingsLocalStorageIF | null = JSON.parse(
+            localStorage.getItem('chart_settings') as string,
         );
-        let output: boolean|undefined;
+        let output: boolean | undefined;
         switch (subchart) {
             case 'volume':
-                output = chartSettings?.volume;
+                output = chartSettings?.isVolumeSubchartEnabled;
                 break;
             case 'tvl':
-                output = chartSettings?.tvl;
+                output = chartSettings?.isTvlSubchartEnabled;
                 break;
             case 'feeRate':
-                output = chartSettings?.feeRate;
+                output = chartSettings?.isFeeRateSubchartEnabled;
                 break;
             default:
                 return;
@@ -51,13 +51,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // hooks to memoize user preferences in local state
     // initializer fallback value is default setting for new users
     const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] = useState<boolean>(
-        getPreference('volume') ?? true
+        getPreference('volume') ?? true,
     );
     const [isTvlSubchartEnabled, setIsTvlSubchartEnabled] = useState<boolean>(
-        getPreference('tvl') ?? false
+        getPreference('tvl') ?? false,
     );
     const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] = useState<boolean>(
-        getPreference('feeRate') ?? false
+        getPreference('feeRate') ?? false,
     );
 
     // hook to update local storage any time one of the preference primitives changes
@@ -68,8 +68,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             JSON.stringify({
                 isVolumeSubchartEnabled,
                 isTvlSubchartEnabled,
-                isFeeRateSubchartEnabled
-            })
+                isFeeRateSubchartEnabled,
+            }),
         );
     }, [isVolumeSubchartEnabled, isTvlSubchartEnabled, isFeeRateSubchartEnabled]);
 
@@ -88,14 +88,20 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         }
         // methods to assign a new value of the variable
         // code in this file will carry through new value to local storage
-        enable() {this.setter(true);}
-        disable() {this.setter(false);}
-        toggle() {this.setter(!this.isEnabled);}
+        enable() {
+            this.setter(true);
+        }
+        disable() {
+            this.setter(false);
+        }
+        toggle() {
+            this.setter(!this.isEnabled);
+        }
     }
 
     return {
         volumeSubchart: new Subchart(isVolumeSubchartEnabled, setIsVolumeSubchartEnabled),
         tvlSubchart: new Subchart(isTvlSubchartEnabled, setIsTvlSubchartEnabled),
-        feeRateSubchart: new Subchart(isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled)
+        feeRateSubchart: new Subchart(isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled),
     };
-}
+};

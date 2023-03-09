@@ -34,6 +34,7 @@ import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
+import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 
 // interface for React functional component props
 interface propsIF {
@@ -90,6 +91,7 @@ interface propsIF {
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    chartSettings: chartSettingsMethodsIF;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
@@ -178,6 +180,7 @@ export default function TradeCharts(props: propsIF) {
         showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
+        chartSettings,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -256,9 +259,9 @@ export default function TradeCharts(props: propsIF) {
     );
     // CHART SETTINGS------------------------------------------------------------
     // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
-    const [showTvl, setShowTvl] = useState(false);
-    const [showFeeRate, setShowFeeRate] = useState(false);
-    const [showVolume, setShowVolume] = useState(true);
+    const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
+    const [showFeeRate, setShowFeeRate] = useState(chartSettings.feeRateSubchart.isEnabled);
+    const [showVolume, setShowVolume] = useState(chartSettings.volumeSubchart.isEnabled);
 
     const [liqMode, setLiqMode] = useState('Depth');
 
@@ -446,6 +449,7 @@ export default function TradeCharts(props: propsIF) {
                     showVolume={showVolume}
                     showTvl={showTvl}
                     showFeeRate={showFeeRate}
+                    chartSettings={chartSettings}
                 />
             </div>
             <div
