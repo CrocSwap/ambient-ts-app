@@ -1,15 +1,15 @@
-import { SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 
 export interface dexBalancePrefIF {
-    value: boolean,
-    enable: (value: SetStateAction<boolean>) => void,
-    disable: (value: SetStateAction<boolean>) => void,
-    toggle: (value: SetStateAction<boolean>) => void
+    isEnabled: boolean,
+    enable: () => void,
+    disable: () => void,
+    toggle: () => void
 };
 
 export interface dexBalanceMethodsIF {
-    outputToDexBal: dexBalancePrefIF,
-    drawFromDexBal: dexBalancePrefIF
+    outputTo: dexBalancePrefIF,
+    drawFrom: dexBalancePrefIF
 }
 
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
@@ -38,18 +38,20 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
         getPersistedData('drawFromDexBal') ?? false
     );
 
+    class DexBalPref implements dexBalancePrefIF {
+        public readonly isEnabled: boolean;
+        private readonly setter: Dispatch<SetStateAction<boolean>>;
+        constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>) {
+            this.isEnabled = enabled;
+            this.setter = setterFn;
+        };
+        public enable() {this.setter(true)};
+        public disable() {this.setter(false)};
+        public toggle() {this.setter(!this.isEnabled)};
+    }
+
     return {
-        outputToDexBal: {
-            value: outputToDexBal,
-            enable: () => setOutputToDexBal(true),
-            disable: () => setOutputToDexBal(false),
-            toggle: () => setOutputToDexBal(!outputToDexBal)
-        },
-        drawFromDexBal: {
-            value: drawFromDexBal,
-            enable: () => setDrawFromDexBal(true),
-            disable: () => setDrawFromDexBal(false),
-            toggle: () => setDrawFromDexBal(!drawFromDexBal)
-        }
+        outputTo: new DexBalPref(outputToDexBal, setOutputToDexBal),
+        drawFrom: new DexBalPref(drawFromDexBal, setDrawFromDexBal)
     };
 }
