@@ -12,6 +12,12 @@ export interface dexBalanceMethodsIF {
     drawFromDexBal: dexBalancePrefIF
 }
 
+export interface allDexBalanceMethodsIF {
+    swap: dexBalanceMethodsIF,
+    limit: dexBalanceMethodsIF,
+    range: dexBalanceMethodsIF
+}
+
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     const localStorageSlug = 'dex_bal_pref_' + txType;
 

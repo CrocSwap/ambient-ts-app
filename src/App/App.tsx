@@ -215,7 +215,6 @@ export default function App() {
 
     // hook to manage exchange balance preferences
     const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
-    console.log({dexBalPrefSwap});
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
 
@@ -2381,9 +2380,8 @@ export default function App() {
         theme: theme,
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
-
         isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
+        setIsTutorialMode: setIsTutorialMode
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2438,13 +2436,16 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange
+        }
     };
 
     // props for <Swap/> React element on trade route
@@ -2490,14 +2491,17 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('swap'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange
+        }
     };
 
     // props for <Limit/> React element on trade route
