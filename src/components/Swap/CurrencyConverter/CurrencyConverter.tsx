@@ -120,7 +120,7 @@ export default function CurrencyConverter(props: propsIF) {
         acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -462,7 +462,6 @@ export default function CurrencyConverter(props: propsIF) {
 
                 return;
             }
-            console.log({ tokenAQtyLocal });
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
             try {

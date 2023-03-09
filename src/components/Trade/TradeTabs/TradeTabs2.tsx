@@ -201,8 +201,8 @@ export default function TradeTabs2(props: propsIF) {
 
     useEffect(() => {
         if (!hasInitialized && !hasUserSelectedViewAll && userPositionsDataReceived) {
-            console.log({ outsideControl });
-            console.log({ selectedOutsideTab });
+            // console.log({ outsideControl });
+            // console.log({ selectedOutsideTab });
             if (
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
