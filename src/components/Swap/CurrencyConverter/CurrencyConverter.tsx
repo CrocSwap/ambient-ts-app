@@ -355,7 +355,6 @@ export default function CurrencyConverter(props: propsIF) {
                             `${tokenASymbolLocal} Amount Must Be Less Than Exchange Surplus Balance`,
                         );
                     } else {
-                        console.log('setting to true');
                         setSwapAllowed(true);
                     }
                 } else {
@@ -367,7 +366,6 @@ export default function CurrencyConverter(props: propsIF) {
                             `${tokenASymbolLocal} Amount Must Be Less Than Wallet Balance`,
                         );
                     } else {
-                        console.log('setting to true');
                         setSwapAllowed(true);
                     }
                 }

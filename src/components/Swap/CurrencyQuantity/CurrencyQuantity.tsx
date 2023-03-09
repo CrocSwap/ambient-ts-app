@@ -26,23 +26,24 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisableReverseTokens,
     } = props;
 
-    const [newChangeEvent, setNewChangeEvent] = useState<
-        ChangeEvent<HTMLInputElement> | undefined
-    >();
+    // const [newChangeEvent, setNewChangeEvent] = useState<
+    //     ChangeEvent<HTMLInputElement> | undefined
+    // >();
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    useEffect(() => {
-        setDisplayValue(value);
-    }, [value]);
+    // useEffect(() => {
+    //     setDisplayValue(value);
+    // }, [value]);
 
-    const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
+    // const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
+    const deboundedValueFromProps = useDebounce(value, 500); // debounce 1/2 second
 
     useEffect(() => {
-        if (debouncedEvent) {
-            handleChangeEvent(debouncedEvent);
-        }
-    }, [debouncedEvent]);
+        // if (deboundedValueFromProps) {
+        setDisplayValue(deboundedValueFromProps);
+        // }
+    }, [deboundedValueFromProps]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         if (event && fieldId === 'sell') {
@@ -59,14 +60,15 @@ export default function CurrencyQuantity(props: propsIF) {
             }
         }
 
-        setDisableReverseTokens(true);
-        setNewChangeEvent(event);
-
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
 
         setDisplayValue(input);
+
+        setDisableReverseTokens(true);
+        // setNewChangeEvent(event);
+        handleChangeEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
@@ -84,11 +86,14 @@ export default function CurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
+                    const targetValue = event.target.value;
                     const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) > thisToken.decimals;
+                        precisionOfInput(targetValue) > thisToken.decimals;
                     const isValid =
                         !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' || event.target.validity.valid);
+                        (targetValue === '' || event.target.validity.valid);
+                    console.log({ isValid });
+                    console.log({ targetValue });
                     isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}
