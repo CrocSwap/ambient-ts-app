@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -25,7 +25,6 @@ import {
     // setPrimaryQuantity,
     setShouldLimitConverterUpdate,
     setShouldSwapConverterUpdate,
-    setSimpleRangeWidth,
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
@@ -45,6 +44,7 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // React functional component
@@ -63,6 +63,7 @@ export default function TransactionsMenu(props: propsIF) {
         closeGlobalModal,
         handlePulseAnimation,
         isOnPortfolioPage,
+        setSimpleRangeWidth,
     } = props;
 
     // const [value, copy] = useCopyToClipboard();
@@ -109,7 +110,7 @@ export default function TransactionsMenu(props: propsIF) {
         }
 
         if (tx.positionType === 'ambient') {
-            dispatch(setSimpleRangeWidth(100));
+            setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {

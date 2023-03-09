@@ -4,14 +4,13 @@ import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom'
 import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
 import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import Modal from '../../../components/Global/Modal/Modal';
-
+import Button from '../../../components/Global/Button/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -28,6 +27,7 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -44,6 +44,8 @@ interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    simpleRangeWidth: number;
 }
 
 export default function Reposition(props: propsIF) {
@@ -62,6 +64,8 @@ export default function Reposition(props: propsIF) {
         tokenPair,
         poolPriceDisplay,
         lastBlockNumber,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
     } = props;
 
     // current URL parameter string
@@ -113,7 +117,6 @@ export default function Reposition(props: propsIF) {
 
     const isTokenABase = tradeData.isTokenABase;
 
-    const simpleRangeWidth = tradeData.simpleRangeWidth;
     const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     const currentPoolPriceTick = Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -173,13 +176,32 @@ export default function Reposition(props: propsIF) {
         resetConfirmation();
     };
 
-    useEffect(() => {
-        setRangeWidthPercentage(() => simpleRangeWidth);
-    }, [simpleRangeWidth]);
-
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
+
+    useEffect(() => {
+        console.log('set Advanced Mode to false');
+        dispatch(setAdvancedMode(false));
+    }, []);
+
+    useEffect(() => {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(simpleRangeWidth);
+            setRangeWidthPercentage(simpleRangeWidth);
+            const sliderInput = document.getElementById(
+                'reposition-input-slider-range',
+            ) as HTMLInputElement;
+            if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
+        }
+    }, [simpleRangeWidth]);
+
+    useEffect(() => {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(rangeWidthPercentage);
+            setRangeWidthPercentage(rangeWidthPercentage);
+        }
+    }, [rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -206,14 +228,6 @@ export default function Reposition(props: propsIF) {
         position?.base,
         position?.quote,
     ]);
-
-    useEffect(() => {
-        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
-            console.log('set Range');
-            // dispatch(setRangeModuleTriggered(true));
-            // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
-        }
-    }, [rangeWidthPercentage]);
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
@@ -514,12 +528,20 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                 />
-                <RepositionButton
-                    isPositionInRange={isPositionInRange}
-                    bypassConfirm={bypassConfirm}
-                    onClickFn={openModal}
-                    sendRepositionTransaction={sendRepositionTransaction}
-                />
+                <div className={styles.button_container}>
+                    <Button
+                        title={
+                            isPositionInRange
+                                ? 'Position Currently In Range'
+                                : bypassConfirm
+                                ? 'Reposition'
+                                : 'Open Confirmation'
+                        }
+                        action={bypassConfirm ? sendRepositionTransaction : openModal}
+                        disabled={isPositionInRange}
+                        flat={true}
+                    />
+                </div>
             </div>
             {isModalOpen && (
                 <Modal onClose={handleModalClose} title=' Confirm Reposition'>

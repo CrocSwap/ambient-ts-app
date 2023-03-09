@@ -57,13 +57,13 @@ export default function SidebarLimitOrders(props: propsIF) {
         setIsShowAllEnabled(false);
         navigate(
             '/trade/limit/chain=' +
-            chainId +
-            '&tokenA=' +
-            limitOrder.base +
-            '&tokenB=' +
-            limitOrder.quote
+                chainId +
+                '&tokenA=' +
+                limitOrder.base +
+                '&tokenB=' +
+                limitOrder.quote,
         );
-    }
+    };
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
@@ -76,15 +76,13 @@ export default function SidebarLimitOrders(props: propsIF) {
         // props.setExpandTradeTable(true);
     };
 
-    // TODO:   @Junior please refactor header <div> as a <header> element
-
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            <header className={styles.header}>
                 <div>Pool</div>
                 <div>Price</div>
                 <div>Value</div>
-            </div>
+            </header>
             <div className={styles.content}>
                 {limitOrderByUser &&
                     limitOrderByUser.map((order: LimitOrderIF) => (

@@ -92,6 +92,9 @@ interface propsIF {
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     chartSettings: chartSettingsMethodsIF;
+    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    repositionRangeWidth: number;
 }
 
 export interface CandleChartData {
@@ -176,6 +179,7 @@ export default function TradeCharts(props: propsIF) {
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
+        setSimpleRangeWidth,
         chartSettings,
     } = props;
 
@@ -259,16 +263,15 @@ export default function TradeCharts(props: propsIF) {
     const [showFeeRate, setShowFeeRate] = useState(chartSettings.feeRateSubchart.isEnabled);
     const [showVolume, setShowVolume] = useState(chartSettings.volumeSubchart.isEnabled);
 
-    const [liqMode, setLiqMode] = useState('Depth');
+    const [liqMode, setLiqMode] = useState('Curve'); // TODO: switch default back to depth once depth mode is fixed
 
     const path = useLocation().pathname;
 
     const isMarketOrLimitModule = path.includes('market') || path.includes('limit');
 
     useEffect(() => {
-        // console.log({ isMarketOrLimitModule });
         if (isMarketOrLimitModule) {
-            setLiqMode('Depth');
+            // setLiqMode('Depth'); // TODO: the following code will be uncommented once depth mode is fixed
         } else {
             setLiqMode('Curve');
         }
@@ -595,6 +598,9 @@ export default function TradeCharts(props: propsIF) {
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
+                        setSimpleRangeWidth={setSimpleRangeWidth}
+                        setRepositionRangeWidth={props.setRepositionRangeWidth}
+                        repositionRangeWidth={props.repositionRangeWidth}
                     />
                 </div>
             )}

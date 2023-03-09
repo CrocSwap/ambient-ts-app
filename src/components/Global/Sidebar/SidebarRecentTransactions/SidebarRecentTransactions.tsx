@@ -57,15 +57,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-            chainId +
-            '&tokenA=' +
-            tx.base +
-            '&tokenB=' +
-            tx.quote
-        );
-    }
+        navigate('/trade/market/chain=' + chainId + '&tokenA=' + tx.base + '&tokenB=' + tx.quote);
+    };
 
     const handleViewMoreClick = (): void => {
         redirectBasedOnRoute();
@@ -74,15 +67,13 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setShowSidebar(false);
     };
 
-    // TODO:   @Junior please refactor the header <div> as a <header> element
-
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            <header className={styles.header}>
                 <div>Pool</div>
                 <div>Type</div>
                 <div>Value</div>
-            </div>
+            </header>
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx: TransactionIF) => (
                     <SidebarRecentTransactionsCard

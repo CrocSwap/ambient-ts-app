@@ -24,15 +24,13 @@ export default function RecentPools(props: RecentPoolsProps) {
         getTokenByAddress,
     } = props;
 
-    // TODO:   @Junior please refactor the header <div> as a <header> element
-
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            <header className={styles.header}>
                 <div>Pool</div>
                 <div>Volume</div>
                 <div>TVL</div>
-            </div>
+            </header>
             <div className={styles.content}>
                 {getRecentPools(5).map((pool) => (
                     <RecentPoolsCard

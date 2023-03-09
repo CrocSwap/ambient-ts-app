@@ -1,5 +1,5 @@
 import styles from './FullChat.module.css';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
@@ -35,7 +35,6 @@ export default function FullChat(props: FullChatPropsIF) {
     const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
-
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     // eslint-disable-next-line
@@ -60,6 +59,17 @@ export default function FullChat(props: FullChatPropsIF) {
 
         // handleDropdownMenu();
     }
+    useEffect(() => {
+        props.favePools.pools.map((pool: PoolIF) => {
+            for (let x = 0; x < topPools.length; x++) {
+                if (pool.base.symbol + '/' + pool.quote.symbol === topPools[x].name) {
+                    topPools.push(topPools.splice(x, 1)[0]);
+                } else {
+                    // do nothing
+                }
+            }
+        });
+    }, []);
 
     function handleGlobalClick() {
         props.setRoom('Global');
