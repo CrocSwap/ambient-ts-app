@@ -196,10 +196,18 @@ export default function Swap(props: propsIF) {
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(tradeData.primaryQuantity !== '');
 
+    // hooks to track whether user will use dex or wallet funds in transaction, this is
+    // ... abstracted away from the central hook because the hook manages preference
+    // ... and does not consider whether dex balance is sufficient
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState<boolean>(
+        dexBalancePrefs.swap.drawFromDexBal.isEnabled
+    );
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState<boolean>(
+        dexBalancePrefs.swap.outputToDexBal.isEnabled
+    );
+
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
-    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
-    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
