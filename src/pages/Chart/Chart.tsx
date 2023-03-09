@@ -3949,7 +3949,7 @@ export default function Chart(props: ChartData) {
                     .enter()
                     .append('line')
                     .attr('stroke-width', 1)
-                    .style('pointer-events', 'all');
+                    .attr('pointer-events', 'none');
                 selection.enter().select('g.top-handle').remove();
             });
 
@@ -3969,7 +3969,7 @@ export default function Chart(props: ChartData) {
                     .enter()
                     .append('line')
                     .attr('stroke-width', 1)
-                    .style('pointer-events', 'all');
+                    .attr('pointer-events', 'none');
                 selection.enter().select('g.left-handle').remove();
                 selection.enter().select('g.right-handle').remove();
             });

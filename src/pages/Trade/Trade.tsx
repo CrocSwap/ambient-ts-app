@@ -23,6 +23,7 @@ import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/T
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
+import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 
 // interface for React functional component props
 interface propsIF {
@@ -92,11 +93,13 @@ interface propsIF {
     simpleRangeWidth: number;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
+    chartSettings: chartSettingsMethodsIF;
 }
 
 // React functional component
 export default function Trade(props: propsIF) {
     const {
+        chartSettings,
         pool,
         tokenList,
         cachedQuerySpotPrice,
@@ -478,6 +481,7 @@ export default function Trade(props: propsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
+        chartSettings: chartSettings,
         isUserLoggedIn: isUserLoggedIn,
         pool: pool,
         chainData: chainData,

@@ -422,6 +422,7 @@ export default function Range(props: propsIF) {
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
     useEffect(() => {
+        // console.log({ poolExists });
         if (poolExists === undefined || poolPriceNonDisplay === undefined) {
             setRangeButtonErrorMessage('…');
         } else if (!poolExists) {
@@ -1115,6 +1116,7 @@ export default function Range(props: propsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
+        poolExists: poolExists,
         provider: provider,
         isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
