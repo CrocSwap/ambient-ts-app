@@ -1,6 +1,18 @@
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 
-export const useExchangePrefs = (txType: string) => {
+export interface dexBalancePrefIF {
+    value: boolean,
+    enable: (value: SetStateAction<boolean>) => void,
+    disable: (value: SetStateAction<boolean>) => void,
+    toggle: (value: SetStateAction<boolean>) => void
+};
+
+export interface dexBalanceMethodsIF {
+    outputToDexBal: dexBalancePrefIF,
+    drawFromDexBal: dexBalancePrefIF
+}
+
+export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     const getPersistedData = (type: string) => {
         const preferences = JSON.parse(
             localStorage.getItem(`dex_balance_prefs_${txType}`) as string

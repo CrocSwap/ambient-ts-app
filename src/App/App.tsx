@@ -171,7 +171,7 @@ import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
-import { useExchangePrefs } from './hooks/useExchangePrefs';
+import { useExchangePrefs, dexBalanceMethodsIF } from './hooks/useExchangePrefs';
 // import TutorialOverlay from '../components/Global/TutorialOverlay/TutorialOverlay';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -223,11 +223,11 @@ export default function App() {
     const favePools: favePoolsMethodsIF = useFavePools();
 
     // hook to manage exchange balance preferences
-    const dexBalPrefSwap = useExchangePrefs('swap');
+    const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
     console.log(dexBalPrefSwap);
-    const dexBalPrefLimit = useExchangePrefs('limit');
+    const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     console.log(dexBalPrefLimit);
-    const dexBalPrefRange = useExchangePrefs('range');
+    const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
     console.log(dexBalPrefRange);
 
     // hook to manage app skin
