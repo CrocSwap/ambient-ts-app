@@ -1,5 +1,6 @@
 .dropdown_menu_container {
     min-width: 100px;
+    z-index: 999;
 }
 
 .selector_select {
@@ -13,6 +14,7 @@
     line-height: var(--header2-lh);
     letter-spacing: -0.02em;
     color: var(--text-grey-light);
+    z-index: 999;
 }
 .selector_select_container {
     position: relative;

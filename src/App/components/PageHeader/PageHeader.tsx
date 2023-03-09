@@ -318,7 +318,15 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             className={
-                                location.pathname === link.destination
+                                link.destination.includes('/trade')
+                                    ? location.pathname.includes(tradeDestination)
+                                        ? styles.active
+                                        : styles.inactive
+                                    : link.destination.includes('/swap')
+                                    ? location.pathname.includes('/swap')
+                                        ? styles.active
+                                        : styles.inactive
+                                    : location.pathname === link.destination
                                     ? styles.active
                                     : styles.inactive
                             }
@@ -327,9 +335,16 @@ export default function PageHeader(props: HeaderPropsIF) {
                         >
                             {link.title}
 
-                            {location.pathname === link.destination && (
+                            {((link.destination.includes('/trade') &&
+                                location.pathname.includes(tradeDestination)) ||
+                                (location.pathname.includes('/swap') &&
+                                    link.destination.includes('/swap')) ||
+                                location.pathname === link.destination) && (
                                 <motion.div className={styles.underline} layoutId='underline' />
                             )}
+                            {/* {location.pathname === link.destination && (
+                                <motion.div className={styles.underline} layoutId='underline' />
+                            )} */}
                         </Link>
                     ) : null,
                 )}
@@ -344,6 +359,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
                 <img src={headerLogo} alt='ambient' />
+                <img src='./ambient_logo_1.png' alt='' width='25' />
                 {/* <h1>ambient</h1> */}
             </Link>
             {/* <div
@@ -375,7 +391,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                     switchTheme={switchTheme}
                 /> */}
                 <div className={styles.account}>
-                    {showBranchName ? branchName : null}
+                    <p className={styles.branch_name}>{showBranchName ? branchName : null}</p>
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
                     {!isConnected && connectWagmiButton}

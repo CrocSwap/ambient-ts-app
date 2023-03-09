@@ -44,7 +44,6 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setSimpleRangeWidth,
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setTargetData,
@@ -125,6 +124,8 @@ interface propsIF {
 
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    simpleRangeWidth: number;
 }
 
 export default function Range(props: propsIF) {
@@ -179,6 +180,8 @@ export default function Range(props: propsIF) {
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -277,23 +280,21 @@ export default function Range(props: propsIF) {
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
-        tradeData.simpleRangeWidth,
-    );
+    const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(simpleRangeWidth);
 
     useEffect(() => {
-        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
-            setSimpleRangeWidth(tradeData.simpleRangeWidth);
-            setRangeWidthPercentage(tradeData.simpleRangeWidth);
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(simpleRangeWidth);
+            setRangeWidthPercentage(simpleRangeWidth);
             const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
-            if (sliderInput) sliderInput.value = tradeData.simpleRangeWidth.toString();
+            if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
         }
-    }, [tradeData.simpleRangeWidth]);
+    }, [simpleRangeWidth]);
 
     useEffect(() => {
-        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
             dispatch(setRangeModuleTriggered(true));
-            dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+            setSimpleRangeWidth(rangeWidthPercentage);
             dispatch(setRescaleRangeBoundaries(true));
         }
     }, [rangeWidthPercentage]);

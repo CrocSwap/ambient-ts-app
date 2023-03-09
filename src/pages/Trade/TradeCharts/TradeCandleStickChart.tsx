@@ -88,6 +88,9 @@ interface ChartData {
     seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
+    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
+    repositionRangeWidth: number;
 }
 
 export interface ChartUtils {
@@ -127,6 +130,9 @@ export default function TradeCandleStickChart(props: ChartData) {
         seRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
+        setSimpleRangeWidth,
+        setRepositionRangeWidth,
+        repositionRangeWidth,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -613,7 +619,13 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [liquidityData === undefined]);
+    }, [
+        liquidityData === undefined,
+        liquidityData?.liqAskData.length === 0,
+        liquidityData?.liqBidData.length === 0,
+        liquidityData?.depthLiqAskData.length === 0,
+        liquidityData?.depthLiqAskData.length === 0,
+    ]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         console.log('parse Liq Scale');
@@ -760,7 +772,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
-                        simpleRangeWidth={props.simpleRangeWidth}
+                        rangeSimpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         poolPriceDisplay={props.poolPriceDisplay}
@@ -797,6 +809,9 @@ export default function TradeCandleStickChart(props: ChartData) {
                         seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
+                        setRangeSimpleRangeWidth={setSimpleRangeWidth}
+                        setRepositionRangeWidth={setRepositionRangeWidth}
+                        repositionRangeWidth={repositionRangeWidth}
                     />
                 ) : (
                     <>{loading}</>

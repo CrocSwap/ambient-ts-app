@@ -89,6 +89,10 @@ interface propsIF {
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    simpleRangeWidth: number;
+    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
+    repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
 }
 
@@ -144,6 +148,10 @@ export default function Trade(props: propsIF) {
         rescaleRangeBoundariesWithSlider,
         seRescaleRangeBoundariesWithSlider,
         setCandleDomains,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
+        setRepositionRangeWidth,
+        repositionRangeWidth,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(chainId, isInitialized);
@@ -191,7 +199,6 @@ export default function Trade(props: propsIF) {
         isDenomBase,
         limitTick,
         advancedMode,
-        simpleRangeWidth,
         activeChartPeriod,
         pinnedMaxPriceDisplayTruncated,
         pinnedMinPriceDisplayTruncated,
@@ -375,43 +382,6 @@ export default function Trade(props: propsIF) {
         </section>
     );
 
-    const mobileDataToggle = (
-        <div className={styles.mobile_toggle_container}>
-            {/* <button
-                onClick={() => setActiveMobileComponent('trade')}
-                className={
-                    activeMobileComponent === 'trade'
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
-            >
-                Trade
-            </button> */}
-            {/* {!isCandleDataNull && (
-                <button
-                    onClick={() => setActiveMobileComponent('chart')}
-                    className={
-                        activeMobileComponent === 'chart'
-                            ? styles.active_button_mobile_toggle
-                            : styles.non_active_button_mobile_toggle
-                    }
-                >
-                    Chart
-                </button>
-            )} */}
-            {/* <button
-                onClick={() => setActiveMobileComponent('transactions')}
-                className={
-                    activeMobileComponent === 'transactions'
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
-            >
-                Transactions
-            </button> */}
-        </div>
-    );
-
     const [activeTimeFrame, setActiveTimeFrame] = useState(
         activeChartPeriod === 60
             ? '1m'
@@ -524,6 +494,9 @@ export default function Trade(props: propsIF) {
         isTutorialMode: props.isTutorialMode,
         setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
+        setSimpleRangeWidth: setSimpleRangeWidth,
+        setRepositionRangeWidth: setRepositionRangeWidth,
+        repositionRangeWidth: repositionRangeWidth,
     };
 
     const tradeTabsProps = {
@@ -580,6 +553,7 @@ export default function Trade(props: propsIF) {
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
+        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     const mobileTrade = (
@@ -594,7 +568,6 @@ export default function Trade(props: propsIF) {
             }}
         >
             {poolNotInitializedContent}
-            {mobileDataToggle}
             {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && (
                 <div className={` ${fullScreenStyle}`} style={{ marginLeft: '2rem' }}>

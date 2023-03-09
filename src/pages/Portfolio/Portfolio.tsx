@@ -82,6 +82,7 @@ interface propsIF {
     searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -131,6 +132,7 @@ export default function Portfolio(props: propsIF) {
         searchType,
         chainData,
         mainnetProvider,
+        setSimpleRangeWidth,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -605,6 +607,7 @@ export default function Portfolio(props: propsIF) {
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         fullLayoutToggle: fullLayerToggle,
         handlePulseAnimation: handlePulseAnimation,
+        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     const soloTokenSelectProps = {

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -22,7 +22,6 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
     setRangeModuleTriggered,
-    setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
@@ -45,6 +44,7 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
     isEmpty: boolean;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // React functional component
@@ -63,6 +63,7 @@ export default function RangesMenu(props: propsIF) {
         // isOnPortfolioPage,
         handlePulseAnimation,
         // showHighlightedButton,
+        setSimpleRangeWidth,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -118,7 +119,7 @@ export default function RangesMenu(props: propsIF) {
         }
 
         if (position.positionType === 'ambient') {
-            dispatch(setSimpleRangeWidth(100));
+            setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
         } else {
             console.log({ position });

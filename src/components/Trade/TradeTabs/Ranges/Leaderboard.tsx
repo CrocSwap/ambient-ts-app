@@ -60,6 +60,7 @@ interface propsIF {
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // react functional component
@@ -86,6 +87,7 @@ export default function Leaderboard(props: propsIF) {
         // setLeaderOwnerId,
         cachedQuerySpotPrice,
         showSidebar,
+        setSimpleRangeWidth,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -355,6 +357,7 @@ export default function Leaderboard(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             // blockExplorer={blockExplorer}
             showPair={showPair}
+            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
 

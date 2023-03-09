@@ -26,7 +26,7 @@ export default function SidebarRangePositions(props: propsIF) {
         setShowSidebar,
         setOutsideControl,
         setSelectedOutsideTab,
-        setIsShowAllEnabled
+        setIsShowAllEnabled,
     } = props;
 
     const location = useLocation();
@@ -47,15 +47,8 @@ export default function SidebarRangePositions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-            chainId +
-            '&tokenA=' +
-            pos.base +
-            '&tokenB=' +
-            pos.quote
-        );
-    }
+        navigate('/trade/range/chain=' + chainId + '&tokenA=' + pos.base + '&tokenB=' + pos.quote);
+    };
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
@@ -64,15 +57,13 @@ export default function SidebarRangePositions(props: propsIF) {
         setShowSidebar(false);
     };
 
-    // TODO:   @Junior please refactor the header <div> as a <header> element
-
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            <header className={styles.header}>
                 <div>Pool</div>
                 <div>Range</div>
                 <div>Value</div>
-            </div>
+            </header>
             <div className={styles.content}>
                 {userPositions &&
                     userPositions.map((position, idx) => (

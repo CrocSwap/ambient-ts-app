@@ -38,6 +38,7 @@ interface propsIF {
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 export default function TransactionRow(props: propsIF) {
     const {
@@ -61,6 +62,7 @@ export default function TransactionRow(props: propsIF) {
         openGlobalModal,
         showPair,
         // showSidebar,
+        setSimpleRangeWidth,
     } = props;
 
     const {
@@ -806,6 +808,7 @@ export default function TransactionRow(props: propsIF) {
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
                     isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                    setSimpleRangeWidth={setSimpleRangeWidth}
                 />
             </li>
         </ul>
