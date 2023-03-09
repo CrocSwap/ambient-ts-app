@@ -17,9 +17,11 @@
     -webkit-backdrop-filter: blur(16.5px);
     border-radius: var(--border-radius);
     border: 1px solid rgba(255, 255, 255, 0.18);
+    z-index: 999;
 }
 .menu {
     width: 100%;
+    z-index: 999;
 }
 
 .menu_item {

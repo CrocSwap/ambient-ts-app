@@ -6,7 +6,7 @@
     background: transparent;
     border-radius: var(--border-radius);
     gap: var(--gap, 0.5rem);
-    z-index: 999;
+   
 }
 .account_container div {
     font-size: var(--body-size);
@@ -24,6 +24,7 @@
     line-height: var(--body-lh);
     text-align: center;
     cursor: pointer;
+    z-index: 9999;
 }
 
 .white {
@@ -125,7 +126,7 @@
     width: 350px;
     height: 250px;
     right: -40px;
-    z-index: 9;
+    z-index: 9999;
     padding: 8px 1rem;
 
     display: flex;

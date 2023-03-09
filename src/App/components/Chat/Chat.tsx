@@ -8,8 +8,7 @@ import { devpun } from './devpun';
 
 import notificationSound from '../../../assets/audio/message.wav';
 import MessageItem from './MessageItem/MessageItem';
-import ChatButton from './ChatButton/ChatButton';
-import ChatPanel from '../../../components/Chat/ChatPanel';
+
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface ChatPropsIF {
@@ -31,7 +30,7 @@ export default function Chat(props: ChatPropsIF) {
     const [messagesArray, setMessagesArray] = useState<MessageType[]>([]);
     const [aiMessageIsAJoke, setAiMessageIsAJoke] = useState(false);
     const [soundIsMuted, setSoundIsMuted] = useState(false);
-    const [chatStatus, setChatStatus] = useState(false);
+    // const [chatStatus, setChatStatus] = useState(false);
 
     useEffect(() => {
         props.fullScreen ? setShowChatBot(true) : null;

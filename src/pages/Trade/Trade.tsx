@@ -382,43 +382,6 @@ export default function Trade(props: propsIF) {
         </section>
     );
 
-    const mobileDataToggle = (
-        <div className={styles.mobile_toggle_container}>
-            {/* <button
-                onClick={() => setActiveMobileComponent('trade')}
-                className={
-                    activeMobileComponent === 'trade'
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
-            >
-                Trade
-            </button> */}
-            {/* {!isCandleDataNull && (
-                <button
-                    onClick={() => setActiveMobileComponent('chart')}
-                    className={
-                        activeMobileComponent === 'chart'
-                            ? styles.active_button_mobile_toggle
-                            : styles.non_active_button_mobile_toggle
-                    }
-                >
-                    Chart
-                </button>
-            )} */}
-            {/* <button
-                onClick={() => setActiveMobileComponent('transactions')}
-                className={
-                    activeMobileComponent === 'transactions'
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
-            >
-                Transactions
-            </button> */}
-        </div>
-    );
-
     const [activeTimeFrame, setActiveTimeFrame] = useState(
         activeChartPeriod === 60
             ? '1m'
@@ -605,7 +568,6 @@ export default function Trade(props: propsIF) {
             }}
         >
             {poolNotInitializedContent}
-            {mobileDataToggle}
             {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && (
                 <div className={` ${fullScreenStyle}`} style={{ marginLeft: '2rem' }}>
