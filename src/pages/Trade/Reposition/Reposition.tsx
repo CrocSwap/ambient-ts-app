@@ -28,6 +28,7 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -44,6 +45,8 @@ interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    simpleRangeWidth: number;
 }
 
 export default function Reposition(props: propsIF) {
@@ -62,6 +65,8 @@ export default function Reposition(props: propsIF) {
         tokenPair,
         poolPriceDisplay,
         lastBlockNumber,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
     } = props;
 
     // current URL parameter string
@@ -113,7 +118,6 @@ export default function Reposition(props: propsIF) {
 
     const isTokenABase = tradeData.isTokenABase;
 
-    const simpleRangeWidth = tradeData.simpleRangeWidth;
     const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     const currentPoolPriceTick = Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -173,13 +177,32 @@ export default function Reposition(props: propsIF) {
         resetConfirmation();
     };
 
-    useEffect(() => {
-        setRangeWidthPercentage(() => simpleRangeWidth);
-    }, [simpleRangeWidth]);
-
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
+
+    useEffect(() => {
+        console.log('set Advanced Mode to false');
+        dispatch(setAdvancedMode(false));
+    }, []);
+
+    useEffect(() => {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(simpleRangeWidth);
+            setRangeWidthPercentage(simpleRangeWidth);
+            const sliderInput = document.getElementById(
+                'reposition-input-slider-range',
+            ) as HTMLInputElement;
+            if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
+        }
+    }, [simpleRangeWidth]);
+
+    useEffect(() => {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setSimpleRangeWidth(rangeWidthPercentage);
+            setRangeWidthPercentage(rangeWidthPercentage);
+        }
+    }, [rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -206,14 +229,6 @@ export default function Reposition(props: propsIF) {
         position?.base,
         position?.quote,
     ]);
-
-    useEffect(() => {
-        if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
-            console.log('set Range');
-            // dispatch(setRangeModuleTriggered(true));
-            // dispatch(setSimpleRangeWidth(rangeWidthPercentage));
-        }
-    }, [rangeWidthPercentage]);
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {

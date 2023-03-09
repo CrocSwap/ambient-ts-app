@@ -21,7 +21,6 @@ interface currentPoolInfo {
     limitTick: number;
     advancedLowTick: number;
     advancedHighTick: number;
-    simpleRangeWidth: number;
     slippageTolerance: number;
     activeChartPeriod: number;
     targetData: targetData[];

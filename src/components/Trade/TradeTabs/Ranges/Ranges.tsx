@@ -68,6 +68,7 @@ interface propsIF {
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // react functional component
@@ -97,6 +98,7 @@ export default function Ranges(props: propsIF) {
         setIsShowAllEnabled,
         showSidebar,
         cachedQuerySpotPrice,
+        setSimpleRangeWidth,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -463,6 +465,7 @@ export default function Ranges(props: propsIF) {
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
+            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
 
