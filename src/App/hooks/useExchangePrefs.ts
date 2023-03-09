@@ -8,14 +8,14 @@ export interface dexBalancePrefIF {
 };
 
 export interface dexBalanceMethodsIF {
-    outputTo: dexBalancePrefIF,
-    drawFrom: dexBalancePrefIF
+    outputToDexBal: dexBalancePrefIF,
+    drawFromDexBal: dexBalancePrefIF
 }
 
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     const getPersistedData = (type: string) => {
         const preferences = JSON.parse(
-            localStorage.getItem(`dex_balance_prefs_${txType}`) as string
+            localStorage.getItem(`dex_bal_pref_${txType}`) as string
         );
         let userPref: boolean|undefined;
         switch (type) {
@@ -59,7 +59,7 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     };
 
     return {
-        outputTo: new DexBalPref(outputToDexBal, setOutputToDexBal),
-        drawFrom: new DexBalPref(drawFromDexBal, setDrawFromDexBal)
+        outputToDexBal: new DexBalPref(outputToDexBal, setOutputToDexBal),
+        drawFromDexBal: new DexBalPref(drawFromDexBal, setDrawFromDexBal)
     };
 }

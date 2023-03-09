@@ -215,11 +215,13 @@ export default function App() {
 
     // hook to manage exchange balance preferences
     const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
-    console.log(dexBalPrefSwap.drawFrom.enable);
+    console.log({dexBalPrefSwap});
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
-    console.log(dexBalPrefLimit);
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
-    console.log(dexBalPrefRange);
+
+    false && dexBalPrefSwap;
+    false && dexBalPrefLimit;
+    false && dexBalPrefRange;
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
