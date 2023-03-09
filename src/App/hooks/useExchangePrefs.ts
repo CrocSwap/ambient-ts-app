@@ -10,10 +10,10 @@ export const useExchangePrefs = (txType: string) => {
         let userPref: boolean|undefined;
         switch (type) {
             case 'outputToDexBal':
-                userPref = preferences.outputToDexBal;
+                userPref = preferences?.outputToDexBal;
                 break;
             case 'drawFromDexBal':
-                userPref = preferences.drawFromDexBal;
+                userPref = preferences?.drawFromDexBal;
                 break;
             default:
                 userPref = undefined;
@@ -27,8 +27,19 @@ export const useExchangePrefs = (txType: string) => {
     const [drawFromDexBal, setDrawFromDexBal] = useState<boolean>(
         getPersistedData('drawFromDexBal') ?? false
     );
-    false && outputToDexBal;
-    false && setOutputToDexBal;
-    false && drawFromDexBal;
-    false && setDrawFromDexBal;
+
+    return {
+        outputToDexBal: {
+            value: outputToDexBal,
+            enable: () => setOutputToDexBal(true),
+            disable: () => setOutputToDexBal(false),
+            toggle: () => setOutputToDexBal(!outputToDexBal)
+        },
+        drawFromDexBal: {
+            value: drawFromDexBal,
+            enable: () => setDrawFromDexBal(true),
+            disable: () => setDrawFromDexBal(false),
+            toggle: () => setDrawFromDexBal(!drawFromDexBal)
+        }
+    };
 }
