@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
 export const useExchangePrefs = (txType: string) => {
-    console.log('exchange balance pref for txType: ' + txType);
-
     const getPersistedData = (type: string) => {
         const preferences = JSON.parse(
             localStorage.getItem(`dex_balance_prefs_${txType}`) as string
