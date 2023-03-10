@@ -28,13 +28,11 @@ export default function CurrencyQuantity(props: propsIF) {
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    const deboundedValueFromProps = useDebounce(value, 100); // debounce 100 milliseconds
-
     const [lastEvent, setLastEvent] = useState<ChangeEvent<HTMLInputElement> | undefined>();
 
     useEffect(() => {
-        setDisplayValue(deboundedValueFromProps);
-    }, [deboundedValueFromProps]);
+        setDisplayValue(value);
+    }, [value]);
 
     const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
 
