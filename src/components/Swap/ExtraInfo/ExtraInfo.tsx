@@ -53,6 +53,9 @@ export default function ExtraInfo(props: propsIF) {
         isOnTradeRoute ? false : false,
     );
 
+    const [hasUserChosenToDisplayExtraInfo, setHasUserChosenToDisplayExtraInfo] =
+        useState<boolean>(false);
+
     // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
 
     // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
@@ -234,7 +237,10 @@ export default function ExtraInfo(props: propsIF) {
             priceImpact?.percentChange &&
             Math.abs(priceImpact?.percentChange) > 0.02
         ) {
+            console.log('setting to true');
             setShowExtraDetails(true);
+        } else if (!hasUserChosenToDisplayExtraInfo) {
+            setShowExtraDetails(false);
         }
     };
 
@@ -247,8 +253,15 @@ export default function ExtraInfo(props: propsIF) {
             className={styles.extra_info_content}
             onClick={
                 priceImpact
-                    ? () => setShowExtraDetails(!showExtraDetails)
-                    : () => setShowExtraDetails(false)
+                    ? () => {
+                          if (showExtraDetails) {
+                              setHasUserChosenToDisplayExtraInfo(false);
+                          } else {
+                              setHasUserChosenToDisplayExtraInfo(true);
+                          }
+                          setShowExtraDetails(!showExtraDetails);
+                      }
+                    : undefined
             }
         >
             <div className={styles.gas_pump}>
