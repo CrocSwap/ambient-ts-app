@@ -2598,7 +2598,6 @@ export default function App() {
         dailyVol: dailyVol,
         graphData: graphData,
         openGlobalModal: openGlobalModal,
-
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
@@ -2616,13 +2615,16 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('range'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange
+        }
     };
 
     function toggleSidebar() {
