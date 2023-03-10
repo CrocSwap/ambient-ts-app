@@ -298,148 +298,79 @@ export default function RoomDropdown(props: propsIF) {
 
     useEffect(() => {
         const rooms = topPools;
+        const fave:
+            | PoolIF[]
+            | {
+                  name: string;
+                  base: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  quote: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  chainId: string;
+                  poolId: number;
+                  speed: number;
+                  id: number;
+              }[] = [];
+        favePools.pools.map((pool: PoolIF) => {
+            const favPool = {
+                name: pool.base.symbol + '/' + pool.quote.symbol,
+                base: {
+                    name: pool.base.name,
+                    address: pool.base.address,
+                    symbol: pool.base.symbol,
+                    decimals: pool.base.decimals,
+                    chainId: pool.base.chainId,
+                    logoURI: pool.base.logoURI,
+                },
+                quote: {
+                    name: pool.quote.name,
+                    address: pool.quote.address,
+                    symbol: pool.quote.symbol,
+                    decimals: pool.quote.decimals,
+                    chainId: pool.quote.chainId,
+                    logoURI: pool.quote.logoURI,
+                },
+                chainId: pool.chainId,
+                poolId: pool.poolId,
+                speed: findSpeed(pool),
+                id: findId(pool),
+            };
+
+            if (!rooms.some(({ name }) => name === favPool.name)) {
+                rooms.push(favPool);
+            }
+            for (let x = 0; x < rooms.length; x++) {
+                if (favPool.name === rooms[x].name) {
+                    rooms.push(rooms.splice(x, 1)[0]);
+                } else {
+                    // do nothing
+                }
+            }
+            fave.push(favPool);
+        });
+        setFavoritePoolsArray(() => {
+            return fave;
+        });
+        // const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
+        // favoritePoolsArray.splice(0, middleIndex);
         if (props.selectedRoom === 'Global') {
-            const fave:
-                | PoolIF[]
-                | {
-                      name: string;
-                      base: {
-                          name: string;
-                          address: string;
-                          symbol: string;
-                          decimals: number;
-                          chainId: number;
-                          logoURI: string;
-                      };
-                      quote: {
-                          name: string;
-                          address: string;
-                          symbol: string;
-                          decimals: number;
-                          chainId: number;
-                          logoURI: string;
-                      };
-                      chainId: string;
-                      poolId: number;
-                      speed: number;
-                      id: number;
-                  }[] = [];
-            favePools.pools.map((pool: PoolIF) => {
-                const favPool = {
-                    name: pool.base.symbol + '/' + pool.quote.symbol,
-                    base: {
-                        name: pool.base.name,
-                        address: pool.base.address,
-                        symbol: pool.base.symbol,
-                        decimals: pool.base.decimals,
-                        chainId: pool.base.chainId,
-                        logoURI: pool.base.logoURI,
-                    },
-                    quote: {
-                        name: pool.quote.name,
-                        address: pool.quote.address,
-                        symbol: pool.quote.symbol,
-                        decimals: pool.quote.decimals,
-                        chainId: pool.quote.chainId,
-                        logoURI: pool.quote.logoURI,
-                    },
-                    chainId: pool.chainId,
-                    poolId: pool.poolId,
-                    speed: findSpeed(pool),
-                    id: findId(pool),
-                };
-
-                if (!rooms.some(({ name }) => name === favPool.name)) {
-                    rooms.push(favPool);
-                }
-                for (let x = 0; x < rooms.length; x++) {
-                    if (favPool.name === rooms[x].name) {
-                        rooms.push(rooms.splice(x, 1)[0]);
-                    } else {
-                        // do nothing
-                    }
-                }
-                fave.push(favPool);
-            });
-            setFavoritePoolsArray(() => {
-                return fave;
-            });
-            // const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-            // favoritePoolsArray.splice(0, middleIndex);
+            // do nothing
         } else {
-            const rooms = topPools;
-            const fave:
-                | PoolIF[]
-                | {
-                      name: string;
-                      base: {
-                          name: string;
-                          address: string;
-                          symbol: string;
-                          decimals: number;
-                          chainId: number;
-                          logoURI: string;
-                      };
-                      quote: {
-                          name: string;
-                          address: string;
-                          symbol: string;
-                          decimals: number;
-                          chainId: number;
-                          logoURI: string;
-                      };
-                      chainId: string;
-                      poolId: number;
-                      speed: number;
-                      id: number;
-                  }[] = [];
-
-            favePools.pools.map((pool: PoolIF) => {
-                const favPool = {
-                    name: pool.base.symbol + '/' + pool.quote.symbol,
-                    base: {
-                        name: pool.base.name,
-                        address: pool.base.address,
-                        symbol: pool.base.symbol,
-                        decimals: pool.base.decimals,
-                        chainId: pool.base.chainId,
-                        logoURI: pool.base.logoURI,
-                    },
-                    quote: {
-                        name: pool.quote.name,
-                        address: pool.quote.address,
-                        symbol: pool.quote.symbol,
-                        decimals: pool.quote.decimals,
-                        chainId: pool.quote.chainId,
-                        logoURI: pool.quote.logoURI,
-                    },
-                    chainId: pool.chainId,
-                    poolId: pool.poolId,
-                    speed: findSpeed(pool),
-                    id: findId(pool),
-                };
-                if (!rooms.some(({ name }) => name === favPool.name)) {
-                    rooms.push(favPool);
-                }
-
-                for (let x = 0; x < rooms.length; x++) {
-                    console.log(rooms[x].name);
-                    if (favPool.name === rooms[x].name) {
-                        fave.push(favPool);
-                        rooms.push(rooms.splice(x, 1)[0]);
-                    } else {
-                        fave.push(favPool);
-                        // do nothing
-                    }
-                }
-            });
-
             const index = rooms.map((e) => e.name).indexOf(props.selectedRoom);
             rooms.splice(index, 1);
 
-            setFavoritePoolsArray(() => {
-                return fave;
-            });
             //     const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
             // favoritePoolsArray.splice(0, middleIndex);
         }

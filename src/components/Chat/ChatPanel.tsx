@@ -186,6 +186,7 @@ export default function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
+        scrollToBottom();
         setNotification(0);
         getMsg();
     }, [room]);
