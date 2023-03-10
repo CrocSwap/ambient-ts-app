@@ -604,7 +604,10 @@ export default function TradeCandleStickChart(props: ChartData) {
             setIsLoading(true);
             return undefined;
         }
-    }, [props.liquidityData, props.liquidityData?.ranges, props.poolPriceDisplay]);
+    }, [
+        props.liquidityData && JSON.stringify(props.liquidityData?.ranges),
+        props.poolPriceDisplay,
+    ]);
 
     useEffect(() => {
         console.log('resetting scale for chart because timeframe changed');
