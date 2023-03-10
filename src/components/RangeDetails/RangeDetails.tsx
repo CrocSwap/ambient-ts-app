@@ -175,7 +175,8 @@ export default function RangeDetails(props: propsIF) {
                         : undefined;
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
-                    const usdValue = position.positionLiqTotalUSD;
+                    const usdValue = position.totalValueUSD;
+                    // const usdValue = position.positionLiqTotalUSD;
 
                     if (usdValue) {
                         setUsdValue(

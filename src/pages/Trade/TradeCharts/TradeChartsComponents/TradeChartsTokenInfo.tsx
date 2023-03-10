@@ -1,9 +1,7 @@
 import styles from './TradeChartsTokenInfo.module.css';
 import {
     DefaultTooltip,
-    GreenTextTooltip,
     NoColorTooltip,
-    RedTextTooltip,
 } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { useAppSelector, useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
@@ -50,29 +48,29 @@ export default function TradeChartsTokenInfo(props: propsIF) {
 
     const currencyCharacter = denomInBase
         ? // denom in a, return token b character
-        getUnicodeCharacter(tradeData.quoteToken.symbol)
+          getUnicodeCharacter(tradeData.quoteToken.symbol)
         : // denom in b, return token a character
-        getUnicodeCharacter(tradeData.baseToken.symbol);
+          getUnicodeCharacter(tradeData.baseToken.symbol);
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-            })
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
             : poolPriceDisplay.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
     const logoSizes = smallScrenView ? '18px' : '25px';
 
     const currentAmountDisplay = (
-        <span className={styles.amount} style={{ marginTop: '2px' }}>
+        <span className={styles.amount}>
             {poolPriceDisplay === Infinity || poolPriceDisplay === 0
                 ? '…'
                 : `${currencyCharacter}${truncatedPoolPrice}`}
@@ -88,36 +86,10 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <span>
+            <span style={isPoolPriceChangePositive ? { color: 'green' } : { color: 'red' }}>
                 {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
             </span>
         </NoColorTooltip>
-    );
-
-    const amountWithTooltipGreen = (
-        <GreenTextTooltip
-            interactive
-            title={poolPriceChange}
-            placement={simplifyVersion ? 'left' : 'right'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            {currentAmountDisplay}
-        </GreenTextTooltip>
-    );
-
-    const amountWithTooltipRed = (
-        <RedTextTooltip
-            interactive
-            title={poolPriceChange}
-            placement={simplifyVersion ? 'left' : 'right'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            {currentAmountDisplay}
-        </RedTextTooltip>
     );
 
     // fav button-------------------------------
@@ -132,7 +104,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         currentPoolData.base.address,
         currentPoolData.quote.address,
         currentPoolData.chainId,
-        currentPoolData.poolId
+        currentPoolData.poolId,
     );
 
     const handleFavButton = () =>
@@ -227,7 +199,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         </div>
                     </DefaultTooltip>
                 </section>
-                {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
+                {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
+                {currentAmountDisplay}
+                {poolPriceChange}
             </div>
         </div>
     );
@@ -277,8 +251,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
                 </div>
             </DefaultTooltip>
-
-            {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
+            {currentAmountDisplay}
+            {poolPriceChange}
+            {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
         </div>
     );
 }

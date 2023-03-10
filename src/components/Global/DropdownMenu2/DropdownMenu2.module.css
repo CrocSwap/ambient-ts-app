@@ -9,6 +9,7 @@
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
     justify-content: space-between;
     position: relative;
+    z-index: 999;
 
     /* background: var(--dark3);
     border-radius: 4px; */
@@ -19,6 +20,7 @@
     display: flex;
     gap: 4px;
     cursor: pointer;
+    z-index: 999;
 }
 
 .menu_container {
@@ -27,6 +29,7 @@
     flex-direction: column;
 
     position: absolute;
+    z-index: 999;
     /* top: 30px; */
 }
 
