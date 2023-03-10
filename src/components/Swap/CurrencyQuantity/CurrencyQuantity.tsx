@@ -28,21 +28,27 @@ export default function CurrencyQuantity(props: propsIF) {
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    const deboundedValueFromProps = useDebounce(value, 750); // debounce 3/4 second
+    const deboundedValueFromProps = useDebounce(value, 100); // debounce 100 milliseconds
+
+    const [lastEvent, setLastEvent] = useState<ChangeEvent<HTMLInputElement> | undefined>();
 
     useEffect(() => {
         setDisplayValue(deboundedValueFromProps);
     }, [deboundedValueFromProps]);
 
+    const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
+
+    useEffect(() => {
+        if (debouncedLastEvent) handleChangeEvent(debouncedLastEvent);
+    }, [debouncedLastEvent]);
+
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         if (event && fieldId === 'sell') {
-            if (event.target.value === '') {
-                setBuyQtyString('');
-            }
+            setBuyQtyString('');
+            setSellQtyString(event.target.value);
         } else if (event && fieldId === 'buy') {
-            if (event.target.value === '') {
-                setSellQtyString('');
-            }
+            setSellQtyString('');
+            setBuyQtyString(event.target.value);
         }
 
         const input = event.target.value.startsWith('.')
@@ -52,7 +58,7 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisplayValue(input);
 
         setDisableReverseTokens(true);
-        handleChangeEvent(event);
+        setLastEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
@@ -70,7 +76,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const targetValue = event.target.value;
+                    const targetValue = event.target.value.replaceAll(',', '');
                     const isPrecisionGreaterThanDecimals =
                         precisionOfInput(targetValue) > thisToken.decimals;
                     const isValid =
