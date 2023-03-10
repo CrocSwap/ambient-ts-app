@@ -294,10 +294,20 @@ export default function CurrencyConverter(props: propsIF) {
                 setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
                 setTokenAQtyLocal('');
             }
-            setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
             dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
+            setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         }
     };
+
+    const handleBlockUpdate = () => {
+        if (!disableReverseTokens) {
+            isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        }
+    };
+
+    useEffect(() => {
+        handleBlockUpdate();
+    }, [lastBlockNumber]);
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
@@ -305,7 +315,6 @@ export default function CurrencyConverter(props: propsIF) {
     }, [
         shouldUpdate,
         crocEnv,
-        lastBlockNumber,
         poolExists,
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
@@ -415,6 +424,7 @@ export default function CurrencyConverter(props: propsIF) {
                 setSwapButtonErrorMessage('Enter an Amount');
                 setPriceImpact(undefined);
                 setDisableReverseTokens(false);
+
                 if (isNaN(parsedInput) || parsedInput === 0) return;
             }
             try {
@@ -487,7 +497,6 @@ export default function CurrencyConverter(props: propsIF) {
 
         setTokenBQtyLocal(truncatedTokenBQty);
         setBuyQtyString(truncatedTokenBQty);
-
         setDisableReverseTokens(false);
     };
 
@@ -522,9 +531,6 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
-                if (disableReverseTokens) {
-                    setDisableReverseTokens(false);
-                }
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
@@ -551,9 +557,6 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
-                if (disableReverseTokens) {
-                    setDisableReverseTokens(false);
-                }
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
@@ -668,6 +671,7 @@ export default function CurrencyConverter(props: propsIF) {
             : '';
 
         if (truncatedTokenAQty !== tokenAQtyLocal) setTokenAQtyLocal(truncatedTokenAQty);
+
         if (truncatedTokenAQty !== sellQtyString) setSellQtyString(truncatedTokenAQty);
 
         if (disableReverseTokens) setDisableReverseTokens(false);
