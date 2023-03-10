@@ -26,23 +26,13 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisableReverseTokens,
     } = props;
 
-    const [newChangeEvent, setNewChangeEvent] = useState<
-        ChangeEvent<HTMLInputElement> | undefined
-    >();
-
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    useEffect(() => {
-        setDisplayValue(value);
-    }, [value]);
-
-    const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
+    const deboundedValueFromProps = useDebounce(value, 500); // debounce 1/2 second
 
     useEffect(() => {
-        if (debouncedEvent) {
-            handleChangeEvent(debouncedEvent);
-        }
-    }, [debouncedEvent]);
+        setDisplayValue(deboundedValueFromProps);
+    }, [deboundedValueFromProps]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         if (event && fieldId === 'sell') {
@@ -59,14 +49,14 @@ export default function CurrencyQuantity(props: propsIF) {
             }
         }
 
-        setDisableReverseTokens(true);
-        setNewChangeEvent(event);
-
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
 
         setDisplayValue(input);
+
+        setDisableReverseTokens(true);
+        handleChangeEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
@@ -84,12 +74,16 @@ export default function CurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
+                    const targetValue = event.target.value;
                     const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) > thisToken.decimals;
+                        precisionOfInput(targetValue) > thisToken.decimals;
                     const isValid =
                         !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' || event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
+                        (targetValue === '' || event.target.validity.valid);
+
+                    if (isValid) {
+                        handleEventLocal(event);
+                    }
                 }}
                 value={displayValue}
                 type='text'
@@ -98,7 +92,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />
