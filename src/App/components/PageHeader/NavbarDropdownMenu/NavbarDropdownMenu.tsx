@@ -242,11 +242,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             data: socialsItems,
             leftIcon: <FaDiscord size={20} />,
         },
-        {
-            title: 'More',
-            data: moreItems,
-            leftIcon: <FiMoreHorizontal size={20} />,
-        },
+        // {
+        //     title: 'More',
+        //     data: moreItems,
+        //     leftIcon: <FiMoreHorizontal size={20} />,
+        // },
     ];
 
     return (
@@ -276,6 +276,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                             {item.title}
                         </NavbarDropdownItem>
                     ))}
+                    <NavbarDropdownItem leftIcon={<BsBook size={18} />}>Docs</NavbarDropdownItem>
                 </motion.div>
             </CSSTransition>
 
