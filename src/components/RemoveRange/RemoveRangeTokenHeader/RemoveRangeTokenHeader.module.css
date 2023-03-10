@@ -9,6 +9,11 @@
     line-height: var(--header2-lh);
     font-weight: 200;
     letter-spacing: -0.02em;
+
+}
+
+.settings_button {
+    cursor: pointer;
 }
 
 .token_info {

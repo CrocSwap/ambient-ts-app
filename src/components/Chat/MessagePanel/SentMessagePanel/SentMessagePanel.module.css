@@ -285,7 +285,7 @@
     word-break: break-word;
 }
 
-img,
-picture {
+.main img,
+.main picture {
     max-width: 100%;
 }
