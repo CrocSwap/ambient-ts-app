@@ -117,6 +117,7 @@ interface ChartData {
     activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
     liquidityScale: any;
+    liquidityDepthScale: any;
     minPrice: number;
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
@@ -167,6 +168,7 @@ export default function Chart(props: ChartData) {
         liquidityData,
         handlePulseAnimation,
         liquidityScale,
+        liquidityDepthScale,
         minPrice,
         maxPrice,
         rescaleRangeBoundariesWithSlider,
@@ -392,6 +394,7 @@ export default function Chart(props: ChartData) {
             scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
 
             liquidityScale.range([width, (width / 10) * 9]);
+            liquidityDepthScale.range([width, (width / 10) * 9]);
 
             scaleData.volumeScale.range([height, height - height / 10]);
         }
@@ -2310,6 +2313,20 @@ export default function Chart(props: ChartData) {
             ];
         });
     };
+
+    useEffect(() => {
+        const liqDataAll = liquidityData.depthLiqBidData.concat(liquidityData.depthLiqAskData);
+
+        const visibleDomain = liqDataAll.filter(
+            (liqData: any) =>
+                liqData.liqPrices >= scaleData.yScale.domain()[0] &&
+                liqData.liqPrices <= scaleData.yScale.domain()[1],
+        );
+
+        const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
+
+        liquidityDepthScale.domain([0, maxLiq]);
+    }, [scaleData && scaleData.yScale.domain()[0], scaleData && scaleData.yScale.domain()[1]]);
 
     // set default limit tick
     useEffect(() => {
@@ -4416,7 +4433,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
+                .xScale(liquidityDepthScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     // selection.enter().style('stroke', () => 'rgba(205, 193, 255)');
@@ -4436,7 +4453,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
+                .xScale(liquidityDepthScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     // selection.enter().style('stroke', () => '#7371FC');
@@ -4525,7 +4542,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
+                .xScale(liquidityDepthScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.style('fill', 'url(#bidAreaGradient)');
@@ -4541,7 +4558,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
+                .xScale(liquidityDepthScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.style('fill', () => {
@@ -4699,7 +4716,8 @@ export default function Chart(props: ChartData) {
             horizontalBandJoin !== undefined &&
             barSeries !== undefined &&
             volumeData !== undefined &&
-            liquidityScale !== undefined
+            liquidityScale !== undefined &&
+            liquidityDepthScale !== undefined
         ) {
             const targetData = {
                 limit: limit,
@@ -4750,6 +4768,7 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
+                liquidityDepthScale,
             );
         }
     }, [
@@ -4791,6 +4810,7 @@ export default function Chart(props: ChartData) {
         selectedDate,
         liqMode,
         liquidityScale,
+        liquidityDepthScale,
         showSidebar,
     ]);
 
@@ -5003,6 +5023,7 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
+            liquidityDepthScale: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -5101,6 +5122,7 @@ export default function Chart(props: ChartData) {
                     ]);
 
                     liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+                    liquidityDepthScale.range([event.detail.width, (event.detail.width / 10) * 9]);
 
                     scaleData.volumeScale.range([
                         event.detail.height,
@@ -6023,6 +6045,7 @@ export default function Chart(props: ChartData) {
                     scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
 
                     liquidityScale.range([width, (width / 10) * 9]);
+                    liquidityDepthScale.range([width, (width / 10) * 9]);
 
                     scaleData.volumeScale.range([height, height - height / 10]);
                 }
