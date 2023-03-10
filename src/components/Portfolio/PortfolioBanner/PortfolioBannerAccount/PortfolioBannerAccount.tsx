@@ -1,9 +1,9 @@
-import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
+// import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-
+import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
 interface IPortfolioBannerAccountPropsIF {
     imageData: string[];
     ensName: string;
@@ -12,6 +12,7 @@ interface IPortfolioBannerAccountPropsIF {
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
+    blockiesToDisplay: JSX.Element | null;
 }
 import styles from './PortfolioBannerAccount.module.css';
 
@@ -42,6 +43,7 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
+        // blockiesToDisplay
         // connectedAccountActive,
     } = props;
 
@@ -100,6 +102,8 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         },
     };
 
+    const ambientLogoDisplay = <img src={ambientLogo} alt='' className={styles.ambi_logo} />;
+
     return (
         <motion.main
             // style={{padding: showAccountDetails ? '24px' : '8px 16px'}}
@@ -113,17 +117,17 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
                 className={styles.account_container}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                <motion.div
-                    className={styles.avatar_image}
-                    animate={showAccountDetails ? 'open' : 'closed'}
-                    variants={iconVariants}
-                >
-                    {imageData[0] ? (
+                {imageData[0] ? (
+                    <motion.div
+                        className={styles.avatar_image}
+                        animate={showAccountDetails ? 'open' : 'closed'}
+                        variants={iconVariants}
+                    >
                         <img src={imageData[0]} alt='avatar' />
-                    ) : (
-                        <img src={noAvatarImage} alt='no avatar' />
-                    )}
-                </motion.div>
+                    </motion.div>
+                ) : (
+                    ambientLogoDisplay
+                )}
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}
