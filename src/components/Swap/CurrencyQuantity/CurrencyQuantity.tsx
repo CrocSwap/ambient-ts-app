@@ -26,47 +26,37 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisableReverseTokens,
     } = props;
 
-    const [newChangeEvent, setNewChangeEvent] = useState<
-        ChangeEvent<HTMLInputElement> | undefined
-    >();
-
     const [displayValue, setDisplayValue] = useState<string>('');
+
+    const [lastEvent, setLastEvent] = useState<ChangeEvent<HTMLInputElement> | undefined>();
 
     useEffect(() => {
         setDisplayValue(value);
     }, [value]);
 
-    const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
+    const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
 
     useEffect(() => {
-        if (debouncedEvent) {
-            handleChangeEvent(debouncedEvent);
-        }
-    }, [debouncedEvent]);
+        if (debouncedLastEvent) handleChangeEvent(debouncedLastEvent);
+    }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         if (event && fieldId === 'sell') {
-            if (event.target.value === '') {
-                setBuyQtyString('');
-            } else {
-                setBuyQtyString('');
-            }
+            setBuyQtyString('');
+            setSellQtyString(event.target.value);
         } else if (event && fieldId === 'buy') {
-            if (event.target.value === '') {
-                setSellQtyString('');
-            } else {
-                setSellQtyString('');
-            }
+            setSellQtyString('');
+            setBuyQtyString(event.target.value);
         }
-
-        setDisableReverseTokens(true);
-        setNewChangeEvent(event);
 
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
 
         setDisplayValue(input);
+
+        setDisableReverseTokens(true);
+        setLastEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
@@ -84,12 +74,16 @@ export default function CurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
+                    const targetValue = event.target.value.replaceAll(',', '');
                     const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) > thisToken.decimals;
+                        precisionOfInput(targetValue) > thisToken.decimals;
                     const isValid =
                         !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' || event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
+                        (targetValue === '' || event.target.validity.valid);
+
+                    if (isValid) {
+                        handleEventLocal(event);
+                    }
                 }}
                 value={displayValue}
                 type='text'
@@ -98,7 +92,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />

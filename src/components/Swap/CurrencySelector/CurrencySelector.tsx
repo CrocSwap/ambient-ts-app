@@ -131,7 +131,7 @@ export default function CurrencySelector(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -142,10 +142,16 @@ export default function CurrencySelector(props: propsIF) {
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
 
-    useEffect(() => {
+    const handleDexBalanceChange = () => {
         if (parseFloat(tokenADexBalance) <= 0) {
             setIsWithdrawFromDexChecked(false);
+        } else if (dexBalancePrefs.swap.drawFromDexBal.isEnabled) {
+            setIsWithdrawFromDexChecked(true);
         }
+    };
+
+    useEffect(() => {
+        handleDexBalanceChange();
     }, [tokenADexBalance]);
 
     // const WithdrawTokensContent = (

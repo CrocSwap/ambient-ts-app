@@ -120,7 +120,7 @@ export default function CurrencyConverter(props: propsIF) {
         acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -355,7 +355,6 @@ export default function CurrencyConverter(props: propsIF) {
                             `${tokenASymbolLocal} Amount Must Be Less Than Exchange Surplus Balance`,
                         );
                     } else {
-                        console.log('setting to true');
                         setSwapAllowed(true);
                     }
                 } else {
@@ -367,7 +366,6 @@ export default function CurrencyConverter(props: propsIF) {
                             `${tokenASymbolLocal} Amount Must Be Less Than Wallet Balance`,
                         );
                     } else {
-                        console.log('setting to true');
                         setSwapAllowed(true);
                     }
                 }
@@ -379,7 +377,6 @@ export default function CurrencyConverter(props: propsIF) {
                             `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
                         );
                     } else {
-                        console.log('setting to true');
                         setSwapAllowed(true);
                     }
                 } else {
@@ -389,7 +386,6 @@ export default function CurrencyConverter(props: propsIF) {
                             `${tokenASymbolLocal} Amount Exceeds Wallet Balance`,
                         );
                     } else {
-                        console.log('setting to true');
                         setSwapAllowed(true);
                     }
                 }
@@ -401,14 +397,13 @@ export default function CurrencyConverter(props: propsIF) {
         if (!crocEnv) return;
         let rawTokenBQty;
         if (evt) {
-            const targetValue = evt.target.value;
+            const targetValue = evt.target.value.replaceAll(',', '');
 
             const input = targetValue.startsWith('.') ? '0' + targetValue : targetValue;
 
             const parsedInput = parseFloat(input);
 
             setTokenAQtyLocal(input);
-            setSellQtyString(input);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
@@ -440,6 +435,7 @@ export default function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
                 console.log({ error });
+                setSwapAllowed(false);
             }
         } else {
             console.log('token a change event triggered - no event');
@@ -462,7 +458,6 @@ export default function CurrencyConverter(props: propsIF) {
 
                 return;
             }
-            console.log({ tokenAQtyLocal });
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
             try {
@@ -504,9 +499,9 @@ export default function CurrencyConverter(props: propsIF) {
             (tokenAInputField as HTMLInputElement).value = value;
         }
         if (value) {
-            const input = value;
-            setTokenAQtyLocal(input);
+            const input = value.replaceAll(',', '');
             setSellQtyString(input);
+            setTokenAQtyLocal(input);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
@@ -581,11 +576,10 @@ export default function CurrencyConverter(props: propsIF) {
         let rawTokenAQty: number | undefined;
         if (evt) {
             const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+                ? '0' + evt.target.value.replaceAll(',', '')
+                : evt.target.value.replaceAll(',', '');
 
             setTokenBQtyLocal(input);
-            setBuyQtyString(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
@@ -619,6 +613,7 @@ export default function CurrencyConverter(props: propsIF) {
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
             } catch (error) {
                 console.log({ error });
+                setSwapAllowed(false);
             }
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         } else {
