@@ -80,6 +80,7 @@ interface propsIF {
 
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // React functional component
@@ -113,6 +114,7 @@ export default function PortfolioTabs(props: propsIF) {
         // fullLayoutToggle,
         handlePulseAnimation,
         account,
+        setSimpleRangeWidth,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -376,6 +378,7 @@ export default function PortfolioTabs(props: propsIF) {
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         handlePulseAnimation: handlePulseAnimation,
+        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     // props for <Transactions/> React Element
@@ -401,6 +404,7 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
         tokenMap: tokenMap,
+        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     // Props for <Orders/> React Element

@@ -28,9 +28,9 @@ const useSocket = (room: string) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages(data);
-                setLastMessage(data[data.length - 1]);
-                setLastMessageText(data[data.length - 1].text);
-                setMessageUser(data[data.length - 1].sender);
+                setLastMessage(data[0]);
+                setLastMessageText(data[0].text);
+                setMessageUser(data[0].sender);
             });
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
