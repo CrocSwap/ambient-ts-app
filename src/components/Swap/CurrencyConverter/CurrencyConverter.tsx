@@ -226,12 +226,9 @@ export default function CurrencyConverter(props: propsIF) {
     const [shouldUpdate, setShouldUpdate] = useState(false);
 
     useEffect(() => {
-        console.log('new crocEnv');
-        if (crocEnv) {
-            setDefaultTokenQuantities();
-            setShouldUpdate(true);
-        }
-    }, [crocEnv]);
+        setDefaultTokenQuantities();
+        setShouldUpdate(true);
+    }, []);
 
     const navigate = useNavigate();
 
@@ -260,6 +257,16 @@ export default function CurrencyConverter(props: propsIF) {
     const [switchBoxes, setSwitchBoxes] = useState(false);
 
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
+
+    useEffect(() => {
+        // re-enable every 3 seconds
+        const timerId = setInterval(() => {
+            setDisableReverseTokens(false);
+        }, 3000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     const reverseTokens = (): void => {
         if (disableReverseTokens || !poolExists) {
@@ -425,7 +432,6 @@ export default function CurrencyConverter(props: propsIF) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setPriceImpact(undefined);
-                setDisableReverseTokens(false);
 
                 if (isNaN(parsedInput) || parsedInput === 0) return;
             }
@@ -461,12 +467,10 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
-            if (tokenAQtyLocal === '') {
+            if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenBQtyLocal('');
-                setBuyQtyString('');
-                setDisableReverseTokens(false);
 
                 return;
             }
@@ -499,7 +503,6 @@ export default function CurrencyConverter(props: propsIF) {
 
         setTokenBQtyLocal(truncatedTokenBQty);
         setBuyQtyString(truncatedTokenBQty);
-        setDisableReverseTokens(false);
     };
 
     const handleTokenAChangeClick = async (value: string) => {
@@ -597,7 +600,6 @@ export default function CurrencyConverter(props: propsIF) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setPriceImpact(undefined);
-                setDisableReverseTokens(false);
                 if (isNaN(parsedInput) || parsedInput === 0) return;
             }
             try {
@@ -633,12 +635,10 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
-            setDisableReverseTokens(false);
             if (tokenBQtyLocal === '' && tokenAQtyLocal === '') {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenAQtyLocal('');
-                setSellQtyString('');
 
                 return;
             }
@@ -676,7 +676,6 @@ export default function CurrencyConverter(props: propsIF) {
 
         if (truncatedTokenAQty !== sellQtyString) setSellQtyString(truncatedTokenAQty);
 
-        setDisableReverseTokens(false);
         if (shouldSwapConverterUpdate) dispatch(setShouldSwapConverterUpdate(false));
     };
 
