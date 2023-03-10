@@ -301,6 +301,8 @@ export default function CurrencyConverter(props: propsIF) {
 
     const handleBlockUpdate = () => {
         if (!disableReverseTokens) {
+            setDisableReverseTokens(true);
+
             isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
         }
     };
@@ -631,12 +633,12 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
+            setDisableReverseTokens(false);
             if (tokenBQtyLocal === '' && tokenAQtyLocal === '') {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenAQtyLocal('');
                 setSellQtyString('');
-                setDisableReverseTokens(false);
 
                 return;
             }
@@ -674,7 +676,7 @@ export default function CurrencyConverter(props: propsIF) {
 
         if (truncatedTokenAQty !== sellQtyString) setSellQtyString(truncatedTokenAQty);
 
-        if (disableReverseTokens) setDisableReverseTokens(false);
+        setDisableReverseTokens(false);
         if (shouldSwapConverterUpdate) dispatch(setShouldSwapConverterUpdate(false));
     };
 
