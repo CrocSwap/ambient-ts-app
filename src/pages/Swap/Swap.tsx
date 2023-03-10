@@ -143,7 +143,7 @@ export default function Swap(props: propsIF) {
         toggleBypassConfirm,
         lastBlockNumber,
         tokenPairLocal,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -200,10 +200,10 @@ export default function Swap(props: propsIF) {
     // ... abstracted away from the central hook because the hook manages preference
     // ... and does not consider whether dex balance is sufficient
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState<boolean>(
-        dexBalancePrefs.swap.drawFromDexBal.isEnabled
+        dexBalancePrefs.swap.drawFromDexBal.isEnabled,
     );
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState<boolean>(
-        dexBalancePrefs.swap.outputToDexBal.isEnabled
+        dexBalancePrefs.swap.outputToDexBal.isEnabled,
     );
 
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
@@ -243,7 +243,9 @@ export default function Swap(props: propsIF) {
         const buyTokenAddress = tokenB.address;
         // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
+        const qty = isTokenAPrimary
+            ? sellQtyString.replaceAll(',', '')
+            : buyQtyString.replaceAll(',', '');
         const isQtySell = isTokenAPrimary;
         // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
         let tx;
@@ -652,7 +654,7 @@ export default function Swap(props: propsIF) {
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
-        dexBalancePrefs: dexBalancePrefs
+        dexBalancePrefs: dexBalancePrefs,
     };
 
     const handleSwapButtonClickWithBypass = () => {

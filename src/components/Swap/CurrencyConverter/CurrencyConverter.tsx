@@ -397,9 +397,6 @@ export default function CurrencyConverter(props: propsIF) {
         if (!crocEnv) return;
         let rawTokenBQty;
         if (evt) {
-            setSellQtyString(
-                evt.target.value.startsWith('.') ? '0' + evt.target.value : evt.target.value,
-            );
             const targetValue = evt.target.value.replaceAll(',', '');
 
             const input = targetValue.startsWith('.') ? '0' + targetValue : targetValue;
@@ -578,9 +575,6 @@ export default function CurrencyConverter(props: propsIF) {
 
         let rawTokenAQty: number | undefined;
         if (evt) {
-            setBuyQtyString(
-                evt.target.value.startsWith('.') ? '0' + evt.target.value : evt.target.value,
-            );
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value.replaceAll(',', '')
                 : evt.target.value.replaceAll(',', '');
