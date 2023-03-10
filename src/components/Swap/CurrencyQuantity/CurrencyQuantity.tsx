@@ -26,23 +26,12 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisableReverseTokens,
     } = props;
 
-    // const [newChangeEvent, setNewChangeEvent] = useState<
-    //     ChangeEvent<HTMLInputElement> | undefined
-    // >();
-
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    // useEffect(() => {
-    //     setDisplayValue(value);
-    // }, [value]);
-
-    // const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
     const deboundedValueFromProps = useDebounce(value, 500); // debounce 1/2 second
 
     useEffect(() => {
-        // if (deboundedValueFromProps) {
         setDisplayValue(deboundedValueFromProps);
-        // }
     }, [deboundedValueFromProps]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +56,6 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisplayValue(input);
 
         setDisableReverseTokens(true);
-        // setNewChangeEvent(event);
         handleChangeEvent(event);
     };
 
@@ -92,9 +80,10 @@ export default function CurrencyQuantity(props: propsIF) {
                     const isValid =
                         !isPrecisionGreaterThanDecimals &&
                         (targetValue === '' || event.target.validity.valid);
-                    console.log({ isValid });
-                    console.log({ targetValue });
-                    isValid ? handleEventLocal(event) : null;
+
+                    if (isValid) {
+                        handleEventLocal(event);
+                    }
                 }}
                 value={displayValue}
                 type='text'
@@ -103,7 +92,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />
