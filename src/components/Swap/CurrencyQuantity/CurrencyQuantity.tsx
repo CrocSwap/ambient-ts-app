@@ -28,7 +28,7 @@ export default function CurrencyQuantity(props: propsIF) {
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    const deboundedValueFromProps = useDebounce(value, 500); // debounce 1/2 second
+    const deboundedValueFromProps = useDebounce(value, 750); // debounce 3/4 second
 
     useEffect(() => {
         setDisplayValue(deboundedValueFromProps);
@@ -38,13 +38,9 @@ export default function CurrencyQuantity(props: propsIF) {
         if (event && fieldId === 'sell') {
             if (event.target.value === '') {
                 setBuyQtyString('');
-            } else {
-                setBuyQtyString('');
             }
         } else if (event && fieldId === 'buy') {
             if (event.target.value === '') {
-                setSellQtyString('');
-            } else {
                 setSellQtyString('');
             }
         }

@@ -237,9 +237,13 @@ export default function ExtraInfo(props: propsIF) {
             priceImpact?.percentChange &&
             Math.abs(priceImpact?.percentChange) > 0.02
         ) {
-            console.log('setting to true');
             setShowExtraDetails(true);
-        } else if (!hasUserChosenToDisplayExtraInfo) {
+        } else if (
+            showExtraDetails &&
+            (!priceImpact ||
+                (priceImpact?.percentChange && Math.abs(priceImpact?.percentChange) <= 0.02)) &&
+            !hasUserChosenToDisplayExtraInfo
+        ) {
             setShowExtraDetails(false);
         }
     };
