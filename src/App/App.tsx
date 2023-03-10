@@ -2528,20 +2528,16 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        // poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
-
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
-        // limitRate: limitRate,
-        // setLimitRate: setLimitRate,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
@@ -2554,17 +2550,19 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('limit'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange
+        }
     };
 
     // props for <Range/> React element
-
     const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
