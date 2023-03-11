@@ -14,7 +14,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+// import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
