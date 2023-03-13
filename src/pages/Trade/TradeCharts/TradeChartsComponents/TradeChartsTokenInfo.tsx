@@ -70,7 +70,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
     const logoSizes = smallScrenView ? '18px' : '25px';
 
     const currentAmountDisplay = (
-        <span className={styles.amount}>
+        <span className={styles.amount} style={{ marginTop: '2.5px' }}>
             {poolPriceDisplay === Infinity || poolPriceDisplay === 0
                 ? '…'
                 : `${currencyCharacter}${truncatedPoolPrice}`}
@@ -86,7 +86,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <span style={isPoolPriceChangePositive ? { color: 'green' } : { color: 'red' }}>
+            <span
+                style={
+                    isPoolPriceChangePositive
+                        ? { color: 'green', marginTop: '4.5px', fontSize: '15px' }
+                        : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
+                }
+            >
                 {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
             </span>
         </NoColorTooltip>
