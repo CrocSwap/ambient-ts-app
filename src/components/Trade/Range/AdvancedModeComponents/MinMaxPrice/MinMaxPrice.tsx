@@ -88,8 +88,12 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const minPriceInput = evt.target.value;
-            handleSetMinTarget(minPriceInput);
+            // const maxPriceInput = evt.target.value;
+            const targetValue = evt.target.value.replaceAll(',', '');
+            const isValid = evt.target.validity.valid;
+            if (isValid) {
+                handleSetMinTarget(targetValue);
+            }
         } else {
             console.log('no event');
         }
@@ -97,8 +101,12 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const maxPriceInput = evt.target.value;
-            handleSetMaxTarget(maxPriceInput);
+            // const maxPriceInput = evt.target.value;
+            const targetValue = evt.target.value.replaceAll(',', '');
+            const isValid = evt.target.validity.valid;
+            if (isValid) {
+                handleSetMaxTarget(targetValue);
+            }
         } else {
             console.log('no event');
         }
