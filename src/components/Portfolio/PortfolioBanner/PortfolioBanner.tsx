@@ -94,7 +94,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 blockiesToDisplay={blockiesToDisplay}
             />
             <div className={styles.nft_container}>
-                {imageData[0] ? <img src={imageData[0]} alt='nft' /> : null}
+                {/* {imageData[0] ? <img src={imageData[0]} alt='nft' /> : null} */}
                 {imageData[1] ? <img src={imageData[1]} alt='nft' /> : null}
                 {imageData[2] ? <img src={imageData[2]} alt='nft' /> : null}
                 {imageData[3] ? <img src={imageData[3]} alt='nft' /> : null}
