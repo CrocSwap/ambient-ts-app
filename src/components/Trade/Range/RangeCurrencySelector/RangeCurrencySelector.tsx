@@ -16,8 +16,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-
-// import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
+import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -75,12 +74,12 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function RangeCurrencySelector(props: propsIF) {
@@ -141,6 +140,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        dexBalancePrefs
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -158,34 +158,6 @@ export default function RangeCurrencySelector(props: propsIF) {
             setIsWithdrawTokenBFromDexChecked(false);
         }
     }, [tokenBDexBalance]);
-
-    // const DexBalanceContent = (
-    //     <span className={styles.surplus_toggle}>
-    //         <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-    //             {isTokenASelector ? (
-    //                 <Toggle2
-    //                     isOn={isWithdrawTokenAFromDexChecked}
-    //                     handleToggle={() =>
-    //                         setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-    //                     }
-    //                     id='withdraw_from_dex'
-    //                     disabled={false}
-    //                     // disabled={parseFloat(tokenADexBalance) <= 0}
-    //                 />
-    //             ) : (
-    //                 <Toggle2
-    //                     isOn={isWithdrawTokenBFromDexChecked}
-    //                     handleToggle={() =>
-    //                         setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-    //                     }
-    //                     id='withdraw_to_wallet'
-    //                     disabled={false}
-    //                     // disabled={parseFloat(tokenBDexBalance) <= 0}
-    //                 />
-    //             )}
-    //         </IconWithTooltip>
-    //     </span>
-    // );
 
     const walletBalanceNonLocaleString = isTokenASelector
         ? tokenABalance && gasPriceInGwei
@@ -288,13 +260,7 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-    //     chainId,
-    //     tokensBank,
-    //     verifyToken,
-    //     getTokenByAddress,
-    //     getTokensByName,
-    // );
+
 
     const handleInputClear = (): void => {
         setInput('');
@@ -312,16 +278,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         <button
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
-                // if (props.sellToken) {
-                //     setIsWithdrawFromDexChecked(false);
-                // } else {
-                //     setIsSaveAsDexSurplusChecked(false);
-                // }
-                // if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                //     handleChangeClick(walletBalanceNonLocaleString);
-                // }
                 handleChangeClick(walletBalanceNonLocaleString);
-
                 console.log('max button clicked');
             }}
         >
@@ -336,23 +293,11 @@ export default function RangeCurrencySelector(props: propsIF) {
         : isWithdrawTokenBFromDexChecked && surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton =
-        // isSellTokenSelector &&
-        // isWithdrawFromDexChecked &&
-        //         surplusBalanceNonLocaleString !== '0.0'
         displaySurplusMaxButton ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => {
-                    // if (props.sellToken) {
-                    //     setIsWithdrawFromDexChecked(true);
-                    // } else {
-                    //     setIsSaveAsDexSurplusChecked(true);
-                    // }
-                    // if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                    //     handleChangeClick(surplusBalanceNonLocaleStringOffset);
-                    // }
                     handleChangeClick(surplusBalanceNonLocaleString);
-
                     console.log('clicked');
                 }}
             >
@@ -377,7 +322,6 @@ export default function RangeCurrencySelector(props: propsIF) {
             <DefaultTooltip
                 interactive
                 title={exchangeBalanceTitle}
-                // placement={'bottom'}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
@@ -391,12 +335,12 @@ export default function RangeCurrencySelector(props: propsIF) {
                             : styles.grey_logo
                     }`}
                     onClick={() => {
+                        dexBalancePrefs.range.drawFromDexBal.enable();
                         if (isTokenASelector) {
                             setIsWithdrawTokenAFromDexChecked(true);
                         } else {
                             setIsWithdrawTokenBFromDexChecked(true);
                         }
-                        // handleChangeClick(surplusBalanceNonLocaleString);
                     }}
                     style={{
                         color:
@@ -445,15 +389,23 @@ export default function RangeCurrencySelector(props: propsIF) {
                 <div
                     className={styles.balance_with_pointer}
                     onClick={() => {
+                        dexBalancePrefs.range.drawFromDexBal.disable();
                         if (isTokenASelector) {
                             setIsWithdrawTokenAFromDexChecked(false);
                         } else {
                             setIsWithdrawTokenBFromDexChecked(false);
                         }
-                        // handleChangeClick(walletBalanceNonLocaleString);
                     }}
                 >
                     <div className={styles.wallet_logo}>
+                        {/*
+                        ***  TODO: Currently, code in the next block runs using ETH
+                        ***  TODO: differently than other tokens, which means the DOM
+                        ***  TODO: will not highlight the wallet balance to use excess
+                        ***  TODO: if dex balance is not sufficient... when Dough adds
+                        ***  TODO: this SDK update, we also need to adjust the highlight
+                        ***  TODO: logic show below.
+                        */}
                         <MdAccountBalanceWallet
                             size={20}
                             color={
