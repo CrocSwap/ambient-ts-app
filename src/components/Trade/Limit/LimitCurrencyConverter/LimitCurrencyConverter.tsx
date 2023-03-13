@@ -28,6 +28,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 
 // interface for component props
 interface propsIF {
@@ -89,6 +90,7 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 // central react functional component
@@ -145,14 +147,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
         acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
+        dexBalancePrefs,
     } = props;
-
-    // useEffect(() => {
-    //     console.log({ tokenAInputQty });
-    // }, [tokenAInputQty]);
-    // useEffect(() => {
-    //     console.log({ tokenBInputQty });
-    // }, [tokenBInputQty]);
 
     const dispatch = useAppDispatch();
 
@@ -164,9 +160,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
-    // const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
-    //     !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
-    // );
 
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
@@ -244,8 +237,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
             if (!tradeData.shouldLimitDirectionReverse) {
                 dispatch(setLimitTick(undefined));
             }
-
-            // setResetLimitTick((value) => !value);
         }
     };
 
@@ -576,6 +567,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
+                dexBalancePrefs={dexBalancePrefs}
             />
 
             <div
@@ -639,6 +631,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     searchType={searchType}
                     acknowledgeToken={acknowledgeToken}
                     openGlobalPopup={openGlobalPopup}
+                    dexBalancePrefs={dexBalancePrefs}
                 />
             </div>
             {/* <DividerDark addMarginTop /> */}
@@ -656,7 +649,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 chainId={chainId}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
-                // onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 limitTickDisplayPrice={limitTickDisplayPrice}
                 isOrderCopied={isOrderCopied}

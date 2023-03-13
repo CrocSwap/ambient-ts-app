@@ -129,7 +129,12 @@ export default function OrderRow(props: propsIF) {
 
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
-    const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
+    const usernameStyle =
+        isOwnerActiveAccount && isShowAllEnabled
+            ? 'owned_tx_contrast'
+            : ensName
+            ? 'gradient_text'
+            : 'base_color';
 
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;

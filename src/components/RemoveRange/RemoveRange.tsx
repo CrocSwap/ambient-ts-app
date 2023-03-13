@@ -593,7 +593,7 @@ export default function RemoveRange(props: propsIF) {
     );
 
     const buttonToDisplay = (
-        <div style={{ padding: '0 1rem' }}>
+        <div style={{ padding: '1rem' }}>
             {showSettings ? (
                 <Button title='Confirm' action={() => setShowSettings(false)} flat />
             ) : isPositionPendingUpdate ? (
@@ -618,7 +618,7 @@ export default function RemoveRange(props: propsIF) {
         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     ) : (
         <>
-            <div className={styles.header_container}>
+            <div className={styles.header_container} style={{ padding: '1rem' }}>
                 <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}

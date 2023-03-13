@@ -2378,7 +2378,7 @@ export default function App() {
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
         isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2441,8 +2441,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Swap/> React element on trade route
@@ -2497,8 +2497,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Limit/> React element on trade route
@@ -2525,20 +2525,16 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        // poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
-
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
-        // limitRate: limitRate,
-        // setLimitRate: setLimitRate,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
@@ -2551,17 +2547,19 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('limit'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Range/> React element
-
     const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
@@ -2597,7 +2595,6 @@ export default function App() {
         dailyVol: dailyVol,
         graphData: graphData,
         openGlobalModal: openGlobalModal,
-
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
@@ -2615,13 +2612,16 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('range'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange,
+        },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
     };

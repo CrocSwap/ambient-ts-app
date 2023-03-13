@@ -1,7 +1,8 @@
 .container {
     display: flex;
     transition: all var(--animation-speed) ease-in-out;
-    background: var(--dark2);
+    /* background: var(--dark2); */
+    border-radius: 50%;
     /* width: 40px;
     height: 40px;
     padding: 2px;
@@ -9,16 +10,37 @@
 
     justify-content: center;
     align-items: center;
+
+    height: 30px;
+    width: 30px;
+
+
+    
 }
 
 .container:hover {
-    background: var(--dark3);
-    -webkit-transform: rotate(90deg);
+    /* background: var(--dark3); */
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+
+
+    /* cursor: pointer; */
+    /* -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
-    transform: rotate(90deg);
+    transform: rotate(90deg); */
 }
+
+.container:hover .token_arrow{
+        -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    transform: rotate(180deg); 
+}
+
 
 /* .clicked{
     -webkit-transform: rotate(90deg);
@@ -50,13 +72,21 @@
     -moz-transition: 0.7s;
     -ms-transition: 0.7s;
     -o-transition: 0.7s;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
-.token_arrow:hover {
+/* .token_arrow:hover{
+
+
+    margin-bottom: 6px;
+    cursor: pointer;
+
+} */
+
+/* .token_arrow:hover {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
-}
+} */
