@@ -61,6 +61,7 @@ export default function FullChat(props: FullChatPropsIF) {
         // handleDropdownMenu();
     }
 
+    // eslint-disable-next-line
     function findSpeed(pool: any) {
         switch (pool.base.symbol + '/' + pool.quote.symbol) {
             case 'ETH/USDC':
@@ -80,6 +81,7 @@ export default function FullChat(props: FullChatPropsIF) {
         }
     }
 
+    // eslint-disable-next-line
     function findId(pool: any) {
         switch (pool.base.symbol + '/' + pool.quote.symbol) {
             case 'ETH/USDC':
@@ -99,7 +101,7 @@ export default function FullChat(props: FullChatPropsIF) {
         }
     }
     useEffect(() => {
-        props.favePools.pools.map((pool: PoolIF, i: number) => {
+        props.favePools.pools.map((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + '/' + pool.quote.symbol,
                 base: {
