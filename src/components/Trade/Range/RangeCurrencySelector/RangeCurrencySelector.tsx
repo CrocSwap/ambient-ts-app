@@ -398,6 +398,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                     }}
                 >
                     <div className={styles.wallet_logo}>
+                        {/*
+                        ***  TODO: Currently, code in the next block runs using ETH
+                        ***  TODO: differently than other tokens, which means the DOM
+                        ***  TODO: will not highlight the wallet balance to use excess
+                        ***  TODO: if dex balance is not sufficient... when Dough adds
+                        ***  TODO: this SDK update, we also need to adjust the highlight
+                        ***  TODO: logic show below.
+                        */}
                         <MdAccountBalanceWallet
                             size={20}
                             color={

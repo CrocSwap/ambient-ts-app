@@ -191,8 +191,19 @@ export default function Range(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
-    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
+    // local state values whether tx will use dex balance preferentially over
+    // ... wallet funds, this layer of logic matters because the DOM may need
+    // ... to use wallet funds without switching the persisted preference
+    const [
+        isWithdrawTokenAFromDexChecked,
+        setIsWithdrawTokenAFromDexChecked
+    ] = useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
+    const [
+        isWithdrawTokenBFromDexChecked,
+        setIsWithdrawTokenBFromDexChecked
+    ] = useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
+
+
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
