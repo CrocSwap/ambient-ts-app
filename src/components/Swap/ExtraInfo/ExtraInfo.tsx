@@ -140,7 +140,7 @@ export default function ExtraInfo(props: propsIF) {
     ];
 
     const priceImpactWarning = (
-        <div className={styles.extra_details}>
+        <div className={styles.price_impact}>
             {priceImpactComponentArray.map((item, idx) =>
                 item ? (
                     <div className={styles.extra_row} key={idx}>
