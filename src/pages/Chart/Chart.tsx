@@ -2309,7 +2309,7 @@ export default function Chart(props: ChartData) {
 
             const resultData = liqDataAll[resIndex];
 
-            if (nearest) {
+            if (nearest && resultData) {
                 return resultData.liqPrices;
             } else {
                 return 0;
