@@ -19,9 +19,9 @@ export interface allDexBalanceMethodsIF {
 }
 
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
-    const localStorageSlug = 'dex_bal_pref_' + txType;
+    const localStorageSlug: string = 'dex_bal_pref_' + txType;
 
-    const getPersistedData = (type: string) => {
+    const getPersistedData = (type: string): boolean|undefined => {
         const preferences = JSON.parse(
             localStorage.getItem(localStorageSlug) as string
         );
