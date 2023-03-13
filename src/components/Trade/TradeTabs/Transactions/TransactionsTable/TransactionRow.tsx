@@ -188,7 +188,12 @@ export default function TransactionRow(props: propsIF) {
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
 
-    const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
+    const usernameStyle =
+        isOwnerActiveAccount && isShowAllEnabled
+            ? 'owned_tx_contrast'
+            : ensName
+            ? 'gradient_text'
+            : 'base_color';
 
     const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
