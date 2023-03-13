@@ -224,7 +224,12 @@ export default function RangesRow(props: propsIF) {
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
 
-    const usernameStyle = ensName || userMatchesConnectedAccount ? 'gradient_text' : 'base_color';
+    const usernameStyle =
+        isOwnerActiveAccount && (isShowAllEnabled || isLeaderboard)
+            ? 'owned_tx_contrast'
+            : ensName
+            ? 'gradient_text'
+            : 'base_color';
 
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
