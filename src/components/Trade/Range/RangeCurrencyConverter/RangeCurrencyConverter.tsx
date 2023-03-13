@@ -21,7 +21,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
-
+import tokenArrow from '../../../../assets/images/icons/plus.svg';
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -800,6 +800,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
                 tokenAorB={'A'}
             />
             <div className={styles.arrow_container}>
+                <img src={tokenArrow} alt='plus sign' />
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <div id='range_currency_converter'>

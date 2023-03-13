@@ -120,7 +120,7 @@ export default function TokensArrow() {
                         gradientUnits='userSpaceOnUse'
                     >
                         <stop stopColor='#7371FC' />
-                        <stop offset='0.494792' stopColor='#CDC1FF' />
+                        <stop offset='0.494792' stopColor='#7371FC' />
                         <stop offset='1' stopColor='#7371FC' />
                     </linearGradient>
                 </defs>

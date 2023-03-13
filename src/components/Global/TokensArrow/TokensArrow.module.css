@@ -1,7 +1,7 @@
 .container {
     display: flex;
     transition: all var(--animation-speed) ease-in-out;
-    background: var(--dark2);
+    /* background: var(--dark2); */
     border-radius: 50%;
     /* width: 40px;
     height: 40px;
@@ -19,7 +19,7 @@
 }
 
 .container:hover {
-    background: var(--dark3);
+    /* background: var(--dark3); */
     width: 30px;
     height: 30px;
     border-radius: 50%;
