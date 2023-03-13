@@ -67,14 +67,16 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
     const [copiedData, setCopiedData] = useState('');
 
     function handleCopyEnsName() {
-        copy(ensNameToDisplay);
-        setCopiedData(ensNameToDisplay);
+        copy(ensNameAvailable ? ensName : resolvedAddress ? resolvedAddress : activeAccount);
+        setCopiedData(
+            ensNameAvailable ? ensName : resolvedAddress ? resolvedAddress : activeAccount,
+        );
 
         setOpenSnackbar(true);
     }
     function handleCopyAddress() {
-        copy(activeAccount);
-        setCopiedData(activeAccount);
+        copy(resolvedAddress ? resolvedAddress : activeAccount);
+        setCopiedData(resolvedAddress ? resolvedAddress : activeAccount);
 
         setOpenSnackbar(true);
     }

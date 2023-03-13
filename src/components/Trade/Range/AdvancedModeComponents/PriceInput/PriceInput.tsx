@@ -41,7 +41,7 @@ export default function PriceInput(props: priceInputProps) {
             autoCorrect='off'
             min='0'
             minLength={1}
-            pattern='^[0-9]*[.,]?[0-9]*$'
+            pattern='^[0-9,]*[.]?[0-9]*$'
             placeholder='0.0'
             disabled={disable}
             required
