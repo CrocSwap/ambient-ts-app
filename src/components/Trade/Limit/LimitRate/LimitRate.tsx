@@ -4,6 +4,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
+import { HiPlus, HiMinus } from 'react-icons/hi';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -119,6 +120,17 @@ export default function LimitRate(props: propsIF) {
         </div>
     );
 
+    const buttonControls = (
+        <div className={styles.button_controls}>
+            <button>
+                <HiPlus />
+            </button>
+            <button>
+                <HiMinus />
+            </button>
+        </div>
+    );
+
     return (
         <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
             <span
@@ -137,8 +149,9 @@ export default function LimitRate(props: propsIF) {
                 </button>
             </span>
 
-            <div className={`${styles.swap_input} `} id='limit_rate'>
+            <div className={styles.swap_input} id='limit_rate'>
                 {rateInput}
+                {buttonControls}
             </div>
         </div>
     );

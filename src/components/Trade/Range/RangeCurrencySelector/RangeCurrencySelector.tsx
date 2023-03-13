@@ -140,7 +140,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -261,7 +261,6 @@ export default function RangeCurrencySelector(props: propsIF) {
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
 
-
     const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
@@ -292,20 +291,19 @@ export default function RangeCurrencySelector(props: propsIF) {
         ? isWithdrawTokenAFromDexChecked && surplusBalanceNonLocaleString !== '0.0'
         : isWithdrawTokenBFromDexChecked && surplusBalanceNonLocaleString !== '0.0';
 
-    const surplusMaxButton =
-        displaySurplusMaxButton ? (
-            <button
-                className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    handleChangeClick(surplusBalanceNonLocaleString);
-                    console.log('clicked');
-                }}
-            >
-                Max
-            </button>
-        ) : (
-            <p className={styles.max_button} />
-        );
+    const surplusMaxButton = displaySurplusMaxButton ? (
+        <button
+            className={`${styles.max_button} ${styles.max_button_enable}`}
+            onClick={() => {
+                handleChangeClick(surplusBalanceNonLocaleString);
+                console.log('clicked');
+            }}
+        >
+            Max
+        </button>
+    ) : (
+        <p className={styles.max_button} />
+    );
     const exchangeBalanceTitle = (
         <p
             style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
@@ -399,13 +397,13 @@ export default function RangeCurrencySelector(props: propsIF) {
                 >
                     <div className={styles.wallet_logo}>
                         {/*
-                        ***  TODO: Currently, code in the next block runs using ETH
-                        ***  TODO: differently than other tokens, which means the DOM
-                        ***  TODO: will not highlight the wallet balance to use excess
-                        ***  TODO: if dex balance is not sufficient... when Dough adds
-                        ***  TODO: this SDK update, we also need to adjust the highlight
-                        ***  TODO: logic show below.
-                        */}
+                         ***  TODO: Currently, code in the next block runs using ETH
+                         ***  TODO: differently than other tokens, which means the DOM
+                         ***  TODO: will not highlight the wallet balance to use excess
+                         ***  TODO: if dex balance is not sufficient... when Dough adds
+                         ***  TODO: this SDK update, we also need to adjust the highlight
+                         ***  TODO: logic show below.
+                         */}
                         <MdAccountBalanceWallet
                             size={20}
                             color={

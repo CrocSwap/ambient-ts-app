@@ -194,15 +194,12 @@ export default function Range(props: propsIF) {
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
     // ... to use wallet funds without switching the persisted preference
-    const [
-        isWithdrawTokenAFromDexChecked,
-        setIsWithdrawTokenAFromDexChecked
-    ] = useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
-    const [
-        isWithdrawTokenBFromDexChecked,
-        setIsWithdrawTokenBFromDexChecked
-    ] = useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
-
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState<boolean>(
+        dexBalancePrefs.range.drawFromDexBal.isEnabled,
+    );
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState<boolean>(
+        dexBalancePrefs.range.drawFromDexBal.isEnabled,
+    );
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
@@ -1158,7 +1155,7 @@ export default function Range(props: propsIF) {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs
+        dexBalancePrefs: dexBalancePrefs,
     };
 
     // props for <RangeWidth/> React element

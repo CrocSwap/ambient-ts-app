@@ -2378,7 +2378,7 @@ export default function App() {
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
         isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2441,8 +2441,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Swap/> React element on trade route
@@ -2497,8 +2497,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Limit/> React element on trade route
@@ -2555,8 +2555,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Range/> React element
@@ -2620,7 +2620,7 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
+            range: dexBalPrefRange,
         },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,

@@ -147,7 +147,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const dispatch = useAppDispatch();

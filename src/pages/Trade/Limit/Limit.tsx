@@ -156,7 +156,7 @@ export default function Limit(props: propsIF) {
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
@@ -168,12 +168,11 @@ export default function Limit(props: propsIF) {
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
-
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(
-        dexBalancePrefs.limit.drawFromDexBal.isEnabled
+        dexBalancePrefs.limit.drawFromDexBal.isEnabled,
     );
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(
-        dexBalancePrefs.limit.outputToDexBal.isEnabled
+        dexBalancePrefs.limit.outputToDexBal.isEnabled,
     );
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
@@ -843,7 +842,7 @@ export default function Limit(props: propsIF) {
         acknowledgeToken: acknowledgeToken,
         setResetLimitTick: setResetLimitTick,
         openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs
+        dexBalancePrefs: dexBalancePrefs,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

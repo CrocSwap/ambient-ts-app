@@ -2,25 +2,25 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 // interface for one object with a value and reducers to update said value
 export interface dexBalancePrefIF {
-    isEnabled: boolean,
-    enable: () => void,
-    disable: () => void,
-    toggle: () => void
-};
+    isEnabled: boolean;
+    enable: () => void;
+    disable: () => void;
+    toggle: () => void;
+}
 
 // interface for an object with two nested objects to manage draw vs receive prefs
 // this is the interface of this hook's returned value
 export interface dexBalanceMethodsIF {
-    outputToDexBal: dexBalancePrefIF,
-    drawFromDexBal: dexBalancePrefIF
+    outputToDexBal: dexBalancePrefIF;
+    drawFromDexBal: dexBalancePrefIF;
 }
 
 // interface for an object with multiple instances of this hook inside it
 // this is how we pass data from App.tsx through props to the rest of the app
 export interface allDexBalanceMethodsIF {
-    swap: dexBalanceMethodsIF,
-    limit: dexBalanceMethodsIF,
-    range: dexBalanceMethodsIF
+    swap: dexBalanceMethodsIF;
+    limit: dexBalanceMethodsIF;
+    range: dexBalanceMethodsIF;
 }
 
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
@@ -29,13 +29,11 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
 
     // fn to retrieve persisted data from local storage to initialization
     // may return `undefined` but that value is handled downstream
-    const getPersistedData = (type: string): boolean|undefined => {
+    const getPersistedData = (type: string): boolean | undefined => {
         // get correct key-val pair from local storage and parse as string
-        const preferences = JSON.parse(
-            localStorage.getItem(localStorageSlug) as string
-        );
+        const preferences = JSON.parse(localStorage.getItem(localStorageSlug) as string);
         // declare an output variable (`undefined` if no persisted value)
-        let userPref: boolean|undefined;
+        let userPref: boolean | undefined;
         // switch statement to get the correct persisted value from data
         // returns `undefined` is data does not exist or if arg `type` is unrecongized
         switch (type) {
@@ -55,18 +53,15 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     // hooks to track in-session user preference
     // initialize from local storage if persisted value was found
     const [outputToDexBal, setOutputToDexBal] = useState<boolean>(
-        getPersistedData('outputToDexBal') ?? false
+        getPersistedData('outputToDexBal') ?? false,
     );
     const [drawFromDexBal, setDrawFromDexBal] = useState<boolean>(
-        getPersistedData('drawFromDexBal') ?? false
+        getPersistedData('drawFromDexBal') ?? false,
     );
 
     // hook to update local storage when either persisted value changes
     useEffect(() => {
-        localStorage.setItem(
-            localStorageSlug,
-            JSON.stringify({outputToDexBal, drawFromDexBal})
-        );
+        localStorage.setItem(localStorageSlug, JSON.stringify({ outputToDexBal, drawFromDexBal }));
     }, [outputToDexBal, drawFromDexBal]);
 
     // class constructor to manage each data on preference (draw vs receive)
@@ -82,12 +77,12 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
             this.enable = () => setterFn(true);
             this.disable = () => setterFn(false);
             this.toggle = () => setterFn(!this.isEnabled);
-        };
-    };
+        }
+    }
 
     // return objects to retrieve and update user preferences
     return {
         outputToDexBal: new DexBalPref(outputToDexBal, setOutputToDexBal),
-        drawFromDexBal: new DexBalPref(drawFromDexBal, setDrawFromDexBal)
+        drawFromDexBal: new DexBalPref(drawFromDexBal, setDrawFromDexBal),
     };
-}
+};
