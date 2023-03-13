@@ -46,8 +46,24 @@ export default function LimitRate(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
-    const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
-    // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const limitTick = tradeData.limitTick;
+
+    const increaseTick = () => {
+        if (limitTick) {
+            dispatch(setLimitTick(limitTick + gridSize));
+            setPriceInputFieldBlurred(true);
+        }
+    };
+
+    const decreaseTick = () => {
+        if (limitTick) {
+            dispatch(setLimitTick(limitTick - gridSize));
+            setPriceInputFieldBlurred(true);
+        }
+    };
 
     const initialLimitRateNonDisplay =
         (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
@@ -122,11 +138,11 @@ export default function LimitRate(props: propsIF) {
 
     const buttonControls = (
         <div className={styles.button_controls}>
-            <button>
+            <button onClick={!isDenomBase ? increaseTick : decreaseTick}>
                 <HiPlus />
             </button>
             <button>
-                <HiMinus />
+                <HiMinus onClick={!isDenomBase ? decreaseTick : increaseTick} />
             </button>
         </div>
     );
