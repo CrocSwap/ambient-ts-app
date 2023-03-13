@@ -2292,12 +2292,37 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    const findLiqNearest = (liqDataAll: any[]) => {
+        const point = scaleData.yScale(scaleData.yScale.domain()[0]);
+
+        if (point == undefined) return 0;
+        if (liqDataAll) {
+            const nearest = minimum(liqDataAll, (d: any) => {
+                return Math.abs(point - scaleData.yScale(d.liqPrices));
+            })[1];
+
+            const nearestIndex = liqDataAll.findIndex(
+                (item: any) => item.liqPrices === nearest.liqPrices,
+            );
+
+            const resIndex = liqDataAll.length > 1 ? nearestIndex + 1 : 0;
+
+            const resultData = liqDataAll[resIndex];
+
+            if (nearest) {
+                return resultData.liqPrices;
+            } else {
+                return 0;
+            }
+        }
+    };
+
     useEffect(() => {
         const liqDataAll = liquidityData.depthLiqBidData.concat(liquidityData.depthLiqAskData);
 
         const visibleDomain = liqDataAll.filter(
             (liqData: any) =>
-                liqData.liqPrices >= scaleData.yScale.domain()[0] &&
+                liqData.liqPrices >= findLiqNearest(liqDataAll) &&
                 liqData.liqPrices <= scaleData.yScale.domain()[1],
         );
 
@@ -3972,7 +3997,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [scaleData, selectedDate]);
+    }, [scaleData === undefined, selectedDate]);
 
     useEffect(() => {
         const canvas = d3.select(d3CanvasCandle.current).select('canvas').node() as any;
@@ -4418,7 +4443,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [scaleData, gradientForAsk, liqMode]);
+    }, [scaleData === undefined, gradientForAsk, liqMode, liquidityScale, liquidityDepthScale]);
 
     useEffect(() => {
         const ctx = (d3.select(d3CanvasLiqAsk.current).select('canvas').node() as any).getContext(
@@ -4459,7 +4484,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [scaleData, liqMode, gradientForBid]);
+    }, [scaleData, liqMode, gradientForBid, liquidityScale, liquidityDepthScale]);
 
     useEffect(() => {
         const ctx = (d3.select(d3CanvasLiqBid.current).select('canvas').node() as any).getContext(
@@ -4906,7 +4931,7 @@ export default function Chart(props: ChartData) {
 
         const filteredAllData = allData.filter(
             (item: any) =>
-                scaleData.yScale.domain()[0] <= item.liqPrices &&
+                findLiqNearest(allData) <= item.liqPrices &&
                 item.liqPrices <= scaleData.yScale.domain()[1],
         );
 
