@@ -2,6 +2,7 @@
     display: flex;
     transition: all var(--animation-speed) ease-in-out;
     background: var(--dark2);
+    border-radius: 50%;
     /* width: 40px;
     height: 40px;
     padding: 2px;
@@ -9,17 +10,21 @@
 
     justify-content: center;
     align-items: center;
+
+    height: 30px;
+    width: 30px;
+
+
     
 }
 
 .container:hover{
     background: var(--dark3);
-    -webkit-transform: rotate(180deg);
-    -moz-transform: rotate(180deg);
-    -o-transform: rotate(180deg);
-    -ms-transform: rotate(180deg);
-    transform: rotate(180deg);
+
+
+    cursor: pointer;
 }
+
 
 /* .clicked{
     -webkit-transform: rotate(180deg);
@@ -59,9 +64,13 @@
 
 .token_arrow:hover{
 
-    -webkit-transform: rotate(180deg);
+    /* -webkit-transform: rotate(180deg);
     -moz-transform: rotate(180deg);
     -o-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
-    transform: rotate(180deg);
+    transform: rotate(180deg); */
+    margin-bottom: 6px;
+    cursor: pointer;
+
 }
+
