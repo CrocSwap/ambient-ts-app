@@ -442,7 +442,12 @@ export default function RoomDropdown(props: propsIF) {
                                 key={i}
                                 data-value={pool.name}
                                 data-icon='glyphicon glyphicon-eye-open'
-                                onClick={(event: any) => handleRoomClick(event, pool.quote.symbol)}
+                                onClick={(event: any) =>
+                                    handleRoomClick(
+                                        event,
+                                        pool.quote.symbol + '/' + pool.base.symbol,
+                                    )
+                                }
                             >
                                 {favoritePoolsArray.some(({ name }) => name === pool.name) ? (
                                     <svg
