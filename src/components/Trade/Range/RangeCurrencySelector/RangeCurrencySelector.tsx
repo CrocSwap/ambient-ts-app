@@ -335,11 +335,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                             : styles.grey_logo
                     }`}
                     onClick={() => {
+                        dexBalancePrefs.range.drawFromDexBal.enable();
                         if (isTokenASelector) {
-                            dexBalancePrefs.range.drawFromDexBal.enable();
                             setIsWithdrawTokenAFromDexChecked(true);
                         } else {
-                            dexBalancePrefs.range.outputToDexBal.enable();
                             setIsWithdrawTokenBFromDexChecked(true);
                         }
                     }}
@@ -390,11 +389,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                 <div
                     className={styles.balance_with_pointer}
                     onClick={() => {
+                        dexBalancePrefs.range.drawFromDexBal.disable();
                         if (isTokenASelector) {
-                            dexBalancePrefs.range.drawFromDexBal.disable();
                             setIsWithdrawTokenAFromDexChecked(false);
                         } else {
-                            dexBalancePrefs.range.outputToDexBal.disable();
                             setIsWithdrawTokenBFromDexChecked(false);
                         }
                     }}
