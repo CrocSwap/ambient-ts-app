@@ -823,7 +823,6 @@ export default function App() {
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
     const [poolExists, setPoolExists] = useState<boolean | undefined>();
-    useEffect(() => console.log({ poolExists }), [poolExists]);
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     // hook to update `poolExists` when crocEnv changes
