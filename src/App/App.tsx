@@ -162,7 +162,6 @@ import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
@@ -198,8 +197,12 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
-    const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
+    const walletToS: tosMethodsIF = useTermsOfService('wallet', process.env.REACT_APP_WALLET_TOS_CID as string);
+    const chatToS: tosMethodsIF = useTermsOfService('chat', process.env.REACT_APP_CHAT_TOS_CID as string);
+    // this line is just here to make the linter happy
+    // it should be removed when the chatToS line is moved
+    // please and thank you
+    false && chatToS;
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
@@ -3210,7 +3213,6 @@ export default function App() {
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
-                                    chatToS={chatToS}
                                     chartSettings={chartSettings}
                                 />
                             }
