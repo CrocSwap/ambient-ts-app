@@ -199,6 +199,10 @@ export default function App() {
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService('wallet');
     const chatToS: tosMethodsIF = useTermsOfService('chat');
+    // this line is just here to make the linter happy
+    // it should be removed when the chatToS line is moved
+    // please and thank you
+    false && chatToS;
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
