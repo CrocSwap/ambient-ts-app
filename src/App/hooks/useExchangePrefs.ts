@@ -21,6 +21,7 @@ export interface allDexBalanceMethodsIF {
     swap: dexBalanceMethodsIF;
     limit: dexBalanceMethodsIF;
     range: dexBalanceMethodsIF;
+    reap: dexBalanceMethodsIF;
 }
 
 export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {

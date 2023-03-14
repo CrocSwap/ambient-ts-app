@@ -216,6 +216,7 @@ export default function App() {
     const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
+    const dexBalPrefReap : dexBalanceMethodsIF = useExchangePrefs('reap');
 
     false && dexBalPrefSwap;
     false && dexBalPrefLimit;
@@ -2442,6 +2443,7 @@ export default function App() {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
+            reap: dexBalPrefReap
         },
     };
 
@@ -2498,6 +2500,7 @@ export default function App() {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
+            reap: dexBalPrefReap
         },
     };
 
@@ -2556,6 +2559,7 @@ export default function App() {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
+            reap: dexBalPrefReap
         },
     };
 
@@ -2621,6 +2625,7 @@ export default function App() {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
+            reap: dexBalPrefReap
         },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
