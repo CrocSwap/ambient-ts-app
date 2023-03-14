@@ -21,6 +21,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
+import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 
 // interface for component props
@@ -143,7 +144,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -749,7 +750,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs
+        dexBalancePrefs: dexBalancePrefs,
     };
 
     return (
@@ -764,6 +765,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
                 tokenAorB={'A'}
             />
             <div className={styles.arrow_container}>
+                <img src={tokenArrow} alt='plus sign' />
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <div id='range_currency_converter'>

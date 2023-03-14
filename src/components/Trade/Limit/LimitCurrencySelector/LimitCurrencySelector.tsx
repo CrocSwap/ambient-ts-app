@@ -117,7 +117,7 @@ export default function LimitCurrencySelector(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;

@@ -34,6 +34,11 @@
     gap: 2rem;
 }
 
+/* .row_container img{
+    width: 331px;
+height: 420px;
+} */
+
 .column_reverse {
     flex-direction: column-reverse;
 }
