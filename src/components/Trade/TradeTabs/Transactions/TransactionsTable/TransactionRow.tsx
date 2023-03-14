@@ -1,6 +1,6 @@
 import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
@@ -221,6 +221,11 @@ export default function TransactionRow(props: propsIF) {
         }
     }
 
+    const [highlightRow, setHighlightRow] = useState(false);
+    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
+    const handleRowMouseDown = () => setHighlightRow(true);
+    const handleRowMouseOut = () => setHighlightRow(false);
+
     const IDWithTooltip = (
         <DefaultTooltip
             interactive
@@ -258,6 +263,8 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={200}
         >
             <li
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
                 onClick={openDetailsModal}
                 data-label='value'
                 className='base_color'
@@ -421,7 +428,11 @@ export default function TransactionRow(props: propsIF) {
             enterDelay={150}
             leaveDelay={200}
         >
-            <li className='base_color'>
+            <li
+                className='base_color'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 {/* {tokensTogether} */}
                 <NavLink
                     // onClick={() => {
@@ -484,7 +495,12 @@ export default function TransactionRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <li
+                onClick={openDetailsModal}
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
@@ -505,7 +521,13 @@ export default function TransactionRow(props: propsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -533,7 +555,13 @@ export default function TransactionRow(props: propsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -557,7 +585,7 @@ export default function TransactionRow(props: propsIF) {
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
                     ? null
@@ -629,6 +657,8 @@ export default function TransactionRow(props: propsIF) {
                 (tx.entityType === 'liqchange' ? (
                     tx.positionType === 'ambient' ? (
                         <li
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
                             onClick={openDetailsModal}
                             data-label='price'
                             className={'gradient_text'}
@@ -642,6 +672,8 @@ export default function TransactionRow(props: propsIF) {
                         </li>
                     ) : (
                         <li
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
                             onClick={openDetailsModal}
                             data-label='price'
                             className={`${priceStyle}`}
@@ -666,6 +698,8 @@ export default function TransactionRow(props: propsIF) {
                     )
                 ) : (
                     <li
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                         onClick={() => {
                             console.log({ isOnPortfolioPage });
                             console.log({ truncatedDisplayPriceDenomByMoneyness });
@@ -700,6 +734,8 @@ export default function TransactionRow(props: propsIF) {
                 ))}
             {!showColumns && (
                 <li
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                     onClick={openDetailsModal}
                     data-label='side'
                     className={sideTypeStyle}
@@ -712,6 +748,8 @@ export default function TransactionRow(props: propsIF) {
             )}
             {!showColumns && (
                 <li
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                     onClick={openDetailsModal}
                     data-label='type'
                     className={sideTypeStyle}
@@ -722,6 +760,8 @@ export default function TransactionRow(props: propsIF) {
             )}
             {showColumns && !ipadView && (
                 <li
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                     data-label='side-type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
