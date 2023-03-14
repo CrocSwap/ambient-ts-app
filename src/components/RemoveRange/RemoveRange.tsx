@@ -8,20 +8,12 @@ import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import { VscClose } from 'react-icons/vsc';
-
-// import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
-// import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
-
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
-// import {
-//     // CircleLoader,
-//     // CircleLoaderFailed,
-// } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
 import {
@@ -37,11 +29,10 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-// import WithdrawAs from './WithdrawAs/WithdrawAs';
-// import WithdrawTo from './WithdrawTo/WithdrawTo';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
+import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -65,34 +56,19 @@ interface propsIF {
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
-    // lastBlockNumber: number;
     position: PositionIF;
-
     openGlobalModal: (content: React.ReactNode) => void;
-
     closeGlobalModal: () => void;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function RemoveRange(props: propsIF) {
-    // console.log(props);
     const {
         crocEnv,
-        // chainId,
-        // poolIdx,
-        // user,
-        // bidTick,
-        // askTick,
-        // baseTokenAddress,
-        // quoteTokenAddress,
-        // baseTokenBalance,
-        // quoteTokenBalance,
-        // baseTokenDexBalance,
-        // quoteTokenDexBalance,
         closeGlobalModal,
         chainData,
-        // provider,
-        // lastBlockNumber,
         position,
+        dexBalancePrefs
     } = props;
 
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
@@ -219,25 +195,14 @@ export default function RemoveRange(props: propsIF) {
     const positionHasLiquidity =
         (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) > 0;
 
-    // const removeRangeSetttingIcon = (
-    //     <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
-    //         {showSettings ? null : <RiListSettingsLine size={20} />}
-    //     </div>
-    // );
-
-    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
-
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    // const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewRemovalTransactionHash('');
         setTxErrorCode('');
-
-        // setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -252,13 +217,13 @@ export default function RemoveRange(props: propsIF) {
         position.positionType === 'ambient'
             ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
             : concPosSlot(
-                  position.user,
-                  position.base,
-                  position.quote,
-                  position.bidTick,
-                  position.askTick,
-                  chainData.poolIndex,
-              );
+                position.user,
+                position.base,
+                position.quote,
+                position.bidTick,
+                position.askTick,
+                chainData.poolIndex,
+            );
 
     const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
 
@@ -272,7 +237,6 @@ export default function RemoveRange(props: propsIF) {
 
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
-        // console.log({ position });
 
         dispatch(addPositionPendingUpdate(posHash as string));
 
@@ -282,7 +246,7 @@ export default function RemoveRange(props: propsIF) {
                 console.log(`${removalPercentage}% to be removed.`);
                 try {
                     tx = await pool.burnAmbientAll([lowLimit, highLimit], {
-                        surplus: isSaveAsDexSurplusChecked,
+                        surplus: dexBalancePrefs.reap.outputToDexBal.isEnabled
                     });
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
@@ -293,7 +257,6 @@ export default function RemoveRange(props: propsIF) {
                     console.log({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
-                    // setTxErrorMessage(error?.message);
                 }
             } else {
                 const positionLiq = position.positionLiq;
@@ -313,7 +276,6 @@ export default function RemoveRange(props: propsIF) {
                     console.log({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
-                    // setTxErrorMessage(error?.message);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -321,24 +283,15 @@ export default function RemoveRange(props: propsIF) {
 
             const liquidityToBurn = ethers.BigNumber.from(positionLiq)
                 .mul(removalPercentage)
-                // .mul(removalPercentage === 100 ? 99 : removalPercentage)
                 .div(100);
             console.log(`${removalPercentage}% to be removed.`);
-
-            // console.log({ removalPercentage });
-            // console.log({ liquidityToBurn });
-            // console.log({ lowLimit });
-            // console.log({ highLimit });
-            // console.log({ isSaveAsDexSurplusChecked });
-            // console.log(position.bidTick);
-            // console.log(position.askTick);
 
             try {
                 tx = await pool.burnRangeLiq(
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: isSaveAsDexSurplusChecked },
+                    { surplus: dexBalancePrefs.reap.outputToDexBal.isEnabled },
                 );
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
@@ -376,8 +329,6 @@ export default function RemoveRange(props: propsIF) {
                             quote: position.quote,
                             poolIdx: position.poolIdx.toString(),
                             positionType: 'ambient',
-                            // bidTick: '0',
-                            // askTick: '0',
                             changeType: 'burn',
                             isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
                             liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
@@ -440,8 +391,6 @@ export default function RemoveRange(props: propsIF) {
                                     quote: position.quote,
                                     poolIdx: position.poolIdx.toString(),
                                     positionType: 'ambient',
-                                    // bidTick: '0',
-                                    // askTick: '0',
                                     changeType: 'burn',
                                     isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
                                     liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
@@ -468,7 +417,6 @@ export default function RemoveRange(props: propsIF) {
                     }
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -481,17 +429,6 @@ export default function RemoveRange(props: propsIF) {
         }
     };
     const removalDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-
-    // const removalDenied = (
-    //     <div className={styles.removal_pending}>
-    //         <CircleLoaderFailed />
-    //         <p>
-    //             Check the Metamask extension in your browser for notifications, or click &quot;Try
-    //             Again&quot;. You can also click the left arrow above to try again.
-    //         </p>
-    //         <Button title='Try Again' action={resetConfirmation} flat={true} />
-    //     </div>
-    // );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
@@ -519,13 +456,6 @@ export default function RemoveRange(props: propsIF) {
         />
     );
 
-    // const removalPending = (
-    //     <div className={styles.removal_pending}>
-    //         <CircleLoader size='5rem' borderColor='#171d27' />
-    //         <p>Check the Metamask extension in your browser for notifications.</p>
-    //     </div>
-    // );
-
     const [currentConfirmationData, setCurrentConfirmationData] = useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
@@ -534,9 +464,6 @@ export default function RemoveRange(props: propsIF) {
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
-    // const isRemovalDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
 
@@ -556,7 +483,6 @@ export default function RemoveRange(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        // removalDenied,
         newRemovalTransactionHash,
         txErrorCode,
         showConfirmation,
@@ -576,7 +502,6 @@ export default function RemoveRange(props: propsIF) {
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             {showConfirmation && (
-                // {showConfirmation && !removalDenied && (
                 <header>
                     <div className={styles.button} onClick={resetConfirmation}>
                         {newRemovalTransactionHash == '' && <BsArrowLeft size={30} />}
@@ -630,7 +555,6 @@ export default function RemoveRange(props: propsIF) {
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                 />
-                {/* {removeRangeSetttingIcon} */}
             </div>
             <div style={{ padding: '0 1rem' }}>
                 <RemoveRangeWidth
@@ -650,11 +574,7 @@ export default function RemoveRange(props: propsIF) {
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
                 />
-                {/* <WithdrawAs />
-                <WithdrawTo /> */}
                 <ExtraControls
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     baseTokenBalance={baseTokenBalance}
                     quoteTokenBalance={quoteTokenBalance}
                     baseTokenDexBalance={baseTokenDexBalance}
@@ -663,6 +583,7 @@ export default function RemoveRange(props: propsIF) {
                     quoteRemovalNum={quoteRemovalNum}
                     baseTokenSymbol={props.baseTokenSymbol}
                     quoteTokenSymbol={props.quoteTokenSymbol}
+                    dexBalancePrefs={dexBalancePrefs}
                 />
             </div>
         </>
