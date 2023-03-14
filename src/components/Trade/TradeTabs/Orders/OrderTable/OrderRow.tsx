@@ -6,7 +6,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -182,13 +182,25 @@ export default function OrderRow(props: propsIF) {
             : '';
 
     const IDWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
-            title={posHash}
+            title={
+                <p
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {posHash}
+                </p>
+            }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
@@ -198,7 +210,7 @@ export default function OrderRow(props: propsIF) {
             >
                 {posHashTruncated}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const ValueWithTooltip = (
@@ -208,7 +220,7 @@ export default function OrderRow(props: propsIF) {
             placement={'right'}
             arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
@@ -224,10 +236,19 @@ export default function OrderRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div>
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
@@ -246,9 +267,8 @@ export default function OrderRow(props: propsIF) {
                 </div>
             }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={() => {
@@ -266,7 +286,7 @@ export default function OrderRow(props: propsIF) {
             >
                 {userNameToDisplay}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
@@ -329,7 +349,7 @@ export default function OrderRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={150}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li className='base_color'>
                 {/* {tokensTogether} */}
@@ -468,7 +488,7 @@ export default function OrderRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>

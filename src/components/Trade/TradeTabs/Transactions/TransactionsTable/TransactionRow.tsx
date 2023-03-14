@@ -269,7 +269,7 @@ export default function TransactionRow(props: propsIF) {
             arrow
             disableHoverListener={true}
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onMouseEnter={handleRowMouseDown}
@@ -358,7 +358,7 @@ export default function TransactionRow(props: propsIF) {
                 disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
-                leaveDelay={200}
+                leaveDelay={0}
             >
                 <img src={baseTokenLogo} alt='base token' width={logoSizes} />
             </DefaultTooltip>
@@ -384,7 +384,7 @@ export default function TransactionRow(props: propsIF) {
                 disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
-                leaveDelay={200}
+                leaveDelay={0}
             >
                 <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
             </DefaultTooltip>
@@ -443,7 +443,7 @@ export default function TransactionRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={150}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 className='base_color'
@@ -510,7 +510,7 @@ export default function TransactionRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
@@ -655,7 +655,7 @@ export default function TransactionRow(props: propsIF) {
                     placement={'right'}
                     arrow
                     enterDelay={750}
-                    leaveDelay={200}
+                    leaveDelay={0}
                 >
                     <li
                         data-label='id'
