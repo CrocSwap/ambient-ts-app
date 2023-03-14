@@ -19,6 +19,9 @@ export interface tosMethodsIF {
 }
 
 // central react hook in this file
+// PARAMS EXPLANATION!!
+// termsFor ➔ human-readable label for this ToS instance (plz_use_snake_case)
+// cid: resource URI endpoint to locate the ToS on IPFS (from environmental variables)
 export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF => {
     // unique key for data to be stored in local storage
     const localStorageSlug: string = 'tos_' + termsFor;
@@ -50,6 +53,11 @@ export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF =
         localStorage.setItem(localStorageSlug, JSON.stringify(newAgreement));
     };
 
+    // RETURN VALUES
+    // isAgreed ➔ boolean representation whether user is agreed to current ToS
+    // tos ➔ metadata about the current active ToS
+    // lastAgreement ➔ metadata about ToS version user last agreed to
+    // acceptToS ➔ function to record agreement to the current ToS
     return {
         isAgreed: tos.cid === agreement?.cid,
         tos: tos,
