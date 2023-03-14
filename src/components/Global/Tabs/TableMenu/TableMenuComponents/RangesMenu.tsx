@@ -15,7 +15,10 @@ import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { useAppDispatch, useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -62,7 +65,7 @@ export default function RangesMenu(props: propsIF) {
         position,
         handlePulseAnimation,
         setSimpleRangeWidth,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -76,12 +79,20 @@ export default function RangesMenu(props: propsIF) {
 
     const openRemoveModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(<RemoveRange position={position} {...rangeDetailsProps} />);
+        openGlobalModal(
+            <RemoveRange
+                dexBalancePrefs={dexBalancePrefs}
+                position={position}
+                {...rangeDetailsProps}
+            />,
+        );
     };
 
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
+        openGlobalModal(
+            <RangeDetails position={position} {...rangeDetailsProps} />,
+        );
     };
 
     const openHarvestModal = () => {
@@ -98,7 +109,8 @@ export default function RangesMenu(props: propsIF) {
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
-    const positionMatchesLoggedInUser = userMatchesConnectedAccount && isUserLoggedIn;
+    const positionMatchesLoggedInUser =
+        userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
         {
@@ -222,7 +234,10 @@ export default function RangesMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
-        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount && view1;
+        !isPositionInRange &&
+        !isPositionEmpty &&
+        userMatchesConnectedAccount &&
+        view1;
     // ----------------------
 
     const rangesMenu = (

@@ -25,7 +25,7 @@ export default function HarvestExtraControls(props: propsIF) {
         quoteTokenDexBalance,
         baseRemovalNum,
         quoteRemovalNum,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const baseTokenWalletBalanceNum = parseFloat(baseTokenBalance);
@@ -34,11 +34,15 @@ export default function HarvestExtraControls(props: propsIF) {
     const baseTokenDexBalanceNum = parseFloat(baseTokenDexBalance);
     const quoteTokenDexBalanceNum = parseFloat(quoteTokenDexBalance);
 
-    const combinedBaseWalletBalanceAndRemovalNum = baseTokenWalletBalanceNum + baseRemovalNum;
-    const combinedQuoteWalletBalanceAndRemovalNum = quoteTokenWalletBalanceNum + quoteRemovalNum;
+    const combinedBaseWalletBalanceAndRemovalNum =
+        baseTokenWalletBalanceNum + baseRemovalNum;
+    const combinedQuoteWalletBalanceAndRemovalNum =
+        quoteTokenWalletBalanceNum + quoteRemovalNum;
 
-    const combinedBaseDexBalanceAndRemovalNum = baseTokenDexBalanceNum + baseRemovalNum;
-    const combinedQuoteDexBalanceAndRemovalNum = quoteTokenDexBalanceNum + quoteRemovalNum;
+    const combinedBaseDexBalanceAndRemovalNum =
+        baseTokenDexBalanceNum + baseRemovalNum;
+    const combinedQuoteDexBalanceAndRemovalNum =
+        quoteTokenDexBalanceNum + quoteRemovalNum;
 
     const truncatedWalletBaseQty = isNaN(baseTokenWalletBalanceNum)
         ? '...'
@@ -67,28 +71,36 @@ export default function HarvestExtraControls(props: propsIF) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-    const truncatedCombinedWalletBaseQty = isNaN(combinedBaseWalletBalanceAndRemovalNum)
+    const truncatedCombinedWalletBaseQty = isNaN(
+        combinedBaseWalletBalanceAndRemovalNum,
+    )
         ? '...'
         : combinedBaseWalletBalanceAndRemovalNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
 
-    const truncatedCombinedWalletQuoteQty = isNaN(combinedQuoteWalletBalanceAndRemovalNum)
+    const truncatedCombinedWalletQuoteQty = isNaN(
+        combinedQuoteWalletBalanceAndRemovalNum,
+    )
         ? '...'
         : combinedQuoteWalletBalanceAndRemovalNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
 
-    const truncatedCombinedDexBaseQty = isNaN(combinedBaseDexBalanceAndRemovalNum)
+    const truncatedCombinedDexBaseQty = isNaN(
+        combinedBaseDexBalanceAndRemovalNum,
+    )
         ? '...'
         : combinedBaseDexBalanceAndRemovalNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
 
-    const truncatedCombinedDexQuoteQty = isNaN(combinedQuoteDexBalanceAndRemovalNum)
+    const truncatedCombinedDexQuoteQty = isNaN(
+        combinedQuoteDexBalanceAndRemovalNum,
+    )
         ? '...'
         : combinedQuoteDexBalanceAndRemovalNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -101,23 +113,31 @@ export default function HarvestExtraControls(props: propsIF) {
                 <div
                     className={styles.wallet_section}
                     style={{
-                        color: !dexBalancePrefs.reap.outputToDexBal.isEnabled ? '#ebebff' : '#555555',
+                        color: !dexBalancePrefs.range.outputToDexBal.isEnabled
+                            ? '#ebebff'
+                            : '#555555',
                         cursor: 'pointer',
                     }}
-                    onClick={() => dexBalancePrefs.reap.outputToDexBal.disable()}
+                    onClick={() =>
+                        dexBalancePrefs.range.outputToDexBal.disable()
+                    }
                 >
                     <MdAccountBalanceWallet
                         size={25}
-                        color={dexBalancePrefs.reap.outputToDexBal.isEnabled ? '#555555' : '#EBEBFF'}
+                        color={
+                            dexBalancePrefs.range.outputToDexBal.isEnabled
+                                ? '#555555'
+                                : '#EBEBFF'
+                        }
                     />
                     <div className={styles.wallet_amounts}>
                         <div>
-                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
+                            {dexBalancePrefs.range.outputToDexBal.isEnabled
                                 ? `${truncatedWalletBaseQty} ${baseTokenSymbol}`
                                 : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol}`}
                         </div>
                         <div>
-                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
+                            {dexBalancePrefs.range.outputToDexBal.isEnabled
                                 ? `${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
                                 : `${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
                         </div>
@@ -125,22 +145,27 @@ export default function HarvestExtraControls(props: propsIF) {
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
-                        !dexBalancePrefs.reap.outputToDexBal.isEnabled && styles.grey_logo
+                        !dexBalancePrefs.range.outputToDexBal.isEnabled &&
+                        styles.grey_logo
                     }`}
                     style={{
-                        color: dexBalancePrefs.reap.outputToDexBal.isEnabled ? '#ebebff' : '#555555',
+                        color: dexBalancePrefs.range.outputToDexBal.isEnabled
+                            ? '#ebebff'
+                            : '#555555',
                         cursor: 'pointer',
                     }}
-                    onClick={() => dexBalancePrefs.reap.outputToDexBal.enable()}
+                    onClick={() =>
+                        dexBalancePrefs.range.outputToDexBal.enable()
+                    }
                 >
                     <div className={styles.wallet_amounts}>
                         <div>
-                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
+                            {dexBalancePrefs.range.outputToDexBal.isEnabled
                                 ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol}`
                                 : `${truncatedDexBaseQty} ${baseTokenSymbol}`}
                         </div>
                         <div>
-                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
+                            {dexBalancePrefs.range.outputToDexBal.isEnabled
                                 ? `${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
                                 : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
                         </div>
@@ -152,8 +177,6 @@ export default function HarvestExtraControls(props: propsIF) {
     );
 
     return (
-        <div className={styles.main_container}>
-            {exchangeBalanceControl}
-        </div>
+        <div className={styles.main_container}>{exchangeBalanceControl}</div>
     );
 }

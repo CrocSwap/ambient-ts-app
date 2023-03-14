@@ -16,7 +16,12 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
+import {
+    ambientPosSlot,
+    ChainSpec,
+    concPosSlot,
+    CrocEnv,
+} from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 import {
@@ -70,28 +75,29 @@ export default function HarvestPosition(props: propsIF) {
         quoteTokenLogoURI,
         closeGlobalModal,
         position,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
-    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
+    const lastBlockNumber = useAppSelector(
+        (state) => state.graphData,
+    ).lastBlock;
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     // eslint-disable-next-line
-    const [newHarvestTransactionHash, setNewHarvestTransactionHash] = useState('');
+    const [newHarvestTransactionHash, setNewHarvestTransactionHash] =
+        useState('');
     // eslint-disable-next-line
     const [txErrorCode, setTxErrorCode] = useState('');
     // eslint-disable-next-line
     // const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] = useState<
-        number | undefined
-    >();
-    const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] = useState<
-        number | undefined
-    >();
+    const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] =
+        useState<number | undefined>();
+    const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
+        useState<number | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -99,7 +105,8 @@ export default function HarvestPosition(props: propsIF) {
         setTxErrorCode('');
     };
 
-    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+    const positionStatsCacheEndpoint =
+        'https://809821320828123.de:5000/position_stats?';
     const dispatch = useAppDispatch();
 
     const positionsPendingUpdate = useAppSelector(
@@ -124,16 +131,24 @@ export default function HarvestPosition(props: propsIF) {
                             base: position.base,
                             quote: position.quote,
                             poolIdx: position.poolIdx.toString(),
-                            bidTick: position.bidTick ? position.bidTick.toString() : '0',
-                            askTick: position.askTick ? position.askTick.toString() : '0',
+                            bidTick: position.bidTick
+                                ? position.bidTick.toString()
+                                : '0',
+                            askTick: position.askTick
+                                ? position.askTick.toString()
+                                : '0',
                             addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )
                     .then((response) => response.json())
                     .then((json) => {
-                        setFeeLiqBaseDecimalCorrected(json?.data?.feesLiqBaseDecimalCorrected);
-                        setFeeLiqQuoteDecimalCorrected(json?.data?.feesLiqQuoteDecimalCorrected);
+                        setFeeLiqBaseDecimalCorrected(
+                            json?.data?.feesLiqBaseDecimalCorrected,
+                        );
+                        setFeeLiqQuoteDecimalCorrected(
+                            json?.data?.feesLiqQuoteDecimalCorrected,
+                        );
                     });
             })();
         }
@@ -142,7 +157,8 @@ export default function HarvestPosition(props: propsIF) {
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
+        useState<string>('');
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -192,13 +208,24 @@ export default function HarvestPosition(props: propsIF) {
                     .catch(console.log);
             }
         })();
-    }, [crocEnv, position.user, position.base, position.quote, lastBlockNumber]);
+    }, [
+        crocEnv,
+        position.user,
+        position.base,
+        position.quote,
+        lastBlockNumber,
+    ]);
 
     const liquiditySlippageTolerance = 1;
 
     const posHash =
         position.positionType === 'ambient'
-            ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
+            ? ambientPosSlot(
+                  position.user,
+                  position.base,
+                  position.quote,
+                  chainData.poolIndex,
+              )
             : concPosSlot(
                   position.user,
                   position.base,
@@ -208,7 +235,8 @@ export default function HarvestPosition(props: propsIF) {
                   chainData.poolIndex,
               );
 
-    const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
+    const isPositionPendingUpdate =
+        positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const harvestFn = async () => {
         setShowConfirmation(true);
@@ -228,7 +256,7 @@ export default function HarvestPosition(props: propsIF) {
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: dexBalancePrefs.reap.outputToDexBal.isEnabled },
+                    { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
                 );
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
@@ -238,7 +266,9 @@ export default function HarvestPosition(props: propsIF) {
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 dispatch(removePositionPendingUpdate(posHash as string));
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
             }
@@ -246,7 +276,8 @@ export default function HarvestPosition(props: propsIF) {
             console.log('unsupported position type for harvest');
         }
 
-        const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint =
+            'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
             fetch(
                 newLiqChangeCacheEndpoint +
@@ -257,8 +288,12 @@ export default function HarvestPosition(props: propsIF) {
                         base: position.base,
                         quote: position.quote,
                         poolIdx: position.poolIdx.toString(),
-                        bidTick: position.bidTick ? position.bidTick.toString() : '0',
-                        askTick: position.askTick ? position.askTick.toString() : '0',
+                        bidTick: position.bidTick
+                            ? position.bidTick.toString()
+                            : '0',
+                        askTick: position.askTick
+                            ? position.askTick.toString()
+                            : '0',
                         positionType: position.positionType,
                         changeType: 'harvest',
                     }),
@@ -294,8 +329,12 @@ export default function HarvestPosition(props: propsIF) {
                                 base: position.base,
                                 quote: position.quote,
                                 poolIdx: position.poolIdx.toString(),
-                                bidTick: position.bidTick ? position.bidTick.toString() : '0',
-                                askTick: position.askTick ? position.askTick.toString() : '0',
+                                bidTick: position.bidTick
+                                    ? position.bidTick.toString()
+                                    : '0',
+                                askTick: position.askTick
+                                    ? position.askTick.toString()
+                                    : '0',
                                 positionType: position.positionType,
                                 changeType: 'harvest',
                             }),
@@ -318,7 +357,8 @@ export default function HarvestPosition(props: propsIF) {
     const positionType = 'concentrated';
 
     const feesGreaterThanZero =
-        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) > 0;
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
+        0;
 
     const harvestButtonOrNull = isPositionPendingUpdate ? (
         <HarvestPositionButton
@@ -326,31 +366,41 @@ export default function HarvestPosition(props: propsIF) {
             harvestFn={harvestFn}
             title={'Position Update Pending…'}
         />
-    ) : positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
+    ) : positionType === 'concentrated' &&
+      feesGreaterThanZero &&
+      !showSettings ? (
         <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
     ) : (
-        <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
+        <HarvestPositionButton
+            disabled={true}
+            harvestFn={harvestFn}
+            title={'…'}
+        />
     );
 
     const removalPercentage = 100;
 
-    const baseRemovalNum = ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
+    const baseRemovalNum =
+        ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
 
-    const quoteRemovalNum = ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
+    const quoteRemovalNum =
+        ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
 
     // confirmation modal
     const removalDenied = (
         <div className={styles.removal_denied}>
             <CircleLoaderFailed size='10rem' />
             <p>
-                Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to try again.
+                Check the Metamask extension in your browser for notifications,
+                or click &quot;Try Again&quot;. You can also click the left
+                arrow above to try again.
             </p>
             <Button title='Try Again' action={resetConfirmation} flat />
         </div>
     );
 
-    const etherscanLink = chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
+    const etherscanLink =
+        chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
 
     const removalSuccess = (
         <div className={styles.removal_denied}>
@@ -373,11 +423,14 @@ export default function HarvestPosition(props: propsIF) {
     const removalPending = (
         <div className={styles.removal_pending}>
             <CircleLoader size='10rem' borderColor='#171d27' />
-            <p>Check the Metamask extension in your browser for notifications.</p>
+            <p>
+                Check the Metamask extension in your browser for notifications.
+            </p>
         </div>
     );
 
-    const [currentConfirmationData, setCurrentConfirmationData] = useState(removalPending);
+    const [currentConfirmationData, setCurrentConfirmationData] =
+        useState(removalPending);
 
     const transactionApproved = newHarvestTransactionHash !== '';
 
@@ -386,7 +439,9 @@ export default function HarvestPosition(props: propsIF) {
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
@@ -395,7 +450,11 @@ export default function HarvestPosition(props: propsIF) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+        } else if (
+            isTransactionException ||
+            isGasLimitException ||
+            isInsufficientFundsException
+        ) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -417,7 +476,10 @@ export default function HarvestPosition(props: propsIF) {
     ]);
 
     const mainModalContent = showSettings ? (
-        <HarvestPositionSettings showSettings={showSettings} setShowSettings={setShowSettings} />
+        <HarvestPositionSettings
+            showSettings={showSettings}
+            setShowSettings={setShowSettings}
+        />
     ) : (
         <>
             <div className={styles.header_container}>
@@ -443,8 +505,12 @@ export default function HarvestPosition(props: propsIF) {
                     quoteTokenSymbol={props.quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogoURI}
                     quoteTokenLogoURI={quoteTokenLogoURI}
-                    posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
+                    posLiqBaseDecimalCorrected={
+                        position.positionLiqBaseDecimalCorrected
+                    }
+                    posLiqQuoteDecimalCorrected={
+                        position.positionLiqQuoteDecimalCorrected
+                    }
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     baseRemovalNum={baseRemovalNum}
@@ -473,7 +539,9 @@ export default function HarvestPosition(props: propsIF) {
                     <BsArrowLeft size={30} />
                 </div>
             )}
-            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
+            <div className={styles.confirmation_content}>
+                {currentConfirmationData}
+            </div>
         </div>
     );
 
@@ -484,7 +552,11 @@ export default function HarvestPosition(props: propsIF) {
             <div className={styles.main_content}>
                 <HarvestPositionHeader
                     onClose={closeGlobalModal}
-                    title={showSettings ? 'Harvest Position Settings' : 'Harvest Position'}
+                    title={
+                        showSettings
+                            ? 'Harvest Position Settings'
+                            : 'Harvest Position'
+                    }
                     onBackButton={() => {
                         resetConfirmation();
                         setShowSettings(false);
@@ -494,7 +566,11 @@ export default function HarvestPosition(props: propsIF) {
                 {mainModalContent}
                 <div style={{ padding: '0 1rem' }}>
                     {showSettings ? (
-                        <Button title='Confirm' action={() => setShowSettings(false)} flat />
+                        <Button
+                            title='Confirm'
+                            action={() => setShowSettings(false)}
+                            flat
+                        />
                     ) : (
                         harvestButtonOrNull
                     )}
