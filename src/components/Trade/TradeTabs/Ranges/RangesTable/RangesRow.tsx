@@ -227,7 +227,7 @@ export default function RangesRow(props: propsIF) {
     const usernameStyle =
         isOwnerActiveAccount && (isShowAllEnabled || isLeaderboard)
             ? 'owned_tx_contrast'
-            : ensName
+            : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
             : 'base_color';
 
