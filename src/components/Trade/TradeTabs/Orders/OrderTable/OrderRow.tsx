@@ -132,7 +132,7 @@ export default function OrderRow(props: propsIF) {
     const usernameStyle =
         isOwnerActiveAccount && isShowAllEnabled
             ? 'owned_tx_contrast'
-            : ensName
+            : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
             : 'base_color';
 
