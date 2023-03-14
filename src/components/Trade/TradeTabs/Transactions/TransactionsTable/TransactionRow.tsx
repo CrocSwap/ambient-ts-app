@@ -236,7 +236,7 @@ export default function TransactionRow(props: propsIF) {
                         marginLeft: '-40px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
-                        padding: '4px',
+                        padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
                     }}
@@ -253,7 +253,7 @@ export default function TransactionRow(props: propsIF) {
             <li
                 onClick={handleOpenExplorer}
                 data-label='id'
-                className='base_color'
+                className={`${styles.base_color} ${styles.hover_style}`}
                 style={{ fontFamily: 'monospace' }}
             >
                 {txHashTruncated}
@@ -296,7 +296,7 @@ export default function TransactionRow(props: propsIF) {
                         marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
-                        padding: '4px',
+                        padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
                     }}
@@ -333,7 +333,7 @@ export default function TransactionRow(props: propsIF) {
                     navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
                 }}
                 data-label='wallet'
-                className={usernameStyle}
+                className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
@@ -504,10 +504,23 @@ export default function TransactionRow(props: propsIF) {
             : 'Pending...';
 
     const TxTimeWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
-            title={moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
-            placement={'left'}
+            title={
+                <p
+                    style={{
+                        marginLeft: '-70px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+                </p>
+            }
+            placement={'right'}
             arrow
             enterDelay={750}
             leaveDelay={0}
@@ -523,7 +536,7 @@ export default function TransactionRow(props: propsIF) {
                 </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
     // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
     // const quoteQtyToolTipStyle = (
