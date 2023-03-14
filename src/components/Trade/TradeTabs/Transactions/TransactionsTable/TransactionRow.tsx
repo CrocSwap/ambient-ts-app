@@ -3,7 +3,7 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
 
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -227,19 +227,28 @@ export default function TransactionRow(props: propsIF) {
     const handleRowMouseOut = () => setHighlightRow(false);
 
     const IDWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
+                <div
+                    onClick={handleOpenExplorer}
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     {txHash + 'ㅤ'}
                     {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
                     <FiExternalLink size={'12px'} />
                 </div>
             } // invisible space character added
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={handleOpenExplorer}
@@ -249,7 +258,7 @@ export default function TransactionRow(props: propsIF) {
             >
                 {txHashTruncated}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const usdValueWithTooltip = (
@@ -279,10 +288,19 @@ export default function TransactionRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div>
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '4px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
@@ -301,9 +319,8 @@ export default function TransactionRow(props: propsIF) {
                 </div>
             }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={() => {
@@ -321,7 +338,7 @@ export default function TransactionRow(props: propsIF) {
             >
                 {userNameToDisplay}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent =
