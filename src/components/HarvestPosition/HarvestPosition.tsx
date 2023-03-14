@@ -1,5 +1,4 @@
 import styles from './HarvestPosition.module.css';
-// import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
 import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
@@ -7,15 +6,11 @@ import { useEffect, useState } from 'react';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
-
-// import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
-// import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
-
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import {
     CircleLoader,
@@ -38,6 +33,7 @@ import {
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
+import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -63,6 +59,7 @@ interface propsIF {
     isDenomBase: boolean;
     position: PositionIF;
     closeGlobalModal: () => void;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function HarvestPosition(props: propsIF) {
@@ -71,34 +68,15 @@ export default function HarvestPosition(props: propsIF) {
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
-        // baseTokenBalance,
-        // quoteTokenBalance,
-        // baseTokenDexBalance,
-        // quoteTokenDexBalance,
-        // chainId,
-        // poolIdx,
-        // user,
-        // bidTick,
-        // askTick,
-        // baseTokenAddress,
-        // quoteTokenAddress,
-        // provider,
         closeGlobalModal,
         position,
+        dexBalancePrefs
     } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
-    const harvestPositionSetttingIcon = (
-        <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
-            {showSettings ? null : <RiListSettingsLine size={20} />}
-        </div>
-    );
-
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
-
-    // const [removalPercentage, setRemovalPercentage] = useState(100);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     // eslint-disable-next-line
@@ -119,8 +97,6 @@ export default function HarvestPosition(props: propsIF) {
         setShowConfirmation(false);
         setNewHarvestTransactionHash('');
         setTxErrorCode('');
-
-        // setTxErrorMessage('');
     };
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
@@ -252,7 +228,7 @@ export default function HarvestPosition(props: propsIF) {
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: isSaveAsDexSurplusChecked },
+                    { surplus: dexBalancePrefs.reap.outputToDexBal.isEnabled },
                 );
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
@@ -261,7 +237,6 @@ export default function HarvestPosition(props: propsIF) {
                 console.log('caught error');
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
                 if (error.reason === 'sending a transaction requires a signer') {
                     location.reload();
@@ -413,10 +388,6 @@ export default function HarvestPosition(props: propsIF) {
 
     const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
 
-    // const isRemovalDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
-
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
 
@@ -439,34 +410,11 @@ export default function HarvestPosition(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        // removalDenied,
         newHarvestTransactionHash,
         txErrorCode,
         showConfirmation,
         isRemovalDenied,
     ]);
-
-    const buttonToDisplay = (
-        <div style={{ padding: '0 1rem' }}>
-            {showSettings ? (
-                <Button title='Confirm' action={() => setShowSettings(false)} flat />
-            ) : (
-                harvestButtonOrNull
-            )}
-        </div>
-    );
-
-    const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
-                </div>
-            )}
-            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
-        </div>
-    );
-    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
     const mainModalContent = showSettings ? (
         <HarvestPositionSettings showSettings={showSettings} setShowSettings={setShowSettings} />
@@ -482,12 +430,13 @@ export default function HarvestPosition(props: propsIF) {
                     quoteTokenLogoURI={quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
                 />
-                {harvestPositionSetttingIcon}
+                <div
+                    onClick={() => setShowSettings(!showSettings)}
+                    className={styles.settings_icon}
+                >
+                    {showSettings ? null : <RiListSettingsLine size={20} />}
+                </div>
             </div>
-            {/* <HarvestPositionWidth
-                removalPercentage={removalPercentage}
-                setRemovalPercentage={setRemovalPercentage}
-            /> */}
             <div style={{ padding: '0 1rem' }}>
                 <HarvestPositionInfo
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -503,8 +452,6 @@ export default function HarvestPosition(props: propsIF) {
                     removalPercentage={removalPercentage}
                 />
                 <HarvestExtraControls
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     baseTokenSymbol={props.baseTokenSymbol}
                     quoteTokenSymbol={props.quoteTokenSymbol}
                     baseRemovalNum={baseRemovalNum}
@@ -513,18 +460,27 @@ export default function HarvestPosition(props: propsIF) {
                     quoteTokenBalance={quoteTokenBalance}
                     baseTokenDexBalance={baseTokenDexBalance}
                     quoteTokenDexBalance={quoteTokenDexBalance}
+                    dexBalancePrefs={dexBalancePrefs}
                 />
             </div>
         </>
+    );
+
+    const confirmationContent = (
+        <div className={styles.confirmation_container}>
+            {showConfirmation && (
+                <div className={styles.button} onClick={resetConfirmation}>
+                    <BsArrowLeft size={30} />
+                </div>
+            )}
+            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
+        </div>
     );
 
     if (showConfirmation) return confirmationContent;
 
     return (
         <div className={styles.remove_range_container}>
-            {/* {removeRangeSettingsPage} */}
-            {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
-
             <div className={styles.main_content}>
                 <HarvestPositionHeader
                     onClose={closeGlobalModal}
@@ -536,8 +492,13 @@ export default function HarvestPosition(props: propsIF) {
                     showBackButton={showSettings}
                 />
                 {mainModalContent}
-                {/* {harvestButtonOrNull} */}
-                {buttonToDisplay}
+                <div style={{ padding: '0 1rem' }}>
+                    {showSettings ? (
+                        <Button title='Confirm' action={() => setShowSettings(false)} flat />
+                    ) : (
+                        harvestButtonOrNull
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -1,12 +1,9 @@
 import styles from './HarvestExtraControls.module.css';
-// import Toggle2 from '../../Global/Toggle/Toggle2';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { Dispatch, SetStateAction } from 'react';
+import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
-interface HarvestExtraControlsPropsIF {
-    isSaveAsDexSurplusChecked: boolean;
-    setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
+interface propsIF {
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseRemovalNum: number;
@@ -15,12 +12,11 @@ interface HarvestExtraControlsPropsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
-export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF) {
+export default function HarvestExtraControls(props: propsIF) {
     const {
-        isSaveAsDexSurplusChecked,
-        setIsSaveAsDexSurplusChecked,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenBalance,
@@ -29,6 +25,7 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
         quoteTokenDexBalance,
         baseRemovalNum,
         quoteRemovalNum,
+        dexBalancePrefs
     } = props;
 
     const baseTokenWalletBalanceNum = parseFloat(baseTokenBalance);
@@ -104,23 +101,23 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                 <div
                     className={styles.wallet_section}
                     style={{
-                        color: !isSaveAsDexSurplusChecked ? '#ebebff' : '#555555',
+                        color: !dexBalancePrefs.reap.outputToDexBal.isEnabled ? '#ebebff' : '#555555',
                         cursor: 'pointer',
                     }}
-                    onClick={() => setIsSaveAsDexSurplusChecked(false)}
+                    onClick={() => dexBalancePrefs.reap.outputToDexBal.disable()}
                 >
                     <MdAccountBalanceWallet
                         size={25}
-                        color={isSaveAsDexSurplusChecked ? '#555555' : '#EBEBFF'}
+                        color={dexBalancePrefs.reap.outputToDexBal.isEnabled ? '#555555' : '#EBEBFF'}
                     />
                     <div className={styles.wallet_amounts}>
                         <div>
-                            {isSaveAsDexSurplusChecked
+                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
                                 ? `${truncatedWalletBaseQty} ${baseTokenSymbol}`
                                 : `${truncatedCombinedWalletBaseQty} ${baseTokenSymbol}`}
                         </div>
                         <div>
-                            {isSaveAsDexSurplusChecked
+                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
                                 ? `${truncatedWalletQuoteQty} ${quoteTokenSymbol}`
                                 : `${truncatedCombinedWalletQuoteQty} ${quoteTokenSymbol}`}
                         </div>
@@ -128,22 +125,22 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                 </div>
                 <div
                     className={`${styles.exchange_text} ${
-                        !isSaveAsDexSurplusChecked && styles.grey_logo
+                        !dexBalancePrefs.reap.outputToDexBal.isEnabled && styles.grey_logo
                     }`}
                     style={{
-                        color: isSaveAsDexSurplusChecked ? '#ebebff' : '#555555',
+                        color: dexBalancePrefs.reap.outputToDexBal.isEnabled ? '#ebebff' : '#555555',
                         cursor: 'pointer',
                     }}
-                    onClick={() => setIsSaveAsDexSurplusChecked(true)}
+                    onClick={() => dexBalancePrefs.reap.outputToDexBal.enable()}
                 >
                     <div className={styles.wallet_amounts}>
                         <div>
-                            {isSaveAsDexSurplusChecked
+                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
                                 ? `${truncatedCombinedDexBaseQty} ${baseTokenSymbol}`
                                 : `${truncatedDexBaseQty} ${baseTokenSymbol}`}
                         </div>
                         <div>
-                            {isSaveAsDexSurplusChecked
+                            {dexBalancePrefs.reap.outputToDexBal.isEnabled
                                 ? `${truncatedCombinedDexQuoteQty} ${quoteTokenSymbol}`
                                 : `${truncatedDexQuoteQty} ${quoteTokenSymbol}`}
                         </div>
@@ -151,32 +148,12 @@ export default function HarvestExtraControls(props: HarvestExtraControlsPropsIF)
                     <img src={ambientLogo} width='25' alt='' />
                 </div>
             </div>
-            {/* 
-            <Toggle2
-                isOn={isSaveAsDexSurplusChecked}
-                handleToggle={() => setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)}
-                id='harvest_position_exchange_balance'
-                disabled={false}
-            /> */}
         </section>
     );
-    // const gaslesssTransactionControl = (
-    //     <section className={styles.gasless_container}>
-    //         <div className={styles.gasless_text}>Enable Gasless Transaction</div>
-
-    //         <Toggle2
-    //             isOn={false}
-    //             handleToggle={() => console.log('toggled')}
-    //             id='gasless_transaction_toggle'
-    //             disabled={true}
-    //         />
-    //     </section>
-    // );
 
     return (
         <div className={styles.main_container}>
             {exchangeBalanceControl}
-            {/* {gaslesssTransactionControl} */}
         </div>
     );
 }

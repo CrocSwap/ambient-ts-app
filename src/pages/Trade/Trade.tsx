@@ -24,11 +24,11 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
+import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 
 // interface for React functional component props
 interface propsIF {
     pool: CrocPoolView | undefined;
-    // poolPriceTick: number | undefined;
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -84,7 +84,6 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
@@ -94,6 +93,7 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 // React functional component
@@ -152,6 +152,7 @@ export default function Trade(props: propsIF) {
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
+        dexBalancePrefs
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(chainId, isInitialized);
@@ -265,27 +266,12 @@ export default function Trade(props: propsIF) {
     const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
     const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
 
-    // const [upBodyColor] = useState<string>('#CDC1FF');
-    // const [upBorderColor] = useState<string>('#CDC1FF');
-    // const [downBodyColor] = useState<string>('#171D27');
-    // const [downBodyColor] = useState<string>('#24243e');
-    // const [downBorderColor] = useState<string>('#7371FC');
     const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
     const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
     const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
     const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
     const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.8)');
     const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.8)');
-
-    // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
-    // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
-    // const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
-    // const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
-
-    // console.log({ upBodyColor });
-    // console.log({ upBorderColor });
-    // console.log({ downBodyColor });
-    // console.log({ downBorderColor });
 
     const handleChartBgColorPickerChange = (color: any) => {
         setChartBg(color.hex);
@@ -490,7 +476,6 @@ export default function Trade(props: propsIF) {
         seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
         showSidebar: showSidebar,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
-
         isTutorialMode: props.isTutorialMode,
         setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
@@ -549,11 +534,11 @@ export default function Trade(props: propsIF) {
         setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
-
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        dexBalancePrefs: dexBalancePrefs
     };
 
     const mobileTrade = (
@@ -596,9 +581,11 @@ export default function Trade(props: propsIF) {
 
     return (
         <section className={styles.main_layout}>
-            <div className={`${styles.middle_col} ${expandTradeTable ? styles.flex_column : ''}`}>
+            <div className={
+                `${styles.middle_col}
+                ${expandTradeTable ? styles.flex_column : ''}`
+            }>
                 {poolNotInitializedContent}
-                {/* {mobileDataToggle} */}
                 <div
                     className={` ${expandGraphStyle} ${
                         activeMobileComponent !== 'chart' ? styles.hide : ''

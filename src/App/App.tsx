@@ -2831,7 +2831,6 @@ export default function App() {
                                     tokenList={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     pool={pool}
-                                    // poolPriceTick={poolPriceTick}
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
@@ -2901,6 +2900,12 @@ export default function App() {
                                     simpleRangeWidth={simpleRangeWidth}
                                     setRepositionRangeWidth={setRepositionRangeWidth}
                                     repositionRangeWidth={repositionRangeWidth}
+                                    dexBalancePrefs={{
+                                        swap: dexBalPrefSwap,
+                                        limit: dexBalPrefLimit,
+                                        range: dexBalPrefRange,
+                                        reap: dexBalPrefReap
+                                    }}
                                 />
                             }
                         >
@@ -3137,6 +3142,12 @@ export default function App() {
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
                                     setSimpleRangeWidth={setSimpleRangeWidth}
+                                    dexBalancePrefs={{
+                                        swap: dexBalPrefSwap,
+                                        limit: dexBalPrefLimit,
+                                        range: dexBalPrefRange,
+                                        reap: dexBalPrefReap
+                                    }}
                                 />
                             }
                         />
@@ -3197,6 +3208,12 @@ export default function App() {
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
                                     setSimpleRangeWidth={setSimpleRangeWidth}
+                                    dexBalancePrefs={{
+                                        swap: dexBalPrefSwap,
+                                        limit: dexBalPrefLimit,
+                                        range: dexBalPrefRange,
+                                        reap: dexBalPrefReap
+                                    }}
                                 />
                             }
                         />
@@ -3278,6 +3295,12 @@ export default function App() {
                                     openModalWallet={openWagmiModalWallet}
                                     mainnetProvider={mainnetProvider}
                                     setSimpleRangeWidth={setSimpleRangeWidth}
+                                    dexBalancePrefs={{
+                                        swap: dexBalPrefSwap,
+                                        limit: dexBalPrefLimit,
+                                        range: dexBalPrefRange,
+                                        reap: dexBalPrefReap
+                                    }}
                                 />
                             }
                         />

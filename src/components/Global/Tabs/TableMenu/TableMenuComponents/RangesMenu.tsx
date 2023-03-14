@@ -23,6 +23,7 @@ import {
     setAdvancedMode,
     setRangeModuleTriggered,
 } from '../../../../../utils/state/tradeDataSlice';
+import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 
 // interface for React functional component props
 interface propsIF {
@@ -45,6 +46,7 @@ interface propsIF {
     showHighlightedButton: boolean;
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 // React functional component
@@ -54,38 +56,22 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         isEmpty,
-        // chainData,
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
         position,
-        // isOnPortfolioPage,
         handlePulseAnimation,
-        // showHighlightedButton,
         setSimpleRangeWidth,
+        dexBalancePrefs
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
 
-    // const currentLocation = location.pathname;
-
     const { isAmbient, isPositionInRange } = rangeDetailsProps;
-    // eslint-disable-next-line
-    // const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
     const dispatch = useAppDispatch();
-
-    // const feesGreaterThanZero =
-    //     (positionData.feesLiqBaseDecimalCorrected || 0) +
-    //         (positionData.feesLiqQuoteDecimalCorrected || 0) >
-    //     0;
-
-    // const positionHasLiquidity =
-    //     (positionData.positionLiqBaseDecimalCorrected || 0) +
-    //         (positionData.positionLiqQuoteDecimalCorrected || 0) >
-    //     0;
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
@@ -102,18 +88,20 @@ export default function RangesMenu(props: propsIF) {
     const openHarvestModal = () => {
         setShowDropdownMenu(false);
         openGlobalModal(
-            <HarvestPosition crocEnv={crocEnv} position={position} {...rangeDetailsProps} />,
+            <HarvestPosition
+                crocEnv={crocEnv}
+                position={position}
+                dexBalancePrefs={dexBalancePrefs}
+                {...rangeDetailsProps}
+            />,
         );
     };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
     const positionMatchesLoggedInUser = userMatchesConnectedAccount && isUserLoggedIn;
-    // const isDenomBase = tradeData.isDenomBase
 
     const handleCopyClick = () => {
-        // console.log('copy clicked');
-        // console.log({ positionData });
         {
             handlePulseAnimation ? handlePulseAnimation('range') : null;
         }
@@ -133,10 +121,6 @@ export default function RangesMenu(props: propsIF) {
     };
 
     // -----------------SNACKBAR----------------
-    // function handleCopyAddress() {
-    //     copy(posHash);
-    //     setOpenSnackbar(true);
-    // }
 
     const snackbarContent = (
         <SnackbarComponent
@@ -150,7 +134,6 @@ export default function RangesMenu(props: propsIF) {
     // -----------------END OF SNACKBAR----------------
 
     const repositionButton = (
-        // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
         <Link
             className={styles.reposition_button}
             to={
@@ -170,7 +153,6 @@ export default function RangesMenu(props: propsIF) {
             Reposition
         </Link>
     );
-    //  : null;
 
     const removeButton = positionMatchesLoggedInUser ? (
         <button className={styles.option_button} onClick={openRemoveModal}>
@@ -181,13 +163,9 @@ export default function RangesMenu(props: propsIF) {
     const copyButton = position ? (
         <Link
             style={{ opacity: '1' }}
-            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             to={
-                '/trade/range/' +
-                // (isOnPortfolioPage
-                // ?
-                'chain=' +
+                '/trade/range/chain=' +
                 position.chainId +
                 '&tokenA=' +
                 position.base +
@@ -197,7 +175,6 @@ export default function RangesMenu(props: propsIF) {
                 position.bidTick +
                 '&highTick=' +
                 position.askTick
-                // : currentLocation.slice(currentLocation.indexOf('chain')) )
             }
             onClick={handleCopyClick}
         >
@@ -210,10 +187,7 @@ export default function RangesMenu(props: propsIF) {
             style={{ opacity: '1' }}
             className={styles.option_button}
             to={
-                '/trade/range/' +
-                // (isOnPortfolioPage
-                // ?
-                'chain=' +
+                '/trade/range/chain=' +
                 position.chainId +
                 '&tokenA=' +
                 position.base +
@@ -223,7 +197,6 @@ export default function RangesMenu(props: propsIF) {
                 position.bidTick +
                 '&highTick=' +
                 position.askTick
-                // : currentLocation.slice(currentLocation.indexOf('chain')))
             }
             onClick={handleCopyClick}
         >
@@ -243,55 +216,28 @@ export default function RangesMenu(props: propsIF) {
             </button>
         ) : null;
 
-    // const editButton = positionMatchesLoggedInUser ? (
-    //     <Link
-    //         style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
-    //         className={styles.option_button}
-    //         to={`/trade/edit/${posHash}`}
-    //         state={{ position: positionData }}
-    //         replace={currentLocation.startsWith('/trade/edit')}
-    //     >
-    //         Edit
-    //     </Link>
-    // ) : null;
-
     // ----------------------
-
-    // const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
     const view1 = useMediaQuery('(min-width: 720px)');
     const view2 = useMediaQuery('(min-width: 1380px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
-    // const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
-    // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount && view1;
     // ----------------------
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {/* {!showRepositionButton && view2 && detailsButton} */}
             {showRepositionButton && repositionButton}
             {!showRepositionButton && userMatchesConnectedAccount && addButton}
             {view2 && !isEmpty && removeButton}
-            {/* {view2 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
-            {/* {view2 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && !isEmpty && harvestButton}
-            {/* {view2 && removeButton} */}
-            {/* {view3 && detailsButton} */}
             {!userMatchesConnectedAccount && copyButton}
-            {/* {!userMatchesConnectedAccount && view2 && copyButton} */}
-            {/* {view2 && !props.showSidebar && copyButton} */}
         </div>
     );
 
-    // console.log(posHash);
-
     const menuContent = (
         <div className={styles.menu_column}>
-            {/* {!view1 && !isPositionInRange && repositionButton} */}
-            {/* {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {!view3 && !isEmpty && harvestButton}
             {!view2 && !isEmpty && removeButton}
             {detailsButton}
