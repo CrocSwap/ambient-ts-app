@@ -282,7 +282,7 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     const handleBlockUpdate = () => {
-        if (!disableReverseTokens) {
+        if (!disableReverseTokens && tokenAQtyLocal !== '' && tokenBQtyLocal !== '') {
             setDisableReverseTokens(true);
 
             isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
