@@ -198,8 +198,8 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
-    const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
+    const walletToS: tosMethodsIF = useTermsOfService('wallet');
+    const chatToS: tosMethodsIF = useTermsOfService('chat');
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
