@@ -162,7 +162,6 @@ import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
