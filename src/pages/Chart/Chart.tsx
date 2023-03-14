@@ -130,14 +130,6 @@ interface ChartData {
     repositionRangeWidth: number;
 }
 
-function getWindowDimensions() {
-    const { innerWidth: width, innerHeight: height } = window;
-    return {
-        width,
-        height,
-    };
-}
-
 export default function Chart(props: ChartData) {
     const {
         isUserLoggedIn,
@@ -196,8 +188,6 @@ export default function Chart(props: ChartData) {
     const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
-
-    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
 
     const parsedChartData = props.candleData;
 
@@ -359,40 +349,11 @@ export default function Chart(props: ChartData) {
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    useEffect(() => {
-        function handleResize() {
-            const { width, height } = getWindowDimensions();
-            setWindowDimensions(getWindowDimensions());
-
-            scaleData.xScale.range([0, width]);
-            scaleData.yScale.range([height, 0]);
-
-            scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
-
-            liquidityScale.range([width, (width / 10) * 9]);
-            liquidityDepthScale.range([width, (width / 10) * 9]);
-
-            scaleData.volumeScale.range([height, height - height / 10]);
-        }
-
-        return () => window.removeEventListener('resize', handleResize);
-    }, [d3PlotArea]);
+    const [plotAreaWidth, setPlotAreaWidth] = useState<number | undefined>();
 
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
-
-    useEffect(() => {
-        const { width, height } = getWindowDimensions();
-
-        const aspect = width / height,
-            chart = d3.select(d3PlotArea.current) as any;
-        d3.select(d3Container.current).on('resize', function () {
-            const targetWidth = chart.node().getBoundingClientRect().width;
-            chart.attr('width', targetWidth);
-            chart.attr('height', targetWidth / aspect);
-        });
-    }, []);
 
     useEffect(() => {
         if (minPrice !== 0 && maxPrice !== 0) {
@@ -2325,9 +2286,17 @@ export default function Chart(props: ChartData) {
                 liqData.liqPrices >= findLiqNearest(liqDataAll) &&
                 liqData.liqPrices <= scaleData.yScale.domain()[1],
         );
-
         const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-
+        if (plotAreaWidth !== undefined) {
+            if (maxLiq && parseFloat(maxLiq) <= 100) {
+                liquidityDepthScale.range([
+                    plotAreaWidth,
+                    plotAreaWidth - plotAreaWidth / (1000 * 2.5),
+                ]);
+            } else {
+                liquidityDepthScale.range([plotAreaWidth, (plotAreaWidth / 10) * 9]);
+            }
+        }
         liquidityDepthScale.domain([0, maxLiq]);
     }, [scaleData && scaleData.yScale.domain()[0], scaleData && scaleData.yScale.domain()[1]]);
 
@@ -4746,8 +4715,7 @@ export default function Chart(props: ChartData) {
             horizontalBandJoin !== undefined &&
             barSeries !== undefined &&
             volumeData !== undefined &&
-            liquidityScale !== undefined &&
-            liquidityDepthScale !== undefined
+            liquidityScale !== undefined
         ) {
             const targetData = {
                 limit: limit,
@@ -4789,7 +4757,6 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
-                liquidityDepthScale,
             );
         }
     }, [
@@ -5212,7 +5179,6 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
-            liquidityDepthScale: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -5311,7 +5277,6 @@ export default function Chart(props: ChartData) {
                     ]);
 
                     liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
-                    liquidityDepthScale.range([event.detail.width, (event.detail.width / 10) * 9]);
 
                     scaleData.volumeScale.range([
                         event.detail.height,
@@ -5561,7 +5526,6 @@ export default function Chart(props: ChartData) {
             liquidityData?.liqAskData,
             liquidityData?.depthLiqBidData,
             liquidityData?.depthLiqAskData,
-            windowDimensions,
             showTvl,
             showVolume,
             showFeeRate,
@@ -5870,6 +5834,9 @@ export default function Chart(props: ChartData) {
                     scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
 
                     liquidityScale.range([width, (width / 10) * 9]);
+
+                    setPlotAreaWidth(width);
+
                     liquidityDepthScale.range([width, (width / 10) * 9]);
 
                     scaleData.volumeScale.range([height, height - height / 10]);
