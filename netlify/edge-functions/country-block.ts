@@ -2,7 +2,7 @@ import { Context } from 'https://edge.netlify.com';
 
 export default async (request: Request, context: Context) => {
     // if user not in blocked country, show website
-    if (!['NL', 'KP', 'IR'].includes(context.geo.country.code)) {
+    if (!['KP', 'IR'].includes(context.geo.country.code)) {
         return;
     }
 
