@@ -15,7 +15,6 @@ interface TestPageProps {
     closeSidebar: () => void;
     togggggggleSidebar: () => void;
     walletToS: tosMethodsIF;
-    chatToS: tosMethodsIF;
     chartSettings: chartSettingsMethodsIF;
 }
 // eslint-disable-next-line

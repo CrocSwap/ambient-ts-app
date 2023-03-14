@@ -3210,7 +3210,6 @@ export default function App() {
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
-                                    chatToS={chatToS}
                                     chartSettings={chartSettings}
                                 />
                             }
