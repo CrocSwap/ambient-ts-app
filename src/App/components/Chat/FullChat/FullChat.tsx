@@ -32,6 +32,7 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     // eslint-disable-next-line
+    const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
     const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
@@ -59,10 +60,78 @@ export default function FullChat(props: FullChatPropsIF) {
 
         // handleDropdownMenu();
     }
+
+    // eslint-disable-next-line
+    function findSpeed(pool: any) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+            case 'ETH/USDC':
+                return 0 as number;
+            case 'ETH/WBTC':
+                return 5;
+            case 'USDC/DAI':
+                return -2;
+            case 'ETH/DAI':
+                return -2;
+            case 'USDC/WBTC':
+                return -2;
+            case 'WBTC/DAI':
+                return -2;
+            default:
+                return 10;
+        }
+    }
+
+    // eslint-disable-next-line
+    function findId(pool: any) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+            case 'ETH/USDC':
+                return 1;
+            case 'ETH/WBTC':
+                return 3;
+            case 'USDC/DAI':
+                return 4;
+            case 'ETH/DAI':
+                return 2;
+            case 'USDC/WBTC':
+                return 5;
+            case 'WBTC/DAI':
+                return 6;
+            default:
+                return 10;
+        }
+    }
     useEffect(() => {
         props.favePools.pools.map((pool: PoolIF) => {
+            const favPool = {
+                name: pool.base.symbol + '/' + pool.quote.symbol,
+                base: {
+                    name: pool.base.name,
+                    address: pool.base.address,
+                    symbol: pool.base.symbol,
+                    decimals: pool.base.decimals,
+                    chainId: pool.base.chainId,
+                    logoURI: pool.base.logoURI,
+                },
+                quote: {
+                    name: pool.quote.name,
+                    address: pool.quote.address,
+                    symbol: pool.quote.symbol,
+                    decimals: pool.quote.decimals,
+                    chainId: pool.quote.chainId,
+                    logoURI: pool.quote.logoURI,
+                },
+                chainId: pool.chainId,
+                poolId: pool.poolId,
+                speed: findSpeed(pool),
+                id: findId(pool),
+            };
+
+            if (!topPools.some(({ name }) => name === favPool.name)) {
+                topPools.push(favPool);
+            }
+
             for (let x = 0; x < topPools.length; x++) {
-                if (pool.base.symbol + '/' + pool.quote.symbol === topPools[x].name) {
+                if (favPool.name === topPools[x].name) {
                     topPools.push(topPools.splice(x, 1)[0]);
                 } else {
                     // do nothing

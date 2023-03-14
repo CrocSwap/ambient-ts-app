@@ -8,7 +8,7 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -227,31 +227,48 @@ export default function RangesRow(props: propsIF) {
     const usernameStyle =
         isOwnerActiveAccount && (isShowAllEnabled || isLeaderboard)
             ? 'owned_tx_contrast'
-            : ensName
+            : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
             : 'base_color';
 
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
+    const [highlightRow, setHighlightRow] = useState(false);
+    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
+    const handleRowMouseDown = () => setHighlightRow(true);
+    const handleRowMouseOut = () => setHighlightRow(false);
+
     const IDWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
-            title={posHash.toString()}
+            title={
+                <p
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {posHash.toString()}
+                </p>
+            }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className='base_color'
+                className={`${styles.base_color} ${styles.hover_style}`}
                 style={{ fontFamily: 'monospace' }}
             >
                 {posHashTruncated}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const ValueWithTooltip = (
@@ -261,7 +278,7 @@ export default function RangesRow(props: propsIF) {
             placement={'right'}
             arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
@@ -269,6 +286,8 @@ export default function RangesRow(props: propsIF) {
                 className='base_color'
                 // className='gradient_text'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {' '}
                 {'$' + usdValue}
@@ -279,10 +298,19 @@ export default function RangesRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div>
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
@@ -301,9 +329,8 @@ export default function RangesRow(props: propsIF) {
                 </div>
             }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={() => {
@@ -316,12 +343,12 @@ export default function RangesRow(props: propsIF) {
                     navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
                 }}
                 data-label='wallet'
-                className={usernameStyle}
+                className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent =
@@ -386,9 +413,13 @@ export default function RangesRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={150}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li className='base_color'>
+            <li
+                className='base_color'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 {/* {tokensTogether} */}
                 <NavLink
                     // onClick={() => {
@@ -437,9 +468,15 @@ export default function RangesRow(props: propsIF) {
         //     placement={'right'}
         //     arrow
         //     enterDelay={150}
-        //     leaveDelay={200}
+        //     leaveDelay={0}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -465,9 +502,15 @@ export default function RangesRow(props: propsIF) {
         //     placement={'right'}
         //     arrow
         //     enterDelay={150}
-        //     leaveDelay={200}
+        //     leaveDelay={0}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -513,27 +556,43 @@ export default function RangesRow(props: propsIF) {
             : 'Pending...';
 
     const RangeTimeWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                'First Minted: ' + moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+                <p
+                    style={{
+                        marginLeft: '-70px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {'First Minted: ' +
+                        moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')}
+                </p>
             }
             // title={
             //     'Last Updated: ' +
             //     moment(position.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm')
             // }
-            placement={'left'}
-            arrow
+            placement={'right'}
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <li
+                onClick={openDetailsModal}
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
 
@@ -549,7 +608,7 @@ export default function RangesRow(props: propsIF) {
             }
             id={positionDomId}
             ref={currentPositionActive ? activePositionRef : null}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
@@ -592,6 +651,8 @@ export default function RangesRow(props: propsIF) {
                         className='base_color'
                         // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span style={{ fontFamily: 'monospace' }}>{'0.00'}</span>
                     </li>
@@ -601,6 +662,8 @@ export default function RangesRow(props: propsIF) {
                         data-label='min price'
                         className='base_color'
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
                         {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
@@ -620,6 +683,8 @@ export default function RangesRow(props: propsIF) {
                         className='base_color'
                         // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span
                             style={{
@@ -636,6 +701,8 @@ export default function RangesRow(props: propsIF) {
                         className='base_color'
                         // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
                         {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
@@ -653,6 +720,8 @@ export default function RangesRow(props: propsIF) {
                     className='base_color'
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <p>
                         <span>{sideCharacter}</span>
@@ -678,6 +747,8 @@ export default function RangesRow(props: propsIF) {
                     className='base_color'
                     style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <p>
                         <span className='gradient_text' style={{ textTransform: 'lowercase' }}>
@@ -695,6 +766,8 @@ export default function RangesRow(props: propsIF) {
                     className='base_color'
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <div
                         className={styles.token_qty}
@@ -716,13 +789,25 @@ export default function RangesRow(props: propsIF) {
                 </li>
             )}
 
-            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'right' }}>
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                style={{ textAlign: 'right' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 {' '}
                 <p style={{ fontFamily: 'monospace' }} className={apyClassname}>
                     {apyString}
                 </p>
             </li>
-            <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
+            <li
+                onClick={openDetailsModal}
+                data-label='status'
+                className='gradient_text'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <RangeStatus
                     isInRange={isPositionInRange}
                     isAmbient={isAmbient}
