@@ -348,9 +348,6 @@ export default function Chart(props: ChartData) {
     const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-
-    const [plotAreaWidth, setPlotAreaWidth] = useState<number | undefined>();
-
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
@@ -2258,22 +2255,33 @@ export default function Chart(props: ChartData) {
 
         if (point == undefined) return 0;
         if (liqDataAll) {
-            const nearest = minimum(liqDataAll, (d: any) => {
-                return Math.abs(point - scaleData.yScale(d.liqPrices));
-            })[1];
+            const tempLiqData = liqDataAll;
 
-            const nearestIndex = liqDataAll.findIndex(
-                (item: any) => item.liqPrices === nearest.liqPrices,
-            );
+            const sortLiqaData = tempLiqData.sort(function (a, b) {
+                return a.liqPrices - b.liqPrices;
+            });
 
-            const resIndex = liqDataAll.length > 1 ? nearestIndex + 1 : 0;
+            const closestMin = sortLiqaData.reduce(function (prev, curr) {
+                return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
+                    Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
+                    ? curr
+                    : prev;
+            });
 
-            const resultData = liqDataAll[resIndex];
+            const closestMax = sortLiqaData.reduce(function (prev, curr) {
+                return Math.abs(curr.liqPrices - scaleData.yScale.domain()[1]) <
+                    Math.abs(prev.liqPrices - scaleData.yScale.domain()[1])
+                    ? curr
+                    : prev;
+            });
 
-            if (nearest && resultData) {
-                return resultData.liqPrices;
+            if (closestMin !== undefined && closestMin !== undefined) {
+                return {
+                    min: closestMin.liqPrices ? closestMin.liqPrices : 0,
+                    max: closestMax.liqPrices,
+                };
             } else {
-                return 0;
+                return { min: 0, max: 0 };
             }
         }
     };
@@ -2281,22 +2289,11 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         const liqDataAll = liquidityData.depthLiqBidData.concat(liquidityData.depthLiqAskData);
 
+        const { min, max }: any = findLiqNearest(liqDataAll);
         const visibleDomain = liqDataAll.filter(
-            (liqData: any) =>
-                liqData.liqPrices >= findLiqNearest(liqDataAll) &&
-                liqData.liqPrices <= scaleData.yScale.domain()[1],
+            (liqData: any) => liqData.liqPrices >= min && liqData.liqPrices <= max,
         );
         const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-        if (plotAreaWidth !== undefined) {
-            if (maxLiq && parseFloat(maxLiq) <= 100) {
-                liquidityDepthScale.range([
-                    plotAreaWidth,
-                    plotAreaWidth - plotAreaWidth / (1000 * 2.5),
-                ]);
-            } else {
-                liquidityDepthScale.range([plotAreaWidth, (plotAreaWidth / 10) * 9]);
-            }
-        }
         liquidityDepthScale.domain([0, maxLiq]);
     }, [scaleData && scaleData.yScale.domain()[0], scaleData && scaleData.yScale.domain()[1]]);
 
@@ -4896,10 +4893,9 @@ export default function Chart(props: ChartData) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
+        const { min }: any = findLiqNearest(allData);
         const filteredAllData = allData.filter(
-            (item: any) =>
-                findLiqNearest(allData) <= item.liqPrices &&
-                item.liqPrices <= scaleData.yScale.domain()[1],
+            (item: any) => min <= item.liqPrices && item.liqPrices <= scaleData.yScale.domain()[1],
         );
 
         const liqMaxActiveLiq = d3.max(filteredAllData, (d: any) => d.activeLiq);
@@ -5277,6 +5273,18 @@ export default function Chart(props: ChartData) {
                     ]);
 
                     liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+
+                    if (liquidityDepthScale.domain()[1] <= 50) {
+                        liquidityDepthScale.range([
+                            event.detail.width,
+                            event.detail.width - event.detail.width / (100 * 2.5),
+                        ]);
+                    } else {
+                        liquidityDepthScale.range([
+                            event.detail.width,
+                            (event.detail.width / 10) * 9,
+                        ]);
+                    }
 
                     scaleData.volumeScale.range([
                         event.detail.height,
@@ -5834,8 +5842,6 @@ export default function Chart(props: ChartData) {
                     scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
 
                     liquidityScale.range([width, (width / 10) * 9]);
-
-                    setPlotAreaWidth(width);
 
                     liquidityDepthScale.range([width, (width / 10) * 9]);
 
