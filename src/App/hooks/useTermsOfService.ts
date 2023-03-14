@@ -19,13 +19,9 @@ export interface tosMethodsIF {
 }
 
 // central react hook in this file
-export const useTermsOfService = (termsFor: string): tosMethodsIF => {
+export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF => {
     // unique key for data to be stored in local storage
     const localStorageSlug: string = 'tos_' + termsFor;
-
-    // resource hash for terms of service URI
-    // this is the "cid" from the IPFS resource
-    const agreementUriSlug = 'Qmad5FtHuwnsEDdEz71Rn5oyPuw2nbfqG9XpAGHW8wGCt1';
 
     // base URL to combine with resource hash to make valid link
     const agreementUriBase = 'https://gateway.ipfs.io/ipfs/';
@@ -33,8 +29,8 @@ export const useTermsOfService = (termsFor: string): tosMethodsIF => {
     // current terms of service metadata
     const tos: tosIF = {
         for: termsFor,
-        cid: agreementUriSlug,
-        viewAt: agreementUriBase + agreementUriSlug,
+        cid: cid,
+        viewAt: agreementUriBase + cid,
     };
 
     // fn to get the current user agreement from local storage

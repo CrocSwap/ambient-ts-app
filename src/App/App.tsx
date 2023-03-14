@@ -197,8 +197,8 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService('wallet');
-    const chatToS: tosMethodsIF = useTermsOfService('chat');
+    const walletToS: tosMethodsIF = useTermsOfService('wallet', process.env.REACT_APP_WALLET_TOS_CID as string);
+    const chatToS: tosMethodsIF = useTermsOfService('chat', process.env.REACT_APP_CHAT_TOS_CID as string);
     // this line is just here to make the linter happy
     // it should be removed when the chatToS line is moved
     // please and thank you
