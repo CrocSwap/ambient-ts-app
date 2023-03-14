@@ -13,7 +13,7 @@ export interface tosIF {
 // this is the object returned by this hook
 export interface tosMethodsIF {
     isAgreed: boolean,
-    tosURL: tosIF,
+    tos: tosIF,
     lastAgreement: tosIF | undefined,
     acceptToS: () => void,
 }
@@ -56,7 +56,7 @@ export const useTermsOfService = (termsFor: string): tosMethodsIF => {
 
     return {
         isAgreed: tos.cid === agreement?.cid,
-        tosURL: tos,
+        tos: tos,
         lastAgreement: agreement,
         acceptToS
     };
