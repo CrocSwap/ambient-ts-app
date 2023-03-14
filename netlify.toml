@@ -13,3 +13,7 @@
   for = "/rings_192.png"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+
+[[edge_functions]]
+  path = "/*"
+  function = "country-block"
