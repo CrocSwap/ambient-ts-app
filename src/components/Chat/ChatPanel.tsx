@@ -71,6 +71,7 @@ export default function ChatPanel(props: propsIF) {
     const [scrollDirection, setScrollDirection] = useState(String);
     const [notification, setNotification] = useState(0);
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
+    const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] = useState(true);
 
     // console.log('running ChatPanel');
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
@@ -109,14 +110,6 @@ export default function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
-            console.log(
-                'message user: ',
-                messageUser,
-                ' current user: ',
-                currentUser,
-                ' last message: ',
-                lastMessage,
-            );
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
@@ -125,7 +118,7 @@ export default function ChatPanel(props: propsIF) {
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
-                console.log('evet');
+                setIsScrollToBottomButtonPressed(true);
                 const timer = setTimeout(() => {
                     messageEnd.current?.scrollTo(
                         messageEnd.current?.scrollHeight,
@@ -192,7 +185,8 @@ export default function ChatPanel(props: propsIF) {
     }, [ens, address, props.chatStatus, props.isFullScreen, userCurrentPool]);
 
     useEffect(() => {
-        console.log('getting messages');
+        setIsScrollToBottomButtonPressed(false);
+        scrollToBottom();
         setNotification(0);
         getMsg();
     }, [room]);
@@ -233,6 +227,7 @@ export default function ChatPanel(props: propsIF) {
     }, [isMessageDeleted]);
 
     useEffect(() => {
+        setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
         console.log('scrolling to bottom');
@@ -243,6 +238,7 @@ export default function ChatPanel(props: propsIF) {
     }
 
     const scrollToBottomButton = async () => {
+        setIsScrollToBottomButtonPressed(true);
         messageEnd.current?.scrollTo(
             messageEnd.current?.scrollHeight,
             messageEnd.current?.scrollHeight,
@@ -263,6 +259,7 @@ export default function ChatPanel(props: propsIF) {
     const handleScroll = (e: any) => {
         if (0 <= e.target.scrollTop) {
             setNotification(0);
+            setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
         } else {
             setScrollDirection('Scroll Up');
@@ -276,6 +273,7 @@ export default function ChatPanel(props: propsIF) {
             messageEnd.current?.scrollHeight !== messageEnd.current?.scrollHeight
         ) {
             setScrollDirection('Scroll Up');
+            setIsScrollToBottomButtonPressed(false);
         }
         if (0 <= messageEnd.current?.scrollTop) {
             setScrollDirection('Scroll Down');
@@ -350,7 +348,9 @@ export default function ChatPanel(props: propsIF) {
 
     const chatNotification = (
         <div className={styles.chat_notification}>
-            {notification > 0 && scrollDirection === 'Scroll Up' ? (
+            {notification > 0 &&
+            scrollDirection === 'Scroll Up' &&
+            !isScrollToBottomButtonPressed ? (
                 props.isFullScreen ? (
                     <div className={styles.chat_notification}>
                         <span
@@ -385,7 +385,9 @@ export default function ChatPanel(props: propsIF) {
                         </span>
                     </div>
                 )
-            ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
+            ) : scrollDirection === 'Scroll Up' &&
+              notification <= 0 &&
+              !isScrollToBottomButtonPressed ? (
                 props.isFullScreen ? (
                     <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
                         <RiArrowDownSLine
