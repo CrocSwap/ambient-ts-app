@@ -586,11 +586,9 @@ export default function RangesRow(props: propsIF) {
                         }
                     }}
                 >
-                    <p className={`${styles.base_color} ${styles.hover_style}`}>
-                        {posHashTruncated}
-                    </p>{' '}
+                    <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
+                        className={usernameStyle}
                         style={{ textTransform: 'lowercase' }}
                     >
                         {userNameToDisplay}
@@ -603,7 +601,6 @@ export default function RangesRow(props: propsIF) {
                         onClick={openDetailsModal}
                         data-label='max price'
                         className='base_color'
-                        // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
@@ -636,7 +633,6 @@ export default function RangesRow(props: propsIF) {
                         onClick={openDetailsModal}
                         data-label='max price'
                         className='base_color'
-                        // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}

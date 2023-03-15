@@ -8,9 +8,7 @@ import {
     TextOnlyTooltip,
 } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
-
 import { NavLink, useNavigate } from 'react-router-dom';
-// import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
@@ -729,13 +727,9 @@ export default function TransactionRow(props: propsIF) {
                             handleOpenExplorer();
                         }}
                     >
+                        <p className='base_color'>{txHashTruncated}</p>{' '}
                         <p
-                            className={`${styles.base_color} ${styles.hover_style}`}
-                        >
-                            {txHashTruncated}
-                        </p>{' '}
-                        <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
+                            className={usernameStyle}
                             style={{ textTransform: 'lowercase' }}
                         >
                             {userNameToDisplay}
