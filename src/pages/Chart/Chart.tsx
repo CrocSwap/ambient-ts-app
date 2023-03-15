@@ -2620,6 +2620,7 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('g.right-handle').remove();
                 selection.enter().select('g.left-handle').remove();
                 selection.enter().select('line').attr('class', 'ghostline');
+                selection.enter().attr('pointer-events', 'none');
             });
 
             setGhostLines(() => {
@@ -2664,6 +2665,22 @@ export default function Chart(props: ChartData) {
         ];
 
         return result;
+    }
+
+    function setLimitForNoGoZone(newLimitValue: number) {
+        const noGoZoneMin = noGoZoneBoudnaries[0][0];
+        const noGoZoneMax = noGoZoneBoudnaries[0][1];
+
+        const diffNoGoZoneMin = Math.abs(newLimitValue - noGoZoneMin);
+        const diffNoGoZoneMax = Math.abs(newLimitValue - noGoZoneMax);
+        if (newLimitValue >= noGoZoneMin && newLimitValue <= noGoZoneMax) {
+            if (diffNoGoZoneMin > diffNoGoZoneMax) {
+                newLimitValue = noGoZoneMax;
+            } else {
+                newLimitValue = noGoZoneMin;
+            }
+        }
+        return newLimitValue;
     }
 
     // Drag Type
@@ -2988,6 +3005,7 @@ export default function Chart(props: ChartData) {
 
                     newLimitValue = scaleData.yScale.invert(event.y);
 
+                    newLimitValue = setLimitForNoGoZone(newLimitValue);
                     const lineValues = adjTicks(newLimitValue);
 
                     if (newLimitValue < 0) newLimitValue = 0;
@@ -3000,6 +3018,7 @@ export default function Chart(props: ChartData) {
                         const svg = d3.select(event.target).select('svg');
 
                         ghostJoin(svg, [lineValues]).call(ghostLines);
+                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
                     });
                 })
                 .on('end', (event: any) => {
@@ -5395,6 +5414,7 @@ export default function Chart(props: ChartData) {
                         let newLimitValue = scaleData.yScale.invert(event.offsetY);
 
                         if (newLimitValue < 0) newLimitValue = 0;
+                        newLimitValue = setLimitForNoGoZone(newLimitValue);
 
                         // newLimitValue =
                         //     poolPriceDisplay !== undefined &&
