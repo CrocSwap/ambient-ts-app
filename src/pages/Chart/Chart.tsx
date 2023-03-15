@@ -4685,7 +4685,13 @@ export default function Chart(props: ChartData) {
         if (rescale && !isLineDrag) {
             changeScale();
         }
-    }, [ranges, limit, location.pathname, parsedChartData?.period]);
+    }, [
+        ranges,
+        limit,
+        location.pathname,
+        parsedChartData?.period,
+        parsedChartData?.chartData[0]?.close,
+    ]);
 
     // Call drawChart()
     useEffect(() => {
@@ -4758,7 +4764,7 @@ export default function Chart(props: ChartData) {
         }
     }, [
         parsedChartData,
-        market,
+        JSON.stringify(market[0].value),
         ranges,
         limit,
         zoomUtils,
