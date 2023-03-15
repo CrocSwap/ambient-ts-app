@@ -79,7 +79,7 @@ export default function OrderRow(props: propsIF) {
         truncatedDisplayPrice,
         sideType,
         usdValue,
-        usdValueLocaleString,
+        // usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
@@ -225,26 +225,26 @@ export default function OrderRow(props: propsIF) {
     );
 
     const ValueWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={'$' + usdValueLocaleString}
-            placement={'right'}
-            arrow
-            enterDelay={750}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={'$' + usdValueLocaleString}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={750}
+        //     leaveDelay={0}
+        // >
+        <li
+            onClick={openDetailsModal}
+            data-label='value'
+            className='base_color'
+            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='base_color'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                {' '}
-                {'$' + usdValue}
-            </li>
-        </DefaultTooltip>
+            {' '}
+            {'$' + usdValue}
+        </li>
+        // </DefaultTooltip>
     );
     const navigate = useNavigate();
 
@@ -595,8 +595,13 @@ export default function OrderRow(props: propsIF) {
                         }
                     }}
                 >
-                    <p className='base_color'>{posHashTruncated}</p>{' '}
-                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                    <p className={`${styles.base_color} ${styles.hover_style}`}>
+                        {posHashTruncated}
+                    </p>{' '}
+                    <p
+                        className={`${usernameStyle} ${styles.hover_style}`}
+                        style={{ textTransform: 'lowercase' }}
+                    >
                         {userNameToDisplay}
                     </p>
                 </li>
