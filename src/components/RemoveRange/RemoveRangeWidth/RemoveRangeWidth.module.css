@@ -60,6 +60,8 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     margin-right: 10px;
+
+    width: 60px;
 }
 .percentage_options {
     display: flex;

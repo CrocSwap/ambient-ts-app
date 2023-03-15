@@ -103,7 +103,6 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-light);
-    margin-top: 2px;
 }
 
 .token_info_container .change_positive {

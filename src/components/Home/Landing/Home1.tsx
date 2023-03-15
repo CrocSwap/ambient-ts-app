@@ -3,7 +3,7 @@ import styles from './Home1.module.css';
 // import { useTranslation } from 'react-i18next';
 // import logoText from '../../../assets/images/logos/logo_text.svg';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
-import row1Image from '../../../assets/images/newHome/row1.png';
+import row1Image from '../../../assets/images/newHome/row1.svg';
 import row2Image from '../../../assets/images/newHome/row2.png';
 import row3Image from '../../../assets/images/newHome/row3.png';
 export default function Home1() {
@@ -36,7 +36,12 @@ export default function Home1() {
     const thirdRow = (
         <div className={styles.slide_container}>
             <div className={`${styles.row_container} ${styles.column_reverse}`}>
-                <img src={row2Image} alt='concentrated and ambient liquidity' />
+                <img
+                    src={row2Image}
+                    alt='concentrated and ambient liquidity'
+                    width='331px'
+                    height='420px'
+                />
                 <section className={styles.faster_section}>
                     <h2>Deep, Diversified Liquidity</h2>
                     <p>
@@ -64,7 +69,7 @@ export default function Home1() {
                     </p>
                     <TradeNowButton />
                 </section>
-                <img src={row3Image} alt='range and limit orders' />
+                <img src={row3Image} alt='range and limit orders' width='240px' height='420px' />
             </div>
         </div>
     );

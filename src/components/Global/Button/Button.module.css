@@ -39,7 +39,7 @@
 .btn_flat{
     border: none;
     background: var(--text-highlight-dark);
-    color: var(--dark1);
+    color: var(--text-grey-white);
     transition: all var(--animation-speed) ease-in-out;
 
 

@@ -162,7 +162,6 @@ import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings, chartSettingsMethodsIF } from './hooks/useChartSettings';
@@ -198,8 +197,18 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
-    const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
+    const walletToS: tosMethodsIF = useTermsOfService(
+        'wallet',
+        process.env.REACT_APP_WALLET_TOS_CID as string,
+    );
+    const chatToS: tosMethodsIF = useTermsOfService(
+        'chat',
+        process.env.REACT_APP_CHAT_TOS_CID as string,
+    );
+    // this line is just here to make the linter happy
+    // it should be removed when the chatToS line is moved
+    // please and thank you
+    false && chatToS;
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
@@ -823,7 +832,6 @@ export default function App() {
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
     const [poolExists, setPoolExists] = useState<boolean | undefined>();
-    useEffect(() => console.log({ poolExists }), [poolExists]);
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     // hook to update `poolExists` when crocEnv changes
@@ -2378,7 +2386,7 @@ export default function App() {
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
         isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2441,8 +2449,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Swap/> React element on trade route
@@ -2497,8 +2505,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Limit/> React element on trade route
@@ -2525,20 +2533,16 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        // poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
-
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
-        // limitRate: limitRate,
-        // setLimitRate: setLimitRate,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
@@ -2551,17 +2555,19 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('limit'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Range/> React element
-
     const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
@@ -2597,7 +2603,6 @@ export default function App() {
         dailyVol: dailyVol,
         graphData: graphData,
         openGlobalModal: openGlobalModal,
-
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
@@ -2615,13 +2620,16 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-
         openGlobalPopup: openGlobalPopup,
         bypassConfirm: checkBypassConfirm('range'),
         toggleBypassConfirm: updateBypassConfirm,
-
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange,
+        },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
     };
@@ -2751,7 +2759,8 @@ export default function App() {
         currentLocation !== '/404' &&
         currentLocation !== '/app/chat' &&
         currentLocation !== '/chat' &&
-        !fullScreenChart && <Sidebar {...sidebarProps} />;
+        !fullScreenChart &&
+        isChainSupported && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
@@ -3211,7 +3220,6 @@ export default function App() {
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
-                                    chatToS={chatToS}
                                     chartSettings={chartSettings}
                                 />
                             }

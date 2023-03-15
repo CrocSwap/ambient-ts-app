@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -34,31 +34,20 @@ interface propsIF {
 // central react functional component
 export default function ExtraInfo(props: propsIF) {
     const {
-        // tokenPair,
         priceImpact,
         displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        // quoteTokenIsBuy,
         swapGasPriceinDollars,
-        // didUserFlipDenom,
-        // isTokenABase,
         isOnTradeRoute,
         account,
-        // isDenomBase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(
         isOnTradeRoute ? false : false,
     );
 
-    const [hasUserChosenToDisplayExtraInfo, setHasUserChosenToDisplayExtraInfo] =
-        useState<boolean>(false);
-
-    // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
-
-    // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
@@ -79,8 +68,6 @@ export default function ExtraInfo(props: propsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-
-    // console.log({ priceImpact });
 
     const finalPriceWithDenom = !isDenomBase
         ? 1 / (priceImpact?.finalPrice || 1)
@@ -105,51 +92,90 @@ export default function ExtraInfo(props: propsIF) {
 
     const priceImpactString = !priceImpactNum
         ? '…'
+        : priceImpactNum >= 100
+        ? priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+          })
         : priceImpactNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
-              maximumFractionDigits: 3,
+              maximumFractionDigits: 2,
           });
 
     const feesAndSlippageData = [
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance}%`,
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${slippageTolerance} %`,
         },
         {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
-            data: `${liquidityProviderFee * 100}%`,
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${liquidityProviderFee * 100} %`,
             placement: 'bottom',
         },
     ];
 
     const extraInfoData = [
-        // {
-        //     title: 'Spot Price',
-        //     tooltipTitle: 'Current Price of the Selected Token Pool',
-        //     data: isDenomBase
-        //         ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-        //         : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        // },
         {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'After Price Impact and Provider Fee',
             data: isDenomBase
                 ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-            // data: isDenomBase
-            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
-
-        {
-            title: 'Price Impact',
-            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
-            data: `${priceImpactString}%`,
             placement: 'bottom',
         },
     ];
+
+    const priceImpactComponentArray = [
+        {
+            title: 'Price Impact Warning',
+            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${priceImpactString} %`,
+            placement: 'bottom',
+        },
+    ];
+
+    const priceImpactWarning = (
+        <div className={styles.price_impact}>
+            {priceImpactComponentArray.map((item, idx) =>
+                item ? (
+                    <div className={styles.extra_row} key={idx}>
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent
+                                title={item.tooltipTitle}
+                                placement={item.placement as 'bottom'}
+                            />
+                        </div>
+                        <div
+                            className={styles.data}
+                            style={{
+                                color: '#f6385b',
+                            }}
+                        >
+                            {item.data}
+                        </div>
+                    </div>
+                ) : null,
+            )}
+        </div>
+    );
+
+    //
+    if (priceImpactNum && Math.abs(priceImpactNum) <= 2) {
+        extraInfoData.push({
+            title: 'Price Impact',
+            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${priceImpactString} %`,
+            placement: 'bottom',
+        });
+    }
+
     if (
         [
             '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc',
@@ -162,6 +188,7 @@ export default function ExtraInfo(props: propsIF) {
             data: isDenomBase
                 ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            placement: 'bottom',
         });
     }
     const extraInfoDetails = (
@@ -231,26 +258,26 @@ export default function ExtraInfo(props: propsIF) {
     ) : null;
     const dispatch = useAppDispatch();
 
-    const updateShowExtraDetails = () => {
-        if (
-            !showExtraDetails &&
-            priceImpact?.percentChange &&
-            Math.abs(priceImpact?.percentChange) > 0.02
-        ) {
-            setShowExtraDetails(true);
-        } else if (
-            showExtraDetails &&
-            (!priceImpact ||
-                (priceImpact?.percentChange && Math.abs(priceImpact?.percentChange) <= 0.02)) &&
-            !hasUserChosenToDisplayExtraInfo
-        ) {
-            setShowExtraDetails(false);
-        }
-    };
+    // const updateShowExtraDetails = () => {
+    //     if (
+    //         !showExtraDetails &&
+    //         priceImpact?.percentChange &&
+    //         Math.abs(priceImpact?.percentChange) > 0.02
+    //     ) {
+    //         setShowExtraDetails(true);
+    //     } else if (
+    //         showExtraDetails &&
+    //         (!priceImpact ||
+    //             (priceImpact?.percentChange && Math.abs(priceImpact?.percentChange) <= 0.02)) &&
+    //         !hasUserChosenToDisplayExtraInfo
+    //     ) {
+    //         setShowExtraDetails(false);
+    //     }
+    // };
 
-    useEffect(() => {
-        updateShowExtraDetails();
-    }, [priceImpact?.percentChange]);
+    // useEffect(() => {
+    //     updateShowExtraDetails();
+    // }, [priceImpact?.percentChange]);
 
     const extraDetailsDropdown = (
         <div
@@ -258,11 +285,6 @@ export default function ExtraInfo(props: propsIF) {
             onClick={
                 priceImpact
                     ? () => {
-                          if (showExtraDetails) {
-                              setHasUserChosenToDisplayExtraInfo(false);
-                          } else {
-                              setHasUserChosenToDisplayExtraInfo(true);
-                          }
                           setShowExtraDetails(!showExtraDetails);
                       }
                     : undefined
@@ -307,9 +329,13 @@ export default function ExtraInfo(props: propsIF) {
     const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
     const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
+    const priceImpactWarningOrNull =
+        priceImpactNum && Math.abs(priceImpactNum) > 2 ? priceImpactWarning : null;
+
     return (
         <>
             {/* {extraDetailsNoDropDownOrNull} */}
+            {priceImpactWarningOrNull}
             {extraDetailsDropdown}
             {/* {dropDownOrNull} */}
             {extraDetailsOrNull}

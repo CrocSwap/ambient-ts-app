@@ -546,10 +546,10 @@ export const useProcessTransaction = (
     // --------------------OWNER AND ID WALLET DATA
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 12
-            ? trimString(ensName, 7, 3, '…')
+        ? ensName.length > 13
+            ? trimString(ensName, 8, 3, '…')
             : ensName
-        : trimString(ownerId, 7, 3, '…');
+        : trimString(ownerId, 8, 3, '…');
 
     const txHashTruncated = trimString(txHash, 6, 4, '…');
 

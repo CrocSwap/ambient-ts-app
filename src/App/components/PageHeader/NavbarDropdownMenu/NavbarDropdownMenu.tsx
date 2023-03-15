@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
-import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
+import { AiFillTwitterCircle } from 'react-icons/ai';
 import { BiArrowBack, BiMessageCheck } from 'react-icons/bi';
 import { BsBook, BsMedium } from 'react-icons/bs';
-import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
+import { FiSettings } from 'react-icons/fi';
 import { FaDiscord, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { GoRequestChanges } from 'react-icons/go';
 import { HiOutlineDocumentText, HiDocumentDuplicate } from 'react-icons/hi';
@@ -219,12 +219,12 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         </>
     );
 
-    const moreItems = (
-        <>
-            <NavbarDropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<BsBook size={20} />}>Docs</NavbarDropdownItem>
-        </>
-    );
+    // const moreItems = (
+    //     <>
+    //         <NavbarDropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</NavbarDropdownItem>
+    //         <NavbarDropdownItem leftIcon={<BsBook size={20} />}>Docs</NavbarDropdownItem>
+    //     </>
+    // );
 
     const NavbardropdownItemData = [
         {
@@ -242,11 +242,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             data: socialsItems,
             leftIcon: <FaDiscord size={20} />,
         },
-        {
-            title: 'More',
-            data: moreItems,
-            leftIcon: <FiMoreHorizontal size={20} />,
-        },
+        // {
+        //     title: 'More',
+        //     data: moreItems,
+        //     leftIcon: <FiMoreHorizontal size={20} />,
+        // },
     ];
 
     return (
@@ -276,6 +276,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                             {item.title}
                         </NavbarDropdownItem>
                     ))}
+                    <NavbarDropdownItem leftIcon={<BsBook size={18} />}>Docs</NavbarDropdownItem>
                 </motion.div>
             </CSSTransition>
 
