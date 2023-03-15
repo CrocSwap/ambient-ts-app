@@ -95,6 +95,8 @@ interface propsIF {
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
+    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 export interface CandleChartData {
@@ -183,6 +185,8 @@ export default function TradeCharts(props: propsIF) {
         setCandleDomains,
         setSimpleRangeWidth,
         chartSettings,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -603,6 +607,8 @@ export default function TradeCharts(props: propsIF) {
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}
                         repositionRangeWidth={props.repositionRangeWidth}
+                        setChartTriggeredBy={setChartTriggeredBy}
+                        chartTriggeredBy={chartTriggeredBy}
                     />
                 </div>
             )}

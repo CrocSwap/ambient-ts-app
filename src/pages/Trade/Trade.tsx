@@ -96,6 +96,8 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
+    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 // React functional component
@@ -156,6 +158,8 @@ export default function Trade(props: propsIF) {
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(chainId, isInitialized);
@@ -494,6 +498,8 @@ export default function Trade(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         setRepositionRangeWidth: setRepositionRangeWidth,
         repositionRangeWidth: repositionRangeWidth,
+        setChartTriggeredBy: setChartTriggeredBy,
+        chartTriggeredBy: chartTriggeredBy,
     };
 
     const tradeTabsProps = {
