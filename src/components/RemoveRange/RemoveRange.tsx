@@ -65,10 +65,11 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    handleModalClose: () => void;
 }
 
 export default function RemoveRange(props: propsIF) {
-    const { crocEnv, closeGlobalModal, chainData, position, dexBalancePrefs } =
+    const { handleModalClose, crocEnv, chainData, position, dexBalancePrefs } =
         props;
 
     const lastBlockNumber = useAppSelector(
@@ -557,7 +558,7 @@ export default function RemoveRange(props: propsIF) {
                         )}
                     </div>
                     {newRemovalTransactionHash !== '' && (
-                        <div onClick={closeGlobalModal}>
+                        <div onClick={handleModalClose}>
                             <VscClose size={30} />
                         </div>
                     )}
@@ -650,7 +651,7 @@ export default function RemoveRange(props: propsIF) {
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
                 <RemoveRangeHeader
-                    onClose={closeGlobalModal}
+                    onClose={handleModalClose}
                     title={
                         showSettings
                             ? 'Remove Position Settings'

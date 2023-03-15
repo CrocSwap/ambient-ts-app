@@ -65,6 +65,7 @@ interface propsIF {
     position: PositionIF;
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    handleModalClose: () => void;
 }
 
 export default function HarvestPosition(props: propsIF) {
@@ -73,9 +74,9 @@ export default function HarvestPosition(props: propsIF) {
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
-        closeGlobalModal,
         position,
         dexBalancePrefs,
+        handleModalClose,
     } = props;
 
     // settings
@@ -540,7 +541,7 @@ export default function HarvestPosition(props: propsIF) {
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
                 <HarvestPositionHeader
-                    onClose={closeGlobalModal}
+                    onClose={handleModalClose}
                     title={
                         showSettings
                             ? 'Harvest Position Settings'
