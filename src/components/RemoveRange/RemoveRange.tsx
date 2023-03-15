@@ -38,6 +38,8 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { checkIsStable } from '../../utils/data/stablePairs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -65,11 +67,21 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function RemoveRange(props: propsIF) {
-    const { crocEnv, closeGlobalModal, chainData, position, dexBalancePrefs } =
-        props;
+    const {
+        crocEnv,
+        closeGlobalModal,
+        chainData,
+        position,
+        dexBalancePrefs,
+        slippage,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainId,
+    } = props;
 
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData,
@@ -229,8 +241,6 @@ export default function RemoveRange(props: propsIF) {
         }
     }, [txErrorCode]);
 
-    const liquiditySlippageTolerance = 1;
-
     const posHash =
         position.positionType === 'ambient'
             ? ambientPosSlot(
@@ -251,6 +261,16 @@ export default function RemoveRange(props: propsIF) {
     const isPositionPendingUpdate =
         positionsPendingUpdate.indexOf(posHash as string) > -1;
 
+    const isPairStable: boolean = checkIsStable(
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainId,
+    );
+
+    const persistedSlippage: number = isPairStable
+        ? slippage.mintSlippage.stable
+        : slippage.mintSlippage.volatile;
+
     const removeFn = async () => {
         if (!crocEnv) return;
         console.log('removing');
@@ -259,8 +279,8 @@ export default function RemoveRange(props: propsIF) {
         const pool = crocEnv.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+        const lowLimit = spotPrice * (1 - persistedSlippage);
+        const highLimit = spotPrice * (1 + persistedSlippage);
 
         dispatch(addPositionPendingUpdate(posHash as string));
 
@@ -338,7 +358,6 @@ export default function RemoveRange(props: propsIF) {
                 console.log({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -569,14 +588,20 @@ export default function RemoveRange(props: propsIF) {
         </div>
     );
 
+    const [currentSlippage, setCurrentSlippage] =
+        useState<number>(persistedSlippage);
+
+    const updateSettings = (): void => {
+        setShowSettings(false);
+        isPairStable
+            ? slippage.mintSlippage.updateStable(currentSlippage)
+            : slippage.mintSlippage.updateVolatile(currentSlippage);
+    };
+
     const buttonToDisplay = (
         <div style={{ padding: '1rem' }}>
             {showSettings ? (
-                <Button
-                    title='Confirm'
-                    action={() => setShowSettings(false)}
-                    flat
-                />
+                <Button title='Confirm' action={updateSettings} flat />
             ) : isPositionPendingUpdate ? (
                 <RemoveRangeButton
                     removeFn={removeFn}
@@ -601,8 +626,8 @@ export default function RemoveRange(props: propsIF) {
 
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings
-            showSettings={showSettings}
-            setShowSettings={setShowSettings}
+            persistedSlippage={persistedSlippage}
+            setCurrentSlippage={setCurrentSlippage}
         />
     ) : (
         <>

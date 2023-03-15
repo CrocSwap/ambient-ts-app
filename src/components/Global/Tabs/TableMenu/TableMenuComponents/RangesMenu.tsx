@@ -27,6 +27,7 @@ import {
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
+import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 
 // interface for React functional component props
 interface propsIF {
@@ -50,6 +51,7 @@ interface propsIF {
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 // React functional component
@@ -67,6 +69,7 @@ export default function RangesMenu(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -302,6 +305,7 @@ export default function RangesMenu(props: propsIF) {
                     <RemoveRange
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
+                        slippage={slippage}
                         {...rangeDetailsProps}
                     />
                 </Modal>

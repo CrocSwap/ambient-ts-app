@@ -1,5 +1,11 @@
 // START: Import React and Dongles
-import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react';
+import {
+    useEffect,
+    useState,
+    Dispatch,
+    SetStateAction,
+    ReactNode,
+} from 'react';
 
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -9,7 +15,10 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 
 // START: Import Local Files
 import styles from './PortfolioTabs.module.css';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
@@ -36,6 +45,7 @@ import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 // interface for React functional component props
 interface propsIF {
@@ -79,6 +89,7 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 // React functional component
@@ -111,28 +122,32 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation,
         account,
         setSimpleRangeWidth,
-        dexBalancePrefs
+        dexBalancePrefs,
+        slippage,
     } = props;
 
     const dispatch = useAppDispatch();
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
-    const connectedAccountLimitOrderData = graphData.limitOrdersByUser.limitOrders;
+    const connectedAccountLimitOrderData =
+        graphData.limitOrdersByUser.limitOrders;
     const connectedAccountTransactionData = graphData.changesByUser.changes;
 
-    const [lookupAccountPositionData, setLookupAccountPositionData] = useState<PositionIF[]>([]);
-    const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] = useState<LimitOrderIF[]>(
-        [],
-    );
-    const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
-        TransactionIF[]
+    const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
+        PositionIF[]
     >([]);
+    const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] =
+        useState<LimitOrderIF[]>([]);
+    const [lookupAccountTransactionData, setLookupAccountTransactionData] =
+        useState<TransactionIF[]>([]);
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
-    const userLimitOrdersCacheEndpoint = httpGraphCacheServerDomain + '/user_limit_order_states?';
+    const userPositionsCacheEndpoint =
+        httpGraphCacheServerDomain + '/user_positions?';
+    const userLimitOrdersCacheEndpoint =
+        httpGraphCacheServerDomain + '/user_limit_order_states?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -199,7 +214,10 @@ export default function PortfolioTabs(props: propsIF) {
                 if (userLimitOrderStates) {
                     Promise.all(
                         userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                            return getLimitOrderData(limitOrder, searchableTokens);
+                            return getLimitOrderData(
+                                limitOrder,
+                                searchableTokens,
+                            );
                         }),
                     ).then((updatedLimitOrderStates) => {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);
@@ -256,7 +274,9 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            console.log('querying user tx/order/positions because address changed');
+            console.log(
+                'querying user tx/order/positions because address changed',
+            );
             if (!connectedAccountActive) {
                 if (resolvedAddress) {
                     dispatch(resetLookupUserDataLoadingStatus());
@@ -368,7 +388,8 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenDexBalance: quoteTokenDexBalance,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs
+        dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     // props for <Transactions/> React Element
@@ -385,7 +406,8 @@ export default function PortfolioTabs(props: propsIF) {
         blockExplorer: props.chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
         account: account,
-        setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions:
+            props.setCurrentTxActiveInTransactions,
         expandTradeTable: false,
         isCandleSelected: false,
         closeGlobalModal: props.closeGlobalModal,
@@ -424,14 +446,26 @@ export default function PortfolioTabs(props: propsIF) {
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
-        { label: 'Limits', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
+        {
+            label: 'Limits',
+            content: <Orders {...ordersProps} />,
+            icon: openOrdersImage,
+        },
+        {
+            label: 'Ranges',
+            content: <Ranges {...rangeProps} />,
+            icon: rangePositionsImage,
+        },
         {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },
-        { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
+        {
+            label: 'Wallet Balances',
+            content: <Wallet {...walletProps} />,
+            icon: walletImage,
+        },
     ];
 
     const accountTabDataWithoutTokens = [
@@ -440,21 +474,35 @@ export default function PortfolioTabs(props: propsIF) {
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
-        { label: 'Limits', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
+        {
+            label: 'Limits',
+            content: <Orders {...ordersProps} />,
+            icon: openOrdersImage,
+        },
+        {
+            label: 'Ranges',
+            content: <Ranges {...rangeProps} />,
+            icon: rangePositionsImage,
+        },
         {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },
-        { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
+        {
+            label: 'Wallet Balances',
+            content: <Wallet {...walletProps} />,
+            icon: walletImage,
+        },
     ];
 
     return (
         <div className={styles.tabs_container}>
             <TabComponent
                 data={
-                    connectedAccountActive ? accountTabDataWithTokens : accountTabDataWithoutTokens
+                    connectedAccountActive
+                        ? accountTabDataWithTokens
+                        : accountTabDataWithoutTokens
                 }
                 rightTabOptions={false}
                 selectedOutsideTab={selectedOutsideTab}

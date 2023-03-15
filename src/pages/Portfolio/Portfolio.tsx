@@ -12,32 +12,41 @@ import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
 import Button from '../../components/Global/Button/Button';
-import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
+import {
+    Erc20TokenBalanceFn,
+    nativeTokenBalanceFn,
+} from '../../App/functions/fetchTokenBalances';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-// import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import { Provider } from '@ethersproject/providers';
 import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
-    // setSecondaryImageDataRedux,
 } from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
+    getRecentTokens: (options?: {
+        onCurrentChain?: boolean;
+        count?: number | null;
+    }) => TokenIF[];
     getAmbientTokens: () => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
@@ -84,6 +93,7 @@ interface propsIF {
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -131,7 +141,8 @@ export default function Portfolio(props: propsIF) {
         chainData,
         mainnetProvider,
         setSimpleRangeWidth,
-        dexBalancePrefs
+        dexBalancePrefs,
+        slippage,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -146,8 +157,10 @@ export default function Portfolio(props: propsIF) {
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
-    const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
-    const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
+    const [recheckTokenAllowance, setRecheckTokenAllowance] =
+        useState<boolean>(false);
+    const [recheckTokenBalances, setRecheckTokenBalances] =
+        useState<boolean>(false);
 
     const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
     const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
@@ -158,7 +171,8 @@ export default function Portfolio(props: propsIF) {
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
         const tokenAddress = token.address;
-        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+        const key =
+            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
         const tokenName = tokensOnActiveLists.get(key)?.name;
         const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
         newToken.name = tokenName ?? '';
@@ -185,22 +199,26 @@ export default function Portfolio(props: propsIF) {
         if (recheckTokenBalances) {
             (async () => {
                 if (connectedAccount) {
-                    const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
-                        connectedAccount,
-                        chainData.chainId,
-                        lastBlockNumber,
-                        crocEnv,
-                    );
+                    const newNativeToken: TokenIF =
+                        await cachedFetchNativeTokenBalance(
+                            connectedAccount,
+                            chainData.chainId,
+                            lastBlockNumber,
+                            crocEnv,
+                        );
 
                     dispatch(setNativeToken(newNativeToken));
 
-                    const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
-                        connectedAccount,
-                        chainData.chainId,
-                        lastBlockNumber,
-                        crocEnv,
+                    const erc20Results: TokenIF[] =
+                        await cachedFetchErc20TokenBalances(
+                            connectedAccount,
+                            chainData.chainId,
+                            lastBlockNumber,
+                            crocEnv,
+                        );
+                    const erc20TokensWithLogos = erc20Results.map((token) =>
+                        addTokenInfo(token),
                     );
-                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
 
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 }
@@ -208,7 +226,13 @@ export default function Portfolio(props: propsIF) {
         }
 
         setRecheckTokenBalances(false);
-    }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
+    }, [
+        crocEnv,
+        selectedToken.address,
+        connectedAccount,
+        lastBlockNumber,
+        recheckTokenBalances,
+    ]);
 
     useEffect(() => {
         (async () => {
@@ -224,25 +248,35 @@ export default function Portfolio(props: propsIF) {
                 setRecheckTokenAllowance(false);
             }
         })();
-    }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
+    }, [
+        crocEnv,
+        selectedTokenAddress,
+        lastBlockNumber,
+        connectedAccount,
+        recheckTokenAllowance,
+    ]);
 
     const { address: addressFromParams } = useParams();
 
     const isAddressEns = addressFromParams?.endsWith('.eth');
-    const isAddressHex = addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
+    const isAddressHex =
+        addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
-    if (addressFromParams && !isAddressEns && !isAddressHex) return <NotFound />;
+    if (addressFromParams && !isAddressEns && !isAddressHex)
+        return <NotFound />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
     const connectedAccountActive =
-        !addressFromParams || resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
+        !addressFromParams ||
+        resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
 
     useEffect(() => {
         (async () => {
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
+                    const newResolvedAddress =
+                        await mainnetProvider.resolveName(addressFromParams);
                     if (newResolvedAddress) {
                         setResolvedAddress(newResolvedAddress);
                         dispatch(setResolvedAddressRedux(newResolvedAddress));
@@ -296,7 +330,8 @@ export default function Portfolio(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
+        useModal(modalCloseCustom);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -326,7 +361,9 @@ export default function Portfolio(props: propsIF) {
     );
 
     useEffect(() => {
-        !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
+        !connectedAccountActive
+            ? setFullLayoutActive(true)
+            : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
     const fullLayerToggle = (
@@ -357,17 +394,25 @@ export default function Portfolio(props: propsIF) {
         </div>
     );
 
-    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
+    const connectedUserNativeToken = useAppSelector(
+        (state) => state.userData.tokens.nativeToken,
+    );
+    const connectedUserErc20Tokens = useAppSelector(
+        (state) => state.userData.tokens.erc20Tokens,
+    );
 
-    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
+    const connectedUserTokens = [connectedUserNativeToken].concat(
+        connectedUserErc20Tokens,
+    );
 
-    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
-        TokenIF | undefined
-    >();
-    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] = useState<TokenIF[]>([]);
+    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
+        useState<TokenIF | undefined>();
+    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] =
+        useState<TokenIF[]>([]);
 
-    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(resolvedAddressErc20Tokens);
+    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(
+        resolvedAddressErc20Tokens,
+    );
 
     useEffect(() => {
         (async () => {
@@ -407,15 +452,20 @@ export default function Portfolio(props: propsIF) {
                     );
 
                     erc20Results.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = resolvedAddressErc20Tokens.findIndex(
-                            (existingToken) => existingToken.address === newToken.address,
-                        );
+                        const indexOfExistingToken =
+                            resolvedAddressErc20Tokens.findIndex(
+                                (existingToken) =>
+                                    existingToken.address === newToken.address,
+                            );
 
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
                         } else if (
-                            JSON.stringify(resolvedAddressErc20Tokens[indexOfExistingToken]) !==
-                            JSON.stringify(newToken)
+                            JSON.stringify(
+                                resolvedAddressErc20Tokens[
+                                    indexOfExistingToken
+                                ],
+                            ) !== JSON.stringify(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
@@ -426,11 +476,18 @@ export default function Portfolio(props: propsIF) {
                 }
             }
         })();
-    }, [crocEnv, resolvedAddress, chainData.chainId, lastBlockNumber, connectedAccountActive]);
+    }, [
+        crocEnv,
+        resolvedAddress,
+        chainData.chainId,
+        lastBlockNumber,
+        connectedAccountActive,
+    ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
+        useState(true);
 
     const handleInputClear = () => {
         setInput('');
@@ -447,7 +504,9 @@ export default function Portfolio(props: propsIF) {
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
             <button
-                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                onClick={() =>
+                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                }
                 className={
                     showTabsAndNotExchange
                         ? styles.non_active_button_mobile_toggle
@@ -457,7 +516,9 @@ export default function Portfolio(props: propsIF) {
                 Transactions
             </button>
             <button
-                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                onClick={() =>
+                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                }
                 className={
                     showTabsAndNotExchange
                         ? styles.active_button_mobile_toggle
@@ -472,7 +533,11 @@ export default function Portfolio(props: propsIF) {
     const notConnectedContent = (
         <div className={styles.non_connected_content}>
             <p>Please connect your wallet.</p>
-            <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+            <Button
+                flat
+                title='Connect Wallet'
+                action={() => openModalWallet()}
+            />
         </div>
     );
 
@@ -515,7 +580,8 @@ export default function Portfolio(props: propsIF) {
         fullLayoutToggle: fullLayerToggle,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs
+        dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     const soloTokenSelectProps = {
@@ -542,7 +608,11 @@ export default function Portfolio(props: propsIF) {
     };
 
     const portfolioBannerProps = {
-        ensName: connectedAccountActive ? ensName ?? '' : secondaryEnsName ? secondaryEnsName : '',
+        ensName: connectedAccountActive
+            ? ensName ?? ''
+            : secondaryEnsName
+            ? secondaryEnsName
+            : '',
         resolvedAddress: resolvedAddress,
         activeAccount: address ?? connectedAccount ?? '',
         imageData: connectedAccountActive ? userImageData : secondaryImageData,
@@ -588,7 +658,9 @@ export default function Portfolio(props: propsIF) {
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {userAccount && showProfileSettings && <ProfileSettings {...profileSettingsProps} />}
+            {userAccount && showProfileSettings && (
+                <ProfileSettings {...profileSettingsProps} />
+            )}
             <PortfolioBanner {...portfolioBannerProps} />
 
             <div

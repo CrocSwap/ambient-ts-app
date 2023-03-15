@@ -3208,6 +3208,11 @@ export default function App() {
                                     }}
                                     setChartTriggeredBy={setChartTriggeredBy}
                                     chartTriggeredBy={chartTriggeredBy}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
+                                    }}
                                 />
                             }
                         >
@@ -3558,6 +3563,11 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
+                                    }}
                                 />
                             }
                         />
@@ -3636,6 +3646,11 @@ export default function App() {
                                         swap: dexBalPrefSwap,
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
+                                    }}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
                                     }}
                                 />
                             }
@@ -3740,6 +3755,11 @@ export default function App() {
                                         swap: dexBalPrefSwap,
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
+                                    }}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
                                     }}
                                 />
                             }
