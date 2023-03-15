@@ -7,15 +7,15 @@ export interface tosIF {
     viewAt: string;
     cid: string;
     acceptedOn?: string | Date;
-};
+}
 
 // exportable interface for methods to interact with Terms of Service
 // this is the object returned by this hook
 export interface tosMethodsIF {
-    isAgreed: boolean,
-    tos: tosIF,
-    lastAgreement: tosIF | undefined,
-    acceptToS: () => void,
+    isAgreed: boolean;
+    tos: tosIF;
+    lastAgreement: tosIF | undefined;
+    acceptToS: () => void;
 }
 
 // central react hook in this file
@@ -44,11 +44,11 @@ export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF =
 
     // hook to memoize most recent user agreement data in local state
     // will be `undefined` if user has not yet agreed
-    const [agreement, setAgreement] = useState<tosIF|undefined>(getLastAgreement());
+    const [agreement, setAgreement] = useState<tosIF | undefined>(getLastAgreement());
 
     // fn to accept terms of service to be called on demand
     const acceptToS = () => {
-        const newAgreement = {...tos, acceptedOn: new Date().toISOString()};
+        const newAgreement = { ...tos, acceptedOn: new Date().toISOString() };
         setAgreement(newAgreement);
         localStorage.setItem(localStorageSlug, JSON.stringify(newAgreement));
     };
@@ -62,6 +62,6 @@ export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF =
         isAgreed: tos.cid === agreement?.cid,
         tos: tos,
         lastAgreement: agreement,
-        acceptToS
+        acceptToS,
     };
 };

@@ -52,8 +52,6 @@ interface ChartData {
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
-    pinnedMinPriceDisplayTruncated: number | undefined;
-    pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
     poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
@@ -84,13 +82,17 @@ interface ChartData {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
+    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
     rescaleRangeBoundariesWithSlider: boolean;
-    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    setRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
+    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 export interface ChartUtils {
@@ -126,13 +128,18 @@ export default function TradeCandleStickChart(props: ChartData) {
         setFetchingCandle,
         minPrice,
         maxPrice,
+        setMaxPrice,
+        setMinPrice,
         rescaleRangeBoundariesWithSlider,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
+        poolPriceDisplay,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -301,11 +308,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
-        if (
-            props.liquidityData &&
-            props.poolPriceDisplay !== undefined &&
-            props.poolPriceDisplay > 0
-        ) {
+        if (props.liquidityData && poolPriceDisplay !== undefined && poolPriceDisplay > 0) {
             console.log('parsing liquidity data');
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
@@ -330,7 +333,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             const limitBoundary = parseFloat(rangeBoundary.pinnedMaxPriceDisplay);
 
-            const barThreshold = props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
+            const barThreshold = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
             const domainLeft = Math.min(
                 ...props.liquidityData.ranges.map((o: any) => {
@@ -604,10 +607,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             setIsLoading(true);
             return undefined;
         }
-    }, [
-        props.liquidityData && JSON.stringify(props.liquidityData?.ranges),
-        props.poolPriceDisplay,
-    ]);
+    }, [props.liquidityData && JSON.stringify(props.liquidityData?.ranges), poolPriceDisplay]);
 
     useEffect(() => {
         console.log('resetting scale for chart because timeframe changed');
@@ -745,7 +745,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liquidityDepthScale === undefined ||
                 // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
-                props.poolPriceDisplay === 0 ||
+                poolPriceDisplay === 0 ||
                 liquidityData?.liqAskData.length === 0 ||
                 liquidityData?.liqBidData.length === 0 ||
                 poolPriceNonDisplay === 0 ||
@@ -760,7 +760,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         return () => clearTimeout(timer);
     }, [
         parsedChartData?.chartData.length,
-        props.poolPriceDisplay,
+        poolPriceDisplay,
         poolPriceNonDisplay,
         scaleData === undefined,
         liquidityScale,
@@ -786,8 +786,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         rangeSimpleRangeWidth={props.simpleRangeWidth}
-                        pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
-                        pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         poolPriceDisplay={props.poolPriceDisplay}
                         truncatedPoolPrice={props.truncatedPoolPrice}
                         chartItemStates={props.chartItemStates}
@@ -819,13 +817,17 @@ export default function TradeCandleStickChart(props: ChartData) {
                         handlePulseAnimation={handlePulseAnimation}
                         minPrice={minPrice}
                         maxPrice={maxPrice}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
-                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        setRescaleRangeBoundariesWithSlider={setRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
                         setRangeSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={setRepositionRangeWidth}
                         repositionRangeWidth={repositionRangeWidth}
+                        setChartTriggeredBy={setChartTriggeredBy}
+                        chartTriggeredBy={chartTriggeredBy}
                     />
                 ) : (
                     <>{loading}</>

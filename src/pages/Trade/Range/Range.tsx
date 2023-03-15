@@ -44,15 +44,7 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setPinnedMaxPrice,
-    setPinnedMinPrice,
-    setTargetData,
-    setRangeModuleTriggered,
-    setRangeLowLineTriggered,
-    setRangeHighLineTriggered,
     setIsLinesSwitched,
-    setRescaleRangeBoundaries,
-    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -126,6 +118,14 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
+    minPrice: number;
+    maxPrice: number;
+    rescaleRangeBoundariesWithSlider: boolean;
+    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 export default function Range(props: propsIF) {
@@ -183,6 +183,13 @@ export default function Range(props: propsIF) {
         dexBalancePrefs,
         setSimpleRangeWidth,
         simpleRangeWidth,
+        setMaxPrice,
+        setMinPrice,
+        setRescaleRangeBoundariesWithSlider,
+        minPrice,
+        maxPrice,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -236,8 +243,6 @@ export default function Range(props: propsIF) {
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
 
-    const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
-    const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
     const isLinesSwitched = tradeData.isLinesSwitched;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
@@ -302,9 +307,8 @@ export default function Range(props: propsIF) {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            dispatch(setRangeModuleTriggered(true));
+            // dispatch(setRangeModuleTriggered(true));
             setSimpleRangeWidth(rangeWidthPercentage);
-            dispatch(setRescaleRangeBoundaries(true));
         }
     }, [rangeWidthPercentage]);
 
@@ -399,14 +403,15 @@ export default function Range(props: propsIF) {
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            dispatch(
-                setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
-            );
-            dispatch(
-                setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
-            );
+            // dispatch(
+            //     setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
+            // );
+            // dispatch(
+            //     setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
+            // );
 
-            dispatch(setRangeModuleTriggered(true));
+            setMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated));
+            setMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated));
         }
     }, [
         rangeWidthPercentage,
@@ -570,19 +575,6 @@ export default function Range(props: propsIF) {
             setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
             setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
 
-            const newTargetData: targetData[] = [
-                {
-                    name: 'Max',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay),
-                },
-                {
-                    name: 'Min',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay),
-                },
-            ];
-
-            dispatch(setTargetData(newTargetData));
-
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
@@ -622,13 +614,16 @@ export default function Range(props: propsIF) {
                 }
             }
 
-            dispatch(
-                setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
-            );
-            dispatch(
-                setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
-            );
-            dispatch(setRangeModuleTriggered(true));
+            // dispatch(
+            //     setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
+            // );
+            // dispatch(
+            //     setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
+            // );
+            setMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated));
+            setMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated));
+
+            // dispatch(setRangeModuleTriggered(true));
         }
     }, [
         currentPoolPriceTick,
@@ -641,18 +636,13 @@ export default function Range(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (rangeLowBoundFieldBlurred || rangeLowLineTriggered) {
+        if (rangeLowBoundFieldBlurred || chartTriggeredBy === 'low_line') {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMinValue = tradeData.targetData.filter(
-                (target: any) => target.name === 'Min',
-            )[0].value;
-
-            const targetMaxValue = tradeData.targetData.filter(
-                (target: any) => target.name === 'Max',
-            )[0].value;
+            const targetMinValue = minPrice;
+            const targetMaxValue = maxPrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
@@ -671,9 +661,13 @@ export default function Range(props: propsIF) {
                 ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
                 : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
+            // !denominationsInBase
+            //     ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
+            //     : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
+
             !denominationsInBase
-                ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
-                : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
+                ? setMinPrice(pinnedDisplayPrices.pinnedLowTick)
+                : setMaxPrice(pinnedDisplayPrices.pinnedHighTick);
 
             if (isLinesSwitched) {
                 denominationsInBase
@@ -709,25 +703,19 @@ export default function Range(props: propsIF) {
             }
 
             setRangeLowBoundFieldBlurred(false);
-            dispatch(setRangeLowLineTriggered(false));
-            dispatch(setRangeModuleTriggered(true));
+            setChartTriggeredBy('none');
             dispatch(setIsLinesSwitched(false));
         }
-    }, [rangeLowBoundFieldBlurred, JSON.stringify(rangeLowLineTriggered)]);
+    }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
 
     useEffect(() => {
-        if (rangeHighBoundFieldBlurred || rangeHighLineTriggered) {
+        if (rangeHighBoundFieldBlurred || chartTriggeredBy === 'high_line') {
             const rangeHighBoundDisplayField = document.getElementById(
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMaxValue = tradeData.targetData.filter(
-                (target: any) => target.name === 'Max',
-            )[0].value;
-
-            const targetMinValue = tradeData.targetData.filter(
-                (target: any) => target.name === 'Min',
-            )[0].value;
+            const targetMaxValue = maxPrice;
+            const targetMinValue = minPrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
@@ -777,11 +765,10 @@ export default function Range(props: propsIF) {
             }
 
             setRangeHighBoundFieldBlurred(false);
-            dispatch(setRangeHighLineTriggered(false));
-            dispatch(setRangeModuleTriggered(true));
+            setChartTriggeredBy('none');
             dispatch(setIsLinesSwitched(false));
         }
-    }, [rangeHighBoundFieldBlurred, JSON.stringify(rangeHighLineTriggered)]);
+    }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
     const depositSkew = useMemo(
         () =>
@@ -1164,6 +1151,7 @@ export default function Range(props: propsIF) {
         setRangeWidthPercentage: setRangeWidthPercentage,
         isRangeCopied: isRangeCopied,
         openGlobalPopup: openGlobalPopup,
+        setRescaleRangeBoundariesWithSlider: setRescaleRangeBoundariesWithSlider,
     };
     // props for <RangeExtraInfo/> React element
 
@@ -1226,7 +1214,10 @@ export default function Range(props: propsIF) {
                     // setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange || !poolExists}
                     chainId={chainId.toString()}
-                    targetData={tradeData.targetData}
+                    maxPrice={maxPrice}
+                    minPrice={minPrice}
+                    setMaxPrice={setMaxPrice}
+                    setMinPrice={setMinPrice}
                     isRangeCopied={isRangeCopied}
                 />
             </motion.div>
