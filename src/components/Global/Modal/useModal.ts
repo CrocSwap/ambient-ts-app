@@ -2,12 +2,8 @@ import { useState } from 'react';
 
 export const useModal = (
     modalCloseCustom?: () => void,
-    initialMode = false
-): [
-    boolean,
-    () => void,
-    () => void
-] => {
+    initialMode = false,
+): [boolean, () => void, () => void] => {
     // create a useState hook to track if the modal should be rendered
     const [isModalOpen, setIsModalOpen] = useState<boolean>(initialMode);
 

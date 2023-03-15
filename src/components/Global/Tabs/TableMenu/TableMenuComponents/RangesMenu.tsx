@@ -93,6 +93,7 @@ export default function RangesMenu(props: propsIF) {
     const handleModalClose = () => {
         closeRemoveRangeModal();
         setShowDropdownMenu(false);
+        console.log('clicked');
     };
 
     const removeRangeModalOrNull = isRemoveRangeModalOpen ? (
