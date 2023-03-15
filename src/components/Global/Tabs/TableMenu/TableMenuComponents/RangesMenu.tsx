@@ -21,7 +21,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setRangeModuleTriggered,
 } from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
@@ -128,8 +127,6 @@ export default function RangesMenu(props: propsIF) {
             dispatch(setAdvancedMode(true));
         }
         setShowDropdownMenu(false);
-
-        dispatch(setRangeModuleTriggered(true));
     };
 
     // -----------------SNACKBAR----------------

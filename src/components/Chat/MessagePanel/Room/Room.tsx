@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { targetData } from '../../../../utils/state/tradeDataSlice';
 import { RiArrowDownSLine } from 'react-icons/ri';
 // import { BsSuitHeartFill } from 'react-icons/bs';
 import { useState, useEffect } from 'react';
@@ -27,7 +26,6 @@ interface currentPoolInfo {
     advancedHighTick: number;
     slippageTolerance: number;
     activeChartPeriod: number;
-    targetData: targetData[];
 }
 
 interface propsIF {

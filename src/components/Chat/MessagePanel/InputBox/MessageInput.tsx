@@ -9,7 +9,6 @@ import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
@@ -36,7 +35,6 @@ interface currentPoolInfo {
     advancedHighTick: number;
     slippageTolerance: number;
     activeChartPeriod: number;
-    targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
 }

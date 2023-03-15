@@ -377,7 +377,7 @@ export default function App() {
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
     const [repositionRangeWidth, setRepositionRangeWidth] = useState<number>(10);
-    const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
+    const [rescaleRangeBoundariesWithSlider, setRescaleRangeBoundariesWithSlider] =
         useState<boolean>(false);
 
     // custom hook to manage chain the app is using
@@ -2378,7 +2378,7 @@ export default function App() {
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
         isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode
+        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2441,8 +2441,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Swap/> React element on trade route
@@ -2497,8 +2497,8 @@ export default function App() {
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
-            range: dexBalPrefRange
-        }
+            range: dexBalPrefRange,
+        },
     };
 
     // props for <Limit/> React element on trade route
@@ -2624,6 +2624,12 @@ export default function App() {
         setIsTutorialMode: setIsTutorialMode,
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
+        setMaxPrice: setMaxRangePrice,
+        setMinPrice: setMinRangePrice,
+        minPrice: minRangePrice,
+        maxPrice: maxRangePrice,
+        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider: setRescaleRangeBoundariesWithSlider,
     };
 
     function toggleSidebar() {
@@ -2883,11 +2889,13 @@ export default function App() {
                                     setIsCandleDataNull={setIsCandleDataNull}
                                     minPrice={minRangePrice}
                                     maxPrice={maxRangePrice}
+                                    setMaxPrice={setMaxRangePrice}
+                                    setMinPrice={setMinRangePrice}
                                     rescaleRangeBoundariesWithSlider={
                                         rescaleRangeBoundariesWithSlider
                                     }
-                                    seRescaleRangeBoundariesWithSlider={
-                                        seRescaleRangeBoundariesWithSlider
+                                    setRescaleRangeBoundariesWithSlider={
+                                        setRescaleRangeBoundariesWithSlider
                                     }
                                     isTutorialMode={isTutorialMode}
                                     setIsTutorialMode={setIsTutorialMode}
@@ -2938,8 +2946,8 @@ export default function App() {
                                         toggleBypassConfirm={updateBypassConfirm}
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
-                                        seRescaleRangeBoundariesWithSlider={
-                                            seRescaleRangeBoundariesWithSlider
+                                        setRescaleRangeBoundariesWithSlider={
+                                            setRescaleRangeBoundariesWithSlider
                                         }
                                         poolPriceDisplay={poolPriceDisplay}
                                         setSimpleRangeWidth={setRepositionRangeWidth}

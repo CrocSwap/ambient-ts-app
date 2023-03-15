@@ -57,8 +57,6 @@ interface propsIF {
     liquidityData: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
-    pinnedMinPriceDisplayTruncated: number | undefined;
-    pinnedMaxPriceDisplayTruncated: number | undefined;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -84,8 +82,10 @@ interface propsIF {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
     rescaleRangeBoundariesWithSlider: boolean;
-    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    setRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
 
     isTutorialMode: boolean;
@@ -175,8 +175,10 @@ export default function TradeCharts(props: propsIF) {
         setFetchingCandle,
         minPrice,
         maxPrice,
+        setMaxPrice,
+        setMinPrice,
         rescaleRangeBoundariesWithSlider,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
@@ -562,8 +564,6 @@ export default function TradeCharts(props: propsIF) {
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}
-                        pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
-                        pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         poolPriceDisplay={poolPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
@@ -594,8 +594,10 @@ export default function TradeCharts(props: propsIF) {
                         setFetchingCandle={setFetchingCandle}
                         minPrice={minPrice}
                         maxPrice={maxPrice}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
-                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        setRescaleRangeBoundariesWithSlider={setRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
                         setSimpleRangeWidth={setSimpleRangeWidth}

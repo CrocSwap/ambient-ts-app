@@ -7,7 +7,6 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { targetData } from '../../utils/state/tradeDataSlice';
 import { TbTableExport } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
@@ -36,7 +35,6 @@ interface currentPoolInfo {
     advancedHighTick: number;
     slippageTolerance: number;
     activeChartPeriod: number;
-    targetData: targetData[];
 }
 
 interface propsIF {
