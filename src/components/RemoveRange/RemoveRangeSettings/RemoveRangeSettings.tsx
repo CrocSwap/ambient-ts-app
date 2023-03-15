@@ -13,8 +13,12 @@ export default function RemoveRangeSettings(props: propsIF) {
     const preset2 = 0.3;
     const preset3 = 0.5;
 
+    // this layer is necessary to make the `<input />` responsive to change
+    // future Emily this is past Emily yes you're going to hate this
+    // ... implementation but please trust me it really is necessary
     const [slip, setSlip] = useState<number>(persistedSlippage);
 
+    // update local in-flile slippage in parallel with slippage in parent
     const takeNewSlippage = (val: number): void => {
         setSlip(val);
         setCurrentSlippage(val);

@@ -87,7 +87,7 @@ export default function RemoveRange(props: propsIF) {
         (state) => state.graphData,
     ).lastBlock;
 
-    const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
     const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
         useState<number | undefined>();
@@ -179,7 +179,6 @@ export default function RemoveRange(props: propsIF) {
             position.positionType
         ) {
             (async () => {
-                // console.log('fetching details');
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
@@ -487,7 +486,7 @@ export default function RemoveRange(props: propsIF) {
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const etherscanLink =
+    const etherscanLink: string =
         chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
     const removalSuccess = (
@@ -528,7 +527,7 @@ export default function RemoveRange(props: propsIF) {
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    function handleConfirmationChange() {
+    function handleConfirmationChange(): void {
         setCurrentConfirmationData(removalPending);
 
         if (transactionApproved) {
