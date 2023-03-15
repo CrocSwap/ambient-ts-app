@@ -4,7 +4,13 @@ import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 
 import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
+import {
+    useState,
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+} from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -62,10 +68,16 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    getRecentTokens: (
+        options?: getRecentTokensParamsIF | undefined,
+    ) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -137,7 +149,9 @@ export default function CurrencySelector(props: propsIF) {
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
-    const thisToken = isSellTokenSelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = isSellTokenSelector
+        ? tokenPair.dataTokenA
+        : tokenPair.dataTokenB;
 
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
@@ -157,21 +171,33 @@ export default function CurrencySelector(props: propsIF) {
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
             {isSellTokenSelector ? (
-                <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
+                <IconWithTooltip
+                    title='Use Exchange Balance'
+                    placement='bottom'
+                >
                     <Toggle2
                         isOn={isWithdrawFromDexChecked}
-                        handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+                        handleToggle={() =>
+                            setIsWithdrawFromDexChecked(
+                                !isWithdrawFromDexChecked,
+                            )
+                        }
                         id='sell_token_withdrawal'
                         disabled={false}
                         // disabled={isWithdrawFromDexDisabled}
                     />
                 </IconWithTooltip>
             ) : (
-                <IconWithTooltip title='Save to Exchange Balance' placement='bottom'>
+                <IconWithTooltip
+                    title='Save to Exchange Balance'
+                    placement='bottom'
+                >
                     <Toggle2
                         isOn={isSaveAsDexSurplusChecked}
                         handleToggle={() =>
-                            setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)
+                            setIsSaveAsDexSurplusChecked(
+                                !isSaveAsDexSurplusChecked,
+                            )
                         }
                         id='buy_token_withdrawal'
                     />
@@ -183,7 +209,10 @@ export default function CurrencySelector(props: propsIF) {
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
             ? isSellTokenEth
-                ? (parseFloat(tokenABalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
+                ? (
+                      parseFloat(tokenABalance) -
+                      gasPriceInGwei * 400000 * 1e-9
+                  ).toFixed(18)
                 : tokenABalance
             : ''
         : tokenBBalance
@@ -204,12 +233,17 @@ export default function CurrencySelector(props: propsIF) {
           })
         : '...';
 
-    const surplusBalanceNonLocaleString = props.sellToken ? tokenADexBalance : tokenBDexBalance;
+    const surplusBalanceNonLocaleString = props.sellToken
+        ? tokenADexBalance
+        : tokenBDexBalance;
 
     const surplusBalanceNonLocaleStringOffset = props.sellToken
         ? tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
-                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
+                ? (
+                      parseFloat(tokenADexBalance) -
+                      gasPriceInGwei * 400000 * 1e-9
+                  ).toFixed(18)
                 : tokenADexBalance
             : ''
         : tokenBDexBalance
@@ -328,7 +362,7 @@ export default function CurrencySelector(props: propsIF) {
 
     const walletContent = (
         <section
-            className={`${styles.wallet_container}`}
+            className={styles.wallet_container}
             style={{ color: surplusContainerColorStyle }}
         >
             <IconWithTooltip title={'Wallet Balance'} placement='bottom'>
@@ -337,13 +371,20 @@ export default function CurrencySelector(props: propsIF) {
                     onClick={() => handleWalletBalanceClick()}
                 >
                     <div className={styles.wallet_logo}>
-                        <MdAccountBalanceWallet size={20} color={walletLogoColorStyle} />
+                        <MdAccountBalanceWallet
+                            size={20}
+                            color={walletLogoColorStyle}
+                        />
                     </div>
                     <div className={styles.balance_column}>
-                        <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
+                        <div>
+                            {isUserLoggedIn ? walletBalanceLocaleString : ''}
+                        </div>
                         <div
                             style={{
-                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                color: isSellTokenSelector
+                                    ? '#f6385b'
+                                    : '#15be67',
                                 fontSize: '9px',
 
                                 // width: '50px'
@@ -417,9 +458,18 @@ export default function CurrencySelector(props: propsIF) {
 
     const exchangeBalanceTitle = (
         <p
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
             onClick={() =>
-                openGlobalPopup(<ExchangeBalanceExplanation />, 'Exchange Balance', 'right')
+                openGlobalPopup(
+                    <ExchangeBalanceExplanation />,
+                    'Exchange Balance',
+                    'right',
+                )
             }
         >
             Exchange Balance <AiOutlineQuestionCircle size={14} />
@@ -446,15 +496,21 @@ export default function CurrencySelector(props: propsIF) {
                         {isUserLoggedIn && surplusBalanceLocaleString}
                         <div
                             style={{
-                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                color: isSellTokenSelector
+                                    ? '#f6385b'
+                                    : '#15be67',
                                 fontSize: '9px',
                                 // width: '50px'
                             }}
                         >
-                            {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange}
+                            {isSellTokenSelector
+                                ? sellTokenSurplusChange
+                                : buyTokenSurplusChange}
                         </div>
                     </div>
-                    <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
+                    <div
+                        className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}
+                    >
                         <img
                             src={ambientLogo}
                             width='20'
@@ -513,8 +569,10 @@ export default function CurrencySelector(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
+        useModal(modalCloseCustom);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
+        useState(true);
 
     const handleInputClear = (): void => {
         setInput('');
@@ -540,7 +598,9 @@ export default function CurrencySelector(props: propsIF) {
                     />
                 </div>
                 <div
-                    className={`${styles.token_select} ${isSwapCopied && styles.pulse_animation}`}
+                    className={`${styles.token_select} ${
+                        isSwapCopied && styles.pulse_animation
+                    }`}
                     onClick={openTokenModal}
                     id='swap_token_selector'
                 >
@@ -552,9 +612,14 @@ export default function CurrencySelector(props: propsIF) {
                             width='30px'
                         />
                     ) : (
-                        <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={thisToken.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
-                    <div className={styles.token_list_text}>{thisToken.symbol}</div>
+                    <div className={styles.token_list_text}>
+                        {thisToken.symbol}
+                    </div>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
@@ -580,7 +645,9 @@ export default function CurrencySelector(props: propsIF) {
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={
+                            setShowSoloSelectTokenButtons
+                        }
                         outputTokens={outputTokens}
                         validatedInput={validatedInput}
                         setInput={setInput}

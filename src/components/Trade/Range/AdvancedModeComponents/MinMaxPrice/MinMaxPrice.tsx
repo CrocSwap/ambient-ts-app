@@ -4,7 +4,10 @@ import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
 
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+} from '../../../../../utils/state/tradeDataSlice';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -100,7 +103,8 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const disableInputContent = (
         <div className={styles.disable_text}>
-            Invalid range selected. The min price must be lower than the max price.
+            Invalid range selected. The min price must be lower than the max
+            price.
         </div>
     );
 
@@ -109,7 +113,9 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             const high = maxPrice;
             const low = minPrice;
 
-            setMaxPriceInputString(high !== undefined ? high.toString() : '0.0');
+            setMaxPriceInputString(
+                high !== undefined ? high.toString() : '0.0',
+            );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
 
             // lowBoundOnBlur();
@@ -145,11 +151,17 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Min Price'
                     percentageDifference={minPricePercentage}
                     handleChangeEvent={
-                        !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
+                        !isDenomBase
+                            ? handleMaxPriceChangeEvent
+                            : handleMinPriceChangeEvent
                     }
                     onBlur={lowBoundOnBlur}
-                    increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
-                    decreaseTick={!isDenomBase ? decreaseLowTick : increaseHighTick}
+                    increaseTick={
+                        !isDenomBase ? increaseLowTick : decreaseHighTick
+                    }
+                    decreaseTick={
+                        !isDenomBase ? decreaseLowTick : increaseHighTick
+                    }
                     isRangeCopied={isRangeCopied}
                 />
                 <PriceInput
@@ -157,11 +169,17 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
                     handleChangeEvent={
-                        !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
+                        !isDenomBase
+                            ? handleMinPriceChangeEvent
+                            : handleMaxPriceChangeEvent
                     }
                     onBlur={highBoundOnBlur}
-                    increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}
-                    decreaseTick={!isDenomBase ? decreaseHighTick : increaseLowTick}
+                    increaseTick={
+                        !isDenomBase ? increaseHighTick : decreaseLowTick
+                    }
+                    decreaseTick={
+                        !isDenomBase ? decreaseHighTick : increaseLowTick
+                    }
                     isRangeCopied={isRangeCopied}
                 />
             </div>

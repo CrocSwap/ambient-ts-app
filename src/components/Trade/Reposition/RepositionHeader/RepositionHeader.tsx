@@ -11,6 +11,7 @@ import { VscClose } from 'react-icons/vsc';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { Dispatch, SetStateAction } from 'react';
 
 interface propsIF {
     positionHash: string;
@@ -18,10 +19,20 @@ interface propsIF {
     isPairStable: boolean;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
+    setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 export default function RepositionHeader(props: propsIF) {
-    const { positionHash, repoSlippage, isPairStable, bypassConfirm, toggleBypassConfirm } = props;
+    const {
+        setRangeWidthPercentage,
+        positionHash,
+        repoSlippage,
+        isPairStable,
+        bypassConfirm,
+        toggleBypassConfirm,
+        setSimpleRangeWidth,
+    } = props;
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -33,10 +44,15 @@ export default function RepositionHeader(props: propsIF) {
 
     return (
         <ContentHeader>
-            <div onClick={() => openModal()} style={{ cursor: 'pointer', marginLeft: '10px' }}>
+            <div
+                onClick={() => openModal()}
+                style={{ cursor: 'pointer', marginLeft: '10px' }}
+            >
                 <RiSettings5Line />
             </div>
-            <div className={styles.title}>Reposition: {trimString(positionHash, 4, 4, '…')}</div>
+            <div className={styles.title}>
+                Reposition: {trimString(positionHash, 4, 4, '…')}
+            </div>
 
             {isModalOpen && (
                 <Modal noHeader title='modal' onClose={closeModal}>
@@ -54,6 +70,8 @@ export default function RepositionHeader(props: propsIF) {
             <div
                 onClick={() => {
                     dispatch(setAdvancedMode(false));
+                    setRangeWidthPercentage(10);
+                    setSimpleRangeWidth(10);
                     navigate(exitPath, { replace: true });
                 }}
                 style={{ cursor: 'pointer', marginRight: '10px' }}

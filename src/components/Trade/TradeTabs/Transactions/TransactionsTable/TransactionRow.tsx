@@ -3,11 +3,12 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import {
+    DefaultTooltip,
+    TextOnlyTooltip,
+} from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
-
 import { NavLink, useNavigate } from 'react-router-dom';
-// import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
@@ -145,9 +146,12 @@ export default function TransactionRow(props: propsIF) {
     // const posOrNegativeQuote = !isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
-    const isSellQtyZero = (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
-    const isBuyQtyZero = (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
-    const isOrderRemove = tx.entityType === 'limitOrder' && sideType === 'remove';
+    const isSellQtyZero =
+        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+    const isBuyQtyZero =
+        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+    const isOrderRemove =
+        tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
         baseQuantityDisplayShort === '0.00' ||
@@ -176,17 +180,23 @@ export default function TransactionRow(props: propsIF) {
                 account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
-                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
                 isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
     };
 
     const activeTransactionStyle =
-        tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';
+        tx.id === currentTxActiveInTransactions
+            ? styles.active_transaction_style
+            : '';
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
+        userNameToDisplay === 'You' && isShowAllEnabled
+            ? styles.border_left
+            : null;
 
     const usernameStyle =
         isOwnerActiveAccount && isShowAllEnabled
@@ -195,12 +205,17 @@ export default function TransactionRow(props: propsIF) {
             ? 'gradient_text'
             : 'base_color';
 
-    const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
+    const txDomId =
+        tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
     function scrollToDiv() {
         const element = document.getElementById(txDomId);
 
-        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest',
+        });
     }
 
     const activePositionRef = useRef(null);
@@ -311,7 +326,13 @@ export default function TransactionRow(props: propsIF) {
                                 }),
                             );
                         }}
-                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
                     >
                         {'View Account' + 'ㅤ'}
                         <FiExternalLink size={'12px'} />
@@ -330,7 +351,15 @@ export default function TransactionRow(props: propsIF) {
                             loadingStatus: true,
                         }),
                     );
-                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                    navigate(
+                        `/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`,
+                    );
                 }}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.hover_style}`}
@@ -349,7 +378,11 @@ export default function TransactionRow(props: propsIF) {
                     <div>
                         <p>
                             {baseTokenSymbol}
-                            {`${baseTokenSymbol === 'ETH' ? '' : ': ' + baseTokenAddress}`}
+                            {`${
+                                baseTokenSymbol === 'ETH'
+                                    ? ''
+                                    : ': ' + baseTokenAddress
+                            }`}
                         </p>
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
@@ -363,8 +396,14 @@ export default function TransactionRow(props: propsIF) {
                 <img src={baseTokenLogo} alt='base token' width={logoSizes} />
             </DefaultTooltip>
         ) : (
-            <IconWithTooltip title={`${baseTokenSymbol}: ${baseTokenAddress}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width={logoSizes} />
+            <IconWithTooltip
+                title={`${baseTokenSymbol}: ${baseTokenAddress}`}
+                placement='bottom'
+            >
+                <NoTokenIcon
+                    tokenInitial={tx.baseSymbol.charAt(0)}
+                    width={logoSizes}
+                />
             </IconWithTooltip>
         );
 
@@ -389,8 +428,14 @@ export default function TransactionRow(props: propsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
             </DefaultTooltip>
         ) : (
-            <IconWithTooltip title={`${quoteTokenSymbol}: ${quoteTokenAddress}`} placement='right'>
-                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width={logoSizes} />
+            <IconWithTooltip
+                title={`${quoteTokenSymbol}: ${quoteTokenAddress}`}
+                placement='right'
+            >
+                <NoTokenIcon
+                    tokenInitial={tx.quoteSymbol.charAt(0)}
+                    width={logoSizes}
+                />
             </IconWithTooltip>
         );
 
@@ -477,7 +522,10 @@ export default function TransactionRow(props: propsIF) {
     // const txTimeInDays = moment(Date.now()).diff(tx.time * 1000, 'days');
     // const txTimeInHours = moment(Date.now()).diff(tx.time * 1000, 'hours');
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(tx.time * 1000, 'seconds');
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+        tx.time * 1000,
+        'seconds',
+    );
 
     // const txTimeDisplay =
     //     txTimeInDays === 0
@@ -635,7 +683,10 @@ export default function TransactionRow(props: propsIF) {
                     title={
                         <div>
                             {isOnPortfolioPage ? (
-                                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
+                                <div
+                                    onClick={handleOpenExplorer}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     {txHash + 'ㅤ'}
                                     {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
                                     <FiExternalLink size={'12px'} />
@@ -676,11 +727,9 @@ export default function TransactionRow(props: propsIF) {
                             handleOpenExplorer();
                         }}
                     >
-                        <p className={`${styles.base_color} ${styles.hover_style}`}>
-                            {txHashTruncated}
-                        </p>{' '}
+                        <p className='base_color'>{txHashTruncated}</p>{' '}
                         <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
+                            className={usernameStyle}
                             style={{ textTransform: 'lowercase' }}
                         >
                             {userNameToDisplay}
@@ -714,7 +763,11 @@ export default function TransactionRow(props: propsIF) {
                             className={`${priceStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
-                                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
+                                <span>
+                                    {truncatedLowDisplayPrice
+                                        ? priceCharacter
+                                        : '…'}
+                                </span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
@@ -722,7 +775,11 @@ export default function TransactionRow(props: propsIF) {
                                 </span>
                             </p>
                             <p className={`${styles.align_right} `}>
-                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
+                                <span>
+                                    {truncatedHighDisplayPrice
+                                        ? priceCharacter
+                                        : '…'}
+                                </span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -737,7 +794,9 @@ export default function TransactionRow(props: propsIF) {
                         onMouseLeave={handleRowMouseOut}
                         onClick={() => {
                             console.log({ isOnPortfolioPage });
-                            console.log({ truncatedDisplayPriceDenomByMoneyness });
+                            console.log({
+                                truncatedDisplayPriceDenomByMoneyness,
+                            });
                             openDetailsModal();
                         }}
                         data-label='price'
@@ -753,13 +812,19 @@ export default function TransactionRow(props: propsIF) {
                                               : '…'}
                                       </span>
                                       <span style={{ fontFamily: 'monospace' }}>
-                                          {truncatedDisplayPriceDenomByMoneyness}
+                                          {
+                                              truncatedDisplayPriceDenomByMoneyness
+                                          }
                                       </span>
                                   </p>
                               ) || '…'
                             : (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{truncatedDisplayPrice ? priceCharacter : '…'}</span>
+                                      <span>
+                                          {truncatedDisplayPrice
+                                              ? priceCharacter
+                                              : '…'}
+                                      </span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPrice}
                                       </span>
@@ -776,7 +841,8 @@ export default function TransactionRow(props: propsIF) {
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
                 >
-                    {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                    {tx.entityType === 'liqchange' ||
+                    tx.entityType === 'limitOrder'
                         ? `${sideType}`
                         : `${sideType} ${sideCharacter}`}
                 </li>
@@ -804,7 +870,8 @@ export default function TransactionRow(props: propsIF) {
                 >
                     <p>{type}</p>
                     <p>
-                        {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                        {tx.entityType === 'liqchange' ||
+                        tx.entityType === 'limitOrder'
                             ? `${sideType}`
                             : `${sideType} ${sideCharacter}`}
                     </p>
@@ -828,7 +895,10 @@ export default function TransactionRow(props: propsIF) {
                 >
                     <div
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {isBuy
                             ? isOrderRemove
@@ -850,7 +920,10 @@ export default function TransactionRow(props: propsIF) {
 
                     <div
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {isBuy
                             ? `${
@@ -887,7 +960,9 @@ export default function TransactionRow(props: propsIF) {
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
-                    isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
                     setSimpleRangeWidth={setSimpleRangeWidth}
                 />
             </li>
