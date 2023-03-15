@@ -297,7 +297,11 @@ export default function RangesMenu(props: propsIF) {
                     title='Remove Position'
                     noHeader
                 >
-                    <RemoveRange position={position} {...rangeDetailsProps} />
+                    <RemoveRange
+                        position={position}
+                        dexBalancePrefs={dexBalancePrefs}
+                        {...rangeDetailsProps}
+                    />
                 </Modal>
             )}
         </div>

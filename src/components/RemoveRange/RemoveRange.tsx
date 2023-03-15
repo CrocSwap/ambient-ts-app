@@ -598,6 +598,7 @@ export default function RemoveRange(props: propsIF) {
             )}
         </div>
     );
+    console.log(dexBalancePrefs);
 
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings
