@@ -2,6 +2,7 @@
 import { capitalConcFactor, CrocEnv, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction } from 'react';
+import { FaGasPump } from 'react-icons/fa';
 import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -47,6 +48,7 @@ interface IRepositionPriceInfoProps {
 
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
+    rangeGasPriceinDollars: string | undefined;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -67,6 +69,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
         newQuoteQtyDisplay,
+        rangeGasPriceinDollars,
     } = props;
 
     const baseSymbol = position?.baseSymbol;
@@ -295,6 +298,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             <div className={styles.collateral_container}>
                 {quoteTokenCollateral}
                 {newQuoteTokenCollateral}
+            </div>
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} />
+                {rangeGasPriceinDollars ? rangeGasPriceinDollars : '…'}
             </div>
         </div>
     );
