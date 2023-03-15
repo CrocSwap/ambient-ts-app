@@ -262,27 +262,27 @@ export default function TransactionRow(props: propsIF) {
     );
 
     const usdValueWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={txUsdValueLocaleString}
-            placement={'right-end'}
-            arrow
-            disableHoverListener={true}
-            enterDelay={750}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={txUsdValueLocaleString}
+        //     placement={'right-end'}
+        //     arrow
+        //     disableHoverListener={true}
+        //     enterDelay={750}
+        //     leaveDelay={0}
+        // >
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={openDetailsModal}
+            data-label='value'
+            className='base_color'
+            // className='gradient_text'
+            style={{ textAlign: 'right', fontFamily: 'monospace' }}
         >
-            <li
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-                onClick={openDetailsModal}
-                data-label='value'
-                className='base_color'
-                // className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {usdValue}
-            </li>
-        </DefaultTooltip>
+            {usdValue}
+        </li>
+        // </DefaultTooltip>
     );
 
     const navigate = useNavigate();

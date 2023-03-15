@@ -272,27 +272,27 @@ export default function RangesRow(props: propsIF) {
     );
 
     const ValueWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={'$' + usdValueLocaleString}
-            placement={'right'}
-            arrow
-            enterDelay={750}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={'$' + usdValueLocaleString}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={750}
+        //     leaveDelay={0}
+        // >
+        <li
+            onClick={openDetailsModal}
+            data-label='value'
+            className='base_color'
+            // className='gradient_text'
+            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='base_color'
-                // className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                {' '}
-                {'$' + usdValue}
-            </li>
-        </DefaultTooltip>
+            {' '}
+            {'$' + usdValue}
+        </li>
+        // </DefaultTooltip>
     );
 
     const navigate = useNavigate();
