@@ -21,7 +21,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setRangeModuleTriggered,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
@@ -141,8 +140,6 @@ export default function RangesMenu(props: propsIF) {
             dispatch(setAdvancedMode(true));
         }
         setShowDropdownMenu(false);
-
-        dispatch(setRangeModuleTriggered(true));
     };
 
     // -----------------SNACKBAR----------------

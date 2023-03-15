@@ -3,8 +3,6 @@ import { Dispatch, SetStateAction } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setRescaleRangeBoundaries } from '../../../../utils/state/tradeDataSlice';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
@@ -15,6 +13,7 @@ interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     isRangeCopied: boolean;
+    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -24,9 +23,13 @@ interface RangeWidthPropsIF {
 
 // React functional component
 export default function RangeWidth(props: RangeWidthPropsIF) {
-    const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied, openGlobalPopup } = props;
-
-    const dispatch = useAppDispatch();
+    const {
+        rangeWidthPercentage,
+        setRangeWidthPercentage,
+        isRangeCopied,
+        openGlobalPopup,
+        setRescaleRangeBoundariesWithSlider,
+    } = props;
 
     const PercentageOptionContent = (
         <>
@@ -39,7 +42,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton((1 / 20) * 100, setRangeWidthPercentage);
-                        dispatch(setRescaleRangeBoundaries(true));
+                        setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
                     5%
@@ -48,7 +51,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
-                        dispatch(setRescaleRangeBoundaries(true));
+                        setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
                     10%
@@ -57,7 +60,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton((1 / 4) * 100, setRangeWidthPercentage);
-                        dispatch(setRescaleRangeBoundaries(true));
+                        setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
                     25%
@@ -66,7 +69,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton((1 / 2) * 100, setRangeWidthPercentage);
-                        dispatch(setRescaleRangeBoundaries(true));
+                        setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
                     50%
@@ -76,7 +79,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton(100, setRangeWidthPercentage);
-                        dispatch(setRescaleRangeBoundaries(true));
+                        setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
                     Ambient
@@ -136,7 +139,9 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
-                        onClick={() => dispatch(setRescaleRangeBoundaries(true))}
+                        onClick={() => {
+                            setRescaleRangeBoundariesWithSlider(true);
+                        }}
                     />
                 </div>
 

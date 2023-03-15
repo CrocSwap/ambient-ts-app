@@ -382,12 +382,15 @@ export default function App() {
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+
+    // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
     const [repositionRangeWidth, setRepositionRangeWidth] = useState<number>(10);
-    const [rescaleRangeBoundariesWithSlider, seRescaleRangeBoundariesWithSlider] =
+    const [rescaleRangeBoundariesWithSlider, setRescaleRangeBoundariesWithSlider] =
         useState<boolean>(false);
+    const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -2632,6 +2635,14 @@ export default function App() {
         },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
+        setMaxPrice: setMaxRangePrice,
+        setMinPrice: setMinRangePrice,
+        setChartTriggeredBy: setChartTriggeredBy,
+        chartTriggeredBy: chartTriggeredBy,
+        minPrice: minRangePrice,
+        maxPrice: maxRangePrice,
+        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider: setRescaleRangeBoundariesWithSlider,
     };
 
     function toggleSidebar() {
@@ -2892,11 +2903,13 @@ export default function App() {
                                     setIsCandleDataNull={setIsCandleDataNull}
                                     minPrice={minRangePrice}
                                     maxPrice={maxRangePrice}
+                                    setMaxPrice={setMaxRangePrice}
+                                    setMinPrice={setMinRangePrice}
                                     rescaleRangeBoundariesWithSlider={
                                         rescaleRangeBoundariesWithSlider
                                     }
-                                    seRescaleRangeBoundariesWithSlider={
-                                        seRescaleRangeBoundariesWithSlider
+                                    setRescaleRangeBoundariesWithSlider={
+                                        setRescaleRangeBoundariesWithSlider
                                     }
                                     isTutorialMode={isTutorialMode}
                                     setIsTutorialMode={setIsTutorialMode}
@@ -2905,6 +2918,8 @@ export default function App() {
                                     simpleRangeWidth={simpleRangeWidth}
                                     setRepositionRangeWidth={setRepositionRangeWidth}
                                     repositionRangeWidth={repositionRangeWidth}
+                                    setChartTriggeredBy={setChartTriggeredBy}
+                                    chartTriggeredBy={chartTriggeredBy}
                                 />
                             }
                         >
@@ -2947,8 +2962,8 @@ export default function App() {
                                         toggleBypassConfirm={updateBypassConfirm}
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
-                                        seRescaleRangeBoundariesWithSlider={
-                                            seRescaleRangeBoundariesWithSlider
+                                        setRescaleRangeBoundariesWithSlider={
+                                            setRescaleRangeBoundariesWithSlider
                                         }
                                         poolPriceDisplay={poolPriceDisplay}
                                         setSimpleRangeWidth={setRepositionRangeWidth}

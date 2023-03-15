@@ -40,7 +40,7 @@ interface propsIF {
     toggleBypassConfirm: (item: string, pref: boolean) => void;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
-    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
@@ -60,7 +60,7 @@ export default function Reposition(props: propsIF) {
         toggleBypassConfirm,
         setMinPrice,
         setMaxPrice,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
         tokenPair,
         poolPriceDisplay,
         lastBlockNumber,
@@ -505,7 +505,7 @@ export default function Reposition(props: propsIF) {
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                    setRescaleRangeBoundariesWithSlider={setRescaleRangeBoundariesWithSlider}
                 />
                 <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}
