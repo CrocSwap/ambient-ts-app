@@ -135,6 +135,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
+        poolPriceDisplay,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -303,11 +304,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
-        if (
-            props.liquidityData &&
-            props.poolPriceDisplay !== undefined &&
-            props.poolPriceDisplay > 0
-        ) {
+        if (props.liquidityData && poolPriceDisplay !== undefined && poolPriceDisplay > 0) {
             console.log('parsing liquidity data');
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
@@ -332,7 +329,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             const limitBoundary = parseFloat(rangeBoundary.pinnedMaxPriceDisplay);
 
-            const barThreshold = props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
+            const barThreshold = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
             const domainLeft = Math.min(
                 ...props.liquidityData.ranges.map((o: any) => {
@@ -606,10 +603,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             setIsLoading(true);
             return undefined;
         }
-    }, [
-        props.liquidityData && JSON.stringify(props.liquidityData?.ranges),
-        props.poolPriceDisplay,
-    ]);
+    }, [props.liquidityData && JSON.stringify(props.liquidityData?.ranges), poolPriceDisplay]);
 
     useEffect(() => {
         console.log('resetting scale for chart because timeframe changed');
@@ -747,7 +741,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liquidityDepthScale === undefined ||
                 // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
-                props.poolPriceDisplay === 0 ||
+                poolPriceDisplay === 0 ||
                 liquidityData?.liqAskData.length === 0 ||
                 liquidityData?.liqBidData.length === 0 ||
                 poolPriceNonDisplay === 0 ||
@@ -762,7 +756,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         return () => clearTimeout(timer);
     }, [
         parsedChartData?.chartData.length,
-        props.poolPriceDisplay,
+        poolPriceDisplay,
         poolPriceNonDisplay,
         scaleData === undefined,
         liquidityScale,
