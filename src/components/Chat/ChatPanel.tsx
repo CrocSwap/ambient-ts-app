@@ -338,11 +338,14 @@ export default function ChatPanel(props: propsIF) {
             </section>
         </div>
     );
+    const [isChatDisabled, setIsChatDisabled] = useState(false);
 
     const messageList = (
         <div
             ref={messageEnd}
-            className={styles.scrollable_div}
+            className={`${styles.scrollable_div} ${
+                isChatDisabled && styles.scrollable_div_disabled
+            }`}
             onScroll={handleScroll}
             onWheel={handleWheel}
             id='chatmessage'
@@ -379,6 +382,7 @@ export default function ChatPanel(props: propsIF) {
                         />
                     </div>
                 ))}
+            {isChatDisabled && <div className={styles.disabled_overlay} />}
         </div>
     );
 
@@ -498,6 +502,14 @@ export default function ChatPanel(props: propsIF) {
             >
                 <div className={styles.chat_body}>
                     {header}
+                    <span
+                        style={{
+                            width: '20px',
+                            height: '20px',
+                            background: 'var(--dark2)',
+                        }}
+                        onClick={() => setIsChatDisabled(!isChatDisabled)}
+                    ></span>
 
                     <Room
                         favePools={favePools}
