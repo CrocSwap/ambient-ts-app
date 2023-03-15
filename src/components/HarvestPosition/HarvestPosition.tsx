@@ -516,17 +516,7 @@ export default function HarvestPosition(props: propsIF) {
                     quoteRemovalNum={quoteRemovalNum}
                     removalPercentage={removalPercentage}
                 />
-                <HarvestExtraControls
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseRemovalNum={baseRemovalNum}
-                    quoteRemovalNum={quoteRemovalNum}
-                    baseTokenBalance={baseTokenBalance}
-                    quoteTokenBalance={quoteTokenBalance}
-                    baseTokenDexBalance={baseTokenDexBalance}
-                    quoteTokenDexBalance={quoteTokenDexBalance}
-                    dexBalancePrefs={dexBalancePrefs}
-                />
+                <HarvestExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>
         </>
     );
