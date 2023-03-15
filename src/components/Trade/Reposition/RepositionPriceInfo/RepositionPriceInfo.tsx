@@ -5,8 +5,12 @@ import { Dispatch, SetStateAction } from 'react';
 import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import styles from './RepositionPriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -89,6 +93,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
     const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
 
+    const dispatch = useAppDispatch();
+
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
     // const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
@@ -146,7 +152,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const quoteTokenCharacter = position?.quoteSymbol
         ? getUnicodeCharacter(position?.quoteSymbol)
         : '';
-    const poolPriceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+    const poolPriceCharacter = isDenomBase
+        ? quoteTokenCharacter
+        : baseTokenCharacter;
 
     let aprPercentage = ambientApy;
 
@@ -166,9 +174,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
           })}%`
         : '…';
 
-    let daysInRange = 0;
+    let daysInRange = rangeWidthPercentage === 100 ? Infinity : 0;
 
-    if (dailyVol) {
+    if (dailyVol && rangeWidthPercentage !== 100) {
         const poolPrice = tickToPrice(currentPoolPriceTick);
         const lowPrice = tickToPrice(pinnedLowTick);
         const highPrice = tickToPrice(pinnedHighTick);
@@ -184,7 +192,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     }
 
     const daysInRangeString = daysInRange
-        ? `Est. Time in Range | ${formatDaysRange(daysInRange)}`
+        ? daysInRange === Infinity
+            ? 'Est. Time in Range | ∞'
+            : `Est. Time in Range | ${formatDaysRange(daysInRange)}`
         : '…';
 
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
@@ -192,7 +202,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     // JSX frag for estimated APR of position
 
     const apr = <span className={styles.apr}>{aprPercentageString}</span>;
-    const days = <span className={styles.apr}>{daysInRangeString}</span>;
+    const days = (
+        <span className={styles.time_in_range}>{daysInRangeString}</span>
+    );
 
     // JSX frag for lowest price in range
     const minimumPrice = (
@@ -221,25 +233,37 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     // jsx for  Collateral
     const baseTokenCollateral = (
         <div className={styles.collateral_display}>
-            <p className={styles.collateral_title}>Current {baseSymbol} Collateral</p>
-            <p className={styles.collateral_amount}>{currentBaseQtyDisplayTruncated}</p>
+            <p className={styles.collateral_title}>
+                Current {baseSymbol} Collateral
+            </p>
+            <p className={styles.collateral_amount}>
+                {currentBaseQtyDisplayTruncated}
+            </p>
         </div>
     );
     const quoteTokenCollateral = (
         <div className={styles.collateral_display}>
-            <p className={styles.collateral_title}>Current {quoteSymbol} Collateral</p>
-            <p className={styles.collateral_amount}>{currentQuoteQtyDisplayTruncated}</p>
+            <p className={styles.collateral_title}>
+                Current {quoteSymbol} Collateral
+            </p>
+            <p className={styles.collateral_amount}>
+                {currentQuoteQtyDisplayTruncated}
+            </p>
         </div>
     );
     const newBaseTokenCollateral = (
         <div className={styles.collateral_display}>
-            <p className={styles.collateral_title}>{baseSymbol} After Reposition</p>
+            <p className={styles.collateral_title}>
+                {baseSymbol} After Reposition
+            </p>
             <p className={styles.collateral_amount}>{newBaseQtyDisplay}</p>
         </div>
     );
     const newQuoteTokenCollateral = (
         <div className={styles.collateral_display}>
-            <p className={styles.collateral_title}>{quoteSymbol} After Reposition</p>
+            <p className={styles.collateral_title}>
+                {quoteSymbol} After Reposition
+            </p>
             <p className={styles.collateral_amount}>{newQuoteQtyDisplay}</p>
         </div>
     );
@@ -252,7 +276,12 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 {minimumPrice}
                 <div className={styles.price_display}>
                     <h4 className={styles.price_title}>Current Price</h4>
-                    <span className={styles.current_price}>
+                    <span
+                        className={styles.current_price}
+                        onClick={() => {
+                            dispatch(toggleDidUserFlipDenom());
+                        }}
+                    >
                         {poolPriceCharacter}
                         {currentPoolPriceDisplay}
                     </span>
@@ -261,10 +290,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             </div>
             <div className={styles.collateral_container}>
                 {baseTokenCollateral}
-                {quoteTokenCollateral}
+                {newBaseTokenCollateral}
             </div>
             <div className={styles.collateral_container}>
-                {newBaseTokenCollateral}
+                {quoteTokenCollateral}
                 {newQuoteTokenCollateral}
             </div>
         </div>
