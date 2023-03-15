@@ -6,7 +6,12 @@ import {
     useParams,
     Navigate,
 } from 'react-router-dom';
-import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    CrocReposition,
+    RangeLiqPos,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 // import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
@@ -129,6 +134,30 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+
+    const [concLiq, setConcLiq] = useState<string>('');
+
+    const updateConcLiq = async () => {
+        if (
+            !crocEnv ||
+            !position ||
+            !position.positionStorageSlot ||
+            !position.tx
+        )
+            return;
+        const pos = (await crocEnv
+            .positions()
+            .queryPos(
+                position.positionStorageSlot,
+                position.tx,
+            )) as RangeLiqPos;
+        setConcLiq(pos.concLiq.toString());
+        console.log({ pos });
+    };
+
+    useEffect(() => {
+        updateConcLiq();
+    }, [crocEnv]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -260,11 +289,10 @@ export default function Reposition(props: propsIF) {
             return;
         }
         let tx;
-
         try {
             const pool = crocEnv.pool(position.base, position.quote);
             const repo = new CrocReposition(pool, {
-                liquidity: position.positionLiq,
+                liquidity: concLiq,
                 burn: [position.bidTick, position.askTick],
                 mint: [pinnedLowTick, pinnedHighTick],
             });
@@ -520,14 +548,17 @@ export default function Reposition(props: propsIF) {
             isPositionInRange ||
             !crocEnv ||
             !debouncedLowTick ||
-            !debouncedHighTick
+            !debouncedHighTick ||
+            !position.base ||
+            !position.quote ||
+            !concLiq
         ) {
             return;
         }
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
-            liquidity: position.positionLiq,
+            liquidity: concLiq,
             burn: [position.bidTick, position.askTick],
             mint: [debouncedLowTick, debouncedHighTick],
         });
