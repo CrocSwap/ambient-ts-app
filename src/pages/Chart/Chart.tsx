@@ -5961,10 +5961,10 @@ export default function Chart(props: ChartData) {
             <d3fc-group id='d3fc_group' auto-resize>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div className='chart_grid'>
-                        <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
-                        <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasCandle} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasBar} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
