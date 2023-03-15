@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { targetData } from '../../../../utils/state/tradeDataSlice';
 import { RiArrowDownSLine } from 'react-icons/ri';
 // import { BsSuitHeartFill } from 'react-icons/bs';
 import { useState, useEffect } from 'react';
@@ -27,7 +26,6 @@ interface currentPoolInfo {
     advancedHighTick: number;
     slippageTolerance: number;
     activeChartPeriod: number;
-    targetData: targetData[];
 }
 
 interface propsIF {
@@ -58,8 +56,8 @@ export default function RoomDropdown(props: propsIF) {
         setShowCurrentPoolButton,
     } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    const [roomArray, setRoomArray] = useState<string[]>([]);
-    const [favoritePoolsArray, setFavoritePoolsArray] = useState<string[]>([]);
+    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
+    const [roomArray] = useState<PoolIF[]>([]);
     // const [isCurrentPool, setIsCurrentPool] = useState(false);
     // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
@@ -87,18 +85,60 @@ export default function RoomDropdown(props: propsIF) {
         },
     ];
 
+    const rooms = topPools;
+
+    function findSpeed(pool: any) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+            case 'ETH/USDC':
+                return 0 as number;
+            case 'ETH/WBTC':
+                return 5;
+            case 'USDC/DAI':
+                return -2;
+            case 'ETH/DAI':
+                return -2;
+            case 'USDC/WBTC':
+                return -2;
+            case 'WBTC/DAI':
+                return -2;
+            default:
+                return 10;
+        }
+    }
+
+    function findId(pool: any) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+            case 'ETH/USDC':
+                return 1;
+            case 'ETH/WBTC':
+                return 3;
+            case 'USDC/DAI':
+                return 4;
+            case 'ETH/DAI':
+                return 2;
+            case 'USDC/WBTC':
+                return 5;
+            case 'WBTC/DAI':
+                return 6;
+            default:
+                return 10;
+        }
+    }
+
     useEffect(() => {
         props.setUserCurrentPool(
             currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
         );
-        updateUser(props.currentUser as string, props.ensName, props.userCurrentPool).then(
-            (result: any) => {
-                if (result.status === 'OK') {
-                    console.log(result);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                }
-            },
-        );
+        updateUser(
+            props.currentUser as string,
+            props.ensName,
+            props.userCurrentPool,
+        ).then((result: any) => {
+            if (result.status === 'OK') {
+                console.log(result);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            }
+        });
 
         if (props.selectedRoom === props.userCurrentPool) {
             setShowCurrentPoolButton(false);
@@ -114,158 +154,166 @@ export default function RoomDropdown(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const roomArr: string[] = [];
-        const favePoolsArr: string[] = [];
-
+        rooms?.map((pool: PoolIF) => {
+            if (!roomArray.some(({ name }) => name === pool.name)) {
+                roomArray.push(pool);
+            }
+        });
+        const fave:
+            | PoolIF[]
+            | {
+                  name: string;
+                  base: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  quote: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  chainId: string;
+                  poolId: number;
+                  speed: number;
+                  id: number;
+              }[] = [];
         favePools.pools.map((pool: PoolIF) => {
-            favePoolsArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-        });
+            const favPool = {
+                name: pool.base.symbol + '/' + pool.quote.symbol,
+                base: {
+                    name: pool.base.name,
+                    address: pool.base.address,
+                    symbol: pool.base.symbol,
+                    decimals: pool.base.decimals,
+                    chainId: pool.base.chainId,
+                    logoURI: pool.base.logoURI,
+                },
+                quote: {
+                    name: pool.quote.name,
+                    address: pool.quote.address,
+                    symbol: pool.quote.symbol,
+                    decimals: pool.quote.decimals,
+                    chainId: pool.quote.chainId,
+                    logoURI: pool.quote.logoURI,
+                },
+                chainId: pool.chainId,
+                poolId: pool.poolId,
+                speed: findSpeed(pool),
+                id: findId(pool),
+            };
 
-        setFavoritePoolsArray(() => {
-            return favePoolsArr;
-        });
-
-        rooms?.map((pool: PoolIF) => {
-            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-        });
-
-        for (let x = 0; x < roomArr.length; x++) {
-            if (!favePoolsArr.includes(roomArr[x])) {
-                roomArr.push(roomArr.splice(x, 1)[0]);
-            } else {
-                // do nothing
+            if (!roomArray.some(({ name }) => name === favPool.name)) {
+                roomArray.push(favPool);
             }
-        }
 
-        setRoomArray(() => {
-            return roomArr;
-        });
-
-        const middleIndex = Math.ceil(roomArray.length / 2);
-        roomArray.splice(0, middleIndex);
-    }, []);
-
-    const rooms = topPools;
-    const favepools = props.favePools.pools;
-    useEffect(() => {
-        const roomArr: string[] = [];
-        const favePoolsArr: string[] = [];
-
-        favepools?.map((pool: PoolIF) => {
-            favePoolsArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-        });
-
-        setFavoritePoolsArray(() => {
-            return favePoolsArr;
-        });
-
-        rooms?.map((pool: PoolIF) => {
-            roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-        });
-
-        for (let x = 0; x < roomArr.length; x++) {
-            if (!favePoolsArr.includes(roomArr[x])) {
-                roomArr.push(roomArr.splice(x, 1)[0]);
-            } else {
-                // do nothing
-            }
-        }
-
-        setRoomArray(() => {
-            return roomArr;
-        });
-
-        const middleIndex = Math.ceil(roomArray.length / 2);
-        roomArray.splice(0, middleIndex);
-    }, [favepools]);
-
-    useEffect(() => {
-        if (props.selectedRoom === 'Global') {
-            const roomArr: string[] = [];
-            rooms?.map((pool: PoolIF) => {
-                roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-            });
-
-            for (let x = 0; x < roomArr.length; x++) {
-                if (!favoritePoolsArray.includes(roomArr[x])) {
-                    roomArr.push(roomArr.splice(x, 1)[0]);
+            for (let x = 0; x < roomArray.length; x++) {
+                if (favPool.name === roomArray[x].name) {
+                    roomArray.push(roomArray.splice(x, 1)[0]);
                 } else {
                     // do nothing
                 }
             }
+            fave.push(favPool);
+        });
+        setFavoritePoolsArray(() => {
+            return fave;
+        });
+        const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
+        favoritePoolsArray.splice(0, middleIndex);
+    }, [favePools]);
 
-            setRoomArray(() => {
-                return roomArr;
-            });
-        } else {
-            if (isCurrentPool) {
-                const roomArr: string[] = [];
-                rooms.map((pool: PoolIF) => {
-                    roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-                });
-                for (let x = 0; x < roomArr.length; x++) {
-                    if (!favoritePoolsArray.includes(roomArr[x])) {
-                        roomArr.push(roomArr.splice(x, 1)[0]);
-                    } else {
-                        // do nothing
-                    }
-                }
-                setRoomArray(() => {
-                    return roomArr;
-                });
-                const index = roomArr.indexOf(props.selectedRoom);
-                roomArr.splice(index, 1);
-                if (index > -1) {
-                    // only splice array when item is found
+    useEffect(() => {
+        rooms?.map((pool: PoolIF) => {
+            if (!roomArray.some(({ name }) => name === pool.name)) {
+                roomArray.push(pool);
+            }
+        });
+        const fave:
+            | PoolIF[]
+            | {
+                  name: string;
+                  base: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  quote: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  chainId: string;
+                  poolId: number;
+                  speed: number;
+                  id: number;
+              }[] = [];
+        favePools.pools.map((pool: PoolIF) => {
+            const favPool = {
+                name: pool.base.symbol + '/' + pool.quote.symbol,
+                base: {
+                    name: pool.base.name,
+                    address: pool.base.address,
+                    symbol: pool.base.symbol,
+                    decimals: pool.base.decimals,
+                    chainId: pool.base.chainId,
+                    logoURI: pool.base.logoURI,
+                },
+                quote: {
+                    name: pool.quote.name,
+                    address: pool.quote.address,
+                    symbol: pool.quote.symbol,
+                    decimals: pool.quote.decimals,
+                    chainId: pool.quote.chainId,
+                    logoURI: pool.quote.logoURI,
+                },
+                chainId: pool.chainId,
+                poolId: pool.poolId,
+                speed: findSpeed(pool),
+                id: findId(pool),
+            };
 
-                    for (let x = 0; x < roomArr.length; x++) {
-                        if (!favoritePoolsArray.includes(roomArr[x])) {
-                            roomArr.push(roomArr.splice(x, 1)[0]);
-                        } else {
-                            // do nothing
-                        }
-                    }
-
-                    setRoomArray(() => {
-                        return roomArr;
-                    });
-                }
-            } else {
-                const roomArr: string[] = [];
-                rooms.map((pool: PoolIF) => {
-                    roomArr.push(pool.base.symbol + '/' + pool.quote.symbol);
-                });
-
-                for (let x = 0; x < roomArr.length; x++) {
-                    if (!favoritePoolsArray.includes(roomArr[x])) {
-                        roomArr.push(roomArr.splice(x, 1)[0]);
-                    } else {
-                        // do nothing
-                    }
-                }
-
-                setRoomArray(() => {
-                    return roomArr;
-                });
-                const index = roomArr.indexOf(props.selectedRoom);
-                roomArr.splice(index, 1);
-                if (index > -1) {
-                    for (let x = 0; x < roomArr.length; x++) {
-                        if (!favoritePoolsArray.includes(roomArr[x])) {
-                            roomArr.push(roomArr.splice(x, 1)[0]);
-                        } else {
-                            // do nothing
-                        }
-                    }
-
-                    // only splice array when item is found
-                    setRoomArray(() => {
-                        return roomArr;
-                    });
+            if (!roomArray.some(({ name }) => name === favPool.name)) {
+                roomArray.push(favPool);
+            }
+            for (let x = 0; x < roomArray.length; x++) {
+                if (favPool.name === roomArray[x].name) {
+                    roomArray.push(roomArray.splice(x, 1)[0]);
+                } else {
+                    // do nothing
                 }
             }
+            fave.push(favPool);
+        });
+        setFavoritePoolsArray(() => {
+            return fave;
+        });
+        // const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
+        // favoritePoolsArray.splice(0, middleIndex);
+        if (props.selectedRoom === 'Global') {
+            // do nothing
+        } else {
+            const index = roomArray
+                .map((e) => e.name)
+                .indexOf(props.selectedRoom);
+            roomArray.splice(index, 1);
+
+            const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
+            favoritePoolsArray.splice(0, middleIndex);
         }
-    }, [props.selectedRoom, rooms]);
+    }, [props.selectedRoom]);
 
     const [isActive, setIsActive] = useState(false);
 
@@ -297,7 +345,9 @@ export default function RoomDropdown(props: propsIF) {
     }
 
     function handleRoomClickCurrentPool() {
-        props.setRoom(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
+        props.setRoom(
+            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+        );
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);
@@ -320,7 +370,9 @@ export default function RoomDropdown(props: propsIF) {
                         className={styles.dropdown_item}
                         key={defaultRooms[1].id}
                         data-value={defaultRooms[1].value}
-                        onClick={(event: any) => handleRoomClick(event, 'Global')}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, 'Global')
+                        }
                     ></div>
                 );
             } else {
@@ -330,7 +382,9 @@ export default function RoomDropdown(props: propsIF) {
                             className={styles.dropdown_item}
                             key={tab.id}
                             data-value={tab.value}
-                            onClick={(event: any) => handleRoomClick(event, tab.name)}
+                            onClick={(event: any) =>
+                                handleRoomClick(event, tab.name)
+                            }
                         >
                             {tab.name}
                         </div>
@@ -339,7 +393,7 @@ export default function RoomDropdown(props: propsIF) {
             }
         } else {
             if (selectedRoom === 'Global') {
-                if (rooms.length !== 0) {
+                if (roomArray.length !== 0) {
                     return '';
                 }
             } else {
@@ -348,7 +402,9 @@ export default function RoomDropdown(props: propsIF) {
                         className={styles.dropdown_item}
                         key={tab.id}
                         data-value={tab.value}
-                        onClick={(event: any) => handleRoomClick(event, tab.name)}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, tab.name)
+                        }
                     >
                         {tab.name}
                     </div>
@@ -361,8 +417,17 @@ export default function RoomDropdown(props: propsIF) {
 
     return (
         <div className={styles.dropdown}>
-            <div className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}>
-                <div onClick={() => handleDropdownMenu()} style={{ flexGrow: '1' }}>
+            <div
+                className={
+                    isActive
+                        ? styles.dropdown_btn_isActive
+                        : styles.dropdown_btn
+                }
+            >
+                <div
+                    onClick={() => handleDropdownMenu()}
+                    style={{ flexGrow: '1' }}
+                >
                     {props.selectedRoom}
                 </div>
                 {showCurrentPoolButton ? (
@@ -372,7 +437,13 @@ export default function RoomDropdown(props: propsIF) {
                         onMouseOver={handleMouseOver}
                         onMouseOut={handleMouseOut}
                     >
-                        <div className={isHovering ? styles.bgsalmon : styles.current_pool_text}>
+                        <div
+                            className={
+                                isHovering
+                                    ? styles.bgsalmon
+                                    : styles.current_pool_text
+                            }
+                        >
                             Current Pool
                         </div>
                     </div>
@@ -384,7 +455,10 @@ export default function RoomDropdown(props: propsIF) {
                     {handleShowSelectedRoom(props.selectedRoom)}
                 </div>
                 <div onClick={() => handleDropdownMenu()}>
-                    <RiArrowDownSLine className={styles.star_icon} id='room dropdown' />
+                    <RiArrowDownSLine
+                        className={styles.star_icon}
+                        id='room dropdown'
+                    />
                 </div>
             </div>
             {isActive && (
@@ -394,14 +468,25 @@ export default function RoomDropdown(props: propsIF) {
                             <div
                                 className={styles.dropdown_item}
                                 key={i}
-                                data-value={pool}
+                                data-value={pool.name}
                                 data-icon='glyphicon glyphicon-eye-open'
-                                onClick={(event: any) => handleRoomClick(event, pool)}
+                                onClick={(event: any) =>
+                                    handleRoomClick(
+                                        event,
+                                        pool.quote.symbol +
+                                            '/' +
+                                            pool.base.symbol,
+                                    )
+                                }
                             >
-                                {favoritePoolsArray.includes(pool) ? (
+                                {favoritePoolsArray.some(
+                                    ({ name }) => name === pool.name,
+                                ) ? (
                                     <svg
                                         width={smallScrenView ? '15px' : '20px'}
-                                        height={smallScrenView ? '15px' : '20px'}
+                                        height={
+                                            smallScrenView ? '15px' : '20px'
+                                        }
                                         viewBox='0 0 15 15'
                                         fill='none'
                                         xmlns='http://www.w3.org/2000/svg'
@@ -430,7 +515,7 @@ export default function RoomDropdown(props: propsIF) {
                                 ) : (
                                     ''
                                 )}
-                                {pool}
+                                {pool.name}
                             </div>
                         ))}
 

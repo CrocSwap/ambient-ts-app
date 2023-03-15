@@ -167,7 +167,6 @@ import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { termsOfService } from '../utils/data/termsOfService';
 import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import {
@@ -209,8 +208,18 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(termsOfService.wallet);
-    const chatToS: tosMethodsIF = useTermsOfService(termsOfService.chat);
+    const walletToS: tosMethodsIF = useTermsOfService(
+        'wallet',
+        process.env.REACT_APP_WALLET_TOS_CID as string,
+    );
+    const chatToS: tosMethodsIF = useTermsOfService(
+        'chat',
+        process.env.REACT_APP_CHAT_TOS_CID as string,
+    );
+    // this line is just here to make the linter happy
+    // it should be removed when the chatToS line is moved
+    // please and thank you
+    false && chatToS;
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
@@ -392,6 +401,8 @@ export default function App() {
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
+
+    // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
@@ -399,8 +410,9 @@ export default function App() {
         useState<number>(10);
     const [
         rescaleRangeBoundariesWithSlider,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
     ] = useState<boolean>(false);
+    const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -909,7 +921,6 @@ export default function App() {
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
     const [poolExists, setPoolExists] = useState<boolean | undefined>();
-    useEffect(() => console.log({ poolExists }), [poolExists]);
     const tokenPairStringified = useMemo(
         () => JSON.stringify(tokenPair),
         [tokenPair],
@@ -2890,6 +2901,15 @@ export default function App() {
         },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
+        setMaxPrice: setMaxRangePrice,
+        setMinPrice: setMinRangePrice,
+        setChartTriggeredBy: setChartTriggeredBy,
+        chartTriggeredBy: chartTriggeredBy,
+        minPrice: minRangePrice,
+        maxPrice: maxRangePrice,
+        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider:
+            setRescaleRangeBoundariesWithSlider,
     };
 
     function toggleSidebar() {
@@ -3023,7 +3043,8 @@ export default function App() {
         currentLocation !== '/404' &&
         currentLocation !== '/app/chat' &&
         currentLocation !== '/chat' &&
-        !fullScreenChart && <Sidebar {...sidebarProps} />;
+        !fullScreenChart &&
+        isChainSupported && <Sidebar {...sidebarProps} />;
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
@@ -3165,11 +3186,13 @@ export default function App() {
                                     setIsCandleDataNull={setIsCandleDataNull}
                                     minPrice={minRangePrice}
                                     maxPrice={maxRangePrice}
+                                    setMaxPrice={setMaxRangePrice}
+                                    setMinPrice={setMinRangePrice}
                                     rescaleRangeBoundariesWithSlider={
                                         rescaleRangeBoundariesWithSlider
                                     }
-                                    seRescaleRangeBoundariesWithSlider={
-                                        seRescaleRangeBoundariesWithSlider
+                                    setRescaleRangeBoundariesWithSlider={
+                                        setRescaleRangeBoundariesWithSlider
                                     }
                                     isTutorialMode={isTutorialMode}
                                     setIsTutorialMode={setIsTutorialMode}
@@ -3185,6 +3208,8 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
+                                    setChartTriggeredBy={setChartTriggeredBy}
+                                    chartTriggeredBy={chartTriggeredBy}
                                 />
                             }
                         >
@@ -3268,8 +3293,8 @@ export default function App() {
                                         }
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
-                                        seRescaleRangeBoundariesWithSlider={
-                                            seRescaleRangeBoundariesWithSlider
+                                        setRescaleRangeBoundariesWithSlider={
+                                            setRescaleRangeBoundariesWithSlider
                                         }
                                         poolPriceDisplay={poolPriceDisplay}
                                         setSimpleRangeWidth={
@@ -3636,7 +3661,6 @@ export default function App() {
                                     closeSidebar={closeSidebar}
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
-                                    chatToS={chatToS}
                                     chartSettings={chartSettings}
                                 />
                             }

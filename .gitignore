@@ -25,3 +25,6 @@ yarn-error.log*
 /playwright-report/
 /dist-pw/
 /.prettierignore
+# Local Netlify folder
+.netlify
+.vscode/settings.json

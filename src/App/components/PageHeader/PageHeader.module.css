@@ -19,8 +19,15 @@
     pointer-events: none;
     
 } */
+
+.branch{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
 .branch_name{
-    font-size: 10px;
+    font-size: 12px;
     color: orange;
 }
 

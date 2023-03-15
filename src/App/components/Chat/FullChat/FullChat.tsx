@@ -1,7 +1,10 @@
 import styles from './FullChat.module.css';
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
-import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
+import {
+    TbLayoutSidebarLeftCollapse,
+    TbLayoutSidebarLeftExpand,
+} from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
@@ -32,7 +35,14 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     // eslint-disable-next-line
-    const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
+    const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
+    const {
+        messageList,
+        chatNotification,
+        messageInput,
+        userName,
+        userCurrentPool,
+    } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState('Global');
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
@@ -59,10 +69,78 @@ export default function FullChat(props: FullChatPropsIF) {
 
         // handleDropdownMenu();
     }
+
+    // eslint-disable-next-line
+    function findSpeed(pool: any) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+            case 'ETH/USDC':
+                return 0 as number;
+            case 'ETH/WBTC':
+                return 5;
+            case 'USDC/DAI':
+                return -2;
+            case 'ETH/DAI':
+                return -2;
+            case 'USDC/WBTC':
+                return -2;
+            case 'WBTC/DAI':
+                return -2;
+            default:
+                return 10;
+        }
+    }
+
+    // eslint-disable-next-line
+    function findId(pool: any) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+            case 'ETH/USDC':
+                return 1;
+            case 'ETH/WBTC':
+                return 3;
+            case 'USDC/DAI':
+                return 4;
+            case 'ETH/DAI':
+                return 2;
+            case 'USDC/WBTC':
+                return 5;
+            case 'WBTC/DAI':
+                return 6;
+            default:
+                return 10;
+        }
+    }
     useEffect(() => {
         props.favePools.pools.map((pool: PoolIF) => {
+            const favPool = {
+                name: pool.base.symbol + '/' + pool.quote.symbol,
+                base: {
+                    name: pool.base.name,
+                    address: pool.base.address,
+                    symbol: pool.base.symbol,
+                    decimals: pool.base.decimals,
+                    chainId: pool.base.chainId,
+                    logoURI: pool.base.logoURI,
+                },
+                quote: {
+                    name: pool.quote.name,
+                    address: pool.quote.address,
+                    symbol: pool.quote.symbol,
+                    decimals: pool.quote.decimals,
+                    chainId: pool.quote.chainId,
+                    logoURI: pool.quote.logoURI,
+                },
+                chainId: pool.chainId,
+                poolId: pool.poolId,
+                speed: findSpeed(pool),
+                id: findId(pool),
+            };
+
+            if (!topPools.some(({ name }) => name === favPool.name)) {
+                topPools.push(favPool);
+            }
+
             for (let x = 0; x < topPools.length; x++) {
-                if (pool.base.symbol + '/' + pool.quote.symbol === topPools[x].name) {
+                if (favPool.name === topPools[x].name) {
                     topPools.push(topPools.splice(x, 1)[0]);
                 } else {
                     // do nothing
@@ -84,9 +162,11 @@ export default function FullChat(props: FullChatPropsIF) {
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
         const { pool, isDropdown } = props;
 
-        const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
+        const activePoolStyle =
+            pool?.name === readableRoomName ? styles.active_room : '';
         const poolIsCurrentPool = pool.name === userCurrentPool;
-        const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
+        const activePoolIsCurrentPool =
+            poolIsCurrentPool && pool?.name === readableRoomName;
 
         return (
             <div
@@ -121,20 +201,37 @@ export default function FullChat(props: FullChatPropsIF) {
     const sidebarExpandOrCollapseIcon = (
         <div onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}>
             {isChatSidebarOpen ? (
-                <TbLayoutSidebarLeftCollapse size={20} color='var(--text-highlight)' />
+                <TbLayoutSidebarLeftCollapse
+                    size={20}
+                    color='var(--text-highlight)'
+                />
             ) : (
-                <TbLayoutSidebarLeftExpand size={20} color='var(--text-highlight)' />
+                <TbLayoutSidebarLeftExpand
+                    size={20}
+                    color='var(--text-highlight)'
+                />
             )}{' '}
         </div>
     );
 
     const chatOptionData = [
-        { title: 'Settings', icon: <FiSettings size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Settings',
+            icon: <FiSettings size={20} color='var(--text-highlight)' />,
+        },
         {
             title: 'Notification',
-            icon: <IoNotificationsOutline size={20} color='var(--text-highlight)' />,
+            icon: (
+                <IoNotificationsOutline
+                    size={20}
+                    color='var(--text-highlight)'
+                />
+            ),
         },
-        { title: 'Sound', icon: <AiOutlineSound size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Sound',
+            icon: <AiOutlineSound size={20} color='var(--text-highlight)' />,
+        },
     ];
     // eslint-disable-next-line
     const chatOptions = (
@@ -162,13 +259,18 @@ export default function FullChat(props: FullChatPropsIF) {
                 <MdOutlineChat size={20} color='var(--text-grey-light)' />
             </header>
 
-            <div className={styles.option_item} onClick={handleCurrentPoolClick}>
+            <div
+                className={styles.option_item}
+                onClick={handleCurrentPoolClick}
+            >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Current Pool</span>
             </div>
             <div
                 className={styles.option_item}
-                style={{ background: currentRoomIsGlobal ? 'var(--dark3)' : '' }}
+                style={{
+                    background: currentRoomIsGlobal ? 'var(--dark3)' : '',
+                }}
                 onClick={handleGlobalClick}
             >
                 <FiAtSign size={20} color='var(--text-highlight)' />
@@ -197,7 +299,11 @@ export default function FullChat(props: FullChatPropsIF) {
                     }
                 >
                     {topPools.map((pool, idx) => (
-                        <ChannelDisplay pool={pool} key={idx} isDropdown={true} />
+                        <ChannelDisplay
+                            pool={pool}
+                            key={idx}
+                            isDropdown={true}
+                        />
                     ))}
                 </div>
             )}
@@ -215,7 +321,13 @@ export default function FullChat(props: FullChatPropsIF) {
     );
 
     return (
-        <div className={isChatSidebarOpen ? styles.main_container : styles.main_container_close}>
+        <div
+            className={
+                isChatSidebarOpen
+                    ? styles.main_container
+                    : styles.main_container_close
+            }
+        >
             <section className={styles.left_container}>
                 <header className={styles.user_wallet}>
                     <Link to='/account'>{userName}</Link>
@@ -226,7 +338,9 @@ export default function FullChat(props: FullChatPropsIF) {
             </section>
 
             <section className={styles.right_container}>
-                <header className={styles.right_container_header}># {readableRoomName}</header>{' '}
+                <header className={styles.right_container_header}>
+                    # {readableRoomName}
+                </header>{' '}
                 {channelsDropdown}
                 {chatContainer}
             </section>

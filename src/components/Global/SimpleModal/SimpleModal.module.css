@@ -30,6 +30,8 @@
 
    height: fit-content;
    min-height: 300px;
+   min-width: 300px;
+   top: 1rem;
     border-radius: var(--border-radius);
     position: relative;
     /* max-height: 80vh; */
@@ -75,13 +77,10 @@
     
 
 }
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 500px) {
     .modal_body {
         top: 10rem;
 
         min-width: 407px;
     }
-
-
-
 }

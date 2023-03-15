@@ -23,9 +23,10 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setRangeModuleTriggered,
 } from '../../../../../utils/state/tradeDataSlice';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
+import { useModal } from '../../../Modal/useModal';
+import Modal from '../../../Modal/Modal';
 
 // interface for React functional component props
 interface propsIF {
@@ -76,16 +77,14 @@ export default function RangesMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     // ---------------------MODAL FUNCTIONALITY----------------
-
-    const openRemoveModal = () => {
+    const [
+        isRemoveRangeModalOpen,
+        openRemoveRangeModal,
+        closeRemoveRangeModal,
+    ] = useModal();
+    const handleModalClose = () => {
+        closeRemoveRangeModal();
         setShowDropdownMenu(false);
-        openGlobalModal(
-            <RemoveRange
-                dexBalancePrefs={dexBalancePrefs}
-                position={position}
-                {...rangeDetailsProps}
-            />,
-        );
     };
 
     const openDetailsModal = () => {
@@ -127,8 +126,6 @@ export default function RangesMenu(props: propsIF) {
             dispatch(setAdvancedMode(true));
         }
         setShowDropdownMenu(false);
-
-        dispatch(setRangeModuleTriggered(true));
     };
 
     // -----------------SNACKBAR----------------
@@ -166,7 +163,7 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <button className={styles.option_button} onClick={openRemoveModal}>
+        <button className={styles.option_button} onClick={openRemoveRangeModal}>
             Remove
         </button>
     ) : null;
@@ -294,6 +291,15 @@ export default function RangesMenu(props: propsIF) {
             {rangesMenu}
             {dropdownRangesMenu}
             {snackbarContent}
+            {isRemoveRangeModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title='Remove Position'
+                    noHeader
+                >
+                    <RemoveRange position={position} {...rangeDetailsProps} />
+                </Modal>
+            )}
         </div>
     );
 }
