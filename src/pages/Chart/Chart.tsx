@@ -3100,7 +3100,7 @@ export default function Chart(props: ChartData) {
         setDragControl(false);
     }, [parsedChartData]);
 
-    // y Axis
+    // Axis's
     useEffect(() => {
         if (scaleData) {
             const _yAxis = d3fc
@@ -3136,7 +3136,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
             });
         }
-    }, [scaleData]);
+    }, [scaleData, activeTimeFrame]);
 
     // Horizontal Lines
     useEffect(() => {
@@ -4103,7 +4103,11 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        if (!location.pathname.includes('range') && !location.pathname.includes('reposition')) {
+        if (
+            !location.pathname.includes('range') &&
+            !location.pathname.includes('reposition') &&
+            liquidityData !== undefined
+        ) {
             liquidityData.lineAskSeries = [];
             liquidityData.lineBidSeries = [];
         }
