@@ -82,7 +82,12 @@ export default function RangesMenu(props: propsIF) {
         openRemoveRangeModal,
         closeRemoveRangeModal,
     ] = useModal();
+    const [isHarvestModalOpen, openHarvestModal, closeHarvestModal] =
+        useModal();
+
     const handleModalClose = () => {
+        console.log('CLOSING THE MODAL!!!!');
+        closeHarvestModal();
         closeRemoveRangeModal();
         setShowDropdownMenu(false);
     };
@@ -94,17 +99,17 @@ export default function RangesMenu(props: propsIF) {
         );
     };
 
-    const openHarvestModal = () => {
-        setShowDropdownMenu(false);
-        openGlobalModal(
-            <HarvestPosition
-                crocEnv={crocEnv}
-                position={position}
-                dexBalancePrefs={dexBalancePrefs}
-                {...rangeDetailsProps}
-            />,
-        );
-    };
+    // const openHarvestModal = () => {
+    //     setShowDropdownMenu(false);
+    //     openGlobalModal(
+    //         <HarvestPosition
+    //             crocEnv={crocEnv}
+    //             position={position}
+    //             dexBalancePrefs={dexBalancePrefs}
+    //             {...rangeDetailsProps}
+    //         />,
+    //     );
+    // };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
@@ -281,7 +286,6 @@ export default function RangesMenu(props: propsIF) {
             const interval = setTimeout(() => {
                 setShowDropdownMenu(false);
             }, 5000);
-            console.log('running');
             return () => clearTimeout(interval);
         } else return;
     }, [showDropdownMenu]);
@@ -291,6 +295,16 @@ export default function RangesMenu(props: propsIF) {
             {rangesMenu}
             {dropdownRangesMenu}
             {snackbarContent}
+            {isHarvestModalOpen && (
+                <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
+                    <HarvestPosition
+                        crocEnv={crocEnv}
+                        position={position}
+                        dexBalancePrefs={dexBalancePrefs}
+                        {...rangeDetailsProps}
+                    />
+                </Modal>
+            )}
             {isRemoveRangeModalOpen && (
                 <Modal
                     onClose={handleModalClose}
