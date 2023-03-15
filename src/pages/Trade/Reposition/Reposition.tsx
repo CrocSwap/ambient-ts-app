@@ -9,7 +9,7 @@ import {
 import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
+// import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
@@ -198,6 +198,7 @@ export default function Reposition(props: propsIF) {
     };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
 
@@ -547,6 +548,8 @@ export default function Reposition(props: propsIF) {
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
+                setRangeWidthPercentage={setRangeWidthPercentage}
+                setSimpleRangeWidth={setSimpleRangeWidth}
                 positionHash={position.positionStorageSlot}
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
@@ -561,10 +564,10 @@ export default function Reposition(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider
                     }
                 />
-                <RepositionDenominationSwitch
+                {/* <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}
                     quoteTokenSymbol={position.quoteSymbol || 'USDC'}
-                />
+                /> */}
                 <RepositionPriceInfo
                     crocEnv={crocEnv}
                     position={position}

@@ -112,7 +112,7 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                         min='1'
                         max='100'
                         step='1'
-                        defaultValue={rangeWidthPercentage}
+                        defaultValue={10}
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) =>
