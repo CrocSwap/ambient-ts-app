@@ -1,7 +1,6 @@
 import styles from './ExtraControls.module.css';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
@@ -15,75 +14,56 @@ export default function ExtraControls(props: propsIF) {
         <div className={styles.main_container}>
             <section className={styles.wallet_container}>
                 <div className={styles.wallet_container_left}>
-                    <DefaultTooltip
-                        interactive
-                        title={'Save to Wallet Balance'}
-                        placement={'top-end'}
-                        arrow
-                        enterDelay={100}
-                        leaveDelay={200}
+                    <div
+                        className={styles.wallet_section}
+                        style={{
+                            color: !dexBalancePrefs.range.outputToDexBal
+                                .isEnabled
+                                ? '#ebebff'
+                                : '#555555',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() =>
+                            dexBalancePrefs.range.outputToDexBal.disable()
+                        }
                     >
-                        <div
-                            className={styles.wallet_section}
-                            style={{
-                                color: !dexBalancePrefs.range.outputToDexBal
-                                    .isEnabled
-                                    ? '#ebebff'
-                                    : '#555555',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() =>
-                                dexBalancePrefs.range.outputToDexBal.disable()
+                        <MdAccountBalanceWallet
+                            size={25}
+                            color={
+                                dexBalancePrefs.range.outputToDexBal.isEnabled
+                                    ? '#555555'
+                                    : '#EBEBFF'
                             }
-                        >
-                            <MdAccountBalanceWallet
-                                size={25}
-                                color={
-                                    dexBalancePrefs.range.outputToDexBal
-                                        .isEnabled
-                                        ? '#555555'
-                                        : '#EBEBFF'
-                                }
-                            />
-                            <div className={styles.wallet_amounts}>
-                                Send to Wallet
-                            </div>
+                        />
+                        <div className={styles.wallet_amounts}>
+                            Send to Wallet
                         </div>
-                    </DefaultTooltip>
-                    <DefaultTooltip
-                        interactive
-                        title={'Save to Exchange Balance'}
-                        placement={'top-end'}
-                        arrow
-                        enterDelay={100}
-                        leaveDelay={200}
+                    </div>
+                    <div
+                        className={`${styles.exchange_text} ${
+                            !dexBalancePrefs.range.outputToDexBal.isEnabled &&
+                            styles.grey_logo
+                        }`}
+                        style={{
+                            color: dexBalancePrefs.range.outputToDexBal
+                                .isEnabled
+                                ? '#ebebff'
+                                : '#555555',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() =>
+                            dexBalancePrefs.range.outputToDexBal.enable()
+                        }
                     >
-                        <div
-                            className={`${styles.exchange_text} ${
-                                !dexBalancePrefs.range.outputToDexBal
-                                    .isEnabled && styles.grey_logo
-                            }`}
-                            style={{
-                                color: dexBalancePrefs.range.outputToDexBal
-                                    .isEnabled
-                                    ? '#ebebff'
-                                    : '#555555',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() =>
-                                dexBalancePrefs.range.outputToDexBal.enable()
-                            }
-                        >
-                            <div className={styles.wallet_amounts}>
-                                Send to DEX Balance
-                            </div>
-                            <img
-                                src={ambientLogo}
-                                width='25'
-                                alt='ambient finance logo'
-                            />
+                        <div className={styles.wallet_amounts}>
+                            Send to DEX Balance
                         </div>
-                    </DefaultTooltip>
+                        <img
+                            src={ambientLogo}
+                            width='25'
+                            alt='ambient finance logo'
+                        />
+                    </div>
                 </div>
             </section>
         </div>
