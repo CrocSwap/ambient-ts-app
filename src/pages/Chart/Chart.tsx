@@ -1024,34 +1024,33 @@ export default function Chart(props: ChartData) {
 
     async function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
-        let result = oldTickValues;
 
         const domainX = scaleData.xScale.domain();
         if (activeTimeFrame === '1h') {
-            result = await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 1);
+            return await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 1);
         }
 
         if (activeTimeFrame === '1d') {
-            result = await getOneDayAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            return await getOneDayAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '4h') {
-            result = await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 4);
+            return await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 4);
         }
 
         if (activeTimeFrame === '15m') {
-            result = get15MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            return get15MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '5m') {
-            result = get5MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            return get5MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '1m') {
-            result = get1MinuteAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            return get1MinuteAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
-        return result;
+        return [];
     }
 
     const utcDiff = moment().utcOffset();
@@ -2315,17 +2314,19 @@ export default function Chart(props: ChartData) {
     };
 
     useEffect(() => {
-        const liqDataAll = liquidityData.depthLiqBidData.concat(liquidityData.depthLiqAskData);
+        if (scaleData !== undefined) {
+            const liqDataAll = liquidityData.depthLiqBidData.concat(liquidityData.depthLiqAskData);
 
-        const visibleDomain = liqDataAll.filter(
-            (liqData: any) =>
-                liqData.liqPrices >= scaleData.yScale.domain()[0] &&
-                liqData.liqPrices <= scaleData.yScale.domain()[1],
-        );
+            const visibleDomain = liqDataAll.filter(
+                (liqData: any) =>
+                    liqData.liqPrices >= scaleData.yScale.domain()[0] &&
+                    liqData.liqPrices <= scaleData.yScale.domain()[1],
+            );
 
-        const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
+            const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
 
-        liquidityDepthScale.domain([0, maxLiq]);
+            liquidityDepthScale.domain([0, maxLiq]);
+        }
     }, [scaleData && scaleData.yScale.domain()[0], scaleData && scaleData.yScale.domain()[1]]);
 
     // set default limit tick
@@ -3092,7 +3093,7 @@ export default function Chart(props: ChartData) {
         setDragControl(false);
     }, [parsedChartData]);
 
-    // y Axis
+    // Axis's
     useEffect(() => {
         if (scaleData) {
             const _yAxis = d3fc
@@ -3128,7 +3129,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
             });
         }
-    }, [scaleData]);
+    }, [scaleData, activeTimeFrame]);
 
     // Horizontal Lines
     useEffect(() => {
@@ -4082,7 +4083,11 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        if (!location.pathname.includes('range') && !location.pathname.includes('reposition')) {
+        if (
+            !location.pathname.includes('range') &&
+            !location.pathname.includes('reposition') &&
+            liquidityData !== undefined
+        ) {
             liquidityData.lineAskSeries = [];
             liquidityData.lineBidSeries = [];
         }
