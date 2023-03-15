@@ -8,3 +8,9 @@
     line-height: var(--body-lh);
     color: var(--text-grey-light);
 }
+
+.arrow_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

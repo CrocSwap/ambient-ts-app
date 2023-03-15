@@ -10,7 +10,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import { VscClose } from 'react-icons/vsc';
 
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
-import { RiListSettingsLine } from 'react-icons/ri';
+// import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
@@ -219,11 +219,11 @@ export default function RemoveRange(props: propsIF) {
     const positionHasLiquidity =
         (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) > 0;
 
-    const removeRangeSetttingIcon = (
-        <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
-            {showSettings ? null : <RiListSettingsLine size={20} />}
-        </div>
-    );
+    // const removeRangeSetttingIcon = (
+    //     <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
+    //         {showSettings ? null : <RiListSettingsLine size={20} />}
+    //     </div>
+    // );
 
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
 
@@ -593,7 +593,7 @@ export default function RemoveRange(props: propsIF) {
     );
 
     const buttonToDisplay = (
-        <div style={{ padding: '0 1rem' }}>
+        <div style={{ padding: '1rem' }}>
             {showSettings ? (
                 <Button title='Confirm' action={() => setShowSettings(false)} flat />
             ) : isPositionPendingUpdate ? (
@@ -618,7 +618,7 @@ export default function RemoveRange(props: propsIF) {
         <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} />
     ) : (
         <>
-            <div className={styles.header_container}>
+            <div className={styles.header_container} style={{ padding: '1rem' }}>
                 <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
@@ -627,8 +627,10 @@ export default function RemoveRange(props: propsIF) {
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
+                    showSettings={showSettings}
+                    setShowSettings={setShowSettings}
                 />
-                {removeRangeSetttingIcon}
+                {/* {removeRangeSetttingIcon} */}
             </div>
             <div style={{ padding: '0 1rem' }}>
                 <RemoveRangeWidth

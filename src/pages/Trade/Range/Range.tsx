@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, useMemo, Dispatch, SetStateAction, ReactNode } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor, CrocEnv } from '@crocswap-libs/sdk';
@@ -57,6 +57,7 @@ import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButto
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { rangeTutorialSteps, rangeTutorialStepsAdvanced } from '../../../utils/tutorial/Range';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     account: string | undefined;
@@ -88,7 +89,7 @@ interface propsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    openGlobalModal: (content: ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
     graphData: graphData;
     isRangeCopied: boolean;
@@ -107,7 +108,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -115,11 +115,11 @@ interface propsIF {
     ) => void;
     bypassConfirm: boolean;
     toggleBypassConfirm: (item: string, pref: boolean) => void;
-
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
+    dexBalancePrefs: allDexBalanceMethodsIF;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     minPrice: number;
@@ -180,6 +180,7 @@ export default function Range(props: propsIF) {
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
+        dexBalancePrefs,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setMaxPrice,
@@ -195,8 +196,16 @@ export default function Range(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState(false);
-    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
+    // local state values whether tx will use dex balance preferentially over
+    // ... wallet funds, this layer of logic matters because the DOM may need
+    // ... to use wallet funds without switching the persisted preference
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] = useState<boolean>(
+        dexBalancePrefs.range.drawFromDexBal.isEnabled,
+    );
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState<boolean>(
+        dexBalancePrefs.range.drawFromDexBal.isEnabled,
+    );
+
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -1038,33 +1047,11 @@ export default function Range(props: propsIF) {
         resetConfirmation();
     };
 
-    // const receiptData = useAppSelector((state) => state.receiptData);
-
-    // const sessionReceipts = receiptData.sessionReceipts;
-
-    // const pendingTransactions = receiptData.pendingTransactions;
-
-    // const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    // function handleParseReceipt(receipt: any) {
-    //     const parseReceipt = JSON.parse(receipt);
-    //     receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    // }
-
-    // sessionReceipts.map((receipt) => handleParseReceipt(receipt));
-
-    // const currentPendingTransactionsArray = pendingTransactions.filter(
-    //     (hash: string) => !receiveReceiptHashes.includes(hash),
-    // );
-
-    // useEffect(() => {
-    //     if (!currentPendingTransactionsArray.length) setShowBypassConfirmButton(false);
-    // }, [currentPendingTransactionsArray.length]);
-
     const handleRangeButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
         sendTransaction();
     };
+
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
         tokenPair: tokenPair,
@@ -1093,6 +1080,7 @@ export default function Range(props: propsIF) {
         bypassConfirm: bypassConfirm,
         toggleBypassConfirm: toggleBypassConfirm,
     };
+
     const bypassConfirmButtonProps = {
         newRangeTransactionHash: newRangeTransactionHash,
         txErrorCode: txErrorCode,
@@ -1122,7 +1110,6 @@ export default function Range(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         isTokenAPrimaryLocal: isTokenAPrimaryLocal,
-        // setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -1157,6 +1144,7 @@ export default function Range(props: propsIF) {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        dexBalancePrefs: dexBalancePrefs,
     };
 
     // props for <RangeWidth/> React element
