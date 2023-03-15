@@ -304,6 +304,7 @@ export default function Chart(props: ChartData) {
     // Line Joins
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [horizontalBandJoin, setHorizontalBandJoin] = useState<any>();
+    const [horizontalBand, setHorizontalBand] = useState<any>();
     const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
 
@@ -3211,6 +3212,16 @@ export default function Chart(props: ChartData) {
                 });
             }
 
+            const horizontalBand = d3fc
+                .annotationSvgBand()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .fromValue((d: any) => d[0])
+                .toValue((d: any) => d[1])
+                .decorate((selection: any) => {
+                    selection.select('path').attr('fill', '#7371FC1A');
+                });
+
             setTargetsJoin(() => {
                 return targetsJoin;
             });
@@ -3237,6 +3248,10 @@ export default function Chart(props: ChartData) {
 
             setLimitLine(() => {
                 return limitLine;
+            });
+
+            setHorizontalBand(() => {
+                return horizontalBand;
             });
         }
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isUserLoggedIn]);
@@ -4385,6 +4400,30 @@ export default function Chart(props: ChartData) {
                         scaleData.yScale.domain(domain);
                     }
                 }
+
+                d3.select(d3PlotArea.current).on('draw', function (event: any) {
+                    const svg = d3.select(event.target).select('svg');
+
+                    horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                    targetsJoin(svg, [ranges]).call(horizontalLine);
+
+                    if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
+                        lineAskSeriesJoin(svg, [
+                            liqMode === 'Curve' ? liquidityData.liqAskData : [],
+                        ]).call(lineAskSeries);
+                        lineBidSeriesJoin(svg, [
+                            liqMode === 'Curve' ? liquidityData.liqBidData : [],
+                        ]).call(lineBidSeries);
+
+                        lineDepthBidSeriesJoin(svg, [
+                            liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
+                        ]).call(lineDepthAskSeries);
+
+                        lineDepthAskSeriesJoin(svg, [
+                            liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
+                        ]).call(lineDepthBidSeries);
+                    }
+                });
             }
 
             render();
@@ -5320,16 +5359,6 @@ export default function Chart(props: ChartData) {
                 };
 
                 // const candleJoin = d3fc.dataJoin('g', 'candle');
-
-                const horizontalBand = d3fc
-                    .annotationSvgBand()
-                    .xScale(scaleData.xScale)
-                    .yScale(scaleData.yScale)
-                    .fromValue((d: any) => d[0])
-                    .toValue((d: any) => d[1])
-                    .decorate((selection: any) => {
-                        selection.select('path').attr('fill', '#7371FC1A');
-                    });
 
                 // const highlightedCurrentPriceLineJoin = d3fc.dataJoin(
                 //     'g',
