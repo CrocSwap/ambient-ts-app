@@ -36,6 +36,7 @@
     flex-direction: column;
     overflow-y: hidden;
     color: white;
+    
    
 
     /* border-radius: var(--border-radius); */
@@ -76,19 +77,32 @@
     max-height: 3rem;
 }
 
-.swap_input {
-    width: 100%;
-    max-height: 35px;
-    display: flex;
-    /* justify-content: center; */
-    align-items: center;
-    border-radius: var(--border-radius);
-    border: solid 1px transparent;
-    background-image: linear-gradient(rgba(23, 29, 39, 1), rgba(23, 29, 39, 1)),
+.token_amount{
+width: 100%;
+    border: 1px solid var(--text-highlight-dark);
+    background: var(--dark2);
+    /* background-image: linear-gradient(rgba(23, 29, 39, 1), rgba(23, 29, 39, 1)),
         linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
     background-origin: border-box;
     background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    box-shadow: 2px 1000px 1px var(--dark3) inset; */
+    /* max-height: 35px; */
+    border-radius: var(--border-radius);
+}
+
+.swap_input {
+    width: 100%;
+    /* max-height: 35px; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* justify-content: center; */
+    align-items: center;
+    gap: 4px;
+
+   
+
+
 }
 .token_select {
     display: flex;
@@ -97,7 +111,29 @@
     width: 30%;
     cursor: pointer;
 }
+.button_controls{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark2);
+    border-radius: var(--border-radius);
+    gap: 4px;
+}
 
+.button_controls button{
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+
+    width: 20px;
+    height: 20px;
+
+}
 .token_select img {
     max-width: 100%;
 }

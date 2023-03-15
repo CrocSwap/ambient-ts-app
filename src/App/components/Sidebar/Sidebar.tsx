@@ -18,7 +18,7 @@ import styles from './Sidebar.module.css';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
-import recentTransactionsImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -418,7 +418,7 @@ export default function Sidebar(props: propsIF) {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1600px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
     // const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
 
     useEffect(() => {

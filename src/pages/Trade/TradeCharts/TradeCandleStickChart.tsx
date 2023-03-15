@@ -138,6 +138,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const [scaleData, setScaleData] = useState<any>();
     const [liquidityScale, setLiquidityScale] = useState<any>();
+    const [liquidityDepthScale, setLiquidityDepthScale] = useState<any>();
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
@@ -600,7 +601,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             setIsLoading(true);
             return undefined;
         }
-    }, [props.liquidityData, props.liquidityData?.ranges, poolPriceDisplay]);
+    }, [props.liquidityData && JSON.stringify(props.liquidityData?.ranges), poolPriceDisplay]);
 
     useEffect(() => {
         console.log('resetting scale for chart because timeframe changed');
@@ -629,17 +630,24 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         if (liquidityData !== undefined) {
             const liquidityScale = d3.scaleLinear();
+            const liquidityDepthScale = d3.scaleLinear();
 
             const liquidityExtent = d3fc
-                .extentLinear(liquidityData.liqBidData.concat(liquidityData.liqAskData))
+                .extentLinear()
                 .include([0])
                 .accessors([(d: any) => parseFloat(d.activeLiq)]);
 
             liquidityScale.domain(
                 liquidityExtent(liquidityData.liqBidData.concat(liquidityData.liqAskData)),
             );
+            liquidityDepthScale.domain(
+                liquidityExtent(
+                    liquidityData.depthLiqBidData.concat(liquidityData.depthLiqAskData),
+                ),
+            );
 
             setLiquidityScale(() => liquidityScale);
+            setLiquidityDepthScale(() => liquidityDepthScale);
         }
     };
 
@@ -728,6 +736,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             const shouldReload =
                 scaleData === undefined ||
                 liquidityScale === undefined ||
+                liquidityDepthScale === undefined ||
                 // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
                 poolPriceDisplay === 0 ||
@@ -749,6 +758,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay,
         scaleData === undefined,
         liquidityScale,
+        liquidityDepthScale,
         liquidityData,
     ]);
 
@@ -799,6 +809,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setShowTooltip={props.setShowTooltip}
                         activeTimeFrame={activeTimeFrame}
                         liquidityScale={liquidityScale}
+                        liquidityDepthScale={liquidityDepthScale}
                         handlePulseAnimation={handlePulseAnimation}
                         minPrice={minPrice}
                         maxPrice={maxPrice}

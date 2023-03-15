@@ -11,7 +11,7 @@ import { TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
 import leaderboard from '../../../assets/images/leaderboard.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
-import recentTransactionsImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
@@ -201,8 +201,8 @@ export default function TradeTabs2(props: propsIF) {
 
     useEffect(() => {
         if (!hasInitialized && !hasUserSelectedViewAll && userPositionsDataReceived) {
-            console.log({ outsideControl });
-            console.log({ selectedOutsideTab });
+            // console.log({ outsideControl });
+            // console.log({ selectedOutsideTab });
             if (
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)

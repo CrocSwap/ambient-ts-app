@@ -37,6 +37,7 @@ import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConf
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -50,7 +51,6 @@ interface propsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    // nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -94,6 +94,7 @@ interface propsIF {
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -140,10 +141,9 @@ export default function Swap(props: propsIF) {
         openGlobalPopup,
         bypassConfirm,
         toggleBypassConfirm,
-        // isTutorialMode,
-        // setIsTutorialMode
         lastBlockNumber,
         tokenPairLocal,
+        dexBalancePrefs,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -189,17 +189,29 @@ export default function Swap(props: propsIF) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const [sellQtyString, setSellQtyString] = useState<string>('');
-    const [buyQtyString, setBuyQtyString] = useState<string>('');
+    const [sellQtyString, setSellQtyString] = useState<string>(
+        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
+    const [buyQtyString, setBuyQtyString] = useState<string>(
+        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
 
     const slippageTolerancePercentage = isPairStable ? swapSlippage.stable : swapSlippage.volatile;
 
     const [swapAllowed, setSwapAllowed] = useState<boolean>(tradeData.primaryQuantity !== '');
 
+    // hooks to track whether user will use dex or wallet funds in transaction, this is
+    // ... abstracted away from the central hook because the hook manages preference
+    // ... and does not consider whether dex balance is sufficient
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState<boolean>(
+        dexBalancePrefs.swap.drawFromDexBal.isEnabled,
+    );
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState<boolean>(
+        dexBalancePrefs.swap.outputToDexBal.isEnabled,
+    );
+
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
-    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
-    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
@@ -235,7 +247,9 @@ export default function Swap(props: propsIF) {
         const buyTokenAddress = tokenB.address;
         // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
+        const qty = isTokenAPrimary
+            ? sellQtyString.replaceAll(',', '')
+            : buyQtyString.replaceAll(',', '');
         const isQtySell = isTokenAPrimary;
         // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
         let tx;
@@ -394,7 +408,6 @@ export default function Swap(props: propsIF) {
                     console.log({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
                     receipt = error.receipt;
                 }
             }
@@ -511,7 +524,9 @@ export default function Swap(props: propsIF) {
 
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
 
-    const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
+    const swapPageStyle = pathname.startsWith('/swap')
+        ? styles.swap_page
+        : styles.scrollable_container;
 
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([
@@ -595,17 +610,6 @@ export default function Swap(props: propsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
-    // const denominationSwitchOrNull = priceImpact ? (
-    //     <div className={styles.header_container}>
-    //         <DividerDark addMarginTop />
-    //         <DenominationSwitch />
-    //     </div>
-    // ) : null;
-
-    // console.log({ isUserLoggedIn });
-    // console.log({ swapAllowed });
-    // console.log({ sellQtyString });
-
     const currencyConverterProps = {
         tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
@@ -654,6 +658,7 @@ export default function Swap(props: propsIF) {
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
+        dexBalancePrefs: dexBalancePrefs,
     };
 
     const handleSwapButtonClickWithBypass = () => {
@@ -690,7 +695,6 @@ export default function Swap(props: propsIF) {
                         bypassConfirm={bypassConfirm}
                         toggleBypassConfirm={toggleBypassConfirm}
                     />
-                    {/* <DividerDark addMarginTop /> */}
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -700,6 +704,7 @@ export default function Swap(props: propsIF) {
                         <CurrencyConverter {...currencyConverterProps} />
                     </motion.div>
                     <ExtraInfo
+                        account={account}
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
                         isTokenABase={isSellTokenBase}

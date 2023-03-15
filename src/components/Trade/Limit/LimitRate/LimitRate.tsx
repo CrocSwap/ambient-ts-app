@@ -4,6 +4,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
+import { HiPlus, HiMinus } from 'react-icons/hi';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -45,8 +46,24 @@ export default function LimitRate(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
-    const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
-    // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const limitTick = tradeData.limitTick;
+
+    const increaseTick = () => {
+        if (limitTick) {
+            dispatch(setLimitTick(limitTick + gridSize));
+            setPriceInputFieldBlurred(true);
+        }
+    };
+
+    const decreaseTick = () => {
+        if (limitTick) {
+            dispatch(setLimitTick(limitTick - gridSize));
+            setPriceInputFieldBlurred(true);
+        }
+    };
 
     const initialLimitRateNonDisplay =
         (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
@@ -104,7 +121,7 @@ export default function LimitRate(props: propsIF) {
                         setPreviousDisplayPrice(targetValue);
                     }
                 }}
-                value={displayPrice}
+                value={displayPrice === 'NaN' ? '...' : displayPrice}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
@@ -116,6 +133,17 @@ export default function LimitRate(props: propsIF) {
                 required
                 // value={limitPrice}
             />
+        </div>
+    );
+
+    const buttonControls = (
+        <div className={styles.button_controls}>
+            <button onClick={!isDenomBase ? increaseTick : decreaseTick}>
+                <HiPlus />
+            </button>
+            <button>
+                <HiMinus onClick={!isDenomBase ? decreaseTick : increaseTick} />
+            </button>
         </div>
     );
 
@@ -137,8 +165,9 @@ export default function LimitRate(props: propsIF) {
                 </button>
             </span>
 
-            <div className={`${styles.swap_input} `} id='limit_rate'>
+            <div className={styles.swap_input} id='limit_rate'>
                 {rateInput}
+                {buttonControls}
             </div>
         </div>
     );
