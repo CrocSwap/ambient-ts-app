@@ -38,12 +38,12 @@ interface currentPoolInfo {
 }
 
 interface propsIF {
-    chatStatus: boolean;
+    isChatOpen: boolean;
+    setIsChatOpen: Dispatch<SetStateAction<boolean>>;
     onClose: () => void;
     favePools: favePoolsMethodsIF;
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
-    setChatStatus: Dispatch<SetStateAction<boolean>>;
     fullScreen?: boolean;
     userImageData: string[];
     appPage?: boolean;
@@ -51,8 +51,9 @@ interface propsIF {
 }
 
 export default function ChatPanel(props: propsIF) {
-    const { favePools, currentPool, setChatStatus } = props;
+    const { isFullScreen, favePools, currentPool, setIsChatOpen } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     // const navigate = useNavigate();
 
     // eslint-disable-next-line
@@ -92,13 +93,13 @@ export default function ChatPanel(props: propsIF) {
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
-        if ((e.charCode || e.keyCode) === 27) setChatStatus(false);
+        if ((e.charCode || e.keyCode) === 27) setIsChatOpen(false);
     }
 
     // eslint-disable-next-line
     function openChatPanel(e: any) {
         if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
-            setChatStatus(!props.chatStatus);
+            setIsChatOpen(!props.isChatOpen);
         }
     }
 
@@ -193,7 +194,7 @@ export default function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, address, props.chatStatus, props.isFullScreen, userCurrentPool]);
+    }, [ens, address, props.isChatOpen, isFullScreen, userCurrentPool]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -251,10 +252,10 @@ export default function ChatPanel(props: propsIF) {
         scrollToBottom();
         setNotification(0);
         console.log('scrolling to bottom');
-    }, [props.chatStatus]);
+    }, [props.isChatOpen]);
 
     function handleCloseChatPanel() {
-        props.setChatStatus(false);
+        props.setIsChatOpen(false);
     }
 
     const scrollToBottomButton = async () => {
@@ -303,26 +304,28 @@ export default function ChatPanel(props: propsIF) {
 
     // const handleFullScreenRedirect = () => {
     //     navigate('/app/chat');
-    //     props.setChatStatus(true);
+    //     props.setIsChatOpen(true);
     // };
 
     const header = (
         <div
             className={styles.chat_header}
-            onClick={() => setChatStatus(!props.chatStatus)}
+            onClick={() => setIsChatOpen(!props.isChatOpen)}
         >
             <h2 className={styles.chat_title}>Chat</h2>
             <section style={{ paddingRight: '10px' }}>
-                {props.isFullScreen || !props.chatStatus ? (
+                {isFullScreen || !props.isChatOpen ? (
                     <></>
                 ) : (
                     <TbTableExport
                         size={18}
                         className={styles.open_full_button}
-                        onClick={() => window.open('/chat')}
+                        onClick={() =>
+                            window.open('/chat/' + room.replace('/', '&'))
+                        }
                     />
                 )}
-                {props.isFullScreen || !props.chatStatus ? (
+                {isFullScreen || !props.isChatOpen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
@@ -331,7 +334,7 @@ export default function ChatPanel(props: propsIF) {
                         onClick={() => handleCloseChatPanel()}
                     />
                 )}
-                {!props.chatStatus && <IoIosArrowUp size={22} />}
+                {!props.isChatOpen && <IoIosArrowUp size={22} />}
             </section>
         </div>
     );
@@ -384,7 +387,7 @@ export default function ChatPanel(props: propsIF) {
             {notification > 0 &&
             scrollDirection === 'Scroll Up' &&
             !isScrollToBottomButtonPressed ? (
-                props.isFullScreen ? (
+                isFullScreen ? (
                     <div className={styles.chat_notification}>
                         <span
                             style={{ marginTop: '-18px', cursor: 'pointer' }}
@@ -421,7 +424,7 @@ export default function ChatPanel(props: propsIF) {
             ) : scrollDirection === 'Scroll Up' &&
               notification <= 0 &&
               !isScrollToBottomButtonPressed ? (
-                props.isFullScreen ? (
+                isFullScreen ? (
                     <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
                         <RiArrowDownSLine
                             role='button'
@@ -461,7 +464,7 @@ export default function ChatPanel(props: propsIF) {
         />
     );
 
-    const contentHeight = props.chatStatus ? '479px' : '30px';
+    const contentHeight = props.isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
             <FullChat
@@ -501,7 +504,7 @@ export default function ChatPanel(props: propsIF) {
                         selectedRoom={room}
                         setRoom={setRoom}
                         currentPool={currentPool}
-                        isFullScreen={props.isFullScreen}
+                        isFullScreen={isFullScreen}
                         room={room}
                         setIsCurrentPool={setIsCurrentPool}
                         isCurrentPool={isCurrentPool}
