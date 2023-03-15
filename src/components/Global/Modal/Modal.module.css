@@ -65,7 +65,7 @@
 }
 
 .modal_content {
-    padding: 20px;
+    /* padding: 20px; */
     background: var(--dark2);
     border-radius: var(--border-radius);
 

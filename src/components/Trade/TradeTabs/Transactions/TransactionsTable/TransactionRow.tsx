@@ -676,8 +676,13 @@ export default function TransactionRow(props: propsIF) {
                             handleOpenExplorer();
                         }}
                     >
-                        <p className='base_color'>{txHashTruncated}</p>{' '}
-                        <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        <p className={`${styles.base_color} ${styles.hover_style}`}>
+                            {txHashTruncated}
+                        </p>{' '}
+                        <p
+                            className={`${usernameStyle} ${styles.hover_style}`}
+                            style={{ textTransform: 'lowercase' }}
+                        >
                             {userNameToDisplay}
                         </p>
                     </li>

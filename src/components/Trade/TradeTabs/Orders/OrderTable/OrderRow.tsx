@@ -595,8 +595,13 @@ export default function OrderRow(props: propsIF) {
                         }
                     }}
                 >
-                    <p className='base_color'>{posHashTruncated}</p>{' '}
-                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                    <p className={`${styles.base_color} ${styles.hover_style}`}>
+                        {posHashTruncated}
+                    </p>{' '}
+                    <p
+                        className={`${usernameStyle} ${styles.hover_style}`}
+                        style={{ textTransform: 'lowercase' }}
+                    >
                         {userNameToDisplay}
                     </p>
                 </li>

@@ -23,6 +23,8 @@ import {
     setAdvancedMode,
     setRangeModuleTriggered,
 } from '../../../../../utils/state/tradeDataSlice';
+import { useModal } from '../../../Modal/useModal';
+import Modal from '../../../Modal/Modal';
 
 // interface for React functional component props
 interface propsIF {
@@ -88,6 +90,17 @@ export default function RangesMenu(props: propsIF) {
     //     0;
 
     // ---------------------MODAL FUNCTIONALITY----------------
+    const [isRemoveRangeModalOpen, openRemoveRangeModal, closeRemoveRangeModal] = useModal();
+    const handleModalClose = () => {
+        closeRemoveRangeModal();
+        setShowDropdownMenu(false);
+    };
+
+    const removeRangeModalOrNull = isRemoveRangeModalOpen ? (
+        <Modal onClose={handleModalClose} title='Remove Position' noHeader>
+            <RemoveRange position={position} {...rangeDetailsProps} />
+        </Modal>
+    ) : null;
 
     const openRemoveModal = () => {
         setShowDropdownMenu(false);
@@ -173,7 +186,7 @@ export default function RangesMenu(props: propsIF) {
     //  : null;
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <button className={styles.option_button} onClick={openRemoveModal}>
+        <button className={styles.option_button} onClick={openRemoveRangeModal}>
             Remove
         </button>
     ) : null;
@@ -334,6 +347,7 @@ export default function RangesMenu(props: propsIF) {
             {rangesMenu}
             {dropdownRangesMenu}
             {snackbarContent}
+            {removeRangeModalOrNull}
         </div>
     );
 }
