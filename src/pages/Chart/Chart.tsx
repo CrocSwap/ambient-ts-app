@@ -1024,33 +1024,34 @@ export default function Chart(props: ChartData) {
 
     async function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
+        let result = oldTickValues;
 
         const domainX = scaleData.xScale.domain();
         if (activeTimeFrame === '1h') {
-            return await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 1);
+            result = await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 1);
         }
 
         if (activeTimeFrame === '1d') {
-            return await getOneDayAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            result = await getOneDayAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '4h') {
-            return await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 4);
+            result = await getHourAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth, 4);
         }
 
         if (activeTimeFrame === '15m') {
-            return get15MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            result = get15MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '5m') {
-            return get5MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            result = get5MinutesAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
         if (activeTimeFrame === '1m') {
-            return get1MinuteAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
+            result = get1MinuteAxisTicks(domainX[0], domainX[1], oldTickValues, bandwidth);
         }
 
-        return [];
+        return result;
     }
 
     const utcDiff = moment().utcOffset();
