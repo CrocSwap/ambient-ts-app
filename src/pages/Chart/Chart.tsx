@@ -17,8 +17,6 @@ import { formatAmountChartData, formatAmountWithoutDigit } from '../../utils/num
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
-    setRangeHighLineTriggered,
-    setRangeLowLineTriggered,
     candleDomain,
     setIsLinesSwitched,
     // setIsTokenAPrimary,
@@ -124,6 +122,8 @@ interface ChartData {
     rangeSimpleRangeWidth: number | undefined;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
+    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 export default function Chart(props: ChartData) {
@@ -166,6 +166,8 @@ export default function Chart(props: ChartData) {
         rangeSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -175,8 +177,6 @@ export default function Chart(props: ChartData) {
     const side = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
-    const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
-    const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
     const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
@@ -1271,6 +1271,82 @@ export default function Chart(props: ChartData) {
         }
     };
 
+    const hideCrosshair = () => {
+        d3.select(d3PlotArea.current)
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'hidden');
+
+        d3.select(d3PlotArea.current)
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'hidden');
+
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'hidden');
+
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'hidden');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'hidden');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'hidden');
+    };
+
+    const showCrosshair = () => {
+        d3.select(d3PlotArea.current)
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current)
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+    };
+
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && parsedChartData !== undefined) {
@@ -1489,41 +1565,7 @@ export default function Chart(props: ChartData) {
                         );
                     }
 
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
+                    hideCrosshair();
                 })
                 .on('zoom', (event: any) => {
                     async function newDomains(parsedChartData: any) {
@@ -1753,41 +1795,7 @@ export default function Chart(props: ChartData) {
                         setShowLatest(false);
                     }
 
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'visible');
+                    showCrosshair();
 
                     props.setShowTooltip(true);
 
@@ -1816,41 +1824,8 @@ export default function Chart(props: ChartData) {
                 } else {
                     firstLocation = event.sourceEvent.offsetY;
                 }
-                d3.select(d3PlotArea.current)
-                    .select('svg')
-                    .select('.crosshairHorizontal')
-                    .selectChild()
-                    .style('visibility', 'hidden');
 
-                d3.select('#tvl_chart')
-                    .select('svg')
-                    .select('.crosshairHorizontal')
-                    .selectChild()
-                    .style('visibility', 'hidden');
-
-                d3.select(d3PlotArea.current)
-                    .select('svg')
-                    .select('.crosshairVertical')
-                    .selectChild()
-                    .style('visibility', 'hidden');
-
-                d3.select('#tvl_chart')
-                    .select('svg')
-                    .select('.crosshairVertical')
-                    .selectChild()
-                    .style('visibility', 'hidden');
-
-                d3.select('#fee_rate_chart')
-                    .select('svg')
-                    .select('.crosshairHorizontal')
-                    .selectChild()
-                    .style('visibility', 'hidden');
-
-                d3.select('#fee_rate_chart')
-                    .select('svg')
-                    .select('.crosshairVertical')
-                    .selectChild()
-                    .style('visibility', 'hidden');
+                hideCrosshair();
             };
 
             const yAxisZoom = d3
@@ -2463,14 +2438,12 @@ export default function Chart(props: ChartData) {
                         value: maxPrice,
                     },
                 ];
-                console.log('set', chartTargets);
                 setLiqHighlightedLinesAndArea(chartTargets);
 
                 return chartTargets;
             });
 
-            dispatch(setRangeHighLineTriggered(false));
-            dispatch(setRangeLowLineTriggered(false));
+            setChartTriggeredBy('none');
         }
     };
 
@@ -2496,11 +2469,7 @@ export default function Chart(props: ChartData) {
             (location.pathname.includes('range') || location.pathname.includes('reposition')) &&
             isAdvancedModeActive
         ) {
-            if (
-                rangeLowLineTriggered === undefined ||
-                rangeHighLineTriggered === undefined ||
-                rescaleRangeBoundariesWithSlider
-            ) {
+            if (chartTriggeredBy === '' || rescaleRangeBoundariesWithSlider) {
                 setAdvancedLines();
             }
         }
@@ -2647,6 +2616,7 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
+                    hideCrosshair();
                 })
                 .on('drag', function (event) {
                     // d3.select(d3Container.current)
@@ -2902,6 +2872,8 @@ export default function Chart(props: ChartData) {
                     }
                 })
                 .on('end', (event: any) => {
+                    showCrosshair();
+
                     d3.select(d3Container.current).style('cursor', 'default');
                     setCrosshairData([
                         {
@@ -2981,6 +2953,7 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'row-resize');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'row-resize');
+                    hideCrosshair();
 
                     d3.select(d3Container.current)
                         .select('.ghostLines')
@@ -3014,6 +2987,8 @@ export default function Chart(props: ChartData) {
                     });
                 })
                 .on('end', (event: any) => {
+                    showCrosshair();
+
                     d3.select(d3Container.current).style('cursor', 'default');
 
                     d3.select(d3Container.current)
@@ -5551,41 +5526,7 @@ export default function Chart(props: ChartData) {
                 render();
 
                 d3.select(d3Container.current).on('mouseleave', () => {
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'hidden');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'hidden');
+                    hideCrosshair();
 
                     setIsMouseMoveCrosshair(false);
 
@@ -5855,8 +5796,12 @@ export default function Chart(props: ChartData) {
             setMaxPrice(low > high ? low : high);
 
             // dispatch(setTargetData(newTargetData));
-            dispatch(setRangeHighLineTriggered(highLineMoved));
-            dispatch(setRangeLowLineTriggered(lowLineMoved));
+
+            if (lowLineMoved) {
+                setChartTriggeredBy('low_line');
+            } else if (highLineMoved) {
+                setChartTriggeredBy('high_line');
+            }
             dispatch(setIsLinesSwitched(isLinesSwitched));
         }
     };

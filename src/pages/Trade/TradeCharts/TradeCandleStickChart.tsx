@@ -91,6 +91,8 @@ interface ChartData {
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
+    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 export interface ChartUtils {
@@ -136,6 +138,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         setRepositionRangeWidth,
         repositionRangeWidth,
         poolPriceDisplay,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -822,6 +826,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setRangeSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={setRepositionRangeWidth}
                         repositionRangeWidth={repositionRangeWidth}
+                        setChartTriggeredBy={setChartTriggeredBy}
+                        chartTriggeredBy={chartTriggeredBy}
                     />
                 ) : (
                     <>{loading}</>

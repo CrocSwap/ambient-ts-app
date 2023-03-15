@@ -382,12 +382,15 @@ export default function App() {
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
+
+    // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
     const [repositionRangeWidth, setRepositionRangeWidth] = useState<number>(10);
     const [rescaleRangeBoundariesWithSlider, setRescaleRangeBoundariesWithSlider] =
         useState<boolean>(false);
+    const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -2634,6 +2637,8 @@ export default function App() {
         simpleRangeWidth: simpleRangeWidth,
         setMaxPrice: setMaxRangePrice,
         setMinPrice: setMinRangePrice,
+        setChartTriggeredBy: setChartTriggeredBy,
+        chartTriggeredBy: chartTriggeredBy,
         minPrice: minRangePrice,
         maxPrice: maxRangePrice,
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
@@ -2913,6 +2918,8 @@ export default function App() {
                                     simpleRangeWidth={simpleRangeWidth}
                                     setRepositionRangeWidth={setRepositionRangeWidth}
                                     repositionRangeWidth={repositionRangeWidth}
+                                    setChartTriggeredBy={setChartTriggeredBy}
+                                    chartTriggeredBy={chartTriggeredBy}
                                 />
                             }
                         >

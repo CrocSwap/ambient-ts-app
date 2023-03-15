@@ -44,8 +44,6 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setRangeLowLineTriggered,
-    setRangeHighLineTriggered,
     setIsLinesSwitched,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
@@ -126,6 +124,8 @@ interface propsIF {
     maxPrice: number;
     rescaleRangeBoundariesWithSlider: boolean;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
+    chartTriggeredBy: string;
 }
 
 export default function Range(props: propsIF) {
@@ -188,6 +188,8 @@ export default function Range(props: propsIF) {
         setRescaleRangeBoundariesWithSlider,
         minPrice,
         maxPrice,
+        setChartTriggeredBy,
+        chartTriggeredBy,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -241,8 +243,6 @@ export default function Range(props: propsIF) {
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
 
-    const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
-    const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
     const isLinesSwitched = tradeData.isLinesSwitched;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
@@ -636,7 +636,7 @@ export default function Range(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (rangeLowBoundFieldBlurred || rangeLowLineTriggered) {
+        if (rangeLowBoundFieldBlurred || chartTriggeredBy === 'low_line') {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
@@ -703,14 +703,13 @@ export default function Range(props: propsIF) {
             }
 
             setRangeLowBoundFieldBlurred(false);
-            dispatch(setRangeLowLineTriggered(false));
-            // dispatch(setRangeModuleTriggered(true));
+            setChartTriggeredBy('none');
             dispatch(setIsLinesSwitched(false));
         }
-    }, [rangeLowBoundFieldBlurred, JSON.stringify(rangeLowLineTriggered)]);
+    }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
 
     useEffect(() => {
-        if (rangeHighBoundFieldBlurred || rangeHighLineTriggered) {
+        if (rangeHighBoundFieldBlurred || chartTriggeredBy === 'high_line') {
             const rangeHighBoundDisplayField = document.getElementById(
                 'max-price-input-quantity',
             ) as HTMLInputElement;
@@ -766,11 +765,10 @@ export default function Range(props: propsIF) {
             }
 
             setRangeHighBoundFieldBlurred(false);
-            dispatch(setRangeHighLineTriggered(false));
-            // dispatch(setRangeModuleTriggered(true));
+            setChartTriggeredBy('none');
             dispatch(setIsLinesSwitched(false));
         }
-    }, [rangeHighBoundFieldBlurred, JSON.stringify(rangeHighLineTriggered)]);
+    }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
     const depositSkew = useMemo(
         () =>
