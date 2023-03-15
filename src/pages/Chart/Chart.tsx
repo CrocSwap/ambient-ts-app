@@ -4998,12 +4998,7 @@ export default function Chart(props: ChartData) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
-        const { min }: any = findLiqNearest(allData);
-        const filteredAllData = allData.filter(
-            (item: any) => min <= item.liqPrices && item.liqPrices <= scaleData.yScale.domain()[1],
-        );
-
-        const liqMaxActiveLiq = d3.max(filteredAllData, (d: any) => d.activeLiq);
+        const liqMaxActiveLiq = d3.max(allData, (d: any) => d.activeLiq);
 
         const currentDataY = scaleData.yScale.invert(event.offsetY);
         const currentDataX =
