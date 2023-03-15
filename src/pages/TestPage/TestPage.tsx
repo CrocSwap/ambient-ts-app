@@ -24,13 +24,13 @@ export default function TestPage(props: TestPageProps) {
     return (
         <section className={styles.main}>
             <p>
-                {
-                    walletToS.isAgreed
-                        ? `You agreed to ToS on ${walletToS.lastAgreement?.acceptedOn}`
-                        : 'Please agree to our ToS'
-                }
+                {walletToS.isAgreed
+                    ? `You agreed to ToS on ${walletToS.lastAgreement?.acceptedOn}`
+                    : 'Please agree to our ToS'}
             </p>
-            {!walletToS.isAgreed && <button onClick={() => walletToS.acceptToS()}>Accept the ToS!</button>}
+            {!walletToS.isAgreed && (
+                <button onClick={() => walletToS.acceptToS()}>Accept the ToS!</button>
+            )}
         </section>
     );
 }
