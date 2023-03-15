@@ -3,11 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import {
-    setIsTokenAPrimary,
-    setPrimaryQuantity,
-    setShouldSwapConverterUpdate,
-} from '../../../utils/state/tradeDataSlice';
+import { setIsTokenAPrimary, setPrimaryQuantity } from '../../../utils/state/tradeDataSlice';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
@@ -149,17 +145,15 @@ export default function CurrencyConverter(props: propsIF) {
         } else {
             setIsSellTokenEth(false);
         }
-    }, [tradeData.tokenA.address]);
+    }, [tradeData.tokenA.address + tradeData.tokenA.symbol]);
 
     useEffect(() => {
         setTokenBLocal(tradeData.tokenB.address);
         setTokenBSymbolLocal(tradeData.tokenB.symbol);
-    }, [tradeData.tokenB.address]);
+    }, [tradeData.tokenB.address + tradeData.tokenB.symbol]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
-
-    const shouldSwapConverterUpdate = tradeData.shouldSwapConverterUpdate;
 
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
@@ -172,7 +166,9 @@ export default function CurrencyConverter(props: propsIF) {
         !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
 
-    const userHasEnteredAmount = tokenAQtyLocal !== '';
+    const navigate = useNavigate();
+
+    const { pathname } = useLocation();
 
     const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
@@ -212,27 +208,6 @@ export default function CurrencyConverter(props: propsIF) {
         parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
     const tokenBSurplusPlusTokenBQtyNum =
         parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
-
-    const setDefaultTokenQuantities = () => {
-        if (isTokenAPrimaryLocal) {
-            setTokenAQtyLocal(tradeData.primaryQuantity);
-            setSellQtyString(tradeData.primaryQuantity);
-        } else {
-            setTokenBQtyLocal(tradeData.primaryQuantity);
-            setBuyQtyString(tradeData.primaryQuantity);
-        }
-    };
-
-    const [shouldUpdate, setShouldUpdate] = useState(false);
-
-    useEffect(() => {
-        setDefaultTokenQuantities();
-        setShouldUpdate(true);
-    }, []);
-
-    const navigate = useNavigate();
-
-    const { pathname } = useLocation();
 
     const linkPath = useMemo(() => {
         let locationSlug = '';
@@ -307,7 +282,7 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     const handleBlockUpdate = () => {
-        if (!disableReverseTokens) {
+        if (!disableReverseTokens && tokenAQtyLocal !== '' && tokenBQtyLocal !== '') {
             setDisableReverseTokens(true);
 
             isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
@@ -320,9 +295,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
-        if (shouldUpdate) setShouldUpdate(false);
     }, [
-        shouldUpdate,
         crocEnv,
         poolExists,
         tokenALocal + tokenBLocal,
@@ -330,12 +303,10 @@ export default function CurrencyConverter(props: propsIF) {
         combinedTokenABalance,
         isWithdrawFromDexChecked,
         slippageTolerancePercentage,
-        shouldSwapConverterUpdate,
     ]);
 
     useEffect(() => {
         if (!poolExists) {
-            console.log({ poolExists });
             setSwapAllowed(false);
 
             if (poolExists === undefined) {
@@ -343,10 +314,8 @@ export default function CurrencyConverter(props: propsIF) {
             } else if (poolExists === false) {
                 setSwapButtonErrorMessage('Pool Not Initialized');
             }
-        } else {
-            setShouldUpdate(true);
         }
-    }, [poolExists]);
+    }, [poolExists === undefined, poolExists === false]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
@@ -456,7 +425,7 @@ export default function CurrencyConverter(props: propsIF) {
                 setSwapAllowed(false);
             }
         } else {
-            console.log('token a change event triggered - no event');
+            console.log('token a change event triggered - no keyboard event');
             if (!poolExists) {
                 setSwapAllowed(false);
 
@@ -624,7 +593,7 @@ export default function CurrencyConverter(props: propsIF) {
             }
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         } else {
-            console.log('token B change event triggered - no event');
+            console.log('token B change event triggered - no keyboard event');
             if (!poolExists) {
                 setSwapAllowed(false);
 
@@ -675,8 +644,6 @@ export default function CurrencyConverter(props: propsIF) {
         if (truncatedTokenAQty !== tokenAQtyLocal) setTokenAQtyLocal(truncatedTokenAQty);
 
         if (truncatedTokenAQty !== sellQtyString) setSellQtyString(truncatedTokenAQty);
-
-        if (shouldSwapConverterUpdate) dispatch(setShouldSwapConverterUpdate(false));
     };
 
     return (
@@ -700,7 +667,6 @@ export default function CurrencyConverter(props: propsIF) {
                 fieldId='sell'
                 tokenAorB={'A'}
                 sellToken
-                userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
                 tokenABalance={tokenABalance}
@@ -768,7 +734,6 @@ export default function CurrencyConverter(props: propsIF) {
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
                     tokenAorB={'B'}
-                    userHasEnteredAmount={userHasEnteredAmount}
                     handleChangeEvent={handleTokenBChangeEvent}
                     tokenABalance={tokenABalance}
                     tokenBBalance={tokenBBalance}

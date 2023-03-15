@@ -6,7 +6,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -135,7 +135,13 @@ export default function OrderRow(props: propsIF) {
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
             : 'base_color';
-
+    // eslint-disable-next-line
+    const usernameStyleModule =
+        isOwnerActiveAccount && isShowAllEnabled
+            ? styles.owned_tx_contrast
+            : ensName
+            ? styles.gradient_text
+            : styles.base_color;
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
 
@@ -181,24 +187,41 @@ export default function OrderRow(props: propsIF) {
             ? styles.active_position_style
             : '';
 
+    const [highlightRow, setHighlightRow] = useState(false);
+    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
+    const handleRowMouseDown = () => setHighlightRow(true);
+    const handleRowMouseOut = () => setHighlightRow(false);
+
     const IDWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
-            title={posHash}
+            title={
+                <p
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {posHash}
+                </p>
+            }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className='base_color'
+                className={`${styles.base_color} ${styles.hover_style}`}
                 style={{ fontFamily: 'monospace' }}
             >
                 {posHashTruncated}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const ValueWithTooltip = (
@@ -208,13 +231,15 @@ export default function OrderRow(props: propsIF) {
             placement={'right'}
             arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
                 data-label='value'
                 className='base_color'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {' '}
                 {'$' + usdValue}
@@ -224,10 +249,19 @@ export default function OrderRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div>
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
@@ -246,9 +280,8 @@ export default function OrderRow(props: propsIF) {
                 </div>
             }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={() => {
@@ -261,12 +294,12 @@ export default function OrderRow(props: propsIF) {
                     navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
                 }}
                 data-label='wallet'
-                className={usernameStyle}
+                className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
@@ -329,9 +362,13 @@ export default function OrderRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={150}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li className='base_color'>
+            <li
+                className='base_color'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 {/* {tokensTogether} */}
                 <NavLink
                     // onClick={() => {
@@ -410,7 +447,13 @@ export default function OrderRow(props: propsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -438,7 +481,13 @@ export default function OrderRow(props: propsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -459,26 +508,46 @@ export default function OrderRow(props: propsIF) {
     );
 
     const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                'First Minted: ' +
-                moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+                <p
+                    style={{
+                        marginLeft: '-70px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {'First Minted: ' +
+                        moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')}
+                </p>
             }
-            placement={'left'}
-            arrow
+            placement={'right'}
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <li
+                onClick={openDetailsModal}
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     ) : (
-        <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+        <li
+            onClick={openDetailsModal}
+            style={{ textTransform: 'lowercase' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <p className='base_color' style={{ fontFamily: 'monospace' }}>
                 {elapsedTimeString}
             </p>
@@ -492,7 +561,7 @@ export default function OrderRow(props: propsIF) {
             onMouseLeave={() => setShowHighlightedButton(false)}
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
             id={orderDomId}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             onClick={() =>
                 limitOrder.limitOrderIdentifier === currentPositionActive
                     ? null
@@ -538,6 +607,8 @@ export default function OrderRow(props: propsIF) {
                     data-label='price'
                     className={priceStyle}
                     style={{ textAlign: 'right' }}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     {isOnPortfolioPage
                         ? (
@@ -564,6 +635,8 @@ export default function OrderRow(props: propsIF) {
                     onClick={openDetailsModal}
                     data-label='side'
                     className={sellOrderStyle}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     {`${sideType} ${sideCharacter}`}
                 </li>
@@ -574,6 +647,8 @@ export default function OrderRow(props: propsIF) {
                     data-label='type'
                     className={sellOrderStyle}
                     style={{ textAlign: 'center' }}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     Order
                 </li>
@@ -584,6 +659,8 @@ export default function OrderRow(props: propsIF) {
                     className={sellOrderStyle}
                     style={{ textAlign: 'center' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <p>Order</p>
                     <p>{`${sideType} ${sideCharacter}`}</p>
@@ -601,6 +678,8 @@ export default function OrderRow(props: propsIF) {
 
                     className='base_color'
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <div
                         className={styles.token_qty}
@@ -621,7 +700,12 @@ export default function OrderRow(props: propsIF) {
                 </li>
             )}
             {!ipadView && (
-                <li onClick={openDetailsModal} data-label='status'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='status'
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
+                >
                     <div
                         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                     >

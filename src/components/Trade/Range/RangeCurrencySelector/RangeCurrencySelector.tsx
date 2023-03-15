@@ -460,7 +460,6 @@ export default function RangeCurrencySelector(props: propsIF) {
             : '#555555';
 
     const swapboxBottomOrNull = !isUserLoggedIn ? (
-        // || (isUserLoggedIn && !userHasEnteredAmount) ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
