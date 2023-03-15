@@ -99,18 +99,6 @@ export default function RangesMenu(props: propsIF) {
         );
     };
 
-    // const openHarvestModal = () => {
-    //     setShowDropdownMenu(false);
-    //     openGlobalModal(
-    //         <HarvestPosition
-    //             crocEnv={crocEnv}
-    //             position={position}
-    //             dexBalancePrefs={dexBalancePrefs}
-    //             {...rangeDetailsProps}
-    //         />,
-    //     );
-    // };
-
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
     const positionMatchesLoggedInUser =

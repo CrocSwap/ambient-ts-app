@@ -387,8 +387,7 @@ export default function RangesRow(props: propsIF) {
     const tip = pair.join('\n');
 
     const tradeLinkPath =
-        '/trade/range/' +
-        'chain=' +
+        '/trade/range/chain=' +
         position.chainId +
         '&tokenA=' +
         position.quote +
