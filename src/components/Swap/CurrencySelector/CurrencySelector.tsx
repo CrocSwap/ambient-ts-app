@@ -39,7 +39,6 @@ interface propsIF {
     tokenADexBalance: string;
     tokenBDexBalance: string;
     isSellTokenEth?: boolean;
-    userHasEnteredAmount: boolean;
     tokenAQtyCoveredByWalletBalance?: number;
     tokenAQtyCoveredBySurplusBalance?: number;
     tokenBQtyCoveredByWalletBalance?: number;
@@ -108,7 +107,6 @@ export default function CurrencySelector(props: propsIF) {
         tokenADexBalance,
         tokenBDexBalance,
         isSwapCopied,
-        // userHasEnteredAmount,
         isSellTokenEth,
         tokenAQtyCoveredBySurplusBalance,
         tokenAQtyCoveredByWalletBalance,

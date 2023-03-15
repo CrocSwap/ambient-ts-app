@@ -1,12 +1,11 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 // exportable interface for Terms of Service data object
 export interface tosIF {
-    for: string,
-    text: string;
-    version: number;
-    publishedOn: string | Date;
+    for: string;
+    viewAt: string;
+    cid: string;
     acceptedOn?: string | Date;
 };
 
@@ -14,46 +13,55 @@ export interface tosIF {
 // this is the object returned by this hook
 export interface tosMethodsIF {
     isAgreed: boolean,
-    currentToS: tosIF,
-    currentAgreement: tosIF | undefined,
-    acceptAgreement: () => void,
+    tos: tosIF,
+    lastAgreement: tosIF | undefined,
+    acceptToS: () => void,
 }
 
 // central react hook in this file
-export const useTermsOfService = (tos: tosIF): tosMethodsIF => {
+// PARAMS EXPLANATION!!
+// termsFor ➔ human-readable label for this ToS instance (plz_use_snake_case)
+// cid: resource URI endpoint to locate the ToS on IPFS (from environmental variables)
+export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF => {
+    // unique key for data to be stored in local storage
+    const localStorageSlug: string = 'tos_' + termsFor;
+
+    // base URL to combine with resource hash to make valid link
+    const agreementUriBase = 'https://gateway.ipfs.io/ipfs/';
+
+    // current terms of service metadata
+    const tos: tosIF = {
+        for: termsFor,
+        cid: cid,
+        viewAt: agreementUriBase + cid,
+    };
+
     // fn to get the current user agreement from local storage
-    const getLastAgreement = (): (tosIF|undefined) => {
-        const agreement = JSON.parse(localStorage.getItem(`tos_${tos.for}`) as string);
+    const getLastAgreement = () => {
+        const agreement = JSON.parse(localStorage.getItem(localStorageSlug) as string);
         return agreement;
     };
 
     // hook to memoize most recent user agreement data in local state
+    // will be `undefined` if user has not yet agreed
     const [agreement, setAgreement] = useState<tosIF|undefined>(getLastAgreement());
 
-    // sync `agreement` into local storage when user newly agrees 
-    useEffect(() => {
-        // check that `agreement` is not undefined
-        // if it is a defined value, update local storage
-        agreement && localStorage.setItem(`tos_${agreement.for}`, JSON.stringify(agreement));
-    }, [agreement]);
+    // fn to accept terms of service to be called on demand
+    const acceptToS = () => {
+        const newAgreement = {...tos, acceptedOn: new Date().toISOString()};
+        setAgreement(newAgreement);
+        localStorage.setItem(localStorageSlug, JSON.stringify(newAgreement));
+    };
 
-    // memoize check as to whether user agreement is current
-    // memoization matters because some app functionalities will check frequently
-    const isAgreed = useMemo<boolean>(() => {
-        // log rechecks at the debug level
-        console.debug(
-            `rechecking agreement for ${tos.for} terms of service`,
-            tos
-        );
-        // return whether agreement matches the current tos (version number)
-        return agreement?.version === tos.version
-    }, [agreement]);
-
-    // return methods for the app to interact with this instance of ToS
+    // RETURN VALUES
+    // isAgreed ➔ boolean representation whether user is agreed to current ToS
+    // tos ➔ metadata about the current active ToS
+    // lastAgreement ➔ metadata about ToS version user last agreed to
+    // acceptToS ➔ function to record agreement to the current ToS
     return {
-        isAgreed,
-        currentToS: tos,
-        currentAgreement: agreement,
-        acceptAgreement: () => setAgreement({...tos, acceptedOn: new Date().toISOString()})
+        isAgreed: tos.cid === agreement?.cid,
+        tos: tos,
+        lastAgreement: agreement,
+        acceptToS
     };
 };
