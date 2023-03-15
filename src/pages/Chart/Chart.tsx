@@ -295,7 +295,8 @@ export default function Chart(props: ChartData) {
     const [candlestick, setCandlestick] = useState<any>();
     const [barSeries, setBarSeries] = useState<any>();
     // Line Series
-    // const [ghostLines, setGhostLines] = useState<any>();
+    const [ghostLines, setGhostLines] = useState<any>();
+    const [ghostJoin, setGhostJoin] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
     const [marketLine, setMarketLine] = useState<any>();
     const [limitLine, setLimitLine] = useState<any>();
@@ -305,6 +306,11 @@ export default function Chart(props: ChartData) {
     const [horizontalBandJoin, setHorizontalBandJoin] = useState<any>();
     const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
+
+    // NoGoZone Joins
+    const [limitNoGoZone, setLimitNoGoZone] = useState<any>();
+    const [limitNoGoZoneJoin, setlimitNoGoZoneJoin] = useState<any>();
+    const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
 
     // Liq Series
     const [liqBidSeries, setLiqBidSeries] = useState<any>();
@@ -2516,25 +2522,33 @@ export default function Chart(props: ChartData) {
     }, [isAdvancedModeActive, ranges, liquidityData?.liqBidData, scaleData]);
 
     // Ghost Lines
-    // useEffect(() => {
-    //     if (scaleData !== undefined) {
-    //         const ghostLines = d3fc
-    //             .annotationSvgLine()
-    //             .value((d: any) => d.pinnedMaxPriceDisplayTruncated)
-    //             .xScale(scaleData.xScale)
-    //             .yScale(scaleData.yScale);
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const ghostLines = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.tickValue)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
 
-    //         ghostLines.decorate((selection: any) => {
-    //             selection.enter().attr('id', (d: any) => d.name);
-    //             selection.enter().select('g.right-handle').remove();
-    //             selection.enter().select('g.left-handle').remove();
-    //             selection.enter().select('line').attr('class', 'ghostline');
-    //         });
-    //         // setGhostLines(() => {
-    //         //     return ghostLines;
-    //         // });
-    //     }
-    // }, [scaleData]);
+            ghostLines.decorate((selection: any) => {
+                selection.enter().attr('id', (d: any) => d.name);
+                selection.enter().select('g.right-handle').remove();
+                selection.enter().select('g.left-handle').remove();
+                selection.enter().select('line').attr('class', 'ghostline');
+                selection.enter().attr('pointer-events', 'none');
+            });
+
+            setGhostLines(() => {
+                return ghostLines;
+            });
+
+            const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
+
+            setGhostJoin(() => {
+                return ghostJoin;
+            });
+        }
+    }, [scaleData]);
 
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
         if (poolPriceDisplay) {
@@ -2553,6 +2567,35 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
+    }
+
+    function adjTicks(linePrice: any) {
+        const result = [
+            { tickValue: 0.995 * linePrice },
+            { tickValue: 0.99 * linePrice },
+            { tickValue: 0.985 * linePrice },
+            { tickValue: 1.005 * linePrice },
+            { tickValue: 1.01 * linePrice },
+            { tickValue: 1.015 * linePrice },
+        ];
+
+        return result;
+    }
+
+    function setLimitForNoGoZone(newLimitValue: number) {
+        const noGoZoneMin = noGoZoneBoudnaries[0][0];
+        const noGoZoneMax = noGoZoneBoudnaries[0][1];
+
+        const diffNoGoZoneMin = Math.abs(newLimitValue - noGoZoneMin);
+        const diffNoGoZoneMax = Math.abs(newLimitValue - noGoZoneMax);
+        if (newLimitValue >= noGoZoneMin && newLimitValue <= noGoZoneMax) {
+            if (diffNoGoZoneMin > diffNoGoZoneMax) {
+                newLimitValue = noGoZoneMax;
+            } else {
+                newLimitValue = noGoZoneMin;
+            }
+        }
+        return newLimitValue;
     }
 
     // Drag Type
@@ -2911,45 +2954,47 @@ export default function Chart(props: ChartData) {
                     d3.select(d3Container.current).style('cursor', 'row-resize');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'row-resize');
                     hideCrosshair();
+
+                    d3.select(d3Container.current)
+                        .select('.ghostLines')
+                        .selectAll('.horizontal')
+                        .style('visibility', 'visible');
+
+                    d3.select(d3Container.current)
+                        .select('.limitNoGoZone')
+                        .select('.horizontal')
+                        .style('visibility', 'visible');
                 })
                 .on('drag', function (event) {
-                    // d3.select(d3Container.current)
-                    //     .select('.ghostLines')
-                    //     .selectAll('.horizontal')
-                    //     .style('visibility', 'visible');
-
-                    // const snapResponse = snap(
-                    //    liquidityData.liqSnapData,
-                    //     scaleData.yScale.invert(event.y),
-                    // );
-
-                    // const snappedValueIndex = snapResponse[0].index;
-
-                    // const neighborValues: any[] = [];
-
-                    // for (let i = -3; i < 4; i++) {
-                    //     neighborValues.push(props.liquidityData.liqSnapData[snappedValueIndex + i]);
-                    // }
-
-                    // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
                     setIsLineDrag(true);
+
                     newLimitValue = scaleData.yScale.invert(event.y);
+
+                    newLimitValue = setLimitForNoGoZone(newLimitValue);
+                    const lineValues = adjTicks(newLimitValue);
 
                     if (newLimitValue < 0) newLimitValue = 0;
 
-                    // newLimitValue =
-                    //     poolPriceDisplay !== undefined && newLimitValue >= liquidityData.topBoundary
-                    //         ? liquidityData.topBoundary
-                    //         : newLimitValue;
-
                     setLimit(() => {
                         return [{ name: 'Limit', value: newLimitValue }];
+                    });
+
+                    d3.select(d3PlotArea.current).on('draw', function (event: any) {
+                        const svg = d3.select(event.target).select('svg');
+
+                        ghostJoin(svg, [lineValues]).call(ghostLines);
+                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
                     });
                 })
                 .on('end', (event: any) => {
                     showCrosshair();
 
                     d3.select(d3Container.current).style('cursor', 'default');
+
+                    d3.select(d3Container.current)
+                        .select('.limitNoGoZone')
+                        .select('.horizontal')
+                        .style('visibility', 'hidden');
 
                     setCrosshairData([
                         {
@@ -3030,7 +3075,7 @@ export default function Chart(props: ChartData) {
         setDragControl(false);
     }, [parsedChartData]);
 
-    // y Axis
+    // Axis's
     useEffect(() => {
         if (scaleData) {
             const _yAxis = d3fc
@@ -3066,7 +3111,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
             });
         }
-    }, [scaleData]);
+    }, [scaleData, activeTimeFrame]);
 
     // Horizontal Lines
     useEffect(() => {
@@ -4033,7 +4078,11 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        if (!location.pathname.includes('range') && !location.pathname.includes('reposition')) {
+        if (
+            !location.pathname.includes('range') &&
+            !location.pathname.includes('reposition') &&
+            liquidityData !== undefined
+        ) {
             liquidityData.lineAskSeries = [];
             liquidityData.lineBidSeries = [];
         }
@@ -4596,6 +4645,43 @@ export default function Chart(props: ChartData) {
         JSON.stringify(d3Container.current?.offsetWidth),
     ]);
 
+    // NoGoZone
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const limitNoGoZone = d3fc
+                .annotationSvgBand()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .fromValue((d: any) => d[0])
+                .toValue((d: any) => d[1])
+                .decorate((selection: any) => {
+                    selection.select('path').attr('fill', 'rgba(235, 235, 255, 0.1)');
+                    selection.enter().style('visibility', 'hidden');
+                });
+
+            setLimitNoGoZone(() => {
+                return limitNoGoZone;
+            });
+
+            const limitNoGoZoneJoin = d3fc.dataJoin('g', 'limitNoGoZone');
+
+            setlimitNoGoZoneJoin(() => {
+                return limitNoGoZoneJoin;
+            });
+        }
+    }, [scaleData]);
+
+    function noGoZone(poolPrice: any) {
+        return [[poolPrice * 0.99, poolPrice * 1.01]];
+    }
+
+    useEffect(() => {
+        const noGoZoneBoudnaries = noGoZone(poolPriceDisplay);
+        setNoGoZoneBoudnaries(() => {
+            return noGoZoneBoudnaries;
+        });
+    }, [poolPriceDisplay]);
+
     function changeScale() {
         if (poolPriceDisplay && scaleData) {
             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
@@ -4694,9 +4780,12 @@ export default function Chart(props: ChartData) {
             lineDepthBidSeriesJoin !== undefined &&
             lineDepthAskSeriesJoin !== undefined &&
             horizontalBandData !== undefined &&
+            noGoZoneBoudnaries !== undefined &&
             horizontalBandJoin !== undefined &&
             barSeries !== undefined &&
             volumeData !== undefined &&
+            limitNoGoZone !== undefined &&
+            limitNoGoZoneJoin !== undefined &&
             liquidityScale !== undefined
         ) {
             const targetData = {
@@ -4733,12 +4822,15 @@ export default function Chart(props: ChartData) {
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
                 horizontalBandData,
+                noGoZoneBoudnaries,
                 // barSeries,
                 volumeData,
                 // showVolume,
                 selectedDate,
                 liqMode,
                 liquidityScale,
+                limitNoGoZone,
+                limitNoGoZoneJoin,
             );
         }
     }, [
@@ -4768,12 +4860,15 @@ export default function Chart(props: ChartData) {
         mouseMoveEventCharts,
         isZoomForSubChart,
         horizontalBandData,
+        noGoZoneBoudnaries,
         // showVolume,
         selectedDate,
         liqMode,
         liquidityScale,
         liquidityDepthScale,
         showSidebar,
+        limitNoGoZone,
+        limitNoGoZoneJoin,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -4878,12 +4973,7 @@ export default function Chart(props: ChartData) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
-        const { min }: any = findLiqNearest(allData);
-        const filteredAllData = allData.filter(
-            (item: any) => min <= item.liqPrices && item.liqPrices <= scaleData.yScale.domain()[1],
-        );
-
-        const liqMaxActiveLiq = d3.max(filteredAllData, (d: any) => d.activeLiq);
+        const liqMaxActiveLiq = d3.max(allData, (d: any) => d.activeLiq);
 
         const currentDataY = scaleData.yScale.invert(event.offsetY);
         const currentDataX =
@@ -5154,12 +5244,15 @@ export default function Chart(props: ChartData) {
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
             horizontalBandData: any,
+            noGoZoneBoudnaries: any,
             // barSeries: any,
             volumeData: any,
             // showVolume: boolean,
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
+            limitNoGoZone: any,
+            limitNoGoZoneJoin: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -5299,6 +5392,7 @@ export default function Chart(props: ChartData) {
                         let newLimitValue = scaleData.yScale.invert(event.offsetY);
 
                         if (newLimitValue < 0) newLimitValue = 0;
+                        newLimitValue = setLimitForNoGoZone(newLimitValue);
 
                         // newLimitValue =
                         //     poolPriceDisplay !== undefined &&
@@ -5322,6 +5416,8 @@ export default function Chart(props: ChartData) {
                         )
                     ) {
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                        limitNoGoZoneJoin(svg, [noGoZoneBoudnaries]).call(limitNoGoZone);
+
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(limitLine);
@@ -5809,10 +5905,10 @@ export default function Chart(props: ChartData) {
             <d3fc-group id='d3fc_group' auto-resize>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div className='chart_grid'>
-                        <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
-                        <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasCandle} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasBar} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
