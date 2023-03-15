@@ -626,6 +626,7 @@ export default function RemoveRange(props: propsIF) {
 
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings
+            isPairStable={isPairStable}
             persistedSlippage={persistedSlippage}
             setCurrentSlippage={setCurrentSlippage}
         />
