@@ -641,17 +641,7 @@ export default function RemoveRange(props: propsIF) {
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
                 />
-                <ExtraControls
-                    baseTokenBalance={baseTokenBalance}
-                    quoteTokenBalance={quoteTokenBalance}
-                    baseTokenDexBalance={baseTokenDexBalance}
-                    quoteTokenDexBalance={quoteTokenDexBalance}
-                    baseRemovalNum={baseRemovalNum}
-                    quoteRemovalNum={quoteRemovalNum}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    dexBalancePrefs={dexBalancePrefs}
-                />
+                <ExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>
         </>
     );
