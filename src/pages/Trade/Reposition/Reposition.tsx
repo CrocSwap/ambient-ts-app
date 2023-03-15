@@ -58,6 +58,8 @@ interface propsIF {
     lastBlockNumber: number;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
@@ -78,6 +80,8 @@ export default function Reposition(props: propsIF) {
         lastBlockNumber,
         setSimpleRangeWidth,
         simpleRangeWidth,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     // current URL parameter string
@@ -545,6 +549,25 @@ export default function Reposition(props: propsIF) {
         position.askTick,
     ]);
 
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
+
+            setRangeGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -588,6 +611,7 @@ export default function Reposition(props: propsIF) {
                     }
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
+                    rangeGasPriceinDollars={rangeGasPriceinDollars}
                 />
                 <div className={styles.button_container}>
                     <Button
