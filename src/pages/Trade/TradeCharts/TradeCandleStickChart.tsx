@@ -52,8 +52,6 @@ interface ChartData {
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
-    pinnedMinPriceDisplayTruncated: number | undefined;
-    pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
     poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
@@ -84,8 +82,10 @@ interface ChartData {
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
+    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
     rescaleRangeBoundariesWithSlider: boolean;
-    seRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
+    setRescaleRangeBoundariesWithSlider: React.Dispatch<React.SetStateAction<boolean>>;
     showSidebar: boolean;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -126,8 +126,10 @@ export default function TradeCandleStickChart(props: ChartData) {
         setFetchingCandle,
         minPrice,
         maxPrice,
+        setMaxPrice,
+        setMinPrice,
         rescaleRangeBoundariesWithSlider,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
         showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
@@ -780,9 +782,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         rangeSimpleRangeWidth={props.simpleRangeWidth}
-                        pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
-                        pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
-                        poolPriceDisplay={poolPriceDisplay}
+                        poolPriceDisplay={props.poolPriceDisplay}
                         truncatedPoolPrice={props.truncatedPoolPrice}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
@@ -813,8 +813,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         handlePulseAnimation={handlePulseAnimation}
                         minPrice={minPrice}
                         maxPrice={maxPrice}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
                         rescaleRangeBoundariesWithSlider={rescaleRangeBoundariesWithSlider}
-                        seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                        setRescaleRangeBoundariesWithSlider={setRescaleRangeBoundariesWithSlider}
                         showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
                         setRangeSimpleRangeWidth={setSimpleRangeWidth}

@@ -82,8 +82,10 @@ interface propsIF {
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     minPrice: number;
     maxPrice: number;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
     rescaleRangeBoundariesWithSlider: boolean;
-    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
@@ -145,8 +147,10 @@ export default function Trade(props: propsIF) {
         isCandleDataNull,
         minPrice,
         maxPrice,
+        setMaxPrice,
+        setMinPrice,
         rescaleRangeBoundariesWithSlider,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
@@ -195,14 +199,7 @@ export default function Trade(props: propsIF) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
-    const {
-        isDenomBase,
-        limitTick,
-        advancedMode,
-        activeChartPeriod,
-        pinnedMaxPriceDisplayTruncated,
-        pinnedMinPriceDisplayTruncated,
-    } = tradeData;
+    const { isDenomBase, limitTick, advancedMode, activeChartPeriod } = tradeData;
     const baseTokenLogo = isDenomBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
     const quoteTokenLogo = isDenomBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
 
@@ -463,8 +460,6 @@ export default function Trade(props: propsIF) {
         favePools: favePools,
         isAdvancedModeActive: advancedMode,
         simpleRangeWidth: simpleRangeWidth,
-        pinnedMinPriceDisplayTruncated: pinnedMinPriceDisplayTruncated,
-        pinnedMaxPriceDisplayTruncated: pinnedMaxPriceDisplayTruncated,
         upBodyColor: upBodyColor,
         upBorderColor: upBorderColor,
         downBodyColor: downBodyColor,
@@ -486,8 +481,10 @@ export default function Trade(props: propsIF) {
         setFetchingCandle: setFetchingCandle,
         minPrice: minPrice,
         maxPrice: maxPrice,
+        setMaxPrice: setMaxPrice,
+        setMinPrice: setMinPrice,
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
-        seRescaleRangeBoundariesWithSlider: seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider: setRescaleRangeBoundariesWithSlider,
         showSidebar: showSidebar,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
 
