@@ -2586,9 +2586,15 @@ export default function Chart(props: ChartData) {
         return result;
     }
 
-    function setLimitForNoGoZone(newLimitValue: number) {
+    const getNoZoneData = () => {
         const noGoZoneMin = noGoZoneBoudnaries[0][0];
         const noGoZoneMax = noGoZoneBoudnaries[0][1];
+
+        return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
+    };
+
+    function setLimitForNoGoZone(newLimitValue: number) {
+        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
         const diffNoGoZoneMin = Math.abs(newLimitValue - noGoZoneMin);
         const diffNoGoZoneMax = Math.abs(newLimitValue - noGoZoneMax);
@@ -5438,13 +5444,16 @@ export default function Chart(props: ChartData) {
 
                         if (newLimitValue < 0) newLimitValue = 0;
 
+                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+                        if (!(newLimitValue >= noGoZoneMin && newLimitValue <= noGoZoneMax)) {
+                            onBlurLimitRate(newLimitValue);
+                        }
                         // newLimitValue =
                         //     poolPriceDisplay !== undefined &&
                         //     newLimitValue > liquidityData.topBoundary
                         //         ? liquidityData.topBoundary
                         //         : newLimitValue;
-
-                        onBlurLimitRate(setLimitForNoGoZone(newLimitValue));
                     }
                 });
 
@@ -5858,8 +5867,7 @@ export default function Chart(props: ChartData) {
             return;
         }
 
-        const noGoZoneMin = noGoZoneBoudnaries[0][0];
-        const noGoZoneMax = noGoZoneBoudnaries[0][1];
+        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
         let isNoGoneZoneMin: boolean | undefined = undefined;
         if (newLimitValue === noGoZoneMin) {
             isNoGoneZoneMin = true;
