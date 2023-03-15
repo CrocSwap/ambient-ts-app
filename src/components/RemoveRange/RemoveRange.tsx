@@ -3,7 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
@@ -64,16 +64,16 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
+    handleModalClose: () => void;
 }
 
 export default function RemoveRange(props: propsIF) {
     const {
         crocEnv,
-        closeGlobalModal,
         chainData,
         position,
         dexBalancePrefs,
@@ -81,6 +81,7 @@ export default function RemoveRange(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
+        handleModalClose,
     } = props;
 
     const lastBlockNumber = useAppSelector(
@@ -575,7 +576,7 @@ export default function RemoveRange(props: propsIF) {
                         )}
                     </div>
                     {newRemovalTransactionHash !== '' && (
-                        <div onClick={closeGlobalModal}>
+                        <div onClick={handleModalClose}>
                             <VscClose size={30} />
                         </div>
                     )}
@@ -674,7 +675,7 @@ export default function RemoveRange(props: propsIF) {
         <div className={styles.remove_range_container}>
             <div className={styles.main_content}>
                 <RemoveRangeHeader
-                    onClose={closeGlobalModal}
+                    onClose={handleModalClose}
                     title={
                         showSettings
                             ? 'Remove Position Settings'

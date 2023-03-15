@@ -289,6 +289,7 @@ export default function RangesMenu(props: propsIF) {
             {isHarvestModalOpen && (
                 <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
                     <HarvestPosition
+                        handleModalClose={handleModalClose}
                         crocEnv={crocEnv}
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
@@ -304,6 +305,7 @@ export default function RangesMenu(props: propsIF) {
                 >
                     <RemoveRange
                         position={position}
+                        handleModalClose={handleModalClose}
                         dexBalancePrefs={dexBalancePrefs}
                         slippage={slippage}
                         {...rangeDetailsProps}

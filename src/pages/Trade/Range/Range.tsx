@@ -24,7 +24,7 @@ import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrenc
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
-import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
+// import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
@@ -1148,7 +1148,7 @@ export default function Range(props: propsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            <DenominationSwitch />
+            {/* <DenominationSwitch /> */}
         </div>
     );
 

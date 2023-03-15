@@ -3280,6 +3280,8 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
+                                        gasPriceInGwei={gasPriceInGwei}
                                         lastBlockNumber={lastBlockNumber}
                                         tokenPair={tokenPair}
                                         crocEnv={crocEnv}

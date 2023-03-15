@@ -9,7 +9,7 @@ import {
 import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
+// import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
@@ -58,6 +58,8 @@ interface propsIF {
     lastBlockNumber: number;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
@@ -78,6 +80,8 @@ export default function Reposition(props: propsIF) {
         lastBlockNumber,
         setSimpleRangeWidth,
         simpleRangeWidth,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     // current URL parameter string
@@ -198,6 +202,7 @@ export default function Reposition(props: propsIF) {
     };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
 
@@ -544,9 +549,30 @@ export default function Reposition(props: propsIF) {
         position.askTick,
     ]);
 
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
+
+            setRangeGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
+                setRangeWidthPercentage={setRangeWidthPercentage}
+                setSimpleRangeWidth={setSimpleRangeWidth}
                 positionHash={position.positionStorageSlot}
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
@@ -561,10 +587,10 @@ export default function Reposition(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider
                     }
                 />
-                <RepositionDenominationSwitch
+                {/* <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}
                     quoteTokenSymbol={position.quoteSymbol || 'USDC'}
-                />
+                /> */}
                 <RepositionPriceInfo
                     crocEnv={crocEnv}
                     position={position}
@@ -585,6 +611,7 @@ export default function Reposition(props: propsIF) {
                     }
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
+                    rangeGasPriceinDollars={rangeGasPriceinDollars}
                 />
                 <div className={styles.button_container}>
                     <Button
