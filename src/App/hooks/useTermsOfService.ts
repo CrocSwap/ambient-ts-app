@@ -22,7 +22,10 @@ export interface tosMethodsIF {
 // PARAMS EXPLANATION!!
 // termsFor ➔ human-readable label for this ToS instance (plz_use_snake_case)
 // cid: resource URI endpoint to locate the ToS on IPFS (from environmental variables)
-export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF => {
+export const useTermsOfService = (
+    termsFor: string,
+    cid: string,
+): tosMethodsIF => {
     // unique key for data to be stored in local storage
     const localStorageSlug: string = 'tos_' + termsFor;
 
@@ -38,13 +41,17 @@ export const useTermsOfService = (termsFor: string, cid: string): tosMethodsIF =
 
     // fn to get the current user agreement from local storage
     const getLastAgreement = () => {
-        const agreement = JSON.parse(localStorage.getItem(localStorageSlug) as string);
+        const agreement = JSON.parse(
+            localStorage.getItem(localStorageSlug) as string,
+        );
         return agreement;
     };
 
     // hook to memoize most recent user agreement data in local state
     // will be `undefined` if user has not yet agreed
-    const [agreement, setAgreement] = useState<tosIF | undefined>(getLastAgreement());
+    const [agreement, setAgreement] = useState<tosIF | undefined>(
+        getLastAgreement(),
+    );
 
     // fn to accept terms of service to be called on demand
     const acceptToS = () => {

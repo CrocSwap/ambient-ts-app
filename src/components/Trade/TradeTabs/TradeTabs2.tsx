@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction, useRef, ReactNode } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
@@ -24,6 +24,7 @@ import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
+import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -56,37 +57,31 @@ interface propsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
-    openGlobalModal: (content: React.ReactNode) => void;
-
+    openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
     showSidebar: boolean;
     handlePulseAnimation: (type: string) => void;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     selectedDate: Date | undefined;
-    setSelectedDate: React.Dispatch<Date | undefined>;
+    setSelectedDate: Dispatch<Date | undefined>;
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     activeTimeFrame: string;
     unselectCandle: () => void;
     favePools: favePoolsMethodsIF;
     poolPriceDisplay: number;
-
     poolPriceChangePercent: string | undefined;
-
     setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
     isPoolPriceChangePositive: boolean;
-
     setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
     cachedQuerySpotPrice: SpotPriceFn;
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
-
-// const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
 export default function TradeTabs2(props: propsIF) {
     const {
@@ -140,6 +135,7 @@ export default function TradeTabs2(props: propsIF) {
         isCandleArrived,
         setIsCandleDataArrived,
         setSimpleRangeWidth,
+        dexBalancePrefs
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -152,14 +148,12 @@ export default function TradeTabs2(props: propsIF) {
             : true;
 
     const activeChartPeriod = tradeData.activeChartPeriod;
-    // const userData = useAppSelector((state) => state?.userData);
 
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     const userPositions = graphData?.positionsByUser?.positions;
 
     const userPositionsDataReceived = graphData?.positionsByUser.dataReceived;
-    // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
 
@@ -201,8 +195,6 @@ export default function TradeTabs2(props: propsIF) {
 
     useEffect(() => {
         if (!hasInitialized && !hasUserSelectedViewAll && userPositionsDataReceived) {
-            // console.log({ outsideControl });
-            // console.log({ selectedOutsideTab });
             if (
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
@@ -215,7 +207,6 @@ export default function TradeTabs2(props: propsIF) {
                 ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
-                    // console.log('2');
                     return;
                 } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
                     setIsShowAllEnabled(false);
@@ -238,8 +229,6 @@ export default function TradeTabs2(props: propsIF) {
                 (outsideControl && selectedOutsideTab === 2) ||
                 (!outsideControl && selectedInsideTab === 2)
             ) {
-                // console.log({ isShowAllEnabled });
-                // console.log({ matchingUserPositionsLength });
                 if (
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
@@ -304,7 +293,6 @@ export default function TradeTabs2(props: propsIF) {
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<TransactionIF[]>([]);
 
     useEffect(() => {
-        // console.log({ filter });
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
                 tokenList: tokenList,
@@ -346,8 +334,6 @@ export default function TradeTabs2(props: propsIF) {
     const [leader, setLeader] = useState('');
     const [leaderOwnerId, setLeaderOwnerId] = useState('');
 
-    // console.log(leader);
-
     // Props for <Ranges/> React Element
     const rangesProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -370,24 +356,17 @@ export default function TradeTabs2(props: propsIF) {
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,
-
         closeGlobalModal: props.closeGlobalModal,
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
-
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
         handlePulseAnimation: handlePulseAnimation,
-        // handleRangeCopiedClick: handleRangeCopiedClick,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        dexBalancePrefs: dexBalancePrefs
     };
-    // Props for <Ranges/> React Element
-    // const poolInfoProps = {
-    //     chainData: chainData,
-    //     lastBlockNumber: lastBlockNumber,
-    //     showSidebar: showSidebar,
-    // };
+
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
@@ -413,11 +392,10 @@ export default function TradeTabs2(props: propsIF) {
         showSidebar: showSidebar,
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
-
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        // handleTxCopiedClick: handleTxCopiedClick,
     };
+
     // Props for <Orders/> React Element
     const ordersProps = {
         crocEnv: crocEnv,
@@ -434,13 +412,11 @@ export default function TradeTabs2(props: propsIF) {
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
-        // handleOrderCopiedClick: handleOrderCopiedClick,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
         lastBlockNumber: lastBlockNumber,
     };
-    // props for <PositionsOnlyToggle/> React Element
 
     const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] = useState(true);
 
@@ -476,72 +452,43 @@ export default function TradeTabs2(props: propsIF) {
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         simplifyVersion: true,
     };
+
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
         ? [
-              {
-                  label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
-                  icon: recentTransactionsImage,
-                  showRightSideOption: true,
-              },
-              //   {
-              //       label: 'Limits',
-              //       content: <Orders {...ordersProps} />,
-              //       icon: openOrdersImage,
-              //       showRightSideOption: true,
-              //   },
-              //   {
-              //       label: 'Ranges',
-              //       content: <Ranges {...rangesProps} />,
-              //       icon: rangePositionsImage,
-              //       showRightSideOption: true,
-              //   },
-              //   {
-              //       label: 'Leaderboard',
-              //       content: <Leaderboard {...rangesProps} />,
-              //       icon: rangePositionsImage,
-              //       showRightSideOption: false,
-              //   },
-              //   {
-              //       label: 'Info',
-              //       content: <PoolInfo {...poolInfoProps} />,
-              //       icon: rangePositionsImage,
-              //       showRightSideOption: false,
-              //   },
-          ]
+            {
+                label: 'Transactions',
+                content: <Transactions {...transactionsProps} />,
+                icon: recentTransactionsImage,
+                showRightSideOption: true,
+            }
+        ]
         : [
-              {
-                  label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
-                  icon: recentTransactionsImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Limits',
-                  content: <Orders {...ordersProps} />,
-                  icon: openOrdersImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Ranges',
-                  content: <Ranges {...rangesProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: true,
-              },
-              {
-                  label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
-                  icon: leaderboard,
-                  showRightSideOption: false,
-              },
-              //   {
-              //       label: 'Info',
-              //       content: <PoolInfo {...poolInfoProps} />,
-              //       icon: rangePositionsImage,
-              //       showRightSideOption: false,
-              //   },
-          ];
+            {
+                label: 'Transactions',
+                content: <Transactions {...transactionsProps} />,
+                icon: recentTransactionsImage,
+                showRightSideOption: true,
+            },
+            {
+                label: 'Limits',
+                content: <Orders {...ordersProps} />,
+                icon: openOrdersImage,
+                showRightSideOption: true,
+            },
+            {
+                label: 'Ranges',
+                content: <Ranges {...rangesProps} />,
+                icon: rangePositionsImage,
+                showRightSideOption: true,
+            },
+            {
+                label: 'Leaderboard',
+                content: <Leaderboard {...rangesProps} />,
+                icon: leaderboard,
+                showRightSideOption: false,
+            },
+        ];
 
     // -------------------------------END OF DATA-----------------------------------------
     const tabComponentRef = useRef<HTMLDivElement>(null);
@@ -550,11 +497,6 @@ export default function TradeTabs2(props: propsIF) {
         setCurrentTxActiveInTransactions('');
         setCurrentPositionActive('');
     };
-    // const unselectCandle = () => {
-    //     setSelectedDate(undefined);
-    //     changeState(false, undefined);
-    //     setIsCandleSelected(false);
-    // };
 
     const clearButtonOrNull = isCandleSelected ? (
         <button className={styles.option_button} onClick={() => unselectCandle()}>
@@ -564,8 +506,6 @@ export default function TradeTabs2(props: propsIF) {
 
     const utcDiff = moment().utcOffset();
     const utcDiffHours = Math.floor(utcDiff / 60);
-
-    // console.log({ utcDiffHours });
 
     const selectedMessageContent = (
         <div className={styles.show_tx_message}>
@@ -582,11 +522,7 @@ export default function TradeTabs2(props: propsIF) {
                 leaveDelay={200}
             >
                 <p
-                    onClick={() => {
-                        unselectCandle();
-                        // setIsCandleSelected(false);
-                        // setTransactionFilter(undefined);
-                    }}
+                    onClick={() => unselectCandle()}
                     style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
                 >
                     {isCandleSelected &&

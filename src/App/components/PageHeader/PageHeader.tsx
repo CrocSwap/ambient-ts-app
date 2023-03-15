@@ -102,7 +102,8 @@ export default function PageHeader(props: HeaderPropsIF) {
             : 'local';
 
     const showBranchName =
-        branchName.toLowerCase() !== 'main' && branchName.toLowerCase() !== 'production';
+        branchName.toLowerCase() !== 'main' &&
+        branchName.toLowerCase() !== 'production';
 
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const modalTitle = 'Log in with Email';
@@ -155,13 +156,15 @@ export default function PageHeader(props: HeaderPropsIF) {
     // }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
-    const accountAddress = isConnected && address ? trimString(address, 6, 6) : '';
+    const accountAddress =
+        isConnected && address ? trimString(address, 6, 6) : '';
     const userData = useAppSelector((state) => state.userData);
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
 
     const accountProps = {
-        nativeBalance: connectedUserNativeToken?.combinedBalanceDisplayTruncated,
+        nativeBalance:
+            connectedUserNativeToken?.combinedBalanceDisplayTruncated,
         accountAddress: accountAddress,
         accountAddressFull: isConnected && address ? address : '',
         ensName: ensName || '',
@@ -190,7 +193,10 @@ export default function PageHeader(props: HeaderPropsIF) {
     // );
 
     const connectWagmiButton = (
-        <button className={styles.authenticate_button} onClick={() => openWagmiModalWallet()}>
+        <button
+            className={styles.authenticate_button}
+            onClick={() => openWagmiModalWallet()}
+        >
             Connect Wallet
         </button>
     );
@@ -252,8 +258,10 @@ export default function PageHeader(props: HeaderPropsIF) {
 
         const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
         const isAddressHex =
-            (pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42) ||
-            (pathNoLeadingSlash?.startsWith('account/0x') && pathNoLeadingSlash?.length == 50);
+            (pathNoLeadingSlash?.startsWith('0x') &&
+                pathNoLeadingSlash?.length == 42) ||
+            (pathNoLeadingSlash?.startsWith('account/0x') &&
+                pathNoLeadingSlash?.length == 50);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
         // console.log({ isPathValidAddress });
@@ -269,7 +277,10 @@ export default function PageHeader(props: HeaderPropsIF) {
                     : pathNoPrefix
                 : trimString(pathNoPrefix, 6, 0, '…');
             document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
-        } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
+        } else if (
+            location.pathname.includes('swap') ||
+            location.pathname.includes('trade')
+        ) {
             document.title = isDenomBase
                 ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
@@ -292,13 +303,21 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap' + paramsSlug, shouldDisplay: true },
+        {
+            title: t('common:swapTitle'),
+            destination: '/swap' + paramsSlug,
+            shouldDisplay: true,
+        },
         {
             title: t('common:tradeTitle'),
             destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
-        { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
+        {
+            title: t('common:analyticsTitle'),
+            destination: '/analytics',
+            shouldDisplay: false,
+        },
         {
             title: t('common:accountTitle'),
             destination: '/account',
@@ -320,7 +339,9 @@ export default function PageHeader(props: HeaderPropsIF) {
                         <Link
                             className={
                                 link.destination.includes('/trade')
-                                    ? location.pathname.includes(tradeDestination)
+                                    ? location.pathname.includes(
+                                          tradeDestination,
+                                      )
                                         ? styles.active
                                         : styles.inactive
                                     : link.destination.includes('/swap')
@@ -341,7 +362,10 @@ export default function PageHeader(props: HeaderPropsIF) {
                                 (location.pathname.includes('/swap') &&
                                     link.destination.includes('/swap')) ||
                                 location.pathname === link.destination) && (
-                                <motion.div className={styles.underline} layoutId='underline' />
+                                <motion.div
+                                    className={styles.underline}
+                                    layoutId='underline'
+                                />
                             )}
                             {/* {location.pathname === link.destination && (
                                 <motion.div className={styles.underline} layoutId='underline' />
