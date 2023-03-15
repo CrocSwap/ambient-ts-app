@@ -86,7 +86,7 @@ export default function TransactionRow(props: propsIF) {
 
         type,
         usdValue,
-        txUsdValueLocaleString,
+        // txUsdValueLocaleString,
         baseTokenSymbol,
         baseTokenAddress,
         quoteTokenSymbol,

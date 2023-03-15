@@ -79,7 +79,7 @@ export default function OrderRow(props: propsIF) {
         truncatedDisplayPrice,
         sideType,
         usdValue,
-        usdValueLocaleString,
+        // usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,

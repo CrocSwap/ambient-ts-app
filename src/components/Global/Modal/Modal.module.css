@@ -29,10 +29,12 @@
 
     height: fit-content;
     min-height: 300px;
+    min-width: 300px;
     border-radius: var(--border-radius);
     position: relative;
     /* max-height: 80vh; */
     color: var(--text-grey-white);
+    top: 1rem;
 
     /* min-height: 80vh; */
 }
@@ -76,7 +78,7 @@
     cursor: pointer;
 }
 
-@media only screen and (min-width: 1380px) {
+@media only screen and (min-width: 500px) {
     .modal_body {
         top: 10rem;
 

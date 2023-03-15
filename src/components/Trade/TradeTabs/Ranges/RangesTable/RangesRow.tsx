@@ -94,7 +94,7 @@ export default function RangesRow(props: propsIF) {
         // isOrderFilled,
 
         usdValue,
-        usdValueLocaleString,
+        // usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,

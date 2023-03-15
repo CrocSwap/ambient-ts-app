@@ -26,6 +26,7 @@ import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import { BiGitBranch } from 'react-icons/bi';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -391,7 +392,13 @@ export default function PageHeader(props: HeaderPropsIF) {
                     switchTheme={switchTheme}
                 /> */}
                 <div className={styles.account}>
-                    <p className={styles.branch_name}>{showBranchName ? branchName : null}</p>
+                    <p className={styles.branch_name}>
+                        {showBranchName ? (
+                            <div className={styles.branch}>
+                                {branchName} <BiGitBranch color='yellow' />
+                            </div>
+                        ) : null}
+                    </p>
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
                     {!isConnected && connectWagmiButton}

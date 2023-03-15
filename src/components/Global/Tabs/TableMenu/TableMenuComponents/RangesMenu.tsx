@@ -102,10 +102,10 @@ export default function RangesMenu(props: propsIF) {
         </Modal>
     ) : null;
 
-    const openRemoveModal = () => {
-        setShowDropdownMenu(false);
-        openGlobalModal(<RemoveRange position={position} {...rangeDetailsProps} />);
-    };
+    // const openRemoveModal = () => {
+    //     setShowDropdownMenu(false);
+    //     openGlobalModal(<RemoveRange position={position} {...rangeDetailsProps} />);
+    // };
 
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
