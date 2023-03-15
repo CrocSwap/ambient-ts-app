@@ -7,7 +7,7 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 0.2rem;
-    padding: 1rem;
+    /* padding: 1rem; */
     /* padding: 0 2rem; */
 }
 
@@ -26,10 +26,11 @@
     top: 40px;
 }
 .header_container {
-    display: grid;
+    /* display: grid;
     grid-template-columns: auto 50px;
     gap: 10px;
-    align-items: center;
+    align-items: center; */
+    height: 50px;
 }
 
 .settings_icon {

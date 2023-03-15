@@ -1,13 +1,17 @@
 .header_container{
     
-    height: 41px;
+    /* height: 41px; */
 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  
+background: var(--dark1);
+padding: 1rem;
+border-radius: 4px;
 
-    /* background: red; */
+
 }
 
 .header_container svg{

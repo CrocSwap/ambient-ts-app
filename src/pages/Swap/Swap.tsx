@@ -189,8 +189,12 @@ export default function Swap(props: propsIF) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const [sellQtyString, setSellQtyString] = useState<string>('');
-    const [buyQtyString, setBuyQtyString] = useState<string>('');
+    const [sellQtyString, setSellQtyString] = useState<string>(
+        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
+    const [buyQtyString, setBuyQtyString] = useState<string>(
+        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
 
     const slippageTolerancePercentage = isPairStable ? swapSlippage.stable : swapSlippage.volatile;
 

@@ -1,9 +1,9 @@
 import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
 
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -86,7 +86,7 @@ export default function TransactionRow(props: propsIF) {
 
         type,
         usdValue,
-        txUsdValueLocaleString,
+        // txUsdValueLocaleString,
         baseTokenSymbol,
         baseTokenAddress,
         quoteTokenSymbol,
@@ -188,7 +188,12 @@ export default function TransactionRow(props: propsIF) {
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
 
-    const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
+    const usernameStyle =
+        isOwnerActiveAccount && isShowAllEnabled
+            ? 'owned_tx_contrast'
+            : ensName || userNameToDisplay === 'You'
+            ? 'gradient_text'
+            : 'base_color';
 
     const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
@@ -216,61 +221,86 @@ export default function TransactionRow(props: propsIF) {
         }
     }
 
+    const [highlightRow, setHighlightRow] = useState(false);
+    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
+    const handleRowMouseDown = () => setHighlightRow(true);
+    const handleRowMouseOut = () => setHighlightRow(false);
+
     const IDWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
+                <div
+                    onClick={handleOpenExplorer}
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     {txHash + 'ㅤ'}
                     {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
                     <FiExternalLink size={'12px'} />
                 </div>
             } // invisible space character added
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={handleOpenExplorer}
                 data-label='id'
-                className='base_color'
+                className={`${styles.base_color} ${styles.hover_style}`}
                 style={{ fontFamily: 'monospace' }}
             >
                 {txHashTruncated}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const usdValueWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={txUsdValueLocaleString}
-            placement={'right-end'}
-            arrow
-            disableHoverListener={true}
-            enterDelay={750}
-            leaveDelay={200}
+        // <DefaultTooltip
+        //     interactive
+        //     title={txUsdValueLocaleString}
+        //     placement={'right-end'}
+        //     arrow
+        //     disableHoverListener={true}
+        //     enterDelay={750}
+        //     leaveDelay={0}
+        // >
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={openDetailsModal}
+            data-label='value'
+            className='base_color'
+            // className='gradient_text'
+            style={{ textAlign: 'right', fontFamily: 'monospace' }}
         >
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='base_color'
-                // className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {usdValue}
-            </li>
-        </DefaultTooltip>
+            {usdValue}
+        </li>
+        // </DefaultTooltip>
     );
 
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div>
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
@@ -289,9 +319,8 @@ export default function TransactionRow(props: propsIF) {
                 </div>
             }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={() => {
@@ -304,12 +333,12 @@ export default function TransactionRow(props: propsIF) {
                     navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
                 }}
                 data-label='wallet'
-                className={usernameStyle}
+                className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent =
@@ -329,7 +358,7 @@ export default function TransactionRow(props: propsIF) {
                 disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
-                leaveDelay={200}
+                leaveDelay={0}
             >
                 <img src={baseTokenLogo} alt='base token' width={logoSizes} />
             </DefaultTooltip>
@@ -355,7 +384,7 @@ export default function TransactionRow(props: propsIF) {
                 disableHoverListener={!isOnPortfolioPage}
                 arrow
                 enterDelay={750}
-                leaveDelay={200}
+                leaveDelay={0}
             >
                 <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
             </DefaultTooltip>
@@ -414,9 +443,13 @@ export default function TransactionRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={150}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li className='base_color'>
+            <li
+                className='base_color'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 {/* {tokensTogether} */}
                 <NavLink
                     // onClick={() => {
@@ -471,21 +504,39 @@ export default function TransactionRow(props: propsIF) {
             : 'Pending...';
 
     const TxTimeWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
-            title={moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
-            placement={'left'}
+            title={
+                <p
+                    style={{
+                        marginLeft: '-70px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+                </p>
+            }
+            placement={'right'}
             arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <li
+                onClick={openDetailsModal}
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
     // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
     // const quoteQtyToolTipStyle = (
@@ -500,7 +551,13 @@ export default function TransactionRow(props: propsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -528,7 +585,13 @@ export default function TransactionRow(props: propsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -552,7 +615,7 @@ export default function TransactionRow(props: propsIF) {
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
                     ? null
@@ -605,7 +668,7 @@ export default function TransactionRow(props: propsIF) {
                     placement={'right'}
                     arrow
                     enterDelay={750}
-                    leaveDelay={200}
+                    leaveDelay={0}
                 >
                     <li
                         data-label='id'
@@ -613,8 +676,13 @@ export default function TransactionRow(props: propsIF) {
                             handleOpenExplorer();
                         }}
                     >
-                        <p className='base_color'>{txHashTruncated}</p>{' '}
-                        <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        <p className={`${styles.base_color} ${styles.hover_style}`}>
+                            {txHashTruncated}
+                        </p>{' '}
+                        <p
+                            className={`${usernameStyle} ${styles.hover_style}`}
+                            style={{ textTransform: 'lowercase' }}
+                        >
                             {userNameToDisplay}
                         </p>
                     </li>
@@ -624,6 +692,8 @@ export default function TransactionRow(props: propsIF) {
                 (tx.entityType === 'liqchange' ? (
                     tx.positionType === 'ambient' ? (
                         <li
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
                             onClick={openDetailsModal}
                             data-label='price'
                             className={'gradient_text'}
@@ -637,6 +707,8 @@ export default function TransactionRow(props: propsIF) {
                         </li>
                     ) : (
                         <li
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
                             onClick={openDetailsModal}
                             data-label='price'
                             className={`${priceStyle}`}
@@ -661,6 +733,8 @@ export default function TransactionRow(props: propsIF) {
                     )
                 ) : (
                     <li
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                         onClick={() => {
                             console.log({ isOnPortfolioPage });
                             console.log({ truncatedDisplayPriceDenomByMoneyness });
@@ -695,6 +769,8 @@ export default function TransactionRow(props: propsIF) {
                 ))}
             {!showColumns && (
                 <li
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                     onClick={openDetailsModal}
                     data-label='side'
                     className={sideTypeStyle}
@@ -707,6 +783,8 @@ export default function TransactionRow(props: propsIF) {
             )}
             {!showColumns && (
                 <li
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                     onClick={openDetailsModal}
                     data-label='type'
                     className={sideTypeStyle}
@@ -717,6 +795,8 @@ export default function TransactionRow(props: propsIF) {
             )}
             {showColumns && !ipadView && (
                 <li
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                     data-label='side-type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
