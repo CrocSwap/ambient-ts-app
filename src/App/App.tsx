@@ -2652,7 +2652,7 @@ export default function App() {
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
-    const [chatStatus, setChatStatus] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
@@ -2768,8 +2768,7 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
-        currentLocation !== '/app/chat' &&
-        currentLocation !== '/chat' &&
+        !currentLocation.includes('/chat') &&
         !fullScreenChart &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
@@ -2787,8 +2786,7 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
-        currentLocation == '/app/chat' ||
-        currentLocation == '/chat' ||
+        currentLocation.includes('/chat') ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
@@ -3045,33 +3043,35 @@ export default function App() {
                             />
                         </Route>
                         <Route
-                            path='app/chat'
-                            element={
-                                <ChatPanel
-                                    chatStatus={true}
-                                    onClose={() => {
-                                        console.error('Function not implemented.');
-                                    }}
-                                    favePools={favePools}
-                                    currentPool={currentPoolInfo}
-                                    setChatStatus={setChatStatus}
-                                    isFullScreen={true}
-                                    userImageData={imageData}
-                                    username={ensName}
-                                />
-                            }
-                        />
-                        <Route
                             path='chat'
                             element={
                                 <ChatPanel
-                                    chatStatus={true}
+                                    isChatOpen={true}
                                     onClose={() => {
                                         console.error('Function not implemented.');
                                     }}
                                     favePools={favePools}
                                     currentPool={currentPoolInfo}
-                                    setChatStatus={setChatStatus}
+                                    setIsChatOpen={setIsChatOpen}
+                                    isFullScreen={true}
+                                    userImageData={imageData}
+                                    username={ensName}
+                                    appPage={true}
+                                />
+                            }
+                        />
+
+                        <Route
+                            path='chat/:params'
+                            element={
+                                <ChatPanel
+                                    isChatOpen={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setIsChatOpen={setIsChatOpen}
                                     isFullScreen={true}
                                     userImageData={imageData}
                                     appPage={true}
@@ -3309,13 +3309,13 @@ export default function App() {
                     currentLocation !== '/app/chat' &&
                     currentLocation !== '/chat' && (
                         <ChatPanel
-                            chatStatus={chatStatus}
+                            isChatOpen={isChatOpen}
                             onClose={() => {
                                 console.error('Function not implemented.');
                             }}
                             favePools={favePools}
                             currentPool={currentPoolInfo}
-                            setChatStatus={setChatStatus}
+                            setIsChatOpen={setIsChatOpen}
                             isFullScreen={false}
                             userImageData={imageData}
                         />
