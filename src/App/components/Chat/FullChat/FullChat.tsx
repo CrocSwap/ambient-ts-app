@@ -5,7 +5,7 @@ import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-ic
 import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../../utils/interfaces/exports';
@@ -31,11 +31,14 @@ interface ChannelDisplayPropsIF {
     isDropdown: boolean;
 }
 export default function FullChat(props: FullChatPropsIF) {
+    const { params } = useParams();
+    const reconstructedReadableRoom = params ? params.replace('&', '/') : undefined;
+
     // eslint-disable-next-line
     const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
     const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
-    const [readableRoomName, setReadableName] = useState('Global');
+    const [readableRoomName, setReadableName] = useState(reconstructedReadableRoom || 'Global');
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     // eslint-disable-next-line
