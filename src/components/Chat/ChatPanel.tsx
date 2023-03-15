@@ -382,7 +382,6 @@ export default function ChatPanel(props: propsIF) {
                         />
                     </div>
                 ))}
-            {isChatDisabled && <div className={styles.disabled_overlay} />}
         </div>
     );
 
@@ -490,6 +489,19 @@ export default function ChatPanel(props: propsIF) {
             />
         );
 
+    const disabledOverlay = (
+        <div className={styles.disabled_overlay}>
+            <div className={styles.disabled_container}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam
+                laborum eos dicta consequatur earum quaerat neque ducimus rerum
+                eius iusto!
+                <button onClick={() => setIsChatDisabled(false)}>
+                    Accept Tos
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <div
             className={styles.main_container}
@@ -536,6 +548,8 @@ export default function ChatPanel(props: propsIF) {
 
                     {messageInput}
                     <div id='thelastmessage' />
+
+                    {isChatDisabled && disabledOverlay}
                 </div>
             </div>
         </div>
