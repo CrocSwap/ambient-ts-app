@@ -9,10 +9,6 @@ interface propsIF {
 export default function RemoveRangeSettings(props: propsIF) {
     const { persistedSlippage, setCurrentSlippage } = props;
 
-    const preset1 = 0.1;
-    const preset2 = 0.3;
-    const preset3 = 0.5;
-
     // this layer is necessary to make the `<input />` responsive to change
     // future Emily this is past Emily yes you're going to hate this
     // ... implementation but please trust me it really is necessary
@@ -23,6 +19,8 @@ export default function RemoveRangeSettings(props: propsIF) {
         setSlip(val);
         setCurrentSlippage(val);
     };
+
+    const presets: number[] = [0.1, 0.3, 0.5];
 
     return (
         <div className={styles.main_container}>
@@ -43,15 +41,14 @@ export default function RemoveRangeSettings(props: propsIF) {
                                 placeholder={'slippage'}
                             />
                         </div>
-                        <button onClick={() => takeNewSlippage(preset1)}>
-                            {preset1}%
-                        </button>
-                        <button onClick={() => takeNewSlippage(preset2)}>
-                            {preset2}%
-                        </button>
-                        <button onClick={() => takeNewSlippage(preset3)}>
-                            {preset3}%
-                        </button>
+                        {presets.map((preset) => (
+                            <button
+                                key={`rmv-preset-button-${preset}`}
+                                onClick={() => takeNewSlippage(preset)}
+                            >
+                                {preset}%
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>
