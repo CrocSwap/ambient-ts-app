@@ -3,19 +3,14 @@ import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPosi
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
 import { useEffect, useState } from 'react';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import Button from '../Global/Button/Button';
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
-import {
-    CircleLoader,
-    CircleLoaderFailed,
-} from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+
 import {
     ambientPosSlot,
     ChainSpec,
@@ -39,6 +34,9 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -388,45 +386,20 @@ export default function HarvestPosition(props: propsIF) {
 
     // confirmation modal
     const removalDenied = (
-        <div className={styles.removal_denied}>
-            <CircleLoaderFailed size='10rem' />
-            <p>
-                Check the Metamask extension in your browser for notifications,
-                or click &quot;Try Again&quot;. You can also click the left
-                arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat />
-        </div>
+        <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const etherscanLink =
-        chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
-
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-                <p>Harvest Transaction Successfully Submitted!</p>
-            </div>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newHarvestTransactionHash}
+            content='Harvest Transaction Successfully Submitted!'
+        />
     );
 
     const removalPending = (
-        <div className={styles.removal_pending}>
-            <CircleLoader size='10rem' borderColor='#171d27' />
-            <p>
-                Check the Metamask extension in your browser for notifications.
-            </p>
-        </div>
+        <WaitingConfirmation
+            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+        />
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
