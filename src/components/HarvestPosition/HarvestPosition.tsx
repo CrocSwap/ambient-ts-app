@@ -543,9 +543,7 @@ export default function HarvestPosition(props: propsIF) {
                 <HarvestPositionHeader
                     onClose={handleModalClose}
                     title={
-                        showSettings
-                            ? 'Harvest Position Settings'
-                            : 'Harvest Position'
+                        showSettings ? 'Harvest Settings' : 'Harvest Rewards'
                     }
                     onBackButton={() => {
                         resetConfirmation();
