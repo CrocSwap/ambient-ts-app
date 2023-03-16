@@ -22,7 +22,7 @@ export default function RemoveRangeSettings(props: propsIF) {
     };
 
     // preset values, first set is for stable pairs, second is for volatile
-    const presets: number[] = isPairStable ? [0.1, 0.3, 0.5] : [0.1, 0.3, 0.5];
+    const presets: number[] = isPairStable ? [1, 2, 3] : [1, 2, 3];
 
     return (
         <div className={styles.main_container}>
