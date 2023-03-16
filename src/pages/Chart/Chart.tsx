@@ -193,6 +193,7 @@ export default function Chart(props: ChartData) {
     const d3CanvasCrHorizontal = useRef(null);
     const d3CanvasCrVertical = useRef(null);
     const d3CanvasMarketLine = useRef(null);
+    const d3CanvasLimitLine = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -310,7 +311,6 @@ export default function Chart(props: ChartData) {
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [horizontalBandJoin, setHorizontalBandJoin] = useState<any>();
     const [horizontalBand, setHorizontalBand] = useState<any>();
-    const [limitJoin, setLimitJoin] = useState<any>();
 
     // NoGoZone Joins
     const [limitNoGoZone, setLimitNoGoZone] = useState<any>();
@@ -1276,82 +1276,6 @@ export default function Chart(props: ChartData) {
         }
     };
 
-    const hideCrosshair = () => {
-        d3.select(d3PlotArea.current)
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'hidden');
-
-        d3.select(d3PlotArea.current)
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'hidden');
-
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'hidden');
-
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'hidden');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'hidden');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'hidden');
-    };
-
-    const showCrosshair = () => {
-        d3.select(d3PlotArea.current)
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select(d3PlotArea.current)
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
-    };
-
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && parsedChartData !== undefined) {
@@ -1569,8 +1493,6 @@ export default function Chart(props: ChartData) {
                             parsedChartData?.chartData[0].time * 1000,
                         );
                     }
-
-                    hideCrosshair();
                 })
                 .on('zoom', (event: any) => {
                     async function newDomains(parsedChartData: any) {
@@ -1800,8 +1722,6 @@ export default function Chart(props: ChartData) {
                         setShowLatest(false);
                     }
 
-                    showCrosshair();
-
                     props.setShowTooltip(true);
 
                     setIsMouseMoveCrosshair(false);
@@ -1829,8 +1749,6 @@ export default function Chart(props: ChartData) {
                 } else {
                     firstLocation = event.sourceEvent.offsetY;
                 }
-
-                hideCrosshair();
             };
 
             const yAxisZoom = d3
@@ -2621,7 +2539,6 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
-                    hideCrosshair();
                 })
                 .on('drag', function (event) {
                     // d3.select(d3Container.current)
@@ -2877,8 +2794,6 @@ export default function Chart(props: ChartData) {
                     }
                 })
                 .on('end', (event: any) => {
-                    showCrosshair();
-
                     d3.select(d3Container.current).style('cursor', 'default');
                     setCrosshairData([
                         {
@@ -2958,7 +2873,6 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'row-resize');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'row-resize');
-                    hideCrosshair();
 
                     d3.select(d3Container.current)
                         .select('.ghostLines')
@@ -2988,12 +2902,9 @@ export default function Chart(props: ChartData) {
                         const svg = d3.select(event.target).select('svg');
 
                         ghostJoin(svg, [lineValues]).call(ghostLines);
-                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
                     });
                 })
                 .on('end', (event: any) => {
-                    showCrosshair();
-
                     d3.select(d3Container.current).style('cursor', 'default');
 
                     d3.select(d3Container.current)
@@ -3122,33 +3033,23 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const limitLine = d3fc
-                .annotationSvgLine()
+                .annotationCanvasLine()
                 .value((d: any) => d.value)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            limitLine.decorate((selection: any) => {
-                selection
-                    .enter()
-                    .style(
-                        'visibility',
-                        location.pathname.includes('/limit') ? 'visible' : 'hidden',
-                    )
-                    .attr('id', (d: any) => d.name)
-                    .select('g.left-handle')
-                    .attr('x', 5)
-                    .attr('y', -5);
-                selection
-                    .enter()
-                    .append('rect')
-                    .attr('width', '100%')
-                    .attr('y', -20)
-                    .attr('height', '8%')
-                    .attr('fill', 'transparent')
-                    .attr('stroke', 'none');
-
-                selection.enter().select('g.right-handle').remove();
-                selection.select('line').attr('class', checkLimitOrder ? sellOrderStyle : 'line');
+            limitLine.decorate((context: any) => {
+                // selection
+                //     .enter()
+                //     .style(
+                //         'visibility',
+                //         location.pathname.includes('/limit') ? 'visible' : 'hidden',
+                //     )
+                context.visibility = location.pathname.includes('/limit') ? 'visible' : 'hidden';
+                context.strokeStyle = 'var(--accent-secondary)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 3;
+                //  selection.select('line').attr('class', checkLimitOrder ? sellOrderStyle : 'line');
             });
 
             const marketLine = d3fc
@@ -3194,8 +3095,6 @@ export default function Chart(props: ChartData) {
             const targetsJoin = d3fc.dataJoin('g', 'targets');
             const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
 
-            const limitJoin = d3fc.dataJoin('g', 'limit');
-
             if (d3.select(d3Container.current).select('.liqTooltip').node() === null) {
                 const liqTooltip = d3
                     .select(d3Container.current)
@@ -3224,10 +3123,6 @@ export default function Chart(props: ChartData) {
 
             setHorizontalBandJoin(() => {
                 return horizontalBandJoin;
-            });
-
-            setLimitJoin(() => {
-                return limitJoin;
             });
 
             setHorizontalLine(() => {
@@ -3661,14 +3556,8 @@ export default function Chart(props: ChartData) {
                     );
             }
 
-            if (location.pathname.includes('/limit')) {
-                d3.select(d3Container.current)
-                    .select('.limit')
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'row-resize');
-                        d3.select(event.currentTarget).select('line').style('cursor', 'row-resize');
-                    })
-                    .call(dragLimit);
+            if (location.pathname.includes('/limit') && d3CanvasLimitLine !== undefined) {
+                d3.select(d3CanvasLimitLine.current).call(dragLimit);
             }
         }
     }, [
@@ -3678,6 +3567,7 @@ export default function Chart(props: ChartData) {
         location,
         horizontalLine,
         currentPoolPriceTick,
+        d3CanvasLimitLine,
     ]);
 
     const onClickRange = async (event: any) => {
@@ -4080,7 +3970,23 @@ export default function Chart(props: ChartData) {
                     marketLine.context(ctx);
                 });
         }
-    }, [crosshairData, marketLine]);
+    }, [market, marketLine]);
+
+    useEffect(() => {
+        const canvas = d3.select(d3CanvasLimitLine.current).select('canvas').node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (limitLine) {
+            d3.select(d3CanvasLimitLine.current)
+                .on('draw', () => {
+                    limitLine(limit);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([16, 16]);
+                    limitLine.context(ctx);
+                });
+        }
+    }, [limit, limitLine]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -4178,6 +4084,11 @@ export default function Chart(props: ChartData) {
 
         if (d3CanvasMarketLine) {
             const container = d3.select(d3CanvasMarketLine.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasLimitLine) {
+            const container = d3.select(d3CanvasLimitLine.current).node() as any;
             if (container) container.requestRedraw();
         }
     }
@@ -4895,10 +4806,7 @@ export default function Chart(props: ChartData) {
             parsedChartData !== undefined &&
             scaleData !== undefined &&
             zoomUtils !== undefined &&
-            limitJoin !== undefined &&
             liqTooltip !== undefined &&
-            limitLine !== undefined &&
-            marketLine !== undefined &&
             candlestick !== undefined &&
             targetsJoin !== undefined &&
             lineBidSeries !== undefined &&
@@ -4931,10 +4839,8 @@ export default function Chart(props: ChartData) {
                 liquidityData,
                 zoomUtils,
                 horizontalLine,
-                limitLine,
                 targetsJoin,
                 horizontalBandJoin,
-                limitJoin,
                 marketLine,
                 candlestick,
                 lineBidSeries,
@@ -4969,7 +4875,6 @@ export default function Chart(props: ChartData) {
         horizontalLine,
         targetsJoin,
         // horizontalBandJoin,
-        limitJoin,
         denomInBase,
         liqTooltip,
         marketLine,
@@ -5345,10 +5250,8 @@ export default function Chart(props: ChartData) {
             liquidityData: any,
             zoomUtils: any,
             horizontalLine: any,
-            limitLine: any,
             targetsJoin: any,
             horizontalBandJoin: any,
-            limitJoin: any,
             marketLine: any,
             candlestick: any,
             lineBidSeries: any,
@@ -5528,7 +5431,6 @@ export default function Chart(props: ChartData) {
                         limitNoGoZoneJoin(svg, [noGoZoneBoudnaries]).call(limitNoGoZone);
 
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
-                        limitJoin(svg, [targets.limit]).call(limitLine);
 
                         if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                             lineAskSeriesJoin(svg, [
@@ -5634,8 +5536,6 @@ export default function Chart(props: ChartData) {
                 render();
 
                 d3.select(d3Container.current).on('mouseleave', () => {
-                    hideCrosshair();
-
                     setIsMouseMoveCrosshair(false);
 
                     setsubChartValues([
@@ -5658,10 +5558,15 @@ export default function Chart(props: ChartData) {
                     }
                 });
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .style('visibility', 'hidden');
+                    if (crosshairVertical !== undefined && crosshairHorizontal !== undefined) {
+                        crosshairVertical.decorate((context: any) => {
+                            context.visibility = 'hidden';
+                        });
+                        crosshairHorizontal.decorate((context: any) => {
+                            context.visibility = 'hidden';
+                        });
+                    }
+
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
 
@@ -5669,10 +5574,14 @@ export default function Chart(props: ChartData) {
                 });
 
                 d3.select(d3PlotArea.current).on('mouseenter', () => {
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .style('visibility', 'visible');
+                    if (crosshairVertical !== undefined && crosshairHorizontal !== undefined) {
+                        crosshairVertical.decorate((context: any) => {
+                            context.visibility = 'visible';
+                        });
+                        crosshairHorizontal.decorate((context: any) => {
+                            context.visibility = 'visible';
+                        });
+                    }
 
                     props.setShowTooltip(true);
                 });
@@ -5710,17 +5619,14 @@ export default function Chart(props: ChartData) {
             .style('visibility', 'visible');
     }
     function showCrosshairHorizontal() {
-        d3.select(d3PlotArea.current)
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select(d3PlotArea.current)
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
+        if (crosshairVertical !== undefined && crosshairHorizontal !== undefined) {
+            crosshairVertical.decorate((context: any) => {
+                context.visibility = 'visible';
+            });
+            crosshairHorizontal.decorate((context: any) => {
+                context.visibility = 'visible';
+            });
+        }
 
         d3.select('#tvl_chart')
             .select('svg')
@@ -6024,6 +5930,7 @@ export default function Chart(props: ChartData) {
                             className='plot-canvas'
                         ></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasCrVertical} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLimitLine} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
