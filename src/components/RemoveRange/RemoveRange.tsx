@@ -38,6 +38,7 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -473,21 +474,25 @@ export default function RemoveRange(props: propsIF) {
         chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Removal Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newRemovalTransactionHash}
+            content='Removal Transaction Successfully Submitted.'
+        />
+        // <div className={styles.removal_denied}>
+        //     <div className={styles.completed_animation}>
+        //         <Animation animData={completed} loop={false} />
+        //     </div>
+        //     <p>Removal Transaction Successfully Submitted</p>
+        //     <a
+        //         href={etherscanLink}
+        //         target='_blank'
+        //         rel='noreferrer'
+        //         className={styles.view_etherscan}
+        //     >
+        //         View on Etherscan
+        //         <FiExternalLink size={20} color='black' />
+        //     </a>
+        // </div>
     );
 
     const removalPending = (
