@@ -753,27 +753,23 @@ export default function Swap(props: propsIF) {
     const priceImpactWarningOrNull =
         priceImpactNum && priceImpactNum > 2 ? (
             <div className={styles.price_impact}>
-                {priceImpactComponentArray.map((item, idx) =>
-                    item ? (
-                        <div className={styles.extra_row} key={idx}>
-                            <div className={styles.align_center}>
-                                <div>{item.title}</div>
-                                <TooltipComponent
-                                    title={item.tooltipTitle}
-                                    placement={item.placement as 'bottom'}
-                                />
-                            </div>
-                            <div
-                                className={styles.data}
-                                style={{
-                                    color: '#f6385b',
-                                }}
-                            >
-                                {item.data}
-                            </div>
-                        </div>
-                    ) : null,
-                )}
+                <div className={styles.extra_row}>
+                    <div className={styles.align_center}>
+                        <div>Price Impact Warning</div>
+                        <TooltipComponent
+                            title='Difference Between Current (Spot) Price and Final Price'
+                            placement='bottom'
+                        />
+                    </div>
+                    <div
+                        className={styles.data}
+                        style={{
+                            color: '#f6385b',
+                        }}
+                    >
+                        {priceImpactString}%
+                    </div>
+                </div>
             </div>
         ) : null;
 
