@@ -29,6 +29,7 @@ import {
 } from '../../utils/TransactionError';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 
 interface propsIF {
     account: string;
@@ -251,13 +252,14 @@ export default function ClaimOrder(props: propsIF) {
     );
 
     const claimPending = (
-        <div className={styles.removal_pending}>
-            <div className={styles.loader} />
+        <WaitingConfirmation content='Please Check the Metamask extension in your browser for notifications.' />
+        // <div className={styles.removal_pending}>
+        //     <div className={styles.loader} />
 
-            <p>
-                Check the Metamask extension in your browser for notifications.
-            </p>
-        </div>
+        //     <p>
+        //         Check the Metamask extension in your browser for notifications.
+        //     </p>
+        // </div>
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
