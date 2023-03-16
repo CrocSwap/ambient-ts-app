@@ -1,10 +1,8 @@
 import styles from './TransactionSubmitted.module.css';
 import Animation from '../../Global/Animation/Animation';
 import completed from '../../../assets/animations/completed.json';
-import addTokenToWallet from './addTokenToWallet';
-import Button from '../../Global/Button/Button';
+
 import { FiExternalLink } from 'react-icons/fi';
-import { useLocation } from 'react-router-dom';
 
 interface TransactionSubmittedProps {
     hash: string;
@@ -15,7 +13,6 @@ interface TransactionSubmittedProps {
 export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
     const { hash, content, noAnimation } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
-    const currentLocation = useLocation()?.pathname;
 
     const etherscanButton = (
         <a

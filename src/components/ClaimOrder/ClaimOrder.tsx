@@ -1,11 +1,7 @@
 import styles from './ClaimOrder.module.css';
 import { useState, useEffect } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { CircleLoaderFailed } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import Button from '../Global/Button/Button';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 // import Toggle2 from '../Global/Toggle/Toggle2';
 // import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
@@ -41,7 +37,7 @@ interface propsIF {
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -210,29 +206,9 @@ export default function ClaimOrder(props: propsIF) {
     // -------------END OF CLAIM FUNCTION TO BE REFACTORED
 
     // ----------------------------CONFIRMATION JSX------------------------------
-    const claimDenied = (
-        <div className={styles.removal_pending}>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    marginTop: '2rem',
-                }}
-            >
-                <CircleLoaderFailed />
-                <p>
-                    Check the Metamask extension in your browser for
-                    notifications, or click &quot;Try Again&quot;.
-                    {/* You can also click the left arrow above to try again. */}
-                </p>
-            </div>
-            <Button title='Try Again' action={resetConfirmation} flat={true} />
-        </div>
-    );
-    const etherscanLink =
-        chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
+
+    // const etherscanLink =
+    //     chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
 
     const claimSuccess = (
         <TxSubmittedSimplify
@@ -243,13 +219,6 @@ export default function ClaimOrder(props: propsIF) {
 
     const claimPending = (
         <WaitingConfirmation content='Please Check the Metamask extension in your browser for notifications.' />
-        // <div className={styles.removal_pending}>
-        //     <div className={styles.loader} />
-
-        //     <p>
-        //         Check the Metamask extension in your browser for notifications.
-        //     </p>
-        // </div>
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =

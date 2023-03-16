@@ -5,11 +5,7 @@ import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHea
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
 import RemoveOrderWidth from './RemoveOrderWidth/RemoveOrderWidth';
 import styles from './OrderRemoval.module.css';
-import { CircleLoaderFailed } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import Button from '../Global/Button/Button';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmountOld } from '../../utils/numbers';
@@ -44,7 +40,7 @@ interface propsIF {
 }
 
 export default function OrderRemoval(props: propsIF) {
-    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -255,41 +251,11 @@ export default function OrderRemoval(props: propsIF) {
 
     // ----------------------------CONFIRMATION JSX------------------------------
 
-    const removalDenied = (
-        <div className={styles.removal_pending}>
-            <CircleLoaderFailed />
-            <p>
-                Check the Metamask extension in your browser for notifications,
-                or click &quot;Try Again&quot;. You can also click the left
-                arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat={true} />
-        </div>
-    );
-
-    const etherscanLink =
-        chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
     const removalSuccess = (
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
             content='Removal Transaction Successfully Submitted.'
         />
-        // <div className={styles.removal_pending}>
-        //     <div className={styles.completed_animation}>
-        //         <Animation animData={completed} loop={false} />
-        //     </div>
-        //     <p>Removal Transaction Successfully Submitted</p>
-        //     <a
-        //         href={etherscanLink}
-        //         target='_blank'
-        //         rel='noreferrer'
-        //         className={styles.view_etherscan}
-        //     >
-        //         View on Etherscan
-        //         <FiExternalLink size={20} color='black' />
-        //     </a>
-        // </div>
     );
 
     const removalPending = (

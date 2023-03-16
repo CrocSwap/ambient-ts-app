@@ -5,16 +5,16 @@
     align-items: center;
     text-align: center;
 }
-.waiting_detail {
+.wallet_confirm h2, .wallet_confirm p {
     padding: 10px 0;
 }
 
-.waiting_detail h2{
+.wallet_confirm h2{
 	color: var(--text-grey-white);
 	font-size: var(--header2-size);
 	line-height: var(--header2-lh);
 }
-.waiting_detail p {
+.wallet_confirm  p {
    color: var(--text-grey-light);
    font-size: var(--body-size);
    line-height: var(--body-lh);
