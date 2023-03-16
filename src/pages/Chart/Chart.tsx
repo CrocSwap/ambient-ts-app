@@ -5614,7 +5614,7 @@ export default function Chart(props: ChartData) {
                         props.setShowTooltip(false);
                     }
                 });
-                d3.select(d3PlotArea.current).on('mouseleave', () => {
+                d3.select(d3PlotAreaCanvas.current).on('mouseleave', () => {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairVertical')
@@ -5625,7 +5625,7 @@ export default function Chart(props: ChartData) {
                     render();
                 });
 
-                d3.select(d3PlotArea.current).on('mouseenter', () => {
+                d3.select(d3PlotAreaCanvas.current).on('mouseenter', () => {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairVertical')
