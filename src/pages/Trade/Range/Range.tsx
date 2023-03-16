@@ -417,6 +417,22 @@ export default function Range(props: propsIF) {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
         useState(defaultMaxPriceDifferencePercentage);
 
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
             setIsAmbient(true);
@@ -442,6 +458,8 @@ export default function Range(props: propsIF) {
                 highTick,
                 lookupChain(chainId).gridSize,
             );
+
+            setPinnedDisplayPrices(pinnedDisplayPrices);
 
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
@@ -1158,6 +1176,7 @@ export default function Range(props: propsIF) {
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
+        pinnedDisplayPrices: pinnedDisplayPrices,
         tokenPair: tokenPair,
         spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,

@@ -33,6 +33,8 @@ export function getPinnedPriceValuesFromTicks(
     pinnedMaxPriceDisplay: string;
     pinnedMinPriceDisplayTruncated: string;
     pinnedMaxPriceDisplayTruncated: string;
+    pinnedMinPriceDisplayTruncatedWithCommas: string;
+    pinnedMaxPriceDisplayTruncatedWithCommas: string;
     pinnedLowTick: number;
     pinnedHighTick: number;
     pinnedMinPriceNonDisplay: number;
@@ -66,21 +68,21 @@ export function getPinnedPriceValuesFromTicks(
         ? highPriceDisplayInBase
         : highPriceDisplayInQuote;
 
-    // const lowPriceDisplayTruncated =
-    //     lowPriceDisplay < 2
-    //         ? lowPriceDisplay > 0.1
-    //             ? truncateDecimals(lowPriceDisplay, 4)
-    //             : truncateDecimals(lowPriceDisplay, 6)
-    //         : truncateDecimals(lowPriceDisplay, 2);
+    const lowPriceDisplayTruncated =
+        lowPriceDisplay < 2
+            ? lowPriceDisplay > 0.1
+                ? truncateDecimals(lowPriceDisplay, 4)
+                : truncateDecimals(lowPriceDisplay, 6)
+            : truncateDecimals(lowPriceDisplay, 2);
 
-    // const highPriceDisplayTruncated =
-    //     highPriceDisplay < 2
-    //         ? highPriceDisplay > 0.1
-    //             ? truncateDecimals(highPriceDisplay, 4)
-    //             : truncateDecimals(highPriceDisplay, 6)
-    //         : truncateDecimals(highPriceDisplay, 2);
+    const highPriceDisplayTruncated =
+        highPriceDisplay < 2
+            ? highPriceDisplay > 0.1
+                ? truncateDecimals(highPriceDisplay, 4)
+                : truncateDecimals(highPriceDisplay, 6)
+            : truncateDecimals(highPriceDisplay, 2);
 
-    const lowPriceDisplayTruncated: string = !lowPriceDisplay
+    const lowPriceDisplayTruncatedWithCommas: string = !lowPriceDisplay
         ? ''
         : lowPriceDisplay < 0.00001
         ? lowPriceDisplay.toExponential(2)
@@ -93,7 +95,7 @@ export function getPinnedPriceValuesFromTicks(
               maximumFractionDigits: 2,
           });
 
-    const highPriceDisplayTruncated: string = !highPriceDisplay
+    const highPriceDisplayTruncatedWithCommas: string = !highPriceDisplay
         ? ''
         : highPriceDisplay < 0.00001
         ? highPriceDisplay.toExponential(2)
@@ -111,6 +113,10 @@ export function getPinnedPriceValuesFromTicks(
         pinnedMaxPriceDisplay: highPriceDisplay.toString(),
         pinnedMinPriceDisplayTruncated: lowPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated: highPriceDisplayTruncated,
+        pinnedMinPriceDisplayTruncatedWithCommas:
+            lowPriceDisplayTruncatedWithCommas,
+        pinnedMaxPriceDisplayTruncatedWithCommas:
+            highPriceDisplayTruncatedWithCommas,
         pinnedLowTick: pinnedLowTick,
         pinnedHighTick: pinnedHighTick,
         pinnedMinPriceNonDisplay: pinnedMinPriceNonDisplay,

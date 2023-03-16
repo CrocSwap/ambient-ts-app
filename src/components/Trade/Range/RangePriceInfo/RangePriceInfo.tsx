@@ -20,6 +20,20 @@ interface propsIF {
     poolPriceCharacter: string;
     minRangeDenomByMoneyness?: string;
     maxRangeDenomByMoneyness?: string;
+    pinnedDisplayPrices:
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined;
 }
 
 // central react functional component
@@ -27,12 +41,13 @@ export default function RangePriceInfo(props: propsIF) {
     const {
         spotPriceDisplay,
         poolPriceCharacter,
-        maxPriceDisplay,
-        minPriceDisplay,
+        // maxPriceDisplay,
+        // minPriceDisplay,
         aprPercentage,
         daysInRange,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
+        pinnedDisplayPrices,
     } = props;
 
     const { pathname } = useLocation();
@@ -56,12 +71,17 @@ export default function RangePriceInfo(props: propsIF) {
     // JSX frag for estimated APR of position
     const days = <span className={styles.apr}>{daysInRangeString}</span>;
 
+    const minPrice =
+        pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas;
+    const maxPrice =
+        pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas;
+
     // JSX frag for lowest price in range
     const minimumPrice = (
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Min Price</h4>
             <span className={styles.min_price}>
-                {isOnTradeRoute ? minPriceDisplay : minRangeDenomByMoneyness}
+                {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
                 {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
             </span>
         </div>
@@ -75,7 +95,7 @@ export default function RangePriceInfo(props: propsIF) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Max Price</h4>
             <span className={styles.max_price}>
-                {isOnTradeRoute ? maxPriceDisplay : maxRangeDenomByMoneyness}
+                {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
                 {/* {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()} */}
             </span>
         </div>
