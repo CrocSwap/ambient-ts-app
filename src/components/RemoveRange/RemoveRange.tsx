@@ -591,6 +591,8 @@ export default function RemoveRange(props: propsIF) {
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
 
+    useEffect(() => console.log(currentSlippage));
+
     const updateSettings = (): void => {
         setShowSettings(false);
         isPairStable
@@ -601,12 +603,21 @@ export default function RemoveRange(props: propsIF) {
     const buttonToDisplay = (
         <div style={{ padding: '1rem' }}>
             {showSettings ? (
-                <Button title='Confirm' action={updateSettings} flat />
+                <Button
+                    title={
+                        currentSlippage > 0
+                            ? 'Confirm'
+                            : 'Enter a Valid Slippage'
+                    }
+                    action={updateSettings}
+                    flat
+                    disabled={!(currentSlippage > 0)}
+                />
             ) : isPositionPendingUpdate ? (
                 <RemoveRangeButton
                     removeFn={removeFn}
                     disabled={true}
-                    title='Position Update Pend333ing…'
+                    title='Position Update Pending…'
                 />
             ) : positionHasLiquidity ? (
                 <RemoveRangeButton
