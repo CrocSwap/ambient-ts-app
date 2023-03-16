@@ -42,6 +42,7 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -723,6 +724,59 @@ export default function Swap(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
+    const priceImpactNum = !priceImpact?.percentChange
+        ? undefined
+        : Math.abs(priceImpact.percentChange) * 100;
+
+    const priceImpactString = !priceImpactNum
+        ? '…'
+        : priceImpactNum >= 100
+        ? priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+          })
+        : priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const priceImpactComponentArray = [
+        {
+            title: 'Price Impact Warning',
+            tooltipTitle:
+                'Difference Between Current (Spot) Price and Final Price',
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${priceImpactString} %`,
+            placement: 'bottom',
+        },
+    ];
+    const priceImpactWarningOrNull =
+        priceImpactNum && priceImpactNum > 2 ? (
+            <div className={styles.price_impact}>
+                {priceImpactComponentArray.map((item, idx) =>
+                    item ? (
+                        <div className={styles.extra_row} key={idx}>
+                            <div className={styles.align_center}>
+                                <div>{item.title}</div>
+                                <TooltipComponent
+                                    title={item.tooltipTitle}
+                                    placement={item.placement as 'bottom'}
+                                />
+                            </div>
+                            <div
+                                className={styles.data}
+                                style={{
+                                    color: '#f6385b',
+                                }}
+                            >
+                                {item.data}
+                            </div>
+                        </div>
+                    ) : null,
+                )}
+            </div>
+        ) : null;
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             {props.isTutorialMode && (
@@ -811,6 +865,7 @@ export default function Swap(props: propsIF) {
                     ) : (
                         loginButton
                     )}
+                    {priceImpactWarningOrNull}
                 </ContentContainer>
                 {confirmSwapModalOrNull}
                 {relativeModalOrNull}
