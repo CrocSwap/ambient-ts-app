@@ -11,7 +11,12 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order' | 'Reposition';
+    module:
+        | 'Swap'
+        | 'Market Order'
+        | 'Limit Order'
+        | 'Range Order'
+        | 'Reposition';
     toggleFor: string;
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
@@ -31,33 +36,39 @@ export default function TransactionSettings(props: propsIF) {
         toggleBypassConfirm,
     } = props;
 
-    const [newSlippage, setNewSlippage] = useState<string>(
-        isPairStable ? slippage.stable.toString() : slippage.volatile.toString(),
-    );
-
-    const handleSubmit = (): void => {
-        const slippageAsFloat = parseFloat(newSlippage);
-        isPairStable
-            ? slippage.updateStable(slippageAsFloat)
-            : slippage.updateVolatile(slippageAsFloat);
-        onClose();
+    const handleKeyDown = (event: { keyCode: number }): void => {
+        event.keyCode === 13 && updateSettings();
     };
 
-    const handleKeyDown = (event: { keyCode: number }): void => {
-        event.keyCode === 13 && handleSubmit();
-    }
-
     const shouldDisplaySlippageTolerance = module !== 'Limit Order';
+
+    const persistedSlippage = isPairStable
+        ? slippage.stable
+        : slippage.volatile;
+
+    const [currentSlippage, setCurrentSlippage] =
+        useState<number>(persistedSlippage);
+
+    const updateSettings = (): void => {
+        isPairStable
+            ? slippage.updateStable(currentSlippage)
+            : slippage.updateVolatile(currentSlippage);
+        onClose();
+    };
 
     return (
         <div className={styles.settings_container}>
             <div className={styles.settings_title}>{module + ' Settings'}</div>
             {shouldDisplaySlippageTolerance && (
                 <SlippageTolerance
-                    slippageValue={newSlippage}
-                    setNewSlippage={setNewSlippage}
-                    module={module}
+                    persistedSlippage={persistedSlippage}
+                    setCurrentSlippage={setCurrentSlippage}
                     handleKeyDown={handleKeyDown}
+                    presets={
+                        isPairStable
+                            ? slippage.presets.stable
+                            : slippage.presets.volatile
+                    }
                 />
             )}
             <DividerDark />
@@ -71,9 +82,18 @@ export default function TransactionSettings(props: propsIF) {
             />
 
             <div className={styles.button_container}>
-                {shouldDisplaySlippageTolerance ? (
-                    <Button title='Submit' action={handleSubmit} flat={true} />
-                ) : null}
+                {shouldDisplaySlippageTolerance && (
+                    <Button
+                        title={
+                            currentSlippage > 0
+                                ? 'Confirm'
+                                : 'Enter a Valid Slippage'
+                        }
+                        action={updateSettings}
+                        disabled={!(currentSlippage > 0)}
+                        flat
+                    />
+                )}
             </div>
         </div>
     );
