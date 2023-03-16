@@ -1,4 +1,10 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useState,
+} from 'react';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
@@ -28,10 +34,15 @@ export default function CurrencyQuantity(props: propsIF) {
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
-    const [lastEvent, setLastEvent] = useState<ChangeEvent<HTMLInputElement> | undefined>();
+    const [lastEvent, setLastEvent] = useState<
+        ChangeEvent<HTMLInputElement> | undefined
+    >();
 
     useEffect(() => {
-        setDisplayValue(value);
+        const valueWithLeadingZero = value.startsWith('.')
+            ? '0' + value
+            : value;
+        setDisplayValue(valueWithLeadingZero);
     }, [value]);
 
     const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
