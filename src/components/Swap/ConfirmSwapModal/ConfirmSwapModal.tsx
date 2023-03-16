@@ -9,8 +9,6 @@ import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useState } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-// import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
-// import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
@@ -42,17 +40,13 @@ interface propsIF {
 export default function ConfirmSwapModal(props: propsIF) {
     const {
         initiateSwapMethod,
-
-        // priceImpact,
         isDenomBase,
         poolPriceDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
-        // onClose,
         newSwapTransactionHash,
         tokenPair,
         txErrorCode,
-        // txErrorMessage,
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
@@ -66,21 +60,11 @@ export default function ConfirmSwapModal(props: propsIF) {
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
-    // console.log({ txErrorCode });
-    // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    // const isTransactionDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
-
-    // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-    // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
-
-    // const primarySwapInput = 'sell';
     const sellTokenData = tokenPair.dataTokenA;
 
     const buyTokenData = tokenPair.dataTokenB;
@@ -88,7 +72,8 @@ export default function ConfirmSwapModal(props: propsIF) {
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
     const isPriceInverted =
-        (isDenomBaseLocal && !isSellTokenBase) || (!isDenomBaseLocal && isSellTokenBase);
+        (isDenomBaseLocal && !isSellTokenBase) ||
+        (!isDenomBaseLocal && isSellTokenBase);
 
     const effectivePriceWithDenom = effectivePrice
         ? isPriceInverted
@@ -111,24 +96,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    // const explanationText =
-    //     primarySwapInput === 'sell' ? (
-    //         <div className={styles.confSwap_detail_note}>
-    //             Output is estimated. You will swap up to {sellTokenQty} {sellTokenData.symbol} for{' '}
-    //             {buyTokenData.symbol}. You may swap less than {sellTokenQty} {sellTokenData.symbol}{' '}
-    //             if the price moves beyond the price limit shown above. You can increase the
-    //             likelihood of swapping the full amount by increasing your slippage tolerance in
-    //             settings.
-    //         </div>
-    //     ) : (
-    //         <div className={styles.confSwap_detail_note}>
-    //             Input is estimated. You will swap {sellTokenData.symbol} for up to {buyTokenQty}{' '}
-    //             {buyTokenData.symbol}. You may swap less than {buyTokenQty} {buyTokenData.symbol} if
-    //             the price moves beyond the price limit shown above. You can increase the likelihood
-    //             of swapping the full amount by increasing your slippage tolerance in settings.
-    //         </div>
-    //     );
-
     const displayPriceWithDenom = poolPriceDisplay
         ? isDenomBase
             ? 1 / poolPriceDisplay
@@ -146,26 +113,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                   maximumFractionDigits: 2,
               })
         : '...';
-    // const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
-    // const priceAfterImpact = priceImpact?.finalPrice;
-
-    // const priceAfterImpactWithDenom = priceAfterImpact
-    //     ? isDenomBase
-    //         ? priceAfterImpact
-    //         : 1 / priceAfterImpact
-    //     : undefined;
-
-    // const priceLimit = priceAfterImpactWithDenom
-    //     ? priceAfterImpactWithDenom < 2
-    //         ? priceAfterImpactWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : priceAfterImpactWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //     : '...';
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -175,7 +122,10 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {buyTokenData.logoURI ? (
                     <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
                 ) : (
-                    <NoTokenIcon tokenInitial={buyTokenData.symbol.charAt(0)} width='30px' />
+                    <NoTokenIcon
+                        tokenInitial={buyTokenData.symbol.charAt(0)}
+                        width='30px'
+                    />
                 )}
 
                 <h2>{buyTokenData.symbol}</h2>
@@ -186,12 +136,17 @@ export default function ConfirmSwapModal(props: propsIF) {
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{sellQtyString}</h2>
-
             <div className={styles.logo_display}>
                 {sellTokenData.logoURI ? (
-                    <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                    <img
+                        src={sellTokenData.logoURI}
+                        alt={sellTokenData.symbol}
+                    />
                 ) : (
-                    <NoTokenIcon tokenInitial={sellTokenData.symbol.charAt(0)} width='30px' />
+                    <NoTokenIcon
+                        tokenInitial={sellTokenData.symbol.charAt(0)}
+                        width='30px'
+                    />
                 )}
 
                 <h2>{sellTokenData.symbol}</h2>
@@ -221,6 +176,12 @@ export default function ConfirmSwapModal(props: propsIF) {
             </div>
         </div>
     );
+
+    const [currentSkipConfirm, setCurrentSkipConfirm] =
+        useState<boolean>(bypassConfirm);
+
+    const toggleFor = 'swap';
+
     const fullTxDetails2 = (
         <div className={styles.main_container}>
             <section>
@@ -230,70 +191,39 @@ export default function ConfirmSwapModal(props: propsIF) {
                 </div>
                 {buyCurrencyRow}
             </section>
-            <InitPoolDenom setIsDenomBase={setIsDenomBaseLocal} isDenomBase={isDenomBaseLocal} />
+            <InitPoolDenom
+                setIsDenomBase={setIsDenomBaseLocal}
+                isDenomBase={isDenomBaseLocal}
+            />
 
             {extraInfoData}
-            {/* {explanationText} */}
             <ConfirmationModalControl
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-                toggleFor='swap'
+                currentSkipConfirm={currentSkipConfirm}
+                setCurrentSkipConfirm={setCurrentSkipConfirm}
+                toggleFor={toggleFor}
             />
         </div>
     );
-
-    // TODO: add confirmation modal control to local storage, settings
-    // TODO: and re-enable <ConfirmationModalControl> above
-
-    // const fullTxDetails = (
-    //     <>
-    //         <div className={styles.modal_currency_converter}>
-    //             <CurrencyDisplay amount={sellTokenQty} tokenData={sellTokenData} />
-    //             <div className={styles.arrow_container}>
-    //                 <span className={styles.arrow} />
-    //             </div>
-    //             <CurrencyDisplay amount={buyTokenQty} tokenData={buyTokenData} />
-    //         </div>
-    //         <div className={styles.convRate}>
-    //             {isDenomBase
-    //                 ? `1 ${baseTokenSymbol} ≈ ${displayConversionRate} ${quoteTokenSymbol}`
-    //                 : `1 ${quoteTokenSymbol} ≈ ${displayConversionRate} ${baseTokenSymbol}`}
-    //         </div>
-    //         <Divider />
-    //         <div className={styles.confSwap_detail}>
-    //             <div className={styles.detail_line}>
-    //                 Expected Output
-    //                 <span>
-    //                     {buyTokenQty} {buyTokenData.symbol}
-    //                 </span>
-    //             </div>
-    //             <div className={styles.detail_line}>
-    //                 Effective Conversion Rate
-    //                 <span>
-    //                     {isDenomBase
-    //                         ? `${priceLimit} ${quoteTokenSymbol} / ${baseTokenSymbol}`
-    //                         : `${priceLimit} ${baseTokenSymbol} / ${quoteTokenSymbol}`}
-    //                 </span>
-    //             </div>
-    //             <div className={`${styles.detail_line} ${styles.min_received}`}></div>
-    //         </div>
-    //         {explanationText}
-    //     </>
-    // );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${
+            content={`Swapping ${sellQtyString} ${
+                sellTokenData.symbol
+            } for ${buyQtyString} ${
                 buyTokenData.symbol
             }. Please check the ${'Metamask'} extension in your browser for notifications.
             `}
         />
     );
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionDenied = (
+        <TransactionDenied resetConfirmation={resetConfirmation} />
+    );
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -307,25 +237,10 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
-    const confirmSwapButton = (
-        <Button
-            title='Send Swap'
-            action={() => {
-                console.log(
-                    `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellQtyString}`,
-                );
-                console.log(
-                    `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyQtyString}`,
-                );
-                initiateSwapMethod();
-                setShowConfirmation(false);
-            }}
-            flat={true}
-        />
-    );
-
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
@@ -333,16 +248,30 @@ export default function ConfirmSwapModal(props: propsIF) {
             ? transactionSubmitted
             : confirmSendMessage;
 
-    const modal = (
+    return (
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation ? confirmSwapButton : null}
+                {showConfirmation && (
+                    <Button
+                        title='Send Swap'
+                        action={() => {
+                            console.log(
+                                `Sell Token symbol: ${sellTokenData.symbol} and quantity: ${sellQtyString}`,
+                            );
+                            console.log(
+                                `Buy Token symbol: ${buyTokenData.symbol} and quantity: ${buyQtyString}`,
+                            );
+                            toggleBypassConfirm(toggleFor, currentSkipConfirm);
+                            initiateSwapMethod();
+                            setShowConfirmation(false);
+                        }}
+                        flat
+                    />
+                )}
             </footer>
         </div>
     );
-
-    return <>{modal}</>;
 }

@@ -240,9 +240,7 @@ export default function App() {
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
 
-    false && dexBalPrefSwap;
-    false && dexBalPrefLimit;
-    false && dexBalPrefRange;
+    useSkipConfirm();
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');

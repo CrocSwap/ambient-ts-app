@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // START: Import Local Files
 import styles from './TransactionSettings.module.css';
@@ -36,6 +36,11 @@ export default function TransactionSettings(props: propsIF) {
         toggleBypassConfirm,
     } = props;
 
+    useEffect(
+        () => console.log('initial value for bypass confirm: ' + bypassConfirm),
+        [],
+    );
+
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();
     };
@@ -56,9 +61,12 @@ export default function TransactionSettings(props: propsIF) {
         isPairStable
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
+        console.log('we are updating settings!!!');
         toggleBypassConfirm(toggleFor, currentSkipConfirm);
         onClose();
     };
+
+    useEffect(() => console.log({ currentSkipConfirm }), [currentSkipConfirm]);
 
     return (
         <div className={styles.settings_container}>

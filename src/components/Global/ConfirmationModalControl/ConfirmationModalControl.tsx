@@ -1,4 +1,4 @@
-import { useId, Dispatch, SetStateAction } from 'react';
+import { useId, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
@@ -34,6 +34,8 @@ export default function ConfirmationModalControl(props: propsIF) {
         ? 'Repositions'
         : 'unhandled';
 
+    useEffect(() => console.log('initial value is: ' + currentSkipConfirm), []);
+
     const label = displayInSettings ? (
         <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
     ) : (
@@ -46,7 +48,10 @@ export default function ConfirmationModalControl(props: propsIF) {
                 key={compKey}
                 isOn={currentSkipConfirm}
                 disabled={false}
-                handleToggle={() => setCurrentSkipConfirm(!currentSkipConfirm)}
+                handleToggle={() => {
+                    setCurrentSkipConfirm(!currentSkipConfirm);
+                    console.log('toggled!!');
+                }}
                 id='disabled_confirmation_modal_toggle'
             />
         </div>
