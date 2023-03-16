@@ -129,14 +129,16 @@ export default function RoomDropdown(props: propsIF) {
         props.setUserCurrentPool(
             currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
         );
-        updateUser(props.currentUser as string, props.ensName, props.userCurrentPool).then(
-            (result: any) => {
-                if (result.status === 'OK') {
-                    console.log(result);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                }
-            },
-        );
+        updateUser(
+            props.currentUser as string,
+            props.ensName,
+            props.userCurrentPool,
+        ).then((result: any) => {
+            if (result.status === 'OK') {
+                console.log(result);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            }
+        });
 
         if (props.selectedRoom === props.userCurrentPool) {
             setShowCurrentPoolButton(false);
@@ -303,7 +305,9 @@ export default function RoomDropdown(props: propsIF) {
         if (props.selectedRoom === 'Global') {
             // do nothing
         } else {
-            const index = roomArray.map((e) => e.name).indexOf(props.selectedRoom);
+            const index = roomArray
+                .map((e) => e.name)
+                .indexOf(props.selectedRoom);
             roomArray.splice(index, 1);
 
             const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
@@ -341,7 +345,9 @@ export default function RoomDropdown(props: propsIF) {
     }
 
     function handleRoomClickCurrentPool() {
-        props.setRoom(currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol);
+        props.setRoom(
+            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+        );
         setShowCurrentPoolButton(false);
         setIsActive(false);
         setIsCurrentPool(true);
@@ -364,7 +370,9 @@ export default function RoomDropdown(props: propsIF) {
                         className={styles.dropdown_item}
                         key={defaultRooms[1].id}
                         data-value={defaultRooms[1].value}
-                        onClick={(event: any) => handleRoomClick(event, 'Global')}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, 'Global')
+                        }
                     ></div>
                 );
             } else {
@@ -374,7 +382,9 @@ export default function RoomDropdown(props: propsIF) {
                             className={styles.dropdown_item}
                             key={tab.id}
                             data-value={tab.value}
-                            onClick={(event: any) => handleRoomClick(event, tab.name)}
+                            onClick={(event: any) =>
+                                handleRoomClick(event, tab.name)
+                            }
                         >
                             {tab.name}
                         </div>
@@ -392,7 +402,9 @@ export default function RoomDropdown(props: propsIF) {
                         className={styles.dropdown_item}
                         key={tab.id}
                         data-value={tab.value}
-                        onClick={(event: any) => handleRoomClick(event, tab.name)}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, tab.name)
+                        }
                     >
                         {tab.name}
                     </div>
@@ -405,8 +417,17 @@ export default function RoomDropdown(props: propsIF) {
 
     return (
         <div className={styles.dropdown}>
-            <div className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}>
-                <div onClick={() => handleDropdownMenu()} style={{ flexGrow: '1' }}>
+            <div
+                className={
+                    isActive
+                        ? styles.dropdown_btn_isActive
+                        : styles.dropdown_btn
+                }
+            >
+                <div
+                    onClick={() => handleDropdownMenu()}
+                    style={{ flexGrow: '1' }}
+                >
                     {props.selectedRoom}
                 </div>
                 {showCurrentPoolButton ? (
@@ -416,7 +437,13 @@ export default function RoomDropdown(props: propsIF) {
                         onMouseOver={handleMouseOver}
                         onMouseOut={handleMouseOut}
                     >
-                        <div className={isHovering ? styles.bgsalmon : styles.current_pool_text}>
+                        <div
+                            className={
+                                isHovering
+                                    ? styles.bgsalmon
+                                    : styles.current_pool_text
+                            }
+                        >
                             Current Pool
                         </div>
                     </div>
@@ -428,7 +455,10 @@ export default function RoomDropdown(props: propsIF) {
                     {handleShowSelectedRoom(props.selectedRoom)}
                 </div>
                 <div onClick={() => handleDropdownMenu()}>
-                    <RiArrowDownSLine className={styles.star_icon} id='room dropdown' />
+                    <RiArrowDownSLine
+                        className={styles.star_icon}
+                        id='room dropdown'
+                    />
                 </div>
             </div>
             {isActive && (
@@ -443,14 +473,20 @@ export default function RoomDropdown(props: propsIF) {
                                 onClick={(event: any) =>
                                     handleRoomClick(
                                         event,
-                                        pool.quote.symbol + '/' + pool.base.symbol,
+                                        pool.quote.symbol +
+                                            '/' +
+                                            pool.base.symbol,
                                     )
                                 }
                             >
-                                {favoritePoolsArray.some(({ name }) => name === pool.name) ? (
+                                {favoritePoolsArray.some(
+                                    ({ name }) => name === pool.name,
+                                ) ? (
                                     <svg
                                         width={smallScrenView ? '15px' : '20px'}
-                                        height={smallScrenView ? '15px' : '20px'}
+                                        height={
+                                            smallScrenView ? '15px' : '20px'
+                                        }
                                         viewBox='0 0 15 15'
                                         fill='none'
                                         xmlns='http://www.w3.org/2000/svg'

@@ -5,31 +5,22 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
-// START: Import JSX Components
-
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    // addPositionsByPool,
-    // addPositionsByUser,
-    graphData,
-    updateLeaderboard,
-} from '../../../../utils/state/graphDataSlice';
+import { graphData, updateLeaderboard } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    //  updateApy,
-    updatePositionStats,
-} from '../../../../App/functions/getPositionData';
+import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
+import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 
 // interface for props
 interface propsIF {
@@ -55,12 +46,12 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
-
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 // react functional component
@@ -83,11 +74,10 @@ export default function Leaderboard(props: propsIF) {
         setCurrentPositionActive,
         account,
         handlePulseAnimation,
-        // setLeader,
-        // setLeaderOwnerId,
         cachedQuerySpotPrice,
         showSidebar,
         setSimpleRangeWidth,
+        dexBalancePrefs
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -355,9 +345,9 @@ export default function Leaderboard(props: propsIF) {
             isLeaderboard={true}
             idx={idx + 1}
             handlePulseAnimation={handlePulseAnimation}
-            // blockExplorer={blockExplorer}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
+            dexBalancePrefs={dexBalancePrefs}
         />
     ));
 

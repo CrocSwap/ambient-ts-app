@@ -2,7 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, ReactNode, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -15,15 +15,11 @@ import {
     graphData,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
-
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    // updateApy,
-    updatePositionStats,
-} from '../../../../App/functions/getPositionData';
+import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -33,7 +29,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-// import RangeAccordions from './RangeAccordions/RangeAccordions';
+import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 
 // interface for props
 interface propsIF {
@@ -59,16 +55,16 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
     importedTokens: TokenIF[];
-    openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
-
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 // react functional component
@@ -80,7 +76,6 @@ export default function Ranges(props: propsIF) {
         crocEnv,
         chainData,
         provider,
-
         chainId,
         isShowAllEnabled,
         baseTokenBalance,
@@ -99,6 +94,7 @@ export default function Ranges(props: propsIF) {
         showSidebar,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
+        dexBalancePrefs
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -163,13 +159,10 @@ export default function Ranges(props: propsIF) {
             activeAccountPositionData &&
             JSON.stringify(activeAccountPositionData) !== JSON.stringify(rangeData)
         ) {
-            // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            // console.log({ userPositionsToDisplayOnTrade });
             setRangeData(userPositionsToDisplayOnTrade);
         } else if (positionsByPool && !isOnPortfolioPage) {
-            // console.log({ positionsByPool });
             setRangeData(positionsByPool);
         }
     }, [
@@ -213,7 +206,6 @@ export default function Ranges(props: propsIF) {
                         // console.log({ updatedPositions });
                         // console.log({ sortedPositions });
                         const newArray = updatedPositions.concat(sortedPositions.slice(3));
-                        // console.log({ newArray });
                         setRangeData(newArray);
                     }
                 })
@@ -466,6 +458,7 @@ export default function Ranges(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
+            dexBalancePrefs={dexBalancePrefs}
         />
     ));
 

@@ -4,7 +4,6 @@ import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react'
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-// import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
 
@@ -30,13 +29,13 @@ import {
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
-// import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
+import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
 // interface for React functional component props
 interface propsIF {
@@ -73,14 +72,13 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     handlePulseAnimation: (type: string) => void;
-
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 // React functional component
@@ -103,7 +101,6 @@ export default function PortfolioTabs(props: propsIF) {
         tokenList,
         selectedOutsideTab,
         setSelectedOutsideTab,
-
         outsideControl,
         setOutsideControl,
         openTokenModal,
@@ -111,10 +108,10 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        // fullLayoutToggle,
         handlePulseAnimation,
         account,
         setSimpleRangeWidth,
+        dexBalancePrefs
     } = props;
 
     const dispatch = useAppDispatch();
@@ -131,10 +128,6 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
         TransactionIF[]
     >([]);
-
-    // useEffect(() => {
-    //     console.log({ connectedAccountPositionData });
-    // }, [connectedAccountPositionData]);
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
@@ -318,11 +311,6 @@ export default function PortfolioTabs(props: propsIF) {
               }
           });
 
-    // console.log({ connectedAccountActive });
-    // console.log({ connectedAccountTransactionData });
-    // console.log({ otherAccountTransactionData });
-    // console.log({ activeAccountTransactionData });
-
     // props for <Wallet/> React Element
     const walletProps = {
         crocEnv: crocEnv,
@@ -351,6 +339,7 @@ export default function PortfolioTabs(props: propsIF) {
         tokenMap: tokenMap,
         openTokenModal: openTokenModal,
     };
+
     // props for <Range/> React Element
     const rangeProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -379,6 +368,7 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenDexBalance: quoteTokenDexBalance,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        dexBalancePrefs: dexBalancePrefs
     };
 
     // props for <Transactions/> React Element
@@ -428,10 +418,6 @@ export default function PortfolioTabs(props: propsIF) {
         lastBlockNumber: lastBlockNumber,
     };
 
-    // const tokensProps = {
-    //     chainId: chainId,
-    // };
-
     const accountTabDataWithTokens = [
         {
             label: 'Transactions',
@@ -446,7 +432,6 @@ export default function PortfolioTabs(props: propsIF) {
             icon: exchangeImage,
         },
         { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
-        // { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
     ];
 
     const accountTabDataWithoutTokens = [

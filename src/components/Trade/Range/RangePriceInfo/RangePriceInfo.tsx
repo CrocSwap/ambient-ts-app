@@ -5,6 +5,8 @@ import styles from './RangePriceInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import { useLocation } from 'react-router-dom';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 
 // interface for component props
 interface propsIF {
@@ -36,6 +38,8 @@ export default function RangePriceInfo(props: propsIF) {
     const { pathname } = useLocation();
 
     const isOnTradeRoute = pathname.includes('trade');
+
+    const dispatch = useAppDispatch();
 
     const aprPercentageString = aprPercentage
         ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
@@ -85,8 +89,15 @@ export default function RangePriceInfo(props: propsIF) {
                 {minimumPrice}
                 <div className={styles.price_display}>
                     <h4 className={styles.price_title}>Current Price</h4>
-                    <span className={styles.current_price}>
-                        {currentPrice === 'Infinity' ? '…' : `${poolPriceCharacter}${currentPrice}`}
+                    <span
+                        className={styles.current_price}
+                        onClick={() => {
+                            dispatch(toggleDidUserFlipDenom());
+                        }}
+                    >
+                        {currentPrice === 'Infinity'
+                            ? '…'
+                            : `${poolPriceCharacter}${currentPrice}`}
                     </span>
                 </div>
                 {maximumPrice}
