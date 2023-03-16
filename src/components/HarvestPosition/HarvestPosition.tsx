@@ -39,6 +39,9 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -388,45 +391,53 @@ export default function HarvestPosition(props: propsIF) {
 
     // confirmation modal
     const removalDenied = (
-        <div className={styles.removal_denied}>
-            <CircleLoaderFailed size='10rem' />
-            <p>
-                Check the Metamask extension in your browser for notifications,
-                or click &quot;Try Again&quot;. You can also click the left
-                arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat />
-        </div>
+        <TransactionDenied resetConfirmation={resetConfirmation} />
+        // <div className={styles.removal_denied}>
+        //     <CircleLoaderFailed size='10rem' />
+        //     <p>
+        //         Check the Metamask extension in your browser for notifications,
+        //         or click &quot;Try Again&quot;. You can also click the left
+        //         arrow above to try again.
+        //     </p>
+        //     <Button title='Try Again' action={resetConfirmation} flat />
+        // </div>
     );
 
     const etherscanLink =
         chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
 
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-                <p>Harvest Transaction Successfully Submitted!</p>
-            </div>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newHarvestTransactionHash}
+            content='Harvest Transaction Successfully Submitted!'
+        />
+        // <div className={styles.removal_denied}>
+        //     <div className={styles.completed_animation}>
+        //         <Animation animData={completed} loop={false} />
+        //         <p>Harvest Transaction Successfully Submitted!</p>
+        //     </div>
+        //     <a
+        //         href={etherscanLink}
+        //         target='_blank'
+        //         rel='noreferrer'
+        //         className={styles.view_etherscan}
+        //     >
+        //         View on Etherscan
+        //         <FiExternalLink size={20} color='black' />
+        //     </a>
+        // </div>
     );
 
     const removalPending = (
-        <div className={styles.removal_pending}>
-            <CircleLoader size='10rem' borderColor='#171d27' />
-            <p>
-                Check the Metamask extension in your browser for notifications.
-            </p>
-        </div>
+        <WaitingConfirmation
+            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+        />
+        // <div className={styles.removal_pending}>
+        //     <CircleLoader size='10rem' borderColor='#171d27' />
+        //     <p>
+        //         Check the Metamask extension in your browser for notifications.
+        //     </p>
+        // </div>
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
