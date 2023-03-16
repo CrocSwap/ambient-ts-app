@@ -8,45 +8,14 @@ import { useLocation } from 'react-router-dom';
 
 interface TransactionSubmittedProps {
     hash: string;
-    tokenBAddress: string;
-    tokenBSymbol: string;
-    tokenBDecimals: number;
-    tokenBImage: string;
+    content: string;
     noAnimation?: boolean;
 }
 
-export default function TransactionSubmitted(props: TransactionSubmittedProps) {
-    const {
-        hash,
-        tokenBAddress,
-        tokenBSymbol,
-        tokenBDecimals,
-        tokenBImage,
-        noAnimation,
-    } = props;
+export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
+    const { hash, content, noAnimation } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
-
-    const logoURI = tokenBImage;
-
-    const handleAddToMetamask = async () => {
-        await addTokenToWallet(
-            tokenBAddress,
-            tokenBSymbol,
-            tokenBDecimals,
-            logoURI,
-        );
-    };
-
-    const addToMetamaskButton = (
-        <Button
-            flat
-            title={`Add ${tokenBSymbol} to Metamask`}
-            // action={props.onClickFn}
-            action={handleAddToMetamask}
-            disabled={false}
-        ></Button>
-    );
 
     const etherscanButton = (
         <a
@@ -69,12 +38,9 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                     <Animation animData={completed} loop={false} />
                 </div>
             )}
-            <h2 style={{ marginBottom: '15px' }}>Transaction Submitted</h2>
+            <h2 style={{ marginBottom: '15px' }}>{content}</h2>
             <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
-                    ? null
-                    : addToMetamaskButton}
             </div>
         </div>
     );

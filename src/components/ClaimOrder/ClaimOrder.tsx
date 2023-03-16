@@ -30,6 +30,7 @@ import {
 import TransactionException from '../Global/TransactionException/TransactionException';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 
 interface propsIF {
     account: string;
@@ -234,21 +235,10 @@ export default function ClaimOrder(props: propsIF) {
         chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
 
     const claimSuccess = (
-        <div className={styles.removal_pending}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Claim Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newClaimTransactionHash}
+            content='Claim Transaction Successfully Submitted.'
+        />
     );
 
     const claimPending = (
