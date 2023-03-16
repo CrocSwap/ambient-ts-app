@@ -39,6 +39,8 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { checkIsStable } from '../../utils/data/stablePairs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -66,6 +68,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
     handleModalClose: () => void;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function HarvestPosition(props: propsIF) {
@@ -77,10 +80,31 @@ export default function HarvestPosition(props: propsIF) {
         position,
         dexBalancePrefs,
         handleModalClose,
+        slippage,
     } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
+
+    const isPairStable: boolean = checkIsStable(
+        position.base,
+        position.quote,
+        chainData.chainId,
+    );
+
+    const persistedSlippage: number = isPairStable
+        ? slippage.mintSlippage.stable
+        : slippage.mintSlippage.volatile;
+
+    const [currentSlippage, setCurrentSlippage] =
+        useState<number>(persistedSlippage);
+
+    const updateSettings = (): void => {
+        setShowSettings(false);
+        isPairStable
+            ? slippage.mintSlippage.updateStable(currentSlippage)
+            : slippage.mintSlippage.updateVolatile(currentSlippage);
+    };
 
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData,
@@ -217,8 +241,6 @@ export default function HarvestPosition(props: propsIF) {
         lastBlockNumber,
     ]);
 
-    const liquiditySlippageTolerance = 1;
-
     const posHash =
         position.positionType === 'ambient'
             ? ambientPosSlot(
@@ -246,8 +268,8 @@ export default function HarvestPosition(props: propsIF) {
         const pool = env.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+        const lowLimit = spotPrice * (1 - persistedSlippage);
+        const highLimit = spotPrice * (1 + persistedSlippage);
 
         let tx;
         if (position.positionType === 'concentrated') {
@@ -477,8 +499,13 @@ export default function HarvestPosition(props: propsIF) {
 
     const mainModalContent = showSettings ? (
         <HarvestPositionSettings
-            showSettings={showSettings}
-            setShowSettings={setShowSettings}
+            persistedSlippage={persistedSlippage}
+            setCurrentSlippage={setCurrentSlippage}
+            presets={
+                isPairStable
+                    ? slippage.mintSlippage.presets.stable
+                    : slippage.mintSlippage.presets.volatile
+            }
         />
     ) : (
         <>
@@ -556,11 +583,7 @@ export default function HarvestPosition(props: propsIF) {
                 {mainModalContent}
                 <div style={{ padding: '0 1rem' }}>
                     {showSettings ? (
-                        <Button
-                            title='Confirm'
-                            action={() => setShowSettings(false)}
-                            flat
-                        />
+                        <Button title='Confirm' action={updateSettings} flat />
                     ) : (
                         harvestButtonOrNull
                     )}

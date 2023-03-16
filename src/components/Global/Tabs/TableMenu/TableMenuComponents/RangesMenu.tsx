@@ -293,6 +293,7 @@ export default function RangesMenu(props: propsIF) {
                         crocEnv={crocEnv}
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
+                        slippage={slippage}
                         {...rangeDetailsProps}
                     />
                 </Modal>

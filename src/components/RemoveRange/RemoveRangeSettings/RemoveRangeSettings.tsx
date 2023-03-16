@@ -2,13 +2,13 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import styles from './RemoveRangeSettings.module.css';
 
 interface propsIF {
-    isPairStable: boolean;
     persistedSlippage: number;
     setCurrentSlippage: Dispatch<SetStateAction<number>>;
+    presets: number[];
 }
 
 export default function RemoveRangeSettings(props: propsIF) {
-    const { isPairStable, persistedSlippage, setCurrentSlippage } = props;
+    const { persistedSlippage, setCurrentSlippage, presets } = props;
 
     // this layer is necessary to make the `<input />` responsive to change
     // future Emily this is past Emily yes you're going to hate this
@@ -20,9 +20,6 @@ export default function RemoveRangeSettings(props: propsIF) {
         setSlip(val);
         setCurrentSlippage(val);
     };
-
-    // preset values, first set is for stable pairs, second is for volatile
-    const presets: number[] = isPairStable ? [1, 2, 3] : [1, 2, 3];
 
     return (
         <div className={styles.main_container}>
@@ -38,12 +35,12 @@ export default function RemoveRangeSettings(props: propsIF) {
                                 onChange={(e) =>
                                     takeNewSlippage(parseFloat(e.target.value))
                                 }
-                                type='text'
+                                type='decimal'
                                 value={slip}
                                 placeholder={'slippage'}
                             />
                         </div>
-                        {presets.map((preset) => (
+                        {presets.map((preset: number) => (
                             <button
                                 key={`rmv-preset-button-${preset}`}
                                 onClick={() => takeNewSlippage(preset)}

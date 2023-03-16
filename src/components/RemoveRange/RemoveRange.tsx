@@ -606,7 +606,7 @@ export default function RemoveRange(props: propsIF) {
                 <RemoveRangeButton
                     removeFn={removeFn}
                     disabled={true}
-                    title='Position Update Pending…'
+                    title='Position Update Pend333ing…'
                 />
             ) : positionHasLiquidity ? (
                 <RemoveRangeButton
@@ -626,9 +626,13 @@ export default function RemoveRange(props: propsIF) {
 
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings
-            isPairStable={isPairStable}
             persistedSlippage={persistedSlippage}
             setCurrentSlippage={setCurrentSlippage}
+            presets={
+                isPairStable
+                    ? slippage.mintSlippage.presets.stable
+                    : slippage.mintSlippage.presets.volatile
+            }
         />
     ) : (
         <>
