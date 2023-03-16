@@ -30,6 +30,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import {
@@ -272,6 +273,13 @@ export default function Reposition(props: propsIF) {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Reposition',
+                    }),
+                );
             navigate(redirectPath, { replace: true });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {

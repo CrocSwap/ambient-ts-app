@@ -63,6 +63,7 @@ import {
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -77,6 +78,7 @@ import {
 } from '../../../utils/tutorial/Range';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { formatAmountOld } from '../../../utils/numbers';
 
 interface propsIF {
     account: string | undefined;
@@ -292,11 +294,12 @@ export default function Range(props: propsIF) {
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
+            : displayPriceWithDenom < 0.00001
+            ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+            ? displayPriceWithDenom.toPrecision(3)
+            : displayPriceWithDenom >= 100000
+            ? formatAmountOld(displayPriceWithDenom, 1)
             : displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -415,6 +418,22 @@ export default function Range(props: propsIF) {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
         useState(defaultMaxPriceDifferencePercentage);
 
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
             setIsAmbient(true);
@@ -440,6 +459,8 @@ export default function Range(props: propsIF) {
                 highTick,
                 lookupChain(chainId).gridSize,
             );
+
+            setPinnedDisplayPrices(pinnedDisplayPrices);
 
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
@@ -1025,6 +1046,13 @@ export default function Range(props: propsIF) {
                   ));
             setNewRangeTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Range',
+                    }),
+                );
             setIsWaitingForWallet(false);
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -1156,6 +1184,7 @@ export default function Range(props: propsIF) {
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
+        pinnedDisplayPrices: pinnedDisplayPrices,
         tokenPair: tokenPair,
         spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
@@ -1479,6 +1508,13 @@ export default function Range(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();

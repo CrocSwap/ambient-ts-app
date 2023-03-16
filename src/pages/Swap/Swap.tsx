@@ -32,6 +32,7 @@ import { useRelativeModal } from '../../components/Global/RelativeModal/useRelat
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
@@ -42,6 +43,7 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -293,6 +295,10 @@ export default function Swap(props: propsIF) {
 
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx.hash)
+                dispatch(
+                    addTransactionByType({ txHash: tx.hash, txType: 'Swap' }),
+                );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -432,6 +438,13 @@ export default function Swap(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -723,6 +736,45 @@ export default function Swap(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
+    const priceImpactNum = !priceImpact?.percentChange
+        ? undefined
+        : Math.abs(priceImpact.percentChange) * 100;
+
+    const priceImpactString = !priceImpactNum
+        ? '…'
+        : priceImpactNum >= 100
+        ? priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+          })
+        : priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const priceImpactWarningOrNull =
+        priceImpactNum && priceImpactNum > 2 ? (
+            <div className={styles.price_impact}>
+                <div className={styles.extra_row}>
+                    <div className={styles.align_center}>
+                        <div>Price Impact Warning</div>
+                        <TooltipComponent
+                            title='Difference Between Current (Spot) Price and Final Price'
+                            placement='bottom'
+                        />
+                    </div>
+                    <div
+                        className={styles.data}
+                        style={{
+                            color: '#f6385b',
+                        }}
+                    >
+                        {priceImpactString}%
+                    </div>
+                </div>
+            </div>
+        ) : null;
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             {props.isTutorialMode && (
@@ -811,6 +863,7 @@ export default function Swap(props: propsIF) {
                     ) : (
                         loginButton
                     )}
+                    {priceImpactWarningOrNull}
                 </ContentContainer>
                 {confirmSwapModalOrNull}
                 {relativeModalOrNull}

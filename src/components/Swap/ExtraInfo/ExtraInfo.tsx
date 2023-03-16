@@ -9,7 +9,10 @@ import styles from './ExtraInfo.module.css';
 // import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
 // import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
@@ -54,7 +57,9 @@ export default function ExtraInfo(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceWithDenom = isDenomBase
+        ? 1 / poolPriceDisplay
+        : poolPriceDisplay;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -127,54 +132,15 @@ export default function ExtraInfo(props: propsIF) {
                 : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             placement: 'bottom',
         },
-    ];
-
-    const priceImpactComponentArray = [
         {
-            title: 'Price Impact Warning',
-            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
+            title: 'Price Impact',
+            tooltipTitle:
+                'Difference Between Current (Spot) Price and Final Price',
             // eslint-disable-next-line no-irregular-whitespace
             data: `${priceImpactString} %`,
             placement: 'bottom',
         },
     ];
-
-    const priceImpactWarning = (
-        <div className={styles.price_impact}>
-            {priceImpactComponentArray.map((item, idx) =>
-                item ? (
-                    <div className={styles.extra_row} key={idx}>
-                        <div className={styles.align_center}>
-                            <div>{item.title}</div>
-                            <TooltipComponent
-                                title={item.tooltipTitle}
-                                placement={item.placement as 'bottom'}
-                            />
-                        </div>
-                        <div
-                            className={styles.data}
-                            style={{
-                                color: '#f6385b',
-                            }}
-                        >
-                            {item.data}
-                        </div>
-                    </div>
-                ) : null,
-            )}
-        </div>
-    );
-
-    //
-    if (priceImpactNum && Math.abs(priceImpactNum) <= 2) {
-        extraInfoData.push({
-            title: 'Price Impact',
-            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
-            // eslint-disable-next-line no-irregular-whitespace
-            data: `${priceImpactString} %`,
-            placement: 'bottom',
-        });
-    }
 
     if (
         [
@@ -207,7 +173,8 @@ export default function ExtraInfo(props: propsIF) {
                             className={styles.data}
                             style={{
                                 color:
-                                    item.title === 'Price Impact' && priceImpactNum
+                                    item.title === 'Price Impact' &&
+                                    priceImpactNum
                                         ? Math.abs(priceImpactNum) > 2
                                             ? '#f6385b'
                                             : '#15be67'
@@ -237,7 +204,8 @@ export default function ExtraInfo(props: propsIF) {
                             className={styles.data}
                             style={{
                                 color:
-                                    item.title === 'Price Impact' && priceImpactNum
+                                    item.title === 'Price Impact' &&
+                                    priceImpactNum
                                         ? Math.abs(priceImpactNum) > 2
                                             ? '#f6385b'
                                             : '#15be67'
@@ -291,7 +259,8 @@ export default function ExtraInfo(props: propsIF) {
             }
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
+                <FaGasPump size={12} />{' '}
+                {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
                 {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
             </div>
             <div
@@ -326,16 +295,14 @@ export default function ExtraInfo(props: propsIF) {
     // );
     // const extraDetailsNoDropDownOrNull = !priceImpact ? extraDetailsNoDropdown : null;
     // const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
-    const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
-    const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
-
-    const priceImpactWarningOrNull =
-        priceImpactNum && Math.abs(priceImpactNum) > 2 ? priceImpactWarning : null;
+    const extraDetailsOrNull =
+        showExtraDetails && priceImpact ? extraInfoDetails : null;
+    const feesAndSlippageOrNull =
+        showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>
             {/* {extraDetailsNoDropDownOrNull} */}
-            {priceImpactWarningOrNull}
             {extraDetailsDropdown}
             {/* {dropDownOrNull} */}
             {extraDetailsOrNull}

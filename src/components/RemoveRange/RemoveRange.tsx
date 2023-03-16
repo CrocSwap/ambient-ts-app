@@ -4,9 +4,7 @@ import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHea
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useEffect, useState } from 'react';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import { VscClose } from 'react-icons/vsc';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -25,6 +23,7 @@ import {
     addPendingTx,
     addPositionPendingUpdate,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
@@ -38,6 +37,7 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -330,6 +330,13 @@ export default function RemoveRange(props: propsIF) {
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Removal',
+                        }),
+                    );
             } catch (error) {
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -469,25 +476,11 @@ export default function RemoveRange(props: propsIF) {
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const etherscanLink =
-        chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Removal Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newRemovalTransactionHash}
+            content='Removal Transaction Successfully Submitted.'
+        />
     );
 
     const removalPending = (
