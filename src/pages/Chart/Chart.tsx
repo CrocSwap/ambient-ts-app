@@ -190,6 +190,8 @@ export default function Chart(props: ChartData) {
     const d3CanvasLiqBid = useRef(null);
     const d3CanvasLiqAsk = useRef(null);
     const d3CanvasBand = useRef(null);
+    const d3CanvasCrHorizontal = useRef(null);
+    const d3CanvasCrVertical = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -292,6 +294,7 @@ export default function Chart(props: ChartData) {
     // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     // const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
+    const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     const [candlestick, setCandlestick] = useState<any>();
     const [barSeries, setBarSeries] = useState<any>();
@@ -3946,25 +3949,40 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('g.top-handle').remove();
             });
 
+            const crosshairHorizontalCanvas = d3fc
+                .annotationCanvasLine()
+                .orient('vertical')
+                .value((d: any) => d.x)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .label('');
+
+            crosshairHorizontalCanvas.decorate((context: any) => {
+                context.visibility = 'hidden';
+                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
+            });
+
             setCrosshairHorizontal(() => {
                 return crosshairHorizontal;
             });
 
+            setCrosshairHorizontalCanvas(() => {
+                return crosshairHorizontalCanvas;
+            });
+
             const crosshairVertical = d3fc
-                .annotationSvgLine()
+                .annotationCanvasLine()
                 .value((d: any) => d.y)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            crosshairVertical.decorate((selection: any) => {
-                selection.enter().select('line').attr('class', 'crosshair');
-                selection
-                    .enter()
-                    .append('line')
-                    .attr('stroke-width', 1)
-                    .attr('pointer-events', 'none');
-                selection.enter().select('g.left-handle').remove();
-                selection.enter().select('g.right-handle').remove();
+            crosshairVertical.decorate((context: any) => {
+                context.visibility = 'hidden';
+                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
             });
 
             setCrosshairVertical(() => {
@@ -4027,6 +4045,38 @@ export default function Chart(props: ChartData) {
                 });
         }
     }, [horizontalBandData, horizontalBand]);
+
+    useEffect(() => {
+        const canvas = d3.select(d3CanvasCrHorizontal.current).select('canvas').node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (crosshairHorizontalCanvas) {
+            d3.select(d3CanvasCrHorizontal.current)
+                .on('draw', () => {
+                    crosshairHorizontalCanvas(crosshairData);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([0.6, 0.6]);
+                    crosshairHorizontalCanvas.context(ctx);
+                });
+        }
+    }, [crosshairData, crosshairHorizontalCanvas]);
+
+    useEffect(() => {
+        const canvas = d3.select(d3CanvasCrVertical.current).select('canvas').node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (crosshairVertical) {
+            d3.select(d3CanvasCrVertical.current)
+                .on('draw', () => {
+                    crosshairVertical(crosshairData);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([0.6, 0.6]);
+                    crosshairVertical.context(ctx);
+                });
+        }
+    }, [crosshairData, crosshairVertical]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -4109,6 +4159,16 @@ export default function Chart(props: ChartData) {
 
         if (d3CanvasBand) {
             const container = d3.select(d3CanvasBand.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasCrHorizontal) {
+            const container = d3.select(d3CanvasCrHorizontal.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasCrVertical) {
+            const container = d3.select(d3CanvasCrVertical.current).node() as any;
             if (container) container.requestRedraw();
         }
     }
@@ -4426,7 +4486,9 @@ export default function Chart(props: ChartData) {
                     const svg = d3.select(event.target).select('svg');
 
                     // horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
-                    targetsJoin(svg, [ranges]).call(horizontalLine);
+                    if (targetsJoin) {
+                        targetsJoin(svg, [ranges]).call(horizontalLine);
+                    }
 
                     if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                         lineAskSeriesJoin(svg, [
@@ -5227,16 +5289,10 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (crosshairVertical !== undefined && crosshairHorizontal !== undefined) {
             const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
-            const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
 
-            d3.select(d3PlotArea.current).on('draw', function (event: any) {
-                const svg = d3.select(event.target).select('svg');
-
+            d3.select(d3PlotArea.current).on('draw', function () {
                 const svgFeeRateSub = d3.select('#fee_rate_chart').select('svg');
                 const svgTvlSub = d3.select('#d3PlotTvl').select('svg');
-
-                crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
-                crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
                 if (svgFeeRateSub.node() !== null)
                     crosshairHorizontalJoin(svgFeeRateSub, [crosshairData]).call(
@@ -5958,6 +6014,11 @@ export default function Chart(props: ChartData) {
                         <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasBand} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas
+                            ref={d3CanvasCrHorizontal}
+                            className='plot-canvas'
+                        ></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasCrVertical} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
