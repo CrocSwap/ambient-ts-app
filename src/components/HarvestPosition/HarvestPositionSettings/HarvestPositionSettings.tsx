@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
+import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './HarvestPositionSettings.module.css';
-import { useHarvestSlippage } from './useHarvestSlippage';
 
 interface propsIF {
     persistedSlippage: number;
@@ -11,7 +11,7 @@ interface propsIF {
 export default function HarvestPositionSettings(props: propsIF) {
     const { persistedSlippage, setCurrentSlippage, presets } = props;
 
-    const [slip, takeNewSlippage] = useHarvestSlippage(
+    const [slip, takeNewSlippage] = useSlippageInput(
         persistedSlippage,
         setCurrentSlippage,
     );

@@ -1,6 +1,6 @@
 import { useState, Dispatch, SetStateAction } from 'react';
 
-export const useHarvestSlippage = (
+export const useSlippageInput = (
     persistedSlippage: number,
     setCurrentSlippage: Dispatch<SetStateAction<number>>,
 ): [slip: string, takeNewSlippage: (val: string | number) => void] => {

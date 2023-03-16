@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
+import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './RemoveRangeSettings.module.css';
 
 interface propsIF {
@@ -10,21 +11,10 @@ interface propsIF {
 export default function RemoveRangeSettings(props: propsIF) {
     const { persistedSlippage, setCurrentSlippage, presets } = props;
 
-    // this layer is necessary to make the `<input />` responsive to change
-    // future Emily this is past Emily yes you're going to hate this
-    // ... implementation but please trust me it really is necessary
-    const [slip, setSlip] = useState<string>(persistedSlippage.toString());
-    function takeNewSlippage(val: string | number): void {
-        // setSlip() needs a string
-        // setCurrentSlippage needs a number (float)
-        if (typeof val === 'string') {
-            setSlip(val);
-            setCurrentSlippage(parseFloat(val));
-        } else if (typeof val === 'number') {
-            setSlip(val.toString());
-            setCurrentSlippage(val);
-        }
-    }
+    const [slip, takeNewSlippage] = useSlippageInput(
+        persistedSlippage,
+        setCurrentSlippage,
+    );
 
     return (
         <div className={styles.main_container}>
