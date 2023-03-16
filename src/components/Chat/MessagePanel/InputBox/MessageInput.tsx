@@ -59,16 +59,16 @@ export default function MessageInput(
     const [isPosition, setIsPosition] = useState(false);
     // const { roomId } = props.match.params;
 
-    const { sendMsg } = useSocket(props.room);
+    const { sendMsg } = useSocket(props.room.toUpperCase());
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
     const roomId =
         props.room === 'Current Pool'
-            ? prop.currentPool.baseToken.symbol +
-              prop.currentPool.quoteToken.symbol
-            : props.room;
+            ? prop.currentPool.baseToken.symbol.toUpperCase() +
+              prop.currentPool.quoteToken.symbol.toUpperCase()
+            : props.room.toUpperCase();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
