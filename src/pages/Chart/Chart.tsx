@@ -192,6 +192,7 @@ export default function Chart(props: ChartData) {
     const d3CanvasBand = useRef(null);
     const d3CanvasCrHorizontal = useRef(null);
     const d3CanvasCrVertical = useRef(null);
+    const d3CanvasMarketLine = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -309,7 +310,6 @@ export default function Chart(props: ChartData) {
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [horizontalBandJoin, setHorizontalBandJoin] = useState<any>();
     const [horizontalBand, setHorizontalBand] = useState<any>();
-    const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
 
     // NoGoZone Joins
@@ -3152,23 +3152,16 @@ export default function Chart(props: ChartData) {
             });
 
             const marketLine = d3fc
-                .annotationSvgLine()
+                .annotationCanvasLine()
                 .value((d: any) => d.value)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            marketLine.decorate((selection: any) => {
-                selection
-                    .enter()
-                    .attr('id', (d: any) => d.name)
-                    .select('g.left-handle')
-                    .append('text')
-                    .attr('x', 5)
-                    .attr('y', -5);
-
-                selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'marketLine');
-                selection.select('g.left-handle').remove();
+            marketLine.decorate((context: any) => {
+                context.visibility = 'hidden';
+                context.strokeStyle = 'rgba(235, 235, 255, 0.4)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
             });
 
             const horizontalLine = d3fc
@@ -3202,7 +3195,6 @@ export default function Chart(props: ChartData) {
             const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
 
             const limitJoin = d3fc.dataJoin('g', 'limit');
-            const marketJoin = d3fc.dataJoin('g', 'market');
 
             if (d3.select(d3Container.current).select('.liqTooltip').node() === null) {
                 const liqTooltip = d3
@@ -3236,10 +3228,6 @@ export default function Chart(props: ChartData) {
 
             setLimitJoin(() => {
                 return limitJoin;
-            });
-
-            setMarketJoin(() => {
-                return marketJoin;
             });
 
             setHorizontalLine(() => {
@@ -3982,7 +3970,7 @@ export default function Chart(props: ChartData) {
                 context.visibility = 'hidden';
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.4;
             });
 
             setCrosshairVertical(() => {
@@ -4079,6 +4067,22 @@ export default function Chart(props: ChartData) {
     }, [crosshairData, crosshairVertical]);
 
     useEffect(() => {
+        const canvas = d3.select(d3CanvasMarketLine.current).select('canvas').node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (marketLine) {
+            d3.select(d3CanvasMarketLine.current)
+                .on('draw', () => {
+                    marketLine(market);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([4, 2]);
+                    marketLine.context(ctx);
+                });
+        }
+    }, [crosshairData, marketLine]);
+
+    useEffect(() => {
         if (scaleData !== undefined) {
             const canvasBarChart = d3fc
                 .autoBandwidth(d3fc.seriesCanvasBar())
@@ -4169,6 +4173,11 @@ export default function Chart(props: ChartData) {
 
         if (d3CanvasCrVertical) {
             const container = d3.select(d3CanvasCrVertical.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasMarketLine) {
+            const container = d3.select(d3CanvasMarketLine.current).node() as any;
             if (container) container.requestRedraw();
         }
     }
@@ -4890,7 +4899,6 @@ export default function Chart(props: ChartData) {
             liqTooltip !== undefined &&
             limitLine !== undefined &&
             marketLine !== undefined &&
-            marketJoin !== undefined &&
             candlestick !== undefined &&
             targetsJoin !== undefined &&
             lineBidSeries !== undefined &&
@@ -4927,7 +4935,6 @@ export default function Chart(props: ChartData) {
                 targetsJoin,
                 horizontalBandJoin,
                 limitJoin,
-                marketJoin,
                 marketLine,
                 candlestick,
                 lineBidSeries,
@@ -4963,7 +4970,6 @@ export default function Chart(props: ChartData) {
         targetsJoin,
         // horizontalBandJoin,
         limitJoin,
-        marketJoin,
         denomInBase,
         liqTooltip,
         marketLine,
@@ -5343,7 +5349,6 @@ export default function Chart(props: ChartData) {
             targetsJoin: any,
             horizontalBandJoin: any,
             limitJoin: any,
-            marketJoin: any,
             marketLine: any,
             candlestick: any,
             lineBidSeries: any,
@@ -5523,7 +5528,6 @@ export default function Chart(props: ChartData) {
                         limitNoGoZoneJoin(svg, [noGoZoneBoudnaries]).call(limitNoGoZone);
 
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
-                        marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(limitLine);
 
                         if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
@@ -6009,6 +6013,7 @@ export default function Chart(props: ChartData) {
             <d3fc-group id='d3fc_group' auto-resize>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div className='chart_grid'>
+                        <d3fc-canvas ref={d3CanvasMarketLine} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasCandle} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasBar} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
