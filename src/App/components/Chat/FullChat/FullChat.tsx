@@ -27,6 +27,8 @@ interface FullChatPropsIF {
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     favePools: favePoolsMethodsIF;
     userCurrentPool: string;
+    isChatDisabled: boolean;
+    setIsChatDisabled: Dispatch<SetStateAction<boolean>>;
 }
 
 interface ChannelDisplayPropsIF {
@@ -47,6 +49,8 @@ export default function FullChat(props: FullChatPropsIF) {
         messageInput,
         userName,
         userCurrentPool,
+        isChatDisabled,
+        setIsChatDisabled,
     } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
     const [readableRoomName, setReadableName] = useState(
@@ -316,14 +320,30 @@ export default function FullChat(props: FullChatPropsIF) {
             )}
         </div>
     );
+    const disabledOverlay = (
+        <div className={styles.disabled_overlay}>
+            <div className={styles.disabled_container}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam
+                laborum eos dicta consequatur earum quaerat neque ducimus rerum
+                eius iusto!
+                <button onClick={() => setIsChatDisabled(false)}>
+                    Accept Tos
+                </button>
+            </div>
+        </div>
+    );
 
     const chatContainer = (
-        <div className={styles.chat_main_container}>
+        <div
+            className={styles.chat_main_container}
+            style={{ position: 'relative' }}
+        >
             {messageList}
             {chatNotification}
 
             {messageInput}
             <div id='thelastmessage' />
+            {isChatDisabled && disabledOverlay}
         </div>
     );
 

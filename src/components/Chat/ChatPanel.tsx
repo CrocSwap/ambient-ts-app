@@ -474,6 +474,7 @@ export default function ChatPanel(props: propsIF) {
                 messageList={messageList}
                 chatNotification={chatNotification}
                 messageInput={messageInput}
+                isChatDisabled={isChatDisabled}
                 room={room}
                 userName={
                     ens === null || ens === ''
@@ -486,6 +487,7 @@ export default function ChatPanel(props: propsIF) {
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 favePools={favePools}
                 userCurrentPool={userCurrentPool}
+                setIsChatDisabled={setIsChatDisabled}
             />
         );
 
@@ -514,6 +516,7 @@ export default function ChatPanel(props: propsIF) {
             >
                 <div className={styles.chat_body}>
                     {header}
+
                     <span
                         style={{
                             width: '20px',
@@ -548,8 +551,7 @@ export default function ChatPanel(props: propsIF) {
 
                     {messageInput}
                     <div id='thelastmessage' />
-
-                    {isChatDisabled && disabledOverlay}
+                    {isChatDisabled && props.isChatOpen && disabledOverlay}
                 </div>
             </div>
         </div>
