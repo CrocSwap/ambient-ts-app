@@ -591,8 +591,6 @@ export default function RemoveRange(props: propsIF) {
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
 
-    useEffect(() => console.log(currentSlippage));
-
     const updateSettings = (): void => {
         setShowSettings(false);
         isPairStable
