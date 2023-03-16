@@ -740,16 +740,6 @@ export default function Swap(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
-    const priceImpactComponentArray = [
-        {
-            title: 'Price Impact Warning',
-            tooltipTitle:
-                'Difference Between Current (Spot) Price and Final Price',
-            // eslint-disable-next-line no-irregular-whitespace
-            data: `${priceImpactString} %`,
-            placement: 'bottom',
-        },
-    ];
     const priceImpactWarningOrNull =
         priceImpactNum && priceImpactNum > 2 ? (
             <div className={styles.price_impact}>
