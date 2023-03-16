@@ -41,6 +41,7 @@ import {
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import {
@@ -571,6 +572,13 @@ export default function Limit(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
             setIsWaitingForWallet(false);
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Limit',
+                    }),
+                );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -734,6 +742,13 @@ export default function Limit(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();

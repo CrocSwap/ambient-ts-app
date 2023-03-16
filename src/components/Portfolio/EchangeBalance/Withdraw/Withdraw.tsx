@@ -12,6 +12,7 @@ import Toggle from '../../../Global/Toggle/Toggle';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../../utils/state/receiptDataSlice';
 import {
@@ -108,14 +109,20 @@ export default function Withdraw(props: propsIF) {
               })
         : undefined;
 
-    const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<string | undefined>();
+    const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<
+        string | undefined
+    >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
-    const [isSendToAddressChecked, setIsSendToAddressChecked] = useState<boolean>(false);
-    const [sendToAddressWalletBalance, setSendToAddressWalletBalance] = useState<string>('');
-    const [recheckSendToAddressWalletBalance, setRecheckSendToAddressWalletBalance] =
+    const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
+    const [sendToAddressWalletBalance, setSendToAddressWalletBalance] =
+        useState<string>('');
+    const [
+        recheckSendToAddressWalletBalance,
+        setRecheckSendToAddressWalletBalance,
+    ] = useState<boolean>(false);
 
     const sendToAddressBalanceDisplay = sendToAddressWalletBalance
         ? toDisplayQty(sendToAddressWalletBalance, selectedTokenDecimals)
@@ -181,7 +188,9 @@ export default function Withdraw(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!withdrawQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(BigNumber.from(withdrawQtyNonDisplay))
+                ? BigNumber.from(tokenDexBalance).gte(
+                      BigNumber.from(withdrawQtyNonDisplay),
+                  )
                 : false,
         [tokenDexBalance, withdrawQtyNonDisplay],
     );
@@ -214,7 +223,9 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage('Enter a Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
+            setButtonMessage(
+                `${selectedToken.symbol} Exchange Balance Insufficient`,
+            );
         }
         // else if (isApprovalPending) {
         //     setIsButtonDisabled(true);
@@ -275,6 +286,13 @@ export default function Withdraw(props: propsIF) {
                         .withdraw(depositQtyDisplay, connectedAccount);
                 }
                 dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Withdrawal',
+                        }),
+                    );
 
                 let receipt;
                 try {
@@ -327,14 +345,17 @@ export default function Withdraw(props: propsIF) {
                     resetWithdrawQty();
                 }
             } catch (error) {
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
                 console.warn({ error });
             } finally {
                 setIsWithdrawPending(false);
                 setRecheckTokenBalances(true);
-                if (isSendToAddressChecked) setRecheckSendToAddressWalletBalance(true);
+                if (isSendToAddressChecked)
+                    setRecheckSendToAddressWalletBalance(true);
             }
         }
     };
@@ -389,7 +410,9 @@ export default function Withdraw(props: propsIF) {
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull =
-        isSendToAddressChecked && isResolvedAddressValid && isResolvedAddressDifferent ? (
+        isSendToAddressChecked &&
+        isResolvedAddressValid &&
+        isResolvedAddressDifferent ? (
             <div className={styles.info_text_non_clickable}>
                 Resolved Destination Address:
                 <div className={styles.hex_address}>{resolvedAddress}</div>
@@ -410,7 +433,9 @@ export default function Withdraw(props: propsIF) {
             <div className={styles.toggle_container}>
                 <Toggle
                     isOn={isSendToAddressChecked}
-                    handleToggle={() => setIsSendToAddressChecked(!isSendToAddressChecked)}
+                    handleToggle={() =>
+                        setIsSendToAddressChecked(!isSendToAddressChecked)
+                    }
                     Width={36}
                     id='withdraw_to_different_address'
                 />
@@ -423,7 +448,8 @@ export default function Withdraw(props: propsIF) {
     const handleBalanceClick = () => {
         if (isTokenDexBalanceGreaterThanZero) {
             setWithdrawQtyNonDisplay(tokenDexBalance);
-            if (tokenExchangeDepositsDisplay) setInputValue(tokenExchangeDepositsDisplay);
+            if (tokenExchangeDepositsDisplay)
+                setInputValue(tokenExchangeDepositsDisplay);
             // if (withdrawInput && tokenExchangeDepositsDisplay)
             //     withdrawInput.value = tokenExchangeDepositsDisplay;
         }
@@ -454,7 +480,8 @@ export default function Withdraw(props: propsIF) {
                         : styles.info_text_non_clickable
                 }
             >
-                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
+                Your Exchange Balance ({selectedToken.symbol}):{' '}
+                {tokenDexBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
                 {isSendToAddressChecked

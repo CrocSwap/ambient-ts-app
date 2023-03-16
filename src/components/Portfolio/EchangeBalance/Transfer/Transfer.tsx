@@ -6,11 +6,19 @@ import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    ReactNode,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 // import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../../utils/state/receiptDataSlice';
 import {
@@ -80,10 +88,13 @@ export default function Transfer(props: propsIF) {
               })
         : undefined;
 
-    const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<string | undefined>();
+    const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<
+        string | undefined
+    >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
-    const [sendToAddressDexBalance, setSendToAddressDexBalance] = useState<string>('');
+    const [sendToAddressDexBalance, setSendToAddressDexBalance] =
+        useState<string>('');
     const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
         useState<boolean>(false);
 
@@ -121,7 +132,12 @@ export default function Transfer(props: propsIF) {
     }, [resolvedAddress]);
 
     useEffect(() => {
-        if (crocEnv && selectedToken.address && resolvedAddress && isResolvedAddressValid) {
+        if (
+            crocEnv &&
+            selectedToken.address &&
+            resolvedAddress &&
+            isResolvedAddressValid
+        ) {
             crocEnv
                 .token(selectedToken.address)
                 .balance(resolvedAddress)
@@ -144,7 +160,9 @@ export default function Transfer(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!transferQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(BigNumber.from(transferQtyNonDisplay))
+                ? BigNumber.from(tokenDexBalance).gte(
+                      BigNumber.from(transferQtyNonDisplay),
+                  )
                 : false,
         [tokenDexBalance, transferQtyNonDisplay],
     );
@@ -178,7 +196,9 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
+            setButtonMessage(
+                `${selectedToken.symbol} Exchange Balance Insufficient`,
+            );
         }
         // else if (isApprovalPending) {
         //     setIsButtonDisabled(true);
@@ -209,13 +229,23 @@ export default function Transfer(props: propsIF) {
     const transfer = async (transferQty: string) => {
         if (crocEnv && transferQty && resolvedAddress) {
             try {
-                const transferQtyDisplay = toDisplayQty(transferQty, selectedTokenDecimals);
+                const transferQtyDisplay = toDisplayQty(
+                    transferQty,
+                    selectedTokenDecimals,
+                );
 
                 setIsTransferPending(true);
                 const tx = await crocEnv
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
                 dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Transfer',
+                        }),
+                    );
                 let receipt;
                 try {
                     if (tx) receipt = await tx.wait();
@@ -267,7 +297,9 @@ export default function Transfer(props: propsIF) {
                     resetTransferQty();
                 }
             } catch (error) {
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
                 console.warn({ error });
@@ -325,7 +357,8 @@ export default function Transfer(props: propsIF) {
 
             // if (transferInput && tokenExchangeDepositsDisplay)
             //     transferInput.value = tokenExchangeDepositsDisplay;
-            if (tokenExchangeDepositsDisplay) setInputValue(tokenExchangeDepositsDisplay);
+            if (tokenExchangeDepositsDisplay)
+                setInputValue(tokenExchangeDepositsDisplay);
         }
     };
 
@@ -355,7 +388,8 @@ export default function Transfer(props: propsIF) {
                         : styles.info_text_non_clickable
                 }
             >
-                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
+                Your Exchange Balance ({selectedToken.symbol}):{' '}
+                {tokenDexBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
                 Destination Exchange Balance ({selectedToken.symbol}):{' '}

@@ -32,6 +32,7 @@ import { useRelativeModal } from '../../components/Global/RelativeModal/useRelat
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
@@ -293,6 +294,10 @@ export default function Swap(props: propsIF) {
 
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx.hash)
+                dispatch(
+                    addTransactionByType({ txHash: tx.hash, txType: 'Swap' }),
+                );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -432,6 +437,13 @@ export default function Swap(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
