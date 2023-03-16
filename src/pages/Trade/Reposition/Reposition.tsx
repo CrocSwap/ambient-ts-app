@@ -145,19 +145,20 @@ export default function Reposition(props: propsIF) {
             !position.tx
         )
             return;
+        // console.log({ position });
         const pos = (await crocEnv
             .positions()
             .queryPos(
                 position.positionStorageSlot,
                 position.tx,
             )) as RangeLiqPos;
-        setConcLiq(pos.concLiq.toString());
-        console.log({ pos });
+        setConcLiq(pos?.concLiq.toString());
+        // console.log({ pos });
     };
 
     useEffect(() => {
         updateConcLiq();
-    }, [crocEnv]);
+    }, [crocEnv, lastBlockNumber, JSON.stringify(position)]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
