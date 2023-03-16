@@ -323,8 +323,6 @@ export default function Chart(props: ChartData) {
     const [candlestick, setCandlestick] = useState<any>();
     const [barSeries, setBarSeries] = useState<any>();
     // Line Series
-    const [ghostLines, setGhostLines] = useState<any>();
-    const [ghostJoin, setGhostJoin] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
     const [marketLine, setMarketLine] = useState<any>();
     const [limitLine, setLimitLine] = useState<any>();
@@ -340,6 +338,11 @@ export default function Chart(props: ChartData) {
     const [limitNoGoZone, setLimitNoGoZone] = useState<any>();
     const [limitNoGoZoneJoin, setlimitNoGoZoneJoin] = useState<any>();
     const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
+
+    // Ghost Lines
+    const [ghostLines, setGhostLines] = useState<any>();
+    const [ghostJoin, setGhostJoin] = useState<any>();
+    const [ghostLineValues, setGhostLineValues] = useState<any>();
 
     // Liq Series
     const [liqBidSeries, setLiqBidSeries] = useState<any>();
@@ -3047,9 +3050,15 @@ export default function Chart(props: ChartData) {
         return result;
     }
 
-    function setLimitForNoGoZone(newLimitValue: number) {
+    const getNoZoneData = () => {
         const noGoZoneMin = noGoZoneBoudnaries[0][0];
         const noGoZoneMax = noGoZoneBoudnaries[0][1];
+
+        return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
+    };
+
+    function setLimitForNoGoZone(newLimitValue: number) {
+        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
         const diffNoGoZoneMin = Math.abs(newLimitValue - noGoZoneMin);
         const diffNoGoZoneMax = Math.abs(newLimitValue - noGoZoneMax);
@@ -3491,25 +3500,13 @@ export default function Chart(props: ChartData) {
                     newLimitValue = scaleData.yScale.invert(event.y);
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
-                    const lineValues = adjTicks(newLimitValue);
+                    setGhostLineValues(adjTicks(newLimitValue));
 
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     setLimit(() => {
                         return [{ name: 'Limit', value: newLimitValue }];
                     });
-
-                    d3.select(d3PlotArea.current).on(
-                        'draw',
-                        function (event: any) {
-                            const svg = d3.select(event.target).select('svg');
-
-                            ghostJoin(svg, [lineValues]).call(ghostLines);
-                            limitJoin(svg, [
-                                [{ name: 'Limit', value: newLimitValue }],
-                            ]).call(limitLine);
-                        },
-                    );
                 })
                 .on('end', (event: any) => {
                     showCrosshair();
@@ -3520,7 +3517,7 @@ export default function Chart(props: ChartData) {
                         .select('.limitNoGoZone')
                         .select('.horizontal')
                         .style('visibility', 'hidden');
-
+                    setGhostLineValues([]);
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
@@ -4775,6 +4772,24 @@ export default function Chart(props: ChartData) {
         }
     }, [showVolume]);
 
+    useEffect(() => {
+        if (liqMode === 'Off') {
+            d3.select(d3CanvasLiqAsk.current)
+                .select('canvas')
+                .style('display', 'none');
+            d3.select(d3CanvasLiqBid.current)
+                .select('canvas')
+                .style('display', 'none');
+        } else {
+            d3.select(d3CanvasLiqAsk.current)
+                .select('canvas')
+                .style('display', 'inline');
+            d3.select(d3CanvasLiqBid.current)
+                .select('canvas')
+                .style('display', 'inline');
+        }
+    }, [liqMode]);
+
     function renderCanvas() {
         if (d3CanvasCandle) {
             const container = d3.select(d3CanvasCandle.current).node() as any;
@@ -5599,6 +5614,8 @@ export default function Chart(props: ChartData) {
             limitLine !== undefined &&
             marketLine !== undefined &&
             marketJoin !== undefined &&
+            ghostLines !== undefined &&
+            ghostJoin !== undefined &&
             candlestick !== undefined &&
             targetsJoin !== undefined &&
             lineBidSeries !== undefined &&
@@ -5638,6 +5655,9 @@ export default function Chart(props: ChartData) {
                 horizontalBandJoin,
                 limitJoin,
                 marketJoin,
+                ghostJoin,
+                ghostLineValues,
+                ghostLines,
                 marketLine,
                 candlestick,
                 lineBidSeries,
@@ -5678,6 +5698,8 @@ export default function Chart(props: ChartData) {
         liqTooltip,
         marketLine,
         candlestick,
+        ghostJoin,
+        ghostLines,
         // barSeries,
         lineBidSeries,
         lineAskSeries,
@@ -6151,6 +6173,9 @@ export default function Chart(props: ChartData) {
             horizontalBandJoin: any,
             limitJoin: any,
             marketJoin: any,
+            ghostJoin: any,
+            ghostLineValues: any,
+            ghostLines: any,
             marketLine: any,
             candlestick: any,
             lineBidSeries: any,
@@ -6329,15 +6354,22 @@ export default function Chart(props: ChartData) {
                         );
 
                         if (newLimitValue < 0) newLimitValue = 0;
-                        newLimitValue = setLimitForNoGoZone(newLimitValue);
 
+                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+                        if (
+                            !(
+                                newLimitValue >= noGoZoneMin &&
+                                newLimitValue <= noGoZoneMax
+                            )
+                        ) {
+                            onBlurLimitRate(newLimitValue);
+                        }
                         // newLimitValue =
                         //     poolPriceDisplay !== undefined &&
                         //     newLimitValue > liquidityData.topBoundary
                         //         ? liquidityData.topBoundary
                         //         : newLimitValue;
-
-                        onBlurLimitRate(newLimitValue);
                     }
                 });
 
@@ -6364,6 +6396,9 @@ export default function Chart(props: ChartData) {
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(limitLine);
+                        ghostJoin(svg, [
+                            ghostLineValues ? ghostLineValues : [],
+                        ]).call(ghostLines);
 
                         if (
                             JSON.stringify(liquidityScale.domain()) !== '[0,0]'
@@ -6563,6 +6598,7 @@ export default function Chart(props: ChartData) {
             showVolume,
             showFeeRate,
             tvlAreaSeries,
+            ghostLineValues,
         ],
     );
 
@@ -6803,6 +6839,16 @@ export default function Chart(props: ChartData) {
         if (newLimitValue === undefined) {
             return;
         }
+
+        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+        let isNoGoneZoneMin: boolean | undefined = undefined;
+        if (newLimitValue === noGoZoneMin) {
+            isNoGoneZoneMin = true;
+        }
+        if (newLimitValue === noGoZoneMax) {
+            isNoGoneZoneMin = false;
+        }
+
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
             : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
@@ -6816,8 +6862,13 @@ export default function Chart(props: ChartData) {
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
-            console.log({ pinnedTick });
-            dispatch(setLimitTick(pinnedTick));
+            if (isNoGoneZoneMin !== undefined && isNoGoneZoneMin) {
+                setLimitTick(pinnedTick - chainData.gridSize);
+            } else if (isNoGoneZoneMin !== undefined && !isNoGoneZoneMin) {
+                setLimitTick(pinnedTick + chainData.gridSize);
+            } else {
+                dispatch(setLimitTick(pinnedTick));
+            }
 
             const tickPrice = tickToPrice(pinnedTick);
 

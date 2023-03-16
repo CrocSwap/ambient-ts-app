@@ -76,9 +76,12 @@ export default function ChatPanel(props: propsIF) {
         useState(true);
 
     // console.log('running ChatPanel');
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+        room.toUpperCase(),
+    );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -321,7 +324,9 @@ export default function ChatPanel(props: propsIF) {
                         size={18}
                         className={styles.open_full_button}
                         onClick={() =>
-                            window.open('/chat/' + room.replace('/', '&'))
+                            window.open(
+                                '/chat/' + room.replace('/', '&').toLowerCase(),
+                            )
                         }
                     />
                 )}

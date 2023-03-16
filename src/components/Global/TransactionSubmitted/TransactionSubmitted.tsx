@@ -16,14 +16,26 @@ interface TransactionSubmittedProps {
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
-    const { hash, tokenBAddress, tokenBSymbol, tokenBDecimals, tokenBImage, noAnimation } = props;
+    const {
+        hash,
+        tokenBAddress,
+        tokenBSymbol,
+        tokenBDecimals,
+        tokenBImage,
+        noAnimation,
+    } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
 
     const handleAddToMetamask = async () => {
-        await addTokenToWallet(tokenBAddress, tokenBSymbol, tokenBDecimals, logoURI);
+        await addTokenToWallet(
+            tokenBAddress,
+            tokenBSymbol,
+            tokenBDecimals,
+            logoURI,
+        );
     };
 
     const addToMetamaskButton = (
@@ -37,7 +49,12 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     );
 
     const etherscanButton = (
-        <a href={EthersanTx} target='_blank' rel='noreferrer' className={styles.view_etherscan}>
+        <a
+            href={EthersanTx}
+            target='_blank'
+            rel='noreferrer'
+            className={styles.view_etherscan}
+        >
             View on Etherscan
             <FiExternalLink size={20} color='black' />
         </a>

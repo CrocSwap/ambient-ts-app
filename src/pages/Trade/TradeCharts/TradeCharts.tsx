@@ -429,6 +429,7 @@ export default function TradeCharts(props: propsIF) {
 
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
                         setPoolPriceChangePercent('No Change');
+                        setIsPoolPriceChangePositive(true);
                     } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)

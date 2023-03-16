@@ -36,7 +36,7 @@ interface ChannelDisplayPropsIF {
 export default function FullChat(props: FullChatPropsIF) {
     const { params } = useParams();
     const reconstructedReadableRoom = params
-        ? params.replace('&', '/')
+        ? params.replace('&', '/').toUpperCase()
         : undefined;
 
     // eslint-disable-next-line
@@ -49,10 +49,18 @@ export default function FullChat(props: FullChatPropsIF) {
         userCurrentPool,
     } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
+
     const [readableRoomName, setReadableName] = useState(
-        reconstructedReadableRoom || 'Global',
+        reconstructedReadableRoom || 'global',
     );
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
+
+    useEffect(() => {
+        if (reconstructedReadableRoom) {
+            setReadableName(reconstructedReadableRoom);
+            props.setRoom(reconstructedReadableRoom);
+        }
+    }, [reconstructedReadableRoom]);
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {

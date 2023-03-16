@@ -4,9 +4,7 @@ import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHea
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { ReactNode, useEffect, useState } from 'react';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import { VscClose } from 'react-icons/vsc';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -40,6 +38,7 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { checkIsStable } from '../../utils/data/stablePairs';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -487,25 +486,11 @@ export default function RemoveRange(props: propsIF) {
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const etherscanLink: string =
-        chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Removal Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newRemovalTransactionHash}
+            content='Removal Transaction Successfully Submitted.'
+        />
     );
 
     const removalPending = (

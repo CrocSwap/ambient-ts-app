@@ -51,7 +51,9 @@ interface ConfirmRepositionModalProps {
     toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
-export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
+export default function ConfirmRepositionModal(
+    props: ConfirmRepositionModalProps,
+) {
     const {
         // crocEnv,
         // position,
@@ -100,7 +102,11 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
 
     const sendButton = (
         <Button
-            title={isPositionInRange ? 'Position Currently In Range' : 'Send Reposition'}
+            title={
+                isPositionInRange
+                    ? 'Position Currently In Range'
+                    : 'Send Reposition'
+            }
             action={() => {
                 setShowConfirmation(false);
 
@@ -123,20 +129,19 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
 
     const confirmSendMessage = (
         <WaitingConfirmation content={'Repositioning'} />
-        //  <WaitingConfirmation
-        //      content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
-        //          tokenA.symbol
-        //      } and ${tokenBQty ? tokenBQty : '0'} ${
-        //          tokenB.symbol
-        //      }. Please check the ${'Metamask'} extension in your browser for notifications.`}
-        //  />
     );
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionDenied = (
+        <TransactionDenied resetConfirmation={resetConfirmation} />
+    );
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
@@ -155,12 +160,18 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                     {dataTokenA.logoURI ? (
                         <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
                     ) : (
-                        <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={dataTokenA.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
                     {dataTokenB.logoURI ? (
                         <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
                     ) : (
-                        <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={dataTokenB.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
                 </div>
                 <span className={styles.token_symbol}>
@@ -177,9 +188,15 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenA.logoURI ? (
-                            <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                            <img
+                                src={dataTokenA.logoURI}
+                                alt={dataTokenA.name}
+                            />
                         ) : (
-                            <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='20px' />
+                            <NoTokenIcon
+                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                width='20px'
+                            />
                         )}
                         <span>Current {dataTokenA.symbol} Collateral</span>
                     </div>
@@ -189,9 +206,15 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenA.logoURI ? (
-                            <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                            <img
+                                src={dataTokenA.logoURI}
+                                alt={dataTokenA.name}
+                            />
                         ) : (
-                            <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='20px' />
+                            <NoTokenIcon
+                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                width='20px'
+                            />
                         )}
                         <span> {dataTokenA.symbol} After Reposition</span>
                     </div>
@@ -202,9 +225,15 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenB.logoURI ? (
-                            <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                            <img
+                                src={dataTokenB.logoURI}
+                                alt={dataTokenB.name}
+                            />
                         ) : (
-                            <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='20px' />
+                            <NoTokenIcon
+                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                width='20px'
+                            />
                         )}
                         <span>Current {dataTokenB.symbol} Collateral</span>
                     </div>
@@ -213,9 +242,15 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenB.logoURI ? (
-                            <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                            <img
+                                src={dataTokenB.logoURI}
+                                alt={dataTokenB.name}
+                            />
                         ) : (
-                            <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='20px' />
+                            <NoTokenIcon
+                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                width='20px'
+                            />
                         )}
                         <span>{dataTokenB.symbol} After Reposition</span>
                     </div>
@@ -235,10 +270,18 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
             denominationsInBase={isDenomBase}
             isTokenABase={isTokenABase}
             isAmbient={isAmbient}
-            pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
-            pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
-            pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
-            pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
+            pinnedMinPriceDisplayTruncatedInBase={
+                pinnedMinPriceDisplayTruncatedInBase
+            }
+            pinnedMinPriceDisplayTruncatedInQuote={
+                pinnedMinPriceDisplayTruncatedInQuote
+            }
+            pinnedMaxPriceDisplayTruncatedInBase={
+                pinnedMaxPriceDisplayTruncatedInBase
+            }
+            pinnedMaxPriceDisplayTruncatedInQuote={
+                pinnedMaxPriceDisplayTruncatedInQuote
+            }
         />
     ) : null;
 
@@ -258,7 +301,9 @@ export default function ConfirmRepositionModal(props: ConfirmRepositionModalProp
     return (
         <div className={styles.confirm_range_modal_container}>
             <div>{showConfirmation ? fullTxDetails2 : confirmationDisplay}</div>
-            <footer className={styles.modal_footer}>{showConfirmation ? sendButton : null}</footer>
+            <footer className={styles.modal_footer}>
+                {showConfirmation ? sendButton : null}
+            </footer>
         </div>
     );
 }
