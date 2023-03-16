@@ -189,6 +189,7 @@ export default function Chart(props: ChartData) {
     const d3CanvasBar = useRef(null);
     const d3CanvasLiqBid = useRef(null);
     const d3CanvasLiqAsk = useRef(null);
+    const d3CanvasBand = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -3213,13 +3214,13 @@ export default function Chart(props: ChartData) {
             }
 
             const horizontalBand = d3fc
-                .annotationSvgBand()
+                .annotationCanvasBand()
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
-                .decorate((selection: any) => {
-                    selection.select('path').attr('fill', '#7371FC1A');
+                .decorate((context: any) => {
+                    context.fillStyle = '#7371FC1A';
                 });
 
             setTargetsJoin(() => {
@@ -4013,6 +4014,21 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData, candlestick]);
 
     useEffect(() => {
+        const canvas = d3.select(d3CanvasBand.current).select('canvas').node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (horizontalBand) {
+            d3.select(d3CanvasBand.current)
+                .on('draw', () => {
+                    horizontalBand(horizontalBandData);
+                })
+                .on('measure', () => {
+                    horizontalBand.context(ctx);
+                });
+        }
+    }, [horizontalBandData, horizontalBand]);
+
+    useEffect(() => {
         if (scaleData !== undefined) {
             const canvasBarChart = d3fc
                 .autoBandwidth(d3fc.seriesCanvasBar())
@@ -4088,6 +4104,11 @@ export default function Chart(props: ChartData) {
 
         if (d3CanvasLiqBid) {
             const container = d3.select(d3CanvasLiqBid.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasBand) {
+            const container = d3.select(d3CanvasBand.current).node() as any;
             if (container) container.requestRedraw();
         }
     }
@@ -4404,7 +4425,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
-                    horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                    // horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                     targetsJoin(svg, [ranges]).call(horizontalLine);
 
                     if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
@@ -4820,8 +4841,6 @@ export default function Chart(props: ChartData) {
             lineDepthAskSeriesJoin !== undefined &&
             horizontalBandData !== undefined &&
             noGoZoneBoudnaries !== undefined &&
-            horizontalBandJoin !== undefined &&
-            barSeries !== undefined &&
             volumeData !== undefined &&
             limitNoGoZone !== undefined &&
             limitNoGoZoneJoin !== undefined &&
@@ -4880,7 +4899,7 @@ export default function Chart(props: ChartData) {
         zoomUtils,
         horizontalLine,
         targetsJoin,
-        horizontalBandJoin,
+        // horizontalBandJoin,
         limitJoin,
         marketJoin,
         denomInBase,
@@ -5444,7 +5463,7 @@ export default function Chart(props: ChartData) {
                             isNaN(scaleData.yScale.domain()[1])
                         )
                     ) {
-                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                        // horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                         limitNoGoZoneJoin(svg, [noGoZoneBoudnaries]).call(limitNoGoZone);
 
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
@@ -5938,6 +5957,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-canvas ref={d3CanvasBar} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasBand} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
