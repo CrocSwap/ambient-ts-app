@@ -49,10 +49,14 @@ export default function TransactionSettings(props: propsIF) {
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
 
+    const [currentSkipConfirm, setCurrentSkipConfirm] =
+        useState<boolean>(bypassConfirm);
+
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
+        toggleBypassConfirm(toggleFor, currentSkipConfirm);
         onClose();
     };
 
@@ -75,8 +79,8 @@ export default function TransactionSettings(props: propsIF) {
             <DividerDark />
 
             <ConfirmationModalControl
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
+                currentSkipConfirm={currentSkipConfirm}
+                setCurrentSkipConfirm={setCurrentSkipConfirm}
                 toggleFor={toggleFor}
                 displayInSettings={true}
             />
