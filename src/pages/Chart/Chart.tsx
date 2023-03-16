@@ -1032,16 +1032,29 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
+                    const _width =
+                        (Math.abs(
+                            scaleData.xScale(scaleData.xScale.domain()[0]) -
+                                scaleData.xScale(scaleData.xScale.domain()[1]),
+                        ) *
+                            6) /
+                        100;
+
                     selection
-                        .attr('filter', (d: any) => {
-                            if (d === crosshairData[0].x) {
-                                return 'url(#crossHairBg)';
-                            }
-                        })
                         .select('text')
+
                         .attr('class', (d: any) => {
                             if (d === crosshairData[0].x) {
                                 return 'crossHairText';
+                            }
+
+                            if (
+                                isMouseMoveCrosshair &&
+                                scaleData.xScale(d) >
+                                    scaleData.xScale(crosshairData[0].x) - _width &&
+                                scaleData.xScale(d) < scaleData.xScale(crosshairData[0].x) + _width
+                            ) {
+                                return 'blur';
                             }
 
                             if (
@@ -3536,9 +3549,27 @@ export default function Chart(props: ChartData) {
                 .attr('id', 'crossHairBg');
 
             crosshairDefs.append('feFlood').attr('flood-color', '#242F3F').attr('result', 'bg');
+
             const feMergeTagCrossHair = crosshairDefs.append('feMerge');
             feMergeTagCrossHair.append('feMergeNode').attr('in', 'bg');
             feMergeTagCrossHair.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const crosshairDefsX = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', -0.25)
+                .attr('y', -0.1)
+                .attr('height', 10)
+                .attr('width', 1.5)
+                .attr('id', 'crossHairBgX');
+
+            // crosshairDefsX.append('feOffset').attr('dy', '5').attr('dx','5').attr('result', 'bg');
+
+            crosshairDefsX.append('feFlood').attr('flood-color', '#242F3F').attr('result', 'bg');
+
+            const feMergeTagCrossHairX = crosshairDefsX.append('feMerge');
+            feMergeTagCrossHairX.append('feMergeNode').attr('in', 'bg');
+            feMergeTagCrossHairX.append('feMergeNode').attr('in', 'SourceGraphic');
 
             const marketDefs = svgmain
                 .append('defs')
