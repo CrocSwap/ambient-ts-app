@@ -583,7 +583,16 @@ export default function HarvestPosition(props: propsIF) {
                 {mainModalContent}
                 <div style={{ padding: '0 1rem' }}>
                     {showSettings ? (
-                        <Button title='Confirm' action={updateSettings} flat />
+                        <Button
+                            title={
+                                currentSlippage > 0
+                                    ? 'Confirm'
+                                    : 'Enter a Valid Slippage'
+                            }
+                            action={updateSettings}
+                            flat
+                            disabled={!(currentSlippage > 0)}
+                        />
                     ) : (
                         harvestButtonOrNull
                     )}
