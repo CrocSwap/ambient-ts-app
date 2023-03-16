@@ -189,7 +189,7 @@ export default function Chart(props: ChartData) {
     const d3CanvasBar = useRef(null);
     const d3CanvasLiqBid = useRef(null);
     const d3CanvasLiqAsk = useRef(null);
-
+    const d3PlotAreaCanvas = useRef(null);
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
     const dispatch = useAppDispatch();
@@ -1212,6 +1212,12 @@ export default function Chart(props: ChartData) {
         simpleRangeWidth,
         isAdvancedModeActive,
     ]);
+
+    useEffect(() => {
+        if (zoomUtils !== undefined && d3PlotAreaCanvas !== null) {
+            d3.select(d3PlotAreaCanvas.current).call(zoomUtils?.zoom);
+        }
+    }, [zoomUtils, d3PlotAreaCanvas]);
 
     useEffect(() => {
         setRescale(true);
@@ -4102,6 +4108,11 @@ export default function Chart(props: ChartData) {
             const container = d3.select(d3CanvasLiqBid.current).node() as any;
             if (container) container.requestRedraw();
         }
+
+        if (d3PlotAreaCanvas) {
+            const container = d3.select(d3PlotAreaCanvas.current).node() as any;
+            if (container) container.requestRedraw();
+        }
     }
 
     useEffect(() => {
@@ -5421,7 +5432,7 @@ export default function Chart(props: ChartData) {
                     ]);
                 });
 
-                d3.select(d3PlotArea.current).on('click', (event: any) => {
+                d3.select(d3PlotAreaCanvas.current).on('click', (event: any) => {
                     const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
                         candleOrVolumeDataHoverStatus(event);
                     selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate, nearest);
@@ -5540,7 +5551,7 @@ export default function Chart(props: ChartData) {
                     showCrosshairVertical();
                 };
 
-                d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+                d3.select(d3PlotAreaCanvas.current).on('mousemove', function (event: any) {
                     // console.log('mouse move event');
                     mousemoveEventForCrosshair(event);
                     const { isHoverCandleOrVolumeData } = candleOrVolumeDataHoverStatus(event);
@@ -5981,6 +5992,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
+                        <d3fc-canvas ref={d3PlotAreaCanvas} className='plot-canvas'></d3fc-canvas>
 
                         <d3fc-svg
                             className='y-axis-svg'
