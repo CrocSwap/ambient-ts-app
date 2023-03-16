@@ -239,7 +239,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             <p className={styles.collateral_title}>
                 Current {baseSymbol} Collateral
             </p>
-            <p className={styles.collateral_amount}>
+            <p
+                className={styles.collateral_amount}
+                style={{ color: 'var(--text-grey-light)' }}
+            >
                 {currentBaseQtyDisplayTruncated}
             </p>
         </div>
@@ -249,7 +252,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             <p className={styles.collateral_title}>
                 Current {quoteSymbol} Collateral
             </p>
-            <p className={styles.collateral_amount}>
+            <p
+                className={styles.collateral_amount}
+                style={{ color: 'var(--text-grey-light)' }}
+            >
                 {currentQuoteQtyDisplayTruncated}
             </p>
         </div>
