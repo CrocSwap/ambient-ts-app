@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import styles from './HarvestPositionSettings.module.css';
+import { useHarvestSlippage } from './useHarvestSlippage';
 
 interface propsIF {
     persistedSlippage: number;
@@ -25,6 +26,8 @@ export default function HarvestPositionSettings(props: propsIF) {
             setCurrentSlippage(val);
         }
     }
+
+    useHarvestSlippage();
 
     return (
         <div className={styles.main_container}>
