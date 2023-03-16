@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
 
@@ -115,6 +116,13 @@ export default function ClaimOrder(props: propsIF) {
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Claim',
+                            }),
+                        );
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
@@ -122,6 +130,13 @@ export default function ClaimOrder(props: propsIF) {
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Claim',
+                            }),
+                        );
 
                     // .burnLiq(BigNumber.from(positionLiquidity));
                 }

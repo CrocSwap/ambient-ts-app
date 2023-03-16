@@ -18,6 +18,7 @@ import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
 import {
@@ -156,6 +157,13 @@ export default function OrderRemoval(props: propsIF) {
                         .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Removal',
+                            }),
+                        );
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
@@ -164,6 +172,13 @@ export default function OrderRemoval(props: propsIF) {
                         .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Removal',
+                            }),
+                        );
                 }
             } catch (error) {
                 console.log({ error });

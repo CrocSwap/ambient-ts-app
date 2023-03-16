@@ -23,6 +23,7 @@ import {
     addPendingTx,
     addPositionPendingUpdate,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
@@ -329,6 +330,13 @@ export default function RemoveRange(props: propsIF) {
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Removal',
+                        }),
+                    );
             } catch (error) {
                 if (
                     error.reason === 'sending a transaction requires a signer'
