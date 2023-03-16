@@ -31,7 +31,9 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     // may return `undefined` but that value is handled downstream
     const getPersistedData = (type: string): boolean | undefined => {
         // get correct key-val pair from local storage and parse as string
-        const preferences = JSON.parse(localStorage.getItem(localStorageSlug) as string);
+        const preferences = JSON.parse(
+            localStorage.getItem(localStorageSlug) as string,
+        );
         // declare an output variable (`undefined` if no persisted value)
         let userPref: boolean | undefined;
         // switch statement to get the correct persisted value from data
@@ -61,7 +63,10 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
 
     // hook to update local storage when either persisted value changes
     useEffect(() => {
-        localStorage.setItem(localStorageSlug, JSON.stringify({ outputToDexBal, drawFromDexBal }));
+        localStorage.setItem(
+            localStorageSlug,
+            JSON.stringify({ outputToDexBal, drawFromDexBal }),
+        );
     }, [outputToDexBal, drawFromDexBal]);
 
     // class constructor to manage each data on preference (draw vs receive)
@@ -72,7 +77,10 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
         public readonly enable: () => void;
         public readonly disable: () => void;
         public readonly toggle: () => void;
-        constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>) {
+        constructor(
+            enabled: boolean,
+            setterFn: Dispatch<SetStateAction<boolean>>,
+        ) {
             this.isEnabled = enabled;
             this.enable = () => setterFn(true);
             this.disable = () => setterFn(false);

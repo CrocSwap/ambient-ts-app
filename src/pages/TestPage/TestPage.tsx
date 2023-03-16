@@ -29,7 +29,9 @@ export default function TestPage(props: TestPageProps) {
                     : 'Please agree to our ToS'}
             </p>
             {!walletToS.isAgreed && (
-                <button onClick={() => walletToS.acceptToS()}>Accept the ToS!</button>
+                <button onClick={() => walletToS.acceptToS()}>
+                    Accept the ToS!
+                </button>
             )}
         </section>
     );

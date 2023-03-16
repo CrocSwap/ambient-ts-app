@@ -66,16 +66,22 @@ export default function ChatPanel(props: propsIF) {
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
-    const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
+    const [currentUser, setCurrentUser] = useState<string | undefined>(
+        undefined,
+    );
     const [scrollDirection, setScrollDirection] = useState(String);
     const [notification, setNotification] = useState(0);
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
-    const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] = useState(true);
+    const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
+        useState(true);
 
     // console.log('running ChatPanel');
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+        room.toUpperCase(),
+    );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -85,7 +91,8 @@ export default function ChatPanel(props: propsIF) {
     const { address: addressFromParams } = useParams();
 
     const connectedAccountActive =
-        !addressFromParams || resolvedAddress?.toLowerCase() === address?.toLowerCase();
+        !addressFromParams ||
+        resolvedAddress?.toLowerCase() === address?.toLowerCase();
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -156,17 +163,26 @@ export default function ChatPanel(props: propsIF) {
                         return result;
                     });
                 } else {
-                    result.userData.isModerator === true ? setModerator(true) : setModerator(false);
+                    result.userData.isModerator === true
+                        ? setModerator(true)
+                        : setModerator(false);
                     setCurrentUser(result.userData._id);
                     setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
-                        updateUser(currentUser as string, ensName, userCurrentPool).then(
+                        updateUser(
+                            currentUser as string,
+                            ensName,
+                            userCurrentPool,
+                        ).then(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
                                 if (result.status === 'OK') {
                                     console.log(result);
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    updateMessageUser(currentUser as string, ensName).then(
+                                    updateMessageUser(
+                                        currentUser as string,
+                                        ensName,
+                                    ).then(
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         (result: any) => {
                                             return result;
@@ -194,18 +210,27 @@ export default function ChatPanel(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getID().then((result: any) => {
             if (result?.status === 'OK') {
-                result.userData.isModerator === true ? setModerator(true) : setModerator(false);
+                result.userData.isModerator === true
+                    ? setModerator(true)
+                    : setModerator(false);
                 setCurrentUser(result.userData._id);
                 setUserCurrentPool(result.userData.userCurrentPool);
                 if (result.userData.ensName !== ensName) {
                     // eslint-disable-next-line
-                    updateUser(currentUser as string, ensName, userCurrentPool).then(
+                    updateUser(
+                        currentUser as string,
+                        ensName,
+                        userCurrentPool,
+                    ).then(
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (result: any) => {
                             if (result.status === 'OK') {
                                 console.log(result);
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                updateMessageUser(currentUser as string, ensName).then(
+                                updateMessageUser(
+                                    currentUser as string,
+                                    ensName,
+                                ).then(
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     (result: any) => {
                                         return result;
@@ -269,7 +294,8 @@ export default function ChatPanel(props: propsIF) {
     const handleWheel = (e: any) => {
         if (
             e.nativeEvent.wheelDelta > 0 &&
-            messageEnd.current?.scrollHeight !== messageEnd.current?.scrollHeight
+            messageEnd.current?.scrollHeight !==
+                messageEnd.current?.scrollHeight
         ) {
             setScrollDirection('Scroll Up');
             setIsScrollToBottomButtonPressed(false);
@@ -285,7 +311,10 @@ export default function ChatPanel(props: propsIF) {
     // };
 
     const header = (
-        <div className={styles.chat_header} onClick={() => setIsChatOpen(!props.isChatOpen)}>
+        <div
+            className={styles.chat_header}
+            onClick={() => setIsChatOpen(!props.isChatOpen)}
+        >
             <h2 className={styles.chat_title}>Chat</h2>
             <section style={{ paddingRight: '10px' }}>
                 {isFullScreen || !props.isChatOpen ? (
@@ -294,7 +323,11 @@ export default function ChatPanel(props: propsIF) {
                     <TbTableExport
                         size={18}
                         className={styles.open_full_button}
-                        onClick={() => window.open('/chat/' + room.replace('/', '&'))}
+                        onClick={() =>
+                            window.open(
+                                '/chat/' + room.replace('/', '&').toLowerCase(),
+                            )
+                        }
                     />
                 )}
                 {isFullScreen || !props.isChatOpen ? (
@@ -321,7 +354,10 @@ export default function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => (
-                    <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
+                    <div
+                        key={item._id}
+                        style={{ width: '90%', marginBottom: 4 }}
+                    >
                         <SentMessagePanel
                             isUserLoggedIn={isUserLoggedIn as boolean}
                             message={item}
@@ -329,7 +365,9 @@ export default function ChatPanel(props: propsIF) {
                             isCurrentUser={item.sender === currentUser}
                             currentUser={currentUser}
                             userImageData={
-                                connectedAccountActive ? props.userImageData : secondaryImageData
+                                connectedAccountActive
+                                    ? props.userImageData
+                                    : secondaryImageData
                             }
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
@@ -337,7 +375,11 @@ export default function ChatPanel(props: propsIF) {
                             room={room}
                             isMessageDeleted={isMessageDeleted}
                             setIsMessageDeleted={setIsMessageDeleted}
-                            previousMessage={i === messages.length - 1 ? null : messages[i + 1]}
+                            previousMessage={
+                                i === messages.length - 1
+                                    ? null
+                                    : messages[i + 1]
+                            }
                             nextMessage={i === 0 ? null : messages[i - 1]}
                         />
                     </div>
@@ -418,7 +460,9 @@ export default function ChatPanel(props: propsIF) {
             message={messages[0]}
             room={
                 room === 'Current Pool'
-                    ? currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol
+                    ? currentPool.baseToken.symbol +
+                      '/' +
+                      currentPool.quoteToken.symbol
                     : room
             }
             ensName={ensName}
@@ -453,7 +497,10 @@ export default function ChatPanel(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
-            <div className={styles.modal_body} style={{ height: contentHeight, width: '100%' }}>
+            <div
+                className={styles.modal_body}
+                style={{ height: contentHeight, width: '100%' }}
+            >
                 <div className={styles.chat_body}>
                     {header}
 
