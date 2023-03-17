@@ -303,71 +303,71 @@ export default function TransactionRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <p>{ensName ? ensName : ownerId}</p>
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
-                    >
-                        {'View Account' + 'ㅤ'}
-                        <FiExternalLink size={'12px'} />
-                    </NavLink>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
+        // <TextOnlyTooltip
+        //     interactive
+        //     title={
+        //         <div
+        //             style={{
+        //                 marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+        //                 background: 'var(--dark3)',
+        //                 color: 'var(--text-grey-white)',
+        //                 padding: '12px',
+        //                 borderRadius: '4px',
+        //                 cursor: 'pointer',
+        //             }}
+        //         >
+        //             <p>{ensName ? ensName : ownerId}</p>
+        //             <NavLink
+        //                 onClick={() => {
+        //                     dispatch(
+        //                         setDataLoadingStatus({
+        //                             datasetName: 'lookupUserTxData',
+        //                             loadingStatus: true,
+        //                         }),
+        //                     );
+        //                 }}
+        //                 to={`/${
+        //                     isOwnerActiveAccount
+        //                         ? 'account'
+        //                         : ensName
+        //                         ? ensName
+        //                         : ownerId
+        //                 }`}
+        //             >
+        //                 {'View Account' + 'ㅤ'}
+        //                 <FiExternalLink size={'12px'} />
+        //             </NavLink>
+        //         </div>
+        //     }
+        //     placement={'right'}
+        //     enterDelay={750}
+        //     leaveDelay={0}
+        // >
+        <li
+            onClick={() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserTxData',
+                        loadingStatus: true,
+                    }),
+                );
+                navigate(
+                    `/${
+                        isOwnerActiveAccount
+                            ? 'account'
+                            : ensName
+                            ? ensName
+                            : ownerId
+                    }`,
+                );
+            }}
+            data-label='wallet'
+            className={`${usernameStyle} ${styles.hover_style}`}
+            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
         >
-            <li
-                onClick={() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: true,
-                        }),
-                    );
-                    navigate(
-                        `/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`,
-                    );
-                }}
-                data-label='wallet'
-                className={`${usernameStyle} ${styles.hover_style}`}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
-            >
-                {userNameToDisplay}
-            </li>
-        </TextOnlyTooltip>
+            {userNameToDisplay}
+        </li>
+        // </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent =
@@ -678,64 +678,83 @@ export default function TransactionRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <DefaultTooltip
-                    interactive
-                    title={
-                        <div>
-                            {isOnPortfolioPage ? (
-                                <div
-                                    onClick={handleOpenExplorer}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    {txHash + 'ㅤ'}
-                                    {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
-                                    <FiExternalLink size={'12px'} />
-                                </div>
-                            ) : (
-                                <NavLink
-                                    onClick={() => {
-                                        dispatch(
-                                            setDataLoadingStatus({
-                                                datasetName: 'lookupUserTxData',
-                                                loadingStatus: true,
-                                            }),
-                                        );
-                                    }}
-                                    to={`/${
-                                        isOwnerActiveAccount
-                                            ? 'account'
-                                            : ensName
-                                            ? ensName
-                                            : ownerId
-                                    }`}
-                                >
-                                    <p>{ensName ? ensName : ownerId}</p>
-                                    {'View Account' + 'ㅤ'}
-                                    <FiExternalLink size={'12px'} />
-                                </NavLink>
-                            )}
-                        </div>
-                    }
-                    placement={'right'}
-                    arrow
-                    enterDelay={750}
-                    leaveDelay={0}
-                >
-                    <li
-                        data-label='id'
+                // <DefaultTooltip
+                //     interactive
+                //     title={
+                //         <div>
+                //             {isOnPortfolioPage ? (
+                //                 <div
+                //                     onClick={handleOpenExplorer}
+                //                     style={{ cursor: 'pointer' }}
+                //                 >
+                //                     {txHash + 'ㅤ'}
+                //                     <FiExternalLink size={'12px'} />
+                //                 </div>
+                //             ) : (
+                //                 <NavLink
+                //                     onClick={() => {
+                //                         dispatch(
+                //                             setDataLoadingStatus({
+                //                                 datasetName: 'lookupUserTxData',
+                //                                 loadingStatus: true,
+                //                             }),
+                //                         );
+                //                     }}
+                //                     to={`/${
+                //                         isOwnerActiveAccount
+                //                             ? 'account'
+                //                             : ensName
+                //                             ? ensName
+                //                             : ownerId
+                //                     }`}
+                //                 >
+                //                     <p>{ensName ? ensName : ownerId}</p>
+                //                     {'View Account' + 'ㅤ'}
+                //                     <FiExternalLink size={'12px'} />
+                //                 </NavLink>
+                //             )}
+                //         </div>
+                //     }
+                //     placement={'right'}
+                //     arrow
+                //     enterDelay={750}
+                //     leaveDelay={0}
+                // >
+                <li data-label='id'>
+                    <p
                         onClick={() => {
                             handleOpenExplorer();
                         }}
+                        className={`base_color ${styles.hover_style}`}
                     >
-                        <p className='base_color'>{txHashTruncated}</p>{' '}
+                        {txHashTruncated}
+                    </p>{' '}
+                    <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
+                    >
                         <p
-                            className={usernameStyle}
+                            className={`${usernameStyle} ${styles.hover_style}`}
                             style={{ textTransform: 'lowercase' }}
                         >
                             {userNameToDisplay}
                         </p>
-                    </li>
-                </DefaultTooltip>
+                    </NavLink>
+                </li>
+                // </DefaultTooltip>
             )}
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
