@@ -157,6 +157,7 @@ export default function RangesRow(props: propsIF) {
         quoteTokenDexBalance: props.quoteTokenDexBalance,
         isOnPortfolioPage: props.isOnPortfolioPage,
         handlePulseAnimation: handlePulseAnimation,
+        isPositionInRange: isPositionInRange,
     };
 
     const openDetailsModal = () => {
