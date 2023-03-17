@@ -2,7 +2,7 @@
 
 Please follow these items as close to as possible for your PR. Check off relevant items and remove as not needed. These will help your reviewer find similar ground for starting their review from. 
 
-- [ ] Does the code stick to our formatting and code standards? Does running prettier and ESLint over the code should yield no warnings or errors respectively?
+- [ ] Does the code stick to our formatting and code standards? Does running prettier and ESLint over the code yield no warnings or errors?
 - [ ] Are we using comments correctly? Use /* */ for block comments for new functions.
 - [ ] Does this PR have a linked GitHub issue?
 - [ ] Does the change re-implement code that would be better served by pulling an existing module instead?
