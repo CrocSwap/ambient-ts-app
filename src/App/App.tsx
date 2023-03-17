@@ -178,6 +178,7 @@ import {
     useExchangePrefs,
     dexBalanceMethodsIF,
 } from './hooks/useExchangePrefs';
+import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -240,7 +241,11 @@ export default function App() {
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
 
-    useSkipConfirm();
+    // hooks to manage user preferences to skip confirmation modals
+    const bypassConfSwap: skipConfirmIF = useSkipConfirm('swap');
+    const bypassConfLimit: skipConfirmIF = useSkipConfirm('limit');
+    const bypassConfRange: skipConfirmIF = useSkipConfirm('range');
+    const bypassConfRepo: skipConfirmIF = useSkipConfirm('repo');
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -3677,6 +3682,12 @@ export default function App() {
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
                                     chartSettings={chartSettings}
+                                    bypassConf={{
+                                        swap: bypassConfSwap,
+                                        limit: bypassConfLimit,
+                                        range: bypassConfRange,
+                                        repo: bypassConfRepo,
+                                    }}
                                 />
                             }
                         />
