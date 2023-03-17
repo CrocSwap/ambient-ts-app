@@ -492,10 +492,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
-            if (
-                !(parseFloat(tokenAQtyLocal) > 0) ||
-                !(parseFloat(tokenBQtyLocal) > 0)
-            ) {
+            if (!(parseFloat(tokenAQtyLocal) > 0)) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenBQtyLocal('');
@@ -668,10 +665,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
-            if (
-                !(parseFloat(tokenAQtyLocal) > 0) ||
-                !(parseFloat(tokenBQtyLocal) > 0)
-            ) {
+            if (!(parseFloat(tokenBQtyLocal) > 0)) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenAQtyLocal('');

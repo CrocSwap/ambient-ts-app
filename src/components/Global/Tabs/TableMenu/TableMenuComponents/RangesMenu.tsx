@@ -61,7 +61,7 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         isEmpty,
-        isPositionEmpty,
+        // isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
@@ -74,7 +74,7 @@ export default function RangesMenu(props: propsIF) {
 
     const { openGlobalModal } = rangeDetailsProps;
 
-    const { isAmbient, isPositionInRange } = rangeDetailsProps;
+    const { isAmbient } = rangeDetailsProps;
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
     const dispatch = useAppDispatch();
@@ -227,9 +227,9 @@ export default function RangesMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
-        !isPositionInRange &&
-        !isPositionEmpty &&
-        userMatchesConnectedAccount &&
+        // !isPositionInRange &&
+        // !isPositionEmpty &&
+        // userMatchesConnectedAccount &&
         view1;
     // ----------------------
 

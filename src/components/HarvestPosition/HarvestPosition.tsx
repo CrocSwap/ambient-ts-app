@@ -29,6 +29,7 @@ import {
     addPendingTx,
     addPositionPendingUpdate,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
@@ -282,6 +283,13 @@ export default function HarvestPosition(props: propsIF) {
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewHarvestTransactionHash(tx?.hash);
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Harvest',
+                        }),
+                    );
             } catch (error) {
                 console.log('caught error');
                 dispatch(removePositionPendingUpdate(posHash as string));
