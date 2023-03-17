@@ -721,10 +721,6 @@ export default function TransactionRow(props: propsIF) {
                     className='color_white'
                     style={{ textAlign: 'right' }}
                     onClick={() => {
-                        // console.log({ isBuy });
-                        // console.log({ isOrderRemove });
-                        // console.log({ baseDisplay });
-                        // console.log({ quoteDisplay });
                         openDetailsModal();
                     }}
                 >
