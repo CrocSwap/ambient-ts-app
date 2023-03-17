@@ -265,8 +265,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // console.log({ location });
-
     const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
 
     return (
