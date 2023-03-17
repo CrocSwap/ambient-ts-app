@@ -11,7 +11,12 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order' | 'Reposition';
+    module:
+        | 'Swap'
+        | 'Market Order'
+        | 'Limit Order'
+        | 'Range Order'
+        | 'Reposition';
     toggleFor: string;
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
@@ -32,7 +37,9 @@ export default function TransactionSettings(props: propsIF) {
     } = props;
 
     const [newSlippage, setNewSlippage] = useState<string>(
-        isPairStable ? slippage.stable.toString() : slippage.volatile.toString(),
+        isPairStable
+            ? slippage.stable.toString()
+            : slippage.volatile.toString(),
     );
 
     const handleSubmit = (): void => {
@@ -45,7 +52,7 @@ export default function TransactionSettings(props: propsIF) {
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && handleSubmit();
-    }
+    };
 
     const shouldDisplaySlippageTolerance = module !== 'Limit Order';
 

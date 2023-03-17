@@ -12,7 +12,9 @@ interface IClaimOrderTokenHeaderProps {
     isDenomBase: boolean;
 }
 
-export default function ClaimOrderTokenHeader(props: IClaimOrderTokenHeaderProps) {
+export default function ClaimOrderTokenHeader(
+    props: IClaimOrderTokenHeaderProps,
+) {
     const dispatch = useAppDispatch();
 
     return (
@@ -24,16 +26,29 @@ export default function ClaimOrderTokenHeader(props: IClaimOrderTokenHeaderProps
                 }}
             >
                 <img
-                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
+                    src={
+                        props.isDenomBase
+                            ? props.baseTokenLogoURI
+                            : props.quoteTokenLogoURI
+                    }
                     alt=''
                 />
                 <img
-                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
+                    src={
+                        props.isDenomBase
+                            ? props.quoteTokenLogoURI
+                            : props.baseTokenLogoURI
+                    }
                     alt=''
                 />
                 <span>
-                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /
-                    {props.isDenomBase ? props.quoteTokenSymbol : props.baseTokenSymbol}
+                    {props.isDenomBase
+                        ? props.baseTokenSymbol
+                        : props.quoteTokenSymbol}{' '}
+                    /
+                    {props.isDenomBase
+                        ? props.quoteTokenSymbol
+                        : props.baseTokenSymbol}
                 </span>
             </div>
             <OpenOrderStatus isFilled={props.isOrderFilled} />

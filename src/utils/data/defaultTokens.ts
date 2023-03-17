@@ -25,7 +25,8 @@ export const ropstenDAI = {
     chainId: 3,
     decimals: 18,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     name: 'Dai Stablecoin',
     symbol: 'DAI',
 };
@@ -46,7 +47,8 @@ export const mainnetDAI = {
     chainId: 1,
     decimals: 18,
     fromList: '/ambient-token-list.json',
-    logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     name: 'Dai Stablecoin',
     symbol: 'DAI',
 };
@@ -101,7 +103,8 @@ export const goerliDAI = {
     symbol: 'DAI',
     decimals: 18,
     chainId: 5,
-    logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     fromList: '/ambient-token-list.json',
 };
 

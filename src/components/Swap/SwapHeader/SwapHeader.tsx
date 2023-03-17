@@ -7,7 +7,10 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
@@ -69,7 +72,10 @@ export default function SwapHeader(props: propsIF) {
             >
                 <AiOutlineShareAlt />
             </div>
-            <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+            <div
+                className={styles.token_info}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+            >
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>

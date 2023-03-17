@@ -11,11 +11,14 @@ interface TogglePropsIF {
     disabled?: boolean;
 }
 export default function Toggle(props: TogglePropsIF) {
-    const { isOn, handleToggle, onColor, Width, id, buttonColor, disabled } = props;
+    const { isOn, handleToggle, onColor, Width, id, buttonColor, disabled } =
+        props;
 
     const labelStyle = Width ? `${Width}px` : '100px';
     const labelHeight = `${parseInt(labelStyle) / 2}px`;
-    const buttonStyle = labelStyle ? `${parseInt(labelStyle) / 2 - 3.3}px` : '45px';
+    const buttonStyle = labelStyle
+        ? `${parseInt(labelStyle) / 2 - 3.3}px`
+        : '45px';
     const buttonColorStyle = buttonColor ? buttonColor : '#ffffff';
 
     const onColorStyle = onColor

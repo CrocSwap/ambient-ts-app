@@ -11,13 +11,15 @@ interface propsIF {
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const { bypassConfirm, toggleBypassConfirm, toggleFor, displayInSettings } = props;
+    const { bypassConfirm, toggleBypassConfirm, toggleFor, displayInSettings } =
+        props;
 
     const { pathname } = useLocation();
 
     const compKey = useId();
 
-    const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] = useState(bypassConfirm);
+    const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] =
+        useState(bypassConfirm);
 
     // TODO:   @Junior  unless the `id` field is being used for DOM manipulation
     // TODO:   @Junior  ... or for CSS targeting, just take it out and use the

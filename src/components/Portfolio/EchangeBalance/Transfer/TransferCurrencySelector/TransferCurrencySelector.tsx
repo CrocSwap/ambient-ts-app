@@ -19,8 +19,15 @@ interface propsIF {
 }
 
 export default function TransferCurrencySelector(props: propsIF) {
-    const { fieldId, disable, onClick, selectedToken, setTransferQty, inputValue, setInputValue } =
-        props;
+    const {
+        fieldId,
+        disable,
+        onClick,
+        selectedToken,
+        setTransferQty,
+        inputValue,
+        setInputValue,
+    } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -29,7 +36,9 @@ export default function TransferCurrencySelector(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.00'
                 onChange={(event) => {
-                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    const isValid =
+                        event.target.value === '' ||
+                        event.target.validity.valid;
                     isValid ? setInputValue(event.target.value) : null;
                     if (parseFloat(event.target.value) > 0) {
                         const nonDisplayQty = fromDisplayQty(
@@ -70,10 +79,15 @@ export default function TransferCurrencySelector(props: propsIF) {
                             width='30px'
                         />
                     ) : (
-                        <NoTokenIcon tokenInitial={selectedToken.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={selectedToken.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
 
-                    <span className={styles.token_list_text}>{selectedToken.symbol}</span>
+                    <span className={styles.token_list_text}>
+                        {selectedToken.symbol}
+                    </span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

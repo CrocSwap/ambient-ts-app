@@ -35,7 +35,8 @@ export default function SelectedRange(props: propsIF) {
     } = props;
 
     const reverseDisplayDefault =
-        (isTokenABase && denominationsInBase) || (!isTokenABase && !denominationsInBase);
+        (isTokenABase && denominationsInBase) ||
+        (!isTokenABase && !denominationsInBase);
 
     const [denomInBase, setDenomInBase] = useState(denominationsInBase);
     const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
@@ -51,7 +52,9 @@ export default function SelectedRange(props: propsIF) {
     const tokenAShortName = tokenPair.dataTokenA.symbol;
     const tokenBShortName = tokenPair.dataTokenB.symbol;
 
-    const displayPriceWithDenom = denomInBase ? 1 / poolPriceDisplayNum : poolPriceDisplayNum;
+    const displayPriceWithDenom = denomInBase
+        ? 1 / poolPriceDisplayNum
+        : poolPriceDisplayNum;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -74,7 +77,11 @@ export default function SelectedRange(props: propsIF) {
                     setReverseDisplay(!reverseDisplay);
                     setDenomInBase(!denomInBase);
                 }}
-                className={!reverseDisplay ? styles.active_button : styles.non_active_button}
+                className={
+                    !reverseDisplay
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
             >
                 {tokenAShortName}
             </button>
@@ -84,7 +91,11 @@ export default function SelectedRange(props: propsIF) {
                     setReverseDisplay(!reverseDisplay);
                     setDenomInBase(!denomInBase);
                 }}
-                className={!reverseDisplay ? styles.non_active_button : styles.active_button}
+                className={
+                    !reverseDisplay
+                        ? styles.non_active_button
+                        : styles.active_button
+                }
             >
                 {tokenBShortName}
             </button>
@@ -107,7 +118,8 @@ export default function SelectedRange(props: propsIF) {
                     <p className={styles.price_range_amount}>{value}</p>
                     <p className={styles.price_range_title}>{tokens}</p>
                     <p className={styles.price_range_info}>
-                        Your position will be 100% composed of {currentToken} at this price.
+                        Your position will be 100% composed of {currentToken} at
+                        this price.
                     </p>
                 </div>
             </div>
@@ -125,7 +137,9 @@ export default function SelectedRange(props: propsIF) {
                         : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
                 }
                 currentToken={
-                    reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol
+                    reverseDisplay
+                        ? tokenPair.dataTokenA.symbol
+                        : tokenPair.dataTokenB.symbol
                 }
             />
             <PriceRangeDisplay
@@ -137,7 +151,9 @@ export default function SelectedRange(props: propsIF) {
                         : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
                 }
                 currentToken={
-                    reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol
+                    reverseDisplay
+                        ? tokenPair.dataTokenB.symbol
+                        : tokenPair.dataTokenA.symbol
                 }
             />
         </div>

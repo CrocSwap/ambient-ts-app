@@ -109,7 +109,9 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const nftsDisplay = (
         <div className={styles.row}>
             <h4>NFTs</h4>
-            <div className={styles.nft_container}>{imageData.length ? nfts : nftsPlaceholder}</div>
+            <div className={styles.nft_container}>
+                {imageData.length ? nfts : nftsPlaceholder}
+            </div>
         </div>
     );
     const themeDisplay = (
@@ -171,7 +173,10 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
             transition={pageTransition}
             className={styles.container}
         >
-            <div className={styles.back_button} onClick={() => setShowProfileSettings(false)}>
+            <div
+                className={styles.back_button}
+                onClick={() => setShowProfileSettings(false)}
+            >
                 <BiArrowBack size={30} />
             </div>
             <div className={styles.content}>
@@ -184,7 +189,10 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                         {themeDisplay}
                         {skinDisplay}
                     </section>
-                    <button className={styles.save_button} onClick={() => updateUser()}>
+                    <button
+                        className={styles.save_button}
+                        onClick={() => updateUser()}
+                    >
                         Save
                     </button>
                     {snackbarContent}

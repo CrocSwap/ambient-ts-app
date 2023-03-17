@@ -11,8 +11,12 @@ interface propsIF {
 }
 
 export default function SwapButton(props: propsIF) {
-    const { bypassConfirm, swapAllowed, swapButtonErrorMessage, isSwapConfirmationBypassEnabled } =
-        props;
+    const {
+        bypassConfirm,
+        swapAllowed,
+        swapButtonErrorMessage,
+        isSwapConfirmationBypassEnabled,
+    } = props;
     // console.log({ swapAllowed });
     // console.log({ swapButtonErrorMessage });
     const ButtonDisplay = (

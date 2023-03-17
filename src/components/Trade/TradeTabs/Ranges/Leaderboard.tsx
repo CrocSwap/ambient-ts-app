@@ -7,10 +7,16 @@ import { ethers } from 'ethers';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import { graphData, updateLeaderboard } from '../../../../utils/state/graphDataSlice';
+import {
+    graphData,
+    updateLeaderboard,
+} from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
@@ -77,7 +83,7 @@ export default function Leaderboard(props: propsIF) {
         cachedQuerySpotPrice,
         showSidebar,
         setSimpleRangeWidth,
-        dexBalancePrefs
+        dexBalancePrefs,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -90,10 +96,8 @@ export default function Leaderboard(props: propsIF) {
             .sort((a, b) => b.apy - a.apy)
             .map((pos) => pos.positionId) ?? [];
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        'apr',
-        graphData?.leaderboardByPool?.positions,
-    );
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
+        useSortedPositions('apr', graphData?.leaderboardByPool?.positions);
 
     const topThreePositions = sortedPositions.slice(0, 3);
 
@@ -131,17 +135,26 @@ export default function Leaderboard(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
+    }, [
+        account,
+        isShowAllEnabled,
+        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
+    ]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
     const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRangess = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const currentRangess = sortedPositions?.slice(
+        indexOfFirstRanges,
+        indexOfLastRanges,
+    );
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedPositions;
+    const usePaginateDataOrNull = expandTradeTable
+        ? currentRangess
+        : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
@@ -171,8 +184,12 @@ export default function Leaderboard(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
-    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+    const baseTokenCharacter = baseTokenSymbol
+        ? getUnicodeCharacter(baseTokenSymbol)
+        : '';
+    const quoteTokenCharacter = quoteTokenSymbol
+        ? getUnicodeCharacter(quoteTokenSymbol)
+        : '';
 
     const walID = (
         <>
@@ -322,7 +339,11 @@ export default function Leaderboard(props: propsIF) {
             account={account}
             key={idx}
             position={position}
-            rank={positionsByApy.findIndex((posId) => posId === position.positionId) + 1}
+            rank={
+                positionsByApy.findIndex(
+                    (posId) => posId === position.positionId,
+                ) + 1
+            }
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             openGlobalModal={props.openGlobalModal}
@@ -355,7 +376,9 @@ export default function Leaderboard(props: propsIF) {
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 
-    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
+    const expandStyle = expandTradeTable
+        ? 'calc(100vh - 10rem)'
+        : mobileViewHeight;
 
     return (
         <section

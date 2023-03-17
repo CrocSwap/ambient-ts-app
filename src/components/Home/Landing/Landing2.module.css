@@ -9,7 +9,8 @@
 
     border-radius: var(--border-radius);
 
-    background: url('../../../assets/images/home/landing2.png') no-repeat center center;
+    background: url('../../../assets/images/home/landing2.png') no-repeat center
+        center;
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -25,7 +26,7 @@
 
     /* gap: 1rem; */
 }
-.on_chain{
+.on_chain {
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -51,9 +52,7 @@
 .highlight_text {
     font-weight: 500;
     color: var(--text-highlight);
-  
 }
-
 
 .ambient {
     background: var(--title-gradient);
@@ -68,22 +67,19 @@
     display: none;
 }
 
-
 /* Desktop screen Sizes */
 @media only screen and (min-width: 668px) {
-.ambient{
-    display: flex;
-}
+    .ambient {
+        display: flex;
+    }
 
-.highlight_text{
-    margin: 0 5px;
+    .highlight_text {
+        margin: 0 5px;
+    }
+    .architecture,
+    .on_chain {
+        flex-direction: row;
+        font-size: 24px;
+        line-height: 30px;
+    }
 }
-.architecture, .on_chain{
-    flex-direction: row;
-    font-size: 24px;
-    line-height: 30px;
-}
-
-
-}
-

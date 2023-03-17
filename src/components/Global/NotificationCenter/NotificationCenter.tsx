@@ -13,7 +13,8 @@ interface NotificationCenterPropsIF {
 }
 
 const NotificationCenter = (props: NotificationCenterPropsIF) => {
-    const { showNotificationTable, setShowNotificationTable, lastBlockNumber } = props;
+    const { showNotificationTable, setShowNotificationTable, lastBlockNumber } =
+        props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
 

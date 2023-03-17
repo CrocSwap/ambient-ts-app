@@ -26,7 +26,9 @@ export const useUrlParams = (): {
     // params slug to use in URL bar on header navigation
     // useState() + useEffect() is necessary over useMemo() to
     // ... only overwrite the value conditionally
-    const [paramsSlug, setParamsSlug] = useState<string>(makeParamsSlug(pathname));
+    const [paramsSlug, setParamsSlug] = useState<string>(
+        makeParamsSlug(pathname),
+    );
     useEffect(() => {
         // make a new params slug from the URL path
         const newSlug = makeParamsSlug(pathname);
@@ -63,7 +65,9 @@ export const useUrlParams = (): {
     // console.log({ tokenBparam });
 
     const sortedTokens =
-        tokenAparam && tokenBparam ? sortBaseQuoteTokens(tokenAparam, tokenBparam) : [];
+        tokenAparam && tokenBparam
+            ? sortBaseQuoteTokens(tokenAparam, tokenBparam)
+            : [];
 
     return {
         paramsSlug,

@@ -48,17 +48,29 @@ interface FollowCardPropsIF {
     connectedAccountActive: boolean;
 }
 function FollowCard(props: FollowCardPropsIF) {
-    const { avatar, hash, ensName, isFollowing, showAccountDetails, connectedAccountActive } =
-        props;
+    const {
+        avatar,
+        hash,
+        ensName,
+        isFollowing,
+        showAccountDetails,
+        connectedAccountActive,
+    } = props;
 
-    const buttonStyle = isFollowing ? styles.button_following : styles.button_not_following;
+    const buttonStyle = isFollowing
+        ? styles.button_following
+        : styles.button_not_following;
     const buttonIcon = isFollowing ? (
         <IoMdCheckmark size={15} color='#0e131a' />
     ) : (
         <FiPlus size={15} />
     );
 
-    const isUserFollowing = connectedAccountActive ? true : isFollowing ? true : false;
+    const isUserFollowing = connectedAccountActive
+        ? true
+        : isFollowing
+        ? true
+        : false;
     return (
         <div className={styles.follow_card_container}>
             <motion.img
@@ -74,7 +86,8 @@ function FollowCard(props: FollowCardPropsIF) {
                     className={styles.name_display}
                 >
                     <h3>
-                        {ensName} <span> {isUserFollowing && 'follows you'}</span>
+                        {ensName}{' '}
+                        <span> {isUserFollowing && 'follows you'}</span>
                     </h3>
                     <p>
                         {hash} <FiCopy />
@@ -96,8 +109,12 @@ function FollowCard(props: FollowCardPropsIF) {
     );
 }
 export default function FollowDisplay(props: FollowDisplayPropsIF) {
-    const { exampleFollowers, exampleFollowing, showAccountDetails, connectedAccountActive } =
-        props;
+    const {
+        exampleFollowers,
+        exampleFollowing,
+        showAccountDetails,
+        connectedAccountActive,
+    } = props;
 
     const followersDisplay = (
         <div className={styles.followers_display_container}>
@@ -142,12 +159,19 @@ export default function FollowDisplay(props: FollowDisplayPropsIF) {
                     {displayTabs.map((tab, idx) => (
                         <li
                             key={idx}
-                            className={tab.label === selectedTab.label ? styles.header_active : ''}
+                            className={
+                                tab.label === selectedTab.label
+                                    ? styles.header_active
+                                    : ''
+                            }
                             onClick={() => setSelectedTab(tab)}
                         >
                             {tab.label}
                             {tab.label === selectedTab.label ? (
-                                <motion.div className={styles.underline} layoutId='underline' />
+                                <motion.div
+                                    className={styles.underline}
+                                    layoutId='underline'
+                                />
                             ) : null}
                         </li>
                     ))}

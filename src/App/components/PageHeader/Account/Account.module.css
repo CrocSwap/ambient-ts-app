@@ -6,7 +6,6 @@
     background: transparent;
     border-radius: var(--border-radius);
     gap: var(--gap, 0.5rem);
-   
 }
 .account_container div {
     font-size: var(--body-size);
@@ -149,7 +148,6 @@
     pointer-events: auto;
 }
 
-
 .block_number_div {
     margin-right: 10px;
     display: flex;
@@ -190,7 +188,12 @@
     border-radius: inherit;
 }
 .page_block_sign:before {
-    background: linear-gradient(45deg, transparent, transparent 40%, rgb(40, 2, 2));
+    background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        rgb(40, 2, 2)
+    );
     filter: blur(32px);
 }
 

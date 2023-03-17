@@ -137,7 +137,10 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
         setPoolFees(undefined);
         setPoolAPR(undefined);
     }, [
-        JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
+        JSON.stringify({
+            base: tradeData.baseToken.address,
+            quote: tradeData.quoteToken.address,
+        }),
     ]);
 
     const fetchPoolStats = () => {
@@ -150,7 +153,9 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
-            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
+            const volumeString = volume
+                ? '$' + formatAmountOld(volume)
+                : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
@@ -169,7 +174,10 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     }, [
         isServerEnabled,
         lastBlockNumber,
-        JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
+        JSON.stringify({
+            base: tradeData.baseToken.address,
+            quote: tradeData.quoteToken.address,
+        }),
     ]);
     const truncatedBaseAddress = trimString(baseTokenAddress, 6, 0, '…');
     const truncatedQuoteAddress = trimString(quoteTokenAddress, 6, 0, '…');
@@ -255,7 +263,8 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             <h3>$420,000</h3>
         </section>
     );
-    const smallScreen = useMediaQuery('(max-width: 1600px)') && props.showSidebar;
+    const smallScreen =
+        useMediaQuery('(max-width: 1600px)') && props.showSidebar;
     // ||
     // useMediaQuery('(max-width: 1300px)');
 
@@ -263,25 +272,49 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
         {
             label: '5m',
             content: (
-                <TimeDataCard txs={23} buys={23} sells={23} volume={23} smallScreen={smallScreen} />
+                <TimeDataCard
+                    txs={23}
+                    buys={23}
+                    sells={23}
+                    volume={23}
+                    smallScreen={smallScreen}
+                />
             ),
         },
         {
             label: '1h',
             content: (
-                <TimeDataCard txs={24} buys={24} sells={24} volume={24} smallScreen={smallScreen} />
+                <TimeDataCard
+                    txs={24}
+                    buys={24}
+                    sells={24}
+                    volume={24}
+                    smallScreen={smallScreen}
+                />
             ),
         },
         {
             label: '4h',
             content: (
-                <TimeDataCard txs={25} buys={25} sells={25} volume={25} smallScreen={smallScreen} />
+                <TimeDataCard
+                    txs={25}
+                    buys={25}
+                    sells={25}
+                    volume={25}
+                    smallScreen={smallScreen}
+                />
             ),
         },
         {
             label: '24h',
             content: (
-                <TimeDataCard txs={26} buys={26} sells={26} volume={26} smallScreen={smallScreen} />
+                <TimeDataCard
+                    txs={26}
+                    buys={26}
+                    sells={26}
+                    volume={26}
+                    smallScreen={smallScreen}
+                />
             ),
         },
     ];
@@ -290,16 +323,27 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     const timeTabDisplay = (
         <div className={`${styles.time_tab_container} `}>
             <nav>
-                <ul className={smallScreen ? styles.small_screen : styles.large_screen}>
+                <ul
+                    className={
+                        smallScreen ? styles.small_screen : styles.large_screen
+                    }
+                >
                     {timeTabData.map((item) => (
                         <li
                             key={item.label}
-                            className={item.label === selectedTab.label ? styles.selected : ''}
+                            className={
+                                item.label === selectedTab.label
+                                    ? styles.selected
+                                    : ''
+                            }
                             onClick={() => setSelectedTab(item)}
                         >
                             {` ${item.label}`}
                             {item.label === selectedTab.label ? (
-                                <motion.div className={styles.underline} layoutId='underline' />
+                                <motion.div
+                                    className={styles.underline}
+                                    layoutId='underline'
+                                />
                             ) : null}
                         </li>
                     ))}
@@ -331,8 +375,14 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                     <div className={styles.right_container_top}>
                         <PoolInfoCard title='Market Cap:' data={'...'} />
                         <PoolInfoCard title='FDV:' data={'...'} />
-                        <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
-                        <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard
+                            title='24h Swap Volume:'
+                            data={poolVolume || '...'}
+                        />
+                        <PoolInfoCard
+                            title='Total Fees:'
+                            data={poolFees || '...'}
+                        />
                         <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
                         <PoolInfoCard title='Tick Liquidity:' data={'...'} />
                         <PoolInfoCard title='OOR Liquidity:' data={'...'} />

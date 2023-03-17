@@ -50,30 +50,54 @@ export const fetchNativeTokenBalance = async (
 
     // const options = { address: address, chain: chain as '0x5' };
 
-    const getDexBalanceNonDisplay = async (tokenAddress: string, userAddress: string) => {
-        const dexBalance = (await crocEnv.token(tokenAddress).balance(userAddress)).toString();
+    const getDexBalanceNonDisplay = async (
+        tokenAddress: string,
+        userAddress: string,
+    ) => {
+        const dexBalance = (
+            await crocEnv.token(tokenAddress).balance(userAddress)
+        ).toString();
         return dexBalance;
     };
 
-    const getWalletBalanceNonDisplay = async (tokenAddress: string, userAddress: string) => {
-        const walletBalance = (await crocEnv.token(tokenAddress).wallet(userAddress)).toString();
+    const getWalletBalanceNonDisplay = async (
+        tokenAddress: string,
+        userAddress: string,
+    ) => {
+        const walletBalance = (
+            await crocEnv.token(tokenAddress).wallet(userAddress)
+        ).toString();
         return walletBalance;
     };
 
     // const nativeBalance = await Moralis.Web3API.account.getNativeBalance(options);
 
-    const nativeDexBalanceNonDisplay = await getDexBalanceNonDisplay(ZERO_ADDRESS, address);
-    const nativeWalletBalanceNonDisplay = await getWalletBalanceNonDisplay(ZERO_ADDRESS, address);
+    const nativeDexBalanceNonDisplay = await getDexBalanceNonDisplay(
+        ZERO_ADDRESS,
+        address,
+    );
+    const nativeWalletBalanceNonDisplay = await getWalletBalanceNonDisplay(
+        ZERO_ADDRESS,
+        address,
+    );
 
     const combinedBalanceNonDisplay = BigNumber.from(nativeDexBalanceNonDisplay)
         .add(BigNumber.from(nativeWalletBalanceNonDisplay))
         .toString();
 
-    const nativeDexBalanceDisplay = toDisplayQty(nativeDexBalanceNonDisplay, 18);
+    const nativeDexBalanceDisplay = toDisplayQty(
+        nativeDexBalanceNonDisplay,
+        18,
+    );
     const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceDisplay);
     // const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceNonDisplay);
-    const nativeWalletBalanceDisplay = toDisplayQty(nativeWalletBalanceNonDisplay, 18);
-    const nativeWalletBalanceDisplayNum = parseFloat(nativeWalletBalanceDisplay);
+    const nativeWalletBalanceDisplay = toDisplayQty(
+        nativeWalletBalanceNonDisplay,
+        18,
+    );
+    const nativeWalletBalanceDisplayNum = parseFloat(
+        nativeWalletBalanceDisplay,
+    );
 
     const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
@@ -152,18 +176,29 @@ export const fetchErc20TokenBalances = async (
 
     const options = { address: address, chain: chain as '0x5' };
 
-    const erc20WalletBalancesFromMoralis = await Moralis.EvmApi.token.getWalletTokenBalances(
-        options,
-    );
+    const erc20WalletBalancesFromMoralis =
+        await Moralis.EvmApi.token.getWalletTokenBalances(options);
 
-    const erc20DexBalancesFromCache = await fetchDepositBalances({ chainId: chain, user: address });
+    const erc20DexBalancesFromCache = await fetchDepositBalances({
+        chainId: chain,
+        user: address,
+    });
 
     const combinedErc20Balances: TokenIF[] = [];
 
-    const getTokenInfoFromMoralisBalance = (erc20value: Erc20Value): TokenIF => {
-        const moralisErc20Balance = BigNumber.from(erc20value.amount.toString());
-        const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, erc20value.decimals);
-        const moralisErc20BalanceDisplayNum = parseFloat(moralisErc20BalanceDisplay);
+    const getTokenInfoFromMoralisBalance = (
+        erc20value: Erc20Value,
+    ): TokenIF => {
+        const moralisErc20Balance = BigNumber.from(
+            erc20value.amount.toString(),
+        );
+        const moralisErc20BalanceDisplay = toDisplayQty(
+            moralisErc20Balance,
+            erc20value.decimals,
+        );
+        const moralisErc20BalanceDisplayNum = parseFloat(
+            moralisErc20BalanceDisplay,
+        );
         const moralisErc20BalanceDisplayTruncated =
             moralisErc20BalanceDisplayNum < 0.0001
                 ? moralisErc20BalanceDisplayNum.toExponential(2)
@@ -188,11 +223,14 @@ export const fetchErc20TokenBalances = async (
             walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
             combinedBalance: moralisErc20Balance.toString(),
             combinedBalanceDisplay: moralisErc20BalanceDisplay,
-            combinedBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
+            combinedBalanceDisplayTruncated:
+                moralisErc20BalanceDisplayTruncated,
         };
     };
 
-    const getTokenInfoFromCacheBalance = (tokenBalance: IDepositedTokenBalance): TokenIF => {
+    const getTokenInfoFromCacheBalance = (
+        tokenBalance: IDepositedTokenBalance,
+    ): TokenIF => {
         const erc20DexBalance = tokenBalance.balance;
         const erc20DexBalanceDisplay = erc20DexBalance
             ? toDisplayQty(erc20DexBalance, tokenBalance.decimals)
@@ -243,55 +281,72 @@ export const fetchErc20TokenBalances = async (
     });
 
     if (erc20DexBalancesFromCache !== undefined) {
-        erc20DexBalancesFromCache.tokens.map((balanceFromCache: IDepositedTokenBalance) => {
-            if (balanceFromCache.token === ZERO_ADDRESS) return;
+        erc20DexBalancesFromCache.tokens.map(
+            (balanceFromCache: IDepositedTokenBalance) => {
+                if (balanceFromCache.token === ZERO_ADDRESS) return;
 
-            const indexOfExistingToken = (combinedErc20Balances ?? []).findIndex(
-                (existingToken) => existingToken.address === balanceFromCache.token,
-            );
-
-            const newToken = getTokenInfoFromCacheBalance(balanceFromCache);
-
-            if (indexOfExistingToken === -1) {
-                combinedErc20Balances.push(newToken);
-            } else {
-                const existingToken = combinedErc20Balances[indexOfExistingToken];
-
-                const updatedToken = { ...existingToken };
-
-                const combinedBalance = BigNumber.from(existingToken.combinedBalance)
-                    .add(BigNumber.from(newToken.dexBalance))
-                    .toString();
-
-                const combinedBalanceDisplay = toDisplayQty(
-                    combinedBalance,
-                    existingToken.decimals,
+                const indexOfExistingToken = (
+                    combinedErc20Balances ?? []
+                ).findIndex(
+                    (existingToken) =>
+                        existingToken.address === balanceFromCache.token,
                 );
-                const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
-                const combinedBalanceDisplayTruncated = combinedBalanceDisplayNum
-                    ? combinedBalanceDisplayNum < 0.0001
-                        ? combinedBalanceDisplayNum.toExponential(2)
-                        : combinedBalanceDisplayNum < 2
-                        ? combinedBalanceDisplayNum.toPrecision(3)
-                        : combinedBalanceDisplayNum >= 100000
-                        ? formatAmountOld(combinedBalanceDisplayNum)
-                        : combinedBalanceDisplayNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
-                    : undefined;
+                const newToken = getTokenInfoFromCacheBalance(balanceFromCache);
 
-                updatedToken.dexBalance = newToken.dexBalance;
-                updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;
-                updatedToken.dexBalanceDisplayTruncated = newToken.dexBalanceDisplayTruncated;
-                updatedToken.combinedBalance = combinedBalance;
-                updatedToken.combinedBalanceDisplay = combinedBalanceDisplay;
-                updatedToken.combinedBalanceDisplayTruncated = combinedBalanceDisplayTruncated;
+                if (indexOfExistingToken === -1) {
+                    combinedErc20Balances.push(newToken);
+                } else {
+                    const existingToken =
+                        combinedErc20Balances[indexOfExistingToken];
 
-                combinedErc20Balances[indexOfExistingToken] = updatedToken;
-            }
-        });
+                    const updatedToken = { ...existingToken };
+
+                    const combinedBalance = BigNumber.from(
+                        existingToken.combinedBalance,
+                    )
+                        .add(BigNumber.from(newToken.dexBalance))
+                        .toString();
+
+                    const combinedBalanceDisplay = toDisplayQty(
+                        combinedBalance,
+                        existingToken.decimals,
+                    );
+                    const combinedBalanceDisplayNum = parseFloat(
+                        combinedBalanceDisplay,
+                    );
+
+                    const combinedBalanceDisplayTruncated =
+                        combinedBalanceDisplayNum
+                            ? combinedBalanceDisplayNum < 0.0001
+                                ? combinedBalanceDisplayNum.toExponential(2)
+                                : combinedBalanceDisplayNum < 2
+                                ? combinedBalanceDisplayNum.toPrecision(3)
+                                : combinedBalanceDisplayNum >= 100000
+                                ? formatAmountOld(combinedBalanceDisplayNum)
+                                : combinedBalanceDisplayNum.toLocaleString(
+                                      undefined,
+                                      {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 2,
+                                      },
+                                  )
+                            : undefined;
+
+                    updatedToken.dexBalance = newToken.dexBalance;
+                    updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;
+                    updatedToken.dexBalanceDisplayTruncated =
+                        newToken.dexBalanceDisplayTruncated;
+                    updatedToken.combinedBalance = combinedBalance;
+                    updatedToken.combinedBalanceDisplay =
+                        combinedBalanceDisplay;
+                    updatedToken.combinedBalanceDisplayTruncated =
+                        combinedBalanceDisplayTruncated;
+
+                    combinedErc20Balances[indexOfExistingToken] = updatedToken;
+                }
+            },
+        );
     }
 
     return combinedErc20Balances;

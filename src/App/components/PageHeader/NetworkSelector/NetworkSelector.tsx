@@ -30,7 +30,11 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         <ul className={styles.menu_content}>
             {chains.map((chain, idx) => (
                 <motion.li
-                    onClick={() => (switchNetwork ? switchNetwork(parseInt(chain.chainId)) : null)}
+                    onClick={() =>
+                        switchNetwork
+                            ? switchNetwork(parseInt(chain.chainId))
+                            : null
+                    }
                     key={chain.chainId}
                     className={styles.network_item}
                     custom={idx}
@@ -38,7 +42,9 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                 >
                     <div className={styles.chain_name_status}>
                         {lookupChain(chainId).displayName}
-                        {chain.chainId == chainId && <FaDotCircle color='#CDC1FF' size={10} />}
+                        {chain.chainId == chainId && (
+                            <FaDotCircle color='#CDC1FF' size={10} />
+                        )}
                     </div>
                 </motion.li>
             ))}
