@@ -6,7 +6,7 @@ import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import { TbTableExport } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
@@ -59,6 +59,7 @@ export default function ChatPanel(props: propsIF) {
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
+    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
@@ -322,26 +323,25 @@ export default function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => (
-                    <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
-                        <SentMessagePanel
-                            isUserLoggedIn={isUserLoggedIn as boolean}
-                            message={item}
-                            ensName={ensName}
-                            isCurrentUser={item.sender === currentUser}
-                            currentUser={currentUser}
-                            userImageData={
-                                connectedAccountActive ? props.userImageData : secondaryImageData
-                            }
-                            resolvedAddress={resolvedAddress}
-                            connectedAccountActive={address}
-                            moderator={moderator}
-                            room={room}
-                            isMessageDeleted={isMessageDeleted}
-                            setIsMessageDeleted={setIsMessageDeleted}
-                            previousMessage={i === messages.length - 1 ? null : messages[i + 1]}
-                            nextMessage={i === 0 ? null : messages[i - 1]}
-                        />
-                    </div>
+                    <SentMessagePanel
+                        isUserLoggedIn={isUserLoggedIn as boolean}
+                        message={item}
+                        ensName={ensName}
+                        isCurrentUser={item.sender === currentUser}
+                        currentUser={currentUser}
+                        userImageData={
+                            connectedAccountActive ? props.userImageData : secondaryImageData
+                        }
+                        resolvedAddress={resolvedAddress}
+                        connectedAccountActive={address}
+                        moderator={moderator}
+                        room={room}
+                        isMessageDeleted={isMessageDeleted}
+                        setIsMessageDeleted={setIsMessageDeleted}
+                        previousMessage={i === messages.length - 1 ? null : messages[i + 1]}
+                        nextMessage={i === 0 ? null : messages[i - 1]}
+                        key={item._id}
+                    />
                 ))}
         </div>
     );
@@ -445,6 +445,8 @@ export default function ChatPanel(props: propsIF) {
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 favePools={favePools}
                 userCurrentPool={userCurrentPool}
+                favoritePoolsArray={favoritePoolsArray}
+                setFavoritePoolsArray={setFavoritePoolsArray}
             />
         );
 
@@ -473,6 +475,8 @@ export default function ChatPanel(props: propsIF) {
                         setUserCurrentPool={setUserCurrentPool}
                         currentUser={currentUser}
                         ensName={ensName}
+                        setFavoritePoolsArray={setFavoritePoolsArray}
+                        favoritePoolsArray={favoritePoolsArray}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

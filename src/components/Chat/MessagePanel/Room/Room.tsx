@@ -45,6 +45,8 @@ interface propsIF {
     setUserCurrentPool: any;
     ensName: any;
     currentUser: any;
+    favoritePoolsArray: PoolIF[];
+    setFavoritePoolsArray: any;
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -56,9 +58,10 @@ export default function RoomDropdown(props: propsIF) {
         setIsCurrentPool,
         showCurrentPoolButton,
         setShowCurrentPoolButton,
+        favoritePoolsArray,
+        setFavoritePoolsArray,
     } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
     const [roomArray] = useState<PoolIF[]>([]);
     // const [isCurrentPool, setIsCurrentPool] = useState(false);
     // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);

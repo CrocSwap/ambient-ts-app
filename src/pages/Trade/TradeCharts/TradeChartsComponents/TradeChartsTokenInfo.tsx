@@ -107,10 +107,12 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         currentPoolData.poolId,
     );
 
-    const handleFavButton = () =>
+    function handleFavButton() {
         isButtonFavorited
             ? favePools.remove(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
             : favePools.add(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
+        console.log(tradeData);
+    }
 
     const favButton = (
         <button className={styles.favorite_button} onClick={handleFavButton} id='trade_fav_button'>
