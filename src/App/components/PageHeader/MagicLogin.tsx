@@ -24,7 +24,8 @@ export default function MagicLogin(props: IMagicLoginProps) {
     // };
 
     const handleEmailValidation = () => {
-        const regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        const regEx =
+            /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
         if (regEx.test(email)) {
             // setMessage('Send Login Link');
             // setDisable(false);

@@ -87,8 +87,12 @@ export default function ConfirmRangeModal(props: propsIF) {
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionDenied = (
+        <TransactionDenied resetConfirmation={resetConfirmation} />
+    );
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -104,8 +108,12 @@ export default function ConfirmRangeModal(props: propsIF) {
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
-    const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
-    const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
+    const tokenAQty = (
+        document.getElementById('A-range-quantity') as HTMLInputElement
+    )?.value;
+    const tokenBQty = (
+        document.getElementById('B-range-quantity') as HTMLInputElement
+    )?.value;
 
     const dataTokenA = tokenPair.dataTokenA;
     const dataTokenB = tokenPair.dataTokenB;
@@ -117,19 +125,29 @@ export default function ConfirmRangeModal(props: propsIF) {
                     {dataTokenA.logoURI ? (
                         <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
                     ) : (
-                        <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={dataTokenA.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
                     {dataTokenB.logoURI ? (
                         <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
                     ) : (
-                        <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={dataTokenB.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
                 </div>
                 <span className={styles.token_symbol}>
                     {dataTokenA.symbol}/{dataTokenB.symbol}
                 </span>
             </div>
-            <RangeStatus isInRange={isInRange} isEmpty={false} isAmbient={isAmbient} />
+            <RangeStatus
+                isInRange={isInRange}
+                isEmpty={false}
+                isAmbient={isAmbient}
+            />
         </section>
     );
 
@@ -142,24 +160,40 @@ export default function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenA.logoURI ? (
-                            <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                            <img
+                                src={dataTokenA.logoURI}
+                                alt={dataTokenA.name}
+                            />
                         ) : (
-                            <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='20px' />
+                            <NoTokenIcon
+                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                width='20px'
+                            />
                         )}
                         <span>{dataTokenA.symbol}</span>
                     </div>
-                    <span>{tokenAQty !== '' ? tokenACharacter + tokenAQty : '0'}</span>
+                    <span>
+                        {tokenAQty !== '' ? tokenACharacter + tokenAQty : '0'}
+                    </span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenB.logoURI ? (
-                            <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                            <img
+                                src={dataTokenB.logoURI}
+                                alt={dataTokenB.name}
+                            />
                         ) : (
-                            <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='20px' />
+                            <NoTokenIcon
+                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                width='20px'
+                            />
                         )}
                         <span>{dataTokenB.symbol}</span>
                     </div>
-                    <span>{tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}</span>
+                    <span>
+                        {tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}
+                    </span>
                 </div>
             </div>
         </section>
@@ -175,10 +209,18 @@ export default function ConfirmRangeModal(props: propsIF) {
             denominationsInBase={denominationsInBase}
             isTokenABase={isTokenABase}
             isAmbient={isAmbient}
-            pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
-            pinnedMinPriceDisplayTruncatedInQuote={pinnedMinPriceDisplayTruncatedInQuote}
-            pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
-            pinnedMaxPriceDisplayTruncatedInQuote={pinnedMaxPriceDisplayTruncatedInQuote}
+            pinnedMinPriceDisplayTruncatedInBase={
+                pinnedMinPriceDisplayTruncatedInBase
+            }
+            pinnedMinPriceDisplayTruncatedInQuote={
+                pinnedMinPriceDisplayTruncatedInQuote
+            }
+            pinnedMaxPriceDisplayTruncatedInBase={
+                pinnedMaxPriceDisplayTruncatedInBase
+            }
+            pinnedMaxPriceDisplayTruncatedInQuote={
+                pinnedMaxPriceDisplayTruncatedInQuote
+            }
         />
     ) : null;
 
@@ -198,9 +240,9 @@ export default function ConfirmRangeModal(props: propsIF) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
-                tokenBQty ? tokenBQty : '0'
-            } ${tokenB.symbol}. 
+            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
+                tokenA.symbol
+            } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}. 
             
                 Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
@@ -214,7 +256,9 @@ export default function ConfirmRangeModal(props: propsIF) {
                     : `Create ${isAmbient ? 'Ambient' : 'Range'} Position`
             }
             action={() => {
-                console.log(`Sell Token Full name: ${tokenA.symbol} and quantity: ${tokenAQty}`);
+                console.log(
+                    `Sell Token Full name: ${tokenA.symbol} and quantity: ${tokenAQty}`,
+                );
                 console.log(
                     `Buy Token Full name: ${tokenB.symbol} and quantity: ${
                         tokenBQty !== '' ? tokenBQty : '0'
@@ -228,7 +272,9 @@ export default function ConfirmRangeModal(props: propsIF) {
     );
 
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied

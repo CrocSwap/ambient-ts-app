@@ -47,10 +47,12 @@ export default function SetPoolFees(props: SetPoolFeesPropsIF) {
             transition={{ duration: 0.2 }}
         >
             <div className={styles.slippage_tolerance_container}>
-                <div className={styles.slippage_title}>Initial pool fee (%)</div>
+                <div className={styles.slippage_title}>
+                    Initial pool fee (%)
+                </div>
                 <p className={styles.help_guide}>
-                    0.30% is best for most weighted pools with established tokens. Go higher for
-                    more exotic tokens.
+                    0.30% is best for most weighted pools with established
+                    tokens. Go higher for more exotic tokens.
                 </p>
                 <div className={styles.slippage_box}>
                     <div className={styles.slippage_content}>
@@ -63,9 +65,15 @@ export default function SetPoolFees(props: SetPoolFeesPropsIF) {
                                 placeholder={'slippage'}
                             />
                         </div>
-                        <button onClick={() => setFee(preset1)}>{preset1}%</button>
-                        <button onClick={() => setFee(preset2)}>{preset2}%</button>
-                        <button onClick={() => setFee(preset3)}>{preset3}%</button>
+                        <button onClick={() => setFee(preset1)}>
+                            {preset1}%
+                        </button>
+                        <button onClick={() => setFee(preset2)}>
+                            {preset2}%
+                        </button>
+                        <button onClick={() => setFee(preset3)}>
+                            {preset3}%
+                        </button>
                     </div>
                 </div>
                 {allowAmbientControl}

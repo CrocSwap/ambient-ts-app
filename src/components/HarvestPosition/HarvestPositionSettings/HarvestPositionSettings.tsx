@@ -6,7 +6,9 @@ interface HarvestPositionSettingsPropsIF {
     setShowSettings: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function HarvestPositionSettings(props: HarvestPositionSettingsPropsIF) {
+export default function HarvestPositionSettings(
+    props: HarvestPositionSettingsPropsIF,
+) {
     // eslint-disable-next-line
     const { showSettings, setShowSettings } = props;
 
@@ -22,7 +24,9 @@ export default function HarvestPositionSettings(props: HarvestPositionSettingsPr
     return (
         <div className={styles.main_container}>
             <div className={styles.slippage_tolerance_container}>
-                <div className={styles.slippage_title}>Slippage Tolerance (%)</div>
+                <div className={styles.slippage_title}>
+                    Slippage Tolerance (%)
+                </div>
                 <div className={styles.slippage_box}>
                     <div className={styles.slippage_content}>
                         <div className={styles.input_container}>
@@ -34,9 +38,15 @@ export default function HarvestPositionSettings(props: HarvestPositionSettingsPr
                                 placeholder={'slippage'}
                             />
                         </div>
-                        <button onClick={() => setSlippage(preset1)}>{preset1}%</button>
-                        <button onClick={() => setSlippage(preset2)}>{preset2}%</button>
-                        <button onClick={() => setSlippage(preset3)}>{preset3}%</button>
+                        <button onClick={() => setSlippage(preset1)}>
+                            {preset1}%
+                        </button>
+                        <button onClick={() => setSlippage(preset2)}>
+                            {preset2}%
+                        </button>
+                        <button onClick={() => setSlippage(preset3)}>
+                            {preset3}%
+                        </button>
                         {/* <button onClick={() => setSlippage('0.5')}>0.5%</button>
             <button onClick={() => setSlippage('1')}>1%</button> */}
                     </div>

@@ -96,7 +96,10 @@ export default function NewNetworkSelector() {
                 variants={itemVariants}
             >
                 {name}
-                <div className={styles.network_color} style={{ backgroundColor: color }}>
+                <div
+                    className={styles.network_color}
+                    style={{ backgroundColor: color }}
+                >
                     {isSelected && (
                         <motion.div
                             layoutId='outline'
@@ -112,7 +115,11 @@ export default function NewNetworkSelector() {
     }
 
     return (
-        <motion.div initial={false} animate={isOpen ? 'open' : 'closed'} className={styles.menu}>
+        <motion.div
+            initial={false}
+            animate={isOpen ? 'open' : 'closed'}
+            className={styles.menu}
+        >
             <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setIsOpen(!isOpen)}

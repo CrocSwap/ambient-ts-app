@@ -11,19 +11,27 @@ export const useTokenMap = () => {
             let tokenLists = [];
             if (localStorage.allTokenLists) {
                 console.log('getting allTokenLists from localStorage...');
-                tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+                tokenLists = JSON.parse(
+                    localStorage.getItem('allTokenLists') as string,
+                );
                 const ambientListPresent = tokenLists.some(
-                    (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
+                    (tokenList: TokenListIF) =>
+                        tokenList.uri === tokenListURIs.ambient,
                 );
                 if (ambientListPresent) {
                     ambientTokens = tokenLists.find(
-                        (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
+                        (tokenList: TokenListIF) =>
+                            tokenList.uri === tokenListURIs.ambient,
                     ).tokens;
                 } else {
-                    throw new Error('Did not find Ambient token list in local storage.');
+                    throw new Error(
+                        'Did not find Ambient token list in local storage.',
+                    );
                 }
             } else {
-                throw new Error('Did not find value <<<allTokenLists>>> in local storage.');
+                throw new Error(
+                    'Did not find value <<<allTokenLists>>> in local storage.',
+                );
             }
         } catch (err) {
             console.warn(err);
@@ -37,19 +45,27 @@ export const useTokenMap = () => {
             let tokenLists = [];
             if (localStorage.allTokenLists) {
                 console.log('getting allTokenLists from localStorage...');
-                tokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+                tokenLists = JSON.parse(
+                    localStorage.getItem('allTokenLists') as string,
+                );
                 const coinGeckoListPresent = tokenLists.some(
-                    (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.coingecko,
+                    (tokenList: TokenListIF) =>
+                        tokenList.uri === tokenListURIs.coingecko,
                 );
                 if (coinGeckoListPresent) {
                     coinGeckoTokens = tokenLists.find(
-                        (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.coingecko,
+                        (tokenList: TokenListIF) =>
+                            tokenList.uri === tokenListURIs.coingecko,
                     ).tokens;
                 } else {
-                    throw new Error('Did not find CoinGecko token list in local storage.');
+                    throw new Error(
+                        'Did not find CoinGecko token list in local storage.',
+                    );
                 }
             } else {
-                throw new Error('Did not find value <<<allTokenLists>>> in local storage.');
+                throw new Error(
+                    'Did not find value <<<allTokenLists>>> in local storage.',
+                );
             }
         } catch (err) {
             console.warn(err);
@@ -61,13 +77,17 @@ export const useTokenMap = () => {
         const newTokensMap = new Map<string, TokenIF>();
         getCoinGeckoTokens().forEach((tkn: TokenIF) =>
             newTokensMap.set(
-                tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
+                tkn.address.toLowerCase() +
+                    '_0x' +
+                    tkn.chainId.toString(16).toLowerCase(),
                 tkn,
             ),
         );
         getAmbientTokens().forEach((tkn: TokenIF) =>
             newTokensMap.set(
-                tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
+                tkn.address.toLowerCase() +
+                    '_0x' +
+                    tkn.chainId.toString(16).toLowerCase(),
                 tkn,
             ),
         );

@@ -7,7 +7,10 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './EditMinMaxPrice.module.css';
 import EditPriceInput from '../EditPriceInput/EditPriceInput';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../utils/state/tradeDataSlice';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+} from '../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
 interface EditMinMaxPricePropsIF {
@@ -101,7 +104,9 @@ export default function EditMinMaxPrice(props: EditMinMaxPricePropsIF) {
                 percentageDifference={minPricePercentage}
                 value={minPrice}
                 handleChangeEvent={
-                    !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
+                    !isDenomBase
+                        ? handleMaxPriceChangeEvent
+                        : handleMinPriceChangeEvent
                 }
                 onBlur={lowBoundOnBlur}
                 increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
@@ -113,7 +118,9 @@ export default function EditMinMaxPrice(props: EditMinMaxPricePropsIF) {
                 percentageDifference={maxPricePercentage}
                 value={maxPrice}
                 handleChangeEvent={
-                    !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
+                    !isDenomBase
+                        ? handleMinPriceChangeEvent
+                        : handleMaxPriceChangeEvent
                 }
                 onBlur={highBoundOnBlur}
                 increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}

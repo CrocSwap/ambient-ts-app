@@ -23,7 +23,9 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
                     <div className={styles.input_container}>
                         <input
                             id='slippage_tolerance_input_field'
-                            onChange={(e) => {setNewSlippage(e.target.value)}}
+                            onChange={(e) => {
+                                setNewSlippage(e.target.value);
+                            }}
                             type='text'
                             value={slippageValue}
                             autoComplete={'off'}
@@ -31,9 +33,15 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
                             onKeyDown={handleKeyDown}
                         />
                     </div>
-                    <button onClick={() => setNewSlippage(preset1)}>{preset1}%</button>
-                    <button onClick={() => setNewSlippage(preset2)}>{preset2}%</button>
-                    <button onClick={() => setNewSlippage(preset3)}>{preset3}%</button>
+                    <button onClick={() => setNewSlippage(preset1)}>
+                        {preset1}%
+                    </button>
+                    <button onClick={() => setNewSlippage(preset2)}>
+                        {preset2}%
+                    </button>
+                    <button onClick={() => setNewSlippage(preset3)}>
+                        {preset3}%
+                    </button>
                 </div>
             </div>
         </div>

@@ -6,7 +6,11 @@ export const useTokenSearch = (
     chainId: string,
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[],
     defaultTokens: TokenIF[],
     walletTokens: TokenIF[],
     recentTokens: TokenIF[],
@@ -19,7 +23,9 @@ export const useTokenSearch = (
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
 
-    const recentTxTokens = useAppSelector((state) => state.userData.recentTokens);
+    const recentTxTokens = useAppSelector(
+        (state) => state.userData.recentTokens,
+    );
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
@@ -43,7 +49,9 @@ export const useTokenSearch = (
             return '';
         }
         // add '0x' to the front of the cleaned string if not present
-        const fixedInput = cleanInput.startsWith('0x') ? cleanInput : '0x' + cleanInput;
+        const fixedInput = cleanInput.startsWith('0x')
+            ? cleanInput
+            : '0x' + cleanInput;
         // declare an output variable
         let output = cleanInput;
         // check if string is a correctly-formed contract address
@@ -77,21 +85,30 @@ export const useTokenSearch = (
             if (tokenExistsOnList) {
                 // get the token for the given address and chain
                 // value can be technically be undefined but gatekeeping prevents that
-                foundToken = getTokenByAddress(validatedInput, chainId) as TokenIF;
+                foundToken = getTokenByAddress(
+                    validatedInput,
+                    chainId,
+                ) as TokenIF;
                 // if token is not on an imported list, check tokens in user data
                 // if token is not on an imported list, check tokens in user data
             } else if (!tokenExistsOnList) {
                 // retrieve and parse user data object from local storage
                 // isolate tokens listed in user data
                 // return one that has an address matching user input on current chain
-                foundToken = JSON.parse(localStorage.getItem('user') as string).tokens.find(
+                foundToken = JSON.parse(
+                    localStorage.getItem('user') as string,
+                ).tokens.find(
                     (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
+                        tkn.address.toLowerCase() ===
+                            validatedInput.toLowerCase() &&
                         tkn.chainId === parseInt(chainId),
                 );
-                foundToken = JSON.parse(localStorage.getItem('user') as string).tokens.find(
+                foundToken = JSON.parse(
+                    localStorage.getItem('user') as string,
+                ).tokens.find(
                     (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
+                        tkn.address.toLowerCase() ===
+                            validatedInput.toLowerCase() &&
                         tkn.chainId === parseInt(chainId),
                 );
             }
@@ -105,7 +122,11 @@ export const useTokenSearch = (
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            const foundTokens = getTokensByName(validatedInput, chainId, exactOnly);
+            const foundTokens = getTokensByName(
+                validatedInput,
+                chainId,
+                exactOnly,
+            );
             // get array of tokens in local storage on user data object
             // these are needed for tokens user previously imported but not on lists
             JSON.parse(localStorage.getItem('user') as string)
@@ -116,8 +137,12 @@ export const useTokenSearch = (
                     // ... already found on an imported list, add it to the search results
                     if (
                         !exactOnly &&
-                        (tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
-                            tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())) &&
+                        (tkn.name
+                            .toLowerCase()
+                            .includes(validatedInput.toLowerCase()) ||
+                            tkn.symbol
+                                .toLowerCase()
+                                .includes(validatedInput.toLowerCase())) &&
                         tkn.chainId === parseInt(chainId) &&
                         !foundTokens
                             .map((tok: TokenIF) => tok.address.toLowerCase())
@@ -129,8 +154,10 @@ export const useTokenSearch = (
                         // ... already found on an imported list, add it to the search results
                     } else if (
                         exactOnly &&
-                        (tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
-                            tkn.symbol.toLowerCase() === validatedInput.toLowerCase()) &&
+                        (tkn.name.toLowerCase() ===
+                            validatedInput.toLowerCase() ||
+                            tkn.symbol.toLowerCase() ===
+                                validatedInput.toLowerCase()) &&
                         tkn.chainId === parseInt(chainId) &&
                         !foundTokens
                             .map((tok: TokenIF) => tok.address.toLowerCase())
@@ -160,7 +187,8 @@ export const useTokenSearch = (
                     // check if current token at index is already in the ouput variable
                     const isInArray = outputTokens.some(
                         (tk: TokenIF) =>
-                            tk.address.toLowerCase() === newTokens[i].address.toLowerCase() &&
+                            tk.address.toLowerCase() ===
+                                newTokens[i].address.toLowerCase() &&
                             tk.chainId === newTokens[i].chainId,
                     );
                     // check if token is recognized from a list (if necessary)
@@ -209,7 +237,13 @@ export const useTokenSearch = (
 
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
-    }, [chainId, defaultTokens.length, walletTokens.length, recentTokens.length, validatedInput]);
+    }, [
+        chainId,
+        defaultTokens.length,
+        walletTokens.length,
+        recentTokens.length,
+        validatedInput,
+    ]);
 
     // outputTokens ➜ tokens to display in DOM
     // validatedInput ➜ user input after validation mods

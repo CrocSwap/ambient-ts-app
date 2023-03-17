@@ -29,25 +29,35 @@ export default function Tokens(props: propsIF) {
     // THE FOLLOWING CODE HAS BEEN MOVED TO PORTFOLIOTABS SO THE DROPDOWN CAN BE USED ON THE RIGHT SIDE OF THE TAB HEADER AS PROPS
 
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>();
-    const [importedTokens, setImportedTokens] = useState<TokenIF[] | null>(null);
-    importedTokens ?? setImportedTokens(JSON.parse(localStorage.getItem('user') as string).tokens);
+    const [importedTokens, setImportedTokens] = useState<TokenIF[] | null>(
+        null,
+    );
+    importedTokens ??
+        setImportedTokens(
+            JSON.parse(localStorage.getItem('user') as string).tokens,
+        );
 
     const [tokenSource, setTokenSource] = useState('imported');
     const [tokensInDOM, setTokensInDOM] = useState<TokenIF[]>([]);
 
     useEffect(() => {
         if (tokenSource === 'imported') {
-            const tokens = JSON.parse(localStorage.getItem('user') as string).tokens;
+            const tokens = JSON.parse(
+                localStorage.getItem('user') as string,
+            ).tokens;
             setTokensInDOM(tokens);
         } else {
             setTokensInDOM(
-                tokenLists?.find((list) => list.name === tokenSource)?.tokens as TokenIF[],
+                tokenLists?.find((list) => list.name === tokenSource)
+                    ?.tokens as TokenIF[],
             );
         }
     }, [tokenSource]);
 
     useEffect(() => {
-        setTokenLists(JSON.parse(localStorage.getItem('allTokenLists') as string));
+        setTokenLists(
+            JSON.parse(localStorage.getItem('allTokenLists') as string),
+        );
     }, []);
 
     // pagination
@@ -64,7 +74,10 @@ export default function Tokens(props: propsIF) {
     // Get current transactions
     const indexOfLastTokens = currentPage * tokensPerPage;
     const indexOfFirstTokens = indexOfLastTokens - tokensPerPage;
-    const currentTokens = tokensInDOM?.slice(indexOfFirstTokens, indexOfLastTokens);
+    const currentTokens = tokensInDOM?.slice(
+        indexOfFirstTokens,
+        indexOfLastTokens,
+    );
 
     // Change page
     const paginate = (pageNumber: number) => {
@@ -73,11 +86,18 @@ export default function Tokens(props: propsIF) {
 
     // end of pagination
 
-    const { searchTerm, onSearchChange, filteredData } = useSearch<TokenIF>('symbol', tokensInDOM);
+    const { searchTerm, onSearchChange, filteredData } = useSearch<TokenIF>(
+        'symbol',
+        tokensInDOM,
+    );
 
     const filteredDataOrNull = filteredData.length ? (
         filteredData.map((tkn, idx) => (
-            <TokenCard key={JSON.stringify(tkn) + idx} token={tkn} chainId={chainId} />
+            <TokenCard
+                key={JSON.stringify(tkn) + idx}
+                token={tkn}
+                chainId={chainId}
+            />
         ))
     ) : (
         <div className={styles.none_found}>
@@ -88,7 +108,11 @@ export default function Tokens(props: propsIF) {
     );
 
     const currentTokensOrNull = currentTokens.map((tkn, idx) => (
-        <TokenCard key={JSON.stringify(tkn) + idx} token={tkn} chainId={chainId} />
+        <TokenCard
+            key={JSON.stringify(tkn) + idx}
+            token={tkn}
+            chainId={chainId}
+        />
     ));
 
     // dropdown
@@ -164,7 +188,10 @@ export default function Tokens(props: propsIF) {
     // end of dropdown ---
 
     return (
-        <div className={styles.container} style={{ height: 'calc(100vh - 19.5rem' }}>
+        <div
+            className={styles.container}
+            style={{ height: 'calc(100vh - 19.5rem' }}
+        >
             <TokensHeader />
             <div className={styles.search_input_container}>
                 <input

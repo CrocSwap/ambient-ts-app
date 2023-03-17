@@ -22,8 +22,12 @@ export default function RangeButton(props: IRangeButtonProps) {
                     props.rangeAllowed
                         ? bypassConfirm
                             ? isAdd
-                                ? `Add to ${isAmbient ? 'Ambient' : 'Range'} Position`
-                                : `Create ${isAmbient ? 'Ambient' : 'Range'} Position`
+                                ? `Add to ${
+                                      isAmbient ? 'Ambient' : 'Range'
+                                  } Position`
+                                : `Create ${
+                                      isAmbient ? 'Ambient' : 'Range'
+                                  } Position`
                             : 'Open Confirmation'
                         : props.rangeButtonErrorMessage
                 }

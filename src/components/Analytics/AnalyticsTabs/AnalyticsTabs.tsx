@@ -15,10 +15,9 @@ interface propsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     favePools: favePoolsMethodsIF;
-
 }
 export default function AnalyticsTabs(props: propsIF) {
-    const {setSelectedOutsideTab, setOutsideControl, favePools} = props;
+    const { setSelectedOutsideTab, setOutsideControl, favePools } = props;
 
     const allTokens: any = [];
     const allPoolData: any = [];
@@ -63,19 +62,35 @@ export default function AnalyticsTabs(props: propsIF) {
                 tokensResult.filter(
                     (item) =>
                         item.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.symbol.toLowerCase().includes(value.toLowerCase()) ||
-                        item.address.toLowerCase().includes(value.toLowerCase()),
+                        item.symbol
+                            .toLowerCase()
+                            .includes(value.toLowerCase()) ||
+                        item.address
+                            .toLowerCase()
+                            .includes(value.toLowerCase()),
                 ),
             );
             setPools(
                 poolsResult.filter(
                     (item) =>
-                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.address.toLowerCase().includes(value.toLowerCase()),
+                        item.token0.name
+                            .toLowerCase()
+                            .includes(value.toLowerCase()) ||
+                        item.token1.name
+                            .toLowerCase()
+                            .includes(value.toLowerCase()) ||
+                        item.token0.symbol
+                            .toLowerCase()
+                            .includes(value.toLowerCase()) ||
+                        item.token1.symbol
+                            .toLowerCase()
+                            .includes(value.toLowerCase()) ||
+                        item.token0.address
+                            .toLowerCase()
+                            .includes(value.toLowerCase()) ||
+                        item.token1.address
+                            .toLowerCase()
+                            .includes(value.toLowerCase()),
                 ),
             );
         }
@@ -84,7 +99,11 @@ export default function AnalyticsTabs(props: propsIF) {
     const analyticTabData = [
         {
             label: 'Top Tokens',
-            content: <TopTokens tokens={searchWord.length > 0 ? tokens : tokensResult} />,
+            content: (
+                <TopTokens
+                    tokens={searchWord.length > 0 ? tokens : tokensResult}
+                />
+            ),
         },
         {
             label: 'Top Pools',

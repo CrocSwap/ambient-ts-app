@@ -15,7 +15,9 @@ export default function EditHeader(props: EditHeaderPropsIF) {
             <div />
             <div className={styles.title}>
                 Edit Position:{' '}
-                {positionHash ? trimString(positionHash, 4, 4, '…') : ' 0xFD05...A3FF'}
+                {positionHash
+                    ? trimString(positionHash, 4, 4, '…')
+                    : ' 0xFD05...A3FF'}
             </div>
             <div onClick={() => navigate(-1)}>
                 <RiCloseFill />

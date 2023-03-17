@@ -13,13 +13,17 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
         setRemovalPercentage(percentage);
         const sliderInputField = document.getElementById('remove-range-slider');
         if (sliderInputField) {
-            (sliderInputField as HTMLInputElement).value = percentage.toString();
+            (sliderInputField as HTMLInputElement).value =
+                percentage.toString();
         }
     };
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
-                <span className={styles.percentage_amount} id='remove-percentage-output'>
+                <span
+                    className={styles.percentage_amount}
+                    id='remove-percentage-output'
+                >
                     {removalPercentage}%
                 </span>
                 <button
@@ -75,7 +79,9 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                         defaultValue={removalPercentage}
                         type='range'
                         className={styles.percentage_input}
-                        onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}
+                        onChange={(e) =>
+                            handlePercentageUpdate(parseInt(e.target.value))
+                        }
                     />
                 </div>
                 <div className={styles.percentage_container}></div>

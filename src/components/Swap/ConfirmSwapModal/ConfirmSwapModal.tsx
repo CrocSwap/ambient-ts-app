@@ -88,7 +88,8 @@ export default function ConfirmSwapModal(props: propsIF) {
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
     const isPriceInverted =
-        (isDenomBaseLocal && !isSellTokenBase) || (!isDenomBaseLocal && isSellTokenBase);
+        (isDenomBaseLocal && !isSellTokenBase) ||
+        (!isDenomBaseLocal && isSellTokenBase);
 
     const effectivePriceWithDenom = effectivePrice
         ? isPriceInverted
@@ -175,7 +176,10 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {buyTokenData.logoURI ? (
                     <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
                 ) : (
-                    <NoTokenIcon tokenInitial={buyTokenData.symbol.charAt(0)} width='30px' />
+                    <NoTokenIcon
+                        tokenInitial={buyTokenData.symbol.charAt(0)}
+                        width='30px'
+                    />
                 )}
 
                 <h2>{buyTokenData.symbol}</h2>
@@ -189,9 +193,15 @@ export default function ConfirmSwapModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 {sellTokenData.logoURI ? (
-                    <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                    <img
+                        src={sellTokenData.logoURI}
+                        alt={sellTokenData.symbol}
+                    />
                 ) : (
-                    <NoTokenIcon tokenInitial={sellTokenData.symbol.charAt(0)} width='30px' />
+                    <NoTokenIcon
+                        tokenInitial={sellTokenData.symbol.charAt(0)}
+                        width='30px'
+                    />
                 )}
 
                 <h2>{sellTokenData.symbol}</h2>
@@ -230,7 +240,10 @@ export default function ConfirmSwapModal(props: propsIF) {
                 </div>
                 {buyCurrencyRow}
             </section>
-            <InitPoolDenom setIsDenomBase={setIsDenomBaseLocal} isDenomBase={isDenomBaseLocal} />
+            <InitPoolDenom
+                setIsDenomBase={setIsDenomBaseLocal}
+                isDenomBase={isDenomBaseLocal}
+            />
 
             {extraInfoData}
             {/* {explanationText} */}
@@ -285,15 +298,21 @@ export default function ConfirmSwapModal(props: propsIF) {
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${
+            content={`Swapping ${sellQtyString} ${
+                sellTokenData.symbol
+            } for ${buyQtyString} ${
                 buyTokenData.symbol
             }. Please check the ${'Metamask'} extension in your browser for notifications.
             `}
         />
     );
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionDenied = (
+        <TransactionDenied resetConfirmation={resetConfirmation} />
+    );
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -325,7 +344,9 @@ export default function ConfirmSwapModal(props: propsIF) {
     );
 
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied

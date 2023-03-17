@@ -13,7 +13,9 @@ export default function Toggle(props: ButtonPropsIF) {
     const buttonTypeStyle = flat ? styles.btn_flat : styles.btn_gradient;
     return (
         <button
-            className={`${disabled ? styles.disabled_btn : buttonTypeStyle} ${styles.btn}`}
+            className={`${disabled ? styles.disabled_btn : buttonTypeStyle} ${
+                styles.btn
+            }`}
             onClick={action}
             disabled={disabled}
         >

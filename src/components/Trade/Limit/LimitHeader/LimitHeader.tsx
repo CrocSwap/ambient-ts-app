@@ -9,7 +9,10 @@ import styles from './LimitHeader.module.css';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
@@ -29,8 +32,13 @@ interface propsIF {
 
 // central react functional component
 export default function LimitHeader(props: propsIF) {
-    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm, toggleBypassConfirm } =
-        props;
+    const {
+        mintSlippage,
+        isPairStable,
+        openGlobalModal,
+        bypassConfirm,
+        toggleBypassConfirm,
+    } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -63,7 +71,10 @@ export default function LimitHeader(props: propsIF) {
             >
                 <AiOutlineShareAlt />
             </div>
-            <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+            <div
+                className={styles.token_info}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+            >
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>

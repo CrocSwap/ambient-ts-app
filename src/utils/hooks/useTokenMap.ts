@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 
-export const useTokenMap = (activeTokenListsChanged: boolean, tokenListsNeeded: string[]) => {
+export const useTokenMap = (
+    activeTokenListsChanged: boolean,
+    tokenListsNeeded: string[],
+) => {
     // hook to preserve the token map value across renders
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
     // hook to create a new token map and write it to local storage
     useEffect(() => {
         // JSON value of 'allTokenLists' from local storage
-        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+        const allTokenLists = JSON.parse(
+            localStorage.getItem('allTokenLists') as string,
+        );
         if (!allTokenLists) return;
         // function to pull a single token list from local storage by its URI
         const getTokensByURI = (uri: string) => {
@@ -48,7 +53,9 @@ export const useTokenMap = (activeTokenListsChanged: boolean, tokenListsNeeded: 
             // create a value in the Map object
             .forEach((tkn: TokenIF) =>
                 newTokensMap.set(
-                    tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
+                    tkn.address.toLowerCase() +
+                        '_0x' +
+                        tkn.chainId.toString(16).toLowerCase(),
                     tkn,
                 ),
             );
