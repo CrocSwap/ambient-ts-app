@@ -8,6 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../../utils/state/receiptDataSlice';
 import {
@@ -58,7 +59,9 @@ export default function Deposit(props: propsIF) {
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!gasPriceInGwei && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
-                  .sub(BigNumber.from(Math.floor(gasPriceInGwei * 200000 * 1e8)))
+                  .sub(
+                      BigNumber.from(Math.floor(gasPriceInGwei * 200000 * 1e8)),
+                  )
                   //   .sub(BigNumber.from(Math.floor(1000000000000000)))
                   //   .sub(BigNumber.from(Math.floor(gasPriceInGwei * 11500000 * 1e-9)))
                   .toString()
@@ -106,7 +109,9 @@ export default function Deposit(props: propsIF) {
               })
         : undefined;
 
-    const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<string | undefined>();
+    const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<
+        string | undefined
+    >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
@@ -121,9 +126,9 @@ export default function Deposit(props: propsIF) {
     const isWalletBalanceSufficient = useMemo(
         () =>
             tokenWalletBalanceAdjustedNonDisplayString && !!depositQtyNonDisplay
-                ? BigNumber.from(tokenWalletBalanceAdjustedNonDisplayString).gte(
-                      BigNumber.from(depositQtyNonDisplay),
-                  )
+                ? BigNumber.from(
+                      tokenWalletBalanceAdjustedNonDisplayString,
+                  ).gte(BigNumber.from(depositQtyNonDisplay))
                 : false,
         [tokenWalletBalanceAdjustedNonDisplayString, depositQtyNonDisplay],
     );
@@ -148,7 +153,9 @@ export default function Deposit(props: propsIF) {
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
         } else if (!isWalletBalanceSufficient) {
             setIsButtonDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Wallet Balance Insufficient`);
+            setButtonMessage(
+                `${selectedToken.symbol} Wallet Balance Insufficient`,
+            );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
             setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
@@ -190,7 +197,10 @@ export default function Deposit(props: propsIF) {
     const deposit = async (depositQtyNonDisplay: string) => {
         if (crocEnv && depositQtyNonDisplay) {
             try {
-                const depositQtyDisplay = toDisplayQty(depositQtyNonDisplay, selectedTokenDecimals);
+                const depositQtyDisplay = toDisplayQty(
+                    depositQtyNonDisplay,
+                    selectedTokenDecimals,
+                );
 
                 setIsDepositPending(true);
 
@@ -199,6 +209,13 @@ export default function Deposit(props: propsIF) {
                     .deposit(depositQtyDisplay, connectedAccount);
 
                 dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Deposit',
+                        }),
+                    );
 
                 let receipt;
 
@@ -252,7 +269,9 @@ export default function Deposit(props: propsIF) {
                     resetDepositQty();
                 }
             } catch (error) {
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
                 console.warn({ error });
@@ -275,6 +294,13 @@ export default function Deposit(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -348,7 +374,8 @@ export default function Deposit(props: propsIF) {
     //     }
     // }, [selectedToken.decimals]);
 
-    const isTokenWalletBalanceGreaterThanZero = parseFloat(tokenWalletBalance) > 0;
+    const isTokenWalletBalanceGreaterThanZero =
+        parseFloat(tokenWalletBalance) > 0;
 
     const [inputValue, setInputValue] = useState('');
 
@@ -356,7 +383,8 @@ export default function Deposit(props: propsIF) {
         if (isTokenWalletBalanceGreaterThanZero) {
             setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
 
-            if (tokenWalletBalanceDisplay) setInputValue(tokenWalletBalanceDisplay);
+            if (tokenWalletBalanceDisplay)
+                setInputValue(tokenWalletBalanceDisplay);
             // if (depositInput && tokenWalletBalanceDisplay)
             //     depositInput.value = tokenWalletBalanceDisplay;
         }
@@ -383,7 +411,8 @@ export default function Deposit(props: propsIF) {
                         : styles.info_text_non_clickable
                 }
             >
-                Your Wallet Balance ({selectedToken.symbol}): {tokenWalletBalanceTruncated || '0.0'}
+                Your Wallet Balance ({selectedToken.symbol}):{' '}
+                {tokenWalletBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
                 Your Exchange Balance ({selectedToken.symbol}):{' '}

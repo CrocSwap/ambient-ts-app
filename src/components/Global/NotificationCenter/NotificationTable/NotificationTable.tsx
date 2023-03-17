@@ -1,7 +1,10 @@
 import styles from './NotificationTable.module.css';
-import { Dispatch, RefObject, SetStateAction } from 'react';
+import { Dispatch, RefObject, SetStateAction, useEffect } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
 
 interface NotificationTableProps {
@@ -12,28 +15,51 @@ interface NotificationTableProps {
     notificationItemRef: RefObject<HTMLDivElement>;
 }
 const NotificationTable = (props: NotificationTableProps) => {
-    const { showNotificationTable, pendingTransactions, lastBlockNumber, notificationItemRef } =
-        props;
+    const {
+        showNotificationTable,
+        pendingTransactions,
+        lastBlockNumber,
+        notificationItemRef,
+    } = props;
 
     const dispatch = useAppDispatch();
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
-    const parsedReceipts = receiptData.sessionReceipts.map((receipt) => JSON.parse(receipt));
+    const transactionsByType = receiptData.transactionsByType;
 
-    const successfulTransactions = parsedReceipts.filter((receipt) => receipt?.status === 1);
+    const parsedReceipts = receiptData.sessionReceipts.map((receipt) =>
+        JSON.parse(receipt),
+    );
 
-    const failedTransactions = parsedReceipts.filter((receipt) => receipt?.status === 0);
+    useEffect(() => {
+        if (parsedReceipts.length) console.log({ parsedReceipts });
+    }, [JSON.stringify(parsedReceipts)]);
 
-    const successfulTransactionsDisplay = successfulTransactions.map((tx, idx) => (
-        <ReceiptDisplay
-            key={idx}
-            status='successful'
-            hash={tx?.transactionHash}
-            txBlockNumber={tx.blockNumber}
-            lastBlockNumber={lastBlockNumber}
-        />
-    ));
+    const successfulTransactions = parsedReceipts.filter(
+        (receipt) => receipt?.status === 1,
+    );
+
+    const failedTransactions = parsedReceipts.filter(
+        (receipt) => receipt?.status === 0,
+    );
+
+    const successfulTransactionsDisplay = successfulTransactions.map(
+        (tx, idx) => (
+            <ReceiptDisplay
+                key={idx}
+                status='successful'
+                hash={tx?.transactionHash}
+                txBlockNumber={tx.blockNumber}
+                lastBlockNumber={lastBlockNumber}
+                txType={
+                    transactionsByType.find(
+                        (e) => e.txHash === tx?.transactionHash,
+                    )?.txType
+                }
+            />
+        ),
+    );
     const failedTransactionsDisplay = failedTransactions.map((tx, idx) => (
         <ReceiptDisplay
             key={idx}
@@ -41,10 +67,20 @@ const NotificationTable = (props: NotificationTableProps) => {
             hash={tx?.transactionHash}
             txBlockNumber={tx.blockNumber}
             lastBlockNumber={lastBlockNumber}
+            txType={
+                transactionsByType.find((e) => e.txHash === tx?.transactionHash)
+                    ?.txType
+            }
         />
     ));
     const pendingTransactionsDisplay = pendingTransactions.map((tx, idx) => (
-        <ReceiptDisplay key={idx} status='pending' hash={tx} lastBlockNumber={lastBlockNumber} />
+        <ReceiptDisplay
+            key={idx}
+            status='pending'
+            hash={tx}
+            lastBlockNumber={lastBlockNumber}
+            txType={transactionsByType.find((e) => e.txHash === tx)?.txType}
+        />
     ));
 
     if (!showNotificationTable) return null;

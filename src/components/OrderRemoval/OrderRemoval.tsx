@@ -5,11 +5,7 @@ import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHea
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
 import RemoveOrderWidth from './RemoveOrderWidth/RemoveOrderWidth';
 import styles from './OrderRemoval.module.css';
-import { CircleLoaderFailed } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import Button from '../Global/Button/Button';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmountOld } from '../../utils/numbers';
@@ -19,7 +15,12 @@ import { BigNumber } from 'ethers';
 // import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+import {
+    addPendingTx,
+    addReceipt,
+    addTransactionByType,
+    removePendingTx,
+} from '../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -27,6 +28,9 @@ import {
 } from '../../utils/TransactionError';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TransactionException from '../Global/TransactionException/TransactionException';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 
 interface propsIF {
     account: string;
@@ -37,7 +41,7 @@ interface propsIF {
 }
 
 export default function OrderRemoval(props: propsIF) {
-    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -62,7 +66,8 @@ export default function OrderRemoval(props: propsIF) {
     } = useProcessOrder(limitOrder, account);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
+    const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
+        useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     // const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
@@ -109,7 +114,8 @@ export default function OrderRemoval(props: propsIF) {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        if (baseRemovalTruncated !== undefined) setBaseQtyToBeRemoved(baseRemovalTruncated);
+        if (baseRemovalTruncated !== undefined)
+            setBaseQtyToBeRemoved(baseRemovalTruncated);
         const quoteRemovalTruncated =
             baseRemovalNum === undefined
                 ? undefined
@@ -125,7 +131,8 @@ export default function OrderRemoval(props: propsIF) {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        if (quoteRemovalTruncated !== undefined) setQuoteQtyToBeRemoved(quoteRemovalTruncated);
+        if (quoteRemovalTruncated !== undefined)
+            setQuoteQtyToBeRemoved(quoteRemovalTruncated);
     }, [removalPercentage]);
 
     const positionLiquidity = limitOrder.positionLiq;
@@ -136,7 +143,9 @@ export default function OrderRemoval(props: propsIF) {
             setShowSettings(false);
             console.log({ limitOrder });
 
-            const liqToRemove = BigNumber.from(positionLiquidity).mul(removalPercentage).div(100);
+            const liqToRemove = BigNumber.from(positionLiquidity)
+                .mul(removalPercentage)
+                .div(100);
 
             let tx;
             try {
@@ -148,6 +157,13 @@ export default function OrderRemoval(props: propsIF) {
                         .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Removal',
+                            }),
+                        );
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
@@ -156,11 +172,20 @@ export default function OrderRemoval(props: propsIF) {
                         .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Removal',
+                            }),
+                        );
                 }
             } catch (error) {
                 console.log({ error });
                 setTxErrorCode(error?.code);
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 } // setTxErrorMessage(error?.message);
             }
@@ -177,7 +202,9 @@ export default function OrderRemoval(props: propsIF) {
                             user: account ?? '',
                             base: limitOrder.base,
                             quote: limitOrder.quote,
-                            poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
+                            poolIdx: lookupChain(
+                                limitOrder.chainId,
+                            ).poolIndex.toString(),
                             positionType: 'knockout',
                             changeType: 'mint',
                             limitTick: limitOrder.askTick.toString(),
@@ -213,7 +240,9 @@ export default function OrderRemoval(props: propsIF) {
                                     user: account ?? '',
                                     base: limitOrder.base,
                                     quote: limitOrder.quote,
-                                    poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
+                                    poolIdx: lookupChain(
+                                        limitOrder.chainId,
+                                    ).poolIndex.toString(),
                                     positionType: 'knockout',
                                     changeType: 'mint',
                                     limitTick: limitOrder.askTick.toString(),
@@ -237,46 +266,19 @@ export default function OrderRemoval(props: propsIF) {
 
     // ----------------------------CONFIRMATION JSX------------------------------
 
-    const removalDenied = (
-        <div className={styles.removal_pending}>
-            <CircleLoaderFailed />
-            <p>
-                Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat={true} />
-        </div>
-    );
-
-    const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
     const removalSuccess = (
-        <div className={styles.removal_pending}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Removal Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newRemovalTransactionHash}
+            content='Removal Transaction Successfully Submitted.'
+        />
     );
 
     const removalPending = (
-        <div className={styles.removal_pending}>
-            <div className={styles.loader} />
-
-            <p>Check the Metamask extension in your browser for notifications.</p>
-        </div>
+        <WaitingConfirmation content='Please Check the Metamask extension in your browser for notifications.' />
     );
 
-    const [currentConfirmationData, setCurrentConfirmationData] = useState(removalPending);
+    const [currentConfirmationData, setCurrentConfirmationData] =
+        useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
 
@@ -285,7 +287,9 @@ export default function OrderRemoval(props: propsIF) {
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     // const isRemovalDenied =
     //     txErrorCode === 4001 &&
@@ -297,8 +301,14 @@ export default function OrderRemoval(props: propsIF) {
         if (transactionApproved) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
-            setCurrentConfirmationData(removalDenied);
-        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+            setCurrentConfirmationData(
+                <TransactionDenied resetConfirmation={resetConfirmation} />,
+            );
+        } else if (
+            isTransactionException ||
+            isGasLimitException ||
+            isInsufficientFundsException
+        ) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -321,7 +331,9 @@ export default function OrderRemoval(props: propsIF) {
                     <BsArrowLeft size={30} />
                 </div>
             )} */}
-            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
+            <div className={styles.confirmation_content}>
+                {currentConfirmationData}
+            </div>
         </div>
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
@@ -427,7 +439,11 @@ export default function OrderRemoval(props: propsIF) {
             />
             {/* {gaslesssTransactionControl} */}
             {/* {tooltipExplanationDataDisplay} */}
-            <RemoveOrderButton removeFn={removeFn} disabled={false} title='Remove Limit Order' />
+            <RemoveOrderButton
+                removeFn={removeFn}
+                disabled={false}
+                title='Remove Limit Order'
+            />
         </div>
     );
 

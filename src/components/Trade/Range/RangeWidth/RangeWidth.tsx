@@ -6,7 +6,10 @@ import { MdAdd } from 'react-icons/md';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
-import { updateRangeWithButton, handleRangeSlider } from './rangeWidthFunctions';
+import {
+    updateRangeWithButton,
+    handleRangeSlider,
+} from './rangeWidthFunctions';
 
 // interface for React functional component props
 interface RangeWidthPropsIF {
@@ -41,7 +44,10 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 20) * 100, setRangeWidthPercentage);
+                        updateRangeWithButton(
+                            (1 / 20) * 100,
+                            setRangeWidthPercentage,
+                        );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
@@ -50,7 +56,10 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
+                        updateRangeWithButton(
+                            (1 / 10) * 100,
+                            setRangeWidthPercentage,
+                        );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
@@ -59,7 +68,10 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 4) * 100, setRangeWidthPercentage);
+                        updateRangeWithButton(
+                            (1 / 4) * 100,
+                            setRangeWidthPercentage,
+                        );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
@@ -68,7 +80,10 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
-                        updateRangeWithButton((1 / 2) * 100, setRangeWidthPercentage);
+                        updateRangeWithButton(
+                            (1 / 2) * 100,
+                            setRangeWidthPercentage,
+                        );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                 >
@@ -87,7 +102,10 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <div
                     onClick={() =>
                         openGlobalPopup(
-                            <div>Ambient Range width percentage explanation goes here</div>,
+                            <div>
+                                Ambient Range width percentage explanation goes
+                                here
+                            </div>,
                             'Ambient Range Width',
                             'right',
                         )
@@ -124,7 +142,9 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     }`}
                     id='percentage-output'
                 >
-                    {rangeWidthPercentage === 100 ? 'Ambient' : '± ' + rangeWidthPercentage + '%'}
+                    {rangeWidthPercentage === 100
+                        ? 'Ambient'
+                        : '± ' + rangeWidthPercentage + '%'}
                     {rangeWidthTooltip}
                 </span>
                 <div className={styles.range_width_input}>
@@ -138,7 +158,9 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         defaultValue={rangeWidthPercentage}
                         type='range'
                         className={styles.percentage_input}
-                        onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
+                        onChange={(event) =>
+                            handleRangeSlider(event, setRangeWidthPercentage)
+                        }
                         onClick={() => {
                             setRescaleRangeBoundariesWithSlider(true);
                         }}

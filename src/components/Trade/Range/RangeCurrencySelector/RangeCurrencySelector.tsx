@@ -1,4 +1,10 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useState,
+} from 'react';
 import { ethers } from 'ethers';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
@@ -63,10 +69,16 @@ interface propsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    getRecentTokens: (
+        options?: getRecentTokensParamsIF | undefined,
+    ) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
     outputTokens: TokenIF[];
@@ -145,7 +157,9 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const isTokenASelector = fieldId === 'A';
 
-    const thisToken = isTokenASelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = isTokenASelector
+        ? tokenPair.dataTokenA
+        : tokenPair.dataTokenB;
 
     useEffect(() => {
         if (parseFloat(tokenADexBalance) <= 0) {
@@ -162,12 +176,18 @@ export default function RangeCurrencySelector(props: propsIF) {
     const walletBalanceNonLocaleString = isTokenASelector
         ? tokenABalance && gasPriceInGwei
             ? isTokenAEth
-                ? (parseFloat(tokenABalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+                ? (
+                      parseFloat(tokenABalance) -
+                      gasPriceInGwei * 500000 * 1e-9
+                  ).toFixed(18)
                 : tokenABalance
             : ''
         : tokenBBalance && gasPriceInGwei
         ? isTokenBEth
-            ? (parseFloat(tokenBBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+            ? (
+                  parseFloat(tokenBBalance) -
+                  gasPriceInGwei * 500000 * 1e-9
+              ).toFixed(18)
             : tokenBBalance
         : '';
 
@@ -188,12 +208,18 @@ export default function RangeCurrencySelector(props: propsIF) {
     const surplusBalanceNonLocaleString = isTokenASelector
         ? tokenADexBalance && gasPriceInGwei
             ? isTokenAEth
-                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+                ? (
+                      parseFloat(tokenADexBalance) -
+                      gasPriceInGwei * 500000 * 1e-9
+                  ).toFixed(18)
                 : tokenADexBalance
             : ''
         : tokenBDexBalance && gasPriceInGwei
         ? isTokenBEth
-            ? (parseFloat(tokenBDexBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+            ? (
+                  parseFloat(tokenBDexBalance) -
+                  gasPriceInGwei * 500000 * 1e-9
+              ).toFixed(18)
             : tokenBDexBalance
         : '';
 
@@ -254,12 +280,15 @@ export default function RangeCurrencySelector(props: propsIF) {
     // console.log({ fieldId });
     // console.log({ tokenBSurplusMinusTokenBRemainderNum });
     const isFieldDisabled =
-        (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
+        (isTokenASelector && isTokenADisabled) ||
+        (!isTokenASelector && isTokenBDisabled);
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
+        useModal(modalCloseCustom);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
+        useState(true);
 
     const handleInputClear = (): void => {
         setInput('');
@@ -270,8 +299,10 @@ export default function RangeCurrencySelector(props: propsIF) {
     };
 
     const displayWalletMaxButton = isTokenASelector
-        ? !isWithdrawTokenAFromDexChecked && walletBalanceNonLocaleString !== '0.0'
-        : !isWithdrawTokenBFromDexChecked && walletBalanceNonLocaleString !== '0.0';
+        ? !isWithdrawTokenAFromDexChecked &&
+          walletBalanceNonLocaleString !== '0.0'
+        : !isWithdrawTokenBFromDexChecked &&
+          walletBalanceNonLocaleString !== '0.0';
 
     const walletBalanceMaxButton = displayWalletMaxButton ? (
         <button
@@ -288,8 +319,10 @@ export default function RangeCurrencySelector(props: propsIF) {
     );
 
     const displaySurplusMaxButton = isTokenASelector
-        ? isWithdrawTokenAFromDexChecked && surplusBalanceNonLocaleString !== '0.0'
-        : isWithdrawTokenBFromDexChecked && surplusBalanceNonLocaleString !== '0.0';
+        ? isWithdrawTokenAFromDexChecked &&
+          surplusBalanceNonLocaleString !== '0.0'
+        : isWithdrawTokenBFromDexChecked &&
+          surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton = displaySurplusMaxButton ? (
         <button
@@ -306,9 +339,18 @@ export default function RangeCurrencySelector(props: propsIF) {
     );
     const exchangeBalanceTitle = (
         <p
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
             onClick={() =>
-                openGlobalPopup(<ExchangeBalanceExplanation />, 'Exchange Balance', 'right')
+                openGlobalPopup(
+                    <ExchangeBalanceExplanation />,
+                    'Exchange Balance',
+                    'right',
+                )
             }
         >
             Exchange Balance <AiOutlineQuestionCircle size={14} />
@@ -342,21 +384,28 @@ export default function RangeCurrencySelector(props: propsIF) {
                     }}
                     style={{
                         color:
-                            (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
-                            (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                            (isTokenASelector &&
+                                isWithdrawTokenAFromDexChecked) ||
+                            (!isTokenASelector &&
+                                isWithdrawTokenBFromDexChecked)
                                 ? 'var(--text-highlight)'
                                 : '#555555',
                     }}
                 >
                     {surplusMaxButton}
                     <div className={styles.balance_column}>
-                        <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
+                        <div>
+                            {' '}
+                            {isUserLoggedIn ? surplusBalanceLocaleString : ''}
+                        </div>
                         <div
                             style={{
                                 color: '#f6385b',
                             }}
                         >
-                            {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
+                            {isTokenASelector
+                                ? tokenASurplusChange
+                                : tokenBSurplusChange}
                         </div>
                     </div>
                     <div
@@ -407,8 +456,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                         <MdAccountBalanceWallet
                             size={20}
                             color={
-                                (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-                                (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+                                (isTokenASelector &&
+                                    !isWithdrawTokenAFromDexChecked) ||
+                                (!isTokenASelector &&
+                                    !isWithdrawTokenBFromDexChecked) ||
                                 (isTokenASelector &&
                                     isTokenAEth === false &&
                                     isWithdrawTokenAFromDexChecked &&
@@ -425,7 +476,9 @@ export default function RangeCurrencySelector(props: propsIF) {
                         />
                     </div>
                     <div className={styles.balance_column}>
-                        <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
+                        <div>
+                            {isUserLoggedIn ? walletBalanceLocaleString : ''}
+                        </div>
                         <div
                             style={{
                                 color: '#f6385b',
@@ -462,7 +515,10 @@ export default function RangeCurrencySelector(props: propsIF) {
     const swapboxBottomOrNull = !isUserLoggedIn ? (
         <div className={styles.swapbox_bottom} />
     ) : (
-        <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
+        <div
+            className={styles.swapbox_bottom}
+            style={{ color: surplusContainerColorStyle }}
+        >
             {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
             {walletContent}
             {surplusContent}
@@ -478,7 +534,9 @@ export default function RangeCurrencySelector(props: propsIF) {
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='range_sell_qty'>
                     <RangeCurrencyQuantity
-                        value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
+                        value={
+                            tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
+                        }
                         thisToken={thisToken}
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
@@ -487,7 +545,9 @@ export default function RangeCurrencySelector(props: propsIF) {
                     />
                 </div>
                 <div
-                    className={`${styles.token_select} ${isRangeCopied && styles.pulse_animation}`}
+                    className={`${styles.token_select} ${
+                        isRangeCopied && styles.pulse_animation
+                    }`}
                     onClick={() => openTokenModal()}
                     id='range_token_selector'
                 >
@@ -499,9 +559,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                             width='30px'
                         />
                     ) : (
-                        <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
+                        <NoTokenIcon
+                            tokenInitial={thisToken.symbol.charAt(0)}
+                            width='30px'
+                        />
                     )}
-                    <span className={styles.token_list_text}>{thisToken.symbol}</span>
+                    <span className={styles.token_list_text}>
+                        {thisToken.symbol}
+                    </span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
@@ -526,7 +591,9 @@ export default function RangeCurrencySelector(props: propsIF) {
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={
+                            setShowSoloSelectTokenButtons
+                        }
                         outputTokens={outputTokens}
                         validatedInput={validatedInput}
                         setInput={setInput}
