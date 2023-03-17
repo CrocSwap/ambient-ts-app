@@ -58,8 +58,8 @@
     },
     "lint-staged": {
         "**/*.{js,jsx,ts,tsx}": [
-            "npx prettier --write --config ./.prettierrc",
-            "npx eslint --fix"
+            "prettier --write --config ./.prettierrc",
+            "eslint --fix"
         ]
     },
     "browserslist": [
