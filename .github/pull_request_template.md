@@ -2,7 +2,7 @@
 
 Please follow these items as close to as possible for your PR. Please add a description or link a Git issue for context. Check off relevant items and remove as not needed. These will help your reviewer find similar ground for starting their review from. 
 
-- [ ] Is this a PR meant for test purposes? If so, please DO NOT REVIEW. (Remove this when ready for review)
+- [ ] Is this a PR meant for test purposes? If so, please open/change to a draft PR to indicate work in progress/test. 
 - [ ] Did you request feedback from another team member prior to merge? 
 - [ ] Does the code stick to our formatting and code standards? Does running prettier and ESLint over the code yield no warnings or errors?
 - [ ] Are we using comments correctly? Use /* */ for block comments for new functions.
