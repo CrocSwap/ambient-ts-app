@@ -50,6 +50,7 @@ interface propsIF {
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    isPositionInRange: boolean;
 }
 
 // React functional component
@@ -59,7 +60,7 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         isEmpty,
-        // isPositionEmpty,
+        isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
@@ -67,6 +68,7 @@ export default function RangesMenu(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        isPositionInRange,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -236,9 +238,9 @@ export default function RangesMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
-        // !isPositionInRange &&
-        // !isPositionEmpty &&
-        // userMatchesConnectedAccount &&
+        !isPositionInRange &&
+        !isPositionEmpty &&
+        userMatchesConnectedAccount &&
         view1;
     // ----------------------
 
