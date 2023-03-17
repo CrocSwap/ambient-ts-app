@@ -74,7 +74,6 @@ export default function ChatPanel(props: propsIF) {
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] = useState(true);
 
-    // console.log('running ChatPanel');
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
@@ -137,9 +136,6 @@ export default function ChatPanel(props: propsIF) {
             );
         }
     }, [lastMessage]);
-
-    // console.log({ ens });
-    // console.log({ ensName });
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
