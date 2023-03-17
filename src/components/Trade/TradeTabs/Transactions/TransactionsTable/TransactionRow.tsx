@@ -47,14 +47,11 @@ export default function TransactionRow(props: propsIF) {
         showColumns,
         tradeData,
         ipadView,
-        // view2,
         isTokenABase,
         tx,
-        // showSidebar,
         blockExplorer,
         handlePulseAnimation,
-        // openGlobalModal,
-        // closeGlobalModal,
+
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
@@ -62,7 +59,6 @@ export default function TransactionRow(props: propsIF) {
         closeGlobalModal,
         openGlobalModal,
         showPair,
-        // showSidebar,
         setSimpleRangeWidth,
     } = props;
 
@@ -74,20 +70,13 @@ export default function TransactionRow(props: propsIF) {
         baseTokenLogo,
         baseQuantityDisplayShort,
         quoteQuantityDisplayShort,
-        // isBaseFlowPositive,
-        // isQuoteFlowPositive,
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
         ownerId,
-        // isOrderFilled,
         truncatedDisplayPrice,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         sideType,
-
         type,
         usdValue,
-        // txUsdValueLocaleString,
         baseTokenSymbol,
         baseTokenAddress,
         quoteTokenSymbol,
@@ -101,7 +90,6 @@ export default function TransactionRow(props: propsIF) {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
@@ -266,7 +254,6 @@ export default function TransactionRow(props: propsIF) {
             onClick={openDetailsModal}
             data-label='value'
             className='base_color'
-            // className='gradient_text'
             style={{ textAlign: 'right', fontFamily: 'monospace' }}
         >
             {usdValue}
@@ -739,7 +726,6 @@ export default function TransactionRow(props: propsIF) {
                             ? quoteQuantityDisplayShort
                             : baseQuantityDisplayShort}
                         {valueArrows ? positiveArrow : ' '}
-                        {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy
                             ? isOrderRemove
                                 ? baseTokenLogoComponent
@@ -767,7 +753,6 @@ export default function TransactionRow(props: propsIF) {
                                       ? baseQuantityDisplayShort
                                       : quoteQuantityDisplayShort
                               }${valueArrows ? negativeArrow : ' '}`}
-                        {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy
                             ? isOrderRemove
                                 ? quoteTokenLogoComponent
