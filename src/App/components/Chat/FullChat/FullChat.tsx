@@ -46,7 +46,6 @@ export default function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
-        console.log(pool);
         const roomName = pool.base.symbol + '/' + pool.quote.symbol;
         props.setRoom(roomName);
 
@@ -176,8 +175,6 @@ export default function FullChat(props: FullChatPropsIF) {
                 return fave;
             });
         });
-        console.log('aaaaa ', props.favoritePoolsArray);
-        console.log('readableRoom ', readableRoom);
     }, []);
 
     function handleGlobalClick() {
@@ -209,7 +206,6 @@ export default function FullChat(props: FullChatPropsIF) {
                 className={`${styles.pool_display} ${activePoolStyle}`}
                 // eslint-disable-next-line
                 onClick={(event: any) => {
-                    // console.log({ pool });
                     handleRoomClick(event, pool, isDropdown);
                 }}
             >
@@ -383,7 +379,6 @@ export default function FullChat(props: FullChatPropsIF) {
         readableRoom?.poolId,
     );
     function handleFavButton() {
-        console.log('handle fav button click ', readableRoom);
         isButtonFavorited
             ? props.favePools.remove(
                   readableRoom.quote,
