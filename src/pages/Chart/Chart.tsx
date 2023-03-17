@@ -5209,10 +5209,13 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
-                    horizontalBandJoin(svg, [horizontalBandData]).call(
-                        horizontalBand,
-                    );
-                    targetsJoin(svg, [ranges]).call(horizontalLine);
+                    if (horizontalBandJoin)
+                        horizontalBandJoin(svg, [horizontalBandData]).call(
+                            horizontalBand,
+                        );
+
+                    if (targetsJoin)
+                        targetsJoin(svg, [ranges]).call(horizontalLine);
 
                     if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                         lineAskSeriesJoin(svg, [
