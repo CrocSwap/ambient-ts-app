@@ -729,30 +729,42 @@ export default function TransactionRow(props: propsIF) {
                     >
                         {txHashTruncated}
                     </p>{' '}
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
-                    >
+                    {isOnPortfolioPage ? (
                         <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
-                            style={{ textTransform: 'lowercase' }}
+                            className={`${usernameStyle}`}
+                            style={{
+                                textTransform: 'lowercase',
+                                cursor: 'default',
+                            }}
                         >
                             {userNameToDisplay}
                         </p>
-                    </NavLink>
+                    ) : (
+                        <NavLink
+                            onClick={() => {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'lookupUserTxData',
+                                        loadingStatus: true,
+                                    }),
+                                );
+                            }}
+                            to={`/${
+                                isOwnerActiveAccount
+                                    ? 'account'
+                                    : ensName
+                                    ? ensName
+                                    : ownerId
+                            }`}
+                        >
+                            <p
+                                className={`${usernameStyle} ${styles.hover_style}`}
+                                style={{ textTransform: 'lowercase' }}
+                            >
+                                {userNameToDisplay}
+                            </p>
+                        </NavLink>
+                    )}
                 </li>
                 // </DefaultTooltip>
             )}
