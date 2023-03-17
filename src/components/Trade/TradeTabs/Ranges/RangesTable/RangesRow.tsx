@@ -19,7 +19,6 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
