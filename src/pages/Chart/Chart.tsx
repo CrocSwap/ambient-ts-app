@@ -4962,7 +4962,7 @@ export default function Chart(props: ChartData) {
     }, [isLineDrag, isChartZoom]);
 
     const mouseOutFuncForLiq = () => {
-        d3.select(d3PlotArea.current).select('.indicatorLine').style('visibility', 'hidden');
+        d3.select(d3CanvasPlotArea.current).select('.indicatorLine').style('visibility', 'hidden');
 
         if (liqTooltip) liqTooltip.style('visibility', 'hidden');
 
@@ -4982,7 +4982,7 @@ export default function Chart(props: ChartData) {
 
         scaleData.yScaleIndicator.range([event.offsetY, scaleData.yScale(poolPriceDisplay)]);
 
-        d3.select(d3PlotArea.current).select('.indicatorLine').style('visibility', 'visible');
+        d3.select(d3CanvasPlotArea.current).select('.indicatorLine').style('visibility', 'visible');
 
         const filtered =
             liquidityData.liqBidData.length > 1
@@ -5045,7 +5045,7 @@ export default function Chart(props: ChartData) {
 
         scaleData.yScaleIndicator.range([event.offsetY, scaleData.yScale(poolPriceDisplay)]);
 
-        d3.select(d3PlotArea.current).select('.indicatorLine').style('visibility', 'visible');
+        d3.select(d3CanvasPlotArea.current).select('.indicatorLine').style('visibility', 'visible');
 
         const filtered =
             liquidityData.liqAskData.length > 1
@@ -5359,7 +5359,6 @@ export default function Chart(props: ChartData) {
                 });
 
                 d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
-                    const svg = d3.select(event.target).select('svg');
                     scaleData.xScaleCopy.range([0, event.detail.width]);
                     // svg.call(zoomUtils.zoom).on('dblclick.zoom', null);
                 });
@@ -5479,6 +5478,8 @@ export default function Chart(props: ChartData) {
                     d3.select(d3CanvasCrVertical.current).style('visibility', 'hidden');
 
                     setIsMouseMoveCrosshair(false);
+
+                    mouseOutFuncForLiq();
 
                     setsubChartValues([
                         {
