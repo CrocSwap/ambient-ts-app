@@ -13,8 +13,11 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
     blockiesToDisplay: JSX.Element | null;
+    chainData: ChainSpec;
 }
 import styles from './PortfolioBannerAccount.module.css';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 // const variants = {
 //     open: {
@@ -45,15 +48,10 @@ export default function PortfolioBannerAccount(
         activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
-        // blockiesToDisplay
-        // connectedAccountActive,
+        chainData,
     } = props;
 
-    // console.log({ ensNameAvailable });
-    // console.log({ ensName });
-    // console.log({ resolvedAddress });
-    // console.log({ activeAccount });
-    // console.log({ truncatedAccountAddress });
+    const blockExplorer = chainData.blockExplorer;
 
     const ensNameToDisplay = ensNameAvailable
         ? ensName
@@ -122,6 +120,19 @@ export default function PortfolioBannerAccount(
         <img src={ambientLogo} alt='' className={styles.ambi_logo} />
     );
 
+    function handleOpenExplorer(address: string) {
+        if (address && blockExplorer) {
+            const explorerUrl = `${blockExplorer}address/${address}`;
+            window.open(explorerUrl);
+        }
+    }
+    function handleOpenMainnetExplorer(address: string) {
+        if (address) {
+            const explorerUrl = `https://etherscan.io/address/${address}`;
+            window.open(explorerUrl);
+        }
+    }
+
     return (
         <motion.main
             // style={{padding: showAccountDetails ? '24px' : '8px 16px'}}
@@ -149,9 +160,35 @@ export default function PortfolioBannerAccount(
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}
+                        {ensNameToDisplay ? <FiCopy size={'12px'} /> : null}
+                        {ensNameToDisplay ? (
+                            <FiExternalLink
+                                size={'12px'}
+                                onClick={(e) => {
+                                    if (chainData.chainId === '0x5') {
+                                        // ENS lookup not supported on Görli etherscan
+                                        handleOpenMainnetExplorer(ensName);
+                                    } else {
+                                        handleOpenExplorer(ensName);
+                                    }
+
+                                    e.stopPropagation();
+                                }}
+                            />
+                        ) : null}
                     </span>
                     <span className={styles.hash} onClick={handleCopyAddress}>
                         {addressToDisplay}
+                        {addressToDisplay ? <FiCopy size={'12px'} /> : null}
+                        {addressToDisplay ? (
+                            <FiExternalLink
+                                size={'12px'}
+                                onClick={(e) => {
+                                    handleOpenExplorer(resolvedAddress);
+                                    e.stopPropagation();
+                                }}
+                            />
+                        ) : null}
                     </span>
                 </div>
             </div>
