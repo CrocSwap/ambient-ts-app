@@ -44,7 +44,7 @@ text.crossHairText {
 }
 
 text.blur {
-    filter: blur(4px);
+    filter: blur(7px);
 }
 
 text.startDate {

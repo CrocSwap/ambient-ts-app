@@ -1180,13 +1180,15 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
-                    const _width =
-                        (Math.abs(
-                            scaleData.xScale(scaleData.xScale.domain()[0]) -
-                                scaleData.xScale(scaleData.xScale.domain()[1]),
-                        ) *
-                            6) /
-                        100;
+                    // const _width =
+                    //     (Math.abs(
+                    //         scaleData.xScale(scaleData.xScale.domain()[0]) -
+                    //             scaleData.xScale(scaleData.xScale.domain()[1]),
+                    //     ) *
+                    //         6) /
+                    //     100;
+
+                    const _width = 65; // magic number of pixels to blur surrounding price
 
                     selection
                         .select('text')
