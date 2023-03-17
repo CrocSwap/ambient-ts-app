@@ -289,71 +289,30 @@ export default function RangesRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <p>{ensName ? ensName : ownerId}</p>
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
-                    >
-                        {'View Account' + 'ㅤ'}
-                        <FiExternalLink size={'12px'} />
-                    </NavLink>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
+        <li
+            onClick={() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserTxData',
+                        loadingStatus: true,
+                    }),
+                );
+                navigate(
+                    `/${
+                        isOwnerActiveAccount
+                            ? 'account'
+                            : ensName
+                            ? ensName
+                            : ownerId
+                    }`,
+                );
+            }}
+            data-label='wallet'
+            className={`${usernameStyle} ${styles.hover_style}`}
+            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
         >
-            <li
-                onClick={() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: true,
-                        }),
-                    );
-                    navigate(
-                        `/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`,
-                    );
-                }}
-                data-label='wallet'
-                className={`${usernameStyle} ${styles.hover_style}`}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
-            >
-                {userNameToDisplay}
-            </li>
-        </TextOnlyTooltip>
+            {userNameToDisplay}
+        </li>
     );
 
     const baseTokenLogoComponent =
@@ -542,6 +501,28 @@ export default function RangesRow(props: propsIF) {
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
 
+    const handleAccountClick = () => {
+        if (!isOnPortfolioPage) {
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'lookupUserTxData',
+                    loadingStatus: true,
+                }),
+            );
+            navigate(
+                `/${
+                    isOwnerActiveAccount
+                        ? 'account'
+                        : ensName
+                        ? ensName
+                        : ownerId
+                }`,
+            );
+        } else {
+            openDetailsModal();
+        }
+    };
+
     return (
         <ul
             onMouseEnter={() => setShowHighlightedButton(true)}
@@ -562,33 +543,12 @@ export default function RangesRow(props: propsIF) {
             {idOrNull}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li
-                    data-label='id'
-                    onClick={() => {
-                        if (!isOnPortfolioPage) {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                            navigate(
-                                `/${
-                                    isOwnerActiveAccount
-                                        ? 'account'
-                                        : ensName
-                                        ? ensName
-                                        : ownerId
-                                }`,
-                            );
-                        } else {
-                            openDetailsModal();
-                        }
-                    }}
-                >
-                    <p className='base_color'>{posHashTruncated}</p>{' '}
+                <li data-label='id' onClick={handleAccountClick}>
+                    <p className={`base_color ${styles.hover_style}`}>
+                        {posHashTruncated}
+                    </p>{' '}
                     <p
-                        className={usernameStyle}
+                        className={`${usernameStyle} ${styles.hover_style}`}
                         style={{ textTransform: 'lowercase' }}
                     >
                         {userNameToDisplay}
