@@ -224,18 +224,7 @@ export default function PositionBox(props: propsIF) {
     }
     return props.isPosition ? (
         position !== undefined && !isInput ? (
-            <motion.div
-                className={styles.animate_position_box}
-                // key='content'
-                // initial='collapsed'
-                //  animate='open'
-                //  exit='collapsed'
-                /*   variants={{
-                open: { opacity: 1, height: 'auto' },
-                collapsed: { opacity: 0, height: 0 },
-            }}
-            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}*/
-            >
+            <motion.div className={styles.animate_position_box}>
                 <div className={styles.position_main_box}>
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
@@ -395,18 +384,7 @@ export default function PositionBox(props: propsIF) {
                 </div>
             </motion.div>
         ) : sPositions !== undefined && !isInput ? (
-            <motion.div
-                className={styles.animate_position_box}
-                //  key='content'
-                //  initial='collapsed'
-                //   animate='open'
-                //   exit='collapsed'
-                // variants={{
-                //     open: { opacity: 1, height: 'auto' },
-                //     collapsed: { opacity: 0, height: 0 },
-                // }}
-                // transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
-            >
+            <motion.div className={styles.animate_position_box}>
                 <div className={styles.position_main_box}>
                     {snackbarContent}
                     <div className={styles.position_box}>
