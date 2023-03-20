@@ -26,7 +26,6 @@ export default function PortfolioBanner(props: propsIF) {
         activeAccount,
         imageData,
         resolvedAddress,
-        // setShowProfileSettings,
         connectedAccountActive,
         chainData,
     } = props;
@@ -44,31 +43,6 @@ export default function PortfolioBanner(props: propsIF) {
         ? trimString(activeAccount, 6, 6, '…')
         : trimString(resolvedAddress, 6, 6, '…');
 
-    // const [isFollowing, setIsFollowing] = useState(false);
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
-
-    // const buttonStyle = isFollowing ? styles.button_following : styles.button_not_following;
-    // const buttonIcon = isFollowing ? (
-    //     <IoMdCheckmark size={15} color='#0e131a' />
-    // ) : (
-    //     <FiPlus size={15} />
-    // );
-
-    // function handleFollowingClick() {
-    //     setIsFollowing(!isFollowing);
-    //     setOpenSnackbar(true);
-    // }
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {isFollowing ? 'Following' : 'Unfollowed'}{' '}
-    //         {ensNameAvailable ? ensName : resolvedAddress ? activeAccount : truncatedAccountAddress}
-    //     </SnackbarComponent>
-    // );
-
     const blockiesToDisplay =
         (resolvedAddress || connectedAccountActive) && myBlockies
             ? myBlockies
@@ -76,22 +50,6 @@ export default function PortfolioBanner(props: propsIF) {
 
     return (
         <div className={styles.rectangle_container}>
-            {connectedAccountActive && (
-                <div className={styles.settings_container}>
-                    {/* <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                    className={buttonStyle}
-                    onClick={handleFollowingClick}
-                >
-                    {buttonIcon}
-                    Follow
-                </motion.button> */}
-                    {/* <div style={{ cursor: 'pointer' }} onClick={() => setShowProfileSettings(true)}>
-                        <AiOutlineSetting size={20} color='#bdbdbd' />{' '}
-                    </div> */}
-                </div>
-            )}
             <PortfolioBannerAccount
                 imageData={imageData}
                 ensName={ensName}
@@ -113,7 +71,6 @@ export default function PortfolioBanner(props: propsIF) {
                 ))}
                 {blockiesToDisplay}
             </div>
-            {/* {snackbarContent} */}
         </div>
     );
 }
