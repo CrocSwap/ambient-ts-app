@@ -279,8 +279,8 @@ export default function RemoveRange(props: propsIF) {
         const pool = crocEnv.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - persistedSlippage);
-        const highLimit = spotPrice * (1 + persistedSlippage);
+        const lowLimit = spotPrice * (1 - persistedSlippage / 100);
+        const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
         dispatch(addPositionPendingUpdate(posHash as string));
 
