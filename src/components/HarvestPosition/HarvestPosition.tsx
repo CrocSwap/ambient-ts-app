@@ -267,8 +267,8 @@ export default function HarvestPosition(props: propsIF) {
         const pool = env.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - persistedSlippage);
-        const highLimit = spotPrice * (1 + persistedSlippage);
+        const lowLimit = spotPrice * (1 - persistedSlippage / 100);
+        const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
         let tx;
         if (position.positionType === 'concentrated') {
