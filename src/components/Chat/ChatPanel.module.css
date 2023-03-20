@@ -1,18 +1,9 @@
 .main_container {
-    /* display: flex;
-    justify-content: center;
-    align-items: center; */
     width: 380px;
     padding: 0 1rem;
 
     display: none;
 }
-
-/* .full_screen_wrapper{
-    max-height: calc(100vh - 8rem);
-    width: 100vw;
-    padding: 1rem;
-} */
 
 .modal_body {
     flex-direction: column-reverse;
@@ -61,10 +52,6 @@
     text-transform: uppercase;
     color: white;
     background: var(--dark3);
-    /* border-top: 2px solid var(--text-highlight-dark);
-      border-left: 2px solid var(--text-highlight-dark);
-      border-right: 2px solid var(--text-highlight-dark); */
-    /* background: var(--text-highlight-dark); */
 }
 
 .chat_header section {
@@ -93,31 +80,6 @@
     margin-top: -32px;
     margin-left: 9px;
 }
-
-/* .chat_wrapper_full {
-      display: flex;
-      flex-direction: column-reverse;
-      border: solid 1px transparent;
-      background-origin: border-box;
-      background-clip: content-box, border-box;
-      box-shadow: 2px 1000px 1px #171d27 inset;
-      transition: box-shadow var(--animation-speed) ease-in-out;
-      cursor: pointer;
-      height: 89%;
-      width: 83% !important;
-      border-radius: var(--border-radius);
-      color: white;
-      position: static;
-      aspect-ratio: 5/6;
-      margin-bottom: 2% !important;
-      margin-top: 0;
-      overflow: scroll;
-
-      bottom: 0;
-      width: 100%;
-      
-  }
-   */
 
 .scrollable_div {
     overflow-y: auto;
@@ -160,7 +122,6 @@
     height: 5px;
 
     /* dark/primary */
-
     background-image: linear-gradient(
         to right top,
         #7371fc,
@@ -181,7 +142,6 @@
     transform: rotate(-90deg);
 
     /* Inside auto layout */
-
     flex: none;
     order: 0;
     flex-grow: 0;
