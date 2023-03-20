@@ -32,12 +32,12 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
     } = props;
     const ensNameAvailable = ensName !== '';
 
+    const blockiesSeed = resolvedAddress
+        ? resolvedAddress.toLowerCase()
+        : activeAccount.toLowerCase();
+
     const myBlockies = (
-        <Blockies
-            seed={resolvedAddress || activeAccount}
-            scale={7.4}
-            bgColor={'#171D27'}
-        />
+        <Blockies seed={blockiesSeed} scale={7.4} bgColor={'#171D27'} />
     );
 
     const truncatedAccountAddress = connectedAccountActive

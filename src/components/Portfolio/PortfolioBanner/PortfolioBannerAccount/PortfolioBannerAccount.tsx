@@ -165,11 +165,18 @@ export default function PortfolioBannerAccount(
                             <FiExternalLink
                                 size={'12px'}
                                 onClick={(e) => {
-                                    if (chainData.isTestNet) {
+                                    if (
+                                        chainData.isTestNet &&
+                                        ensNameAvailable
+                                    ) {
                                         // ENS lookup not supported on Görli etherscan
                                         handleOpenMainnetExplorer(ensName);
                                     } else {
-                                        handleOpenExplorer(ensName);
+                                        handleOpenExplorer(
+                                            resolvedAddress
+                                                ? resolvedAddress
+                                                : activeAccount,
+                                        );
                                     }
 
                                     e.stopPropagation();

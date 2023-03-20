@@ -287,6 +287,9 @@ export default function Portfolio(props: propsIF) {
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
                 dispatch(setResolvedAddressRedux(addressFromParams));
+            } else {
+                setResolvedAddress('');
+                dispatch(setResolvedAddressRedux(''));
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
