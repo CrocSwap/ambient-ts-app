@@ -10,7 +10,7 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
 
-interface PortfolioBannerPropsIF {
+interface propsIF {
     ensName: string;
     activeAccount: string;
     imageData: string[];
@@ -20,7 +20,7 @@ interface PortfolioBannerPropsIF {
     chainData: ChainSpec;
 }
 
-export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
+export default function PortfolioBanner(props: propsIF) {
     const {
         ensName,
         activeAccount,
