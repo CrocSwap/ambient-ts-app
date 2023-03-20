@@ -552,6 +552,7 @@ export default function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
+        bypassConfirm: bypassConfirm,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that

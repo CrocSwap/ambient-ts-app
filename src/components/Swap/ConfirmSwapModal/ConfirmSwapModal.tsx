@@ -1,18 +1,25 @@
-import styles from './ConfirmSwapModal.module.css';
-// import { useState } from 'react';
+// START: Import React and Dongles
+import { Dispatch, SetStateAction, useState } from 'react';
+import { CrocImpact } from '@crocswap-libs/sdk';
+
+// START: Import JSX Components
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../Global/TransactionException/TransactionException';
 import Button from '../../Global/Button/Button';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { CrocImpact } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useState } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+
+// START: Import Other Local Files
+import styles from './ConfirmSwapModal.module.css';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
+import {
+    allSkipConfirmMethodsIF,
+    skipConfirmIF,
+} from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -32,11 +39,10 @@ interface propsIF {
     slippageTolerancePercentage: number;
     effectivePrice: number;
     isSellTokenBase: boolean;
-    tempBypassConfirm: boolean;
-    setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
     sellQtyString: string;
     buyQtyString: string;
     bypassConfirmSwap: skipConfirmIF;
+    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -55,11 +61,10 @@ export default function ConfirmSwapModal(props: propsIF) {
         slippageTolerancePercentage,
         effectivePrice,
         isSellTokenBase,
-        tempBypassConfirm,
-        setTempBypassConfirm,
         sellQtyString,
         buyQtyString,
         bypassConfirmSwap,
+        bypassConfirm,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -159,6 +164,10 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const toggleFor = 'swap';
 
+    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(
+        bypassConfirm.swap.isEnabled,
+    );
+
     const fullTxDetails2 = (
         <div className={styles.main_container}>
             <section>
@@ -189,7 +198,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                 </div>
                 <div className={styles.row}>
                     <p>Slippage Tolerance</p>
-                    <p>{slippageTolerancePercentage}% </p>
+                    <p>{slippageTolerancePercentage}%</p>
                 </div>
             </div>
             <ConfirmationModalControl
