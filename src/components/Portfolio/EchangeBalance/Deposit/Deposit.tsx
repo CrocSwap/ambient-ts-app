@@ -40,8 +40,6 @@ export default function Deposit(props: propsIF) {
         crocEnv,
         tokenAllowance,
         connectedAccount,
-        // openGlobalModal,
-        // closeGlobalModal,
         selectedToken,
         tokenWalletBalance,
         tokenDexBalance,
@@ -59,16 +57,22 @@ export default function Deposit(props: propsIF) {
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!gasPriceInGwei && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
-                  .sub(
-                      BigNumber.from(Math.floor(gasPriceInGwei * 200000 * 1e8)),
-                  )
-                  //   .sub(BigNumber.from(Math.floor(1000000000000000)))
-                  //   .sub(BigNumber.from(Math.floor(gasPriceInGwei * 11500000 * 1e-9)))
+                  /* 
+                        below is the magic number (60000) determined by trial and error 
+                        to avoid a metamask error that the additional cost 
+                        of gas would exceed the user's ETH balance by decreasing
+                        the amount of ETH being deposited by the estimated gas
+                        cost of the transaction.
+                    */
+                  .sub(BigNumber.from(Math.floor(gasPriceInGwei * 60000 * 1e9)))
                   .toString()
             : tokenWalletBalance;
 
-    const tokenWalletBalanceDisplay = tokenWalletBalance
-        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+    const tokenWalletBalanceDisplay = tokenWalletBalanceAdjustedNonDisplayString
+        ? toDisplayQty(
+              tokenWalletBalanceAdjustedNonDisplayString,
+              selectedTokenDecimals,
+          )
         : undefined;
 
     const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
@@ -80,9 +84,7 @@ export default function Deposit(props: propsIF) {
             ? tokenWalletBalanceDisplayNum.toExponential(2)
             : tokenWalletBalanceDisplayNum < 2
             ? tokenWalletBalanceDisplayNum.toPrecision(3)
-            : // : tokenWalletBalanceNum >= 100000
-              // ? formatAmountOld(tokenWalletBalanceNum)
-              tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+            : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -101,9 +103,7 @@ export default function Deposit(props: propsIF) {
             ? tokenExchangeDepositsDisplayNum.toExponential(2)
             : tokenExchangeDepositsDisplayNum < 2
             ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-            : // : tokenDexBalanceNum >= 100000
-              // ? formatAmountOld(tokenDexBalanceNum)
-              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
+            : tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -172,24 +172,6 @@ export default function Deposit(props: propsIF) {
         selectedToken.symbol,
     ]);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeGlobalModal();
-    // };
-
-    // const chooseTokenDiv = (
-    //     <div>
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))}
-    //     </div>
-    // );
-
     useEffect(() => {
         setIsDepositPending(false);
     }, [JSON.stringify(selectedToken)]);
@@ -235,28 +217,6 @@ export default function Deposit(props: propsIF) {
 
                         console.log({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         // console.log({ error });
                         receipt = error.receipt;
@@ -285,6 +245,7 @@ export default function Deposit(props: propsIF) {
     };
 
     const depositFn = async () => {
+        console.log({ depositQtyNonDisplay });
         if (depositQtyNonDisplay) await deposit(depositQtyNonDisplay);
     };
 
@@ -343,14 +304,7 @@ export default function Deposit(props: propsIF) {
         await approve(selectedToken.address);
     };
 
-    // const depositInput = document.getElementById(
-    //     'exchange-balance-deposit-exchange-balance-deposit-quantity',
-    // ) as HTMLInputElement;
-
     const resetDepositQty = () => {
-        // if (depositInput) {
-        //     depositInput.value = '';
-        // }
         setDepositQtyNonDisplay(undefined);
         setInputValue('');
     };
@@ -358,21 +312,6 @@ export default function Deposit(props: propsIF) {
     useEffect(() => {
         resetDepositQty();
     }, [selectedToken.address]);
-
-    // useEffect(() => {
-    //     if (depositInput) {
-    //         const inputDisplayValueString = depositInput.value;
-    //         if (parseFloat(inputDisplayValueString) > 0) {
-    //             const nonDisplayQty = fromDisplayQty(
-    //                 inputDisplayValueString,
-    //                 selectedToken.decimals,
-    //             );
-    //             setDepositQtyNonDisplay(nonDisplayQty.toString());
-    //         } else {
-    //             setDepositQtyNonDisplay(undefined);
-    //         }
-    //     }
-    // }, [selectedToken.decimals]);
 
     const isTokenWalletBalanceGreaterThanZero =
         parseFloat(tokenWalletBalance) > 0;
@@ -385,8 +324,6 @@ export default function Deposit(props: propsIF) {
 
             if (tokenWalletBalanceDisplay)
                 setInputValue(tokenWalletBalanceDisplay);
-            // if (depositInput && tokenWalletBalanceDisplay)
-            //     depositInput.value = tokenWalletBalanceDisplay;
         }
     };
 
