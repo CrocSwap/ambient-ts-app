@@ -18,8 +18,9 @@ export interface allSkipConfirmMethodsIF {
     repo: skipConfirmIF;
 }
 
-// custom hook to track and persist user preference for bypassing confirm modal
-// each instance of this hook tracks a single value
+// custom hook to track and persist user preference for bypassing the confirm
+// ... transanction modal, each instance of this hook tracks a single value
+// ... but all persist data in the same local storage data object
 export const useSkipConfirm = (module: string): skipConfirmIF => {
     // key for local storage to access or persist data
     const localStorageKey = 'skip_confirmation';
@@ -54,6 +55,12 @@ export const useSkipConfirm = (module: string): skipConfirmIF => {
         setPref(newVal);
     };
 
+    // moduleFor ➔ which value is being reference, mainly for debugging
+    // isEnabled ➔ the current persisted value held in local state
+    // setValue ➔ fn accepting a dynamic boolean value
+    // enable ➔ fn pre-loaded to persist `true` boolean value
+    // disable ➔ fn pre-loaded to persist `false` boolean value
+    // toggle ➔ fn pre-loaded to reverse the current persisted value
     return {
         moduleFor: module,
         isEnabled: pref,
