@@ -38,9 +38,12 @@ d3fc-svg {
 }
 
 text.crossHairText {
-    filter: url(#crossHairBg);
     font-size: 13px;
     font-weight: bold;
+}
+
+text.blur {
+    filter: blur(7px);
 }
 
 text.startDate {
