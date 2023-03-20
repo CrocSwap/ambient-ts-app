@@ -180,10 +180,6 @@
 .page_block_sign:after {
     content: ' ';
     position: absolute;
-    /* top: 8px;
-  left: 8px;
-  right: 8px;
-  bottom: 8px; */
     background: linear-gradient(#161616, #262626);
     border-radius: inherit;
 }
