@@ -10,6 +10,11 @@ import {
     setPositionsByUser,
     setChangesByUser,
     setChangesByPool,
+    // addSwapsByUser,
+    // addSwapsByPool,
+    // CandleData,
+    // setCandles,
+    // addCandles,
     setLiquidity,
     setPoolVolumeSeries,
     setPoolTvlSeries,
@@ -25,6 +30,7 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
+    // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -43,6 +49,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
+// import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -73,6 +80,7 @@ import {
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
+    // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
@@ -86,13 +94,17 @@ import {
     candleDomain,
     setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
-import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
+import {
+    memoizeQuerySpotPrice,
+    // querySpotPrice,
+} from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
@@ -149,6 +161,7 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
+import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
@@ -165,7 +178,6 @@ import {
     useExchangePrefs,
     dexBalanceMethodsIF,
 } from './hooks/useExchangePrefs';
-import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -228,11 +240,9 @@ export default function App() {
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
 
-    // hooks to manage user preferences to skip confirmation modals
-    const bypassConfirmSwap: skipConfirmIF = useSkipConfirm('swap');
-    const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
-    const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
-    const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
+    false && dexBalPrefSwap;
+    false && dexBalPrefLimit;
+    false && dexBalPrefRange;
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -539,6 +549,8 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
+
+    const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -2699,18 +2711,14 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('swap'),
+        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
         },
     };
 
@@ -2758,6 +2766,8 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('swap'),
+        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
@@ -2766,15 +2776,10 @@ export default function App() {
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
         },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
     };
 
     // props for <Limit/> React element on trade route
+
     const limitPropsTrade = {
         account: account,
         pool: pool,
@@ -2820,18 +2825,14 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('limit'),
+        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
         },
     };
 
@@ -2889,6 +2890,8 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
+        bypassConfirm: checkBypassConfirm('range'),
+        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         dexBalancePrefs: {
@@ -2907,12 +2910,6 @@ export default function App() {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
     };
 
     function toggleSidebar() {
@@ -3211,11 +3208,6 @@ export default function App() {
                                     }}
                                     setChartTriggeredBy={setChartTriggeredBy}
                                     chartTriggeredBy={chartTriggeredBy}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
                                 />
                             }
                         >
@@ -3293,6 +3285,12 @@ export default function App() {
                                         isDenomBase={tradeData.isDenomBase}
                                         repoSlippage={repoSlippage}
                                         isPairStable={isPairStable}
+                                        bypassConfirm={checkBypassConfirm(
+                                            'repo',
+                                        )}
+                                        toggleBypassConfirm={
+                                            updateBypassConfirm
+                                        }
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
                                         setRescaleRangeBoundariesWithSlider={
@@ -3303,12 +3301,6 @@ export default function App() {
                                             setRepositionRangeWidth
                                         }
                                         simpleRangeWidth={repositionRangeWidth}
-                                        bypassConfirm={{
-                                            swap: bypassConfirmSwap,
-                                            limit: bypassConfirmLimit,
-                                            range: bypassConfirmRange,
-                                            repo: bypassConfirmRepo,
-                                        }}
                                     />
                                 }
                             />
@@ -3568,11 +3560,6 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
                                 />
                             }
                         />
@@ -3652,11 +3639,6 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
                                 />
                             }
                         />
@@ -3682,12 +3664,6 @@ export default function App() {
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
                                     chartSettings={chartSettings}
-                                    bypassConf={{
-                                        swap: bypassConfirmSwap,
-                                        limit: bypassConfirmLimit,
-                                        range: bypassConfirmRange,
-                                        repo: bypassConfirmRepo,
-                                    }}
                                 />
                             }
                         />
@@ -3767,11 +3743,6 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
                                 />
                             }
                         />
@@ -3813,6 +3784,7 @@ export default function App() {
                 popupTitle={popupTitle}
                 placement={popupPlacement}
             />
+
             {isWagmiModalOpenWallet && (
                 <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
             )}

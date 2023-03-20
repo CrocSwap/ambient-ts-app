@@ -12,9 +12,7 @@ interface IRemoveOrderTokenHeaderProps {
     isDenomBase: boolean;
 }
 
-export default function RemoveOrderTokenHeader(
-    props: IRemoveOrderTokenHeaderProps,
-) {
+export default function RemoveOrderTokenHeader(props: IRemoveOrderTokenHeaderProps) {
     const dispatch = useAppDispatch();
 
     return (
@@ -26,31 +24,18 @@ export default function RemoveOrderTokenHeader(
                 }}
             >
                 <img
-                    src={
-                        props.isDenomBase
-                            ? props.baseTokenLogoURI
-                            : props.quoteTokenLogoURI
-                    }
+                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
                     // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/580px-Ethereum-icon-purple.svg.png'
                     alt=''
                 />
                 <img
-                    src={
-                        props.isDenomBase
-                            ? props.quoteTokenLogoURI
-                            : props.baseTokenLogoURI
-                    }
+                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
                     alt=''
                 />
                 {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
                 <span>
-                    {props.isDenomBase
-                        ? props.baseTokenSymbol
-                        : props.quoteTokenSymbol}{' '}
-                    /
-                    {props.isDenomBase
-                        ? props.quoteTokenSymbol
-                        : props.baseTokenSymbol}
+                    {props.isDenomBase ? props.baseTokenSymbol : props.quoteTokenSymbol} /
+                    {props.isDenomBase ? props.quoteTokenSymbol : props.baseTokenSymbol}
                 </span>
             </div>
             <OpenOrderStatus isFilled={props.isOrderFilled} />

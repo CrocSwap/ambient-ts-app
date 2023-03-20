@@ -23,6 +23,7 @@
     color: var(--text-grey-light);
 }
 
+
 .balance_with_pointer {
     display: flex;
     flex-direction: row;
@@ -32,37 +33,45 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
+ 
+   
+
+    
 }
 
 .swapbox_bottom {
-    margin: 6px 10px;
-    height: 33px;
+  
+margin: 6px 10px;
+   height: 33px;
 
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 4px;
+   
+   display: grid;
+   grid-template-columns: repeat(2, 1fr);
+   gap: 4px;
+  
+padding: 0 2rem;
 
-    padding: 0 2rem;
+   
 }
-.wallet_container,
-.surplus_container,
-.surplus_toggle {
+.wallet_container, .surplus_container, .surplus_toggle{
     width: 100%;
     /* background: red; */
     display: flex;
     flex-direction: row;
     align-items: center;
-
+    
     /* align-items: center; */
     /* flex: 1;; */
     gap: 4px;
+
+
 
     /* background: rgb(8, 21, 94); */
     /* width: calc(100%/3) */
 }
 
 .wallet_container {
-    justify-content: flex-start;
+    justify-content: flex-start; 
     /* background: rgb(2, 2, 34); */
 }
 .surplus_container {
@@ -70,6 +79,7 @@
     justify-content: flex-end;
     /* background: rgb(2, 2, 34); */
     /* text-align: end; */
+  
 }
 
 /* .surplus_toggle { 
@@ -161,14 +171,15 @@
     filter: grayscale(100%);
 }
 
+
+
 /* modal */
 
 .pool_modal {
     max-height: 400px;
     overflow-y: scroll;
     overflow-x: hidden;
-    transition: all var(--animation-speed)
-        cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .pool_modal::-webkit-scrollbar {
@@ -223,9 +234,10 @@
     /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
-.max_button_enable {
+.max_button_enable{
     border-radius: 4px;
     background: var(--dark3);
+
 }
 
 .max_button:hover {

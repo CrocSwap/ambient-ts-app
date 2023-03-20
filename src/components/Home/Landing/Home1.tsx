@@ -23,9 +23,9 @@ export default function Home1() {
                 <section className={styles.faster_section}>
                     <h2>Faster, Easier, and Cheaper</h2>
                     <p>
-                        Ambient runs the entire DEX inside a single smart
-                        contract, allowing for low fee transactions, greater
-                        liquidity rewards, and a fairer trading experience.
+                        Ambient runs the entire DEX inside a single smart contract, allowing for low
+                        fee transactions, greater liquidity rewards, and a fairer trading
+                        experience.
                     </p>
                     <TradeNowButton />
                 </section>
@@ -45,11 +45,9 @@ export default function Home1() {
                 <section className={styles.faster_section}>
                     <h2>Deep, Diversified Liquidity</h2>
                     <p>
-                        Ambient is built for diversified, sustainable liquidity
-                        that fixes the broken LP economics of AMMs. It is also
-                        the only DEX to support concentrated (‘V3’), ambient
-                        (‘V2’) and knock-out liquidity in the same liquidity
-                        pool.
+                        Ambient is built for diversified, sustainable liquidity that fixes the
+                        broken LP economics of AMMs. It is also the only DEX to support concentrated
+                        (‘V3’), ambient (‘V2’) and knock-out liquidity in the same liquidity pool.
                     </p>
                     <TradeNowButton />
                 </section>
@@ -62,22 +60,16 @@ export default function Home1() {
                 <section className={styles.faster_section}>
                     <h2>Bridge the Gap Between Trading and LP’ing</h2>
                     <p>
-                        Make your LP position a trading position – and vice
-                        versa – using our range and limit orders.
+                        Make your LP position a trading position – and vice versa – using our range
+                        and limit orders.
                     </p>
                     <p>
-                        Ambient combines liquidity in a single pool, allowing
-                        for greater rewards for liquidity providers, and less
-                        impact for traders.
+                        Ambient combines liquidity in a single pool, allowing for greater rewards
+                        for liquidity providers, and less impact for traders.
                     </p>
                     <TradeNowButton />
                 </section>
-                <img
-                    src={row3Image}
-                    alt='range and limit orders'
-                    width='240px'
-                    height='420px'
-                />
+                <img src={row3Image} alt='range and limit orders' width='240px' height='420px' />
             </div>
         </div>
     );
@@ -88,10 +80,9 @@ export default function Home1() {
                 <section className={styles.faster_section}>
                     <h2>Better than CEX</h2>
                     <p>
-                        Built for traders and market makers of all kinds,
-                        Ambient introduces novel DeFi-native features and an
-                        array of quality-of-life improvements allowing for a
-                        best-in-class user experience.
+                        Built for traders and market makers of all kinds, Ambient introduces novel
+                        DeFi-native features and an array of quality-of-life improvements allowing
+                        for a best-in-class user experience.
                     </p>
 
                     <TradeNowButton />

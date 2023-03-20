@@ -5,9 +5,7 @@ function useHandleSwipeBack(ref: any) {
     };
 
     ref.current?.addEventListener('wheel', handleSwipeBack, { passive: false });
-    ref.current?.addEventListener('touchstart', handleSwipeBack, {
-        passive: false,
-    });
+    ref.current?.addEventListener('touchstart', handleSwipeBack, { passive: false });
 
     return () => {
         ref.current?.removeEventListener('wheel', handleSwipeBack);

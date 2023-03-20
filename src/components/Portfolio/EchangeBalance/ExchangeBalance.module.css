@@ -144,6 +144,6 @@ ul.tab_navs {
 
     .control_container {
         display: flex;
-        border-radius: 4px;
+       border-radius: 4px;
     }
 }

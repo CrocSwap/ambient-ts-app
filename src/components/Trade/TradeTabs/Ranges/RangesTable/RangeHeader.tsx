@@ -61,8 +61,7 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
         }
     }, [sortBy, reverseSort, slug, sortable]);
 
-    const activeSortStyle =
-        sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
+    const activeSortStyle = sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
     return (
         <>

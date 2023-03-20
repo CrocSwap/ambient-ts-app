@@ -21,8 +21,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     const controls = useAnimation();
     const isFirstRun = useRef(true);
 
-    const { value, pending, showNotificationTable, setShowNotificationTable } =
-        props;
+    const { value, pending, showNotificationTable, setShowNotificationTable } = props;
 
     useEffect(() => {
         if (!isFirstRun.current && value > 0) {
@@ -33,9 +32,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
         }
     }, [controls, value]);
 
-    const toggleNotificationCenter: React.MouseEventHandler<
-        HTMLDivElement
-    > = () => {
+    const toggleNotificationCenter: React.MouseEventHandler<HTMLDivElement> = () => {
         setShowNotificationTable(!showNotificationTable);
     };
 

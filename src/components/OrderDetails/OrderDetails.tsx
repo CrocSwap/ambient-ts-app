@@ -26,12 +26,7 @@ interface propsIF {
 export default function OrderDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
-    const {
-        limitOrder,
-        account,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
-    } = props;
+    const { limitOrder, account, isBaseTokenMoneynessGreaterOrEqual, isOnPortfolioPage } = props;
 
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
     const {
@@ -72,8 +67,7 @@ export default function OrderDetails(props: propsIF) {
 
     const [usdValue, setUsdValue] = useState<string>('...');
     // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
-    const [baseCollateralDisplay, setBaseCollateralDisplay] =
-        useState<string>(baseDisplayFrontend);
+    const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<string>(baseDisplayFrontend);
     const [quoteCollateralDisplay, setQuoteCollateralDisplay] =
         useState<string>(quoteDisplayFrontend);
 
@@ -89,22 +83,14 @@ export default function OrderDetails(props: propsIF) {
 
     const isBid = limitOrder.isBid;
 
-    const limitPriceString = truncatedDisplayPrice
-        ? truncatedDisplayPrice
-        : '0';
+    const limitPriceString = truncatedDisplayPrice ? truncatedDisplayPrice : '0';
     // console.log({ limitPriceString });
 
     const parsedLimitPriceNum = parseFloat(limitPriceString.replace(/,/, ''));
-    const baseDisplayFrontendNum = parseFloat(
-        baseDisplayFrontend.replace(/,/, ''),
-    );
-    const quoteDisplayFrontendNum = parseFloat(
-        quoteDisplayFrontend.replace(/,/, ''),
-    );
+    const baseDisplayFrontendNum = parseFloat(baseDisplayFrontend.replace(/,/, ''));
+    const quoteDisplayFrontendNum = parseFloat(quoteDisplayFrontend.replace(/,/, ''));
 
-    const isFillStarted = isBid
-        ? quoteDisplayFrontendNum !== 0
-        : baseDisplayFrontendNum !== 0;
+    const isFillStarted = isBid ? quoteDisplayFrontendNum !== 0 : baseDisplayFrontendNum !== 0;
 
     const approximateSellQty = isBid
         ? isDenomBase
@@ -167,8 +153,7 @@ export default function OrderDetails(props: propsIF) {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
+        const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType) {
@@ -192,14 +177,10 @@ export default function OrderDetails(props: propsIF) {
                 .then((json) => {
                     const positionStats = json?.data;
                     console.log({ positionStats });
-                    const liqBaseNum =
-                        positionStats.positionLiqBaseDecimalCorrected;
-                    const liqQuoteNum =
-                        positionStats.positionLiqQuoteDecimalCorrected;
-                    const claimableBaseNum =
-                        positionStats.claimableLiqBaseDecimalCorrected;
-                    const claimableQuoteNum =
-                        positionStats.claimableLiqQuoteDecimalCorrected;
+                    const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
+                    const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
+                    const claimableBaseNum = positionStats.claimableLiqBaseDecimalCorrected;
+                    const claimableQuoteNum = positionStats.claimableLiqQuoteDecimalCorrected;
 
                     const isOrderClaimable = positionStats.claimableLiq !== '0';
                     setIsClaimable(isOrderClaimable);
@@ -231,9 +212,7 @@ export default function OrderDetails(props: propsIF) {
                     // console.log({ claimableBaseDisplay });
 
                     isOrderFilled
-                        ? setBaseCollateralDisplay(
-                              claimableBaseDisplay ?? '0.00',
-                          )
+                        ? setBaseCollateralDisplay(claimableBaseDisplay ?? '0.00')
                         : setBaseCollateralDisplay(liqBaseDisplay ?? '0.00');
 
                     const liqQuoteDisplay = liqQuoteNum
@@ -263,9 +242,7 @@ export default function OrderDetails(props: propsIF) {
                     // console.log({ claimableQuoteDisplay });
 
                     isOrderFilled
-                        ? setQuoteCollateralDisplay(
-                              claimableQuoteDisplay ?? '0.00',
-                          )
+                        ? setQuoteCollateralDisplay(claimableQuoteDisplay ?? '0.00')
                         : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
 
                     const usdValue = positionStats.totalValueUSD;
@@ -333,9 +310,7 @@ export default function OrderDetails(props: propsIF) {
                         baseCollateralDisplay={baseCollateralDisplay}
                         quoteCollateralDisplay={quoteCollateralDisplay}
                         isOrderFilled={isClaimable}
-                        approximateSellQtyTruncated={
-                            approximateSellQtyTruncated
-                        }
+                        approximateSellQtyTruncated={approximateSellQtyTruncated}
                         approximateBuyQtyTruncated={approximateBuyQtyTruncated}
                         baseDisplayFrontend={baseDisplayFrontend}
                         quoteDisplayFrontend={quoteDisplayFrontend}
@@ -354,9 +329,7 @@ export default function OrderDetails(props: propsIF) {
                     <TransactionDetailsGraph
                         tx={limitOrder}
                         transactionType={'limitOrder'}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
+                        isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
                         isOnPortfolioPage={isOnPortfolioPage}
                     />
                 </div>

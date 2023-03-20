@@ -44,9 +44,7 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
                 className={styles.curve_depth_mobile_button}
-                onClick={() =>
-                    setShowCurveDepthDropdown(!showCurveDepthDropdown)
-                }
+                onClick={() => setShowCurveDepthDropdown(!showCurveDepthDropdown)}
             >
                 {liqMode}
             </button>
@@ -55,12 +53,9 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
                 {curveDepthData.map((button, idx) => (
                     <div className={styles.curve_depth_container} key={idx}>
                         <button
-                            onClick={() =>
-                                handleCurveDepthClickMobile(button.action)
-                            }
+                            onClick={() => handleCurveDepthClickMobile(button.action)}
                             className={
-                                button.name.toLowerCase() ===
-                                liqMode.toLowerCase()
+                                button.name.toLowerCase() === liqMode.toLowerCase()
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }

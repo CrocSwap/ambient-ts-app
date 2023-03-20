@@ -44,7 +44,6 @@ import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
-import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -101,11 +100,13 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
+
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
-    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -150,10 +151,11 @@ export default function Swap(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
+        bypassConfirm,
+        toggleBypassConfirm,
         lastBlockNumber,
         tokenPairLocal,
         dexBalancePrefs,
-        bypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -162,8 +164,6 @@ export default function Swap(props: propsIF) {
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
 
-    // this apparently different from the `bypassConfirm` that I am working with
-    // it should possibly be renamed something different or better documented
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
@@ -535,7 +535,8 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
-        bypassConfirmSwap: bypassConfirm.swap,
+        bypassConfirm: bypassConfirm,
+        toggleBypassConfirm: toggleBypassConfirm,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
@@ -544,7 +545,6 @@ export default function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
-        bypassConfirm: bypassConfirm,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -553,6 +553,14 @@ export default function Swap(props: propsIF) {
         <Modal onClose={handleModalClose} title='Swap Confirmation'>
             <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
+    ) : null;
+
+    const relativeModalOrNull = isRelativeModalOpen ? (
+        <RelativeModal onClose={closeRelativeModal} title='Relative Modal'>
+            You are about to do something that will lose you a lot of money. If
+            you think you are smarter than the awesome team that programmed
+            this, press dismiss.
+        </RelativeModal>
     ) : null;
 
     // calculate price of gas for swap
@@ -681,7 +689,7 @@ export default function Swap(props: propsIF) {
         tokensBank: importedTokens,
         priceImpact: priceImpact,
         setImportedTokens: setImportedTokens,
-        chainId: chainId,
+        chainId: chainId as string,
         isLiq: false,
         poolPriceDisplay: poolPriceDisplay,
         isTokenAPrimary: isTokenAPrimary,
@@ -791,6 +799,7 @@ export default function Swap(props: propsIF) {
                         openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
                         bypassConfirm={bypassConfirm}
+                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                     {navigationMenu}
                     <motion.div
@@ -830,15 +839,18 @@ export default function Swap(props: propsIF) {
                                     // user has hide confirmation modal off
                                     <SwapButton
                                         onClickFn={
-                                            bypassConfirm.swap.isEnabled
+                                            bypassConfirm
                                                 ? handleSwapButtonClickWithBypass
                                                 : openModal
+                                        }
+                                        isSwapConfirmationBypassEnabled={
+                                            bypassConfirm
                                         }
                                         swapAllowed={swapAllowed}
                                         swapButtonErrorMessage={
                                             swapButtonErrorMessage
                                         }
-                                        bypassConfirmSwap={bypassConfirm.swap}
+                                        bypassConfirm={bypassConfirm}
                                     />
                                 ) : (
                                     // user has hide confirmation modal on
@@ -854,16 +866,7 @@ export default function Swap(props: propsIF) {
                     {priceImpactWarningOrNull}
                 </ContentContainer>
                 {confirmSwapModalOrNull}
-                {isRelativeModalOpen && (
-                    <RelativeModal
-                        onClose={closeRelativeModal}
-                        title='Relative Modal'
-                    >
-                        You are about to do something that will lose you a lot
-                        of money. If you think you are smarter than the awesome
-                        team that programmed this, press dismiss.
-                    </RelativeModal>
-                )}
+                {relativeModalOrNull}
             </div>
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}

@@ -58,17 +58,16 @@ export default function TransactionHeader(props: TransactionHeaderPropsIF) {
         }
     }, [sortBy, reverseSort, slug, sortable]);
 
-    const activeSortStyle =
-        sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
+    const activeSortStyle = sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
     return (
         <>
             {show && (
                 <li
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
-                    className={`${activeSortStyle} ${
-                        alignRight && styles.align_right
-                    } ${alignCenter && styles.align_center}`}
+                    className={`${activeSortStyle} ${alignRight && styles.align_right} ${
+                        alignCenter && styles.align_center
+                    }`}
                     onClick={() => handleClick(slug.toLowerCase())}
                 >
                     {name} {arrow}

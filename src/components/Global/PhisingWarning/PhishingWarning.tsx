@@ -14,15 +14,11 @@ export default function PhishingWarning() {
                     <h3>PHISHING WARNING</h3>
                     <p>
                         please make sure you are visiting{' '}
-                        <span>https://ambient-finance.netlify.app/</span>- check
-                        the URL carefully.
+                        <span>https://ambient-finance.netlify.app/</span>- check the URL carefully.
                     </p>
                 </div>
             </div>
-            <div
-                style={{ cursor: 'pointer' }}
-                onClick={() => setShowWarning(false)}
-            >
+            <div style={{ cursor: 'pointer' }} onClick={() => setShowWarning(false)}>
                 {' '}
                 <VscClose size='30px' />
             </div>

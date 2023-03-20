@@ -35,10 +35,7 @@ export default function HomeSlider() {
                 {/* <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
                     <Landing />
                 </SwiperSlide> */}
-                <SwiperSlide
-                    className={styles.swiperslide}
-                    style={{ background: 'url()' }}
-                >
+                <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
                     <Landing1 />
                 </SwiperSlide>
                 {/* <SwiperSlide className={styles.swiperslide}>

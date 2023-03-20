@@ -1,38 +1,40 @@
-.container {
+.container{
     /* background: var(--dark1); */
-    margin-top: 3rem;
-    background: var(--dark1);
+margin-top: 3rem;
+background: var(--dark1);
 
-    border-radius: 4px;
+border-radius: 4px;
     width: 100%;
     padding: 8px 0;
     margin: 0 8px;
     height: 100%;
-
+   
     overflow-y: hidden;
 }
 
-.container::-webkit-scrollbar,
-.main_result_container::-webkit-scrollbar {
-    display: none;
+
+.container::-webkit-scrollbar, .main_result_container::-webkit-scrollbar {
+   display: none;
 }
 
-.search_input_container {
-    font-size: var(--body-size);
+.search_input_container{
+    font-size:  var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-light)
 }
 
 /* individual search results */
 
-.main_result_container {
-    margin: 10px 0;
 
+
+.main_result_container{
+    margin: 10px 0;
+    
     max-height: 100px;
     overflow-y: scroll;
+
 }
-.card_container,
-.header {
+.card_container, .header {
     width: 100%;
     width: 100%;
     display: grid;
@@ -45,43 +47,46 @@
     padding: 5px;
 }
 
-.card_container div,
-.header div {
+.card_container div, .header div {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.header {
+.header{
     padding: 5px 0;
 
     border-bottom: 1px solid var(--dark3);
-    color: var(--text-grey-dark);
+    color: var(--text-grey-dark)
 }
 
-.card_title {
+.card_title{
+
     display: flex;
-    justify-content: flex-start;
+    justify-content:flex-start;
     align-items: center;
     padding: 0 2rem;
     font-weight: 500;
-    font-size: 12px;
-    line-height: 15px;
-    color: var(--text-highlight);
+font-size: 12px;
+line-height: 15px;
+color: var(--text-highlight);
+
 }
 
-.search_result_title {
+
+
+.search_result_title{
     margin: 10px 0;
-    color: #cdc1ff;
+    color: #CDC1FF;
     color: var(--text-grey-dark);
     font-weight: 200;
     font-size: 18px;
-    line-height: 22px;
-    letter-spacing: -0.02em;
-    text-align: center;
+line-height: 22px;
+letter-spacing: -0.02em;
+text-align: center;
 }
 
-.not_found_text {
+.not_found_text{
     height: 100px;
     display: flex;
     justify-content: flex-start;

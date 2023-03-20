@@ -9,21 +9,14 @@ export default function Landing2() {
             <div className={styles.content_container}>
                 <div className={styles.on_chain}>
                     {t('slide2.part1')}{' '}
-                    <div className={styles.highlight_text}>
-                        {' '}
-                        {t('slide2.part2')}
-                    </div>
+                    <div className={styles.highlight_text}> {t('slide2.part2')}</div>
                 </div>
                 <div className={styles.ambient}>ambient</div>
                 <div className={styles.architecture}>
                     {/* <div className={styles.highlight_text_mobile}>Our unique architecture</div> */}
-                    Our{' '}
-                    <span className={styles.highlight_text}>
-                        {' '}
-                        unique architecture
-                    </span>{' '}
-                    provides low fee transactions, greater liquidity rewards,
-                    and a fairer trading experience.
+                    Our <span className={styles.highlight_text}> unique architecture</span> provides
+                    low fee transactions, greater liquidity rewards, and a fairer trading
+                    experience.
                 </div>
             </div>
         </div>

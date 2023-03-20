@@ -11,7 +11,7 @@
 
 .modal_content:hover {
     background: var(--dark2);
-
+  
     cursor: pointer;
 }
 
@@ -25,12 +25,7 @@
 }
 
 .modal_tokens_info img {
-    background: linear-gradient(
-        90deg,
-        #af99ff 0%,
-        #46b7db 49.48%,
-        #f13d70 100%
-    );
+    background: linear-gradient(90deg, #af99ff 0%, #46b7db 49.48%, #f13d70 100%);
 
     border-radius: 50%;
 }

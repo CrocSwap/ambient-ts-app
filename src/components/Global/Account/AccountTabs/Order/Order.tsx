@@ -20,11 +20,7 @@ export default function Order(props: propsIF) {
             <OrderCardHeader />
             <div className={styles.item_container}>
                 {orders.map((order, idx) => (
-                    <OrderCard
-                        limitOrder={order}
-                        key={idx}
-                        isDenomBase={true}
-                    />
+                    <OrderCard limitOrder={order} key={idx} isDenomBase={true} />
                 ))}
             </div>
         </div>

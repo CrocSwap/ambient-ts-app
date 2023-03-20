@@ -49,9 +49,7 @@ export default function PriceInput(props: priceInputProps) {
     );
 
     const percentageDifferenceString =
-        percentageDifference >= 0
-            ? '+' + percentageDifference
-            : percentageDifference.toString();
+        percentageDifference >= 0 ? '+' + percentageDifference : percentageDifference.toString();
 
     return (
         <div className={styles.minMax_container} id={`range_${fieldId}_price`}>
@@ -61,16 +59,12 @@ export default function PriceInput(props: priceInputProps) {
                 <span className={styles.sign} onClick={decreaseTick}>
                     <FaMinus size={16} />
                 </span>
-                <span className={isRangeCopied && styles.pulse_animation}>
-                    {priceInput}
-                </span>
+                <span className={isRangeCopied && styles.pulse_animation}>{priceInput}</span>
                 <span className={styles.sign} onClick={increaseTick}>
                     <FaPlus size={16} />
                 </span>
             </div>
-            <span className={styles.percentage}>
-                {percentageDifferenceString}%
-            </span>
+            <span className={styles.percentage}>{percentageDifferenceString}%</span>
         </div>
     );
 }

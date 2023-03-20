@@ -6,8 +6,7 @@ export const getLiquidityFee = async (
 ): Promise<number | undefined> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const liquidityFeeCacheEndpoint =
-        httpGraphCacheServerDomain + '/pool_liquidity_fee?';
+    const liquidityFeeCacheEndpoint = httpGraphCacheServerDomain + '/pool_liquidity_fee?';
     return fetch(
         liquidityFeeCacheEndpoint +
             new URLSearchParams({

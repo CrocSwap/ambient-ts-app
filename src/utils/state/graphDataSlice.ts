@@ -149,22 +149,12 @@ export interface CandlesForAllPools {
 }
 
 export interface Pool {
-    pool: {
-        baseAddress: string;
-        quoteAddress: string;
-        poolIdx: number;
-        network: string;
-    };
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; network: string };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
 
 export interface CandlesByPoolAndDuration {
-    pool: {
-        baseAddress: string;
-        quoteAddress: string;
-        poolIdx: number;
-        network: string;
-    };
+    pool: { baseAddress: string; quoteAddress: string; poolIdx: number; network: string };
     duration: number;
     candles: Array<CandleData>;
 }
@@ -284,112 +274,76 @@ export const graphDataSlice = createSlice({
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
-        addPositionsByUser: (
-            state,
-            action: PayloadAction<Array<PositionIF>>,
-        ) => {
+        addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedPosition = action.payload[index];
-                const positionIdToFind =
-                    updatedPosition.positionId.toLowerCase();
-                const indexOfPositionInState =
-                    state.positionsByUser.positions.findIndex(
-                        (position) =>
-                            position.positionId.toLowerCase() ===
-                            positionIdToFind,
-                    );
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.positionsByUser.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
                 if (indexOfPositionInState === -1) {
-                    state.positionsByUser.positions = [
-                        action.payload[index],
-                    ].concat(state.positionsByUser.positions);
+                    state.positionsByUser.positions = [action.payload[index]].concat(
+                        state.positionsByUser.positions,
+                    );
                 } else {
                     const existingPosition =
                         state.positionsByUser.positions[indexOfPositionInState];
                     const updatedPosition = action.payload[index];
 
                     if (!updatedPosition.latestUpdateTime) {
-                        updatedPosition.latestUpdateTime =
-                            existingPosition.latestUpdateTime;
+                        updatedPosition.latestUpdateTime = existingPosition.latestUpdateTime;
                     }
 
-                    state.positionsByUser.positions[indexOfPositionInState] =
-                        updatedPosition;
+                    state.positionsByUser.positions[indexOfPositionInState] = updatedPosition;
                 }
             }
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
-        setLeaderboardByPool: (
-            state,
-            action: PayloadAction<PositionsByPool>,
-        ) => {
+        setLeaderboardByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.leaderboardByPool = action.payload;
         },
-        setLimitOrdersByUser: (
-            state,
-            action: PayloadAction<LimitOrdersByUser>,
-        ) => {
+        setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
             state.limitOrdersByUser = action.payload;
         },
-        setLimitOrdersByPool: (
-            state,
-            action: PayloadAction<LimitOrdersByPool>,
-        ) => {
+        setLimitOrdersByPool: (state, action: PayloadAction<LimitOrdersByPool>) => {
             state.limitOrdersByPool = action.payload;
         },
-        addPositionsByPool: (
-            state,
-            action: PayloadAction<Array<PositionIF>>,
-        ) => {
+        addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedPosition = action.payload[index];
-                const positionIdToFind =
-                    updatedPosition.positionId.toLowerCase();
-                const indexOfPositionInState =
-                    state.positionsByPool.positions.findIndex(
-                        (position) =>
-                            position.positionId.toLowerCase() ===
-                            positionIdToFind,
-                    );
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.positionsByPool.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
                 if (indexOfPositionInState === -1) {
-                    state.positionsByPool.positions = [
-                        action.payload[index],
-                    ].concat(state.positionsByPool.positions);
+                    state.positionsByPool.positions = [action.payload[index]].concat(
+                        state.positionsByPool.positions,
+                    );
                 } else {
-                    state.positionsByPool.positions[indexOfPositionInState] =
-                        action.payload[index];
+                    state.positionsByPool.positions[indexOfPositionInState] = action.payload[index];
                 }
             }
         },
-        updateLeaderboard: (
-            state,
-            action: PayloadAction<Array<PositionIF>>,
-        ) => {
+        updateLeaderboard: (state, action: PayloadAction<Array<PositionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedPosition = action.payload[index];
-                const positionIdToFind =
-                    updatedPosition.positionId.toLowerCase();
-                const indexOfPositionInState =
-                    state.leaderboardByPool.positions.findIndex(
-                        (position) =>
-                            position.positionId.toLowerCase() ===
-                            positionIdToFind,
-                    );
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.leaderboardByPool.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
                 if (indexOfPositionInState === -1) {
-                    state.leaderboardByPool.positions = [
-                        action.payload[index],
-                    ].concat(state.leaderboardByPool.positions);
+                    state.leaderboardByPool.positions = [action.payload[index]].concat(
+                        state.leaderboardByPool.positions,
+                    );
                 } else {
                     state.leaderboardByPool.positions[indexOfPositionInState] =
                         action.payload[index];
                 }
             }
         },
-        setPoolVolumeSeries: (
-            state,
-            action: PayloadAction<PoolVolumeSeries>,
-        ) => {
+        setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
             state.poolVolumeSeries = action.payload;
         },
         setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
@@ -398,10 +352,7 @@ export const graphDataSlice = createSlice({
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
         },
-        addChangesByUser: (
-            state,
-            action: PayloadAction<Array<TransactionIF>>,
-        ) => {
+        addChangesByUser: (state, action: PayloadAction<Array<TransactionIF>>) => {
             // const payload = action.payload;
             // console.log({ payload });
             const newChangesArray: Array<TransactionIF> = [];
@@ -418,56 +369,41 @@ export const graphDataSlice = createSlice({
                     //     state.changesByUser.changes,
                     // );
                 } else {
-                    state.changesByUser.changes[indexOfTxInState] =
-                        action.payload[index];
+                    state.changesByUser.changes[indexOfTxInState] = action.payload[index];
                 }
             }
             if (newChangesArray.length)
-                state.changesByUser.changes = newChangesArray.concat(
-                    state.changesByUser.changes,
-                );
+                state.changesByUser.changes = newChangesArray.concat(state.changesByUser.changes);
         },
-        addLimitOrderChangesByUser: (
-            state,
-            action: PayloadAction<LimitOrderIF[]>,
-        ) => {
+        addLimitOrderChangesByUser: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 console.log({ updatedTx });
                 const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
-                const indexOfOrderInState =
-                    state.limitOrdersByUser.limitOrders.findIndex(
-                        (order) =>
-                            order.limitOrderIdentifier.toLowerCase() ===
-                            idToFind,
-                    );
+                const indexOfOrderInState = state.limitOrdersByUser.limitOrders.findIndex(
+                    (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
+                );
                 if (indexOfOrderInState === -1) {
-                    state.limitOrdersByUser.limitOrders = [
-                        action.payload[index],
-                    ].concat(state.limitOrdersByUser.limitOrders);
+                    state.limitOrdersByUser.limitOrders = [action.payload[index]].concat(
+                        state.limitOrdersByUser.limitOrders,
+                    );
                 } else {
                     state.limitOrdersByUser.limitOrders[indexOfOrderInState] =
                         action.payload[index];
                 }
             }
         },
-        addLimitOrderChangesByPool: (
-            state,
-            action: PayloadAction<LimitOrderIF[]>,
-        ) => {
+        addLimitOrderChangesByPool: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const idToFind = updatedTx.limitOrderIdentifier?.toLowerCase();
-                const indexOfOrderInState =
-                    state.limitOrdersByPool.limitOrders.findIndex(
-                        (order) =>
-                            order.limitOrderIdentifier?.toLowerCase() ===
-                            idToFind,
-                    );
+                const indexOfOrderInState = state.limitOrdersByPool.limitOrders.findIndex(
+                    (order) => order.limitOrderIdentifier?.toLowerCase() === idToFind,
+                );
                 if (indexOfOrderInState === -1) {
-                    state.limitOrdersByPool.limitOrders = [
-                        action.payload[index],
-                    ].concat(state.limitOrdersByPool.limitOrders);
+                    state.limitOrdersByPool.limitOrders = [action.payload[index]].concat(
+                        state.limitOrdersByPool.limitOrders,
+                    );
                 } else {
                     state.limitOrdersByPool.limitOrders[indexOfOrderInState] =
                         action.payload[index];
@@ -477,10 +413,7 @@ export const graphDataSlice = createSlice({
         setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
             state.changesByPool = action.payload;
         },
-        addChangesByPool: (
-            state,
-            action: PayloadAction<Array<TransactionIF>>,
-        ) => {
+        addChangesByPool: (state, action: PayloadAction<Array<TransactionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
@@ -488,12 +421,11 @@ export const graphDataSlice = createSlice({
                     (tx) => tx.tx.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
-                    state.changesByPool.changes = [
-                        action.payload[index],
-                    ].concat(state.changesByPool.changes);
+                    state.changesByPool.changes = [action.payload[index]].concat(
+                        state.changesByPool.changes,
+                    );
                 } else {
-                    state.changesByPool.changes[indexOfTxInState] =
-                        action.payload[index];
+                    state.changesByPool.changes[indexOfTxInState] = action.payload[index];
                 }
             }
         },
@@ -502,10 +434,7 @@ export const graphDataSlice = createSlice({
 
             state.liquidityData = action.payload;
         },
-        setCandles: (
-            state,
-            action: PayloadAction<CandlesByPoolAndDuration>,
-        ) => {
+        setCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
             const poolToFind = JSON.stringify(action.payload.pool);
             const indexOfPool = state.candlesForAllPools.pools
                 .map((item) => JSON.stringify(item.pool))
@@ -515,17 +444,16 @@ export const graphDataSlice = createSlice({
             if (indexOfPool === -1) {
                 // console.log('pool not found in RTK for new candle data');
 
-                state.candlesForAllPools.pools =
-                    state.candlesForAllPools.pools.concat({
-                        pool: action.payload.pool,
-                        candlesByPoolAndDuration: [
-                            {
-                                pool: action.payload.pool,
-                                duration: action.payload.duration,
-                                candles: action.payload.candles,
-                            },
-                        ],
-                    });
+                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    candlesByPoolAndDuration: [
+                        {
+                            pool: action.payload.pool,
+                            duration: action.payload.duration,
+                            candles: action.payload.candles,
+                        },
+                    ],
+                });
                 // else, check if duration exists
             } else {
                 // console.log('pool found in RTK for new candle data');
@@ -539,22 +467,21 @@ export const graphDataSlice = createSlice({
                 if (indexOfDuration === -1) {
                     console.log('duration not found');
 
-                    state.candlesForAllPools.pools[
-                        indexOfPool
-                    ].candlesByPoolAndDuration = state.candlesForAllPools.pools[
-                        indexOfPool
-                    ].candlesByPoolAndDuration.concat([
-                        {
-                            pool: action.payload.pool,
-                            duration: action.payload.duration,
-                            candles: action.payload.candles,
-                        },
-                    ]);
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration =
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration.concat(
+                            [
+                                {
+                                    pool: action.payload.pool,
+                                    duration: action.payload.duration,
+                                    candles: action.payload.candles,
+                                },
+                            ],
+                        );
                 } else {
                     // console.log('duration found');
-                    state.candlesForAllPools.pools[
-                        indexOfPool
-                    ].candlesByPoolAndDuration[indexOfDuration] = {
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                        indexOfDuration
+                    ] = {
                         pool: action.payload.pool,
                         duration: action.payload.duration,
                         candles: action.payload.candles,
@@ -563,33 +490,25 @@ export const graphDataSlice = createSlice({
                 // state.candlesForAllPools.pools[indexOfPool] = action.payload;
             }
         },
-        addCandles: (
-            state,
-            action: PayloadAction<CandlesByPoolAndDuration>,
-        ) => {
-            const poolToFind = JSON.stringify(
-                action.payload.pool,
-            ).toLowerCase();
+        addCandles: (state, action: PayloadAction<CandlesByPoolAndDuration>) => {
+            const poolToFind = JSON.stringify(action.payload.pool).toLowerCase();
             const indexOfPool = state.candlesForAllPools.pools
                 .map((item) => JSON.stringify(item.pool).toLowerCase())
                 .findIndex((pool) => pool === poolToFind);
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (indexOfPool === -1) {
-                console.error(
-                    'pool not found in RTK for new candle subscription data',
-                );
-                state.candlesForAllPools.pools =
-                    state.candlesForAllPools.pools.concat({
-                        pool: action.payload.pool,
-                        candlesByPoolAndDuration: [
-                            {
-                                pool: action.payload.pool,
-                                duration: action.payload.duration,
-                                candles: action.payload.candles,
-                            },
-                        ],
-                    });
+                console.error('pool not found in RTK for new candle subscription data');
+                state.candlesForAllPools.pools = state.candlesForAllPools.pools.concat({
+                    pool: action.payload.pool,
+                    candlesByPoolAndDuration: [
+                        {
+                            pool: action.payload.pool,
+                            duration: action.payload.duration,
+                            candles: action.payload.candles,
+                        },
+                    ],
+                });
                 // else, replace candles for pool if different
             } else {
                 // console.log('pool found in RTK for new candle subscription data');
@@ -602,17 +521,16 @@ export const graphDataSlice = createSlice({
 
                 if (indexOfDuration === -1) {
                     // console.log('duration not found');
-                    state.candlesForAllPools.pools[
-                        indexOfPool
-                    ].candlesByPoolAndDuration = state.candlesForAllPools.pools[
-                        indexOfPool
-                    ].candlesByPoolAndDuration.concat([
-                        {
-                            pool: action.payload.pool,
-                            duration: action.payload.duration,
-                            candles: action.payload.candles,
-                        },
-                    ]);
+                    state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration =
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration.concat(
+                            [
+                                {
+                                    pool: action.payload.pool,
+                                    duration: action.payload.duration,
+                                    candles: action.payload.candles,
+                                },
+                            ],
+                        );
                 } else {
                     const timeToFind = action.payload.candles[0].time;
                     const indexOfDuplicate = state.candlesForAllPools.pools[
@@ -630,24 +548,20 @@ export const graphDataSlice = createSlice({
                     // if new candle data not already in RTK, add
                     if (indexOfDuplicate === -1) {
                         // console.log('no duplicate found, adding');
-                        state.candlesForAllPools.pools[
-                            indexOfPool
-                        ].candlesByPoolAndDuration[indexOfDuration].candles =
-                            action.payload.candles.concat(
-                                state.candlesForAllPools.pools[indexOfPool]
-                                    .candlesByPoolAndDuration[indexOfDuration]
-                                    .candles,
-                            );
+                        state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                            indexOfDuration
+                        ].candles = action.payload.candles.concat(
+                            state.candlesForAllPools.pools[indexOfPool].candlesByPoolAndDuration[
+                                indexOfDuration
+                            ].candles,
+                        );
                     }
                 }
             }
         },
         setDataLoadingStatus: (
             state,
-            action: PayloadAction<{
-                datasetName: string;
-                loadingStatus: boolean;
-            }>,
+            action: PayloadAction<{ datasetName: string; loadingStatus: boolean }>,
         ) => {
             switch (action.payload.datasetName) {
                 case 'connectedUserTxData':
@@ -675,20 +589,16 @@ export const graphDataSlice = createSlice({
                         action.payload.loadingStatus;
                     break;
                 case 'poolTxData':
-                    state.dataLoadingStatus.isPoolTxDataLoading =
-                        action.payload.loadingStatus;
+                    state.dataLoadingStatus.isPoolTxDataLoading = action.payload.loadingStatus;
                     break;
                 case 'poolOrderData':
-                    state.dataLoadingStatus.isPoolOrderDataLoading =
-                        action.payload.loadingStatus;
+                    state.dataLoadingStatus.isPoolOrderDataLoading = action.payload.loadingStatus;
                     break;
                 case 'poolRangeData':
-                    state.dataLoadingStatus.isPoolRangeDataLoading =
-                        action.payload.loadingStatus;
+                    state.dataLoadingStatus.isPoolRangeDataLoading = action.payload.loadingStatus;
                     break;
                 case 'candleData':
-                    state.dataLoadingStatus.isCandleDataLoading =
-                        action.payload.loadingStatus;
+                    state.dataLoadingStatus.isCandleDataLoading = action.payload.loadingStatus;
                     break;
                 default:
                     break;

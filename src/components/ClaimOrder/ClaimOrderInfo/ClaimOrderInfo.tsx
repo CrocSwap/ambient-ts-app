@@ -71,14 +71,8 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
                         <Row>
                             <span>Claimable Token Quantity</span>
                             <div className={styles.align_center}>
-                                <p className={styles.info_text}>
-                                    {baseDisplay}
-                                </p>
-                                <img
-                                    src={baseTokenLogoURI}
-                                    alt=''
-                                    width='15px'
-                                />
+                                <p className={styles.info_text}>{baseDisplay}</p>
+                                <img src={baseTokenLogoURI} alt='' width='15px' />
                             </div>
                         </Row>
                     ) : null}
@@ -87,14 +81,8 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
                         <Row>
                             <span>Claimable Token Quantity</span>
                             <div className={styles.align_center}>
-                                <p className={styles.info_text}>
-                                    {quoteDisplay}
-                                </p>
-                                <img
-                                    src={quoteTokenLogoURI}
-                                    alt=''
-                                    width='15px'
-                                />
+                                <p className={styles.info_text}>{quoteDisplay}</p>
+                                <img src={quoteTokenLogoURI} alt='' width='15px' />
                             </div>
                         </Row>
                     ) : null}
@@ -105,17 +93,13 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
                 <Row>
                     <span>Limit Price</span>
                     <div className={styles.align_center}>
-                        <div className={styles.info_text}>
-                            {truncatedDisplayPrice}
-                        </div>
+                        <div className={styles.info_text}>{truncatedDisplayPrice}</div>
                         {/* <img src={quoteTokenLogoURI} alt='' width='15px' /> */}
                     </div>
                 </Row>
                 <Row>
                     <span>Fill Time</span>
-                    <div className={styles.token_price}>
-                        {claimablePivotTimeString}
-                    </div>
+                    <div className={styles.token_price}>{claimablePivotTimeString}</div>
                 </Row>
                 {/* <Row>
                     <span> Claimable Amount</span>

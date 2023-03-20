@@ -14,9 +14,7 @@ interface TransactionAccordionContentPropsIF {
     quoteDisplay: string;
     blockExplorer: string | undefined;
 }
-export default function TransactionAccordionContent(
-    props: TransactionAccordionContentPropsIF,
-) {
+export default function TransactionAccordionContent(props: TransactionAccordionContentPropsIF) {
     // eslint-disable-next-line
     const [copyValue, copy] = useCopyToClipboard();
     // eslint-disable-next-line
@@ -103,16 +101,10 @@ export default function TransactionAccordionContent(
 
     const actionButtonsDisplay = (
         <div className={styles.buttons_container}>
-            <button
-                className={styles.option_button}
-                onClick={handleOpenExplorer}
-            >
+            <button className={styles.option_button} onClick={handleOpenExplorer}>
                 Explorer <RiExternalLinkLine />
             </button>
-            <button
-                className={styles.option_button}
-                onClick={handleCopyAddress}
-            >
+            <button className={styles.option_button} onClick={handleCopyAddress}>
                 Copy Trade
             </button>
         </div>

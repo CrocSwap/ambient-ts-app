@@ -12,11 +12,7 @@ export const useToken = (
     getAmbientTokens: () => TokenIF[],
     getTokensOnChain: (chn: string) => TokenIF[],
     getToken: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[],
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
     acknowledgeToken: (tkn: TokenIF) => void,
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
@@ -27,10 +23,7 @@ export const useToken = (
         // mutable output variable
         const newMap = map;
         // generate a key for the key value pair
-        const tokenKey =
-            tkn.address.toLowerCase() +
-            '_0x' +
-            tkn.chainId.toString().toLowerCase();
+        const tokenKey = tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString().toLowerCase();
         // boolean showing if token is already in the Map
         const tokenFromArray = newMap.get(tokenKey);
         // if token is already in the Map, update the array of origin URIs
@@ -68,16 +61,12 @@ export const useToken = (
                     ?.flatMap((tokenList: TokenListIF) => tokenList.tokens)
                     // add each token to the map
                     // this will by nature remove duplicate entries across lists
-                    ?.forEach((tkn: TokenIF) =>
-                        addTokenToMap(tkn, newTokenMap),
-                    );
+                    ?.forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // get 'ackTokens' from user data object in local storage
                 JSON.parse(localStorage.getItem('user') as string)
                     ?.ackTokens // add each token to the map
                     // this will also remove duplicates intelligently
-                    ?.forEach((tkn: TokenIF) =>
-                        addTokenToMap(tkn, newTokenMap),
-                    );
+                    ?.forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // send token map to be memoized in local state
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {
@@ -107,9 +96,7 @@ export const useToken = (
 
     // fn to get all Ambient tokens agnostic of chain
     const getAmbientTokens = (): TokenIF[] => {
-        return getAllTokens().filter(
-            (tok: TokenIF) => tok.fromList === '/ambient-token-list.json',
-        );
+        return getAllTokens().filter((tok: TokenIF) => tok.fromList === '/ambient-token-list.json');
     };
 
     // fn to retrieve all tokens from token map on current chain
@@ -121,20 +108,13 @@ export const useToken = (
     // fn to return a given token by name and address
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
-    const getTokenByAddress = (
-        addr: string,
-        chn = chainId,
-    ): TokenIF | undefined => {
+    const getTokenByAddress = (addr: string, chn = chainId): TokenIF | undefined => {
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
     // fn to return an array of tokens matching either name or symbol
     // can return exact or partial matches
-    const getTokensByName = (
-        searchName: string,
-        chn = chainId,
-        exact = false,
-    ): TokenIF[] => {
+    const getTokensByName = (searchName: string, chn = chainId, exact = false): TokenIF[] => {
         // array of all on-chain tokens in the Map
         const tokensOnChain = getTokensOnChain(chn);
         // search logic for exact matches only
@@ -160,9 +140,7 @@ export const useToken = (
             );
         };
         // array of matches, either exact or partial, depending on arg in fn call
-        const matches: TokenIF[] = exact
-            ? searchExact(searchName)
-            : searchPartial(searchName);
+        const matches: TokenIF[] = exact ? searchExact(searchName) : searchPartial(searchName);
         // array to hold exact-string token matches
         const exactMatches: TokenIF[] = [];
         // array to hold partial-string token matches

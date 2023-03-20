@@ -29,10 +29,8 @@ export default function TopPoolsCard(props: TopPoolsCardProp) {
                     />
                 </div>
                 <p>
-                    {props.searchInput == ''
-                        ? firstPair?.symbol
-                        : props.searchInput}
-                    /{secondPair?.symbol}
+                    {props.searchInput == '' ? firstPair?.symbol : props.searchInput}/
+                    {secondPair?.symbol}
                 </p>
                 <p>0.01%</p>
             </div>

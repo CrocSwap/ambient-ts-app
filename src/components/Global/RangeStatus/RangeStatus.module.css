@@ -29,7 +29,9 @@
     justify-content: center;
     align-items: center;
     color: var(--text-grey-white);
+
 }
+
 
 .range_text_positive {
     width: 18px;
@@ -46,7 +48,7 @@
 }
 .range_text_ambient {
     width: 18px;
-    height: 18px;
+    height: 18px;;
 
     background: var(--title-gradient);
     border-radius: 50%;
@@ -55,7 +57,8 @@
     display: flex;
 }
 
-.non_filled {
+.non_filled{
+
     width: 21.5px;
     height: 21.5px;
     border-radius: 50%;

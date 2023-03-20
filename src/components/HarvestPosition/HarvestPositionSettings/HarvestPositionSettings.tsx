@@ -1,48 +1,44 @@
 import { Dispatch, SetStateAction } from 'react';
-import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './HarvestPositionSettings.module.css';
 
-interface propsIF {
-    persistedSlippage: number;
-    setCurrentSlippage: Dispatch<SetStateAction<number>>;
-    presets: number[];
+interface HarvestPositionSettingsPropsIF {
+    showSettings: boolean;
+    setShowSettings: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function HarvestPositionSettings(props: propsIF) {
-    const { persistedSlippage, setCurrentSlippage, presets } = props;
+export default function HarvestPositionSettings(props: HarvestPositionSettingsPropsIF) {
+    // eslint-disable-next-line
+    const { showSettings, setShowSettings } = props;
 
-    const [slip, takeNewSlippage] = useSlippageInput(
-        persistedSlippage,
-        setCurrentSlippage,
-    );
+    // console.log(showSettings);
+    const preset1 = '0.1';
+    const preset2 = '0.3';
+    const preset3 = '0.5';
+
+    const slippageValue = 2;
+
+    const setSlippage = (val: string) => console.log(val);
 
     return (
         <div className={styles.main_container}>
             <div className={styles.slippage_tolerance_container}>
-                <div className={styles.slippage_title}>
-                    Slippage Tolerance (%)
-                </div>
+                <div className={styles.slippage_title}>Slippage Tolerance (%)</div>
                 <div className={styles.slippage_box}>
                     <div className={styles.slippage_content}>
                         <div className={styles.input_container}>
                             <input
                                 id='harvest_position_slippage_tolerance_input_field'
-                                onChange={(e) =>
-                                    takeNewSlippage(e.target.value)
-                                }
+                                onChange={(e) => setSlippage(e.target.value)}
                                 type='text'
-                                value={slip}
+                                value={slippageValue}
                                 placeholder={'slippage'}
                             />
                         </div>
-                        {presets.map((preset: number) => (
-                            <button
-                                key={`rmv-preset-button-${preset}`}
-                                onClick={() => takeNewSlippage(preset)}
-                            >
-                                {preset}%
-                            </button>
-                        ))}
+                        <button onClick={() => setSlippage(preset1)}>{preset1}%</button>
+                        <button onClick={() => setSlippage(preset2)}>{preset2}%</button>
+                        <button onClick={() => setSlippage(preset3)}>{preset3}%</button>
+                        {/* <button onClick={() => setSlippage('0.5')}>0.5%</button>
+            <button onClick={() => setSlippage('1')}>1%</button> */}
                     </div>
                 </div>
             </div>

@@ -22,10 +22,7 @@ interface PositionsOnlyToggleProps {
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     leader: string;
     leaderOwnerId: string;
-    changeState: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
     isCandleDataNull: boolean;
@@ -128,15 +125,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                         // setIsCandleSelected(false);
                         // setTransactionFilter(undefined);
                     }}
-                    style={
-                        isCandleSelected
-                            ? { cursor: 'pointer' }
-                            : { cursor: 'default' }
-                    }
+                    style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
                 >
-                    {isUserLoggedIn && !isCandleSelected
-                        ? `My ${props.currentTab}`
-                        : null}
+                    {isUserLoggedIn && !isCandleSelected ? `My ${props.currentTab}` : null}
                 </p>
                 {/* <p>{`All ${props.currentTab}`}</p> */}
                 {/* {clearButtonOrNull} */}

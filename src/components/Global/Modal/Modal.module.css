@@ -20,10 +20,7 @@
 
 .modal_body {
     border: solid 1px transparent;
-    background-image: linear-gradient(
-            rgba(189, 27, 27, 0),
-            rgba(255, 255, 255, 0)
-        ),
+    background-image: linear-gradient(rgba(189, 27, 27, 0), rgba(255, 255, 255, 0)),
         linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
     background-origin: border-box;
     background-clip: content-box, border-box;

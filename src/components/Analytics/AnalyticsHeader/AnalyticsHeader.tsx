@@ -2,8 +2,7 @@ import styles from './AnalyticsHeader.module.css';
 import { NavLink } from 'react-router-dom';
 
 export default function AnalyticsHeader() {
-    const gradientBackground =
-        'linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%)';
+    const gradientBackground = 'linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%)';
 
     return (
         <div className={styles.container}>

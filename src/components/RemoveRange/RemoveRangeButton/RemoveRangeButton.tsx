@@ -13,12 +13,7 @@ export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
 
     return (
         <div>
-            <Button
-                title={title}
-                disabled={props.disabled}
-                action={removeFn}
-                flat={true}
-            />
+            <Button title={title} disabled={props.disabled} action={removeFn} flat={true} />
         </div>
     );
 }

@@ -33,12 +33,7 @@
     margin: 10px 0;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

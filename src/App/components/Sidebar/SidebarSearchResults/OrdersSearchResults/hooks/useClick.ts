@@ -13,10 +13,7 @@ export const useClick = (
 
     const handleClick = (limitOrder: LimitOrderIF) => {
         let locationSlug = '';
-        if (
-            pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
-        ) {
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
@@ -30,11 +27,7 @@ export const useClick = (
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
         navigate(
-            locationSlug +
-                '/chain=0x5&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
+            locationSlug + '/chain=0x5&tokenA=' + limitOrder.base + '&tokenB=' + limitOrder.quote,
         );
     };
 

@@ -15,9 +15,7 @@ export default function SidebarFooter() {
     // console.log({ currentLocation });
 
     const sidebarPositionStyle =
-        currentLocation === '/'
-            ? styles.position_sticky
-            : styles.position_absolute;
+        currentLocation === '/' ? styles.position_sticky : styles.position_absolute;
 
     const { paramsSlug } = useUrlParams();
 
@@ -33,16 +31,8 @@ export default function SidebarFooter() {
 
     const linksData = [
         { title: 'Home', destination: '/', icon: FaHome },
-        {
-            title: 'Swap',
-            destination: '/swap' + paramsSlug,
-            icon: RiSwapBoxFill,
-        },
-        {
-            title: 'Trade',
-            destination: tradeDestination + paramsSlug,
-            icon: GiTrade,
-        },
+        { title: 'Swap', destination: '/swap' + paramsSlug, icon: RiSwapBoxFill },
+        { title: 'Trade', destination: tradeDestination + paramsSlug, icon: GiTrade },
         { title: 'Account', destination: '/account', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat', icon: BsFillChatDotsFill },
     ];

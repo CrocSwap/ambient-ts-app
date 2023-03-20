@@ -52,10 +52,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             nextMessageDate.getTime() - currentMessageDate.getTime(),
         );
 
-        getDayAndName(
-            props.previousMessage?.createdAt,
-            props.message?.createdAt,
-        );
+        getDayAndName(props.previousMessage?.createdAt, props.message?.createdAt);
 
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 10 * 60 * 1000) {
@@ -112,12 +109,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
         });
         const previousDayNumber = previousMessageDate.getUTCDate();
         const currentDayNumber = currentMessageDate.getUTCDate();
-        const currentDayMonthNumber = currentMessageDate.toLocaleString(
-            'default',
-            {
-                month: 'long',
-            },
-        );
+        const currentDayMonthNumber = currentMessageDate.toLocaleString('default', {
+            month: 'long',
+        });
         if (
             todayDayNumber === currentDayNumber &&
             todayMonthNumber === currentDayMonthNumber &&
@@ -173,8 +167,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                 className={` ${
                                     props.isUserLoggedIn
                                         ? word.slice(1) === props.ensName ||
-                                          word.slice(1) ===
-                                              props.connectedAccountActive
+                                          word.slice(1) === props.connectedAccountActive
                                             ? styles.mention_message
                                             : styles.message
                                         : styles.message
@@ -186,9 +179,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     </p>
                 );
             } else {
-                return (
-                    <p className={styles.message}>{props.message.message}</p>
-                );
+                return <p className={styles.message}>{props.message.message}</p>;
             }
         } else {
             if (props.message.isMentionMessage === true) {
@@ -200,8 +191,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                 className={` ${
                                     props.isUserLoggedIn
                                         ? word.slice(1) === props.ensName ||
-                                          word.slice(1) ===
-                                              props.connectedAccountActive
+                                          word.slice(1) === props.connectedAccountActive
                                             ? styles.mention_message
                                             : styles.message
                                         : styles.message
@@ -213,11 +203,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     </p>
                 );
             } else {
-                return (
-                    <p className={styles.message_without_avatar}>
-                        {props.message.message}
-                    </p>
-                );
+                return <p className={styles.message_without_avatar}>{props.message.message}</p>;
             }
         }
     }
@@ -241,9 +227,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     // console.log({ location });
 
-    const myBlockies = (
-        <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />
-    );
+    const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
 
     return (
         <div className={styles.main}>
@@ -259,8 +243,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     props.isUserLoggedIn
                         ? props.message.isMentionMessage === false
                             ? styles.sent_message_body
-                            : props.message.mentionedName?.trim() ===
-                                  props.ensName?.trim() ||
+                            : props.message.mentionedName?.trim() === props.ensName?.trim() ||
                               props.message.mentionedName?.trim() ===
                                   props.connectedAccountActive?.trim()
                             ? styles.sent_message_body_with_mention
@@ -268,9 +251,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         : styles.sent_message_body
                 }
             >
-                {showAvatar && (
-                    <div className={styles.nft_container}>{myBlockies}</div>
-                )}
+                {showAvatar && <div className={styles.nft_container}>{myBlockies}</div>}
                 <div className={styles.message_item}>
                     <div
                         className={
@@ -323,16 +304,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     {!isPosition && mentionedMessage()}
                 </div>
                 {props.moderator ? (
-                    <FiDelete
-                        color='red'
-                        onClick={() => deleteMessages(props.message._id)}
-                    />
+                    <FiDelete color='red' onClick={() => deleteMessages(props.message._id)} />
                 ) : (
                     ''
                 )}
-                <p className={styles.message_date}>
-                    {formatAMPM(props.message.createdAt)}
-                </p>
+                <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
 
                 {/* {snackbarContent} */}
             </div>

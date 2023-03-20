@@ -31,8 +31,7 @@ export default function TopTokens(props: TokenProps) {
                   .filter((x) => !!x && !TOKEN_HIDE.includes(x.address))
                   .sort((a, b) => {
                       if (a && b) {
-                          return a[sortField as keyof any] >
-                              b[sortField as keyof any]
+                          return a[sortField as keyof any] > b[sortField as keyof any]
                               ? (sortDirection ? -1 : 1) * 1
                               : (sortDirection ? -1 : 1) * -1;
                       } else {

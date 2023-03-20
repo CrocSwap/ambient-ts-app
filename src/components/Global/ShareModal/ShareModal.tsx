@@ -15,12 +15,7 @@ interface SocialLinkPropsIF {
 function SocialLink(props: SocialLinkPropsIF) {
     const { icon, link, name } = props;
     return (
-        <a
-            target='_blank'
-            rel='noreferrer'
-            href={link}
-            className={styles.social_link_container}
-        >
+        <a target='_blank' rel='noreferrer' href={link} className={styles.social_link_container}>
             {icon}
             {name}
         </a>
@@ -31,9 +26,7 @@ export default function ShareModal() {
     // const currentUrl = location.href
     const currentPathname = location.pathname;
 
-    const [linkToShare, setLinkToShare] = useState(
-        `ambient-finance.netlify.app${currentPathname}`,
-    );
+    const [linkToShare, setLinkToShare] = useState(`ambient-finance.netlify.app${currentPathname}`);
 
     const linkToShareTruncated = linkToShare.slice(0, 50) + '...';
     const socialLinksData = [
@@ -126,12 +119,7 @@ export default function ShareModal() {
     const shareIconsContent = (
         <section className={styles.share_links_container}>
             {socialLinksData.map((link, idx) => (
-                <SocialLink
-                    name={link.name}
-                    icon={link.icon}
-                    link={link.link}
-                    key={idx}
-                />
+                <SocialLink name={link.name} icon={link.icon} link={link.link} key={idx} />
             ))}
         </section>
     );

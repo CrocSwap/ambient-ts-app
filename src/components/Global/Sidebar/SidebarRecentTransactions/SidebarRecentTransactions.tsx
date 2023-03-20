@@ -57,14 +57,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        navigate('/trade/market/chain=' + chainId + '&tokenA=' + tx.base + '&tokenB=' + tx.quote);
     };
 
     const handleViewMoreClick = (): void => {
@@ -84,10 +77,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx: TransactionIF) => (
                     <SidebarRecentTransactionsCard
-                        key={
-                            'Sidebar-Recent-Transactions-Card-' +
-                            JSON.stringify(tx)
-                        }
+                        key={'Sidebar-Recent-Transactions-Card-' + JSON.stringify(tx)}
                         tx={tx}
                         handleClick={handleCardClick}
                     />

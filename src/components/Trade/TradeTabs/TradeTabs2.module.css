@@ -1,20 +1,21 @@
 .trade_tab_container {
+   
     position: relative;
     height: 100%;
 }
 
-.show_tx_message {
+.show_tx_message{
     width: 100%;
     background: var(--dark1);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 4px;
-    padding: 4px 0;
-    margin-left: -5px;
+padding: 4px 0;
+margin-left: -5px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-light)
 }
 
 .option_button {
@@ -39,6 +40,6 @@
     color: var(--text-grey-light);
 }
 
-.option_button:hover {
+.option_button:hover{
     opacity: 0.8;
 }

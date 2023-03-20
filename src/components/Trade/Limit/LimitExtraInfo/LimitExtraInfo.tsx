@@ -8,10 +8,7 @@ import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 // import makePriceDisplay from './makePriceDisplay';
@@ -78,9 +75,7 @@ export default function LimitExtraInfo(props: propsIF) {
     //     }
     // }
 
-    const displayPriceWithDenom = isDenomBase
-        ? 1 / poolPriceDisplay
-        : poolPriceDisplay;
+    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -233,8 +228,7 @@ export default function LimitExtraInfo(props: propsIF) {
             }
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
-                {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
+                <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
             </div>
             <div
                 className={styles.token_amount}

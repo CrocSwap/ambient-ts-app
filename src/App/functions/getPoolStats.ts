@@ -1,14 +1,8 @@
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolStatsFreshEndpoint =
-    'https://809821320828123.de:5000/pool_stats_fresh?';
+const poolStatsFreshEndpoint = 'https://809821320828123.de:5000/pool_stats_fresh?';
 
-const getPoolStatsFresh = async (
-    chainId: string,
-    base: string,
-    quote: string,
-    poolIdx: number,
-) => {
+const getPoolStatsFresh = async (chainId: string, base: string, quote: string, poolIdx: number) => {
     console.log('fetching fresh pool stats ');
     return fetch(
         poolStatsFreshEndpoint +
@@ -85,8 +79,7 @@ const getPoolTVL = async (
     }
 };
 
-const poolPriceChangeCacheEndpoint =
-    'https://809821320828123.de:5000/pool_price_change?';
+const poolPriceChangeCacheEndpoint = 'https://809821320828123.de:5000/pool_price_change?';
 
 const getPoolPriceChange = async (
     chainId: string,
@@ -139,13 +132,7 @@ const get24hChange = async (
     }
 };
 
-export {
-    getPoolStatsFresh,
-    getPoolVolume,
-    getPoolTVL,
-    get24hChange,
-    getPoolPriceChange,
-};
+export { getPoolStatsFresh, getPoolVolume, getPoolTVL, get24hChange, getPoolPriceChange };
 
 export type PoolStatsFn = (
     chain: string,

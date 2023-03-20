@@ -32,14 +32,9 @@ export const useRecentTokens = (
         },
     ): TokenIF[] {
         const relevantTokens = options.onCurrentChain
-            ? recentTokens.filter(
-                  (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
-              )
+            ? recentTokens.filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
             : recentTokens;
-        return relevantTokens.slice(
-            0,
-            options.count ?? relevantTokens.length + 1,
-        );
+        return relevantTokens.slice(0, options.count ?? relevantTokens.length + 1);
     }
 
     // fn to clear list of recent tokens

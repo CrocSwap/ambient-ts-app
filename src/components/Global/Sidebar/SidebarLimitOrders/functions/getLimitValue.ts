@@ -12,8 +12,8 @@ export const getLimitValue = (limitOrder: LimitOrderIF): string => {
         : usdValueNum >= 10000
         ? formatAmountOld(usdValueNum, 1)
         : usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
     return usdValueTruncated ? '$' + usdValueTruncated : '…';
-};
+}

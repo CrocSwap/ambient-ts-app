@@ -11,13 +11,10 @@ export default function Landing4() {
             <div className={styles.header_text}>
                 <span className={styles.ambient_text}>ambient </span>
                 {t('slide4.part1')}
-                <span className={styles.highlight_text}>
-                    {' '}
-                    {t('slide4.part2')}
-                </span>
+                <span className={styles.highlight_text}> {t('slide4.part2')}</span>
                 <div className={styles.amm_pools}>
-                    Meaning greater rewards for liquidity providers, and less
-                    price impact for traders
+                    Meaning greater rewards for liquidity providers, and less price impact for
+                    traders
                 </div>
             </div>
         </div>
@@ -27,8 +24,8 @@ export default function Landing4() {
         <div className={`${styles.liquidity_content} ${styles.half_content}`}>
             <div className={styles.content_title}>Ambient Liquidity</div>
             <div className={styles.content_text}>
-                Provides capital across all prices, allowing for passive capital
-                provision, at the cost of efficiency
+                Provides capital across all prices, allowing for passive capital provision, at the
+                cost of efficiency
             </div>
             <img src={ambientImage} alt='ambient liquidity' />
         </div>
@@ -38,22 +35,19 @@ export default function Landing4() {
         <div className={`${styles.liquidity_content} ${styles.half_content}`}>
             <div className={styles.content_title}>Concentrated Liquidity</div>
             <div className={styles.content_text}>
-                Allows traders to provide liquidity within a specific range,
-                meaning higher capital efficiency, but requires active
-                management
+                Allows traders to provide liquidity within a specific range, meaning higher capital
+                efficiency, but requires active management
             </div>
             <img src={concentratedImage} alt='concentrated liquidity' />
         </div>
     );
     // eslint-disable-next-line
     const combinedLiquidityContent = (
-        <div
-            className={`${styles.liquidity_content} ${styles.liquidity_content_combined}`}
-        >
+        <div className={`${styles.liquidity_content} ${styles.liquidity_content_combined}`}>
             <div className={styles.content_title}>Combined Liquidity</div>
             <div className={styles.content_text}>
-                Combining liquidity into the same pool reduces liquidity
-                fragmentation and increases trade volume
+                Combining liquidity into the same pool reduces liquidity fragmentation and increases
+                trade volume
             </div>
             <img src={combinedImage} alt='combined liquidity' />
         </div>

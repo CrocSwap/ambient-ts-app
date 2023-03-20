@@ -73,11 +73,7 @@ export default function InitPoolSteps(props: InitPoolStepsPropsIF) {
         <div className={styles.steps_display_container}>
             {progressStepsData.map((step, index) => (
                 <>
-                    <Step
-                        step={step}
-                        index={index}
-                        progressStep={progressStep}
-                    />
+                    <Step step={step} index={index} progressStep={progressStep} />
                 </>
             ))}
 

@@ -16,10 +16,7 @@ export default function Toggle(props: TabNavItemPropsIF) {
     const activeStyle = activeTab === id ? styles.tab_active : null;
 
     return (
-        <li
-            onClick={handleClick}
-            className={`${activeStyle} ${styles.tab_list}`}
-        >
+        <li onClick={handleClick} className={`${activeStyle} ${styles.tab_list}`}>
             {activeTab === id ? <div className={styles.underline} /> : null}
             {title}
         </li>

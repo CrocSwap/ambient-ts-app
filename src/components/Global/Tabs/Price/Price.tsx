@@ -16,9 +16,7 @@ export default function Price(props: PriceProps) {
         isAmbient,
     } = props;
     const priceBuy = <p className={styles.buy_style}>{displayPrice ?? '…'}</p>;
-    const priceSell = (
-        <p className={styles.sell_style}>{displayPrice ?? '…'}</p>
-    );
+    const priceSell = <p className={styles.sell_style}>{displayPrice ?? '…'}</p>;
     const range = isAmbient ? (
         <p className={styles.sell_style}>Ambient</p>
     ) : (

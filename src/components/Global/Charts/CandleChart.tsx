@@ -24,14 +24,8 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
         interface IntrinsicElements {
-            'd3fc-group': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
-            'd3fc-svg': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
+            'd3fc-group': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+            'd3fc-svg': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
         }
     }
 }
@@ -43,9 +37,7 @@ export default function CandleChart(props: CandleChartProps) {
         const valueFormatter = d3.format('.2f');
 
         const millisPerDay = 24 * 60 * 60 * 1000;
-        const yExtent = d3fc
-            .extentLinear()
-            .accessors([(d: any) => d.high, (d: any) => d.low]);
+        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.high, (d: any) => d.low]);
         const xExtent = d3fc
             .extentDate()
             .accessors([(d: any) => d.time])
@@ -55,13 +47,7 @@ export default function CandleChart(props: CandleChartProps) {
         const data = {
             series: props.data,
             crosshair: [{ x: 0, y: -50 }],
-            lineData: [
-                {
-                    value: valueFormatter(
-                        props.data[props.data.length - 1]?.open,
-                    ),
-                },
-            ],
+            lineData: [{ value: valueFormatter(props.data[props.data.length - 1]?.open) }],
         };
 
         const xScale = d3.scaleTime();
@@ -76,10 +62,7 @@ export default function CandleChart(props: CandleChartProps) {
             .annotationSvgCrosshair()
             .xLabel('')
             .decorate((selection: any) => {
-                selection
-                    .enter()
-                    .attr('stroke-dasharray', '6 6')
-                    .style('pointer-events', 'all');
+                selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
             });
 
         const candlestick = d3fc
@@ -88,20 +71,14 @@ export default function CandleChart(props: CandleChartProps) {
             .decorate((selection: any) => {
                 selection
                     .enter()
-                    .style('fill', (d: any) =>
-                        d.close > d.open ? '#CDC1FF' : '#171D27',
-                    )
+                    .style('fill', (d: any) => (d.close > d.open ? '#CDC1FF' : '#171D27'))
                     // .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    .style('stroke', (d: any) =>
-                        d.close > d.open ? '#CDC1FF' : '#7371FC',
-                    );
+                    .style('stroke', (d: any) => (d.close > d.open ? '#CDC1FF' : '#7371FC'));
             })
             .xScale(xScale)
             .yScale(yScale);
 
-        const horizontalLine = d3fc
-            .annotationSvgLine()
-            .value((d: any) => d.value);
+        const horizontalLine = d3fc.annotationSvgLine().value((d: any) => d.value);
         horizontalLine.decorate((selection: any) => {
             selection
                 .enter()
@@ -131,9 +108,7 @@ export default function CandleChart(props: CandleChartProps) {
                 const result = data.series.find(
                     (item) =>
                         moment(item.time).format('DD/MM/YYYY h.00 a') ===
-                        moment(xScale.domain()[1].getTime()).format(
-                            'DD/MM/YYYY h.00 a',
-                        ),
+                        moment(xScale.domain()[1].getTime()).format('DD/MM/YYYY h.00 a'),
                 );
                 data.lineData = [
                     {

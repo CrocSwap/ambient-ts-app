@@ -98,9 +98,7 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         return (
             <section
                 onClick={() => handleClick(data.name.toLowerCase())}
-                className={`${styles.sortable_container} ${
-                    styles[data.className]
-                }`}
+                className={`${styles.sortable_container} ${styles[data.className]}`}
             >
                 <p>{data.name}</p>
                 <div className={styles.arrow_wrapper}>{arrow}</div>
@@ -145,9 +143,8 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         //     </div>
         // </>
         <p>
-            This file has been refactored and updated to OrderHeader.tsx on
-            10/13/2022. It is no longer in use. If not uncommented by
-            12/13/2022, it can be safely deleted, along with
+            This file has been refactored and updated to OrderHeader.tsx on 10/13/2022. It is no
+            longer in use. If not uncommented by 12/13/2022, it can be safely deleted, along with
             OrderCardHeader.module.css. -Jr
         </p>
     );

@@ -60,7 +60,6 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     account: string | undefined;
@@ -120,7 +119,9 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
+
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
@@ -171,6 +172,7 @@ export default function Limit(props: propsIF) {
         setResetLimitTick,
         openGlobalPopup,
         bypassConfirm,
+        toggleBypassConfirm,
         dexBalancePrefs,
     } = props;
 
@@ -685,6 +687,7 @@ export default function Limit(props: propsIF) {
         middleDisplayPrice: middleDisplayPrice,
         endDisplayPrice: endDisplayPrice,
         bypassConfirm: bypassConfirm,
+        toggleBypassConfirm: toggleBypassConfirm,
         showBypassConfirmButton: showBypassConfirmButton,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
     };
@@ -699,7 +702,26 @@ export default function Limit(props: propsIF) {
         setShowBypassConfirmButton: setShowBypassConfirmButton,
         sendLimitOrder: sendLimitOrder,
         setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
+        // onClose: handleModalClose,
+        // poolPriceDisplay: poolPriceDisplay || 0,
+        // initiateLimitOrderMethod: sendLimitOrder,
+        // isTokenAPrimary: isTokenAPrimary,
+        // insideTickDisplayPrice: endDisplayPrice,
+        // txErrorMessage: txErrorMessage,
+        // showConfirmation: showConfirmation,
+        // setShowConfirmation: setShowConfirmation,
+        // startDisplayPrice: startDisplayPrice,
+        // middleDisplayPrice: middleDisplayPrice,
+        // endDisplayPrice: endDisplayPrice,
+        // bypassConfirm: bypassConfirm,
+        // toggleBypassConfirm: toggleBypassConfirm,
     };
+
+    const confirmLimitModalOrNull = isModalOpen ? (
+        <Modal onClose={handleModalClose} title='Limit Confirmation'>
+            <ConfirmLimitModal {...confirmLimitModalProps} />
+        </Modal>
+    ) : null;
 
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
@@ -914,6 +936,7 @@ export default function Limit(props: propsIF) {
                     openGlobalModal={props.openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
                     bypassConfirm={bypassConfirm}
+                    toggleBypassConfirm={toggleBypassConfirm}
                 />
                 {navigationMenu}
                 <motion.div
@@ -954,7 +977,7 @@ export default function Limit(props: propsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={
-                                bypassConfirm.limit.isEnabled
+                                bypassConfirm
                                     ? handleLimitButtonClickWithBypass
                                     : openModal
                             }
@@ -964,18 +987,14 @@ export default function Limit(props: propsIF) {
                                 limitAllowed
                             }
                             limitButtonErrorMessage={limitButtonErrorMessage}
-                            bypassConfirmLimit={bypassConfirm.limit}
+                            bypassConfirm={bypassConfirm}
                         />
                     )
                 ) : (
                     loginButton
                 )}
             </ContentContainer>
-            {isModalOpen && (
-                <Modal onClose={handleModalClose} title='Limit Confirmation'>
-                    <ConfirmLimitModal {...confirmLimitModalProps} />
-                </Modal>
-            )}
+            {confirmLimitModalOrNull}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

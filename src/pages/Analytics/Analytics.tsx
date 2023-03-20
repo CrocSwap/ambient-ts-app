@@ -11,12 +11,9 @@ interface propsIF {
 }
 
 export default function Analytics(props: propsIF) {
-    const { setSelectedOutsideTab, setOutsideControl, favePools } = props;
+    const {setSelectedOutsideTab, setOutsideControl, favePools} = props;
     return (
-        <section
-            data-testid={'analytics'}
-            className={styles.analytics_container}
-        >
+        <section data-testid={'analytics'} className={styles.analytics_container}>
             <GraphContainer />
             <AnalyticsTabs
                 setOutsideControl={setOutsideControl}

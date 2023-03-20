@@ -57,9 +57,9 @@
         "prepare": "husky install"
     },
     "lint-staged": {
-        "*.{js,jsx,ts,tsx}": [
-            "prettier --write --config ./.prettierrc",
-            "eslint --fix"
+        "**/*.{js,jsx,ts,tsx}": [
+            "npx prettier --write --config ./.prettierrc",
+            "npx eslint --fix"
         ]
     },
     "browserslist": [

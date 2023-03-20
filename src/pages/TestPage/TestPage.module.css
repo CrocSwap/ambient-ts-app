@@ -23,9 +23,10 @@
     outline: 2px solid yellow;
 } */
 
-.main {
+.main{
     background: var(--dark1);
     height: 100vh;
+   
 }
 
 .menu_container {
@@ -38,11 +39,12 @@
     margin: 1rem 0;
 }
 
-.example_container {
+
+.example_container{
     max-width: 400px;
 }
 
-.rectangle {
+.rectangle{
     width: 300px;
     margin: 1rem;
     background: rgb(3, 3, 96);

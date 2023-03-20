@@ -10,7 +10,7 @@
    background-size: cover;
 } */
 
-.home_container {
+.home_container{
     background: var(--body-bg);
 }
 
@@ -60,6 +60,7 @@
     opacity: 0.2;
 }
 
+
 .progress_bar {
     position: fixed;
     top: 0;
@@ -68,4 +69,5 @@
     height: 10px;
     background: red;
     transform-origin: 0%;
-}
+  }
+  

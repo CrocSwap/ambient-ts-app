@@ -3,12 +3,8 @@ import { useEffect, useState } from 'react';
 
 // interface for a Slippage Pair (not needed outside this file)
 interface SlippagePairIF {
-    stable: number;
-    volatile: number;
-    presets: {
-        stable: number[];
-        volatile: number[];
-    };
+    stable: number,
+    volatile: number
 }
 
 // interface for object returned by this hook
@@ -17,16 +13,6 @@ export interface SlippageMethodsIF {
     volatile: number;
     updateStable: (val: number) => void;
     updateVolatile: (val: number) => void;
-    presets: {
-        stable: number[];
-        volatile: number[];
-    };
-}
-
-export interface allSlippageMethodsIF {
-    swapSlippage: SlippageMethodsIF;
-    mintSlippage: SlippageMethodsIF;
-    repoSlippage: SlippageMethodsIF;
 }
 
 // custom hook to manage and interact a given slippage pair
@@ -34,15 +20,15 @@ export interface allSlippageMethodsIF {
 // @param defaults ➡ default values to use for slippage
 export const useSlippage = (
     slippageType: string,
-    defaults: SlippagePairIF,
+    defaults: SlippagePairIF
 ): SlippageMethodsIF => {
     // fn to get relevant slippage pair from local storage and return
     // ... a value to use productively for stable or volatile slippage
     const getSlippage = (whichOne: string): number => {
         // retrieve the relevant slippage pair from local storage
         // query will return `null` if the key-value pair does not exist
-        const pair: SlippagePairIF | null = JSON.parse(
-            localStorage.getItem(`slippage_${slippageType}`) as string,
+        const pair: SlippagePairIF|null = JSON.parse(
+            localStorage.getItem(`slippage_${slippageType}`) as string
         );
         // declare an output value for the function
         let output: number;
@@ -57,10 +43,10 @@ export const useSlippage = (
                 break;
             default:
                 output = 0;
-        }
+        };
         // return output value
         return output;
-    };
+    }
 
     // hooks to hold stable and volatile values in state
     // do NOT refactor these as useMemo() hooks, it will not work
@@ -69,10 +55,7 @@ export const useSlippage = (
 
     // update persisted value in local storage whenever user changes slippage tolerance
     useEffect(() => {
-        localStorage.setItem(
-            `slippage_${slippageType}`,
-            JSON.stringify({ stable, volatile }),
-        );
+        localStorage.setItem(`slippage_${slippageType}`, JSON.stringify({stable, volatile}));
     }, [stable, volatile]);
 
     // fn to accept a new slippage value from the DOM
@@ -81,7 +64,7 @@ export const useSlippage = (
     const updateSlippage = (slipType: string, newVal: number): void => {
         slipType === 'stable' && setStable(newVal);
         slipType === 'volatile' && setVolatile(newVal);
-    };
+    }
 
     // return data object
     // stable ➡ number, active slippage value for stable pairs
@@ -92,7 +75,6 @@ export const useSlippage = (
         stable,
         volatile,
         updateStable: (val: number) => updateSlippage('stable', val),
-        updateVolatile: (val: number) => updateSlippage('volatile', val),
-        presets: defaults.presets,
+        updateVolatile: (val: number) => updateSlippage('volatile', val)
     };
-};
+}

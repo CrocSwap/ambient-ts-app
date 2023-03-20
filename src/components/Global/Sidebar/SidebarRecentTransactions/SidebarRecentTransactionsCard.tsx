@@ -26,4 +26,4 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
         </div>
     );
 }
-3;
+3

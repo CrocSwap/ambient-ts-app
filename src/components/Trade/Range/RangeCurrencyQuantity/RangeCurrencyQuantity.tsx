@@ -12,14 +12,7 @@ interface propsIF {
     thisToken: TokenIF;
 }
 export default function RangeCurrencyQuantity(props: propsIF) {
-    const {
-        value,
-        thisToken,
-        disable,
-        updateOtherQuantity,
-        fieldId,
-        isAdvancedMode,
-    } = props;
+    const { value, thisToken, disable, updateOtherQuantity, fieldId, isAdvancedMode } = props;
     // console.log({ disable });
 
     const [displayValue, setDisplayValue] = useState<string>('');
@@ -43,9 +36,7 @@ export default function RangeCurrencyQuantity(props: propsIF) {
             {/* <GoCircleSlash size={15} /> */}
             <div className={styles.disabled_text}>
                 The market is outside your specified range.
-                <div className={styles.warning_text}>
-                    Single-asset deposit only.
-                </div>
+                <div className={styles.warning_text}>Single-asset deposit only.</div>
             </div>
         </div>
     );
@@ -68,12 +59,10 @@ export default function RangeCurrencyQuantity(props: propsIF) {
                 placeholder='0.0'
                 onChange={(event) => {
                     const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
+                        precisionOfInput(event.target.value) > thisToken.decimals;
                     const isValid =
                         !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
+                        (event.target.value === '' || event.target.validity.valid);
                     isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}

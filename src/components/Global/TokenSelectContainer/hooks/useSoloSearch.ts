@@ -6,12 +6,8 @@ export const useSoloSearch = (
     importedTokens: TokenIF[],
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[],
-    defaultTokens?: TokenIF[],
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
+    defaultTokens?: TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // memoize default list of tokens to display in DOM
     const importedTokensOnChain = useMemo(
@@ -47,9 +43,7 @@ export const useSoloSearch = (
             return '';
         }
         // add '0x' to the front of the cleaned string if not present
-        const fixedInput = cleanInput.startsWith('0x')
-            ? cleanInput
-            : '0x' + cleanInput;
+        const fixedInput = cleanInput.startsWith('0x') ? cleanInput : '0x' + cleanInput;
         // declare an output variable
         let output = cleanInput;
         // check if string is a correctly-formed contract address
@@ -67,9 +61,7 @@ export const useSoloSearch = (
     }, [input]);
 
     // hook to track tokens to output and render in DOM
-    const [outputTokens, setOutputTokens] = useState<TokenIF[]>(
-        importedTokensOnChain,
-    );
+    const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
 
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
@@ -85,21 +77,15 @@ export const useSoloSearch = (
             if (tokenExistsOnList) {
                 // get the token for the given address and chain
                 // value can be technically be undefined but gatekeeping prevents that
-                foundToken = getTokenByAddress(
-                    validatedInput,
-                    chainId,
-                ) as TokenIF;
+                foundToken = getTokenByAddress(validatedInput, chainId) as TokenIF;
                 // if token is not on an imported list, check tokens in user data
             } else if (!tokenExistsOnList) {
                 // retrieve and parse user data object from local storage
                 // isolate tokens listed in user data
                 // return one that has an address matching user input on current chain
-                foundToken = JSON.parse(
-                    localStorage.getItem('user') as string,
-                ).tokens.find(
+                foundToken = JSON.parse(localStorage.getItem('user') as string).tokens.find(
                     (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() ===
-                            validatedInput.toLowerCase() &&
+                        tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
                         tkn.chainId === parseInt(chainId),
                 );
             }
@@ -113,11 +99,7 @@ export const useSoloSearch = (
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            const foundTokens = getTokensByName(
-                validatedInput,
-                chainId,
-                exactOnly,
-            );
+            const foundTokens = getTokensByName(validatedInput, chainId, exactOnly);
             // get array of tokens in local storage on user data object
             // these are needed for tokens user previously imported but not on lists
             JSON.parse(localStorage.getItem('user') as string)
@@ -128,12 +110,8 @@ export const useSoloSearch = (
                     // ... already found on an imported list, add it to the search results
                     if (
                         !exactOnly &&
-                        (tkn.name
-                            .toLowerCase()
-                            .includes(validatedInput.toLowerCase()) ||
-                            tkn.symbol
-                                .toLowerCase()
-                                .includes(validatedInput.toLowerCase())) &&
+                        (tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
+                            tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())) &&
                         tkn.chainId === parseInt(chainId) &&
                         !foundTokens
                             .map((tok: TokenIF) => tok.address.toLowerCase())
@@ -145,10 +123,8 @@ export const useSoloSearch = (
                         // ... already found on an imported list, add it to the search results
                     } else if (
                         exactOnly &&
-                        (tkn.name.toLowerCase() ===
-                            validatedInput.toLowerCase() ||
-                            tkn.symbol.toLowerCase() ===
-                                validatedInput.toLowerCase()) &&
+                        (tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
+                            tkn.symbol.toLowerCase() === validatedInput.toLowerCase()) &&
                         tkn.chainId === parseInt(chainId) &&
                         !foundTokens
                             .map((tok: TokenIF) => tok.address.toLowerCase())
@@ -164,7 +140,7 @@ export const useSoloSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             return defaultTokens ?? importedTokensOnChain;
-        }
+        };
 
         // declare an output variable
         let tokens: TokenIF[];

@@ -29,10 +29,7 @@ function PositionLI(props: PositionLiPropsIF) {
     const positionValue = getValueUSD(position.totalValueUSD);
 
     return (
-        <li
-            className={styles.card_container}
-            onClick={() => handleClick(position)}
-        >
+        <li className={styles.card_container} onClick={() => handleClick(position)}>
             <p>
                 {isDenomBase
                     ? `${position?.baseSymbol} / ${position?.quoteSymbol}`
@@ -83,18 +80,14 @@ export default function PositionsSearchResults(props: propsIF) {
                         <div>Value</div>
                     </header>
                     <ol className={styles.main_result_container}>
-                        {searchedPositions
-                            .slice(0, 4)
-                            .map((position: PositionIF) => (
-                                <PositionLI
-                                    key={`PositionSearchResult_${JSON.stringify(
-                                        position,
-                                    )}`}
-                                    position={position}
-                                    isDenomBase={isDenomBase}
-                                    handleClick={handleClick}
-                                />
-                            ))}
+                        {searchedPositions.slice(0, 4).map((position: PositionIF) => (
+                            <PositionLI
+                                key={`PositionSearchResult_${JSON.stringify(position)}`}
+                                position={position}
+                                isDenomBase={isDenomBase}
+                                handleClick={handleClick}
+                            />
+                        ))}
                     </ol>
                 </>
             ) : (

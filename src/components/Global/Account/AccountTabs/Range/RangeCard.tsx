@@ -27,9 +27,7 @@ export default function RangeCard(props: propsIF) {
     const baseTokenSymbol = position.baseSymbol;
     const quoteTokenSymbol = position.quoteSymbol;
 
-    const baseTokenCharacter = position.baseSymbol
-        ? getUnicodeCharacter(position.baseSymbol)
-        : '';
+    const baseTokenCharacter = position.baseSymbol ? getUnicodeCharacter(position.baseSymbol) : '';
     const quoteTokenCharacter = position.quoteSymbol
         ? getUnicodeCharacter(position.quoteSymbol)
         : '';
@@ -75,11 +73,7 @@ export default function RangeCard(props: propsIF) {
                 />
                 {/* <WalletAndId posHash='0xcD3eee3fddg134' ownerId={position.user} /> */}
                 <RangeMinMax min={minRangeOrAmbient} max={maxRangeOrAmbient} />
-                <Value
-                    usdValue={
-                        position.totalValueUSD ? '$' + usdValueTruncated : '…'
-                    }
-                />
+                <Value usdValue={position.totalValueUSD ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
                     baseTokenCharacter={baseTokenCharacter}
                     quoteTokenCharacter={quoteTokenCharacter}

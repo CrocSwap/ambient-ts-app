@@ -8,9 +8,7 @@ interface TransactionCardHeaderProps {
     tradeData: tradeData;
 }
 
-export default function TransactionCardHeader(
-    props: TransactionCardHeaderProps,
-) {
+export default function TransactionCardHeader(props: TransactionCardHeaderProps) {
     const { tradeData } = props;
 
     const baseTokenSymbol = tradeData.baseToken.symbol;
@@ -49,9 +47,8 @@ export default function TransactionCardHeader(
         //     </div>
         // </>
         <p>
-            This file has been refactored and updated to TransactionHeader.tsx
-            on 10/13/2022. It is no longer in use. If not uncommented by
-            12/13/2022, it can be safely deleted, along with
+            This file has been refactored and updated to TransactionHeader.tsx on 10/13/2022. It is
+            no longer in use. If not uncommented by 12/13/2022, it can be safely deleted, along with
             TransactionCardHeader.module.css. -Jr
         </p>
     );

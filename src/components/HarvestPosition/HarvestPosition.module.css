@@ -1,3 +1,4 @@
+
 .main_content {
     width: 400px;
     /* height: 400px; */
@@ -6,6 +7,7 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem;
+    
 }
 
 .remove_range_container {
@@ -22,7 +24,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-
+    
     top: 40px;
 }
 .header_container {
@@ -34,7 +36,7 @@
 
 .settings_icon {
     cursor: pointer;
-
+   
     animation: all 500ms ease-in-out;
     display: flex;
     justify-content: flex-end;
@@ -42,7 +44,7 @@
 
 .confirmation_container {
     width: 400px;
-    /* height: 400px; */
+  /* height: 400px; */
     display: flex;
     flex-direction: column;
     justify-content: center;

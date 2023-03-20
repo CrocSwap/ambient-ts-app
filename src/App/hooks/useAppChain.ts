@@ -30,9 +30,7 @@ export const useAppChain = (
     const [currentChain, setCurrentChain] = useState(defaultChain);
     // boolean representing if the current chain is supported by the app
     // we use this value to populate the SwitchNetwork.tsx modal
-    const [isChainSupported, setIsChainSupported] = useState(
-        validateChainId(defaultChain),
-    );
+    const [isChainSupported, setIsChainSupported] = useState(validateChainId(defaultChain));
 
     // change the network in Moralis after user changes in the app
     // useEffect(() => {

@@ -62,12 +62,9 @@ export default function BypassLimitButton(props: propsIF) {
     // const isTransactionDenied =
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
-    const sellTokenQty = (
-        document.getElementById('sell-limit-quantity') as HTMLInputElement
-    )?.value;
-    const buyTokenQty = (
-        document.getElementById('buy-limit-quantity') as HTMLInputElement
-    )?.value;
+    const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
+        ?.value;
+    const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
 
     const sellTokenData = tokenPair?.dataTokenA;
 
@@ -113,11 +110,7 @@ export default function BypassLimitButton(props: propsIF) {
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(
-                  receiptData.sessionReceipts[
-                      receiptData.sessionReceipts.length - 1
-                  ],
-              )
+            ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -134,9 +127,7 @@ export default function BypassLimitButton(props: propsIF) {
     );
 
     const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
+        isTransactionException || isGasLimitException || isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
@@ -147,9 +138,7 @@ export default function BypassLimitButton(props: propsIF) {
             : confirmSendMessage;
 
     const buttonColor =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
+        isTransactionException || isGasLimitException || isInsufficientFundsException
             ? 'orange'
             : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
             ? 'var(--negative)'
@@ -158,9 +147,7 @@ export default function BypassLimitButton(props: propsIF) {
             : 'var(--text-highlight-dark)';
 
     const animationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException ? (
+        isTransactionException || isGasLimitException || isInsufficientFundsException ? (
             <CircleLoaderFailed size='30px' />
         ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
             <CircleLoaderFailed size='30px' />
@@ -171,9 +158,7 @@ export default function BypassLimitButton(props: propsIF) {
         );
 
     const buttonText =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
+        isTransactionException || isGasLimitException || isInsufficientFundsException
             ? 'Transaction Exception'
             : isTransactionDenied
             ? 'Transaction Denied'
@@ -196,17 +181,11 @@ export default function BypassLimitButton(props: propsIF) {
                         {animationDisplay}
                         {buttonText}
                     </div>
-                    {showExtraInfo ? (
-                        <RiArrowUpSLine size={20} />
-                    ) : (
-                        <RiArrowDownSLine size={20} />
-                    )}
+                    {showExtraInfo ? <RiArrowUpSLine size={20} /> : <RiArrowDownSLine size={20} />}
                 </button>
 
                 {showExtraInfo && (
-                    <section className={styles.extra_info_container}>
-                        {confirmationDisplay}
-                    </section>
+                    <section className={styles.extra_info_container}>{confirmationDisplay}</section>
                 )}
                 <span className={styles.close_icon_container}>
                     <button

@@ -102,17 +102,11 @@ export const tradeDataSlice = createSlice({
                 action.payload.address,
                 state.tokenB.address,
             );
-            if (
-                action.payload.address.toLowerCase() ===
-                baseTokenAddress.toLowerCase()
-            ) {
+            if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
                 state.baseToken = action.payload;
                 state.quoteToken = state.tokenB;
                 state.isTokenABase = true;
-            } else if (
-                action.payload.address.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            ) {
+            } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenB;
                 state.isTokenABase = false;
@@ -124,17 +118,11 @@ export const tradeDataSlice = createSlice({
                 action.payload.address,
                 state.tokenA.address,
             );
-            if (
-                action.payload.address.toLowerCase() ===
-                baseTokenAddress.toLowerCase()
-            ) {
+            if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
                 state.baseToken = action.payload;
                 state.quoteToken = state.tokenA;
                 state.isTokenABase = false;
-            } else if (
-                action.payload.address.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            ) {
+            } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenA;
                 state.isTokenABase = true;
@@ -146,22 +134,13 @@ export const tradeDataSlice = createSlice({
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;
         },
-        setShouldSwapConverterUpdate: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
+        setShouldSwapConverterUpdate: (state, action: PayloadAction<boolean>) => {
             state.shouldSwapConverterUpdate = action.payload;
         },
-        setShouldLimitConverterUpdate: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
+        setShouldLimitConverterUpdate: (state, action: PayloadAction<boolean>) => {
             state.shouldLimitConverterUpdate = action.payload;
         },
-        setShouldLimitDirectionReverse: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
+        setShouldLimitDirectionReverse: (state, action: PayloadAction<boolean>) => {
             state.shouldLimitDirectionReverse = action.payload;
         },
         toggleDidUserFlipDenom: (state) => {
@@ -246,16 +225,10 @@ export const tradeDataSlice = createSlice({
         setRescaleRangeBoundaries: (state, action: PayloadAction<boolean>) => {
             state.rescaleRangeBoundaries = action.payload;
         },
-        setMainnetBaseTokenReduxAddress: (
-            state,
-            action: PayloadAction<string>,
-        ) => {
+        setMainnetBaseTokenReduxAddress: (state, action: PayloadAction<string>) => {
             state.mainnetBaseTokenAddress = action.payload;
         },
-        setMainnetQuoteTokenReduxAddress: (
-            state,
-            action: PayloadAction<string>,
-        ) => {
+        setMainnetQuoteTokenReduxAddress: (state, action: PayloadAction<string>) => {
             state.mainnetQuoteTokenAddress = action.payload;
         },
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {

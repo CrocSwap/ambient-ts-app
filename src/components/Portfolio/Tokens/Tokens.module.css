@@ -1,8 +1,8 @@
-.container {
+.container{
     padding: 0 8px;
 }
 
-.search_input_container {
+.search_input_container{
     display: flex;
     justify-content: flex-end;
     gap: 8px;
@@ -10,7 +10,7 @@
     padding: 1rem 0;
 }
 
-.search_input {
+.search_input{
     /* outline: none; */
     border: none;
     outline: 1px solid rgb(33, 32, 32);
@@ -21,13 +21,15 @@
     color: var(--text-grey-white);
     transition: all var(--animation-speed) ease-in-out;
     text-align: end;
+
+    
 }
 
-.search_input:focus {
-    outline: 1px solid var(--text-highlight);
+.search_input:focus{
+  outline: 1px solid var(--text-highlight)
 }
 
-.none_found {
+.none_found{
     width: 100%;
     height: 100%;
     display: flex;
@@ -37,10 +39,10 @@
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-light)
 }
 
-.listPicker {
+.listPicker{
     display: flex;
     justify-content: flex-end;
 }
@@ -51,45 +53,48 @@
     filter: drop-shadow(1px 1px 1px #1c1624);
     width: 200px;
 
-    position: relative;
-}
+    position: relative
+  }
 
-.menu ul {
+
+  
+  .menu ul {
     display: flex;
     flex-direction: column;
     gap: 10px;
     background: var(--dark3);
-}
-
-.menu li {
+  }
+  
+  .menu li {
     color: var(--text-grey-light);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     /* display: block; */
-}
+  }
 
-.menu li:hover {
-    color: var(--text-grey-white);
-}
+  .menu li:hover{
+    color: var(--text-grey-white)
+  }
 
-.menu ul {
-    z-index: 5;
-    top: 3rem;
+  .menu ul{
+      z-index: 5;
+      top: 3rem;
     position: absolute;
     width: 100%;
-}
-
-.menu ul,
-.menu li {
+  }
+  
+  .menu ul,
+  .menu li {
     list-style: none;
     margin: 0;
     padding: 10px;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-}
 
-.menu button {
+  }
+  
+  .menu button {
     -webkit-appearance: button;
     background: var(--dark3);
     color: white;
@@ -106,16 +111,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
 
-.menu button:hover {
-    color: var(--text-grey-white);
-}
-.menu button path {
+  }
+  
+  .menu button:hover{
+    color: var(--text-grey-white)
+  }
+  .menu  button path {
     fill: var(--text-grey-light);
-    transition: all var(--animation-speed) ease-in-out;
-}
+    transition: all var(--animation-speed) ease-in-out
+  }
 
-.menu button:hover > .menu button path {
-    fill: var(--text-grey-white);
-}
+  .menu button:hover > .menu  button path {
+fill: var(--text-grey-white)
+  }
+  

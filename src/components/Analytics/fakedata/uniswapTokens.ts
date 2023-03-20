@@ -22,12 +22,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x9c2C5fd7b07E95EE044DDeba0E97a665F142394f',
+                            tokenAddress: '0x9c2C5fd7b07E95EE044DDeba0E97a665F142394f',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x6314C31A7a1652cE482cffe247E9CB7c3f4BB9aF',
+                            tokenAddress: '0x6314C31A7a1652cE482cffe247E9CB7c3f4BB9aF',
                         },
                     },
                 },
@@ -43,12 +41,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xD6DF932A45C0f255f85145f286eA0b292B21C90B',
+                            tokenAddress: '0xD6DF932A45C0f255f85145f286eA0b292B21C90B',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xba5DdD1f9d7F570dc94a51479a000E3BCE967196',
+                            tokenAddress: '0xba5DdD1f9d7F570dc94a51479a000E3BCE967196',
                         },
                     },
                 },
@@ -82,8 +78,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xdDa7b23D2D72746663E7939743f929a3d85FC975',
+                            tokenAddress: '0xdDa7b23D2D72746663E7939743f929a3d85FC975',
                         },
                     },
                 },
@@ -108,8 +103,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x6a6bD53d677F8632631662C48bD47b1D4D6524ee',
+                            tokenAddress: '0x6a6bD53d677F8632631662C48bD47b1D4D6524ee',
                         },
                     },
                 },
@@ -125,8 +119,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xe2341718c6C0CbFa8e6686102DD8FbF4047a9e9B',
+                            tokenAddress: '0xe2341718c6C0CbFa8e6686102DD8FbF4047a9e9B',
                         },
                     },
                 },
@@ -142,8 +135,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x95c300e7740D2A88a44124B424bFC1cB2F9c3b89',
+                            tokenAddress: '0x95c300e7740D2A88a44124B424bFC1cB2F9c3b89',
                         },
                     },
                 },
@@ -159,8 +151,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x82dCf1Df86AdA26b2dCd9ba6334CeDb8c2448e9e',
+                            tokenAddress: '0x82dCf1Df86AdA26b2dCd9ba6334CeDb8c2448e9e',
                         },
                     },
                 },
@@ -185,8 +176,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x50858d870FAF55da2fD90FB6DF7c34b5648305C6',
+                            tokenAddress: '0x50858d870FAF55da2fD90FB6DF7c34b5648305C6',
                         },
                     },
                 },
@@ -202,8 +192,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x3AE490db48d74B1bC626400135d4616377D0109f',
+                            tokenAddress: '0x3AE490db48d74B1bC626400135d4616377D0109f',
                         },
                     },
                 },
@@ -219,8 +208,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0621d647cecbFb64b79E44302c1933cB4f27054d',
+                            tokenAddress: '0x0621d647cecbFb64b79E44302c1933cB4f27054d',
                         },
                     },
                 },
@@ -236,8 +224,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x101A023270368c0D50BFfb62780F4aFd4ea79C35',
+                            tokenAddress: '0x101A023270368c0D50BFfb62780F4aFd4ea79C35',
                         },
                     },
                 },
@@ -253,8 +240,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x2b8504ab5eFc246d0eC5Ec7E74565683227497de',
+                            tokenAddress: '0x2b8504ab5eFc246d0eC5Ec7E74565683227497de',
                         },
                     },
                 },
@@ -270,12 +256,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xB7b31a6BC18e48888545CE79e83E06003bE70930',
+                            tokenAddress: '0xB7b31a6BC18e48888545CE79e83E06003bE70930',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x74885b4D524d497261259B38900f54e6dbAd2210',
+                            tokenAddress: '0x74885b4D524d497261259B38900f54e6dbAd2210',
                         },
                     },
                 },
@@ -291,8 +275,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x45C27821E80F8789b60Fd8B600C73815d34DDa6C',
+                            tokenAddress: '0x45C27821E80F8789b60Fd8B600C73815d34DDa6C',
                         },
                     },
                 },
@@ -308,8 +291,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xEE800B277A96B0f490a1A732e1D6395FAD960A26',
+                            tokenAddress: '0xEE800B277A96B0f490a1A732e1D6395FAD960A26',
                         },
                     },
                 },
@@ -343,8 +325,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x04bEa9FCE76943E90520489cCAb84E84C0198E29',
+                            tokenAddress: '0x04bEa9FCE76943E90520489cCAb84E84C0198E29',
                         },
                     },
                 },
@@ -355,17 +336,14 @@ export const uniswapTokens = [
                 name: 'Automata',
                 symbol: 'ATA',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/15985/thumb/ATA.jpg?1622535745',
+                logoURI: 'https://assets.coingecko.com/coins/images/15985/thumb/ATA.jpg?1622535745',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0df0f72EE0e5c9B7ca761ECec42754992B2Da5BF',
+                            tokenAddress: '0x0df0f72EE0e5c9B7ca761ECec42754992B2Da5BF',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xAC9Ac2C17cdFED4AbC80A53c5553388575714d03',
+                            tokenAddress: '0xAC9Ac2C17cdFED4AbC80A53c5553388575714d03',
                         },
                     },
                 },
@@ -390,8 +368,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5eB8D998371971D01954205c7AFE90A7AF6a95AC',
+                            tokenAddress: '0x5eB8D998371971D01954205c7AFE90A7AF6a95AC',
                         },
                     },
                 },
@@ -416,12 +393,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x61BDD9C7d4dF4Bf47A4508c0c8245505F2Af5b7b',
+                            tokenAddress: '0x61BDD9C7d4dF4Bf47A4508c0c8245505F2Af5b7b',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xe88998Fb579266628aF6a03e3821d5983e5D0089',
+                            tokenAddress: '0xe88998Fb579266628aF6a03e3821d5983e5D0089',
                         },
                     },
                 },
@@ -437,12 +412,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x1FcbE5937B0cc2adf69772D228fA4205aCF4D9b2',
+                            tokenAddress: '0x1FcbE5937B0cc2adf69772D228fA4205aCF4D9b2',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xBfa641051Ba0a0Ad1b0AcF549a89536A0D76472E',
+                            tokenAddress: '0xBfa641051Ba0a0Ad1b0AcF549a89536A0D76472E',
                         },
                     },
                 },
@@ -458,12 +431,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
+                            tokenAddress: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8',
+                            tokenAddress: '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8',
                         },
                     },
                 },
@@ -479,8 +450,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xA8b1E0764f85f53dfe21760e8AfE5446D82606ac',
+                            tokenAddress: '0xA8b1E0764f85f53dfe21760e8AfE5446D82606ac',
                         },
                     },
                 },
@@ -496,12 +466,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x3Cef98bb43d732E2F285eE605a8158cDE967D219',
+                            tokenAddress: '0x3Cef98bb43d732E2F285eE605a8158cDE967D219',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x3450687EF141dCd6110b77c2DC44B008616AeE75',
+                            tokenAddress: '0x3450687EF141dCd6110b77c2DC44B008616AeE75',
                         },
                     },
                 },
@@ -517,12 +485,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x91c89A94567980f0e9723b487b0beD586eE96aa7',
+                            tokenAddress: '0x91c89A94567980f0e9723b487b0beD586eE96aa7',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xa68Ec98D7ca870cF1Dd0b00EBbb7c4bF60A8e74d',
+                            tokenAddress: '0xa68Ec98D7ca870cF1Dd0b00EBbb7c4bF60A8e74d',
                         },
                     },
                 },
@@ -538,8 +504,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0x406C8dB506653D882295875F633bEC0bEb921C2A',
+                            tokenAddress: '0x406C8dB506653D882295875F633bEC0bEb921C2A',
                         },
                     },
                 },
@@ -555,8 +520,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x438B28C5AA5F00a817b7Def7cE2Fb3d5d1970974',
+                            tokenAddress: '0x438B28C5AA5F00a817b7Def7cE2Fb3d5d1970974',
                         },
                     },
                 },
@@ -572,8 +536,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xc26D47d5c33aC71AC5CF9F776D63Ba292a4F7842',
+                            tokenAddress: '0xc26D47d5c33aC71AC5CF9F776D63Ba292a4F7842',
                         },
                     },
                 },
@@ -589,8 +552,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xa4B2B20b2C73c7046ED19AC6bfF5E5285c58F20a',
+                            tokenAddress: '0xa4B2B20b2C73c7046ED19AC6bfF5E5285c58F20a',
                         },
                     },
                 },
@@ -606,16 +568,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x3e7eF8f50246f725885102E8238CBba33F276747',
+                            tokenAddress: '0x3e7eF8f50246f725885102E8238CBba33F276747',
                         },
                         '137': {
-                            tokenAddress:
-                                '0xA041544fe2BE56CCe31Ebb69102B965E06aacE80',
+                            tokenAddress: '0xA041544fe2BE56CCe31Ebb69102B965E06aacE80',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x0D81E50bC677fa67341c44D7eaA9228DEE64A4e1',
+                            tokenAddress: '0x0D81E50bC677fa67341c44D7eaA9228DEE64A4e1',
                         },
                     },
                 },
@@ -635,17 +594,14 @@ export const uniswapTokens = [
                 name: 'Binance USD',
                 symbol: 'BUSD',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9576/thumb/BUSD.png?1568947766',
+                logoURI: 'https://assets.coingecko.com/coins/images/9576/thumb/BUSD.png?1568947766',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xdAb529f40E671A1D4bF91361c21bf9f0C9712ab7',
+                            tokenAddress: '0xdAb529f40E671A1D4bF91361c21bf9f0C9712ab7',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x31190254504622cEFdFA55a7d3d272e6462629a2',
+                            tokenAddress: '0x31190254504622cEFdFA55a7d3d272e6462629a2',
                         },
                     },
                 },
@@ -665,17 +621,14 @@ export const uniswapTokens = [
                 name: 'Celer Network',
                 symbol: 'CELR',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/4379/thumb/Celr.png?1554705437',
+                logoURI: 'https://assets.coingecko.com/coins/images/4379/thumb/Celr.png?1554705437',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x91a4635F620766145C099E15889Bd2766906A559',
+                            tokenAddress: '0x91a4635F620766145C099E15889Bd2766906A559',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x3a8B787f78D775AECFEEa15706D4221B40F345AB',
+                            tokenAddress: '0x3a8B787f78D775AECFEEa15706D4221B40F345AB',
                         },
                     },
                 },
@@ -691,8 +644,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x594C984E3318e91313f881B021A0C4203fF5E59F',
+                            tokenAddress: '0x594C984E3318e91313f881B021A0C4203fF5E59F',
                         },
                     },
                 },
@@ -708,8 +660,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xf1938Ce12400f9a761084E7A80d37e732a4dA056',
+                            tokenAddress: '0xf1938Ce12400f9a761084E7A80d37e732a4dA056',
                         },
                     },
                 },
@@ -734,12 +685,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8505b9d2254A7Ae468c0E9dd10Ccea3A837aef5c',
+                            tokenAddress: '0x8505b9d2254A7Ae468c0E9dd10Ccea3A837aef5c',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x354A6dA3fcde098F8389cad84b0182725c6C91dE',
+                            tokenAddress: '0x354A6dA3fcde098F8389cad84b0182725c6C91dE',
                         },
                     },
                 },
@@ -750,13 +699,11 @@ export const uniswapTokens = [
                 name: 'COTI',
                 symbol: 'COTI',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/2962/thumb/Coti.png?1559653863',
+                logoURI: 'https://assets.coingecko.com/coins/images/2962/thumb/Coti.png?1559653863',
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0x6FE14d3CC2f7bDdffBa5CdB3BBE7467dd81ea101',
+                            tokenAddress: '0x6FE14d3CC2f7bDdffBa5CdB3BBE7467dd81ea101',
                         },
                     },
                 },
@@ -781,8 +728,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x93B0fF1C8828F6eB039D345Ff681eD735086d925',
+                            tokenAddress: '0x93B0fF1C8828F6eB039D345Ff681eD735086d925',
                         },
                     },
                 },
@@ -798,12 +744,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C',
+                            tokenAddress: '0xAdA58DF0F643D959C2A47c9D4d4c1a4deFe3F11C',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x8ea3156f834A0dfC78F1A5304fAC2CdA676F354C',
+                            tokenAddress: '0x8ea3156f834A0dfC78F1A5304fAC2CdA676F354C',
                         },
                     },
                 },
@@ -828,16 +772,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x0994206dfE8De6Ec6920FF4D779B0d950605Fb53',
+                            tokenAddress: '0x0994206dfE8De6Ec6920FF4D779B0d950605Fb53',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x172370d5Cd63279eFa6d502DAB29171933a610AF',
+                            tokenAddress: '0x172370d5Cd63279eFa6d502DAB29171933a610AF',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978',
+                            tokenAddress: '0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978',
                         },
                     },
                 },
@@ -853,12 +794,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x2727Ab1c2D22170ABc9b595177B2D5C6E1Ab7B7B',
+                            tokenAddress: '0x2727Ab1c2D22170ABc9b595177B2D5C6E1Ab7B7B',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x319f865b287fCC10b30d8cE6144e8b6D1b476999',
+                            tokenAddress: '0x319f865b287fCC10b30d8cE6144e8b6D1b476999',
                         },
                     },
                 },
@@ -874,8 +813,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8c208BC2A808a088a78398fed8f2640cab0b6EDb',
+                            tokenAddress: '0x8c208BC2A808a088a78398fed8f2640cab0b6EDb',
                         },
                     },
                 },
@@ -891,8 +829,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x276C9cbaa4BDf57d7109a41e67BD09699536FA3d',
+                            tokenAddress: '0x276C9cbaa4BDf57d7109a41e67BD09699536FA3d',
                         },
                     },
                 },
@@ -903,17 +840,14 @@ export const uniswapTokens = [
                 name: 'Civic',
                 symbol: 'CVC',
                 decimals: 8,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/788/thumb/civic.png?1547034556',
+                logoURI: 'https://assets.coingecko.com/coins/images/788/thumb/civic.png?1547034556',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x66Dc5A08091d1968e08C16aA5b27BAC8398b02Be',
+                            tokenAddress: '0x66Dc5A08091d1968e08C16aA5b27BAC8398b02Be',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x9DfFB23CAd3322440bCcFF7aB1C58E781dDBF144',
+                            tokenAddress: '0x9DfFB23CAd3322440bCcFF7aB1C58E781dDBF144',
                         },
                     },
                 },
@@ -929,8 +863,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x4257EA7637c355F81616050CbB6a9b709fd72683',
+                            tokenAddress: '0x4257EA7637c355F81616050CbB6a9b709fd72683',
                         },
                     },
                 },
@@ -946,16 +879,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+                            tokenAddress: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+                            tokenAddress: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+                            tokenAddress: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
                         },
                     },
                 },
@@ -966,8 +896,7 @@ export const uniswapTokens = [
                 name: 'Mines of Dalarnia',
                 symbol: 'DAR',
                 decimals: 6,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/19837/thumb/dar.png?1636014223',
+                logoURI: 'https://assets.coingecko.com/coins/images/19837/thumb/dar.png?1636014223',
             },
             {
                 chainId: 1,
@@ -980,8 +909,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x26f5FB1e6C8a65b3A873fF0a213FA16EFF5a7828',
+                            tokenAddress: '0x26f5FB1e6C8a65b3A873fF0a213FA16EFF5a7828',
                         },
                     },
                 },
@@ -1006,8 +934,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xff835562C761205659939B64583dd381a6AA4D92',
+                            tokenAddress: '0xff835562C761205659939B64583dd381a6AA4D92',
                         },
                     },
                 },
@@ -1023,12 +950,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x993f2CafE9dbE525243f4A78BeBC69DAc8D36000',
+                            tokenAddress: '0x993f2CafE9dbE525243f4A78BeBC69DAc8D36000',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xca642467C6Ebe58c13cB4A7091317f34E17ac05e',
+                            tokenAddress: '0xca642467C6Ebe58c13cB4A7091317f34E17ac05e',
                         },
                     },
                 },
@@ -1053,8 +978,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x85955046DF4668e1DD369D2DE9f3AEB98DD2A369',
+                            tokenAddress: '0x85955046DF4668e1DD369D2DE9f3AEB98DD2A369',
                         },
                     },
                 },
@@ -1079,12 +1003,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x4C3bF0a3DE9524aF68327d1D2558a3B70d17D42a',
+                            tokenAddress: '0x4C3bF0a3DE9524aF68327d1D2558a3B70d17D42a',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x51863cB90Ce5d6dA9663106F292fA27c8CC90c5a',
+                            tokenAddress: '0x51863cB90Ce5d6dA9663106F292fA27c8CC90c5a',
                         },
                     },
                 },
@@ -1118,12 +1040,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xE0339c80fFDE91F3e20494Df88d4206D86024cdF',
+                            tokenAddress: '0xE0339c80fFDE91F3e20494Df88d4206D86024cdF',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x3e4Cff6E50F37F731284A92d44AE943e17077fD4',
+                            tokenAddress: '0x3e4Cff6E50F37F731284A92d44AE943e17077fD4',
                         },
                     },
                 },
@@ -1139,12 +1059,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x7eC26842F195c852Fa843bB9f6D8B583a274a157',
+                            tokenAddress: '0x7eC26842F195c852Fa843bB9f6D8B583a274a157',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x7fa9549791EFc9030e1Ed3F25D18014163806758',
+                            tokenAddress: '0x7fa9549791EFc9030e1Ed3F25D18014163806758',
                         },
                     },
                 },
@@ -1160,16 +1078,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x65559aA14915a70190438eF90104769e5E890A00',
+                            tokenAddress: '0x65559aA14915a70190438eF90104769e5E890A00',
                         },
                         '137': {
-                            tokenAddress:
-                                '0xbD7A5Cf51d22930B8B3Df6d834F9BCEf90EE7c4f',
+                            tokenAddress: '0xbD7A5Cf51d22930B8B3Df6d834F9BCEf90EE7c4f',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xfeA31d704DEb0975dA8e77Bf13E04239e70d7c28',
+                            tokenAddress: '0xfeA31d704DEb0975dA8e77Bf13E04239e70d7c28',
                         },
                     },
                 },
@@ -1185,8 +1100,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0E50BEA95Fe001A370A4F1C220C49AEdCB982DeC',
+                            tokenAddress: '0x0E50BEA95Fe001A370A4F1C220C49AEdCB982DeC',
                         },
                     },
                 },
@@ -1211,8 +1125,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8a037dbcA8134FFc72C362e394e35E0Cad618F85',
+                            tokenAddress: '0x8a037dbcA8134FFc72C362e394e35E0Cad618F85',
                         },
                     },
                 },
@@ -1228,8 +1141,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x176f5AB638cf4Ff3B6239Ba609C3fadAA46ef5B0',
+                            tokenAddress: '0x176f5AB638cf4Ff3B6239Ba609C3fadAA46ef5B0',
                         },
                     },
                 },
@@ -1245,8 +1157,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x7583FEDDbceFA813dc18259940F76a02710A8905',
+                            tokenAddress: '0x7583FEDDbceFA813dc18259940F76a02710A8905',
                         },
                     },
                 },
@@ -1262,8 +1173,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x7A7B94F18EF6AD056CDa648588181CDA84800f94',
+                            tokenAddress: '0x7A7B94F18EF6AD056CDa648588181CDA84800f94',
                         },
                     },
                 },
@@ -1279,12 +1189,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x9ff62d1FC52A907B6DCbA8077c2DDCA6E6a9d3e1',
+                            tokenAddress: '0x9ff62d1FC52A907B6DCbA8077c2DDCA6E6a9d3e1',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x3A1429d50E0cBBc45c997aF600541Fe1cc3D2923',
+                            tokenAddress: '0x3A1429d50E0cBBc45c997aF600541Fe1cc3D2923',
                         },
                     },
                 },
@@ -1300,8 +1208,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5eCbA59DAcc1ADc5bDEA35f38A732823fc3dE977',
+                            tokenAddress: '0x5eCbA59DAcc1ADc5bDEA35f38A732823fc3dE977',
                         },
                     },
                 },
@@ -1312,13 +1219,11 @@ export const uniswapTokens = [
                 name: 'ShapeShift FOX Token',
                 symbol: 'FOX',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9988/thumb/FOX.png?1574330622',
+                logoURI: 'https://assets.coingecko.com/coins/images/9988/thumb/FOX.png?1574330622',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x65A05DB8322701724c197AF82C9CaE41195B0aA8',
+                            tokenAddress: '0x65A05DB8322701724c197AF82C9CaE41195B0aA8',
                         },
                     },
                 },
@@ -1334,12 +1239,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x104592a158490a9228070E0A8e5343B499e125D0',
+                            tokenAddress: '0x104592a158490a9228070E0A8e5343B499e125D0',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x7468a5d8E02245B00E8C0217fCE021C70Bc51305',
+                            tokenAddress: '0x7468a5d8E02245B00E8C0217fCE021C70Bc51305',
                         },
                     },
                 },
@@ -1355,12 +1258,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xC9c1c1c20B3658F8787CC2FD702267791f224Ce1',
+                            tokenAddress: '0xC9c1c1c20B3658F8787CC2FD702267791f224Ce1',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xd42785D323e608B9E99fa542bd8b1000D4c2Df37',
+                            tokenAddress: '0xd42785D323e608B9E99fa542bd8b1000D4c2Df37',
                         },
                     },
                 },
@@ -1385,12 +1286,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x3e121107F6F22DA4911079845a470757aF4e1A1b',
+                            tokenAddress: '0x3e121107F6F22DA4911079845a470757aF4e1A1b',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xd9f9d2Ee2d3EFE420699079f16D9e924affFdEA4',
+                            tokenAddress: '0xd9f9d2Ee2d3EFE420699079f16D9e924affFdEA4',
                         },
                     },
                 },
@@ -1415,8 +1314,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x09E1943Dd2A4e82032773594f50CF54453000b97',
+                            tokenAddress: '0x09E1943Dd2A4e82032773594f50CF54453000b97',
                         },
                     },
                 },
@@ -1441,8 +1339,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7',
+                            tokenAddress: '0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7',
                         },
                     },
                 },
@@ -1458,8 +1355,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0B220b82F3eA3B7F6d9A1D8ab58930C064A2b5Bf',
+                            tokenAddress: '0x0B220b82F3eA3B7F6d9A1D8ab58930C064A2b5Bf',
                         },
                     },
                 },
@@ -1475,12 +1371,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5FFD62D3C3eE2E81C00A7b9079FB248e7dF024A8',
+                            tokenAddress: '0x5FFD62D3C3eE2E81C00A7b9079FB248e7dF024A8',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xa0b862F60edEf4452F25B4160F177db44DeB6Cf1',
+                            tokenAddress: '0xa0b862F60edEf4452F25B4160F177db44DeB6Cf1',
                         },
                     },
                 },
@@ -1496,8 +1390,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xF88fc6b493eda7650E4bcf7A290E8d108F677CfE',
+                            tokenAddress: '0xF88fc6b493eda7650E4bcf7A290E8d108F677CfE',
                         },
                     },
                 },
@@ -1513,12 +1406,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5fe2B58c013d7601147DcdD68C143A77499f5531',
+                            tokenAddress: '0x5fe2B58c013d7601147DcdD68C143A77499f5531',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x23A941036Ae778Ac51Ab04CEa08Ed6e2FE103614',
+                            tokenAddress: '0x23A941036Ae778Ac51Ab04CEa08Ed6e2FE103614',
                         },
                     },
                 },
@@ -1534,12 +1425,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xdb95f9188479575F3F718a245EcA1B3BF74567EC',
+                            tokenAddress: '0xdb95f9188479575F3F718a245EcA1B3BF74567EC',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x7f9a7DB853Ca816B9A138AEe3380Ef34c437dEe0',
+                            tokenAddress: '0x7f9a7DB853Ca816B9A138AEe3380Ef34c437dEe0',
                         },
                     },
                 },
@@ -1555,8 +1444,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xC8A94a3d3D2dabC3C1CaffFFDcA6A7543c3e3e65',
+                            tokenAddress: '0xC8A94a3d3D2dabC3C1CaffFFDcA6A7543c3e3e65',
                         },
                     },
                 },
@@ -1572,12 +1460,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x482bc619eE7662759CDc0685B4E78f464Da39C73',
+                            tokenAddress: '0x482bc619eE7662759CDc0685B4E78f464Da39C73',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x3fEcB65993e4835884baF6452d1ebfdBC3A78480',
+                            tokenAddress: '0x3fEcB65993e4835884baF6452d1ebfdBC3A78480',
                         },
                     },
                 },
@@ -1602,8 +1488,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x6cCBF3627b2C83AFEF05bf2F035E7f7B210Fe30D',
+                            tokenAddress: '0x6cCBF3627b2C83AFEF05bf2F035E7f7B210Fe30D',
                         },
                     },
                 },
@@ -1619,8 +1504,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x9Cb74C8032b007466865f060ad2c46145d45553D',
+                            tokenAddress: '0x9Cb74C8032b007466865f060ad2c46145d45553D',
                         },
                     },
                 },
@@ -1631,13 +1515,11 @@ export const uniswapTokens = [
                 name: 'Immutable X',
                 symbol: 'IMX',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/17233/thumb/imx.png?1636691817',
+                logoURI: 'https://assets.coingecko.com/coins/images/17233/thumb/imx.png?1636691817',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x183070C90B34A63292cC908Ce1b263Cb56D49A7F',
+                            tokenAddress: '0x183070C90B34A63292cC908Ce1b263Cb56D49A7F',
                         },
                     },
                 },
@@ -1653,8 +1535,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xfBd8A3b908e764dBcD51e27992464B4432A1132b',
+                            tokenAddress: '0xfBd8A3b908e764dBcD51e27992464B4432A1132b',
                         },
                     },
                 },
@@ -1670,8 +1551,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x4E8dc2149EaC3f3dEf36b1c281EA466338249371',
+                            tokenAddress: '0x4E8dc2149EaC3f3dEf36b1c281EA466338249371',
                         },
                     },
                 },
@@ -1687,8 +1567,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xF18Ac368001b0DdC80aA6a8374deb49e868EFDb8',
+                            tokenAddress: '0xF18Ac368001b0DdC80aA6a8374deb49e868EFDb8',
                         },
                     },
                 },
@@ -1699,13 +1578,11 @@ export const uniswapTokens = [
                 name: 'IoTeX',
                 symbol: 'IOTX',
                 decimals: 18,
-                logoURI:
-                    'https://s2.coinmarketcap.com/static/img/coins/64x64/2777.png',
+                logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/2777.png',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xf6372cDb9c1d3674E83842e3800F2A62aC9F3C66',
+                            tokenAddress: '0xf6372cDb9c1d3674E83842e3800F2A62aC9F3C66',
                         },
                     },
                 },
@@ -1730,8 +1607,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xb87f5c1E81077FfcfE821dA240fd20C99c533aF1',
+                            tokenAddress: '0xb87f5c1E81077FfcfE821dA240fd20C99c533aF1',
                         },
                     },
                 },
@@ -1756,8 +1632,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x42f37A1296b2981F7C3cAcEd84c5096b2Eb0C72C',
+                            tokenAddress: '0x42f37A1296b2981F7C3cAcEd84c5096b2Eb0C72C',
                         },
                     },
                 },
@@ -1782,8 +1657,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x324b28d6565f784d596422B0F2E5aB6e9CFA1Dc7',
+                            tokenAddress: '0x324b28d6565f784d596422B0F2E5aB6e9CFA1Dc7',
                         },
                     },
                 },
@@ -1799,8 +1673,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x53AEc293212E3B792563Bc16f1be26956adb12e9',
+                            tokenAddress: '0x53AEc293212E3B792563Bc16f1be26956adb12e9',
                         },
                     },
                 },
@@ -1811,8 +1684,7 @@ export const uniswapTokens = [
                 name: 'KRYLL',
                 symbol: 'KRL',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/2807/thumb/krl.png?1547036979',
+                logoURI: 'https://assets.coingecko.com/coins/images/2807/thumb/krl.png?1547036979',
             },
             {
                 chainId: 1,
@@ -1825,8 +1697,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xE8A51D0dD1b4525189ddA2187F90ddF0932b5482',
+                            tokenAddress: '0xE8A51D0dD1b4525189ddA2187F90ddF0932b5482',
                         },
                     },
                 },
@@ -1842,12 +1713,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xC3C7d422809852031b44ab29EEC9F1EfF2A58756',
+                            tokenAddress: '0xC3C7d422809852031b44ab29EEC9F1EfF2A58756',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x13Ad51ed4F1B7e9Dc168d8a00cB3f4dDD85EfA60',
+                            tokenAddress: '0x13Ad51ed4F1B7e9Dc168d8a00cB3f4dDD85EfA60',
                         },
                     },
                 },
@@ -1863,16 +1732,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6',
+                            tokenAddress: '0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
+                            tokenAddress: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
+                            tokenAddress: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
                         },
                     },
                 },
@@ -1897,8 +1763,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x66EfB7cC647e0efab02eBA4316a2d2941193F6b3',
+                            tokenAddress: '0x66EfB7cC647e0efab02eBA4316a2d2941193F6b3',
                         },
                     },
                 },
@@ -1914,12 +1779,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x3962F4A0A0051DccE0be73A7e09cEf5756736712',
+                            tokenAddress: '0x3962F4A0A0051DccE0be73A7e09cEf5756736712',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
+                            tokenAddress: '0x289ba1701C2F088cf0faf8B3705246331cB8A839',
                         },
                     },
                 },
@@ -1935,8 +1798,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8Ab2Fec94d17ae69FB90E7c773f2C85Ed1802c01',
+                            tokenAddress: '0x8Ab2Fec94d17ae69FB90E7c773f2C85Ed1802c01',
                         },
                     },
                 },
@@ -1952,16 +1814,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0xFEaA9194F9F8c1B65429E31341a103071464907E',
+                            tokenAddress: '0xFEaA9194F9F8c1B65429E31341a103071464907E',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x84e1670F61347CDaeD56dcc736FB990fBB47ddC1',
+                            tokenAddress: '0x84e1670F61347CDaeD56dcc736FB990fBB47ddC1',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x46d0cE7de6247b0A95f67b43B589b4041BaE7fbE',
+                            tokenAddress: '0x46d0cE7de6247b0A95f67b43B589b4041BaE7fbE',
                         },
                     },
                 },
@@ -1977,16 +1836,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0xc40F949F8a4e094D1b49a23ea9241D289B7b2819',
+                            tokenAddress: '0xc40F949F8a4e094D1b49a23ea9241D289B7b2819',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x23001f892c0C82b79303EDC9B9033cD190BB21c7',
+                            tokenAddress: '0x23001f892c0C82b79303EDC9B9033cD190BB21c7',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x93b346b6BC2548dA6A1E7d98E9a421B42541425b',
+                            tokenAddress: '0x93b346b6BC2548dA6A1E7d98E9a421B42541425b',
                         },
                     },
                 },
@@ -2002,12 +1858,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4',
+                            tokenAddress: '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x442d24578A564EF628A65e6a7E3e7be2a165E231',
+                            tokenAddress: '0x442d24578A564EF628A65e6a7E3e7be2a165E231',
                         },
                     },
                 },
@@ -2023,16 +1877,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x3390108E913824B8eaD638444cc52B9aBdF63798',
+                            tokenAddress: '0x3390108E913824B8eaD638444cc52B9aBdF63798',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x2B9E7ccDF0F4e5B24757c1E1a80e311E34Cb10c7',
+                            tokenAddress: '0x2B9E7ccDF0F4e5B24757c1E1a80e311E34Cb10c7',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x533A7B414CD1236815a5e09F1E97FC7d5c313739',
+                            tokenAddress: '0x533A7B414CD1236815a5e09F1E97FC7d5c313739',
                         },
                     },
                 },
@@ -2048,12 +1899,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x347ACCAFdA7F8c5BdeC57fa34a5b663CBd1aeca7',
+                            tokenAddress: '0x347ACCAFdA7F8c5BdeC57fa34a5b663CBd1aeca7',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x99F40b01BA9C469193B360f72740E416B17Ac332',
+                            tokenAddress: '0x99F40b01BA9C469193B360f72740E416B17Ac332',
                         },
                     },
                 },
@@ -2069,8 +1918,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0x561877b6b3DD7651313794e5F2894B2F18bE0766',
+                            tokenAddress: '0x561877b6b3DD7651313794e5F2894B2F18bE0766',
                         },
                     },
                 },
@@ -2095,8 +1943,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xAa7DbD1598251f856C12f63557A4C4397c253Cea',
+                            tokenAddress: '0xAa7DbD1598251f856C12f63557A4C4397c253Cea',
                         },
                     },
                 },
@@ -2121,12 +1968,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x1B9D40715E757Bdb9bdEC3215B898E46d8a3b71a',
+                            tokenAddress: '0x1B9D40715E757Bdb9bdEC3215B898E46d8a3b71a',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x7F728F3595db17B0B359f4FC47aE80FAd2e33769',
+                            tokenAddress: '0x7F728F3595db17B0B359f4FC47aE80FAd2e33769',
                         },
                     },
                 },
@@ -2142,12 +1987,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x01288e04435bFcd4718FF203D6eD18146C17Cd4b',
+                            tokenAddress: '0x01288e04435bFcd4718FF203D6eD18146C17Cd4b',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xB20A02dfFb172C474BC4bDa3fD6f4eE70C04daf2',
+                            tokenAddress: '0xB20A02dfFb172C474BC4bDa3fD6f4eE70C04daf2',
                         },
                     },
                 },
@@ -2163,8 +2006,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x1C5cccA2CB59145A4B25F452660cbA6436DDce9b',
+                            tokenAddress: '0x1C5cccA2CB59145A4B25F452660cbA6436DDce9b',
                         },
                     },
                 },
@@ -2180,16 +2022,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0xab7bAdEF82E9Fe11f6f33f87BC9bC2AA27F2fCB5',
+                            tokenAddress: '0xab7bAdEF82E9Fe11f6f33f87BC9bC2AA27F2fCB5',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x6f7C932e7684666C9fd1d44527765433e01fF61d',
+                            tokenAddress: '0x6f7C932e7684666C9fd1d44527765433e01fF61d',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x2e9a6Df78E42a30712c10a9Dc4b1C8656f8F2879',
+                            tokenAddress: '0x2e9a6Df78E42a30712c10a9Dc4b1C8656f8F2879',
                         },
                     },
                 },
@@ -2200,17 +2039,14 @@ export const uniswapTokens = [
                 name: 'Melon',
                 symbol: 'MLN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/605/thumb/melon.png?1547034295',
+                logoURI: 'https://assets.coingecko.com/coins/images/605/thumb/melon.png?1547034295',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xa9f37D84c856fDa3812ad0519Dad44FA0a3Fe207',
+                            tokenAddress: '0xa9f37D84c856fDa3812ad0519Dad44FA0a3Fe207',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x8f5c1A99b1df736Ad685006Cb6ADCA7B7Ae4b514',
+                            tokenAddress: '0x8f5c1A99b1df736Ad685006Cb6ADCA7B7Ae4b514',
                         },
                     },
                 },
@@ -2226,8 +2062,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x6968105460f67c3BF751bE7C15f92F5286Fd0CE5',
+                            tokenAddress: '0x6968105460f67c3BF751bE7C15f92F5286Fd0CE5',
                         },
                     },
                 },
@@ -2245,8 +2080,7 @@ export const uniswapTokens = [
                 chainId: 1,
                 name: 'Metal',
                 symbol: 'MTL',
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/763/thumb/Metal.png?1592195010',
+                logoURI: 'https://assets.coingecko.com/coins/images/763/thumb/Metal.png?1592195010',
                 address: '0xF433089366899D83a9f26A773D59ec7eCF30355e',
                 decimals: 8,
             },
@@ -2281,15 +2115,13 @@ export const uniswapTokens = [
                 chainId: 1,
                 name: 'GensoKishi Metaverse',
                 symbol: 'MV',
-                logoURI:
-                    'https://s2.coinmarketcap.com/static/img/coins/64x64/17704.png',
+                logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/17704.png',
                 address: '0xAE788F80F2756A86aa2F410C651F2aF83639B95b',
                 decimals: 18,
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xA3c322Ad15218fBFAEd26bA7f616249f7705D945',
+                            tokenAddress: '0xA3c322Ad15218fBFAEd26bA7f616249f7705D945',
                         },
                     },
                 },
@@ -2298,8 +2130,7 @@ export const uniswapTokens = [
                 chainId: 1,
                 name: 'MXC',
                 symbol: 'MXC',
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/4604/thumb/mxc.png?1655534336',
+                logoURI: 'https://assets.coingecko.com/coins/images/4604/thumb/mxc.png?1655534336',
                 address: '0x5Ca381bBfb58f0092df149bD3D243b08B9a8386e',
                 decimals: 18,
             },
@@ -2314,12 +2145,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x4985E0B13554fB521840e893574D3848C10Fcc6f',
+                            tokenAddress: '0x4985E0B13554fB521840e893574D3848C10Fcc6f',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x53236015A675fcB937485F1AE58040e4Fb920d5b',
+                            tokenAddress: '0x53236015A675fcB937485F1AE58040e4Fb920d5b',
                         },
                     },
                 },
@@ -2339,8 +2168,7 @@ export const uniswapTokens = [
                 name: 'NKN',
                 symbol: 'NKN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/3375/thumb/nkn.png?1548329212',
+                logoURI: 'https://assets.coingecko.com/coins/images/3375/thumb/nkn.png?1548329212',
             },
             {
                 name: 'Numeraire',
@@ -2353,12 +2181,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0Bf519071b02F22C17E7Ed5F4002ee1911f46729',
+                            tokenAddress: '0x0Bf519071b02F22C17E7Ed5F4002ee1911f46729',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x597701b32553b9fa473e21362D480b3a6B569711',
+                            tokenAddress: '0x597701b32553b9fa473e21362D480b3a6B569711',
                         },
                     },
                 },
@@ -2383,12 +2209,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x282d8efCe846A88B159800bd4130ad77443Fa1A1',
+                            tokenAddress: '0x282d8efCe846A88B159800bd4130ad77443Fa1A1',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x933d31561e470478079FEB9A6Dd2691fAD8234DF',
+                            tokenAddress: '0x933d31561e470478079FEB9A6Dd2691fAD8234DF',
                         },
                     },
                 },
@@ -2399,13 +2223,11 @@ export const uniswapTokens = [
                 name: 'Origin Protocol',
                 symbol: 'OGN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/3296/thumb/op.jpg?1547037878',
+                logoURI: 'https://assets.coingecko.com/coins/images/3296/thumb/op.jpg?1547037878',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xa63Beffd33AB3a2EfD92a39A7D2361CEE14cEbA8',
+                            tokenAddress: '0xa63Beffd33AB3a2EfD92a39A7D2361CEE14cEbA8',
                         },
                     },
                 },
@@ -2421,8 +2243,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x62414D03084EeB269E18C970a21f45D2967F0170',
+                            tokenAddress: '0x62414D03084EeB269E18C970a21f45D2967F0170',
                         },
                     },
                 },
@@ -2433,8 +2254,7 @@ export const uniswapTokens = [
                 name: 'ORCA Alliance',
                 symbol: 'ORCA',
                 decimals: 18,
-                logoURI:
-                    'https://s2.coinmarketcap.com/static/img/coins/64x64/5183.png',
+                logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5183.png',
             },
             {
                 chainId: 1,
@@ -2447,8 +2267,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0EE392bA5ef1354c9bd75a98044667d307C0e773',
+                            tokenAddress: '0x0EE392bA5ef1354c9bd75a98044667d307C0e773',
                         },
                     },
                 },
@@ -2464,8 +2283,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x9880e3dDA13c8e7D4804691A45160102d31F6060',
+                            tokenAddress: '0x9880e3dDA13c8e7D4804691A45160102d31F6060',
                         },
                     },
                 },
@@ -2476,8 +2294,7 @@ export const uniswapTokens = [
                 name: 'PayperEx',
                 symbol: 'PAX',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/1601/thumb/pax.png?1547035800',
+                logoURI: 'https://assets.coingecko.com/coins/images/1601/thumb/pax.png?1547035800',
             },
             {
                 chainId: 1,
@@ -2485,17 +2302,14 @@ export const uniswapTokens = [
                 name: 'PAX Gold',
                 symbol: 'PAXG',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9519/thumb/paxg.PNG?1568542565',
+                logoURI: 'https://assets.coingecko.com/coins/images/9519/thumb/paxg.PNG?1568542565',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x553d3D295e0f695B9228246232eDF400ed3560B5',
+                            tokenAddress: '0x553d3D295e0f695B9228246232eDF400ed3560B5',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429',
+                            tokenAddress: '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429',
                         },
                     },
                 },
@@ -2511,16 +2325,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x9e1028F5F1D5eDE59748FFceE5532509976840E0',
+                            tokenAddress: '0x9e1028F5F1D5eDE59748FFceE5532509976840E0',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x263534a4Fe3cb249dF46810718B7B612a30ebbff',
+                            tokenAddress: '0x263534a4Fe3cb249dF46810718B7B612a30ebbff',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x753D224bCf9AAFaCD81558c32341416df61D3DAC',
+                            tokenAddress: '0x753D224bCf9AAFaCD81558c32341416df61D3DAC',
                         },
                     },
                 },
@@ -2536,8 +2347,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8765f05ADce126d70bcdF1b0a48Db573316662eB',
+                            tokenAddress: '0x8765f05ADce126d70bcdF1b0a48Db573316662eB',
                         },
                     },
                 },
@@ -2553,8 +2363,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x7dc0cb65EC6019330a6841e9c274f2EE57A6CA6C',
+                            tokenAddress: '0x7dc0cb65EC6019330a6841e9c274f2EE57A6CA6C',
                         },
                     },
                 },
@@ -2570,8 +2379,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8dc302e2141DA59c934d900886DbF1518Fd92cd4',
+                            tokenAddress: '0x8dc302e2141DA59c934d900886DbF1518Fd92cd4',
                         },
                     },
                 },
@@ -2587,8 +2395,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xcB059C5573646047D6d88dDdb87B745C18161d3b',
+                            tokenAddress: '0xcB059C5573646047D6d88dDdb87B745C18161d3b',
                         },
                     },
                 },
@@ -2604,12 +2411,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x73580A2416A57f1C4b6391DBA688A9e4f7DBECE0',
+                            tokenAddress: '0x73580A2416A57f1C4b6391DBA688A9e4f7DBECE0',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x5F5dbB71841AC60E6c58a772954e8c00678Fd6A4',
+                            tokenAddress: '0x5F5dbB71841AC60E6c58a772954e8c00678Fd6A4',
                         },
                     },
                 },
@@ -2625,12 +2430,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0AaB8DC887D34f00D50E19aee48371a941390d14',
+                            tokenAddress: '0x0AaB8DC887D34f00D50E19aee48371a941390d14',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x4e91F2AF1ee0F84B529478f19794F5AFD423e4A6',
+                            tokenAddress: '0x4e91F2AF1ee0F84B529478f19794F5AFD423e4A6',
                         },
                     },
                 },
@@ -2641,13 +2444,11 @@ export const uniswapTokens = [
                 name: 'Propy',
                 symbol: 'PRO',
                 decimals: 8,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/869/thumb/propy.png?1548332100',
+                logoURI: 'https://assets.coingecko.com/coins/images/869/thumb/propy.png?1548332100',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x82FFdFD1d8699E8886a4e77CeFA9dd9710a7FefD',
+                            tokenAddress: '0x82FFdFD1d8699E8886a4e77CeFA9dd9710a7FefD',
                         },
                     },
                 },
@@ -2663,12 +2464,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x9377Eeb7419486FD4D485671d50baa4BF77c2222',
+                            tokenAddress: '0x9377Eeb7419486FD4D485671d50baa4BF77c2222',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x82164a8B646401a8776F9dC5c8Cba35DcAf60Cd2',
+                            tokenAddress: '0x82164a8B646401a8776F9dC5c8Cba35DcAf60Cd2',
                         },
                     },
                 },
@@ -2693,8 +2492,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x36B77a184bE8ee56f5E81C56727B20647A42e28E',
+                            tokenAddress: '0x36B77a184bE8ee56f5E81C56727B20647A42e28E',
                         },
                     },
                 },
@@ -2728,8 +2526,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x831753DD7087CaC61aB5644b308642cc1c33Dc13',
+                            tokenAddress: '0x831753DD7087CaC61aB5644b308642cc1c33Dc13',
                         },
                     },
                 },
@@ -2745,8 +2542,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x2f81e176471CC57fDC76f7d332FB4511bF2bebDD',
+                            tokenAddress: '0x2f81e176471CC57fDC76f7d332FB4511bF2bebDD',
                         },
                     },
                 },
@@ -2762,16 +2558,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x7FB688CCf682d58f86D7e38e03f9D22e7705448B',
+                            tokenAddress: '0x7FB688CCf682d58f86D7e38e03f9D22e7705448B',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x00e5646f60AC6Fb446f621d146B6E1886f002905',
+                            tokenAddress: '0x00e5646f60AC6Fb446f621d146B6E1886f002905',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xaeF5bbcbFa438519a5ea80B4c7181B4E78d419f2',
+                            tokenAddress: '0xaeF5bbcbFa438519a5ea80B4c7181B4E78d419f2',
                         },
                     },
                 },
@@ -2796,12 +2589,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x780053837cE2CeEaD2A90D9151aA21FC89eD49c2',
+                            tokenAddress: '0x780053837cE2CeEaD2A90D9151aA21FC89eD49c2',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xCF8600347Dc375C5f2FdD6Dab9BB66e0b6773cd7',
+                            tokenAddress: '0xCF8600347Dc375C5f2FdD6Dab9BB66e0b6773cd7',
                         },
                     },
                 },
@@ -2817,12 +2608,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xc3cFFDAf8F3fdF07da6D5e3A89B8723D5E385ff8',
+                            tokenAddress: '0xc3cFFDAf8F3fdF07da6D5e3A89B8723D5E385ff8',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x2E9AE8f178d5Ea81970C7799A377B3985cbC335F',
+                            tokenAddress: '0x2E9AE8f178d5Ea81970C7799A377B3985cbC335F',
                         },
                     },
                 },
@@ -2847,12 +2636,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x19782D3Dc4701cEeeDcD90f0993f0A9126ed89d0',
+                            tokenAddress: '0x19782D3Dc4701cEeeDcD90f0993f0A9126ed89d0',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x9fA891e1dB0a6D1eEAC4B929b5AAE1011C79a204',
+                            tokenAddress: '0x9fA891e1dB0a6D1eEAC4B929b5AAE1011C79a204',
                         },
                     },
                 },
@@ -2877,8 +2664,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x6563c1244820CfBd6Ca8820FBdf0f2847363F733',
+                            tokenAddress: '0x6563c1244820CfBd6Ca8820FBdf0f2847363F733',
                         },
                     },
                 },
@@ -2894,8 +2680,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xAdf2F2Ed91755eA3f4bcC9107a494879f633ae7C',
+                            tokenAddress: '0xAdf2F2Ed91755eA3f4bcC9107a494879f633ae7C',
                         },
                     },
                 },
@@ -2911,8 +2696,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x70c006878a5A50Ed185ac4C87d837633923De296',
+                            tokenAddress: '0x70c006878a5A50Ed185ac4C87d837633923De296',
                         },
                     },
                 },
@@ -2928,16 +2712,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0xB548f63D4405466B36C0c0aC3318a22fDcec711a',
+                            tokenAddress: '0xB548f63D4405466B36C0c0aC3318a22fDcec711a',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x3b9dB434F08003A89554CDB43b3e0b1f8734BdE7',
+                            tokenAddress: '0x3b9dB434F08003A89554CDB43b3e0b1f8734BdE7',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xef888bcA6AB6B1d26dbeC977C455388ecd794794',
+                            tokenAddress: '0xef888bcA6AB6B1d26dbeC977C455388ecd794794',
                         },
                     },
                 },
@@ -2953,8 +2734,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xbe662058e00849C3Eef2AC9664f37fEfdF2cdbFE',
+                            tokenAddress: '0xbe662058e00849C3Eef2AC9664f37fEfdF2cdbFE',
                         },
                     },
                 },
@@ -2970,8 +2750,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x76b8D57e5ac6afAc5D415a054453d1DD2c3C0094',
+                            tokenAddress: '0x76b8D57e5ac6afAc5D415a054453d1DD2c3C0094',
                         },
                     },
                 },
@@ -2987,8 +2766,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x61299774020dA444Af134c82fa83E3810b309991',
+                            tokenAddress: '0x61299774020dA444Af134c82fa83E3810b309991',
                         },
                     },
                 },
@@ -3004,8 +2782,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xF92501c8213da1D6C74A76372CCc720Dc8818407',
+                            tokenAddress: '0xF92501c8213da1D6C74A76372CCc720Dc8818407',
                         },
                     },
                 },
@@ -3021,12 +2798,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
+                            tokenAddress: '0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xd1318eb19DBF2647743c720ed35174efd64e3DAC',
+                            tokenAddress: '0xd1318eb19DBF2647743c720ed35174efd64e3DAC',
                         },
                     },
                 },
@@ -3042,12 +2817,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x6f8a06447Ff6FcF75d803135a7de15CE88C1d4ec',
+                            tokenAddress: '0x6f8a06447Ff6FcF75d803135a7de15CE88C1d4ec',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x5033833c9fe8B9d3E09EEd2f73d2aaF7E3872fd1',
+                            tokenAddress: '0x5033833c9fe8B9d3E09EEd2f73d2aaF7E3872fd1',
                         },
                     },
                 },
@@ -3076,13 +2849,11 @@ export const uniswapTokens = [
                 name: 'Smooth Love Potion',
                 symbol: 'SLP',
                 decimals: 0,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/10366/thumb/SLP.png?1578640057',
+                logoURI: 'https://assets.coingecko.com/coins/images/10366/thumb/SLP.png?1578640057',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0C7304fBAf2A320a1c50c46FE03752722F729946',
+                            tokenAddress: '0x0C7304fBAf2A320a1c50c46FE03752722F729946',
                         },
                     },
                 },
@@ -3107,16 +2878,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4',
+                            tokenAddress: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x50B728D8D964fd00C2d0AAD81718b71311feF68a',
+                            tokenAddress: '0x50B728D8D964fd00C2d0AAD81718b71311feF68a',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xcBA56Cd8216FCBBF3fA6DF6137F3147cBcA37D60',
+                            tokenAddress: '0xcBA56Cd8216FCBBF3fA6DF6137F3147cBcA37D60',
                         },
                     },
                 },
@@ -3132,8 +2900,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0xb74Da9FE2F96B9E0a5f4A3cf0b92dd2bEC617124',
+                            tokenAddress: '0xb74Da9FE2F96B9E0a5f4A3cf0b92dd2bEC617124',
                         },
                     },
                 },
@@ -3149,12 +2916,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xcdB3C70CD25FD15307D84C4F9D37d5C043B33Fb2',
+                            tokenAddress: '0xcdB3C70CD25FD15307D84C4F9D37d5C043B33Fb2',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x3E6648C5a70A150A88bCE65F4aD4d506Fe15d2AF',
+                            tokenAddress: '0x3E6648C5a70A150A88bCE65F4aD4d506Fe15d2AF',
                         },
                     },
                 },
@@ -3170,8 +2935,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0xe018C7a3d175Fb0fE15D70Da2c874d3CA16313EC',
+                            tokenAddress: '0xe018C7a3d175Fb0fE15D70Da2c874d3CA16313EC',
                         },
                     },
                 },
@@ -3187,8 +2951,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xd72357dAcA2cF11A5F155b9FF7880E595A3F5792',
+                            tokenAddress: '0xd72357dAcA2cF11A5F155b9FF7880E595A3F5792',
                         },
                     },
                 },
@@ -3204,8 +2967,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xB36e3391B22a970d31A9b620Ae1A414C6c256d2a',
+                            tokenAddress: '0xB36e3391B22a970d31A9b620Ae1A414C6c256d2a',
                         },
                     },
                 },
@@ -3221,8 +2983,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x60Ea918FC64360269Da4efBDA11d8fC6514617C6',
+                            tokenAddress: '0x60Ea918FC64360269Da4efBDA11d8fC6514617C6',
                         },
                     },
                 },
@@ -3238,12 +2999,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xa1428174F516F527fafdD146b883bB4428682737',
+                            tokenAddress: '0xa1428174F516F527fafdD146b883bB4428682737',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x7f9cf5a2630a0d58567122217dF7609c26498956',
+                            tokenAddress: '0x7f9cf5a2630a0d58567122217dF7609c26498956',
                         },
                     },
                 },
@@ -3254,17 +3013,14 @@ export const uniswapTokens = [
                 symbol: 'sUSD',
                 decimals: 18,
                 chainId: 1,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1616150765',
+                logoURI: 'https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1616150765',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xF81b4Bec6Ca8f9fe7bE01CA734F55B2b6e03A7a0',
+                            tokenAddress: '0xF81b4Bec6Ca8f9fe7bE01CA734F55B2b6e03A7a0',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xA970AF1a584579B618be4d69aD6F73459D112F95',
+                            tokenAddress: '0xA970AF1a584579B618be4d69aD6F73459D112F95',
                         },
                     },
                 },
@@ -3280,12 +3036,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a',
+                            tokenAddress: '0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A',
+                            tokenAddress: '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A',
                         },
                     },
                 },
@@ -3310,8 +3064,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x6aBB753C1893194DE4a83c6e8B4EadFc105Fd5f5',
+                            tokenAddress: '0x6aBB753C1893194DE4a83c6e8B4EadFc105Fd5f5',
                         },
                     },
                 },
@@ -3320,8 +3073,7 @@ export const uniswapTokens = [
                 chainId: 1,
                 name: 'Sylo',
                 symbol: 'SYLO',
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/6430/thumb/SYLO.svg?1589527756',
+                logoURI: 'https://assets.coingecko.com/coins/images/6430/thumb/SYLO.svg?1589527756',
                 address: '0xf293d23BF2CDc05411Ca0edDD588eb1977e8dcd4',
                 decimals: 18,
             },
@@ -3331,13 +3083,11 @@ export const uniswapTokens = [
                 name: 'Synapse',
                 symbol: 'SYN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
+                logoURI: 'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0x1bCfc0B4eE1471674cd6A9F6B363A034375eAD84',
+                            tokenAddress: '0x1bCfc0B4eE1471674cd6A9F6B363A034375eAD84',
                         },
                     },
                 },
@@ -3362,8 +3112,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x50a4a434247089848991DD8f09b889D4e2870aB6',
+                            tokenAddress: '0x50a4a434247089848991DD8f09b889D4e2870aB6',
                         },
                     },
                 },
@@ -3397,8 +3146,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xe1708AbDE4847B4929b70547E5197F1Ba1db2250',
+                            tokenAddress: '0xe1708AbDE4847B4929b70547E5197F1Ba1db2250',
                         },
                     },
                 },
@@ -3407,8 +3155,7 @@ export const uniswapTokens = [
                 chainId: 1,
                 name: 'TE FOOD',
                 symbol: 'TONE',
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/2325/thumb/tec.png?1547036538',
+                logoURI: 'https://assets.coingecko.com/coins/images/2325/thumb/tec.png?1547036538',
                 address: '0x2Ab6Bb8408ca3199B8Fa6C92d5b455F820Af03c4',
                 decimals: 18,
             },
@@ -3418,13 +3165,11 @@ export const uniswapTokens = [
                 name: 'OriginTrail',
                 symbol: 'TRAC',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367',
+                logoURI: 'https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367',
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xA7b98d63a137bF402b4570799ac4caD0BB1c4B1c',
+                            tokenAddress: '0xA7b98d63a137bF402b4570799ac4caD0BB1c4B1c',
                         },
                     },
                 },
@@ -3440,12 +3185,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xE3322702BEdaaEd36CdDAb233360B939775ae5f1',
+                            tokenAddress: '0xE3322702BEdaaEd36CdDAb233360B939775ae5f1',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xd58D345Fd9c82262E087d2D0607624B410D88242',
+                            tokenAddress: '0xd58D345Fd9c82262E087d2D0607624B410D88242',
                         },
                     },
                 },
@@ -3461,12 +3204,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x8676815789211E799a6DC86d02748ADF9cF86836',
+                            tokenAddress: '0x8676815789211E799a6DC86d02748ADF9cF86836',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xBfAE6fecD8124ba33cbB2180aAb0Fe4c03914A5A',
+                            tokenAddress: '0xBfAE6fecD8124ba33cbB2180aAb0Fe4c03914A5A',
                         },
                     },
                 },
@@ -3482,8 +3223,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5b77bCA482bd3E7958b1103d123888EfCCDaF803',
+                            tokenAddress: '0x5b77bCA482bd3E7958b1103d123888EfCCDaF803',
                         },
                     },
                 },
@@ -3499,8 +3239,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5667dcC0ab74D1b1355C3b2061893399331B57e2',
+                            tokenAddress: '0x5667dcC0ab74D1b1355C3b2061893399331B57e2',
                         },
                     },
                 },
@@ -3516,16 +3255,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea',
+                            tokenAddress: '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x3066818837c5e6eD6601bd5a91B0762877A6B731',
+                            tokenAddress: '0x3066818837c5e6eD6601bd5a91B0762877A6B731',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xd693Ec944A85eeca4247eC1c3b130DCa9B0C3b22',
+                            tokenAddress: '0xd693Ec944A85eeca4247eC1c3b130DCa9B0C3b22',
                         },
                     },
                 },
@@ -3545,21 +3281,17 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 1,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x6fd9d7AD17242c41f7131d257212c54A0e816691',
+                            tokenAddress: '0x6fd9d7AD17242c41f7131d257212c54A0e816691',
                         },
                         '137': {
-                            tokenAddress:
-                                '0xb33EaAd8d922B1083446DC23f610c2567fB5180f',
+                            tokenAddress: '0xb33EaAd8d922B1083446DC23f610c2567fB5180f',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
+                            tokenAddress: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
                         },
                     },
                 },
@@ -3584,16 +3316,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+                            tokenAddress: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+                            tokenAddress: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+                            tokenAddress: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
                         },
                     },
                 },
@@ -3609,16 +3338,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
+                            tokenAddress: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
                         },
                         '137': {
-                            tokenAddress:
-                                '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+                            tokenAddress: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+                            tokenAddress: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
                         },
                     },
                 },
@@ -3652,16 +3378,13 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '10': {
-                            tokenAddress:
-                                '0x68f180fcCe6836688e9084f035309E29Bf0A2095',
+                            tokenAddress: '0x68f180fcCe6836688e9084f035309E29Bf0A2095',
                         },
                         '137': {
-                            tokenAddress:
-                                '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+                            tokenAddress: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
+                            tokenAddress: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
                         },
                     },
                 },
@@ -3677,8 +3400,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x90bb6fEB70A9a43CfAaA615F856BA309FD759A90',
+                            tokenAddress: '0x90bb6fEB70A9a43CfAaA615F856BA309FD759A90',
                         },
                     },
                 },
@@ -3694,8 +3416,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '42161': {
-                            tokenAddress:
-                                '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+                            tokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
                         },
                     },
                 },
@@ -3711,12 +3432,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x1B815d120B3eF02039Ee11dC2d33DE7aA4a8C603',
+                            tokenAddress: '0x1B815d120B3eF02039Ee11dC2d33DE7aA4a8C603',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xcAFcD85D8ca7Ad1e1C6F82F651fA15E33AEfD07b',
+                            tokenAddress: '0xcAFcD85D8ca7Ad1e1C6F82F651fA15E33AEfD07b',
                         },
                     },
                 },
@@ -3741,8 +3460,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xd2507e7b5794179380673870d88B22F94da6abe0',
+                            tokenAddress: '0xd2507e7b5794179380673870d88B22F94da6abe0',
                         },
                     },
                 },
@@ -3758,12 +3476,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xDA537104D6A5edd53c6fBba9A898708E465260b6',
+                            tokenAddress: '0xDA537104D6A5edd53c6fBba9A898708E465260b6',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0x82e3A8F066a6989666b031d916c43672085b1582',
+                            tokenAddress: '0x82e3A8F066a6989666b031d916c43672085b1582',
                         },
                     },
                 },
@@ -3779,8 +3495,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0xb8cb8a7F4C2885C03e57E973C74827909Fdc2032',
+                            tokenAddress: '0xb8cb8a7F4C2885C03e57E973C74827909Fdc2032',
                         },
                     },
                 },
@@ -3796,8 +3511,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x82617aA52dddf5Ed9Bb7B370ED777b3182A30fd1',
+                            tokenAddress: '0x82617aA52dddf5Ed9Bb7B370ED777b3182A30fd1',
                         },
                     },
                 },
@@ -3813,12 +3527,10 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '137': {
-                            tokenAddress:
-                                '0x5559Edb74751A0edE9DeA4DC23aeE72cCA6bE3D5',
+                            tokenAddress: '0x5559Edb74751A0edE9DeA4DC23aeE72cCA6bE3D5',
                         },
                         '42161': {
-                            tokenAddress:
-                                '0xBD591Bd4DdB64b77B5f76Eab8f03d02519235Ae2',
+                            tokenAddress: '0xBD591Bd4DdB64b77B5f76Eab8f03d02519235Ae2',
                         },
                     },
                 },
@@ -3838,8 +3550,7 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 3,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
             },
             {
                 name: 'Wrapped Ether',
@@ -3874,8 +3585,7 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 4,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
             },
             {
                 name: 'Wrapped Ether',
@@ -3892,8 +3602,7 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 5,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
             },
             {
                 name: 'Wrapped Ether',
@@ -3915,8 +3624,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0391D2021f89DC339F60Fff84546EA23E337750f',
+                            tokenAddress: '0x0391D2021f89DC339F60Fff84546EA23E337750f',
                         },
                     },
                 },
@@ -3932,8 +3640,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD533a949740bb3306d119CC777fa900bA034cd52',
+                            tokenAddress: '0xD533a949740bb3306d119CC777fa900bA034cd52',
                         },
                     },
                 },
@@ -3949,8 +3656,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                            tokenAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
                         },
                     },
                 },
@@ -3966,8 +3672,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',
+                            tokenAddress: '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',
                         },
                     },
                 },
@@ -3983,8 +3688,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+                            tokenAddress: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
                         },
                     },
                 },
@@ -4000,8 +3704,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD',
+                            tokenAddress: '0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD',
                         },
                     },
                 },
@@ -4017,8 +3720,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+                            tokenAddress: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
                         },
                     },
                 },
@@ -4034,8 +3736,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
+                            tokenAddress: '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
                         },
                     },
                 },
@@ -4051,8 +3752,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
+                            tokenAddress: '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
                         },
                     },
                 },
@@ -4076,8 +3776,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
+                            tokenAddress: '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
                         },
                     },
                 },
@@ -4093,8 +3792,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919',
+                            tokenAddress: '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919',
                         },
                     },
                 },
@@ -4110,8 +3808,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD291E7a03283640FDc51b121aC401383A46cC623',
+                            tokenAddress: '0xD291E7a03283640FDc51b121aC401383A46cC623',
                         },
                     },
                 },
@@ -4127,8 +3824,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+                            tokenAddress: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
                         },
                     },
                 },
@@ -4144,8 +3840,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
+                            tokenAddress: '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
                         },
                     },
                 },
@@ -4156,13 +3851,11 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 10,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+                            tokenAddress: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
                         },
                     },
                 },
@@ -4178,8 +3871,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                            tokenAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
                         },
                     },
                 },
@@ -4195,8 +3887,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                            tokenAddress: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
                         },
                     },
                 },
@@ -4212,8 +3903,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                            tokenAddress: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
                         },
                     },
                 },
@@ -4242,8 +3932,7 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 42,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
             },
             {
                 name: 'Wrapped Ether',
@@ -4265,8 +3954,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x111111111117dC0aa78b770fA6A738034120C302',
+                            tokenAddress: '0x111111111117dC0aa78b770fA6A738034120C302',
                         },
                     },
                 },
@@ -4282,8 +3970,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+                            tokenAddress: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
                         },
                     },
                 },
@@ -4299,8 +3986,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xADE00C28244d5CE17D72E40330B1c318cD12B7c3',
+                            tokenAddress: '0xADE00C28244d5CE17D72E40330B1c318cD12B7c3',
                         },
                     },
                 },
@@ -4316,8 +4002,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x32353A6C91143bfd6C7d363B546e62a9A2489A20',
+                            tokenAddress: '0x32353A6C91143bfd6C7d363B546e62a9A2489A20',
                         },
                     },
                 },
@@ -4333,8 +4018,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x626E8036dEB333b408Be468F951bdB42433cBF18',
+                            tokenAddress: '0x626E8036dEB333b408Be468F951bdB42433cBF18',
                         },
                     },
                 },
@@ -4350,8 +4034,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',
+                            tokenAddress: '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',
                         },
                     },
                 },
@@ -4367,8 +4050,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x27702a26126e0B3702af63Ee09aC4d1A084EF628',
+                            tokenAddress: '0x27702a26126e0B3702af63Ee09aC4d1A084EF628',
                         },
                     },
                 },
@@ -4384,8 +4066,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xAC51066d7bEC65Dc4589368da368b212745d63E8',
+                            tokenAddress: '0xAC51066d7bEC65Dc4589368da368b212745d63E8',
                         },
                     },
                 },
@@ -4401,8 +4082,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xa1faa113cbE53436Df28FF0aEe54275c13B40975',
+                            tokenAddress: '0xa1faa113cbE53436Df28FF0aEe54275c13B40975',
                         },
                     },
                 },
@@ -4418,8 +4098,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xfF20817765cB7f73d4bde2e66e067E58D11095C2',
+                            tokenAddress: '0xfF20817765cB7f73d4bde2e66e067E58D11095C2',
                         },
                     },
                 },
@@ -4435,8 +4114,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4',
+                            tokenAddress: '0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4',
                         },
                     },
                 },
@@ -4452,8 +4130,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xa117000000f279D81A1D3cc75430fAA017FA5A2e',
+                            tokenAddress: '0xa117000000f279D81A1D3cc75430fAA017FA5A2e',
                         },
                     },
                 },
@@ -4469,8 +4146,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
+                            tokenAddress: '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
                         },
                     },
                 },
@@ -4486,8 +4162,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0b38210ea11411557c13457D4dA7dC6ea731B88a',
+                            tokenAddress: '0x0b38210ea11411557c13457D4dA7dC6ea731B88a',
                         },
                     },
                 },
@@ -4503,8 +4178,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBA50933C268F567BDC86E1aC131BE072C6B0b71a',
+                            tokenAddress: '0xBA50933C268F567BDC86E1aC131BE072C6B0b71a',
                         },
                     },
                 },
@@ -4520,8 +4194,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x27054b13b1B798B345b591a4d22e6562d47eA75a',
+                            tokenAddress: '0x27054b13b1B798B345b591a4d22e6562d47eA75a',
                         },
                     },
                 },
@@ -4532,13 +4205,11 @@ export const uniswapTokens = [
                 name: 'Automata',
                 symbol: 'ATA',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/15985/thumb/ATA.jpg?1622535745',
+                logoURI: 'https://assets.coingecko.com/coins/images/15985/thumb/ATA.jpg?1622535745',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA2120b9e674d3fC3875f415A7DF52e382F141225',
+                            tokenAddress: '0xA2120b9e674d3fC3875f415A7DF52e382F141225',
                         },
                     },
                 },
@@ -4554,8 +4225,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x18aAA7115705e8be94bfFEBDE57Af9BFc265B998',
+                            tokenAddress: '0x18aAA7115705e8be94bfFEBDE57Af9BFc265B998',
                         },
                     },
                 },
@@ -4571,8 +4241,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b',
+                            tokenAddress: '0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b',
                         },
                     },
                 },
@@ -4588,8 +4257,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
+                            tokenAddress: '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
                         },
                     },
                 },
@@ -4605,8 +4273,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xba100000625a3754423978a60c9317c58a424e3D',
+                            tokenAddress: '0xba100000625a3754423978a60c9317c58a424e3D',
                         },
                     },
                 },
@@ -4622,8 +4289,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55',
+                            tokenAddress: '0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55',
                         },
                     },
                 },
@@ -4639,8 +4305,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
+                            tokenAddress: '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
                         },
                     },
                 },
@@ -4656,8 +4321,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xF17e65822b568B3903685a7c9F496CF7656Cc6C2',
+                            tokenAddress: '0xF17e65822b568B3903685a7c9F496CF7656Cc6C2',
                         },
                     },
                 },
@@ -4673,8 +4337,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x5732046A883704404F284Ce41FfADd5b007FD668',
+                            tokenAddress: '0x5732046A883704404F284Ce41FfADd5b007FD668',
                         },
                     },
                 },
@@ -4690,8 +4353,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C',
+                            tokenAddress: '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C',
                         },
                     },
                 },
@@ -4707,8 +4369,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc',
+                            tokenAddress: '0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc',
                         },
                     },
                 },
@@ -4724,8 +4385,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0391D2021f89DC339F60Fff84546EA23E337750f',
+                            tokenAddress: '0x0391D2021f89DC339F60Fff84546EA23E337750f',
                         },
                     },
                 },
@@ -4736,13 +4396,11 @@ export const uniswapTokens = [
                 name: 'Binance USD',
                 symbol: 'BUSD',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9576/thumb/BUSD.png?1568947766',
+                logoURI: 'https://assets.coingecko.com/coins/images/9576/thumb/BUSD.png?1568947766',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
+                            tokenAddress: '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
                         },
                     },
                 },
@@ -4753,13 +4411,11 @@ export const uniswapTokens = [
                 name: 'Celer Network',
                 symbol: 'CELR',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/4379/thumb/Celr.png?1554705437',
+                logoURI: 'https://assets.coingecko.com/coins/images/4379/thumb/Celr.png?1554705437',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4F9254C83EB525f9FCf346490bbb3ed28a81C667',
+                            tokenAddress: '0x4F9254C83EB525f9FCf346490bbb3ed28a81C667',
                         },
                     },
                 },
@@ -4775,8 +4431,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2',
+                            tokenAddress: '0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2',
                         },
                     },
                 },
@@ -4792,8 +4447,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3506424F91fD33084466F402d5D97f05F8e3b4AF',
+                            tokenAddress: '0x3506424F91fD33084466F402d5D97f05F8e3b4AF',
                         },
                     },
                 },
@@ -4809,8 +4463,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc00e94Cb662C3520282E6f5717214004A7f26888',
+                            tokenAddress: '0xc00e94Cb662C3520282E6f5717214004A7f26888',
                         },
                     },
                 },
@@ -4826,8 +4479,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD417144312DbF50465b1C641d016962017Ef6240',
+                            tokenAddress: '0xD417144312DbF50465b1C641d016962017Ef6240',
                         },
                     },
                 },
@@ -4843,8 +4495,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b',
+                            tokenAddress: '0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b',
                         },
                     },
                 },
@@ -4860,8 +4511,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD533a949740bb3306d119CC777fa900bA034cd52',
+                            tokenAddress: '0xD533a949740bb3306d119CC777fa900bA034cd52',
                         },
                     },
                 },
@@ -4877,8 +4527,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x491604c0FDF08347Dd1fa4Ee062a822A5DD06B5D',
+                            tokenAddress: '0x491604c0FDF08347Dd1fa4Ee062a822A5DD06B5D',
                         },
                     },
                 },
@@ -4894,8 +4543,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x321C2fE4446C7c963dc41Dd58879AF648838f98D',
+                            tokenAddress: '0x321C2fE4446C7c963dc41Dd58879AF648838f98D',
                         },
                     },
                 },
@@ -4911,8 +4559,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xDf801468a808a32656D2eD2D2d80B72A129739f4',
+                            tokenAddress: '0xDf801468a808a32656D2eD2D2d80B72A129739f4',
                         },
                     },
                 },
@@ -4923,13 +4570,11 @@ export const uniswapTokens = [
                 name: 'Civic',
                 symbol: 'CVC',
                 decimals: 8,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/788/thumb/civic.png?1547034556',
+                logoURI: 'https://assets.coingecko.com/coins/images/788/thumb/civic.png?1547034556',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x41e5560054824eA6B0732E656E3Ad64E20e94E45',
+                            tokenAddress: '0x41e5560054824eA6B0732E656E3Ad64E20e94E45',
                         },
                     },
                 },
@@ -4945,8 +4590,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B',
+                            tokenAddress: '0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B',
                         },
                     },
                 },
@@ -4962,8 +4606,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                            tokenAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
                         },
                     },
                 },
@@ -4979,8 +4622,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3A880652F47bFaa771908C07Dd8673A787dAEd3A',
+                            tokenAddress: '0x3A880652F47bFaa771908C07Dd8673A787dAEd3A',
                         },
                     },
                 },
@@ -4996,8 +4638,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xfB7B4564402E5500dB5bB6d63Ae671302777C75a',
+                            tokenAddress: '0xfB7B4564402E5500dB5bB6d63Ae671302777C75a',
                         },
                     },
                 },
@@ -5013,8 +4654,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419',
+                            tokenAddress: '0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419',
                         },
                     },
                 },
@@ -5030,8 +4670,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b',
+                            tokenAddress: '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b',
                         },
                     },
                 },
@@ -5047,8 +4686,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x92D6C1e31e14520e676a687F0a93788B716BEff5',
+                            tokenAddress: '0x92D6C1e31e14520e676a687F0a93788B716BEff5',
                         },
                     },
                 },
@@ -5064,8 +4702,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x761D38e5ddf6ccf6Cf7c55759d5210750B5D60F3',
+                            tokenAddress: '0x761D38e5ddf6ccf6Cf7c55759d5210750B5D60F3',
                         },
                     },
                 },
@@ -5081,8 +4718,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c',
+                            tokenAddress: '0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c',
                         },
                     },
                 },
@@ -5098,8 +4734,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',
+                            tokenAddress: '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',
                         },
                     },
                 },
@@ -5115,8 +4750,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBBc2AE13b23d715c30720F079fcd9B4a74093505',
+                            tokenAddress: '0xBBc2AE13b23d715c30720F079fcd9B4a74093505',
                         },
                     },
                 },
@@ -5132,8 +4766,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
+                            tokenAddress: '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
                         },
                     },
                 },
@@ -5149,8 +4782,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xa0246c9032bC3A600820415aE600c6388619A14D',
+                            tokenAddress: '0xa0246c9032bC3A600820415aE600c6388619A14D',
                         },
                     },
                 },
@@ -5166,8 +4798,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85',
+                            tokenAddress: '0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85',
                         },
                     },
                 },
@@ -5183,8 +4814,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xef3A930e1FfFFAcd2fc13434aC81bD278B0ecC8d',
+                            tokenAddress: '0xef3A930e1FfFFAcd2fc13434aC81bD278B0ecC8d',
                         },
                     },
                 },
@@ -5200,8 +4830,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x41545f8b9472D758bB669ed8EaEEEcD7a9C4Ec29',
+                            tokenAddress: '0x41545f8b9472D758bB669ed8EaEEEcD7a9C4Ec29',
                         },
                     },
                 },
@@ -5217,8 +4846,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x77FbA179C79De5B7653F68b5039Af940AdA60ce0',
+                            tokenAddress: '0x77FbA179C79De5B7653F68b5039Af940AdA60ce0',
                         },
                     },
                 },
@@ -5229,13 +4857,11 @@ export const uniswapTokens = [
                 name: 'ShapeShift FOX Token',
                 symbol: 'FOX',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9988/thumb/FOX.png?1574330622',
+                logoURI: 'https://assets.coingecko.com/coins/images/9988/thumb/FOX.png?1574330622',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d',
+                            tokenAddress: '0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d',
                         },
                     },
                 },
@@ -5251,8 +4877,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+                            tokenAddress: '0x853d955aCEf822Db058eb8505911ED77F175b99e',
                         },
                     },
                 },
@@ -5268,8 +4893,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
+                            tokenAddress: '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
                         },
                     },
                 },
@@ -5285,8 +4909,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',
+                            tokenAddress: '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',
                         },
                     },
                 },
@@ -5302,8 +4925,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x15D4c048F83bd7e37d49eA4C83a07267Ec4203dA',
+                            tokenAddress: '0x15D4c048F83bd7e37d49eA4C83a07267Ec4203dA',
                         },
                     },
                 },
@@ -5319,8 +4941,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3F382DbD960E3a9bbCeaE22651E88158d2791550',
+                            tokenAddress: '0x3F382DbD960E3a9bbCeaE22651E88158d2791550',
                         },
                     },
                 },
@@ -5336,8 +4957,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429',
+                            tokenAddress: '0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429',
                         },
                     },
                 },
@@ -5353,8 +4973,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6810e776880C02933D47DB1b9fc05908e5386b96',
+                            tokenAddress: '0x6810e776880C02933D47DB1b9fc05908e5386b96',
                         },
                     },
                 },
@@ -5370,8 +4989,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xccC8cb5229B0ac8069C51fd58367Fd1e622aFD97',
+                            tokenAddress: '0xccC8cb5229B0ac8069C51fd58367Fd1e622aFD97',
                         },
                     },
                 },
@@ -5387,8 +5005,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',
+                            tokenAddress: '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',
                         },
                     },
                 },
@@ -5404,8 +5021,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F',
+                            tokenAddress: '0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F',
                         },
                     },
                 },
@@ -5421,8 +5037,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd',
+                            tokenAddress: '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd',
                         },
                     },
                 },
@@ -5438,8 +5053,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC08512927D12348F6620a698105e1BAac6EcD911',
+                            tokenAddress: '0xC08512927D12348F6620a698105e1BAac6EcD911',
                         },
                     },
                 },
@@ -5455,8 +5069,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xF5581dFeFD8Fb0e4aeC526bE659CFaB1f8c781dA',
+                            tokenAddress: '0xF5581dFeFD8Fb0e4aeC526bE659CFaB1f8c781dA',
                         },
                     },
                 },
@@ -5472,8 +5085,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xB705268213D593B8FD88d3FDEFF93AFF5CbDcfAE',
+                            tokenAddress: '0xB705268213D593B8FD88d3FDEFF93AFF5CbDcfAE',
                         },
                     },
                 },
@@ -5484,13 +5096,11 @@ export const uniswapTokens = [
                 name: 'Immutable X',
                 symbol: 'IMX',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/17233/thumb/imx.png?1636691817',
+                logoURI: 'https://assets.coingecko.com/coins/images/17233/thumb/imx.png?1636691817',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF',
+                            tokenAddress: '0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF',
                         },
                     },
                 },
@@ -5506,8 +5116,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0954906da0Bf32d5479e25f46056d22f08464cab',
+                            tokenAddress: '0x0954906da0Bf32d5479e25f46056d22f08464cab',
                         },
                     },
                 },
@@ -5523,8 +5132,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30',
+                            tokenAddress: '0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30',
                         },
                     },
                 },
@@ -5540,8 +5148,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68',
+                            tokenAddress: '0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68',
                         },
                     },
                 },
@@ -5552,13 +5159,11 @@ export const uniswapTokens = [
                 name: 'IoTeX',
                 symbol: 'IOTX',
                 decimals: 18,
-                logoURI:
-                    'https://s2.coinmarketcap.com/static/img/coins/64x64/2777.png',
+                logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/2777.png',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6fB3e0A217407EFFf7Ca062D46c26E5d60a14d69',
+                            tokenAddress: '0x6fB3e0A217407EFFf7Ca062D46c26E5d60a14d69',
                         },
                     },
                 },
@@ -5574,8 +5179,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x7420B4b9a0110cdC71fB720908340C03F9Bc03EC',
+                            tokenAddress: '0x7420B4b9a0110cdC71fB720908340C03F9Bc03EC',
                         },
                     },
                 },
@@ -5591,8 +5195,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC',
+                            tokenAddress: '0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC',
                         },
                     },
                 },
@@ -5608,8 +5211,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xdd974D5C2e2928deA5F71b9825b8b646686BD200',
+                            tokenAddress: '0xdd974D5C2e2928deA5F71b9825b8b646686BD200',
                         },
                     },
                 },
@@ -5625,8 +5227,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44',
+                            tokenAddress: '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44',
                         },
                     },
                 },
@@ -5642,8 +5243,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x037A54AaB062628C9Bbae1FDB1583c195585fe41',
+                            tokenAddress: '0x037A54AaB062628C9Bbae1FDB1583c195585fe41',
                         },
                     },
                 },
@@ -5659,8 +5259,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
+                            tokenAddress: '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
                         },
                     },
                 },
@@ -5676,8 +5275,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+                            tokenAddress: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
                         },
                     },
                 },
@@ -5693,8 +5291,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0',
+                            tokenAddress: '0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0',
                         },
                     },
                 },
@@ -5710,8 +5307,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x58b6A8A3302369DAEc383334672404Ee733aB239',
+                            tokenAddress: '0x58b6A8A3302369DAEc383334672404Ee733aB239',
                         },
                     },
                 },
@@ -5727,8 +5323,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D',
+                            tokenAddress: '0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D',
                         },
                     },
                 },
@@ -5744,8 +5339,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD',
+                            tokenAddress: '0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD',
                         },
                     },
                 },
@@ -5761,8 +5355,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+                            tokenAddress: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
                         },
                     },
                 },
@@ -5778,8 +5371,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942',
+                            tokenAddress: '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942',
                         },
                     },
                 },
@@ -5795,8 +5387,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
+                            tokenAddress: '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
                         },
                     },
                 },
@@ -5812,8 +5403,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x08d967bb0134F2d07f7cfb6E246680c53927DD30',
+                            tokenAddress: '0x08d967bb0134F2d07f7cfb6E246680c53927DD30',
                         },
                     },
                 },
@@ -5829,8 +5419,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xfC98e825A2264D890F9a1e68ed50E1526abCcacD',
+                            tokenAddress: '0xfC98e825A2264D890F9a1e68ed50E1526abCcacD',
                         },
                     },
                 },
@@ -5846,8 +5435,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
+                            tokenAddress: '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
                         },
                     },
                 },
@@ -5863,8 +5451,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
+                            tokenAddress: '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
                         },
                     },
                 },
@@ -5880,8 +5467,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x09a3EcAFa817268f77BE1283176B946C4ff2E608',
+                            tokenAddress: '0x09a3EcAFa817268f77BE1283176B946C4ff2E608',
                         },
                     },
                 },
@@ -5897,8 +5483,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
+                            tokenAddress: '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
                         },
                     },
                 },
@@ -5909,13 +5494,11 @@ export const uniswapTokens = [
                 name: 'Melon',
                 symbol: 'MLN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/605/thumb/melon.png?1547034295',
+                logoURI: 'https://assets.coingecko.com/coins/images/605/thumb/melon.png?1547034295',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xec67005c4E498Ec7f55E092bd1d35cbC47C91892',
+                            tokenAddress: '0xec67005c4E498Ec7f55E092bd1d35cbC47C91892',
                         },
                     },
                 },
@@ -5931,8 +5514,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x275f5Ad03be0Fa221B4C6649B8AeE09a42D9412A',
+                            tokenAddress: '0x275f5Ad03be0Fa221B4C6649B8AeE09a42D9412A',
                         },
                     },
                 },
@@ -5941,15 +5523,13 @@ export const uniswapTokens = [
                 chainId: 137,
                 name: 'GensoKishi Metaverse',
                 symbol: 'MV',
-                logoURI:
-                    'https://s2.coinmarketcap.com/static/img/coins/64x64/17704.png',
+                logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/17704.png',
                 address: '0xA3c322Ad15218fBFAEd26bA7f616249f7705D945',
                 decimals: 18,
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xAE788F80F2756A86aa2F410C651F2aF83639B95b',
+                            tokenAddress: '0xAE788F80F2756A86aa2F410C651F2aF83639B95b',
                         },
                     },
                 },
@@ -5965,8 +5545,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9E46A38F5DaaBe8683E10793b06749EEF7D733d1',
+                            tokenAddress: '0x9E46A38F5DaaBe8683E10793b06749EEF7D733d1',
                         },
                     },
                 },
@@ -5982,8 +5561,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671',
+                            tokenAddress: '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671',
                         },
                     },
                 },
@@ -5999,8 +5577,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x967da4048cD07aB37855c090aAF366e4ce1b9F48',
+                            tokenAddress: '0x967da4048cD07aB37855c090aAF366e4ce1b9F48',
                         },
                     },
                 },
@@ -6011,13 +5588,11 @@ export const uniswapTokens = [
                 name: 'Origin Protocol',
                 symbol: 'OGN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/3296/thumb/op.jpg?1547037878',
+                logoURI: 'https://assets.coingecko.com/coins/images/3296/thumb/op.jpg?1547037878',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26',
+                            tokenAddress: '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26',
                         },
                     },
                 },
@@ -6033,8 +5608,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
+                            tokenAddress: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
                         },
                     },
                 },
@@ -6050,8 +5624,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a',
+                            tokenAddress: '0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a',
                         },
                     },
                 },
@@ -6067,8 +5640,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4575f41308EC1483f3d399aa9a2826d74Da13Deb',
+                            tokenAddress: '0x4575f41308EC1483f3d399aa9a2826d74Da13Deb',
                         },
                     },
                 },
@@ -6079,13 +5651,11 @@ export const uniswapTokens = [
                 name: 'PAX Gold',
                 symbol: 'PAXG',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9519/thumb/paxg.PNG?1568542565',
+                logoURI: 'https://assets.coingecko.com/coins/images/9519/thumb/paxg.PNG?1568542565',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x45804880De22913dAFE09f4980848ECE6EcbAf78',
+                            tokenAddress: '0x45804880De22913dAFE09f4980848ECE6EcbAf78',
                         },
                     },
                 },
@@ -6101,8 +5671,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
+                            tokenAddress: '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
                         },
                     },
                 },
@@ -6118,8 +5687,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3a4f40631a4f906c2BaD353Ed06De7A5D3fCb430',
+                            tokenAddress: '0x3a4f40631a4f906c2BaD353Ed06De7A5D3fCb430',
                         },
                     },
                 },
@@ -6135,8 +5703,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD8912C10681D8B21Fd3742244f44658dBA12264E',
+                            tokenAddress: '0xD8912C10681D8B21Fd3742244f44658dBA12264E',
                         },
                     },
                 },
@@ -6152,8 +5719,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x83e6f1E41cdd28eAcEB20Cb649155049Fac3D5Aa',
+                            tokenAddress: '0x83e6f1E41cdd28eAcEB20Cb649155049Fac3D5Aa',
                         },
                     },
                 },
@@ -6169,8 +5735,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9992eC3cF6A55b00978cdDF2b27BC6882d88D1eC',
+                            tokenAddress: '0x9992eC3cF6A55b00978cdDF2b27BC6882d88D1eC',
                         },
                     },
                 },
@@ -6186,8 +5751,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x57B946008913B82E4dF85f501cbAeD910e58D26C',
+                            tokenAddress: '0x57B946008913B82E4dF85f501cbAeD910e58D26C',
                         },
                     },
                 },
@@ -6203,8 +5767,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x595832F8FC6BF59c85C527fEC3740A1b7a361269',
+                            tokenAddress: '0x595832F8FC6BF59c85C527fEC3740A1b7a361269',
                         },
                     },
                 },
@@ -6215,13 +5778,11 @@ export const uniswapTokens = [
                 name: 'Propy',
                 symbol: 'PRO',
                 decimals: 8,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/869/thumb/propy.png?1548332100',
+                logoURI: 'https://assets.coingecko.com/coins/images/869/thumb/propy.png?1548332100',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x226bb599a12C826476e3A771454697EA52E9E220',
+                            tokenAddress: '0x226bb599a12C826476e3A771454697EA52E9E220',
                         },
                     },
                 },
@@ -6237,8 +5798,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x362bc847A3a9637d3af6624EeC853618a43ed7D2',
+                            tokenAddress: '0x362bc847A3a9637d3af6624EeC853618a43ed7D2',
                         },
                     },
                 },
@@ -6254,8 +5814,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4a220E6096B25EADb88358cb44068A3248254675',
+                            tokenAddress: '0x4a220E6096B25EADb88358cb44068A3248254675',
                         },
                     },
                 },
@@ -6271,8 +5830,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
+                            tokenAddress: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
                         },
                     },
                 },
@@ -6288,8 +5846,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3',
+                            tokenAddress: '0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3',
                         },
                     },
                 },
@@ -6305,8 +5862,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919',
+                            tokenAddress: '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919',
                         },
                     },
                 },
@@ -6322,8 +5878,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF',
+                            tokenAddress: '0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF',
                         },
                     },
                 },
@@ -6339,8 +5894,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA4EED63db85311E22dF4473f87CcfC3DaDCFA3E3',
+                            tokenAddress: '0xA4EED63db85311E22dF4473f87CcfC3DaDCFA3E3',
                         },
                     },
                 },
@@ -6356,8 +5910,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x408e41876cCCDC0F92210600ef50372656052a38',
+                            tokenAddress: '0x408e41876cCCDC0F92210600ef50372656052a38',
                         },
                     },
                 },
@@ -6373,8 +5926,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x221657776846890989a759BA2973e427DfF5C9bB',
+                            tokenAddress: '0x221657776846890989a759BA2973e427DfF5C9bB',
                         },
                     },
                 },
@@ -6390,8 +5942,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x8f8221aFbB33998d8584A2B05749bA73c37a938a',
+                            tokenAddress: '0x8f8221aFbB33998d8584A2B05749bA73c37a938a',
                         },
                     },
                 },
@@ -6407,8 +5958,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x557B933a7C2c45672B610F8954A3deB39a51A8Ca',
+                            tokenAddress: '0x557B933a7C2c45672B610F8954A3deB39a51A8Ca',
                         },
                     },
                 },
@@ -6424,8 +5974,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD291E7a03283640FDc51b121aC401383A46cC623',
+                            tokenAddress: '0xD291E7a03283640FDc51b121aC401383A46cC623',
                         },
                     },
                 },
@@ -6441,8 +5990,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x607F4C5BB672230e8672085532f7e901544a7375',
+                            tokenAddress: '0x607F4C5BB672230e8672085532f7e901544a7375',
                         },
                     },
                 },
@@ -6458,8 +6006,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xf1f955016EcbCd7321c7266BccFB96c68ea5E49b',
+                            tokenAddress: '0xf1f955016EcbCd7321c7266BccFB96c68ea5E49b',
                         },
                     },
                 },
@@ -6475,8 +6022,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24',
+                            tokenAddress: '0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24',
                         },
                     },
                 },
@@ -6492,8 +6038,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a',
+                            tokenAddress: '0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a',
                         },
                     },
                 },
@@ -6509,8 +6054,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3845badAde8e6dFF049820680d1F14bD3903a5d0',
+                            tokenAddress: '0x3845badAde8e6dFF049820680d1F14bD3903a5d0',
                         },
                     },
                 },
@@ -6526,8 +6070,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
+                            tokenAddress: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
                         },
                     },
                 },
@@ -6538,13 +6081,11 @@ export const uniswapTokens = [
                 name: 'Smooth Love Potion',
                 symbol: 'SLP',
                 decimals: 0,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/10366/thumb/SLP.png?1578640057',
+                logoURI: 'https://assets.coingecko.com/coins/images/10366/thumb/SLP.png?1578640057',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
+                            tokenAddress: '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
                         },
                     },
                 },
@@ -6560,8 +6101,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+                            tokenAddress: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
                         },
                     },
                 },
@@ -6577,8 +6117,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x090185f2135308BaD17527004364eBcC2D37e5F6',
+                            tokenAddress: '0x090185f2135308BaD17527004364eBcC2D37e5F6',
                         },
                     },
                 },
@@ -6594,8 +6133,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC',
+                            tokenAddress: '0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC',
                         },
                     },
                 },
@@ -6611,8 +6149,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x006BeA43Baa3f7A6f765F14f10A1a1b08334EF45',
+                            tokenAddress: '0x006BeA43Baa3f7A6f765F14f10A1a1b08334EF45',
                         },
                     },
                 },
@@ -6628,8 +6165,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0763fdCCF1aE541A5961815C0872A8c5Bc6DE4d7',
+                            tokenAddress: '0x0763fdCCF1aE541A5961815C0872A8c5Bc6DE4d7',
                         },
                     },
                 },
@@ -6645,8 +6181,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55',
+                            tokenAddress: '0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55',
                         },
                     },
                 },
@@ -6657,13 +6192,11 @@ export const uniswapTokens = [
                 symbol: 'sUSD',
                 decimals: 18,
                 chainId: 137,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1616150765',
+                logoURI: 'https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1616150765',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
+                            tokenAddress: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
                         },
                     },
                 },
@@ -6679,8 +6212,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
+                            tokenAddress: '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
                         },
                     },
                 },
@@ -6696,8 +6228,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x8CE9137d39326AD0cD6491fb5CC0CbA0e089b6A9',
+                            tokenAddress: '0x8CE9137d39326AD0cD6491fb5CC0CbA0e089b6A9',
                         },
                     },
                 },
@@ -6713,8 +6244,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa',
+                            tokenAddress: '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa',
                         },
                     },
                 },
@@ -6730,8 +6260,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x2e9d63788249371f1DFC918a52f8d799F4a38C94',
+                            tokenAddress: '0x2e9d63788249371f1DFC918a52f8d799F4a38C94',
                         },
                     },
                 },
@@ -6742,13 +6271,11 @@ export const uniswapTokens = [
                 name: 'OriginTrail',
                 symbol: 'TRAC',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367',
+                logoURI: 'https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xaA7a9CA87d3694B5755f213B5D04094b8d0F0A6F',
+                            tokenAddress: '0xaA7a9CA87d3694B5755f213B5D04094b8d0F0A6F',
                         },
                     },
                 },
@@ -6764,8 +6291,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0',
+                            tokenAddress: '0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0',
                         },
                     },
                 },
@@ -6781,8 +6307,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+                            tokenAddress: '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
                         },
                     },
                 },
@@ -6798,8 +6323,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784',
+                            tokenAddress: '0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784',
                         },
                     },
                 },
@@ -6815,8 +6339,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xd084B83C305daFD76AE3E1b4E1F1fe2eCcCb3988',
+                            tokenAddress: '0xd084B83C305daFD76AE3E1b4E1F1fe2eCcCb3988',
                         },
                     },
                 },
@@ -6832,8 +6355,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
+                            tokenAddress: '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
                         },
                     },
                 },
@@ -6844,13 +6366,11 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 137,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+                            tokenAddress: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
                         },
                     },
                 },
@@ -6866,8 +6386,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                            tokenAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
                         },
                     },
                 },
@@ -6883,8 +6402,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                            tokenAddress: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
                         },
                     },
                 },
@@ -6900,8 +6418,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                            tokenAddress: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
                         },
                     },
                 },
@@ -6917,8 +6434,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc221b7E65FfC80DE234bbB6667aBDd46593D34F0',
+                            tokenAddress: '0xc221b7E65FfC80DE234bbB6667aBDd46593D34F0',
                         },
                     },
                 },
@@ -6952,8 +6468,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4691937a7508860F876c9c0a2a617E7d9E945D4B',
+                            tokenAddress: '0x4691937a7508860F876c9c0a2a617E7d9E945D4B',
                         },
                     },
                 },
@@ -6969,8 +6484,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x55296f69f40Ea6d20E478533C15A6B08B654E758',
+                            tokenAddress: '0x55296f69f40Ea6d20E478533C15A6B08B654E758',
                         },
                     },
                 },
@@ -6986,8 +6500,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
+                            tokenAddress: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
                         },
                     },
                 },
@@ -7003,8 +6516,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83',
+                            tokenAddress: '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83',
                         },
                     },
                 },
@@ -7020,8 +6532,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x25f8087EAD173b73D6e8B84329989A8eEA16CF73',
+                            tokenAddress: '0x25f8087EAD173b73D6e8B84329989A8eEA16CF73',
                         },
                     },
                 },
@@ -7037,8 +6548,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
+                            tokenAddress: '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
                         },
                     },
                 },
@@ -7054,8 +6564,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x111111111117dC0aa78b770fA6A738034120C302',
+                            tokenAddress: '0x111111111117dC0aa78b770fA6A738034120C302',
                         },
                     },
                 },
@@ -7071,8 +6580,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+                            tokenAddress: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
                         },
                     },
                 },
@@ -7088,8 +6596,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
+                            tokenAddress: '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
                         },
                     },
                 },
@@ -7100,13 +6607,11 @@ export const uniswapTokens = [
                 name: 'Automata',
                 symbol: 'ATA',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/15985/thumb/ATA.jpg?1622535745',
+                logoURI: 'https://assets.coingecko.com/coins/images/15985/thumb/ATA.jpg?1622535745',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA2120b9e674d3fC3875f415A7DF52e382F141225',
+                            tokenAddress: '0xA2120b9e674d3fC3875f415A7DF52e382F141225',
                         },
                     },
                 },
@@ -7122,8 +6627,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b',
+                            tokenAddress: '0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b',
                         },
                     },
                 },
@@ -7139,8 +6643,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
+                            tokenAddress: '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
                         },
                     },
                 },
@@ -7156,8 +6659,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xba100000625a3754423978a60c9317c58a424e3D',
+                            tokenAddress: '0xba100000625a3754423978a60c9317c58a424e3D',
                         },
                     },
                 },
@@ -7173,8 +6675,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
+                            tokenAddress: '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
                         },
                     },
                 },
@@ -7190,8 +6691,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xF17e65822b568B3903685a7c9F496CF7656Cc6C2',
+                            tokenAddress: '0xF17e65822b568B3903685a7c9F496CF7656Cc6C2',
                         },
                     },
                 },
@@ -7207,8 +6707,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5',
+                            tokenAddress: '0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5',
                         },
                     },
                 },
@@ -7224,8 +6723,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0391D2021f89DC339F60Fff84546EA23E337750f',
+                            tokenAddress: '0x0391D2021f89DC339F60Fff84546EA23E337750f',
                         },
                     },
                 },
@@ -7236,13 +6734,11 @@ export const uniswapTokens = [
                 name: 'Binance USD',
                 symbol: 'BUSD',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9576/thumb/BUSD.png?1568947766',
+                logoURI: 'https://assets.coingecko.com/coins/images/9576/thumb/BUSD.png?1568947766',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
+                            tokenAddress: '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
                         },
                     },
                 },
@@ -7253,13 +6749,11 @@ export const uniswapTokens = [
                 name: 'Celer Network',
                 symbol: 'CELR',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/4379/thumb/Celr.png?1554705437',
+                logoURI: 'https://assets.coingecko.com/coins/images/4379/thumb/Celr.png?1554705437',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4F9254C83EB525f9FCf346490bbb3ed28a81C667',
+                            tokenAddress: '0x4F9254C83EB525f9FCf346490bbb3ed28a81C667',
                         },
                     },
                 },
@@ -7275,8 +6769,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc00e94Cb662C3520282E6f5717214004A7f26888',
+                            tokenAddress: '0xc00e94Cb662C3520282E6f5717214004A7f26888',
                         },
                     },
                 },
@@ -7287,13 +6780,11 @@ export const uniswapTokens = [
                 name: 'COTI',
                 symbol: 'COTI',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/2962/thumb/Coti.png?1559653863',
+                logoURI: 'https://assets.coingecko.com/coins/images/2962/thumb/Coti.png?1559653863',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xDDB3422497E61e13543BeA06989C0789117555c5',
+                            tokenAddress: '0xDDB3422497E61e13543BeA06989C0789117555c5',
                         },
                     },
                 },
@@ -7309,8 +6800,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b',
+                            tokenAddress: '0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b',
                         },
                     },
                 },
@@ -7326,8 +6816,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD533a949740bb3306d119CC777fa900bA034cd52',
+                            tokenAddress: '0xD533a949740bb3306d119CC777fa900bA034cd52',
                         },
                     },
                 },
@@ -7343,8 +6832,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x491604c0FDF08347Dd1fa4Ee062a822A5DD06B5D',
+                            tokenAddress: '0x491604c0FDF08347Dd1fa4Ee062a822A5DD06B5D',
                         },
                     },
                 },
@@ -7355,13 +6843,11 @@ export const uniswapTokens = [
                 name: 'Civic',
                 symbol: 'CVC',
                 decimals: 8,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/788/thumb/civic.png?1547034556',
+                logoURI: 'https://assets.coingecko.com/coins/images/788/thumb/civic.png?1547034556',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x41e5560054824eA6B0732E656E3Ad64E20e94E45',
+                            tokenAddress: '0x41e5560054824eA6B0732E656E3Ad64E20e94E45',
                         },
                     },
                 },
@@ -7377,8 +6863,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                            tokenAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
                         },
                     },
                 },
@@ -7394,8 +6879,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419',
+                            tokenAddress: '0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419',
                         },
                     },
                 },
@@ -7411,8 +6895,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x92D6C1e31e14520e676a687F0a93788B716BEff5',
+                            tokenAddress: '0x92D6C1e31e14520e676a687F0a93788B716BEff5',
                         },
                     },
                 },
@@ -7428,8 +6911,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x761D38e5ddf6ccf6Cf7c55759d5210750B5D60F3',
+                            tokenAddress: '0x761D38e5ddf6ccf6Cf7c55759d5210750B5D60F3',
                         },
                     },
                 },
@@ -7445,8 +6927,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c',
+                            tokenAddress: '0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c',
                         },
                     },
                 },
@@ -7462,8 +6943,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',
+                            tokenAddress: '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',
                         },
                     },
                 },
@@ -7479,8 +6959,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x41545f8b9472D758bB669ed8EaEEEcD7a9C4Ec29',
+                            tokenAddress: '0x41545f8b9472D758bB669ed8EaEEEcD7a9C4Ec29',
                         },
                     },
                 },
@@ -7496,8 +6975,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+                            tokenAddress: '0x853d955aCEf822Db058eb8505911ED77F175b99e',
                         },
                     },
                 },
@@ -7513,8 +6991,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
+                            tokenAddress: '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
                         },
                     },
                 },
@@ -7530,8 +7007,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',
+                            tokenAddress: '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',
                         },
                     },
                 },
@@ -7547,8 +7023,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6810e776880C02933D47DB1b9fc05908e5386b96',
+                            tokenAddress: '0x6810e776880C02933D47DB1b9fc05908e5386b96',
                         },
                     },
                 },
@@ -7564,8 +7039,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',
+                            tokenAddress: '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',
                         },
                     },
                 },
@@ -7581,8 +7055,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F',
+                            tokenAddress: '0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F',
                         },
                     },
                 },
@@ -7598,8 +7071,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC08512927D12348F6620a698105e1BAac6EcD911',
+                            tokenAddress: '0xC08512927D12348F6620a698105e1BAac6EcD911',
                         },
                     },
                 },
@@ -7615,8 +7087,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
+                            tokenAddress: '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
                         },
                     },
                 },
@@ -7632,8 +7103,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+                            tokenAddress: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
                         },
                     },
                 },
@@ -7649,8 +7119,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x58b6A8A3302369DAEc383334672404Ee733aB239',
+                            tokenAddress: '0x58b6A8A3302369DAEc383334672404Ee733aB239',
                         },
                     },
                 },
@@ -7666,8 +7135,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD',
+                            tokenAddress: '0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD',
                         },
                     },
                 },
@@ -7683,8 +7151,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+                            tokenAddress: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
                         },
                     },
                 },
@@ -7700,8 +7167,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942',
+                            tokenAddress: '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942',
                         },
                     },
                 },
@@ -7717,8 +7183,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
+                            tokenAddress: '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
                         },
                     },
                 },
@@ -7734,8 +7199,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x08d967bb0134F2d07f7cfb6E246680c53927DD30',
+                            tokenAddress: '0x08d967bb0134F2d07f7cfb6E246680c53927DD30',
                         },
                     },
                 },
@@ -7751,8 +7215,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+                            tokenAddress: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
                         },
                     },
                 },
@@ -7768,8 +7231,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
+                            tokenAddress: '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
                         },
                     },
                 },
@@ -7785,8 +7247,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
+                            tokenAddress: '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
                         },
                     },
                 },
@@ -7802,8 +7263,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
+                            tokenAddress: '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',
                         },
                     },
                 },
@@ -7814,13 +7274,11 @@ export const uniswapTokens = [
                 name: 'Melon',
                 symbol: 'MLN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/605/thumb/melon.png?1547034295',
+                logoURI: 'https://assets.coingecko.com/coins/images/605/thumb/melon.png?1547034295',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xec67005c4E498Ec7f55E092bd1d35cbC47C91892',
+                            tokenAddress: '0xec67005c4E498Ec7f55E092bd1d35cbC47C91892',
                         },
                     },
                 },
@@ -7836,8 +7294,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x9E46A38F5DaaBe8683E10793b06749EEF7D733d1',
+                            tokenAddress: '0x9E46A38F5DaaBe8683E10793b06749EEF7D733d1',
                         },
                     },
                 },
@@ -7853,8 +7310,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671',
+                            tokenAddress: '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671',
                         },
                     },
                 },
@@ -7870,8 +7326,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x967da4048cD07aB37855c090aAF366e4ce1b9F48',
+                            tokenAddress: '0x967da4048cD07aB37855c090aAF366e4ce1b9F48',
                         },
                     },
                 },
@@ -7882,13 +7337,11 @@ export const uniswapTokens = [
                 name: 'PAX Gold',
                 symbol: 'PAXG',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/9519/thumb/paxg.PNG?1568542565',
+                logoURI: 'https://assets.coingecko.com/coins/images/9519/thumb/paxg.PNG?1568542565',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x45804880De22913dAFE09f4980848ECE6EcbAf78',
+                            tokenAddress: '0x45804880De22913dAFE09f4980848ECE6EcbAf78',
                         },
                     },
                 },
@@ -7904,8 +7357,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
+                            tokenAddress: '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
                         },
                     },
                 },
@@ -7921,8 +7373,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x57B946008913B82E4dF85f501cbAeD910e58D26C',
+                            tokenAddress: '0x57B946008913B82E4dF85f501cbAeD910e58D26C',
                         },
                     },
                 },
@@ -7938,8 +7389,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x595832F8FC6BF59c85C527fEC3740A1b7a361269',
+                            tokenAddress: '0x595832F8FC6BF59c85C527fEC3740A1b7a361269',
                         },
                     },
                 },
@@ -7955,8 +7405,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x362bc847A3a9637d3af6624EeC853618a43ed7D2',
+                            tokenAddress: '0x362bc847A3a9637d3af6624EeC853618a43ed7D2',
                         },
                     },
                 },
@@ -7972,8 +7421,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919',
+                            tokenAddress: '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919',
                         },
                     },
                 },
@@ -7989,8 +7437,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF',
+                            tokenAddress: '0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF',
                         },
                     },
                 },
@@ -8006,8 +7453,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA4EED63db85311E22dF4473f87CcfC3DaDCFA3E3',
+                            tokenAddress: '0xA4EED63db85311E22dF4473f87CcfC3DaDCFA3E3',
                         },
                     },
                 },
@@ -8023,8 +7469,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x408e41876cCCDC0F92210600ef50372656052a38',
+                            tokenAddress: '0x408e41876cCCDC0F92210600ef50372656052a38',
                         },
                     },
                 },
@@ -8040,8 +7485,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD291E7a03283640FDc51b121aC401383A46cC623',
+                            tokenAddress: '0xD291E7a03283640FDc51b121aC401383A46cC623',
                         },
                     },
                 },
@@ -8057,8 +7501,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x3845badAde8e6dFF049820680d1F14bD3903a5d0',
+                            tokenAddress: '0x3845badAde8e6dFF049820680d1F14bD3903a5d0',
                         },
                     },
                 },
@@ -8074,8 +7517,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
+                            tokenAddress: '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
                         },
                     },
                 },
@@ -8091,8 +7533,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+                            tokenAddress: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
                         },
                     },
                 },
@@ -8108,8 +7549,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xD31a59c85aE9D8edEFeC411D448f90841571b89c',
+                            tokenAddress: '0xD31a59c85aE9D8edEFeC411D448f90841571b89c',
                         },
                     },
                 },
@@ -8125,8 +7565,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x090185f2135308BaD17527004364eBcC2D37e5F6',
+                            tokenAddress: '0x090185f2135308BaD17527004364eBcC2D37e5F6',
                         },
                     },
                 },
@@ -8142,8 +7581,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6',
+                            tokenAddress: '0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6',
                         },
                     },
                 },
@@ -8159,8 +7597,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55',
+                            tokenAddress: '0xe53EC727dbDEB9E2d5456c3be40cFF031AB40A55',
                         },
                     },
                 },
@@ -8171,13 +7608,11 @@ export const uniswapTokens = [
                 symbol: 'sUSD',
                 decimals: 18,
                 chainId: 42161,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1616150765',
+                logoURI: 'https://assets.coingecko.com/coins/images/5013/thumb/sUSD.png?1616150765',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
+                            tokenAddress: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
                         },
                     },
                 },
@@ -8193,8 +7628,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
+                            tokenAddress: '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
                         },
                     },
                 },
@@ -8205,13 +7639,11 @@ export const uniswapTokens = [
                 name: 'Synapse',
                 symbol: 'SYN',
                 decimals: 18,
-                logoURI:
-                    'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
+                logoURI: 'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0f2D719407FdBeFF09D87557AbB7232601FD9F29',
+                            tokenAddress: '0x0f2D719407FdBeFF09D87557AbB7232601FD9F29',
                         },
                     },
                 },
@@ -8227,8 +7659,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0',
+                            tokenAddress: '0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0',
                         },
                     },
                 },
@@ -8244,8 +7675,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+                            tokenAddress: '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
                         },
                     },
                 },
@@ -8261,8 +7691,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
+                            tokenAddress: '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
                         },
                     },
                 },
@@ -8273,13 +7702,11 @@ export const uniswapTokens = [
                 symbol: 'UNI',
                 decimals: 18,
                 chainId: 42161,
-                logoURI:
-                    'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
+                logoURI: 'ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg',
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+                            tokenAddress: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
                         },
                     },
                 },
@@ -8295,8 +7722,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                            tokenAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
                         },
                     },
                 },
@@ -8312,8 +7738,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+                            tokenAddress: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
                         },
                     },
                 },
@@ -8329,8 +7754,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+                            tokenAddress: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
                         },
                     },
                 },
@@ -8346,8 +7770,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+                            tokenAddress: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
                         },
                     },
                 },
@@ -8363,8 +7786,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x4691937a7508860F876c9c0a2a617E7d9E945D4B',
+                            tokenAddress: '0x4691937a7508860F876c9c0a2a617E7d9E945D4B',
                         },
                     },
                 },
@@ -8380,8 +7802,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
+                            tokenAddress: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
                         },
                     },
                 },
@@ -8397,8 +7818,7 @@ export const uniswapTokens = [
                 extensions: {
                     bridgeInfo: {
                         '1': {
-                            tokenAddress:
-                                '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
+                            tokenAddress: '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
                         },
                     },
                 },
@@ -8437,7 +7857,4 @@ function spliceIntoChunks(arr: any, chunkSize: number) {
     return res;
 }
 
-export const uniswapPools = spliceIntoChunks(
-    uniswapTokens[0].tokens.slice(0, 100),
-    2,
-);
+export const uniswapPools = spliceIntoChunks(uniswapTokens[0].tokens.slice(0, 100), 2);

@@ -25,12 +25,7 @@ export default function Pagination(props: PaginationPropsIF) {
         }
     }, []);
 
-    const sideScroll = (
-        element: HTMLDivElement,
-        speed: number,
-        distance: number,
-        step: number,
-    ) => {
+    const sideScroll = (element: HTMLDivElement, speed: number, distance: number, step: number) => {
         let scrollAmount = 0;
         const slideTimer = setInterval(() => {
             element.scrollLeft += step;
@@ -51,10 +46,7 @@ export default function Pagination(props: PaginationPropsIF) {
             } else if (totalItems % itemsPerPage === 0) {
                 setEnd(totalItems);
             } else {
-                setEnd(
-                    itemsPerPage * (currentPage - 1) +
-                        (totalItems % itemsPerPage),
-                );
+                setEnd(itemsPerPage * (currentPage - 1) + (totalItems % itemsPerPage));
             }
         }
     }
@@ -69,9 +61,7 @@ export default function Pagination(props: PaginationPropsIF) {
 
     const [expandPaginationContainer] = useState(true);
     // const [expandPaginationContainer, setExpandPaginationContainer] = useState(false);
-    const expandStyle = expandPaginationContainer
-        ? styles.expand
-        : styles.not_expanded;
+    const expandStyle = expandPaginationContainer ? styles.expand : styles.not_expanded;
 
     const handleLeftButtonClick = () => {
         sideScroll(containerRef.current, 25, 100, -60);
@@ -94,10 +84,7 @@ export default function Pagination(props: PaginationPropsIF) {
         paginate(page);
     };
     const rightButton = (
-        <div
-            className={styles.scroll_button}
-            onClick={() => handlerightButtonClick()}
-        >
+        <div className={styles.scroll_button} onClick={() => handlerightButtonClick()}>
             <IoMdArrowDropright size={30} />
         </div>
     );
@@ -145,16 +132,10 @@ export default function Pagination(props: PaginationPropsIF) {
                             <li
                                 key={number}
                                 className={
-                                    number === currentPage
-                                        ? styles.page_active
-                                        : styles.page
+                                    number === currentPage ? styles.page_active : styles.page
                                 }
                             >
-                                <button
-                                    onClick={() => handleNumberClick(number)}
-                                >
-                                    {number}
-                                </button>
+                                <button onClick={() => handleNumberClick(number)}>{number}</button>
                             </li>
                         ))}
                     </div>

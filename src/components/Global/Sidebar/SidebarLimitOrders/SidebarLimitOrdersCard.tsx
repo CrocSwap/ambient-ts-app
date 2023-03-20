@@ -6,10 +6,15 @@ interface propsIF {
     isDenomBase: boolean;
     tokenMap: Map<string, TokenIF>;
     order: LimitOrderIF;
-    handleClick: (limitOrder: LimitOrderIF) => void;
+    handleClick: (limitOrder: LimitOrderIF) => void
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {
-    const { tokenMap, order, isDenomBase, handleClick } = props;
+    const {
+        tokenMap,
+        order,
+        isDenomBase,
+        handleClick
+    } = props;
 
     // human-readable limit price to display in the DOM
     const price = getLimitPrice(order, tokenMap, isDenomBase);

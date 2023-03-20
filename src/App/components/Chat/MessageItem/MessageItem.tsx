@@ -47,9 +47,7 @@ export default function MessageItem(props: MessageItemPropsIF) {
                 !props.isUser && styles.example_right_side
             }`}
         >
-            <h2 className={styles.name}>
-                {props.isUser ? props.name : 'Ambi'}
-            </h2>
+            <h2 className={styles.name}>{props.isUser ? props.name : 'Ambi'}</h2>
 
             <div
                 className={`${styles.message_content} ${
@@ -63,11 +61,7 @@ export default function MessageItem(props: MessageItemPropsIF) {
                 )}
 
                 <div className={styles.message_text}>
-                    {!props.isUser
-                        ? typing
-                            ? typingAnimmation
-                            : messageRender
-                        : messageRender}
+                    {!props.isUser ? (typing ? typingAnimmation : messageRender) : messageRender}
                 </div>
             </div>
             <div className={styles.time}>{props.time}</div>

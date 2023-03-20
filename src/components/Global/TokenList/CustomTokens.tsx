@@ -20,23 +20,12 @@ interface propsIF {
 }
 
 export default function CustomTokens(props: propsIF) {
-    const {
-        chainId,
-        tokenToUpdate,
-        undeletableTokens,
-        closeModal,
-        justTokensDisplay,
-    } = props;
+    const { chainId, tokenToUpdate, undeletableTokens, closeModal, justTokensDisplay } = props;
 
     const dispatch = useAppDispatch();
 
-    const [
-        setSearchInput,
-        tokenAlreadyImported,
-        setTokenAlreadyImported,
-        foundTokens,
-        errorText,
-    ] = useCustomToken(chainId);
+    const [setSearchInput, tokenAlreadyImported, setTokenAlreadyImported, foundTokens, errorText] =
+        useCustomToken(chainId);
 
     const [importedTokens, setImportedTokens] = useState<TokenIF[]>(
         JSON.parse(localStorage.getItem('user') as string).tokens.filter(
@@ -49,15 +38,13 @@ export default function CustomTokens(props: propsIF) {
         setImportedTokens(
             importedTokens.filter(
                 (token: TokenIF) =>
-                    token.address !== sadToken.address ||
-                    token.chainId !== sadToken.chainId,
+                    token.address !== sadToken.address || token.chainId !== sadToken.chainId,
             ),
         );
         const user = JSON.parse(localStorage.getItem('user') as string);
         user.tokens = user.tokens.filter(
             (token: TokenIF) =>
-                token.address !== sadToken.address ||
-                token.chainId !== sadToken.chainId,
+                token.address !== sadToken.address || token.chainId !== sadToken.chainId,
         );
         localStorage.setItem('user', JSON.stringify(user));
     }
@@ -101,9 +88,7 @@ export default function CustomTokens(props: propsIF) {
                     <input
                         type='text'
                         placeholder='0x000'
-                        onChange={(e) =>
-                            setSearchInput(e.target.value.trim().toLowerCase())
-                        }
+                        onChange={(e) => setSearchInput(e.target.value.trim().toLowerCase())}
                     />
                 </div>
             )}
@@ -113,28 +98,15 @@ export default function CustomTokens(props: propsIF) {
             <div className={styles.token_result_container}>
                 {tokenAlreadyImported ||
                     foundTokens.map((token: TokenIF) => (
-                        <div
-                            key={`found_token_${token.address}`}
-                            className={styles.token_result}
-                        >
+                        <div key={`found_token_${token.address}`} className={styles.token_result}>
                             <div className={styles.token_info}>
                                 <div className={styles.token_icon_key}>
-                                    <img
-                                        src={uriToHttp(token.logoURI)}
-                                        alt=''
-                                        width='30px'
-                                    />
-                                    <p className={styles.symbol}>
-                                        {token.symbol}
-                                    </p>
+                                    <img src={uriToHttp(token.logoURI)} alt='' width='30px' />
+                                    <p className={styles.symbol}>{token.symbol}</p>
                                 </div>
-                                <h4 className={styles.token_name}>
-                                    {token.name}
-                                </h4>
+                                <h4 className={styles.token_name}>{token.name}</h4>
                             </div>
-                            <button onClick={() => importToken(token)}>
-                                Import
-                            </button>
+                            <button onClick={() => importToken(token)}>Import</button>
                         </div>
                     ))}
             </div>
@@ -145,25 +117,16 @@ export default function CustomTokens(props: propsIF) {
 
                     <div className={styles.custom_tokens_header}>
                         <span>{importedTokens.length} Custom Tokens</span>
-                        <span className={styles.clear_all_button}>
-                            Clear all
-                        </span>
+                        <span className={styles.clear_all_button}>Clear all</span>
                     </div>
                 </>
             )}
             <div className={styles.imported_token_container}>
                 {importedTokens.map((token: TokenIF) => (
-                    <div
-                        key={`imported_token_${token.address}`}
-                        className={styles.token_result}
-                    >
+                    <div key={`imported_token_${token.address}`} className={styles.token_result}>
                         <div className={styles.token_info}>
                             <div className={styles.token_icon_key}>
-                                <img
-                                    src={uriToHttp(token.logoURI)}
-                                    alt='no image'
-                                    width='30px'
-                                />
+                                <img src={uriToHttp(token.logoURI)} alt='no image' width='30px' />
                                 <p className={styles.symbol}>{token.symbol}</p>
                             </div>
                             <h4 className={styles.token_name}>{token.name}</h4>

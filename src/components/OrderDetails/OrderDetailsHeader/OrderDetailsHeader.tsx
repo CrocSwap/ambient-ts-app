@@ -26,21 +26,12 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     } = props;
     // eslint-disable-next-line
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const phIcon = (
-        <FiCopy
-            size={25}
-            color='var(--text-grey-dark)'
-            style={{ opacity: '0' }}
-        />
-    );
+    const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
     // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
 
     const copyIconWithTooltip = (
-        <IconWithTooltip
-            title='Copy position slot ID to clipboard'
-            placement='bottom'
-        >
+        <IconWithTooltip title='Copy position slot ID to clipboard' placement='bottom'>
             <div onClick={handleCopyPositionId}>
                 <FiCopy size={25} color='var(--text-grey-dark)' />
             </div>

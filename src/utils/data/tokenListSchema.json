@@ -212,9 +212,7 @@
                     "type": "string",
                     "description": "A URI to the token logo asset; if not set, interface will attempt to find a logo based on the token address; suggest SVG or PNG of size 64x64",
                     "format": "uri",
-                    "examples": [
-                        "ipfs://QmXfzKRvjZz3u5JRgC4v5mGVbm9ahrUiB4DgzHBsnWbTMM"
-                    ]
+                    "examples": ["ipfs://QmXfzKRvjZz3u5JRgC4v5mGVbm9ahrUiB4DgzHBsnWbTMM"]
                 },
                 "tags": {
                     "type": "array",
@@ -297,9 +295,7 @@
             "type": "string",
             "description": "A URI for the logo of the token list; prefer SVG or PNG of size 256x256",
             "format": "uri",
-            "examples": [
-                "ipfs://QmXfzKRvjZz3u5JRgC4v5mGVbm9ahrUiB4DgzHBsnWbTMM"
-            ]
+            "examples": ["ipfs://QmXfzKRvjZz3u5JRgC4v5mGVbm9ahrUiB4DgzHBsnWbTMM"]
         }
     },
     "required": ["name", "timestamp", "version", "tokens"]

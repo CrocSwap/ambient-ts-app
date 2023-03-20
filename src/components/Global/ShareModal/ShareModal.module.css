@@ -1,16 +1,19 @@
+
+
 /* options control */
-.option_control_container {
+.option_control_container{
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding: 1rem;
 }
-.options_control_display_container {
+.options_control_display_container{
     display: flex;
     flex-direction: column;
+  
 }
 
-.options_control_display_container ul {
+.options_control_display_container ul{
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -19,46 +22,49 @@
     list-style: none;
 }
 
-.control_title {
-    color: var(--text-grey-light);
+.control_title{
+    color: var(--text-grey-light)
 }
 
-.url_link {
+.url_link{
     width: 100%;
-
+    
     display: flex;
     flex-direction: row;
     align-items: center;
     display: grid;
     grid-template-columns: 1fr 50px;
     gap: 8px;
-    color: var(--text-highlight);
+    color: var(--text-highlight)
 }
 
-.url_link div {
+.url_link div{
     cursor: pointer;
     display: flex;
     justify-content: flex-end;
     padding: 0 4px;
+    
 }
 
-.url_link input {
+.url_link input{
     outline: none;
     border: none;
     color: var(--text-grey-light);
     background: var(--dark1);
     padding: 8px 1rem;
     border-radius: var(--border-radius);
+    
+
 }
 
-.share_links_container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
+.share_links_container{
+display: flex;
+flex-direction: row;
+align-items: center;
+gap: 4px;
 }
 
-.social_link_container {
+.social_link_container{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -66,13 +72,13 @@
     height: 130px;
     width: 130px;
     color: var(--text-grey-light);
-
-    transition: all var(--animation-speed) ease-in-out;
+   
+    transition: all var(--animation-speed) ease-in-out
 }
 
-.social_link_container:hover {
-    background: var(--dark3);
+.social_link_container:hover{
+    background: var(--dark3)
 }
-.social_link_container:hover {
-    color: var(--text-grey-white);
+.social_link_container:hover  {
+    color: var(--text-grey-white)
 }
