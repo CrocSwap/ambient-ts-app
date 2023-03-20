@@ -1180,14 +1180,6 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
-                    // const _width =
-                    //     (Math.abs(
-                    //         scaleData.xScale(scaleData.xScale.domain()[0]) -
-                    //             scaleData.xScale(scaleData.xScale.domain()[1]),
-                    //     ) *
-                    //         6) /
-                    //     100;
-
                     const _width = 65; // magic number of pixels to blur surrounding price
 
                     selection
@@ -4204,8 +4196,6 @@ export default function Chart(props: ChartData) {
                 .attr('height', 10)
                 .attr('width', 1.5)
                 .attr('id', 'crossHairBgX');
-
-            // crosshairDefsX.append('feOffset').attr('dy', '5').attr('dx','5').attr('result', 'bg');
 
             crosshairDefsX
                 .append('feFlood')
