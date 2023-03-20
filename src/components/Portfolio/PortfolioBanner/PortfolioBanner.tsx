@@ -1,15 +1,15 @@
+// START: Import React and Dongles
+import { Dispatch, SetStateAction } from 'react';
+import Blockies from 'react-blockies';
+import { ChainSpec } from '@crocswap-libs/sdk';
+
+// START: Import JSX Components
+import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
+
+// START: Import Other Local Files
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
-import Blockies from 'react-blockies';
 
-// import { AiOutlineSetting } from 'react-icons/ai';
-// import { FiPlus } from 'react-icons/fi';
-// import { IoMdCheckmark } from 'react-icons/io';
-import { Dispatch, SetStateAction } from 'react';
-// import SnackbarComponent from '../../../components/Global/SnackbarComponent/SnackbarComponent';
-// import { motion } from 'framer-motion';
-import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
-import { ChainSpec } from '@crocswap-libs/sdk';
 interface PortfolioBannerPropsIF {
     ensName: string;
     activeAccount: string;
