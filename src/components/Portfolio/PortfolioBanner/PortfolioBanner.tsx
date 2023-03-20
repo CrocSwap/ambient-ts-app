@@ -36,7 +36,10 @@ export default function PortfolioBanner(props: propsIF) {
         : activeAccount.toLowerCase();
 
     const myBlockies = (
-        <Blockies seed={blockiesSeed} scale={7.4} bgColor={'#171D27'} />
+        <Blockies //  bgColor={'#171D27'} <-- keep until we decide to not use a custom background color
+            seed={blockiesSeed}
+            scale={7.4}
+        />
     );
 
     const truncatedAccountAddress = connectedAccountActive
@@ -62,7 +65,7 @@ export default function PortfolioBanner(props: propsIF) {
                 chainData={chainData}
             />
             <div className={styles.nft_container}>
-                {imageData.slice(0, 3).map((image: string) => (
+                {imageData.slice(1, 3).map((image: string) => (
                     <img
                         src={image}
                         alt='nft'
