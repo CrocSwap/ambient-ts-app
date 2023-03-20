@@ -11,7 +11,9 @@ export const filterTokensByChain = (tkns: Array<TokenIF>, chain: number) => {
 
 export const getCurrentTokens = (chainId: string) => {
     const tokensInLocalStorage = localStorage.getItem('testTokens');
-    const allTokens = tokensInLocalStorage ? JSON.parse(tokensInLocalStorage) : '';
+    const allTokens = tokensInLocalStorage
+        ? JSON.parse(tokensInLocalStorage)
+        : '';
     const tokensOnChain = filterTokensByChain(
         allTokens ? allTokens : tempBackupTokens,
         parseInt(chainId),

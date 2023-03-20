@@ -52,6 +52,7 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
+    isPositionInRange: boolean;
 }
 
 // React functional component
@@ -61,7 +62,7 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         isEmpty,
-        // isPositionEmpty,
+        isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
@@ -70,6 +71,7 @@ export default function RangesMenu(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
+        isPositionInRange,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -227,9 +229,9 @@ export default function RangesMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
-        // !isPositionInRange &&
-        // !isPositionEmpty &&
-        // userMatchesConnectedAccount &&
+        !isPositionInRange &&
+        !isPositionEmpty &&
+        userMatchesConnectedAccount &&
         view1;
     // ----------------------
 

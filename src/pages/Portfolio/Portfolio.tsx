@@ -618,6 +618,7 @@ export default function Portfolio(props: propsIF) {
         imageData: connectedAccountActive ? userImageData : secondaryImageData,
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        chainData: chainData,
     };
 
     const profileSettingsProps = {

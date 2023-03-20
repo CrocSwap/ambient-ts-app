@@ -9,6 +9,7 @@ import { Dispatch, SetStateAction } from 'react';
 // import SnackbarComponent from '../../../components/Global/SnackbarComponent/SnackbarComponent';
 // import { motion } from 'framer-motion';
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
+import { ChainSpec } from '@crocswap-libs/sdk';
 interface PortfolioBannerPropsIF {
     ensName: string;
     activeAccount: string;
@@ -16,6 +17,7 @@ interface PortfolioBannerPropsIF {
     resolvedAddress: string;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     connectedAccountActive: boolean;
+    chainData: ChainSpec;
 }
 
 export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
@@ -26,11 +28,16 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
         resolvedAddress,
         // setShowProfileSettings,
         connectedAccountActive,
+        chainData,
     } = props;
     const ensNameAvailable = ensName !== '';
 
     const myBlockies = (
-        <Blockies seed={resolvedAddress || activeAccount} scale={7.4} bgColor={'#171D27'} />
+        <Blockies
+            seed={resolvedAddress || activeAccount}
+            scale={7.4}
+            bgColor={'#171D27'}
+        />
     );
 
     const truncatedAccountAddress = connectedAccountActive
@@ -63,7 +70,9 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
     // );
 
     const blockiesToDisplay =
-        (resolvedAddress || connectedAccountActive) && myBlockies ? myBlockies : null;
+        (resolvedAddress || connectedAccountActive) && myBlockies
+            ? myBlockies
+            : null;
 
     return (
         <div className={styles.rectangle_container}>
@@ -92,6 +101,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 truncatedAccountAddress={truncatedAccountAddress}
                 connectedAccountActive={connectedAccountActive}
                 blockiesToDisplay={blockiesToDisplay}
+                chainData={chainData}
             />
             <div className={styles.nft_container}>
                 {/* {imageData[0] ? <img src={imageData[0]} alt='nft' /> : null} */}

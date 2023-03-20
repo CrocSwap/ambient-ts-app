@@ -1,5 +1,8 @@
 // START: Import Local Files
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import {
     // setDenomInBase,
     toggleDidUserFlipDenom,
@@ -19,7 +22,9 @@ interface RepositionDenominationSwitchPropsIF {
 // TODO:  ... which token to initialize the display too, if it's not necessary in the
 // TODO   ... end, please remove the value from props
 
-export default function RepositionDenominationSwitch(props: RepositionDenominationSwitchPropsIF) {
+export default function RepositionDenominationSwitch(
+    props: RepositionDenominationSwitchPropsIF,
+) {
     const { baseTokenSymbol, quoteTokenSymbol } = props;
     // const dispatch = useAppDispatch();
 
@@ -35,7 +40,11 @@ export default function RepositionDenominationSwitch(props: RepositionDenominati
         <div className={styles.denomination_switch}>
             {/* <div>Denomination</div> */}
             <button
-                className={!isDenomBase ? styles.active_button : styles.non_active_button}
+                className={
+                    !isDenomBase
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={() => {
                     dispatch(toggleDidUserFlipDenom());
 
@@ -46,7 +55,11 @@ export default function RepositionDenominationSwitch(props: RepositionDenominati
                 {baseTokenSymbol}
             </button>
             <button
-                className={isDenomBase ? styles.active_button : styles.non_active_button}
+                className={
+                    isDenomBase
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 // onClick={() => setIsDenomBaseLocal(!isDenomBaseLocal)}
                 onClick={() => {
                     dispatch(toggleDidUserFlipDenom());

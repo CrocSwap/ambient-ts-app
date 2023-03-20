@@ -5,7 +5,9 @@ export const useBypassConfirm = (): [
     (item: string, pref: boolean) => void,
 ] => {
     // holds map of user preferences for bypassing confirmation modals by module (bool) in local state
-    const [bypassConfirm, setBypassConfirm] = useState<Map<string, boolean> | undefined>();
+    const [bypassConfirm, setBypassConfirm] = useState<
+        Map<string, boolean> | undefined
+    >();
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user') as string);

@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { formatAmountOld } from '../../../../../utils/numbers';
 
 import styles from '../SidebarSearchResults.module.css';
-import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
+import {
+    TokenIF,
+    TokenPairIF,
+    TempPoolIF,
+} from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import { useState, useEffect } from 'react';
 interface propsIF {
@@ -24,7 +28,13 @@ interface PoolLIPropsIF {
 }
 
 function PoolLI(props: PoolLIPropsIF) {
-    const { pool, chainId, getTokenByAddress, handleClick, cachedPoolStatsFetch } = props;
+    const {
+        pool,
+        chainId,
+        getTokenByAddress,
+        handleClick,
+        cachedPoolStatsFetch,
+    } = props;
 
     // hold base and quote token data objects in local state
     const [baseToken, setBaseToken] = useState<TokenIF | null>();
@@ -33,11 +43,19 @@ function PoolLI(props: PoolLIPropsIF) {
     // get data objects for base and quote tokens after initial render
     useEffect(() => {
         // array of acknowledged tokens from user data obj in local storage
-        const { ackTokens } = JSON.parse(localStorage.getItem('user') as string);
+        const { ackTokens } = JSON.parse(
+            localStorage.getItem('user') as string,
+        );
         // fn to check local storage and token map for token data
-        const findTokenData = (addr: string, chn: string): TokenIF | undefined => {
+        const findTokenData = (
+            addr: string,
+            chn: string,
+        ): TokenIF | undefined => {
             // look for token data obj in token map
-            const tokenFromMap: TokenIF | undefined = getTokenByAddress(addr.toLowerCase(), chn);
+            const tokenFromMap: TokenIF | undefined = getTokenByAddress(
+                addr.toLowerCase(),
+                chn,
+            );
             // look for token data obj in acknowledged token list
             const tokenFromAckList: TokenIF | undefined = ackTokens.find(
                 (ackToken: TokenIF) =>
@@ -45,7 +63,8 @@ function PoolLI(props: PoolLIPropsIF) {
                     ackToken.address.toLowerCase() === addr.toLowerCase(),
             );
             // single variable to hold either retrieved token
-            const outputToken: TokenIF | undefined = tokenFromMap ?? tokenFromAckList;
+            const outputToken: TokenIF | undefined =
+                tokenFromMap ?? tokenFromAckList;
             // return retrieved token data object
             return outputToken;
         };
@@ -74,7 +93,9 @@ function PoolLI(props: PoolLIPropsIF) {
                 1,
             );
             const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
-            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
+            const volumeString = volume
+                ? '$' + formatAmountOld(volume)
+                : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
@@ -90,7 +111,10 @@ function PoolLI(props: PoolLIPropsIF) {
     // TODO:  ... this needs to be part and parcel with nesting instances in an <ol> element
 
     return (
-        <li className={styles.card_container} onClick={() => handleClick(pool.base, pool.quote)}>
+        <li
+            className={styles.card_container}
+            onClick={() => handleClick(pool.base, pool.quote)}
+        >
             <p>
                 {baseToken?.symbol ?? '--'} / {quoteToken?.symbol ?? '--'}
             </p>
@@ -101,15 +125,25 @@ function PoolLI(props: PoolLIPropsIF) {
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
+    const {
+        searchedPools,
+        getTokenByAddress,
+        tokenPair,
+        chainId,
+        cachedPoolStatsFetch,
+    } = props;
 
     const navigate = useNavigate();
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;
         const tokenAString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase() ? baseAddr : quoteAddr;
+            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+                ? baseAddr
+                : quoteAddr;
         const tokenBString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase() ? quoteAddr : baseAddr;
+            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+                ? quoteAddr
+                : baseAddr;
         navigate(
             '/trade/market/chain=' +
                 chainId +
@@ -133,7 +167,9 @@ export default function PoolsSearchResults(props: propsIF) {
                     <ol className={styles.main_result_container}>
                         {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
                             <PoolLI
-                                key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
+                                key={`sidebar_searched_pool_${JSON.stringify(
+                                    pool,
+                                )}`}
                                 chainId={chainId}
                                 handleClick={handleClick}
                                 pool={pool}

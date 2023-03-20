@@ -14,8 +14,6 @@
     position: absolute;
     bottom: 0;
     right: 0;
-
- 
 }
 
 /* .footer svg {
@@ -37,9 +35,8 @@
     gap: 0.25rem;
 }
 
-.block_number_div span{
-    color: var(--text-grey-white)
-
+.block_number_div span {
+    color: var(--text-grey-white);
 }
 
 /* page block sign */
@@ -64,7 +61,12 @@
     border-radius: inherit;
 }
 .page_block_sign:before {
-    background: linear-gradient(45deg, transparent, transparent 40%, rgb(40, 2, 2));
+    background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        rgb(40, 2, 2)
+    );
     filter: blur(32px);
 }
 

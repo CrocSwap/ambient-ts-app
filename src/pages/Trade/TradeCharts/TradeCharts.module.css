@@ -27,8 +27,8 @@
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 
-    box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca, 0 0 50px #0ba9ca,
-        0 0 80px #0ba9ca;
+    box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca,
+        0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
 }
 .tutorial_button:hover {
     color: var(--text-grey-white);

@@ -13,8 +13,11 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
     blockiesToDisplay: JSX.Element | null;
+    chainData: ChainSpec;
 }
 import styles from './PortfolioBannerAccount.module.css';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 // const variants = {
 //     open: {
@@ -33,7 +36,9 @@ import styles from './PortfolioBannerAccount.module.css';
 
 //     },
 // };
-export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPropsIF) {
+export default function PortfolioBannerAccount(
+    props: IPortfolioBannerAccountPropsIF,
+) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
     const {
@@ -43,17 +48,14 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
-        // blockiesToDisplay
-        // connectedAccountActive,
+        chainData,
     } = props;
 
-    // console.log({ ensNameAvailable });
-    // console.log({ ensName });
-    // console.log({ resolvedAddress });
-    // console.log({ activeAccount });
-    // console.log({ truncatedAccountAddress });
+    const blockExplorer = chainData.blockExplorer;
 
-    const ensNameToDisplay = ensNameAvailable ? ensName : truncatedAccountAddress;
+    const ensNameToDisplay = ensNameAvailable
+        ? ensName
+        : truncatedAccountAddress;
 
     const addressToDisplay = resolvedAddress
         ? resolvedAddress
@@ -67,9 +69,19 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
     const [copiedData, setCopiedData] = useState('');
 
     function handleCopyEnsName() {
-        copy(ensNameAvailable ? ensName : resolvedAddress ? resolvedAddress : activeAccount);
+        copy(
+            ensNameAvailable
+                ? ensName
+                : resolvedAddress
+                ? resolvedAddress
+                : activeAccount,
+        );
         setCopiedData(
-            ensNameAvailable ? ensName : resolvedAddress ? resolvedAddress : activeAccount,
+            ensNameAvailable
+                ? ensName
+                : resolvedAddress
+                ? resolvedAddress
+                : activeAccount,
         );
 
         setOpenSnackbar(true);
@@ -104,7 +116,22 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         },
     };
 
-    const ambientLogoDisplay = <img src={ambientLogo} alt='' className={styles.ambi_logo} />;
+    const ambientLogoDisplay = (
+        <img src={ambientLogo} alt='' className={styles.ambi_logo} />
+    );
+
+    function handleOpenExplorer(address: string) {
+        if (address && blockExplorer) {
+            const explorerUrl = `${blockExplorer}address/${address}`;
+            window.open(explorerUrl);
+        }
+    }
+    function handleOpenMainnetExplorer(address: string) {
+        if (address) {
+            const explorerUrl = `https://etherscan.io/address/${address}`;
+            window.open(explorerUrl);
+        }
+    }
 
     return (
         <motion.main
@@ -133,9 +160,37 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}
+                        {ensNameToDisplay ? <FiCopy size={'12px'} /> : null}
+                        {ensNameToDisplay ? (
+                            <FiExternalLink
+                                size={'12px'}
+                                onClick={(e) => {
+                                    if (chainData.isTestNet) {
+                                        // ENS lookup not supported on Görli etherscan
+                                        handleOpenMainnetExplorer(ensName);
+                                    } else {
+                                        handleOpenExplorer(ensName);
+                                    }
+
+                                    e.stopPropagation();
+                                }}
+                            />
+                        ) : null}
                     </span>
                     <span className={styles.hash} onClick={handleCopyAddress}>
                         {addressToDisplay}
+                        {addressToDisplay ? <FiCopy size={'12px'} /> : null}
+                        {addressToDisplay ? (
+                            <FiExternalLink
+                                size={'12px'}
+                                onClick={(e) => {
+                                    handleOpenExplorer(
+                                        resolvedAddress || activeAccount,
+                                    );
+                                    e.stopPropagation();
+                                }}
+                            />
+                        ) : null}
                     </span>
                 </div>
             </div>

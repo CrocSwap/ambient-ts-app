@@ -1,16 +1,14 @@
-.apr{
+.apr {
     display: flex;
     flex-direction: row;
     align-items: baseline;
     gap: 8px;
-    
 }
 
-.align_center{
+.align_center {
     display: flex;
     justify-content: center;
     /* align-items: center; */
-
 }
 
 .apr p {
@@ -18,14 +16,17 @@
 
     font-weight: 100;
     letter-spacing: -0.02em;
-
-   
 }
 
 .apr_green p {
     /* apr/green */
 
-    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
+    background: linear-gradient(
+        90deg,
+        #15be6f 32.38%,
+        #8fe9bf 51.39%,
+        #15be6f 68.17%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -37,7 +38,12 @@
 .apr_red p {
     /* apr/green */
 
-    background: linear-gradient(90deg, #be4515 32.38%, #de5a2e 51.39%, #be5315 68.17%);
+    background: linear-gradient(
+        90deg,
+        #be4515 32.38%,
+        #de5a2e 51.39%,
+        #be5315 68.17%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

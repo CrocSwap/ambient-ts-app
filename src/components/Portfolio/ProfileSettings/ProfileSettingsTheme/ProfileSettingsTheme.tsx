@@ -104,7 +104,11 @@ export default function ProfileSettingsTheme() {
         setIsOpen(false);
     };
     return (
-        <motion.div initial={false} animate={isOpen ? 'open' : 'closed'} className={styles.menu}>
+        <motion.div
+            initial={false}
+            animate={isOpen ? 'open' : 'closed'}
+            className={styles.menu}
+        >
             <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setIsOpen(!isOpen)}

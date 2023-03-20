@@ -11,7 +11,10 @@ import {
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -50,7 +53,10 @@ interface propsIF {
     setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
-    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    changeState?: (
+        isOpen: boolean | undefined,
+        candleData: CandleData | undefined,
+    ) => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
@@ -106,7 +112,8 @@ export default function Transactions(props: propsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase =
+        tradeData.quoteToken.address.toLowerCase();
 
     const changesByUserMatchingSelectedTokens = changesByUser.filter((tx) => {
         if (
@@ -141,11 +148,15 @@ export default function Transactions(props: propsIF) {
     });
 
     const [transactionData, setTransactionData] = useState(
-        isOnPortfolioPage ? activeAccountTransactionData || [] : changesByPoolWithoutFills,
+        isOnPortfolioPage
+            ? activeAccountTransactionData || []
+            : changesByPoolWithoutFills,
     );
 
-    const isConnectedUserTxDataLoading = dataLoadingStatus?.isConnectedUserTxDataLoading;
-    const isLookupUserTxDataLoading = dataLoadingStatus?.isLookupUserTxDataLoading;
+    const isConnectedUserTxDataLoading =
+        dataLoadingStatus?.isConnectedUserTxDataLoading;
+    const isLookupUserTxDataLoading =
+        dataLoadingStatus?.isLookupUserTxDataLoading;
     const isPoolTxDataLoading = dataLoadingStatus?.isPoolTxDataLoading;
 
     const isTxDataLoadingForPortfolio =
@@ -163,15 +174,24 @@ export default function Transactions(props: propsIF) {
 
     const shouldDisplayNoTableData = !transactionData.length;
 
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 2000); // debounce 1 second
-    const debouncedShouldDisplayNoTableData = useDebounce(shouldDisplayNoTableData, 1000); // debounce 1 second
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(
+        shouldDisplayLoadingAnimation,
+        2000,
+    ); // debounce 1 second
+    const debouncedShouldDisplayNoTableData = useDebounce(
+        shouldDisplayNoTableData,
+        1000,
+    ); // debounce 1 second
 
-    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
+    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] =
+        useState(false);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
             'time',
-            isShowAllEnabled && !isCandleSelected ? changesByPoolWithoutFills : transactionData,
+            isShowAllEnabled && !isCandleSelected
+                ? changesByPoolWithoutFills
+                : transactionData,
         );
 
     function handleUserSelected() {
@@ -201,7 +221,10 @@ export default function Transactions(props: propsIF) {
                 if (changesInSelectedCandle !== undefined) {
                     setTransactionData(changesInSelectedCandle);
                     dispatch(
-                        setDataLoadingStatus({ datasetName: 'candleData', loadingStatus: false }),
+                        setDataLoadingStatus({
+                            datasetName: 'candleData',
+                            loadingStatus: false,
+                        }),
                     );
                 }
                 // setIsDataLoading(false);
@@ -226,7 +249,8 @@ export default function Transactions(props: propsIF) {
     const max1400px = useMediaQuery('(max-width: 1400px)');
     const max1700px = useMediaQuery('(max-width: 1700px)');
 
-    const showColumns = (max1400px && !showSidebar) || (max1700px && showSidebar);
+    const showColumns =
+        (max1400px && !showSidebar) || (max1700px && showSidebar);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -249,11 +273,16 @@ export default function Transactions(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
+    }, [
+        account,
+        isShowAllEnabled,
+        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
+    ]);
 
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+    const indexOfFirstTransaction =
+        indexOfLastTransaction - transactionsPerPage;
     const currentTransactions = sortedTransactions?.slice(
         indexOfFirstTransaction,
         indexOfLastTransaction,
@@ -266,11 +295,16 @@ export default function Transactions(props: propsIF) {
 
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
     const usePaginateDataOrNull =
-        expandTradeTable && largeScreenView ? currentTransactions : sortedTransactions;
+        expandTradeTable && largeScreenView
+            ? currentTransactions
+            : sortedTransactions;
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
-        const handler = setTimeout(() => setDebouncedIsShowAllEnabled(isShowAllEnabled), 5000);
+        const handler = setTimeout(
+            () => setDebouncedIsShowAllEnabled(isShowAllEnabled),
+            5000,
+        );
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
@@ -299,7 +333,10 @@ export default function Transactions(props: propsIF) {
                         );
                     }
                     dispatch(
-                        setDataLoadingStatus({ datasetName: 'poolTxData', loadingStatus: false }),
+                        setDataLoadingStatus({
+                            datasetName: 'poolTxData',
+                            loadingStatus: false,
+                        }),
                     );
                 })
                 .catch(console.log);
@@ -323,7 +360,12 @@ export default function Transactions(props: propsIF) {
                 //  omitKnockout: 'true',
                 addValue: 'true',
             }),
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId, chainData.poolIndex],
+        [
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData.chainId,
+            chainData.poolIndex,
+        ],
     );
 
     const {
@@ -551,7 +593,9 @@ export default function Transactions(props: propsIF) {
         },
     ];
 
-    const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
+    const headerStyle = isOnPortfolioPage
+        ? styles.portfolio_header
+        : styles.trade_header;
 
     const headerColumnsDisplay = (
         <ul className={`${styles.header} ${headerStyle}`}>
@@ -623,12 +667,19 @@ export default function Transactions(props: propsIF) {
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 
-    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
+    const expandStyle = expandTradeTable
+        ? 'calc(100vh - 10rem)'
+        : mobileViewHeight;
 
-    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+    const portfolioPageStyle = props.isOnPortfolioPage
+        ? 'calc(100vh - 19.5rem)'
+        : expandStyle;
 
     return (
-        <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
+        <section
+            className={styles.main_list_container}
+            style={{ height: portfolioPageStyle }}
+        >
             {headerColumnsDisplay}
             {debouncedShouldDisplayLoadingAnimation ? (
                 <TransactionsSkeletons />

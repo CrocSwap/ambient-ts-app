@@ -126,14 +126,22 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <section>
                 <p>Range Min:</p>
                 <h2 className={styles.low_range}>
-                    {isAmbient ? '0' : isOnTradeRoute ? lowRangeDisplay : minRangeDenomByMoneyness}
+                    {isAmbient
+                        ? '0'
+                        : isOnTradeRoute
+                        ? lowRangeDisplay
+                        : minRangeDenomByMoneyness}
                 </h2>
             </section>
 
             <section>
                 <p>Range Max:</p>
                 <h2 className={styles.high_range}>
-                    {isAmbient ? '∞' : isOnTradeRoute ? highRangeDisplay : maxRangeDenomByMoneyness}
+                    {isAmbient
+                        ? '∞'
+                        : isOnTradeRoute
+                        ? highRangeDisplay
+                        : maxRangeDenomByMoneyness}
                 </h2>
             </section>
         </div>
@@ -161,7 +169,13 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 {pooledContent}
                 {earnedContent}
                 {priceStatusContent}
-                <Apy amount={positionApy || undefined} fs='48px' lh='60px' center showTitle />
+                <Apy
+                    amount={positionApy || undefined}
+                    fs='48px'
+                    lh='60px'
+                    center
+                    showTitle
+                />
             </div>
         </div>
     );

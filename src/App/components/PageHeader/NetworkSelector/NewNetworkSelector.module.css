@@ -1,69 +1,60 @@
-.menu{
+.menu {
     z-index: 999;
     position: relative;
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
     color: var(--text-grey-white);
-   
 }
 
-.menu ul, .menu li{
+.menu ul,
+.menu li {
     list-style: none;
     margin: 0;
     padding: 10px;
-   
 }
 
-
-.menu ul{
+.menu ul {
     display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: var(--dark2)
+    flex-direction: column;
+    gap: 10px;
+    background: var(--dark2);
 }
-.main_container{
+.main_container {
     position: absolute;
     top: 60px;
     right: 0;
-    
 }
 
-.main_container li{
-  
-       
-        display: flex;
-        
-        color: var(--text-grey-white);
-      
+.main_container li {
+    display: flex;
+
+    color: var(--text-grey-white);
 }
 
-.main_button{
+.main_button {
     -webkit-appearance: button;
     background: var(--dark2);
-  color: var(--text-grey-white);
-  border: none;
- padding: 4px 10px;
-  /* padding: 4px 2rem; */
- border-radius: 4px ;
-min-width: 140px;
-max-width: 300px;
-  cursor: pointer;
- 
-  /* text-align: left; */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
- 
+    color: var(--text-grey-white);
+    border: none;
+    padding: 4px 10px;
+    /* padding: 4px 2rem; */
+    border-radius: 4px;
+    min-width: 140px;
+    max-width: 300px;
+    cursor: pointer;
+
+    /* text-align: left; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .main_button path {
     fill: var(--text-grey-white);
-  }
+}
 
-  .network_item_container{
-    
+.network_item_container {
     /* padding: 10px 1.3rem; */
     cursor: pointer;
     padding: 10px 0;
@@ -78,11 +69,10 @@ max-width: 300px;
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white)
-
+    color: var(--text-grey-white);
 }
 
-.network_color{
+.network_color {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -97,4 +87,4 @@ max-width: 300px;
     bottom: -8px;
     border: 3px solid white;
     border-radius: 50%;
-  }
+}

@@ -34,7 +34,9 @@ export default function GlobalPopup(props: GlobalPopupProps) {
     // ) : null;
 
     return (
-        <div className={`${showGlobalPopupStyle} ${placementStyle} ${styles.container}`}>
+        <div
+            className={`${showGlobalPopupStyle} ${placementStyle} ${styles.container}`}
+        >
             <header>
                 <p />
                 <h3>{props.popupTitle}</h3>

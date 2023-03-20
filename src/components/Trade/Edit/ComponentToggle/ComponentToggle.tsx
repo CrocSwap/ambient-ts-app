@@ -7,13 +7,21 @@ export default function ComponentToggle() {
     return (
         <div className={styles.liqtype_buttons_container}>
             <button
-                className={!expertModeLiq ? styles.active_button : styles.non_active_button}
+                className={
+                    !expertModeLiq
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={() => setExpertModeLiq(!expertModeLiq)}
             >
                 Guided Mode
             </button>
             <button
-                className={expertModeLiq ? styles.active_button : styles.non_active_button}
+                className={
+                    expertModeLiq
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={() => setExpertModeLiq(!expertModeLiq)}
             >
                 Expert Mode

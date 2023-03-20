@@ -28,7 +28,9 @@ const { chains, provider, webSocketProvider } = configureChains(
     [goerli, avalanche, avalancheFuji],
     [
         infuraProvider({
-            apiKey: process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+            apiKey:
+                process.env.REACT_APP_INFURA_KEY ||
+                '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
         }),
         // alchemyProvider({
         //     apiKey: process.env.REACT_APP_ALCHEMY_ID || '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS',
@@ -71,7 +73,9 @@ const client = createClient({
 // const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
 // const SERVER_URL = 'https://kvng1p7egepw.usemoralis.com:2053/server';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const root = ReactDOM.createRoot(
+    document.getElementById('root') as HTMLElement,
+);
 
 root.render(
     <React.StrictMode>

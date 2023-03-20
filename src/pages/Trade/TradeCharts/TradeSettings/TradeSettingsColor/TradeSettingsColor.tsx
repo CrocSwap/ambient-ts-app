@@ -68,14 +68,25 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         return (
             <DefaultTooltip
                 interactive
-                title={<SketchPicker color={color} onChangeComplete={onChangeComplete} />}
+                title={
+                    <SketchPicker
+                        color={color}
+                        onChangeComplete={onChangeComplete}
+                    />
+                }
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
                 leaveDelay={200}
             >
-                <div className={styles.square_picker_container} onClick={onClick}>
-                    <div className={styles.square_picker} style={{ background: color }} />
+                <div
+                    className={styles.square_picker_container}
+                    onClick={onClick}
+                >
+                    <div
+                        className={styles.square_picker}
+                        style={{ background: color }}
+                    />
                     <label>{label}</label>
                 </div>
             </DefaultTooltip>

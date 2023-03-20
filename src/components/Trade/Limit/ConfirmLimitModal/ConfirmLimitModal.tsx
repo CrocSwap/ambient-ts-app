@@ -49,7 +49,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         endDisplayPrice,
         bypassConfirm,
     } = props;
-
     const [transactionApproved, setTransactionApproved] =
         useState<boolean>(false);
 
