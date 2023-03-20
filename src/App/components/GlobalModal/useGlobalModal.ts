@@ -12,13 +12,6 @@ export const useGlobalModal = (initialMode = false) => {
     const [title, setTitle] = useState<string>('');
 
     // click handlers to to open and close the modal
-
-    // const openGlobalModal = (page: string) => {
-    //   setIsGlobalModalOpen(true)
-    //     setCurrentPage(page)
-
-    // }
-
     const openGlobalModal = (content: React.ReactNode, title?: string) => {
         setIsGlobalModalOpen(true);
         setCurrentContent(content);
