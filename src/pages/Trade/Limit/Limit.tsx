@@ -701,12 +701,6 @@ export default function Limit(props: propsIF) {
         setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
     };
 
-    const confirmLimitModalOrNull = isModalOpen ? (
-        <Modal onClose={handleModalClose} title='Limit Confirmation'>
-            <ConfirmLimitModal {...confirmLimitModalProps} />
-        </Modal>
-    ) : null;
-
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const loginButton = (
@@ -977,7 +971,11 @@ export default function Limit(props: propsIF) {
                     loginButton
                 )}
             </ContentContainer>
-            {confirmLimitModalOrNull}
+            {isModalOpen && (
+                <Modal onClose={handleModalClose} title='Limit Confirmation'>
+                    <ConfirmLimitModal {...confirmLimitModalProps} />
+                </Modal>
+            )}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}
