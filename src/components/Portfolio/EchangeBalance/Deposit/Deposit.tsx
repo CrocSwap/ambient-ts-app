@@ -54,17 +54,31 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
+    /* 
+        below is the magic number (60000) determined by trial and error 
+        to avoid a metamask error that the additional cost 
+        of gas would exceed the user's ETH balance by decreasing
+        the amount of ETH being deposited by the estimated gas
+         cost of the transaction.
+    */
+
+    const estimatedGasAmountForDepositTransaction = 60000;
+
+    const numberOfWeiInGwei = 1e9;
+
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!gasPriceInGwei && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
-                  /* 
-                        below is the magic number (60000) determined by trial and error 
-                        to avoid a metamask error that the additional cost 
-                        of gas would exceed the user's ETH balance by decreasing
-                        the amount of ETH being deposited by the estimated gas
-                        cost of the transaction.
-                    */
-                  .sub(BigNumber.from(Math.floor(gasPriceInGwei * 60000 * 1e9)))
+
+                  .sub(
+                      BigNumber.from(
+                          Math.floor(
+                              gasPriceInGwei *
+                                  estimatedGasAmountForDepositTransaction *
+                                  numberOfWeiInGwei,
+                          ),
+                      ),
+                  )
                   .toString()
             : tokenWalletBalance;
 
@@ -245,7 +259,6 @@ export default function Deposit(props: propsIF) {
     };
 
     const depositFn = async () => {
-        console.log({ depositQtyNonDisplay });
         if (depositQtyNonDisplay) await deposit(depositQtyNonDisplay);
     };
 
