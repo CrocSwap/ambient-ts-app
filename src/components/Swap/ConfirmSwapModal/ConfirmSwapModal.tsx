@@ -16,10 +16,7 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 // START: Import Other Local Files
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import {
-    allSkipConfirmMethodsIF,
-    skipConfirmIF,
-} from '../../../App/hooks/useSkipConfirm';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -41,7 +38,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    bypassConfirmSwap: skipConfirmIF;
     bypassConfirm: allSkipConfirmMethodsIF;
 }
 
@@ -63,7 +59,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        bypassConfirmSwap,
         bypassConfirm,
     } = props;
 
@@ -261,7 +256,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <Button
                         title='Send Swap'
                         action={() => {
-                            bypassConfirmSwap.setValue(tempBypassConfirm);
+                            bypassConfirm.swap.setValue(tempBypassConfirm);
                             initiateSwapMethod();
                             setShowConfirmation(false);
                         }}

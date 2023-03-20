@@ -44,8 +44,6 @@ interface propsIF {
     showExtraInfo: boolean;
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
     bypassConfirmSwap: skipConfirmIF;
-    tempBypassConfirm: boolean;
-    setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function BypassConfirmSwapButton(props: propsIF) {

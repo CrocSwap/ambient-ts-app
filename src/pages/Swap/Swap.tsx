@@ -167,12 +167,6 @@ export default function Swap(props: propsIF) {
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
-    // this creates a layer that can hold a locally-toggled value in state
-    // ... which isn't persisted until user takes addition affirmative action
-    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(
-        bypassConfirm.swap.isEnabled,
-    );
-
     const receiptData = useAppSelector((state) => state.receiptData);
 
     const sessionReceipts = receiptData.sessionReceipts;
@@ -542,8 +536,6 @@ export default function Swap(props: propsIF) {
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
         bypassConfirmSwap: bypassConfirm.swap,
-        tempBypassConfirm: tempBypassConfirm,
-        setTempBypassConfirm: setTempBypassConfirm,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
