@@ -138,8 +138,7 @@ export default function RoomDropdown(props: propsIF) {
             props.userCurrentPool,
         ).then((result: any) => {
             if (result.status === 'OK') {
-                console.log(result);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return true; // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }
         });
 
@@ -230,81 +229,6 @@ export default function RoomDropdown(props: propsIF) {
         });
         const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
         favoritePoolsArray.splice(0, middleIndex);
-    }, [favePools]);
-
-    useEffect(() => {
-        rooms?.map((pool: PoolIF) => {
-            if (!roomArray.some(({ name }) => name === pool.name)) {
-                roomArray.push(pool);
-            }
-        });
-        const fave:
-            | PoolIF[]
-            | {
-                  name: string;
-                  base: {
-                      name: string;
-                      address: string;
-                      symbol: string;
-                      decimals: number;
-                      chainId: number;
-                      logoURI: string;
-                  };
-                  quote: {
-                      name: string;
-                      address: string;
-                      symbol: string;
-                      decimals: number;
-                      chainId: number;
-                      logoURI: string;
-                  };
-                  chainId: string;
-                  poolId: number;
-                  speed: number;
-                  id: number;
-              }[] = [];
-        favePools.pools.map((pool: PoolIF) => {
-            const favPool = {
-                name: pool.base.symbol + '/' + pool.quote.symbol,
-                base: {
-                    name: pool.base.name,
-                    address: pool.base.address,
-                    symbol: pool.base.symbol,
-                    decimals: pool.base.decimals,
-                    chainId: pool.base.chainId,
-                    logoURI: pool.base.logoURI,
-                },
-                quote: {
-                    name: pool.quote.name,
-                    address: pool.quote.address,
-                    symbol: pool.quote.symbol,
-                    decimals: pool.quote.decimals,
-                    chainId: pool.quote.chainId,
-                    logoURI: pool.quote.logoURI,
-                },
-                chainId: pool.chainId,
-                poolId: pool.poolId,
-                speed: findSpeed(pool),
-                id: findId(pool),
-            };
-
-            if (!roomArray.some(({ name }) => name === favPool.name)) {
-                roomArray.push(favPool);
-            }
-            for (let x = 0; x < roomArray.length; x++) {
-                if (favPool.name === roomArray[x].name) {
-                    roomArray.push(roomArray.splice(x, 1)[0]);
-                } else {
-                    // do nothing
-                }
-            }
-            fave.push(favPool);
-        });
-        setFavoritePoolsArray(() => {
-            return fave;
-        });
-        // const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-        // favoritePoolsArray.splice(0, middleIndex);
         if (props.selectedRoom === 'Global') {
             // do nothing
         } else {
@@ -316,7 +240,7 @@ export default function RoomDropdown(props: propsIF) {
             const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
             favoritePoolsArray.splice(0, middleIndex);
         }
-    }, [props.selectedRoom]);
+    }, [favePools, props.selectedRoom]);
 
     const [isActive, setIsActive] = useState(false);
 

@@ -174,7 +174,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 <>
                     {words.map((word, index) => (
                         <span
-                            onClick={() => handleOpenExplorer(url)}
+                            onClick={() => handleOpenExplorer(word)}
                             key={index}
                             style={
                                 urlPattern.test(word)

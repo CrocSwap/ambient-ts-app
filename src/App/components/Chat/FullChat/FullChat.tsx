@@ -446,7 +446,7 @@ export default function FullChat(props: FullChatPropsIF) {
     }
 
     const favButton =
-        readableRoomName !== 'Global' ? (
+        readableRoomName !== 'GLOBAL' ? (
             <button
                 className={styles.favorite_button}
                 onClick={handleFavButton}
