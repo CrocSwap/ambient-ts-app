@@ -2637,6 +2637,8 @@ export default function Chart(props: ChartData) {
                 return a.liqPrices - b.liqPrices;
             });
 
+            if (!sortLiqaData) return;
+
             const closestMin = sortLiqaData.reduce(function (prev, curr) {
                 return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
                     Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
