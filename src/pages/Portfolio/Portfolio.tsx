@@ -186,14 +186,14 @@ export default function Portfolio(props: propsIF) {
                 .token(selectedToken.address)
                 .wallet(connectedAccount)
                 .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
-                .catch(console.log);
+                .catch(console.error);
             crocEnv
                 .token(selectedToken.address)
                 .balance(connectedAccount)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
 
         if (recheckTokenBalances) {
@@ -243,7 +243,7 @@ export default function Portfolio(props: propsIF) {
                         .allowance(connectedAccount);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
                 setRecheckTokenAllowance(false);
             }
@@ -282,7 +282,7 @@ export default function Portfolio(props: propsIF) {
                         dispatch(setResolvedAddressRedux(newResolvedAddress));
                     }
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
@@ -323,7 +323,7 @@ export default function Portfolio(props: propsIF) {
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
-                    console.log({ error });
+                    console.warn({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
@@ -442,7 +442,7 @@ export default function Portfolio(props: propsIF) {
                         setResolvedAddressNativeToken(newNativeToken);
                     }
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
                 try {
                     const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
@@ -475,7 +475,7 @@ export default function Portfolio(props: propsIF) {
                     });
                     setResolvedAddressErc20Tokens(updatedTokens);
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
             }
         })();
