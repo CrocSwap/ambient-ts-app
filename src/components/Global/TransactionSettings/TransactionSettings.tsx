@@ -86,7 +86,7 @@ export default function TransactionSettings(props: propsIF) {
             />
 
             <div className={styles.button_container}>
-                {shouldDisplaySlippageTolerance && (
+                {module !== 'Limit Order' ? (
                     <Button
                         title={
                             currentSlippage > 0
@@ -95,6 +95,12 @@ export default function TransactionSettings(props: propsIF) {
                         }
                         action={updateSettings}
                         disabled={!(currentSlippage > 0)}
+                        flat
+                    />
+                ) : (
+                    <Button
+                        title='Confirm Settings'
+                        action={updateSettings}
                         flat
                     />
                 )}

@@ -48,19 +48,6 @@ export default function SwapHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const settingsModalOrNull = isModalOpen ? (
-        <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings
-                module={isOnTradeRoute ? 'Market Order' : 'Swap'}
-                toggleFor='swap'
-                slippage={swapSlippage}
-                isPairStable={isPairStable}
-                onClose={closeModal}
-                bypassConfirm={bypassConfirm.swap}
-            />
-        </Modal>
-    ) : null;
-
     const tradeRouteHeader = (
         <ContentHeader>
             <div
@@ -118,7 +105,18 @@ export default function SwapHeader(props: propsIF) {
     return (
         <>
             {isOnTradeRoute ? tradeRouteHeader : mainHeader}
-            {settingsModalOrNull}
+            {isModalOpen && (
+                <Modal noHeader title='modal' onClose={closeModal}>
+                    <TransactionSettings
+                        module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                        toggleFor='swap'
+                        slippage={swapSlippage}
+                        isPairStable={isPairStable}
+                        onClose={closeModal}
+                        bypassConfirm={bypassConfirm.swap}
+                    />
+                </Modal>
+            )}
         </>
     );
 }

@@ -960,7 +960,7 @@ export default function Limit(props: propsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={
-                                bypassConfirm
+                                bypassConfirm.limit.isEnabled
                                     ? handleLimitButtonClickWithBypass
                                     : openModal
                             }
