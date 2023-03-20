@@ -35,12 +35,7 @@ export default function PortfolioBanner(props: propsIF) {
         ? resolvedAddress.toLowerCase()
         : activeAccount.toLowerCase();
 
-    const myBlockies = (
-        <Blockies //  bgColor={'#171D27'} <-- keep until we decide to not use a custom background color
-            seed={blockiesSeed}
-            scale={7.4}
-        />
-    );
+    const myBlockies = <Blockies seed={blockiesSeed} scale={7.4} />;
 
     const truncatedAccountAddress = connectedAccountActive
         ? trimString(activeAccount, 6, 6, '…')
