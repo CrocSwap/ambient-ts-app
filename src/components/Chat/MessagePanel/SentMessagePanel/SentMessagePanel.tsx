@@ -2,8 +2,6 @@ import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
-// import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-// import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -145,22 +143,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
-    //     </SnackbarComponent>
-    // );
-    // function handleCopyAddress(item: string) {
-    //     copy(item);
-    //     setOpenSnackbar(true);
-    // }
-
     function mentionedMessage() {
         const messagesArray = props.message.message.split(' ');
         if (showAvatar === true) {
@@ -239,8 +221,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // console.log({ location });
-
     const myBlockies = (
         <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />
     );
@@ -297,11 +277,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         loadingStatus: true,
                                     }),
                                 );
-                                // handleCopyAddress(
-                                //     props.message.ensName === 'defaultValue'
-                                //         ? props.message.walletID
-                                //         : props.message.ensName,
-                                // );
                                 navigate(
                                     `/${
                                         props.message.ensName === 'defaultValue'
@@ -333,8 +308,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 <p className={styles.message_date}>
                     {formatAMPM(props.message.createdAt)}
                 </p>
-
-                {/* {snackbarContent} */}
             </div>
             {hasSeparator ? <hr /> : ''}
         </div>
