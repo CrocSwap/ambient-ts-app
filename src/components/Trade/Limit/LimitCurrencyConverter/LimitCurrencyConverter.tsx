@@ -1,7 +1,16 @@
 // START: Import React and Dongles
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import {
     // reverseTokensInRTK,
@@ -74,10 +83,16 @@ interface propsIF {
 
     isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    getRecentTokens: (
+        options?: getRecentTokensParamsIF | undefined,
+    ) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -156,28 +171,41 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(isTokenAPrimary);
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] =
+        useState<boolean>(isTokenAPrimary);
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
 
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
-    const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
-    const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
-    const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
+    const tokenABalance = isSellTokenBase
+        ? baseTokenBalance
+        : quoteTokenBalance;
+    const tokenBBalance = isSellTokenBase
+        ? quoteTokenBalance
+        : baseTokenBalance;
+    const tokenADexBalance = isSellTokenBase
+        ? baseTokenDexBalance
+        : quoteTokenDexBalance;
+    const tokenBDexBalance = isSellTokenBase
+        ? quoteTokenDexBalance
+        : baseTokenDexBalance;
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
     const tokenASurplusMinusTokenAQtyNum =
-        tokenASurplusMinusTokenARemainderNum >= 0 ? tokenASurplusMinusTokenARemainderNum : 0;
+        tokenASurplusMinusTokenARemainderNum >= 0
+            ? tokenASurplusMinusTokenARemainderNum
+            : 0;
     const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
         ? isWithdrawFromDexChecked
             ? parseFloat(tokenABalance || '0')
-            : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0')
+            : parseFloat(tokenABalance || '0') -
+              parseFloat(tokenAQtyLocal || '0')
         : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-        ? parseFloat(tokenABalance || '0') + tokenASurplusMinusTokenARemainderNum
+        ? parseFloat(tokenABalance || '0') +
+          tokenASurplusMinusTokenARemainderNum
         : isWithdrawFromDexChecked
         ? parseFloat(tokenABalance || '0')
         : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
@@ -251,7 +279,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
     }, [tradeData.shouldLimitDirectionReverse]);
 
     useEffect(() => {
-        isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        isTokenAPrimaryLocal
+            ? handleTokenAChangeEvent()
+            : handleTokenBChangeEvent();
     }, [
         poolExists,
         limitTickDisplayPrice,
@@ -266,7 +296,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
         if (!poolExists) {
             setLimitAllowed(false);
             if (poolExists === undefined) setLimitButtonErrorMessage('...');
-            if (poolExists === false) setLimitButtonErrorMessage('Pool Not Initialized');
+            if (poolExists === false)
+                setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
@@ -297,7 +328,10 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 }
             } else {
                 if (isWithdrawFromDexChecked) {
-                    if (tokenAAmount > parseFloat(tokenADexBalance) + parseFloat(tokenABalance)) {
+                    if (
+                        tokenAAmount >
+                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                    ) {
                         setLimitAllowed(false);
                         setLimitButtonErrorMessage(
                             `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
@@ -362,13 +396,17 @@ export default function LimitCurrencyConverter(props: propsIF) {
         } else {
             if (!isDenominationInBase) {
                 rawTokenBQty = isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity)
+                    ? (1 / limitTickDisplayPrice) *
+                      parseFloat(tradeData.primaryQuantity)
                     : // ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
-                      limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity);
+                      limitTickDisplayPrice *
+                      parseFloat(tradeData.primaryQuantity);
             } else {
                 rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity)
-                    : limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity);
+                    ? (1 / limitTickDisplayPrice) *
+                      parseFloat(tradeData.primaryQuantity)
+                    : limitTickDisplayPrice *
+                      parseFloat(tradeData.primaryQuantity);
             }
             handleLimitButtonMessage(parseFloat(tradeData.primaryQuantity));
         }
@@ -480,13 +518,17 @@ export default function LimitCurrencyConverter(props: propsIF) {
         } else {
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity)
+                    ? limitTickDisplayPrice *
+                      parseFloat(tradeData.primaryQuantity)
                     : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                      (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity);
+                      (1 / limitTickDisplayPrice) *
+                      parseFloat(tradeData.primaryQuantity);
             } else {
                 rawTokenAQty = !isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity)
-                    : (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity);
+                    ? limitTickDisplayPrice *
+                      parseFloat(tradeData.primaryQuantity)
+                    : (1 / limitTickDisplayPrice) *
+                      parseFloat(tradeData.primaryQuantity);
             }
 
             handleLimitButtonMessage(rawTokenAQty);
@@ -541,17 +583,25 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
-                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
-                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
+                tokenAQtyCoveredByWalletBalance={
+                    tokenAQtyCoveredByWalletBalance
+                }
+                tokenAQtyCoveredBySurplusBalance={
+                    tokenAQtyCoveredBySurplusBalance
+                }
                 tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
                 tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
+                tokenASurplusMinusTokenARemainderNum={
+                    tokenASurplusMinusTokenARemainderNum
+                }
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                indicateActiveTokenListsChanged={
+                    indicateActiveTokenListsChanged
+                }
                 gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
                 verifyToken={verifyToken}
@@ -572,7 +622,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
             <div
                 className={
-                    disableReverseTokens ? styles.arrow_container_disabled : styles.arrow_container
+                    disableReverseTokens
+                        ? styles.arrow_container_disabled
+                        : styles.arrow_container
                 }
                 onClick={() => {
                     if (!disableReverseTokens) {
@@ -605,17 +657,29 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     tokenBBalance={tokenBBalance}
                     tokenADexBalance={tokenADexBalance}
                     tokenBDexBalance={tokenBDexBalance}
-                    tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
-                    tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
-                    tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                    tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                    tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
+                    tokenAQtyCoveredByWalletBalance={
+                        tokenAQtyCoveredByWalletBalance
+                    }
+                    tokenAQtyCoveredBySurplusBalance={
+                        tokenAQtyCoveredBySurplusBalance
+                    }
+                    tokenAWalletMinusTokenAQtyNum={
+                        tokenAWalletMinusTokenAQtyNum
+                    }
+                    tokenASurplusMinusTokenAQtyNum={
+                        tokenASurplusMinusTokenAQtyNum
+                    }
+                    tokenASurplusMinusTokenARemainderNum={
+                        tokenASurplusMinusTokenARemainderNum
+                    }
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                    indicateActiveTokenListsChanged={
+                        indicateActiveTokenListsChanged
+                    }
                     gasPriceInGwei={gasPriceInGwei}
                     isOrderCopied={isOrderCopied}
                     verifyToken={verifyToken}
