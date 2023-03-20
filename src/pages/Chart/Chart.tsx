@@ -6928,45 +6928,62 @@ export default function Chart(props: ChartData) {
             .style('display', 'inline');
 
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
-        const center = (noGoZoneMax - noGoZoneMin) / 2;
-        const controlData = noGoZoneMin;
-        // while(controlData <= noGoZoneMax) {
 
-        // }
-        //     d3.select(d3CanvasNoGoZone.current)
-        //     .transition()
-        //     .duration(1000)
-        //     .tween('animate.circles', function() {
-        //       return function(t) {
-        //         noGoZoneBoudnaries[0].forEach(function(d:any,i:any){
-        //           d = d.trans.i(t);
-        //         });
-        //         // drawCircles('black');
-        //       };
-        //   });
-        const interval = setInterval(() => {
-            // d3.select(d3CanvasNoGoZone.current)
-            // .transition()
-            // .duration(2000)
-            // .attr('width', 200)
-            // .attr('height', 200)
-            // .on('end', function() {
-            //     console.log('Animasyon bitti!');
-            // })
+        const beforeCanvas = d3
+            .select(d3CanvasNoGoZone.current)
+            .select('canvas') as any;
+        const canvas = beforeCanvas.node() as any;
+        const ctx = canvas.getContext('2d');
 
+        let requestId: any = null;
+        let y = scaleData.yScale(noGoZoneMax);
+
+        function animate() {
+            ctx.strokeStyle = 'rgba(235, 235, 255, 0.01)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'transparent';
+
+            ctx.strokeRect(
+                -1,
+                scaleData.yScale(noGoZoneMax),
+                Math.abs(
+                    scaleData.xScale(scaleData.xScale.domain()[0]) -
+                        scaleData.xScale(scaleData.xScale.domain()[1]),
+                ) + 10,
+                Math.abs(
+                    scaleData.yScale(noGoZoneMax) -
+                        scaleData.yScale(noGoZoneMin),
+                ),
+            );
+
+            if (y > scaleData.yScale(noGoZoneMax) - 50) {
+                ctx.strokeRect(
+                    -1,
+                    y,
+                    Math.abs(
+                        scaleData.xScale(scaleData.xScale.domain()[0]) -
+                            scaleData.xScale(scaleData.xScale.domain()[1]),
+                    ),
+                    Math.abs(
+                        scaleData.yScale(noGoZoneMax) -
+                            scaleData.yScale(noGoZoneMin),
+                    ) + 20,
+                );
+
+                y -= 10;
+
+                ctx.strokeStyle = 'transparent';
+            }
+
+            requestId = requestAnimationFrame(animate);
+        }
+
+        animate();
+        setTimeout(() => {
+            if (requestId !== null) cancelAnimationFrame(requestId);
             d3.select(d3CanvasNoGoZone.current)
                 .select('canvas')
-                .style('display', 'inline');
-
-            setTimeout(() => {
-                d3.select(d3CanvasNoGoZone.current)
-                    .select('canvas')
-                    .style('display', 'none');
-            }, 200);
-        }, 500);
-
-        setTimeout(() => {
-            interval && clearInterval(interval);
+                .style('display', 'none');
         }, 1000);
     };
 
