@@ -9,7 +9,6 @@ export const useUrlParams = (): {
 } => {
     // current URL pathway
     const { pathname } = useLocation();
-    // const { params } = useParams();
 
     // function to isolate the URL params from the full pathway
     const makeParamsSlug = (url: string) => {
@@ -54,15 +53,11 @@ export const useUrlParams = (): {
         );
     }, [paramsSlug]);
 
-    // console.log({ paramsSlug });
-
     const findParamValue = (key: string) =>
         urlParams.find((param) => param[0] === key)?.slice(-1)[0];
 
     const tokenAparam = findParamValue('tokenA');
-    // console.log({ tokenAparam });
     const tokenBparam = findParamValue('tokenB');
-    // console.log({ tokenBparam });
 
     const sortedTokens =
         tokenAparam && tokenBparam
