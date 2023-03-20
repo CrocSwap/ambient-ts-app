@@ -44,6 +44,7 @@ import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
+import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -100,13 +101,11 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
-
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -151,11 +150,10 @@ export default function Swap(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        bypassConfirm,
-        toggleBypassConfirm,
         lastBlockNumber,
         tokenPairLocal,
         dexBalancePrefs,
+        bypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -164,8 +162,16 @@ export default function Swap(props: propsIF) {
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
 
+    // this apparently different from the `bypassConfirm` that I am working with
+    // it should possibly be renamed something different or better documented
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
     const [showExtraInfo, setShowExtraInfo] = useState(false);
+
+    // this creates a layer that can hold a locally-toggled value in state
+    // ... which isn't persisted until user takes addition affirmative action
+    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(
+        bypassConfirm.swap.isEnabled,
+    );
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -535,8 +541,9 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
-        bypassConfirm: bypassConfirm,
-        toggleBypassConfirm: toggleBypassConfirm,
+        bypassConfirmSwap: bypassConfirm.swap,
+        tempBypassConfirm: tempBypassConfirm,
+        setTempBypassConfirm: setTempBypassConfirm,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
@@ -553,14 +560,6 @@ export default function Swap(props: propsIF) {
         <Modal onClose={handleModalClose} title='Swap Confirmation'>
             <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
-    ) : null;
-
-    const relativeModalOrNull = isRelativeModalOpen ? (
-        <RelativeModal onClose={closeRelativeModal} title='Relative Modal'>
-            You are about to do something that will lose you a lot of money. If
-            you think you are smarter than the awesome team that programmed
-            this, press dismiss.
-        </RelativeModal>
     ) : null;
 
     // calculate price of gas for swap
@@ -689,7 +688,7 @@ export default function Swap(props: propsIF) {
         tokensBank: importedTokens,
         priceImpact: priceImpact,
         setImportedTokens: setImportedTokens,
-        chainId: chainId as string,
+        chainId: chainId,
         isLiq: false,
         poolPriceDisplay: poolPriceDisplay,
         isTokenAPrimary: isTokenAPrimary,
@@ -799,7 +798,6 @@ export default function Swap(props: propsIF) {
                         openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
                         bypassConfirm={bypassConfirm}
-                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                     {navigationMenu}
                     <motion.div
@@ -839,18 +837,15 @@ export default function Swap(props: propsIF) {
                                     // user has hide confirmation modal off
                                     <SwapButton
                                         onClickFn={
-                                            bypassConfirm
+                                            bypassConfirm.swap.isEnabled
                                                 ? handleSwapButtonClickWithBypass
                                                 : openModal
-                                        }
-                                        isSwapConfirmationBypassEnabled={
-                                            bypassConfirm
                                         }
                                         swapAllowed={swapAllowed}
                                         swapButtonErrorMessage={
                                             swapButtonErrorMessage
                                         }
-                                        bypassConfirm={bypassConfirm}
+                                        bypassConfirmSwap={bypassConfirm.swap}
                                     />
                                 ) : (
                                     // user has hide confirmation modal on
@@ -866,7 +861,16 @@ export default function Swap(props: propsIF) {
                     {priceImpactWarningOrNull}
                 </ContentContainer>
                 {confirmSwapModalOrNull}
-                {relativeModalOrNull}
+                {isRelativeModalOpen && (
+                    <RelativeModal
+                        onClose={closeRelativeModal}
+                        title='Relative Modal'
+                    >
+                        You are about to do something that will lose you a lot
+                        of money. If you think you are smarter than the awesome
+                        team that programmed this, press dismiss.
+                    </RelativeModal>
+                )}
             </div>
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}

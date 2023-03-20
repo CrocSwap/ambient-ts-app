@@ -16,6 +16,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -40,8 +41,7 @@ interface propsIF {
     txErrorCode: string;
     txErrorMessage: string;
     resetConfirmation: () => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     isAdd: boolean;
 }
 
@@ -67,7 +67,6 @@ export default function ConfirmRangeModal(props: propsIF) {
         setShowConfirmation,
         resetConfirmation,
         bypassConfirm,
-        toggleBypassConfirm,
         isAdd,
     } = props;
 
@@ -132,8 +131,9 @@ export default function ConfirmRangeModal(props: propsIF) {
         />
     ) : null;
 
-    const [currentSkipConfirm, setCurrentSkipConfirm] =
-        useState<boolean>(bypassConfirm);
+    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
+        bypassConfirm.range.isEnabled,
+    );
 
     const toggleFor = 'range';
 
@@ -223,8 +223,8 @@ export default function ConfirmRangeModal(props: propsIF) {
             </section>
             {selectedRangeOrNull}
             <ConfirmationModalControl
-                currentSkipConfirm={currentSkipConfirm}
-                setCurrentSkipConfirm={setCurrentSkipConfirm}
+                tempBypassConfirm={currentSkipConfirm}
+                setTempBypassConfirm={setCurrentSkipConfirm}
                 toggleFor={toggleFor}
             />
         </>
@@ -268,17 +268,7 @@ export default function ConfirmRangeModal(props: propsIF) {
                                   } Position`
                         }
                         action={() => {
-                            console.log(
-                                `Sell Token Full name: ${dataTokenA.symbol} and quantity: ${tokenAQty}`,
-                            );
-                            console.log(
-                                `Buy Token Full name: ${
-                                    dataTokenB.symbol
-                                } and quantity: ${
-                                    tokenBQty !== '' ? tokenBQty : '0'
-                                }`,
-                            );
-                            toggleBypassConfirm(toggleFor, currentSkipConfirm);
+                            bypassConfirm.range.setValue(currentSkipConfirm);
                             sendTransaction();
                             setShowConfirmation(false);
                         }}

@@ -12,6 +12,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     onClose: () => void;
@@ -46,8 +47,7 @@ interface propsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     isPositionInRange: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -74,7 +74,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isTokenABase,
         isPositionInRange,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
 
     const { dataTokenA, dataTokenB } = tokenPair;
@@ -223,8 +222,9 @@ export default function ConfirmRepositionModal(props: propsIF) {
         />
     ) : null;
 
-    const [currentSkipConfirm, setCurrentSkipConfirm] =
-        useState<boolean>(bypassConfirm);
+    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
+        bypassConfirm.repo.isEnabled,
+    );
 
     const toggleFor = 'repo';
 
@@ -269,8 +269,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
             {tokenAmountDisplay}
             {selectedRangeOrNull}
             <ConfirmationModalControl
-                currentSkipConfirm={currentSkipConfirm}
-                setCurrentSkipConfirm={setCurrentSkipConfirm}
+                tempBypassConfirm={currentSkipConfirm}
+                setTempBypassConfirm={setCurrentSkipConfirm}
                 toggleFor={toggleFor}
             />
         </>
@@ -288,7 +288,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                                 : 'Send Reposition'
                         }
                         action={() => {
-                            toggleBypassConfirm(toggleFor, currentSkipConfirm);
+                            bypassConfirm.repo.setValue(currentSkipConfirm);
                             setShowConfirmation(false);
                             onSend();
                         }}

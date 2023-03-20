@@ -10,6 +10,7 @@ import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     onClose: () => void;
@@ -29,8 +30,7 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -48,7 +48,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         middleDisplayPrice,
         endDisplayPrice,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
 
     const [transactionApproved, setTransactionApproved] =
@@ -239,8 +238,9 @@ export default function ConfirmLimitModal(props: propsIF) {
         </div>
     );
 
-    const [currentSkipConfirm, setCurrentSkipConfirm] =
-        useState<boolean>(bypassConfirm);
+    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
+        bypassConfirm.limit.isEnabled,
+    );
 
     const toggleFor = 'limit';
 
@@ -257,8 +257,8 @@ export default function ConfirmLimitModal(props: propsIF) {
             {extraInfoData}
             {explanationText}
             <ConfirmationModalControl
-                currentSkipConfirm={currentSkipConfirm}
-                setCurrentSkipConfirm={setCurrentSkipConfirm}
+                tempBypassConfirm={currentSkipConfirm}
+                setTempBypassConfirm={setCurrentSkipConfirm}
                 toggleFor={toggleFor}
             />
         </div>
@@ -313,7 +313,7 @@ export default function ConfirmLimitModal(props: propsIF) {
                     <Button
                         title='Send Limit'
                         action={() => {
-                            toggleBypassConfirm(toggleFor, currentSkipConfirm);
+                            bypassConfirm.limit.setValue(currentSkipConfirm);
                             initiateLimitOrderMethod();
                             setShowConfirmation(false);
                         }}

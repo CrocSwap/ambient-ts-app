@@ -21,12 +21,12 @@ export default function TestPage(props: TestPageProps) {
         <section className={styles.main}>
             <p>
                 Confirmation for swap is:{' '}
-                {JSON.stringify(bypassConf.range.isEnabled)}
+                {JSON.stringify(bypassConf.swap.isEnabled)}
             </p>
-            <button onClick={() => bypassConf.range.enable()}>
+            <button onClick={() => bypassConf.swap.enable()}>
                 Turn it on!
             </button>
-            <button onClick={() => bypassConf.range.disable()}>
+            <button onClick={() => bypassConf.swap.disable()}>
                 Turn it off!
             </button>
         </section>

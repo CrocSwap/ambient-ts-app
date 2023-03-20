@@ -7,12 +7,16 @@ import TransactionSettings from '../../Global/TransactionSettings/TransactionSet
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import settingsIcon from '../../../assets/images/icons/settings.svg';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 // interface for props
 interface propsIF {
@@ -20,8 +24,7 @@ interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     shareOptionsDisplay: JSX.Element;
 }
 
@@ -33,7 +36,6 @@ export default function SwapHeader(props: propsIF) {
         isOnTradeRoute,
         openGlobalModal,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -54,8 +56,7 @@ export default function SwapHeader(props: propsIF) {
                 slippage={swapSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
+                bypassConfirm={bypassConfirm.swap}
             />
         </Modal>
     ) : null;
@@ -69,7 +70,10 @@ export default function SwapHeader(props: propsIF) {
             >
                 <AiOutlineShareAlt />
             </div>
-            <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+            <div
+                className={styles.token_info}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+            >
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>

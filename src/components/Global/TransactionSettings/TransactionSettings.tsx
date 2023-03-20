@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // START: Import Local Files
 import styles from './TransactionSettings.module.css';
@@ -8,6 +8,7 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import DividerDark from '../DividerDark/DividerDark';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
@@ -21,8 +22,7 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
     onClose: () => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: skipConfirmIF;
 }
 
 export default function TransactionSettings(props: propsIF) {
@@ -33,13 +33,7 @@ export default function TransactionSettings(props: propsIF) {
         isPairStable,
         onClose,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
-
-    useEffect(
-        () => console.log('initial value for bypass confirm: ' + bypassConfirm),
-        [],
-    );
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();
@@ -54,19 +48,17 @@ export default function TransactionSettings(props: propsIF) {
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
 
-    const [currentSkipConfirm, setCurrentSkipConfirm] =
-        useState<boolean>(bypassConfirm);
+    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
+        bypassConfirm.isEnabled,
+    );
 
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
-        console.log('we are updating settings!!!');
-        toggleBypassConfirm(toggleFor, currentSkipConfirm);
+        bypassConfirm.setValue(currentSkipConfirm);
         onClose();
     };
-
-    useEffect(() => console.log({ currentSkipConfirm }), [currentSkipConfirm]);
 
     return (
         <div className={styles.settings_container}>
@@ -87,8 +79,8 @@ export default function TransactionSettings(props: propsIF) {
             <DividerDark />
 
             <ConfirmationModalControl
-                currentSkipConfirm={currentSkipConfirm}
-                setCurrentSkipConfirm={setCurrentSkipConfirm}
+                tempBypassConfirm={currentSkipConfirm}
+                setTempBypassConfirm={setCurrentSkipConfirm}
                 toggleFor={toggleFor}
                 displayInSettings={true}
             />

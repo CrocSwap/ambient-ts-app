@@ -12,6 +12,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -31,10 +32,11 @@ interface propsIF {
     slippageTolerancePercentage: number;
     effectivePrice: number;
     isSellTokenBase: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    tempBypassConfirm: boolean;
+    setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
     sellQtyString: string;
     buyQtyString: string;
+    bypassConfirmSwap: skipConfirmIF;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -53,10 +55,11 @@ export default function ConfirmSwapModal(props: propsIF) {
         slippageTolerancePercentage,
         effectivePrice,
         isSellTokenBase,
-        bypassConfirm,
-        toggleBypassConfirm,
+        tempBypassConfirm,
+        setTempBypassConfirm,
         sellQtyString,
         buyQtyString,
+        bypassConfirmSwap,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -154,32 +157,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const extraInfoData = (
-        <div className={styles.extra_info_container}>
-            <div className={styles.row}>
-                <p>Expected Output</p>
-                <p>
-                    {buyQtyString} {buyTokenData.symbol}{' '}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Effective Conversion Rate</p>
-                <p>
-                    {isDenomBaseLocal
-                        ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Slippage Tolerance</p>
-                <p>{slippageTolerancePercentage}% </p>
-            </div>
-        </div>
-    );
-
-    const [currentSkipConfirm, setCurrentSkipConfirm] =
-        useState<boolean>(bypassConfirm);
-
     const toggleFor = 'swap';
 
     const fullTxDetails2 = (
@@ -195,18 +172,35 @@ export default function ConfirmSwapModal(props: propsIF) {
                 setIsDenomBase={setIsDenomBaseLocal}
                 isDenomBase={isDenomBaseLocal}
             />
-
-            {extraInfoData}
+            <div className={styles.extra_info_container}>
+                <div className={styles.row}>
+                    <p>Expected Output</p>
+                    <p>
+                        {buyQtyString} {buyTokenData.symbol}
+                    </p>
+                </div>
+                <div className={styles.row}>
+                    <p>Effective Conversion Rate</p>
+                    <p>
+                        {isDenomBaseLocal
+                            ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                    </p>
+                </div>
+                <div className={styles.row}>
+                    <p>Slippage Tolerance</p>
+                    <p>{slippageTolerancePercentage}% </p>
+                </div>
+            </div>
             <ConfirmationModalControl
-                currentSkipConfirm={currentSkipConfirm}
-                setCurrentSkipConfirm={setCurrentSkipConfirm}
+                tempBypassConfirm={tempBypassConfirm}
+                setTempBypassConfirm={setTempBypassConfirm}
                 toggleFor={toggleFor}
             />
         </div>
     );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
-    // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
             content={`Swapping ${sellQtyString} ${
@@ -258,13 +252,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <Button
                         title='Send Swap'
                         action={() => {
-                            console.log(
-                                `Sell Token symbol: ${sellTokenData.symbol} and quantity: ${sellQtyString}`,
-                            );
-                            console.log(
-                                `Buy Token symbol: ${buyTokenData.symbol} and quantity: ${buyQtyString}`,
-                            );
-                            toggleBypassConfirm(toggleFor, currentSkipConfirm);
+                            bypassConfirmSwap.setValue(tempBypassConfirm);
                             initiateSwapMethod();
                             setShowConfirmation(false);
                         }}

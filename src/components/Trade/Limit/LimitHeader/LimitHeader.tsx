@@ -9,27 +9,30 @@ import styles from './LimitHeader.module.css';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
     chainId: string;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function LimitHeader(props: propsIF) {
-    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm, toggleBypassConfirm } =
+    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm } =
         props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -48,8 +51,7 @@ export default function LimitHeader(props: propsIF) {
                 slippage={mintSlippage}
                 isPairStable={isPairStable}
                 onClose={closeModal}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
+                bypassConfirm={bypassConfirm.limit}
             />
         </Modal>
     ) : null;
@@ -63,7 +65,10 @@ export default function LimitHeader(props: propsIF) {
             >
                 <AiOutlineShareAlt />
             </div>
-            <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
+            <div
+                className={styles.token_info}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+            >
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>

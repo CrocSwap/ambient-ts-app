@@ -1,17 +1,17 @@
-import { useId, Dispatch, SetStateAction, useEffect } from 'react';
+import { useId, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
 
 interface propsIF {
-    currentSkipConfirm: boolean;
-    setCurrentSkipConfirm: Dispatch<SetStateAction<boolean>>;
+    tempBypassConfirm: boolean;
+    setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
     toggleFor: string;
     displayInSettings?: boolean;
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const { currentSkipConfirm, setCurrentSkipConfirm, displayInSettings } =
+    const { tempBypassConfirm, setTempBypassConfirm, displayInSettings } =
         props;
 
     const { pathname } = useLocation();
@@ -34,24 +34,18 @@ export default function ConfirmationModalControl(props: propsIF) {
         ? 'Repositions'
         : 'unhandled';
 
-    useEffect(() => console.log('initial value is: ' + currentSkipConfirm), []);
-
-    const label = displayInSettings ? (
-        <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
-    ) : (
-        <p>Skip this confirmation step in the future</p>
-    );
     return (
         <div className={styles.main_container}>
-            {label}
+            {displayInSettings ? (
+                <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
+            ) : (
+                <p>Skip this confirmation step in the future</p>
+            )}
             <Toggle2
                 key={compKey}
-                isOn={currentSkipConfirm}
+                isOn={tempBypassConfirm}
                 disabled={false}
-                handleToggle={() => {
-                    setCurrentSkipConfirm(!currentSkipConfirm);
-                    console.log('toggled!!');
-                }}
+                handleToggle={() => setTempBypassConfirm(!tempBypassConfirm)}
                 id='disabled_confirmation_modal_toggle'
             />
         </div>

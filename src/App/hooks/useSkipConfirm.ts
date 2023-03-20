@@ -3,6 +3,7 @@ import { useState } from 'react';
 export interface skipConfirmIF {
     moduleFor: string;
     isEnabled: boolean;
+    setValue: (newVal: boolean) => void;
     enable: () => void;
     disable: () => void;
     toggle: () => void;
@@ -42,6 +43,7 @@ export const useSkipConfirm = (module: string): skipConfirmIF => {
     return {
         moduleFor: module,
         isEnabled: pref,
+        setValue: (newVal: boolean) => updatePref(newVal),
         enable: () => updatePref(true),
         disable: () => updatePref(false),
         toggle: () => updatePref(!pref),

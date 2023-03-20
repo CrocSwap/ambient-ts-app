@@ -79,6 +79,7 @@ import {
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     account: string | undefined;
@@ -140,8 +141,7 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -208,7 +208,6 @@ export default function Range(props: propsIF) {
         acknowledgeToken,
         openGlobalPopup,
         bypassConfirm,
-        toggleBypassConfirm,
         dexBalancePrefs,
         setSimpleRangeWidth,
         simpleRangeWidth,
@@ -1176,7 +1175,6 @@ export default function Range(props: propsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            {/* <DenominationSwitch /> */}
         </div>
     );
 
@@ -1309,7 +1307,6 @@ export default function Range(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         bypassConfirm: bypassConfirm,
-        toggleBypassConfirm: toggleBypassConfirm,
     };
 
     const bypassConfirmButtonProps = {
@@ -1654,7 +1651,6 @@ export default function Range(props: propsIF) {
                     openGlobalModal={openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
                     bypassConfirm={bypassConfirm}
-                    toggleBypassConfirm={toggleBypassConfirm}
                 />
                 {navigationMenu}
                 <motion.div
@@ -1693,7 +1689,7 @@ export default function Range(props: propsIF) {
                                 !isInvalidRange
                             }
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
-                            bypassConfirm={bypassConfirm}
+                            bypassConfirmRange={bypassConfirm.range}
                             isAmbient={isAmbient}
                             isAdd={isAdd}
                         />
