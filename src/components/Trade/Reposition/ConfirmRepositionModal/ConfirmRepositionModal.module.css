@@ -13,21 +13,10 @@
     padding: 0 20px;
 }
 
-
-
-
-
-
-
-
-
 .confirm_range_modal_container {
     width: 400px;
     display: flex;
     flex-direction: column;
-
-
-   
 }
 
 /* range header */
@@ -50,7 +39,7 @@
     line-height: var(--header2-lh);
 
     font-weight: 200;
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
 }
 .fee_tier {
     font-size: 14px;
@@ -62,11 +51,8 @@
 }
 
 .tokens {
-
-
     display: flex;
     flex-direction: row;
-
 
     align-items: center;
     gap: 8px;
@@ -76,12 +62,9 @@
     width: 30px;
     height: 30px;
 
-
     border-radius: 50%;
     background: white;
 }
-
-
 
 .range_display {
     font-size: 14px;
@@ -139,17 +122,15 @@
 
     align-items: center;
     justify-content: space-between;
-
 }
 
-.detail_line div{
-   
+.detail_line div {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.divider{
+.divider {
     background: var(--dark1);
     height: 1px;
     width: 100%;
@@ -159,6 +140,3 @@
 } */
 
 /* modal */
-
-
-

@@ -77,7 +77,8 @@
     flex-direction: column;
     /* background-color: var(--dark1); */
     position: relative;
-    background: url(../../assets/images/backgrounds/background.png) no-repeat center center;
+    background: url(../../assets/images/backgrounds/background.png) no-repeat
+        center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -269,9 +270,8 @@
 
   } */
 
-
-  /* trade tabs dropdown */
-  .mobile_trades_dropdown{
+/* trade tabs dropdown */
+.mobile_trades_dropdown {
     width: 100%;
     position: relative;
     z-index: 999;
@@ -280,13 +280,9 @@
     border-radius: var(--border-radius);
     text-transform: capitalize;
     margin: 0 auto;
-
-   
-
- 
 }
 
-.mobile_trades_dropdown .active_mobile_trade_dropdown{
+.mobile_trades_dropdown .active_mobile_trade_dropdown {
     background: var(--dark3);
     outline: none;
     border: none;
@@ -304,14 +300,12 @@
     cursor: pointer;
 }
 
-.mobile_trades_dropdown .active_mobile_trade_dropdown:hover{
-    color: var(--text-grey-white)
+.mobile_trades_dropdown .active_mobile_trade_dropdown:hover {
+    color: var(--text-grey-white);
 }
 
-
-.mobile_trade_dropdown_items_containers, 
-.active_mobile_trade_dropdown_items_containers
-{
+.mobile_trade_dropdown_items_containers,
+.active_mobile_trade_dropdown_items_containers {
     position: absolute;
     background: var(--dark2);
     width: 100%;
@@ -323,27 +317,25 @@
     text-align: center;
 }
 
-.mobile_trade_dropdown_items_containers button, 
-.active_mobile_trade_dropdown_items_containers button{
-background: transparent;
-outline: none;
-border: none;
-text-align: center;
-color: var(--text-grey-light);
-padding: 8px;
-/* border-bottom: 1px solid var(--text-grey-dark); */
-text-align: start;
+.mobile_trade_dropdown_items_containers button,
+.active_mobile_trade_dropdown_items_containers button {
+    background: transparent;
+    outline: none;
+    border: none;
+    text-align: center;
+    color: var(--text-grey-light);
+    padding: 8px;
+    /* border-bottom: 1px solid var(--text-grey-dark); */
+    text-align: start;
 }
-.mobile_trade_dropdown_items_containers{
+.mobile_trade_dropdown_items_containers {
     top: 0;
- 
 }
 
-.active_mobile_trade_dropdown_items_containers
-{
+.active_mobile_trade_dropdown_items_containers {
     top: 3rem;
-opacity: 1;
-pointer-events: auto;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* end of pool not initialized */
@@ -367,8 +359,6 @@ pointer-events: auto;
     .right_col {
         padding-left: 30px;
     }
-
-  
 }
 @media (min-width: 320px) {
     .middle_content_style {

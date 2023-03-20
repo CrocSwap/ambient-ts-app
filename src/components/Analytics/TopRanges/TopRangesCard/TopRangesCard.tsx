@@ -19,7 +19,9 @@ export default function TopRangesCard(props: TopRangesCardProp) {
                         width='25px'
                     />
                     <img
-                        src={'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'}
+                        src={
+                            'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
+                        }
                         alt=''
                         width='25px'
                     />

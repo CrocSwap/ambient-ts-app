@@ -9,7 +9,9 @@ interface TransactionDetailControlPropsIF {
     item: ItemIF;
     handleChange: (slug: string) => void;
 }
-export default function TransactionDetailsControl(props: TransactionDetailControlPropsIF) {
+export default function TransactionDetailsControl(
+    props: TransactionDetailControlPropsIF,
+) {
     const { item, handleChange } = props;
 
     return (

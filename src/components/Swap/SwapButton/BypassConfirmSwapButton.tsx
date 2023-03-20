@@ -1,22 +1,25 @@
-import styles from './BypassConfirmSwapButton.module.css';
-
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
+// START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
+// START: Import JSX Components
+import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
+import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
+import TransactionException from '../../Global/TransactionException/TransactionException';
+import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import {
     CircleLoader,
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../Global/LoadingAnimations/CircleLoader/CircleLoader';
+
+// START: Import Other Local Files
+import styles from './BypassConfirmSwapButton.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
-import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../../Global/TransactionException/TransactionException';
-import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -36,15 +39,15 @@ interface propsIF {
     slippageTolerancePercentage: number;
     effectivePrice: number;
     isSellTokenBase: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
     sellQtyString: string;
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
     showBypassConfirm: boolean;
     showExtraInfo: boolean;
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
+    bypassConfirmSwap: skipConfirmIF;
 }
+
 export default function BypassConfirmSwapButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -63,8 +66,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
-    // console.log({ txErrorCode });
-    // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
@@ -77,7 +78,9 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${
+            content={`Swapping ${sellQtyString} ${
+                sellTokenData.symbol
+            } for ${buyQtyString} ${
                 buyTokenData.symbol
             }. Please check the ${'Metamask'} extension in your browser for notifications.
             `}
@@ -112,7 +115,11 @@ export default function BypassConfirmSwapButton(props: propsIF) {
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
+            ? JSON.parse(
+                  receiptData.sessionReceipts[
+                      receiptData.sessionReceipts.length - 1
+                  ],
+              )
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -128,7 +135,9 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         />
     );
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
@@ -139,7 +148,9 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             : confirmSendMessage;
 
     const buttonColor =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? 'orange'
             : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
             ? 'var(--negative)'
@@ -148,7 +159,9 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             : 'var(--text-highlight-dark)';
 
     const animationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException ? (
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException ? (
             <CircleLoaderFailed size='30px' />
         ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
             <CircleLoaderFailed size='30px' />
@@ -159,7 +172,9 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         );
 
     const buttonText =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? 'Transaction Exception'
             : isTransactionDenied
             ? 'Transaction Denied'
@@ -180,11 +195,17 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                         {animationDisplay}
                         {buttonText}
                     </div>
-                    {showExtraInfo ? <RiArrowUpSLine size={20} /> : <RiArrowDownSLine size={20} />}
+                    {showExtraInfo ? (
+                        <RiArrowUpSLine size={20} />
+                    ) : (
+                        <RiArrowDownSLine size={20} />
+                    )}
                 </button>
 
                 {showExtraInfo && (
-                    <section className={styles.extra_info_container}>{confirmationDisplay}</section>
+                    <section className={styles.extra_info_container}>
+                        {confirmationDisplay}
+                    </section>
                 )}
                 <span className={styles.close_icon_container}>
                     <button

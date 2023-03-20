@@ -35,10 +35,11 @@ export default function TokenInfo(props: ITokenInfoProps) {
     } = props;
 
     const [displayPrice, setDisplayPrice] = useState('');
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
-        undefined,
-    );
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
+        string | undefined
+    >(undefined);
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
+        useState<boolean>(true);
 
     const positionApyString =
         positionApy !== undefined
@@ -93,7 +94,12 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (crocEnv && baseTokenAddress && quoteTokenAddress && lastBlockNumber) {
+        if (
+            crocEnv &&
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            lastBlockNumber
+        ) {
             (async () => {
                 const spotPrice = await querySpotPrice(
                     crocEnv,
@@ -109,10 +115,13 @@ export default function TokenInfo(props: ITokenInfoProps) {
                         quoteTokenDecimals,
                     );
 
-                    const displayPriceWithDenom = isDenomBase ? 1 / displayPrice : displayPrice;
+                    const displayPriceWithDenom = isDenomBase
+                        ? 1 / displayPrice
+                        : displayPrice;
 
                     const displayPriceString =
-                        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+                        displayPriceWithDenom === Infinity ||
+                        displayPriceWithDenom === 0
                             ? '…'
                             : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toPrecision(4)
@@ -125,7 +134,13 @@ export default function TokenInfo(props: ITokenInfoProps) {
                 }
             })();
         }
-    }, [crocEnv, isDenomBase, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
+    }, [
+        crocEnv,
+        isDenomBase,
+        lastBlockNumber,
+        baseTokenAddress,
+        quoteTokenAddress,
+    ]);
 
     const aprColor =
         positionApy !== undefined
@@ -145,7 +160,9 @@ export default function TokenInfo(props: ITokenInfoProps) {
                             : styles.price_change_negative
                     }
                 >
-                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
+                    {poolPriceChangePercent === undefined
+                        ? '…'
+                        : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
             <div className={aprColor}>{positionApyString}</div>

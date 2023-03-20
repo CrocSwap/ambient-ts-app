@@ -68,7 +68,9 @@ export default function SidebarSearchResults(props: propsIF) {
                         searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}
                         setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        setCurrentTxActiveInTransactions={
+                            setCurrentTxActiveInTransactions
+                        }
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <OrdersSearchResults

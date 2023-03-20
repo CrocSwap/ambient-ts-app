@@ -45,7 +45,11 @@ export default function RelativeModal(props: RelativeModalProps) {
             >
                 {headerOrNull}
                 <section className={styles.modal_content}>
-                    <img src='https://100dayscss.com/codepen/alert.png' width='44' height='38' />
+                    <img
+                        src='https://100dayscss.com/codepen/alert.png'
+                        width='44'
+                        height='38'
+                    />
                     {children}
                 </section>
                 <button className={styles.footer_button} onClick={onClose}>

@@ -20,8 +20,15 @@ interface TransactionDetailsGraphIF {
     isOnPortfolioPage: boolean;
 }
 
-export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {
-    const { tx, transactionType, isBaseTokenMoneynessGreaterOrEqual, isOnPortfolioPage } = props;
+export default function TransactionDetailsGraph(
+    props: TransactionDetailsGraphIF,
+) {
+    const {
+        tx,
+        transactionType,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isOnPortfolioPage,
+    } = props;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -44,11 +51,15 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
     const mainnetBaseTokenAddress =
         baseTokenAddress === ZERO_ADDRESS
             ? baseTokenAddress
-            : testTokenMap.get(baseTokenAddress.toLowerCase() + '_' + chainId)?.split('_')[0];
+            : testTokenMap
+                  .get(baseTokenAddress.toLowerCase() + '_' + chainId)
+                  ?.split('_')[0];
     const mainnetQuoteTokenAddress =
         quoteTokenAddress === ZERO_ADDRESS
             ? quoteTokenAddress
-            : testTokenMap.get(quoteTokenAddress.toLowerCase() + '_' + chainId)?.split('_')[0];
+            : testTokenMap
+                  .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
+                  ?.split('_')[0];
 
     const { isConnected } = useAccount();
 
@@ -98,7 +109,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const time = () => {
                     switch (transactionType) {
                         case 'swap':
-                            return tx?.time !== undefined ? tx.time : new Date().getTime();
+                            return tx?.time !== undefined
+                                ? tx.time
+                                : new Date().getTime();
                         case 'limitOrder':
                             return tx?.timeFirstMint !== undefined
                                 ? tx?.timeFirstMint
@@ -119,9 +132,13 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
                 if (period !== undefined) {
-                    const numberofCandleNeeded = Math.floor((diff * 2) / (period * 1000));
+                    const numberofCandleNeeded = Math.floor(
+                        (diff * 2) / (period * 1000),
+                    );
 
-                    const startBoundary = Math.floor(new Date().getTime() / 1000);
+                    const startBoundary = Math.floor(
+                        new Date().getTime() / 1000,
+                    );
 
                     try {
                         const graphData = await fetchGraphData(
@@ -161,7 +178,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 .yScale(scaleData.yScale)
                 .crossValue((d: any) => d.time * 1000)
                 .mainValue((d: any) =>
-                    (!isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual)
+                    (
+                        !isOnPortfolioPage
+                            ? denominationsInBase
+                            : !isBaseTokenMoneynessGreaterOrEqual
+                    )
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected,
                 )
@@ -219,7 +240,12 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 return horizontalBand;
             });
         }
-    }, [scaleData, denominationsInBase, isOnPortfolioPage, !isBaseTokenMoneynessGreaterOrEqual]);
+    }, [
+        scaleData,
+        denominationsInBase,
+        isOnPortfolioPage,
+        !isBaseTokenMoneynessGreaterOrEqual,
+    ]);
 
     useEffect(() => {
         if (graphData !== undefined) {
@@ -237,7 +263,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 ])
                 .pad([0.05, 0.1]);
 
-            const xExtent = d3fc.extentDate().accessors([(d: any) => d.time * 1000]);
+            const xExtent = d3fc
+                .extentDate()
+                .accessors([(d: any) => d.time * 1000]);
 
             const xScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
@@ -354,25 +382,34 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             if (transactionType !== 'swap' && tx.positionType !== 'ambient') {
                 const topLineTick = (
-                    !isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual
+                    !isOnPortfolioPage
+                        ? denominationsInBase
+                        : !isBaseTokenMoneynessGreaterOrEqual
                 )
                     ? tx.bidTickInvPriceDecimalCorrected
                     : tx.bidTickPriceDecimalCorrected;
 
                 const lowLineTick = (
-                    !isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual
+                    !isOnPortfolioPage
+                        ? denominationsInBase
+                        : !isBaseTokenMoneynessGreaterOrEqual
                 )
                     ? tx.askTickInvPriceDecimalCorrected
                     : tx.askTickPriceDecimalCorrected;
 
-                const topLimit = topLineTick > lowLineTick ? topLineTick : lowLineTick;
-                const bottomLimit = topLineTick < lowLineTick ? topLineTick : lowLineTick;
+                const topLimit =
+                    topLineTick > lowLineTick ? topLineTick : lowLineTick;
+                const bottomLimit =
+                    topLineTick < lowLineTick ? topLineTick : lowLineTick;
 
                 const shouldRound = topLimit > 1 && bottomLimit > 1;
 
-                const diff = Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 8;
+                const diff =
+                    Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 8;
 
-                const lowerBoundaryFill = Math.abs(yScale.domain()[0] - bottomLimit);
+                const lowerBoundaryFill = Math.abs(
+                    yScale.domain()[0] - bottomLimit,
+                );
 
                 const lowerBoudnaryFactor = Math.ceil(lowerBoundaryFill / diff);
 
@@ -384,7 +421,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         (!isOnPortfolioPage
                             ? denominationsInBase
                             : !isBaseTokenMoneynessGreaterOrEqual)
-                            ? Math.round((bottomLimit - lowerBoundaryFill) / 10) * 10
+                            ? Math.round(
+                                  (bottomLimit - lowerBoundaryFill) / 10,
+                              ) * 10
                             : bottomLimit - lowerBoundaryFill;
                 } else {
                     for (let i = 1; i <= lowerBoudnaryFactor; i++) {
@@ -394,8 +433,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual)
                                 ? Math.round(
-                                      ((i === 1 ? bottomLimit : lowValues[i - 2]) -
-                                          Math.round(lowerBoundaryFill / lowerBoudnaryFactor / 10) *
+                                      ((i === 1
+                                          ? bottomLimit
+                                          : lowValues[i - 2]) -
+                                          Math.round(
+                                              lowerBoundaryFill /
+                                                  lowerBoudnaryFactor /
+                                                  10,
+                                          ) *
                                               10) /
                                           10,
                                   ) * 10
@@ -404,7 +449,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     }
                 }
 
-                const topBoundaryFill = Math.abs(yScale.domain()[1] - diff / 2 - topLimit);
+                const topBoundaryFill = Math.abs(
+                    yScale.domain()[1] - diff / 2 - topLimit,
+                );
                 const topBoudnaryFactor = Math.ceil(topBoundaryFill / diff);
 
                 const topValues: any = [];
@@ -426,7 +473,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                                 : !isBaseTokenMoneynessGreaterOrEqual)
                                 ? Math.round(
                                       ((i === 1 ? topLimit : topValues[i - 2]) +
-                                          Math.round(topBoundaryFill / topBoudnaryFactor / 10) *
+                                          Math.round(
+                                              topBoundaryFill /
+                                                  topBoudnaryFactor /
+                                                  10,
+                                          ) *
                                               10) /
                                           10,
                                   ) * 10
@@ -447,7 +498,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                             (!isOnPortfolioPage
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual)
-                                ? Math.round((topLimit - bandBoundaryFill) / 10) * 10
+                                ? Math.round(
+                                      (topLimit - bandBoundaryFill) / 10,
+                                  ) * 10
                                 : topLimit - bandBoundaryFill;
                     } else {
                         for (let i = 1; i < bandBoudnaryFactor; i++) {
@@ -457,10 +510,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                                     ? denominationsInBase
                                     : !isBaseTokenMoneynessGreaterOrEqual)
                                     ? Math.round(
-                                          (topLimit - bandBoundaryFill / (bandBoudnaryFactor / i)) /
+                                          (topLimit -
+                                              bandBoundaryFill /
+                                                  (bandBoudnaryFactor / i)) /
                                               10,
                                       ) * 10
-                                    : topLimit - bandBoundaryFill / (bandBoudnaryFactor / i);
+                                    : topLimit -
+                                      bandBoundaryFill /
+                                          (bandBoudnaryFactor / i);
                         }
                     }
                 }
@@ -469,14 +526,20 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 if (
                     shouldRound &&
-                    (!isOnPortfolioPage ? denominationsInBase : !isBaseTokenMoneynessGreaterOrEqual)
+                    (!isOnPortfolioPage
+                        ? denominationsInBase
+                        : !isBaseTokenMoneynessGreaterOrEqual)
                 ) {
                     linePrices =
                         Math.abs(
-                            Math.round(topLimit / 10) * 10 - Math.round(bottomLimit / 10) * 10,
+                            Math.round(topLimit / 10) * 10 -
+                                Math.round(bottomLimit / 10) * 10,
                         ) >
                         diff / 2
-                            ? [Math.round(topLimit / 10) * 10, Math.round(bottomLimit / 10) * 10]
+                            ? [
+                                  Math.round(topLimit / 10) * 10,
+                                  Math.round(bottomLimit / 10) * 10,
+                              ]
                             : [
                                   (Math.round(topLimit / 10) * 10 +
                                       Math.round(bottomLimit / 10) * 10) /
@@ -489,7 +552,13 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                             : [(topLimit + bottomLimit) / 2];
                 }
 
-                yAxis.tickValues([0, ...linePrices, ...lowValues, ...topValues, ...bandValues]);
+                yAxis.tickValues([
+                    0,
+                    ...linePrices,
+                    ...lowValues,
+                    ...topValues,
+                    ...bandValues,
+                ]);
             }
 
             const scaleData = {
@@ -519,9 +588,24 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             horizontalBand !== undefined &&
             priceLine !== undefined
         ) {
-            drawChart(graphData, scaleData, lineSeries, priceLine, crossPoint, horizontalBand);
+            drawChart(
+                graphData,
+                scaleData,
+                lineSeries,
+                priceLine,
+                crossPoint,
+                horizontalBand,
+            );
         }
-    }, [scaleData, lineSeries, priceLine, graphData, crossPoint, transactionType, horizontalBand]);
+    }, [
+        scaleData,
+        lineSeries,
+        priceLine,
+        graphData,
+        crossPoint,
+        transactionType,
+        horizontalBand,
+    ]);
 
     const drawChart = useCallback(
         (
@@ -533,7 +617,10 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             horizontalBand: any,
         ) => {
             if (graphData.length > 0) {
-                const xAxis = d3fc.axisBottom().scale(scaleData.xScale).ticks(5);
+                const xAxis = d3fc
+                    .axisBottom()
+                    .scale(scaleData.xScale)
+                    .ticks(5);
 
                 // const priceJoin = d3fc.dataJoin('g', 'priceJoin');
                 // const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');
@@ -544,11 +631,14 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
                 const horizontalBandData: any[] = [];
 
-                d3.select(d3PlotGraph.current).on('measure', function (event: any) {
-                    scaleData.xScale.range([0, event.detail.width]);
-                    scaleData.xScaleOriginal.range([0, event.detail.width]);
-                    scaleData.yScale.range([event.detail.height, 0]);
-                });
+                d3.select(d3PlotGraph.current).on(
+                    'measure',
+                    function (event: any) {
+                        scaleData.xScale.range([0, event.detail.width]);
+                        scaleData.xScaleOriginal.range([0, event.detail.width]);
+                        scaleData.yScale.range([event.detail.height, 0]);
+                    },
+                );
 
                 // Zoom
                 // d3.select(d3PlotGraph.current).on('measure.range', function (event: any) {
@@ -585,36 +675,15 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 //     y: prng(),
                 // }));
 
-                d3.select(d3PlotGraph.current).on('draw', function (event: any) {
-                    const svg = d3.select(event.target).select('svg');
+                d3.select(d3PlotGraph.current).on(
+                    'draw',
+                    function (event: any) {
+                        const svg = d3.select(event.target).select('svg');
 
-                    if (transactionType === 'limitOrder' && tx !== undefined) {
-                        horizontalBandData[0] = [
-                            (
-                                !isOnPortfolioPage
-                                    ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual
-                            )
-                                ? tx.bidTickInvPriceDecimalCorrected
-                                : tx.bidTickPriceDecimalCorrected,
-                            (
-                                !isOnPortfolioPage
-                                    ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual
-                            )
-                                ? tx.askTickInvPriceDecimalCorrected
-                                : tx.askTickPriceDecimalCorrected,
-                        ];
-
-                        // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
-                        //     priceLine,
-                        // );
-                        // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(priceLine);
-                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
-                    }
-
-                    if (transactionType === 'liqchange' && tx !== undefined) {
-                        if (tx.positionType !== 'ambient') {
+                        if (
+                            transactionType === 'limitOrder' &&
+                            tx !== undefined
+                        ) {
                             horizontalBandData[0] = [
                                 (
                                     !isOnPortfolioPage
@@ -635,36 +704,72 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                             // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
                             //     priceLine,
                             // );
-                            // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(
-                            //     priceLine,
-                            // );
-                            horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                            // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(priceLine);
+                            horizontalBandJoin(svg, [horizontalBandData]).call(
+                                horizontalBand,
+                            );
                         }
-                    }
 
-                    lineJoin(svg, [graphData]).call(lineSeries);
-
-                    if (transactionType === 'swap' && tx !== undefined) {
-                        // priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
-                        crossPointJoin(svg, [
-                            [
-                                {
-                                    x: tx.time * 1000,
-                                    y: (
+                        if (
+                            transactionType === 'liqchange' &&
+                            tx !== undefined
+                        ) {
+                            if (tx.positionType !== 'ambient') {
+                                horizontalBandData[0] = [
+                                    (
                                         !isOnPortfolioPage
                                             ? denominationsInBase
                                             : !isBaseTokenMoneynessGreaterOrEqual
                                     )
-                                        ? tx.invPriceDecimalCorrected
-                                        : tx.priceDecimalCorrected,
-                                },
-                            ],
-                        ]).call(crossPoint);
-                    }
+                                        ? tx.bidTickInvPriceDecimalCorrected
+                                        : tx.bidTickPriceDecimalCorrected,
+                                    (
+                                        !isOnPortfolioPage
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.askTickInvPriceDecimalCorrected
+                                        : tx.askTickPriceDecimalCorrected,
+                                ];
 
-                    d3.select(d3Yaxis.current).select('svg').call(scaleData.yAxis);
-                    d3.select(d3Xaxis.current).select('svg').call(xAxis);
-                });
+                                // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
+                                //     priceLine,
+                                // );
+                                // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(
+                                //     priceLine,
+                                // );
+                                horizontalBandJoin(svg, [
+                                    horizontalBandData,
+                                ]).call(horizontalBand);
+                            }
+                        }
+
+                        lineJoin(svg, [graphData]).call(lineSeries);
+
+                        if (transactionType === 'swap' && tx !== undefined) {
+                            // priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
+                            crossPointJoin(svg, [
+                                [
+                                    {
+                                        x: tx.time * 1000,
+                                        y: (
+                                            !isOnPortfolioPage
+                                                ? denominationsInBase
+                                                : !isBaseTokenMoneynessGreaterOrEqual
+                                        )
+                                            ? tx.invPriceDecimalCorrected
+                                            : tx.priceDecimalCorrected,
+                                    },
+                                ],
+                            ]).call(crossPoint);
+                        }
+
+                        d3.select(d3Yaxis.current)
+                            .select('svg')
+                            .call(scaleData.yAxis);
+                        d3.select(d3Xaxis.current).select('svg').call(xAxis);
+                    },
+                );
 
                 render();
             }
@@ -695,7 +800,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     ref={d3PlotGraph}
                     style={{ height: '300px', width: '90%' }}
                 ></d3fc-svg>
-                <d3fc-svg className='y-axis' ref={d3Yaxis} style={{ width: '10%' }}></d3fc-svg>
+                <d3fc-svg
+                    className='y-axis'
+                    ref={d3Yaxis}
+                    style={{ width: '10%' }}
+                ></d3fc-svg>
             </div>
             <d3fc-svg
                 className='x-axis'

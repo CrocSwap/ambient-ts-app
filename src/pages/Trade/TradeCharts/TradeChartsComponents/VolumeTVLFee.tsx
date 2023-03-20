@@ -24,7 +24,8 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         showFeeRate,
     } = props;
 
-    const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] = useState(false);
+    const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] =
+        useState(false);
 
     const desktopView = useMediaQuery('(max-width: 968px)');
 
@@ -45,7 +46,11 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     const volumeTvlAndFeeData = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
-        { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
+        {
+            name: 'Fee Rate',
+            selected: showFeeRate,
+            action: handleFeeRateToggle,
+        },
     ];
 
     const wrapperStyle = showVolumeTVLFeeDropdown
@@ -67,16 +72,26 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
                 className={styles.volume_tvl_fee_mobile_button}
-                onClick={() => setShowVolumeTVLFeeDropdown(!showVolumeTVLFeeDropdown)}
+                onClick={() =>
+                    setShowVolumeTVLFeeDropdown(!showVolumeTVLFeeDropdown)
+                }
             >
-                {showVolume ? 'Volume' : showTvl ? 'TVL' : showFeeRate ? 'Fee Rate' : ''}
+                {showVolume
+                    ? 'Volume'
+                    : showTvl
+                    ? 'TVL'
+                    : showFeeRate
+                    ? 'Fee Rate'
+                    : ''}
             </button>
 
             <div className={wrapperStyle}>
                 {volumeTvlAndFeeData.map((button, idx) => (
                     <div className={styles.volume_tvl_container} key={idx}>
                         <button
-                            onClick={() => handleCurveDepthClickMobile(button.action)}
+                            onClick={() =>
+                                handleCurveDepthClickMobile(button.action)
+                            }
                             className={
                                 button.selected
                                     ? styles.active_selected_button

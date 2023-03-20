@@ -8,10 +8,14 @@ export default function makePriceDisplay(
     poolPrice: number,
     didUserFlipDenom: boolean,
 ) {
-    const [baseTokenData, quoteTokenData] = isTokenABase ? [tokenA, tokenB] : [tokenB, tokenA];
+    const [baseTokenData, quoteTokenData] = isTokenABase
+        ? [tokenA, tokenB]
+        : [tokenB, tokenA];
 
     const [expTokenData, cheapTokenData] =
-        poolPrice < 1 ? [baseTokenData, quoteTokenData] : [quoteTokenData, baseTokenData];
+        poolPrice < 1
+            ? [baseTokenData, quoteTokenData]
+            : [quoteTokenData, baseTokenData];
 
     const [firstSymbol, secondSymbol] = didUserFlipDenom
         ? [cheapTokenData.symbol, expTokenData.symbol]

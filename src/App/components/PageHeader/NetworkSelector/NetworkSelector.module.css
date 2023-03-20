@@ -18,7 +18,6 @@
 }
 .selector_select_container {
     position: relative;
-    
 }
 
 .custom_arrow {
@@ -56,7 +55,6 @@
     overflow: hidden;
     z-index: 2;
     background: var(--body-bg);
-    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
     backdrop-filter: blur(16.5px);
     -webkit-backdrop-filter: blur(16.5px);
     border-radius: var(--border-radius);
@@ -70,15 +68,10 @@
     list-style-type: none;
 }
 .network_item {
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 4px; */
     display: flex;
     flex-direction: row;
     align-items: center;
     transition: background 500ms;
-    /* background:var(--dark3); */
     padding: 8px 0;
     cursor: pointer;
     text-decoration: none;
@@ -113,7 +106,5 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
 }
-
-

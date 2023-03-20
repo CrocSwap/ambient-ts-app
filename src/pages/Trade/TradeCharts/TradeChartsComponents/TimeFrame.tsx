@@ -57,7 +57,10 @@ export default function TimeFrame(props: TimeFramePropsIF) {
                     <div className={styles.main_time_frame_container} key={idx}>
                         <button
                             onClick={() =>
-                                handleTimeFrameClickMobile(time.label, time.activePeriod)
+                                handleTimeFrameClickMobile(
+                                    time.label,
+                                    time.activePeriod,
+                                )
                             }
                             className={
                                 time.label === activeTimeFrame
@@ -80,7 +83,12 @@ export default function TimeFrame(props: TimeFramePropsIF) {
             {activeTimeFrameData.map((time, idx) => (
                 <div className={styles.main_time_frame_container} key={idx}>
                     <button
-                        onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
+                        onClick={() =>
+                            handleTimeFrameButtonClick(
+                                time.label,
+                                time.activePeriod,
+                            )
+                        }
                         className={
                             time.label === activeTimeFrame
                                 ? styles.active_selected_button

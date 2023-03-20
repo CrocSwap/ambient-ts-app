@@ -15,7 +15,9 @@ interface OrderAccordionContentPropsIF {
     // blockExplorer: string | undefined;
 }
 
-export default function OrderAccordionContent(props: OrderAccordionContentPropsIF) {
+export default function OrderAccordionContent(
+    props: OrderAccordionContentPropsIF,
+) {
     const {
         posHash,
         userNameToDisplay,
@@ -96,8 +98,12 @@ export default function OrderAccordionContent(props: OrderAccordionContentPropsI
         <div className={styles.buttons_container}>
             <button className={styles.option_button}>Details</button>
             <button className={styles.option_button}>Copy</button>
-            {isOwnerActiveAccount && <button className={styles.option_button}>Edit</button>}
-            {isOwnerActiveAccount && <button className={styles.option_button}>Remove</button>}
+            {isOwnerActiveAccount && (
+                <button className={styles.option_button}>Edit</button>
+            )}
+            {isOwnerActiveAccount && (
+                <button className={styles.option_button}>Remove</button>
+            )}
         </div>
     );
 

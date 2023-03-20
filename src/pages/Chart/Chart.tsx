@@ -1180,16 +1180,38 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
+                    const _width = 65; // magic number of pixels to blur surrounding price
+
                     selection
-                        .attr('filter', (d: any) => {
-                            if (d === crosshairData[0].x) {
-                                return 'url(#crossHairBg)';
-                            }
-                        })
                         .select('text')
+
                         .attr('class', (d: any) => {
                             if (d === crosshairData[0].x) {
                                 return 'crossHairText';
+                            }
+
+                            if (
+                                isMouseMoveCrosshair &&
+                                scaleData.xScale(d) >
+                                    scaleData.xScale(crosshairData[0].x) -
+                                        _width &&
+                                scaleData.xScale(d) <
+                                    scaleData.xScale(crosshairData[0].x) +
+                                        _width
+                            ) {
+                                return 'blur';
+                            }
+
+                            if (
+                                isMouseMoveCrosshair &&
+                                scaleData.xScale(d) >
+                                    scaleData.xScale(crosshairData[0].x) -
+                                        _width &&
+                                scaleData.xScale(d) <
+                                    scaleData.xScale(crosshairData[0].x) +
+                                        _width
+                            ) {
+                                return 'blur';
                             }
 
                             if (
@@ -4161,9 +4183,30 @@ export default function Chart(props: ChartData) {
                 .append('feFlood')
                 .attr('flood-color', '#242F3F')
                 .attr('result', 'bg');
+
             const feMergeTagCrossHair = crosshairDefs.append('feMerge');
             feMergeTagCrossHair.append('feMergeNode').attr('in', 'bg');
             feMergeTagCrossHair
+                .append('feMergeNode')
+                .attr('in', 'SourceGraphic');
+
+            const crosshairDefsX = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', -0.25)
+                .attr('y', -0.1)
+                .attr('height', 10)
+                .attr('width', 1.5)
+                .attr('id', 'crossHairBgX');
+
+            crosshairDefsX
+                .append('feFlood')
+                .attr('flood-color', '#242F3F')
+                .attr('result', 'bg');
+
+            const feMergeTagCrossHairX = crosshairDefsX.append('feMerge');
+            feMergeTagCrossHairX.append('feMergeNode').attr('in', 'bg');
+            feMergeTagCrossHairX
                 .append('feMergeNode')
                 .attr('in', 'SourceGraphic');
 
@@ -5160,10 +5203,13 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
-                    horizontalBandJoin(svg, [horizontalBandData]).call(
-                        horizontalBand,
-                    );
-                    targetsJoin(svg, [ranges]).call(horizontalLine);
+                    if (horizontalBandJoin)
+                        horizontalBandJoin(svg, [horizontalBandData]).call(
+                            horizontalBand,
+                        );
+
+                    if (targetsJoin)
+                        targetsJoin(svg, [ranges]).call(horizontalLine);
 
                     if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                         lineAskSeriesJoin(svg, [
