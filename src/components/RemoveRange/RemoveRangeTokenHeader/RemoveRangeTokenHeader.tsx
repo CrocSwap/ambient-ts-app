@@ -25,14 +25,26 @@ export default function RemoveRangeTokenHeader(props: propsIF) {
         <div className={styles.container}>
             <div className={styles.token_info}>
                 {props.baseTokenLogoURI ? (
-                    <img src={props.baseTokenLogoURI} alt={props.baseTokenSymbol} />
+                    <img
+                        src={props.baseTokenLogoURI}
+                        alt={props.baseTokenSymbol}
+                    />
                 ) : (
-                    <NoTokenIcon tokenInitial={props.baseTokenSymbol.charAt(0)} width='30px' />
+                    <NoTokenIcon
+                        tokenInitial={props.baseTokenSymbol.charAt(0)}
+                        width='30px'
+                    />
                 )}
                 {props.quoteTokenLogoURI ? (
-                    <img src={props.quoteTokenLogoURI} alt={props.quoteTokenSymbol} />
+                    <img
+                        src={props.quoteTokenLogoURI}
+                        alt={props.quoteTokenSymbol}
+                    />
                 ) : (
-                    <NoTokenIcon tokenInitial={props.quoteTokenSymbol.charAt(0)} width='30px' />
+                    <NoTokenIcon
+                        tokenInitial={props.quoteTokenSymbol.charAt(0)}
+                        width='30px'
+                    />
                 )}
 
                 <span>
@@ -44,7 +56,10 @@ export default function RemoveRangeTokenHeader(props: propsIF) {
                 isEmpty={false}
                 isAmbient={props.isAmbient}
             />
-            <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
+            <div
+                onClick={() => setShowSettings(!showSettings)}
+                className={styles.settings_icon}
+            >
                 {showSettings ? null : <RiListSettingsLine size={20} />}
             </div>
         </div>

@@ -34,7 +34,12 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
-    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
+    background: linear-gradient(
+        90deg,
+        #15be6f 32.38%,
+        #8fe9bf 51.39%,
+        #15be6f 68.17%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -49,7 +54,12 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
-    background: linear-gradient(90deg, #be4515 32.38%, #de5a2e 51.39%, #be5315 68.17%);
+    background: linear-gradient(
+        90deg,
+        #be4515 32.38%,
+        #de5a2e 51.39%,
+        #be5315 68.17%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

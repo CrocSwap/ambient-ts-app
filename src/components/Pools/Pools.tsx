@@ -22,7 +22,7 @@ interface propsIF {
 }
 
 export default function Pools(props: propsIF) {
-    const {pools, poolType, favePools} = props;
+    const { pools, poolType, favePools } = props;
 
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
@@ -30,16 +30,17 @@ export default function Pools(props: propsIF) {
     const sortedPools = useMemo(() => {
         return pools
             ? pools
-                .filter((x) => !!x && !TOKEN_HIDE.includes(x.address))
-                .sort((a, b) => {
-                    if (a && b) {
-                        return a[sortField as keyof any] > b[sortField as keyof any]
-                            ? (sortDirection ? -1 : 1) * 1
-                            : (sortDirection ? -1 : 1) * -1;
-                    } else {
-                        return -1;
-                    }
-                })
+                  .filter((x) => !!x && !TOKEN_HIDE.includes(x.address))
+                  .sort((a, b) => {
+                      if (a && b) {
+                          return a[sortField as keyof any] >
+                              b[sortField as keyof any]
+                              ? (sortDirection ? -1 : 1) * 1
+                              : (sortDirection ? -1 : 1) * -1;
+                      } else {
+                          return -1;
+                      }
+                  })
             : [];
     }, [pools, sortDirection, sortField]);
 
@@ -70,7 +71,11 @@ export default function Pools(props: propsIF) {
     return (
         <div className={styles.container}>
             <div className={styles.container}>
-                <PoolCardHeader poolType={poolType} arrow={arrow} sort={handleSort} />
+                <PoolCardHeader
+                    poolType={poolType}
+                    arrow={arrow}
+                    sort={handleSort}
+                />
                 {poolsDisplay}
             </div>
         </div>

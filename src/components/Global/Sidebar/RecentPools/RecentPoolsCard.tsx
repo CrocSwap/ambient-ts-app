@@ -17,13 +17,22 @@ interface propsIF {
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch, getTokenByAddress } =
-        props;
+    const {
+        tradeData,
+        chainId,
+        pool,
+        lastBlockNumber,
+        cachedPoolStatsFetch,
+        getTokenByAddress,
+    } = props;
 
     const { pathname } = useLocation();
 
     const locationSlug = useMemo(() => {
-        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
+        if (
+            pathname.startsWith('/trade/market') ||
+            pathname.startsWith('/account')
+        ) {
             return '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             return '/trade/limit';
@@ -50,7 +59,9 @@ export default function RecentPoolsCard(props: propsIF) {
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
-            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
+            const volumeString = volume
+                ? '$' + formatAmountOld(volume)
+                : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
@@ -68,10 +79,14 @@ export default function RecentPoolsCard(props: propsIF) {
     }, [lastBlockNumber]);
 
     const tokenAString =
-        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase() ? pool.base : pool.quote;
+        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
+            ? pool.base
+            : pool.quote;
 
     const tokenBString =
-        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase() ? pool.quote : pool.base;
+        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
+            ? pool.quote
+            : pool.base;
 
     return (
         <Link

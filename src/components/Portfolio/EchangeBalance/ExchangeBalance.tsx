@@ -65,30 +65,46 @@ export default function ExchangeBalance(props: propsIF) {
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
-    const [resolvedAddress, setResolvedAddress] = useState<string | undefined>();
+    const [resolvedAddress, setResolvedAddress] = useState<
+        string | undefined
+    >();
 
     const isSendToAddressEns = sendToAddress?.endsWith('.eth');
-    const isSendToAddressHex = sendToAddress?.startsWith('0x') && sendToAddress?.length == 42;
+    const isSendToAddressHex =
+        sendToAddress?.startsWith('0x') && sendToAddress?.length == 42;
 
     useEffect(() => {
         (async () => {
             if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(sendToAddress);
+                const newResolvedAddress = await mainnetProvider.resolveName(
+                    sendToAddress,
+                );
 
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 } else {
                     setResolvedAddress(undefined);
                 }
-            } else if (sendToAddress && isSendToAddressHex && !isSendToAddressEns) {
+            } else if (
+                sendToAddress &&
+                isSendToAddressHex &&
+                !isSendToAddressEns
+            ) {
                 setResolvedAddress(sendToAddress);
             } else {
                 setResolvedAddress(undefined);
             }
         })();
-    }, [sendToAddress, isSendToAddressHex, isSendToAddressEns, mainnetProvider]);
+    }, [
+        sendToAddress,
+        isSendToAddressHex,
+        isSendToAddressEns,
+        mainnetProvider,
+    ]);
 
-    const [secondaryEnsName, setSecondaryEnsName] = useState<string | undefined>();
+    const [secondaryEnsName, setSecondaryEnsName] = useState<
+        string | undefined
+    >();
 
     // check for ENS name
     useEffect(() => {
@@ -101,7 +117,11 @@ export default function ExchangeBalance(props: propsIF) {
                 mainnetProvider
             ) {
                 try {
-                    const ensName = await fetchAddress(mainnetProvider, sendToAddress, '0x1');
+                    const ensName = await fetchAddress(
+                        mainnetProvider,
+                        sendToAddress,
+                        '0x1',
+                    );
                     if (ensName) {
                         setSecondaryEnsName(ensName);
                     } else setSecondaryEnsName(undefined);
@@ -229,8 +249,8 @@ export default function ExchangeBalance(props: propsIF) {
             {(!fullLayoutActive || columnView) && (
                 <section style={{ background: 'var(--dark1)' }}>
                     <div className={styles.info_text}>
-                        Collateral deposited into the Ambient Finance exchange can be traded at
-                        lower gas costs.
+                        Collateral deposited into the Ambient Finance exchange
+                        can be traded at lower gas costs.
                     </div>
                     <div className={styles.info_text}>
                         {' '}

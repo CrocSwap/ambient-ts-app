@@ -51,16 +51,25 @@ export const userDataSlice = createSlice({
         setAddressAtLogin: (state, action: PayloadAction<string>) => {
             state.addressAtLogin = action.payload;
         },
-        setAddressCurrent: (state, action: PayloadAction<string | undefined>) => {
+        setAddressCurrent: (
+            state,
+            action: PayloadAction<string | undefined>,
+        ) => {
             state.addressCurrent = action.payload;
         },
         setEnsNameAtLogin: (state, action: PayloadAction<string>) => {
             state.ensNameAtLogin = action.payload;
         },
-        setEnsNameCurrent: (state, action: PayloadAction<string | undefined>) => {
+        setEnsNameCurrent: (
+            state,
+            action: PayloadAction<string | undefined>,
+        ) => {
             state.ensNameCurrent = action.payload;
         },
-        setEnsOrAddressTruncated: (state, action: PayloadAction<string | undefined>) => {
+        setEnsOrAddressTruncated: (
+            state,
+            action: PayloadAction<string | undefined>,
+        ) => {
             state.ensOrAddressTruncated = action.payload;
         },
         setIsUserIdle: (state, action: PayloadAction<boolean>) => {
@@ -78,8 +87,10 @@ export const userDataSlice = createSlice({
             }>,
         ) => {
             if (!state.tokens.nativeToken) return;
-            state.tokens.nativeToken.walletBalance = action.payload.walletBalance;
-            state.tokens.nativeToken.walletBalanceDisplay = action.payload.walletBalanceDisplay;
+            state.tokens.nativeToken.walletBalance =
+                action.payload.walletBalance;
+            state.tokens.nativeToken.walletBalanceDisplay =
+                action.payload.walletBalanceDisplay;
             state.tokens.nativeToken.walletBalanceDisplayTruncated =
                 action.payload.walletBalanceDisplayTruncated;
         },
@@ -93,7 +104,8 @@ export const userDataSlice = createSlice({
         ) => {
             if (!state.tokens.nativeToken) return;
             state.tokens.nativeToken.dexBalance = action.payload.dexBalance;
-            state.tokens.nativeToken.dexBalanceDisplay = action.payload.dexBalanceDisplay;
+            state.tokens.nativeToken.dexBalanceDisplay =
+                action.payload.dexBalanceDisplay;
             state.tokens.nativeToken.dexBalanceDisplayTruncated =
                 action.payload.dexBalanceDisplayTruncated;
         },
@@ -108,7 +120,8 @@ export const userDataSlice = createSlice({
         ) => {
             if (!state.tokens.erc20Tokens) return;
             const index = action.payload.indexOfExistingErc20Token;
-            state.tokens.erc20Tokens[index].walletBalance = action.payload.walletBalance;
+            state.tokens.erc20Tokens[index].walletBalance =
+                action.payload.walletBalance;
             state.tokens.erc20Tokens[index].walletBalanceDisplay =
                 action.payload.walletBalanceDisplay;
             state.tokens.erc20Tokens[index].walletBalanceDisplayTruncated =
@@ -125,12 +138,17 @@ export const userDataSlice = createSlice({
         ) => {
             if (!state.tokens.erc20Tokens) return;
             const index = action.payload.indexOfExistingErc20Token;
-            state.tokens.erc20Tokens[index].dexBalance = action.payload.dexBalance;
-            state.tokens.erc20Tokens[index].dexBalanceDisplay = action.payload.dexBalanceDisplay;
+            state.tokens.erc20Tokens[index].dexBalance =
+                action.payload.dexBalance;
+            state.tokens.erc20Tokens[index].dexBalanceDisplay =
+                action.payload.dexBalanceDisplay;
             state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
                 action.payload.dexBalanceDisplayTruncated;
         },
-        setShouldRecheckLocalStorage: (state, action: PayloadAction<boolean>) => {
+        setShouldRecheckLocalStorage: (
+            state,
+            action: PayloadAction<boolean>,
+        ) => {
             state.shouldRecheckLocalStorage = action.payload;
         },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
@@ -150,7 +168,10 @@ export const userDataSlice = createSlice({
             state.ensNameAtLogin = initialState.ensNameAtLogin;
             state.ensOrAddressTruncated = initialState.ensOrAddressTruncated;
         },
-        setSecondaryImageDataRedux: (state, action: PayloadAction<string[]>) => {
+        setSecondaryImageDataRedux: (
+            state,
+            action: PayloadAction<string[]>,
+        ) => {
             state.secondaryImageData = action.payload;
         },
         setResolvedAddressRedux: (state, action: PayloadAction<string>) => {

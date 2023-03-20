@@ -15,7 +15,6 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     min-height: 33px;
-   
 }
 
 .gas_pump,
@@ -76,7 +75,6 @@
 
     .extra_details {
         padding: 1rem;
-        
     }
 
     .extra_row {

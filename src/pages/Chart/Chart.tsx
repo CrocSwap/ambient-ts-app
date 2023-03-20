@@ -1180,13 +1180,7 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
-                    const _width =
-                        (Math.abs(
-                            scaleData.xScale(scaleData.xScale.domain()[0]) -
-                                scaleData.xScale(scaleData.xScale.domain()[1]),
-                        ) *
-                            6) /
-                        100;
+                    const _width = 65; // magic number of pixels to blur surrounding price
 
                     selection
                         .select('text')
@@ -2664,6 +2658,8 @@ export default function Chart(props: ChartData) {
             const sortLiqaData = tempLiqData.sort(function (a, b) {
                 return a.liqPrices - b.liqPrices;
             });
+
+            if (!sortLiqaData) return;
 
             const closestMin = sortLiqaData.reduce(function (prev, curr) {
                 return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
@@ -4202,8 +4198,6 @@ export default function Chart(props: ChartData) {
                 .attr('height', 10)
                 .attr('width', 1.5)
                 .attr('id', 'crossHairBgX');
-
-            // crosshairDefsX.append('feOffset').attr('dy', '5').attr('dx','5').attr('result', 'bg');
 
             crosshairDefsX
                 .append('feFlood')
