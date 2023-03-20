@@ -1,10 +1,15 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
+import {
+    useLocation,
+    useNavigate,
+    useParams,
+    Navigate,
+} from 'react-router-dom';
 import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
+// import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
@@ -14,12 +19,20 @@ import Button from '../../../components/Global/Button/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { PositionIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { BigNumber } from 'ethers';
-import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
+import {
+    addPendingTx,
+    addReceipt,
+    addTransactionByType,
+    removePendingTx,
+} from '../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -40,12 +53,14 @@ interface propsIF {
     toggleBypassConfirm: (item: string, pref: boolean) => void;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
-    seRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Reposition(props: propsIF) {
@@ -60,19 +75,22 @@ export default function Reposition(props: propsIF) {
         toggleBypassConfirm,
         setMinPrice,
         setMaxPrice,
-        seRescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
         tokenPair,
         poolPriceDisplay,
         lastBlockNumber,
         setSimpleRangeWidth,
         simpleRangeWidth,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     // current URL parameter string
     const { params } = useParams();
     // console.log({ params });
 
-    const [newRepositionTransactionHash, setNewRepositionTransactionHash] = useState('');
+    const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
+        useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
@@ -119,16 +137,23 @@ export default function Reposition(props: propsIF) {
 
     const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
-    const currentPoolPriceTick = Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
+    const currentPoolPriceTick =
+        Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
 
     const isPositionInRange =
-        position.bidTick <= currentPoolPriceTick && currentPoolPriceTick <= position.askTick;
+        position.bidTick <= currentPoolPriceTick &&
+        currentPoolPriceTick <= position.askTick;
 
     const baseTokenDecimals = position.baseDecimals || 18;
     const quoteTokenDecimals = position.quoteDecimals || 18;
 
     const currentPoolDisplayPriceInBase =
-        1 / toDisplayPrice(currentPoolPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+        1 /
+        toDisplayPrice(
+            currentPoolPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
 
     const currentPoolDisplayPriceInQuote = toDisplayPrice(
         currentPoolPriceNonDisplay,
@@ -148,17 +173,18 @@ export default function Reposition(props: propsIF) {
               })
         : '0.00';
 
-    const truncatedCurrentPoolDisplayPriceInQuote = currentPoolDisplayPriceInQuote
-        ? currentPoolDisplayPriceInQuote < 2
-            ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '0.00';
+    const truncatedCurrentPoolDisplayPriceInQuote =
+        currentPoolDisplayPriceInQuote
+            ? currentPoolDisplayPriceInQuote < 2
+                ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                  })
+                : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : '0.00';
 
     const currentPoolPriceDisplay =
         currentPoolPriceNonDisplay === 0
@@ -177,6 +203,7 @@ export default function Reposition(props: propsIF) {
     };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
+
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
 
@@ -246,6 +273,13 @@ export default function Reposition(props: propsIF) {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Reposition',
+                    }),
+                );
             navigate(redirectPath, { replace: true });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -295,8 +329,10 @@ export default function Reposition(props: propsIF) {
         lookupChain(position?.chainId || '0x5').gridSize,
     );
 
-    const pinnedMinPriceDisplayTruncated = pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-    const pinnedMaxPriceDisplayTruncated = pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+    const pinnedMinPriceDisplayTruncated =
+        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+    const pinnedMaxPriceDisplayTruncated =
+        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
@@ -333,15 +369,16 @@ export default function Reposition(props: propsIF) {
             : '0.00';
     }
 
-    const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] = useState<string>(
-        position?.positionLiqBaseTruncated || '0.00',
-    );
-    const [currentQuoteQtyDisplayTruncated, setCurrentQuoteQtyDisplayTruncated] = useState<string>(
-        position?.positionLiqQuoteTruncated || '0.00',
-    );
+    const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
+        useState<string>(position?.positionLiqBaseTruncated || '0.00');
+    const [
+        currentQuoteQtyDisplayTruncated,
+        setCurrentQuoteQtyDisplayTruncated,
+    ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        httpGraphCacheServerDomain + '/position_stats?';
     const poolIndex = lookupChain(position?.chainId || '0x5').poolIndex;
 
     const fetchCurrentCollateral = () => {
@@ -363,8 +400,10 @@ export default function Reposition(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const positionStats = json?.data;
-                const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
-                const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
+                const liqBaseNum =
+                    positionStats.positionLiqBaseDecimalCorrected;
+                const liqQuoteNum =
+                    positionStats.positionLiqQuoteDecimalCorrected;
                 const liqBaseDisplay = liqBaseNum
                     ? liqBaseNum < 2
                         ? liqBaseNum.toLocaleString(undefined, {
@@ -406,7 +445,8 @@ export default function Reposition(props: propsIF) {
     // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
 
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] =
+        useState<string>('0.00');
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
@@ -421,7 +461,12 @@ export default function Reposition(props: propsIF) {
                 debouncedHighTick,
                 lookupChain(position?.chainId || '0x5').gridSize,
             ).pinnedMinPriceDisplayTruncated,
-        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            debouncedLowTick,
+            debouncedHighTick,
+        ],
     );
 
     const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
@@ -434,7 +479,12 @@ export default function Reposition(props: propsIF) {
                 debouncedHighTick,
                 lookupChain(position?.chainId || '0x5').gridSize,
             ).pinnedMinPriceDisplayTruncated,
-        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            debouncedLowTick,
+            debouncedHighTick,
+        ],
     );
 
     const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
@@ -447,7 +497,12 @@ export default function Reposition(props: propsIF) {
                 debouncedHighTick,
                 lookupChain(position?.chainId || '0x5').gridSize,
             ).pinnedMaxPriceDisplayTruncated,
-        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            debouncedLowTick,
+            debouncedHighTick,
+        ],
     );
 
     const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
@@ -460,11 +515,21 @@ export default function Reposition(props: propsIF) {
                 debouncedHighTick,
                 lookupChain(position?.chainId || '0x5').gridSize,
             ).pinnedMaxPriceDisplayTruncated,
-        [baseTokenDecimals, quoteTokenDecimals, debouncedLowTick, debouncedHighTick],
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            debouncedLowTick,
+            debouncedHighTick,
+        ],
     );
 
     useEffect(() => {
-        if (isPositionInRange || !crocEnv || !debouncedLowTick || !debouncedHighTick) {
+        if (
+            isPositionInRange ||
+            !crocEnv ||
+            !debouncedLowTick ||
+            !debouncedHighTick
+        ) {
             return;
         }
         const pool = crocEnv.pool(position.base, position.quote);
@@ -492,9 +557,30 @@ export default function Reposition(props: propsIF) {
         position.askTick,
     ]);
 
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
+
+            setRangeGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
+                setRangeWidthPercentage={setRangeWidthPercentage}
+                setSimpleRangeWidth={setSimpleRangeWidth}
                 positionHash={position.positionStorageSlot}
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
@@ -505,12 +591,14 @@ export default function Reposition(props: propsIF) {
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    seRescaleRangeBoundariesWithSlider={seRescaleRangeBoundariesWithSlider}
+                    setRescaleRangeBoundariesWithSlider={
+                        setRescaleRangeBoundariesWithSlider
+                    }
                 />
-                <RepositionDenominationSwitch
+                {/* <RepositionDenominationSwitch
                     baseTokenSymbol={position.baseSymbol || 'ETH'}
                     quoteTokenSymbol={position.quoteSymbol || 'USDC'}
-                />
+                /> */}
                 <RepositionPriceInfo
                     crocEnv={crocEnv}
                     position={position}
@@ -523,10 +611,15 @@ export default function Reposition(props: propsIF) {
                     setMinPrice={setMinPrice}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
-                    currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
-                    currentQuoteQtyDisplayTruncated={currentQuoteQtyDisplayTruncated}
+                    currentBaseQtyDisplayTruncated={
+                        currentBaseQtyDisplayTruncated
+                    }
+                    currentQuoteQtyDisplayTruncated={
+                        currentQuoteQtyDisplayTruncated
+                    }
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
+                    rangeGasPriceinDollars={rangeGasPriceinDollars}
                 />
                 <div className={styles.button_container}>
                     <Button
@@ -537,7 +630,11 @@ export default function Reposition(props: propsIF) {
                                 ? 'Reposition'
                                 : 'Open Confirmation'
                         }
-                        action={bypassConfirm ? sendRepositionTransaction : openModal}
+                        action={
+                            bypassConfirm
+                                ? sendRepositionTransaction
+                                : openModal
+                        }
                         disabled={isPositionInRange}
                         flat={true}
                     />
@@ -560,22 +657,32 @@ export default function Reposition(props: propsIF) {
                         setMinPrice={setMinPrice}
                         showConfirmation={showConfirmation}
                         setShowConfirmation={setShowConfirmation}
-                        newRepositionTransactionHash={newRepositionTransactionHash}
+                        newRepositionTransactionHash={
+                            newRepositionTransactionHash
+                        }
                         tokenPair={tokenPair}
                         resetConfirmation={resetConfirmation}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
                         minPriceDisplay={minPriceDisplay}
                         maxPriceDisplay={maxPriceDisplay}
-                        currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
-                        currentQuoteQtyDisplayTruncated={currentQuoteQtyDisplayTruncated}
+                        currentBaseQtyDisplayTruncated={
+                            currentBaseQtyDisplayTruncated
+                        }
+                        currentQuoteQtyDisplayTruncated={
+                            currentQuoteQtyDisplayTruncated
+                        }
                         newBaseQtyDisplay={newBaseQtyDisplay}
                         newQuoteQtyDisplay={newQuoteQtyDisplay}
-                        pinnedMinPriceDisplayTruncatedInBase={pinnedMinPriceDisplayTruncatedInBase}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
                         pinnedMinPriceDisplayTruncatedInQuote={
                             pinnedMinPriceDisplayTruncatedInQuote
                         }
-                        pinnedMaxPriceDisplayTruncatedInBase={pinnedMaxPriceDisplayTruncatedInBase}
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
                         pinnedMaxPriceDisplayTruncatedInQuote={
                             pinnedMaxPriceDisplayTruncatedInQuote
                         }

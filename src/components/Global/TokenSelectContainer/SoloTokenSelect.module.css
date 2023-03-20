@@ -2,6 +2,7 @@
     max-width: 350px;
     display: flex;
     flex-direction: column;
+    padding: 20px;
 }
 
 .container h2{

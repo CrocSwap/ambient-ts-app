@@ -26,10 +26,19 @@
     display: flex;
     justify-content: center;
 }
+
+.ambi_logo{
+    width: 56px;
+    height: 56px;
+
+    border-radius: 50%;
+    aspect-ratio: 1;
+}
 .account_container img {
     max-width: 100%;
 
     border-radius: 50%;
+    object-fit: contain;
 }
 
 .account_names {

@@ -8,7 +8,10 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import {
+    DefaultTooltip,
+    TextOnlyTooltip,
+} from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -20,6 +23,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -27,23 +31,16 @@ interface propsIF {
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     chainId: string;
-    // portfolio?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    // notOnTradeRoute?: boolean;
-    // isAllPositionsEnabled: boolean;
-    // tokenAAddress: string;
-    // tokenBAddress: string;
-    // isDenomBase: boolean;
     account: string;
     lastBlockNumber: number;
     showSidebar: boolean;
     showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
-    // blockExplorer: string | undefined;
     isShowAllEnabled: boolean;
     position: PositionIF;
     rank?: number;
@@ -57,13 +54,13 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
 }
 
 export default function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
-        // showSidebar,
         account,
         ipadView,
         showColumns,
@@ -77,6 +74,7 @@ export default function RangesRow(props: propsIF) {
         isLeaderboard,
         handlePulseAnimation,
         setSimpleRangeWidth,
+        dexBalancePrefs,
     } = props;
 
     const {
@@ -86,23 +84,15 @@ export default function RangesRow(props: propsIF) {
         ownerId,
         quoteTokenLogo,
         baseTokenLogo,
-        // baseDisplay,
-        // quoteDisplay,
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
         userMatchesConnectedAccount,
-        // isOrderFilled,
-
         usdValue,
-        usdValueLocaleString,
+        // usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-
         apyString,
         apyClassname,
-
         isPositionInRange,
         isPositionEmpty,
         isAmbient,
@@ -114,7 +104,6 @@ export default function RangesRow(props: propsIF) {
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        // orderMatchesSelectedTokens,
     } = useProcessRange(position, account, isOnPortfolioPage);
 
     const rangeDetailsProps = {
@@ -177,7 +166,9 @@ export default function RangesRow(props: propsIF) {
                 position={position}
                 account={account}
                 {...rangeDetailsProps}
-                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
                 isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
@@ -214,70 +205,103 @@ export default function RangesRow(props: propsIF) {
 
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
-        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest',
+        });
     }
 
     useEffect(() => {
-        position.positionStorageSlot === currentPositionActive ? scrollToDiv() : null;
+        position.positionStorageSlot === currentPositionActive
+            ? scrollToDiv()
+            : null;
     }, [currentPositionActive]);
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
+        userNameToDisplay === 'You' && isShowAllEnabled
+            ? styles.border_left
+            : null;
 
-    const usernameStyle = ensName || userMatchesConnectedAccount ? 'gradient_text' : 'base_color';
+    const usernameStyle =
+        isOwnerActiveAccount && (isShowAllEnabled || isLeaderboard)
+            ? 'owned_tx_contrast'
+            : ensName || userNameToDisplay === 'You'
+            ? 'gradient_text'
+            : 'base_color';
 
     const activePositionStyle =
-        position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
+        position.positionStorageSlot === currentPositionActive
+            ? styles.active_position_style
+            : '';
+
+    const [highlightRow, setHighlightRow] = useState(false);
+    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
+    const handleRowMouseDown = () => setHighlightRow(true);
+    const handleRowMouseOut = () => setHighlightRow(false);
 
     const IDWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
-            title={posHash.toString()}
+            title={
+                <p
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {posHash.toString()}
+                </p>
+            }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className='base_color'
+                className={`${styles.base_color} ${styles.hover_style}`}
                 style={{ fontFamily: 'monospace' }}
             >
                 {posHashTruncated}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const ValueWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={'$' + usdValueLocaleString}
-            placement={'right'}
-            arrow
-            enterDelay={750}
-            leaveDelay={200}
+        <li
+            onClick={openDetailsModal}
+            data-label='value'
+            className='base_color'
+            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='base_color'
-                // className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {' '}
-                {'$' + usdValue}
-            </li>
-        </DefaultTooltip>
+            {' '}
+            {'$' + usdValue}
+        </li>
     );
 
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                <div>
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
@@ -288,7 +312,13 @@ export default function RangesRow(props: propsIF) {
                                 }),
                             );
                         }}
-                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
                     >
                         {'View Account' + 'ㅤ'}
                         <FiExternalLink size={'12px'} />
@@ -296,9 +326,8 @@ export default function RangesRow(props: propsIF) {
                 </div>
             }
             placement={'right'}
-            arrow
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
             <li
                 onClick={() => {
@@ -308,52 +337,44 @@ export default function RangesRow(props: propsIF) {
                             loadingStatus: true,
                         }),
                     );
-                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                    navigate(
+                        `/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`,
+                    );
                 }}
                 data-label='wallet'
-                className={usernameStyle}
+                className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
             <img src={baseTokenLogo} alt='base token' width={logoSizes} />
         ) : (
-            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width={logoSizes} />
+            <NoTokenIcon
+                tokenInitial={position.baseSymbol.charAt(0)}
+                width={logoSizes}
+            />
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
             <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
         ) : (
-            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width={logoSizes} />
+            <NoTokenIcon
+                tokenInitial={position.quoteSymbol.charAt(0)}
+                width={logoSizes}
+            />
         );
-
-    // const tokensTogether = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'row',
-    //             alignItems: 'center',
-    //             gap: '4px',
-    //         }}
-    //     >
-    //         {baseTokenLogoComponent}
-    //         {quoteTokenLogoComponent}
-    //     </div>
-    // );
-
-    // portfolio page li element ---------------
-    // const accountTokenImages = (
-    //     <li className={styles.token_images_account}>
-
-    //         {tokensTogether}
-    //     </li>
-    // );
 
     const pair =
         position.base !== ZERO_ADDRESS
@@ -381,17 +402,14 @@ export default function RangesRow(props: propsIF) {
             placement={'left'}
             arrow
             enterDelay={150}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li className='base_color'>
-                {/* {tokensTogether} */}
-                <NavLink
-                    // onClick={() => {
-                    //     console.log({ tx });
-                    //     console.log({ tradeLinkPath });
-                    // }}
-                    to={tradeLinkPath}
-                >
+            <li
+                className='base_color'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
+                <NavLink to={tradeLinkPath}>
                     <p>
                         {baseTokenSymbol} / {quoteTokenSymbol}
                     </p>
@@ -400,41 +418,27 @@ export default function RangesRow(props: propsIF) {
         </DefaultTooltip>
     );
 
-    // const poolName = (
-    //     <li className='base_color'>
-    //         {baseTokenSymbol} / {quoteTokenSymbol}
-    //     </li>
-    // );
     // end of portfolio page li element ---------------
 
     // Leaderboard content--------------------------------
 
-    // const idDisplay = !showColumns && IDWithTooltip;
-    // const displayIDorRanking = isLeaderboard
-    //     ? !showColumns && <Medal ranking={props.rank ?? 80} />
-    //     : idDisplay;
-
     const idOrNull = !isLeaderboard && !showColumns ? IDWithTooltip : null;
 
     const rankingOrNull =
-        isLeaderboard && !showColumns ? <Medal ranking={props.rank ?? 80} /> : null;
+        isLeaderboard && !showColumns ? (
+            <Medal ranking={props.rank ?? 80} />
+        ) : null;
 
     // End of Leaderboard content--------------------------------
 
-    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
-    // const quoteQtyToolTipStyle = (
-    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
-    // );
     const baseQtyDisplayWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={baseQtyToolTipStyle}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={200}
-        // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -448,21 +452,17 @@ export default function RangesRow(props: propsIF) {
             >
                 {position.positionLiqBaseTruncated}
                 {baseTokenLogoComponent}
-                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </div>
         </li>
-        /* </DefaultTooltip> */
     );
     const quoteQtyDisplayWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={quoteQtyToolTipStyle}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={200}
-        // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+        <li
+            onClick={openDetailsModal}
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div
                 style={{
                     display: 'flex',
@@ -475,13 +475,9 @@ export default function RangesRow(props: propsIF) {
                 }}
             >
                 {position.positionLiqQuoteTruncated}
-                {/* {quoteDisplay} */}
                 {quoteTokenLogoComponent}
-
-                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </div>
         </li>
-        /* </DefaultTooltip> */
     );
 
     const positionTime = position.latestUpdateTime || position.timeFirstMint;
@@ -508,28 +504,42 @@ export default function RangesRow(props: propsIF) {
             : 'Pending...';
 
     const RangeTimeWithTooltip = (
-        <DefaultTooltip
+        <TextOnlyTooltip
             interactive
             title={
-                'First Minted: ' + moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+                <p
+                    style={{
+                        marginLeft: '-70px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {'First Minted: ' +
+                        moment(position.timeFirstMint * 1000).format(
+                            'MM/DD/YYYY HH:mm',
+                        )}
+                </p>
             }
-            // title={
-            //     'Last Updated: ' +
-            //     moment(position.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm')
-            // }
-            placement={'left'}
-            arrow
+            placement={'right'}
             enterDelay={750}
-            leaveDelay={200}
+            leaveDelay={0}
         >
-            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <li
+                onClick={openDetailsModal}
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
-                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
-        </DefaultTooltip>
+        </TextOnlyTooltip>
     );
+
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
 
     return (
@@ -544,13 +554,12 @@ export default function RangesRow(props: propsIF) {
             }
             id={positionDomId}
             ref={currentPositionActive ? activePositionRef : null}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
-            {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li
@@ -565,7 +574,11 @@ export default function RangesRow(props: propsIF) {
                             );
                             navigate(
                                 `/${
-                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                                    isOwnerActiveAccount
+                                        ? 'account'
+                                        : ensName
+                                        ? ensName
+                                        : ownerId
                                 }`,
                             );
                         } else {
@@ -574,7 +587,10 @@ export default function RangesRow(props: propsIF) {
                     }}
                 >
                     <p className='base_color'>{posHashTruncated}</p>{' '}
-                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                    <p
+                        className={usernameStyle}
+                        style={{ textTransform: 'lowercase' }}
+                    >
                         {userNameToDisplay}
                     </p>
                 </li>
@@ -585,10 +601,13 @@ export default function RangesRow(props: propsIF) {
                         onClick={openDetailsModal}
                         data-label='max price'
                         className='base_color'
-                        // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
-                        <span style={{ fontFamily: 'monospace' }}>{'0.00'}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {'0.00'}
+                        </span>
                     </li>
                 ) : (
                     <li
@@ -596,9 +615,10 @@ export default function RangesRow(props: propsIF) {
                         data-label='min price'
                         className='base_color'
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
-                        {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
                         <span style={{ fontFamily: 'monospace' }}>
                             {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
@@ -613,8 +633,9 @@ export default function RangesRow(props: propsIF) {
                         onClick={openDetailsModal}
                         data-label='max price'
                         className='base_color'
-                        // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span
                             style={{
@@ -629,11 +650,11 @@ export default function RangesRow(props: propsIF) {
                         onClick={openDetailsModal}
                         data-label='max price'
                         className='base_color'
-                        // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
-                        {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
                         <span style={{ fontFamily: 'monospace' }}>
                             {isOnPortfolioPage
                                 ? maxRangeDenomByMoneyness || '…'
@@ -648,6 +669,8 @@ export default function RangesRow(props: propsIF) {
                     className='base_color'
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <p>
                         <span>{sideCharacter}</span>
@@ -673,9 +696,14 @@ export default function RangesRow(props: propsIF) {
                     className='base_color'
                     style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <p>
-                        <span className='gradient_text' style={{ textTransform: 'lowercase' }}>
+                        <span
+                            className='gradient_text'
+                            style={{ textTransform: 'lowercase' }}
+                        >
                             {'ambient'}
                         </span>
                     </p>
@@ -690,34 +718,52 @@ export default function RangesRow(props: propsIF) {
                     className='base_color'
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
                 >
                     <div
                         className={styles.token_qty}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {position.positionLiqBaseTruncated || '0'}
-                        {/* {baseDisplay} */}
                         {baseTokenLogoComponent}
                     </div>
 
                     <div
                         className={styles.token_qty}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {position.positionLiqQuoteTruncated || '0'}
-                        {/* {quoteDisplay} */}
                         {quoteTokenLogoComponent}
                     </div>
                 </li>
             )}
 
-            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'right' }}>
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                style={{ textAlign: 'right' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 {' '}
                 <p style={{ fontFamily: 'monospace' }} className={apyClassname}>
                     {apyString}
                 </p>
             </li>
-            <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
+            <li
+                onClick={openDetailsModal}
+                data-label='status'
+                className='gradient_text'
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <RangeStatus
                     isInRange={isPositionInRange}
                     isAmbient={isAmbient}
@@ -732,6 +778,7 @@ export default function RangesRow(props: propsIF) {
                     isEmpty={position.totalValueUSD === 0}
                     showHighlightedButton={showHighlightedButton}
                     setSimpleRangeWidth={setSimpleRangeWidth}
+                    dexBalancePrefs={dexBalancePrefs}
                 />
             </li>
         </ul>

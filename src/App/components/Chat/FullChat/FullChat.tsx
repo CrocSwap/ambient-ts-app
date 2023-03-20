@@ -1,14 +1,17 @@
 import styles from './FullChat.module.css';
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
-import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
+import {
+    TbLayoutSidebarLeftCollapse,
+    TbLayoutSidebarLeftExpand,
+} from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
 
 interface FullChatPropsIF {
@@ -37,12 +40,36 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
+    const { params } = useParams();
+    const reconstructedReadableRoom = params
+        ? params.replace('&', '/').toUpperCase()
+        : undefined;
+
+    // eslint-disable-next-line
+    const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
+    const {
+        messageList,
+        chatNotification,
+        messageInput,
+        userName,
+        userCurrentPool,
+    } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
-    const [readableRoomName, setReadableName] = useState('Global');
+
+    const [readableRoomName, setReadableName] = useState(
+        reconstructedReadableRoom || 'global',
+    );
+
     // eslint-disable-next-line
     const [readableRoom, setReadableRoom] = useState<any>();
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
+
+    useEffect(() => {
+        if (reconstructedReadableRoom) {
+            setReadableName(reconstructedReadableRoom);
+            props.setRoom(reconstructedReadableRoom);
+        }
+    }, [reconstructedReadableRoom]);
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
@@ -190,9 +217,11 @@ export default function FullChat(props: FullChatPropsIF) {
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
         const { pool, isDropdown } = props;
 
-        const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
+        const activePoolStyle =
+            pool?.name === readableRoomName ? styles.active_room : '';
         const poolIsCurrentPool = pool.name === userCurrentPool;
-        const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
+        const activePoolIsCurrentPool =
+            poolIsCurrentPool && pool?.name === readableRoomName;
         const smallScrenView = useMediaQuery('(max-width: 968px)');
         const isButtonFavorited = props.favePools.check(
             pool.base.address,
@@ -266,20 +295,37 @@ export default function FullChat(props: FullChatPropsIF) {
     const sidebarExpandOrCollapseIcon = (
         <div onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}>
             {isChatSidebarOpen ? (
-                <TbLayoutSidebarLeftCollapse size={20} color='var(--text-highlight)' />
+                <TbLayoutSidebarLeftCollapse
+                    size={20}
+                    color='var(--text-highlight)'
+                />
             ) : (
-                <TbLayoutSidebarLeftExpand size={20} color='var(--text-highlight)' />
+                <TbLayoutSidebarLeftExpand
+                    size={20}
+                    color='var(--text-highlight)'
+                />
             )}{' '}
         </div>
     );
 
     const chatOptionData = [
-        { title: 'Settings', icon: <FiSettings size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Settings',
+            icon: <FiSettings size={20} color='var(--text-highlight)' />,
+        },
         {
             title: 'Notification',
-            icon: <IoNotificationsOutline size={20} color='var(--text-highlight)' />,
+            icon: (
+                <IoNotificationsOutline
+                    size={20}
+                    color='var(--text-highlight)'
+                />
+            ),
         },
-        { title: 'Sound', icon: <AiOutlineSound size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Sound',
+            icon: <AiOutlineSound size={20} color='var(--text-highlight)' />,
+        },
     ];
     // eslint-disable-next-line
     const chatOptions = (
@@ -307,13 +353,18 @@ export default function FullChat(props: FullChatPropsIF) {
                 <MdOutlineChat size={20} color='var(--text-grey-light)' />
             </header>
 
-            <div className={styles.option_item} onClick={handleCurrentPoolClick}>
+            <div
+                className={styles.option_item}
+                onClick={handleCurrentPoolClick}
+            >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Current Pool</span>
             </div>
             <div
                 className={styles.option_item}
-                style={{ background: currentRoomIsGlobal ? 'var(--dark3)' : '' }}
+                style={{
+                    background: currentRoomIsGlobal ? 'var(--dark3)' : '',
+                }}
                 onClick={handleGlobalClick}
             >
                 <FiAtSign size={20} color='var(--text-highlight)' />
@@ -436,7 +487,13 @@ export default function FullChat(props: FullChatPropsIF) {
         );
 
     return (
-        <div className={isChatSidebarOpen ? styles.main_container : styles.main_container_close}>
+        <div
+            className={
+                isChatSidebarOpen
+                    ? styles.main_container
+                    : styles.main_container_close
+            }
+        >
             <section className={styles.left_container}>
                 <header className={styles.user_wallet}>
                     <Link to='/account'>{userName}</Link>

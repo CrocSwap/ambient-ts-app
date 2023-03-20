@@ -4,14 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
-import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
+import { AiFillTwitterCircle } from 'react-icons/ai';
 import { BiArrowBack, BiMessageCheck } from 'react-icons/bi';
 import { BsBook, BsMedium } from 'react-icons/bs';
-import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
+import { FiSettings } from 'react-icons/fi';
 import { FaDiscord, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { GoRequestChanges } from 'react-icons/go';
 import { HiOutlineDocumentText, HiDocumentDuplicate } from 'react-icons/hi';
-import { MdHelp, MdArrowForwardIos, MdLanguage, MdReportProblem } from 'react-icons/md';
+import {
+    MdHelp,
+    MdArrowForwardIos,
+    MdLanguage,
+    MdReportProblem,
+} from 'react-icons/md';
 import { RiErrorWarningLine } from 'react-icons/ri';
 
 // START: Import Local Files
@@ -82,10 +87,17 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         const goBackItemStyle = props.goBackItem ? styles.goBackStyle : null;
 
         const imageIcon = (
-            <img src={props.imageIcon} alt='icon' className={styles.icon_button} width='25px' />
+            <img
+                src={props.imageIcon}
+                alt='icon'
+                className={styles.icon_button}
+                width='25px'
+            />
         );
 
-        const itemIcon = <div className={styles.icon_button}>{props.leftIcon}</div>;
+        const itemIcon = (
+            <div className={styles.icon_button}>{props.leftIcon}</div>
+        );
 
         return (
             <div
@@ -108,9 +120,15 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             <NavbarDropdownItem leftIcon={<AiFillTwitterCircle size={20} />}>
                 Twitter
             </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<FaDiscord size={20} />}>Discord</NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<BsMedium size={20} />}>Medium</NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<FaGithub size={20} />}>Github</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<FaDiscord size={20} />}>
+                Discord
+            </NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<BsMedium size={20} />}>
+                Medium
+            </NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<FaGithub size={20} />}>
+                Github
+            </NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<HiDocumentDuplicate size={20} />}>
                 Docs
             </NavbarDropdownItem>
@@ -176,7 +194,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     };
     const supportItems = (
         <>
-            <NavbarDropdownItem leftIcon={<MdHelp size={20} />}>Help Center</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<MdHelp size={20} />}>
+                Help Center
+            </NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<MdReportProblem size={20} />}>
                 Report a Problem
             </NavbarDropdownItem>
@@ -205,7 +225,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     <NavbarDropdownItem
                         goBackItem
                         key={idx}
-                        rightIcon={i18n.resolvedLanguage === lng ? circleIcon : null}
+                        rightIcon={
+                            i18n.resolvedLanguage === lng ? circleIcon : null
+                        }
                     >
                         {lngs[lng].nativeName}
                     </NavbarDropdownItem>
@@ -219,12 +241,12 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         </>
     );
 
-    const moreItems = (
-        <>
-            <NavbarDropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<BsBook size={20} />}>Docs</NavbarDropdownItem>
-        </>
-    );
+    // const moreItems = (
+    //     <>
+    //         <NavbarDropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</NavbarDropdownItem>
+    //         <NavbarDropdownItem leftIcon={<BsBook size={20} />}>Docs</NavbarDropdownItem>
+    //     </>
+    // );
 
     const NavbardropdownItemData = [
         {
@@ -242,11 +264,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             data: socialsItems,
             leftIcon: <FaDiscord size={20} />,
         },
-        {
-            title: 'More',
-            data: moreItems,
-            leftIcon: <FiMoreHorizontal size={20} />,
-        },
+        // {
+        //     title: 'More',
+        //     data: moreItems,
+        //     leftIcon: <FiMoreHorizontal size={20} />,
+        // },
     ];
 
     return (
@@ -276,6 +298,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                             {item.title}
                         </NavbarDropdownItem>
                     ))}
+                    <NavbarDropdownItem leftIcon={<BsBook size={18} />}>
+                        Docs
+                    </NavbarDropdownItem>
                 </motion.div>
             </CSSTransition>
 
@@ -289,7 +314,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     onEnter={calcHeight}
                 >
                     <div className={styles.menu}>
-                        <NavbarDropdownItem goToMenu='main' leftIcon={<BiArrowBack />} goBackItem>
+                        <NavbarDropdownItem
+                            goToMenu='main'
+                            leftIcon={<BiArrowBack />}
+                            goBackItem
+                        >
                             <h3>{item.title}</h3>
                         </NavbarDropdownItem>
                         {item.data}

@@ -9,6 +9,7 @@
 
     display: flex;
     flex-direction: column;
+  
     gap: 1rem;
     /* overflow-y: hidden; */
     /* height: 100%; */
@@ -134,6 +135,7 @@
     .tabs_exchange_balance_container {
         width: 100%;
         grid-template-columns: auto auto;
+        margin-left: 4px;
         /* grid-template-columns: auto 380px; */
         gap: 1rem;
         /* max-height: calc(100vh - 20rem); */

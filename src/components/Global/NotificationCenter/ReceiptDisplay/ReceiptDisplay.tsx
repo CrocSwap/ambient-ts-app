@@ -13,9 +13,10 @@ interface ReceiptDisplayPropsIF {
     hash: string;
     txBlockNumber?: number;
     lastBlockNumber: number;
+    txType: string | undefined;
 }
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, lastBlockNumber } = props;
+    const { status, hash, txBlockNumber, lastBlockNumber, txType } = props;
     const pending = (
         <div className={styles.pending}>
             <AiOutlineLoading3Quarters />
@@ -84,7 +85,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
             <div className={styles.content}>
                 <div className={styles.info}>
                     <div className={styles.row}>
-                        Transaction {txHashTruncated} {handleTxTextDisplay(status)}
+                        {txType ? txType : 'Transaction'} {txHashTruncated}{' '}
+                        {handleTxTextDisplay(status)}
                         <div
                             style={{
                                 cursor: 'pointer',

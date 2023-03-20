@@ -8,8 +8,12 @@ import styles from './LimitExtraInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
+// import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
+import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 // import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
@@ -74,7 +78,9 @@ export default function LimitExtraInfo(props: propsIF) {
     //     }
     // }
 
-    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceWithDenom = isDenomBase
+        ? 1 / poolPriceDisplay
+        : poolPriceDisplay;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -124,7 +130,6 @@ export default function LimitExtraInfo(props: propsIF) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-
 
     const extraInfoData = [
         {
@@ -216,6 +221,8 @@ export default function LimitExtraInfo(props: propsIF) {
         </div>
     ) : null;
 
+    const dispatch = useAppDispatch();
+
     const extraInfoSectionOrNull = (
         <div
             className={styles.extra_info_content}
@@ -226,14 +233,21 @@ export default function LimitExtraInfo(props: propsIF) {
             }
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
+                <FaGasPump size={15} />{' '}
+                {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
             </div>
-            <div className={styles.token_amount}>
+            <div
+                className={styles.token_amount}
+                onClick={(e) => {
+                    dispatch(toggleDidUserFlipDenom());
+                    e.stopPropagation();
+                }}
+            >
                 {isDenomBase
                     ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
             </div>
-            <DenominationSwitch />
+            {/* <DenominationSwitch /> */}
             {dropDownOrNull}
         </div>
     );

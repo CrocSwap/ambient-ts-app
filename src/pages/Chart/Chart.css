@@ -38,11 +38,16 @@ d3fc-svg {
 }
 
 text.crossHairText {
-    filter: url(#crossHairBg);
+    /* filter: url(#crossHairBg); */
     font-size: 13px;
     font-weight: bold;
+    
 }
 
+
+text.blur {
+    filter: blur(4px);
+}
 
 text.startDate {
     font-size: 13px;
@@ -297,6 +302,8 @@ label {
 .xAxis {
     height: 5%;
 }
+
+
 
 
 @media (max-width: 1700px) and (min-width: 1500px) {

@@ -1,9 +1,13 @@
 import styles from './LimitRate.module.css';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
+import { HiPlus, HiMinus } from 'react-icons/hi';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -39,23 +43,39 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred,
         fieldId,
         disable,
-        poolPriceNonDisplay,
+        // poolPriceNonDisplay,
         // limitTickDisplayPrice,
         isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
-    const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
-    // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
+    const tradeData = useAppSelector((state) => state.tradeData);
 
-    const initialLimitRateNonDisplay =
-        (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
+    const isDenomBase = tradeData.isDenomBase;
+    const limitTick = tradeData.limitTick;
+
+    const increaseTick = () => {
+        if (limitTick) {
+            dispatch(setLimitTick(limitTick + gridSize));
+            setPriceInputFieldBlurred(true);
+        }
+    };
+
+    const decreaseTick = () => {
+        if (limitTick) {
+            dispatch(setLimitTick(limitTick - gridSize));
+            setPriceInputFieldBlurred(true);
+        }
+    };
+
+    // const initialLimitRateNonDisplay =
+    //     (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
 
     // console.log({ initialLimitRateNonDisplay });
 
-    const pinnedInitialTick: number = isSellTokenBase
-        ? pinTickLower(initialLimitRateNonDisplay, gridSize)
-        : pinTickUpper(initialLimitRateNonDisplay, gridSize);
+    // const pinnedInitialTick: number = isSellTokenBase
+    //     ? pinTickLower(initialLimitRateNonDisplay, gridSize)
+    //     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
     const handleLimitChange = (value: string) => {
         console.log({ value });
@@ -83,19 +103,25 @@ export default function LimitRate(props: propsIF) {
             <input
                 id={`${fieldId}-quantity`}
                 onFocus={() => {
-                    const limitRateInputField = document.getElementById('limit-rate-quantity');
+                    const limitRateInputField = document.getElementById(
+                        'limit-rate-quantity',
+                    );
 
                     (limitRateInputField as HTMLInputElement).select();
                 }}
                 onChange={(event) => {
-                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    const isValid =
+                        event.target.value === '' ||
+                        event.target.validity.valid;
                     isValid ? setDisplayPrice(event.target.value) : null;
                 }}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 // onChange={(event) => handleLimitChange(event.target.value)}
                 onBlur={(event) => {
-                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    const isValid =
+                        event.target.value === '' ||
+                        event.target.validity.valid;
                     const targetValue = event.target.value;
                     // console.log({ targetValue });
                     // console.log({ previousDisplayPrice });
@@ -119,14 +145,33 @@ export default function LimitRate(props: propsIF) {
         </div>
     );
 
+    const buttonControls = (
+        <div className={styles.button_controls}>
+            <button onClick={!isDenomBase ? increaseTick : decreaseTick}>
+                <HiPlus />
+            </button>
+            <button>
+                <HiMinus onClick={!isDenomBase ? decreaseTick : increaseTick} />
+            </button>
+        </div>
+    );
+
     return (
-        <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
+        <div
+            className={`${styles.swapbox} ${
+                isOrderCopied && styles.pulse_animation
+            }`}
+        >
             <span
                 className={styles.direction}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                }}
             >
                 <p>Price</p>
-                <button
+                {/* <button
                     className={styles.reset_limit_button}
                     onClick={() => {
                         dispatch(setLimitTick(pinnedInitialTick));
@@ -134,11 +179,12 @@ export default function LimitRate(props: propsIF) {
                     }}
                 >
                     Top of Book
-                </button>
+                </button> */}
             </span>
 
-            <div className={`${styles.swap_input} `} id='limit_rate'>
+            <div className={styles.swap_input} id='limit_rate'>
                 {rateInput}
+                {buttonControls}
             </div>
         </div>
     );

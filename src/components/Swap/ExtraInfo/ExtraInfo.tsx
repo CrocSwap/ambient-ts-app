@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -9,7 +9,10 @@ import styles from './ExtraInfo.module.css';
 // import makePriceDisplay from './makePriceDisplay';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
 // import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
@@ -34,38 +37,29 @@ interface propsIF {
 // central react functional component
 export default function ExtraInfo(props: propsIF) {
     const {
-        // tokenPair,
         priceImpact,
         displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
-        // quoteTokenIsBuy,
         swapGasPriceinDollars,
-        // didUserFlipDenom,
-        // isTokenABase,
         isOnTradeRoute,
         account,
-        // isDenomBase,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(
         isOnTradeRoute ? false : false,
     );
 
-    const [hasUserChosenToDisplayExtraInfo, setHasUserChosenToDisplayExtraInfo] =
-        useState<boolean>(false);
-
-    // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
-
-    // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceWithDenom = isDenomBase
+        ? 1 / poolPriceDisplay
+        : poolPriceDisplay;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -79,8 +73,6 @@ export default function ExtraInfo(props: propsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-
-    // console.log({ priceImpact });
 
     const finalPriceWithDenom = !isDenomBase
         ? 1 / (priceImpact?.finalPrice || 1)
@@ -105,51 +97,51 @@ export default function ExtraInfo(props: propsIF) {
 
     const priceImpactString = !priceImpactNum
         ? '…'
+        : priceImpactNum >= 100
+        ? priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+          })
         : priceImpactNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
-              maximumFractionDigits: 3,
+              maximumFractionDigits: 2,
           });
 
     const feesAndSlippageData = [
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance}%`,
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${slippageTolerance} %`,
         },
         {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
-            data: `${liquidityProviderFee * 100}%`,
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${liquidityProviderFee * 100} %`,
             placement: 'bottom',
         },
     ];
 
     const extraInfoData = [
-        // {
-        //     title: 'Spot Price',
-        //     tooltipTitle: 'Current Price of the Selected Token Pool',
-        //     data: isDenomBase
-        //         ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-        //         : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        // },
         {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'After Price Impact and Provider Fee',
             data: isDenomBase
                 ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-            // data: isDenomBase
-            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            placement: 'bottom',
         },
-
         {
             title: 'Price Impact',
-            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
-            data: `${priceImpactString}%`,
+            tooltipTitle:
+                'Difference Between Current (Spot) Price and Final Price',
+            // eslint-disable-next-line no-irregular-whitespace
+            data: `${priceImpactString} %`,
             placement: 'bottom',
         },
     ];
+
     if (
         [
             '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc',
@@ -162,6 +154,7 @@ export default function ExtraInfo(props: propsIF) {
             data: isDenomBase
                 ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            placement: 'bottom',
         });
     }
     const extraInfoDetails = (
@@ -180,7 +173,8 @@ export default function ExtraInfo(props: propsIF) {
                             className={styles.data}
                             style={{
                                 color:
-                                    item.title === 'Price Impact' && priceImpactNum
+                                    item.title === 'Price Impact' &&
+                                    priceImpactNum
                                         ? Math.abs(priceImpactNum) > 2
                                             ? '#f6385b'
                                             : '#15be67'
@@ -210,7 +204,8 @@ export default function ExtraInfo(props: propsIF) {
                             className={styles.data}
                             style={{
                                 color:
-                                    item.title === 'Price Impact' && priceImpactNum
+                                    item.title === 'Price Impact' &&
+                                    priceImpactNum
                                         ? Math.abs(priceImpactNum) > 2
                                             ? '#f6385b'
                                             : '#15be67'
@@ -231,26 +226,26 @@ export default function ExtraInfo(props: propsIF) {
     ) : null;
     const dispatch = useAppDispatch();
 
-    const updateShowExtraDetails = () => {
-        if (
-            !showExtraDetails &&
-            priceImpact?.percentChange &&
-            Math.abs(priceImpact?.percentChange) > 0.02
-        ) {
-            setShowExtraDetails(true);
-        } else if (
-            showExtraDetails &&
-            (!priceImpact ||
-                (priceImpact?.percentChange && Math.abs(priceImpact?.percentChange) <= 0.02)) &&
-            !hasUserChosenToDisplayExtraInfo
-        ) {
-            setShowExtraDetails(false);
-        }
-    };
+    // const updateShowExtraDetails = () => {
+    //     if (
+    //         !showExtraDetails &&
+    //         priceImpact?.percentChange &&
+    //         Math.abs(priceImpact?.percentChange) > 0.02
+    //     ) {
+    //         setShowExtraDetails(true);
+    //     } else if (
+    //         showExtraDetails &&
+    //         (!priceImpact ||
+    //             (priceImpact?.percentChange && Math.abs(priceImpact?.percentChange) <= 0.02)) &&
+    //         !hasUserChosenToDisplayExtraInfo
+    //     ) {
+    //         setShowExtraDetails(false);
+    //     }
+    // };
 
-    useEffect(() => {
-        updateShowExtraDetails();
-    }, [priceImpact?.percentChange]);
+    // useEffect(() => {
+    //     updateShowExtraDetails();
+    // }, [priceImpact?.percentChange]);
 
     const extraDetailsDropdown = (
         <div
@@ -258,18 +253,14 @@ export default function ExtraInfo(props: propsIF) {
             onClick={
                 priceImpact
                     ? () => {
-                          if (showExtraDetails) {
-                              setHasUserChosenToDisplayExtraInfo(false);
-                          } else {
-                              setHasUserChosenToDisplayExtraInfo(true);
-                          }
                           setShowExtraDetails(!showExtraDetails);
                       }
                     : undefined
             }
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
+                <FaGasPump size={12} />{' '}
+                {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
                 {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
             </div>
             <div
@@ -304,8 +295,10 @@ export default function ExtraInfo(props: propsIF) {
     // );
     // const extraDetailsNoDropDownOrNull = !priceImpact ? extraDetailsNoDropdown : null;
     // const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
-    const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
-    const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
+    const extraDetailsOrNull =
+        showExtraDetails && priceImpact ? extraInfoDetails : null;
+    const feesAndSlippageOrNull =
+        showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>

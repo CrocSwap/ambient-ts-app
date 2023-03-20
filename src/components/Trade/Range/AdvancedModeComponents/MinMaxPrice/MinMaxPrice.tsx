@@ -7,9 +7,6 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
-    setRangeModuleTriggered,
-    setTargetData,
-    targetData,
 } from '../../../../../utils/state/tradeDataSlice';
 
 interface MinMaxPriceIF {
@@ -28,8 +25,11 @@ interface MinMaxPriceIF {
     // setRangeLowTick: Dispatch<SetStateAction<number>>;
     // setRangeHighTick: Dispatch<SetStateAction<number>>;
     chainId: string;
-    targetData: targetData[];
+    maxPrice: number;
+    minPrice: number;
     isRangeCopied: boolean;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
 export default function MinMaxPrice(props: MinMaxPriceIF) {
@@ -47,7 +47,10 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         // setRangeLowTick,
         // setRangeHighTick,
         chainId,
-        targetData,
+        maxPrice,
+        minPrice,
+        setMaxPrice,
+        setMinPrice,
         isRangeCopied,
     } = props;
 
@@ -55,41 +58,31 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleSetMinTarget = (minPriceInput: string) => {
         setMinPriceInputString(minPriceInput);
-
-        const newTargetData: targetData[] = [
-            { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
-            {
-                name: !isDenomBase ? 'Min' : 'Max',
-                value: targetData.filter(
-                    (target) => target.name === (!isDenomBase ? 'Min' : 'Max'),
-                )[0].value,
-            },
-        ];
-        dispatch(setTargetData(newTargetData));
-        dispatch(setRangeModuleTriggered(true));
+        if (!isDenomBase) {
+            setMaxPrice(parseFloat(minPriceInput));
+        } else {
+            setMinPrice(parseFloat(minPriceInput));
+        }
     };
 
     const handleSetMaxTarget = (maxPriceInput: string) => {
         setMaxPriceInputString(maxPriceInput);
 
-        const newTargetData: targetData[] = [
-            { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
-            {
-                name: !isDenomBase ? 'Max' : 'Min',
-                value: targetData.filter(
-                    (target) => target.name === (!isDenomBase ? 'Max' : 'Min'),
-                )[0].value,
-            },
-        ];
-
-        dispatch(setTargetData(newTargetData));
-        dispatch(setRangeModuleTriggered(true));
+        if (!isDenomBase) {
+            setMinPrice(parseFloat(maxPriceInput));
+        } else {
+            setMaxPrice(parseFloat(maxPriceInput));
+        }
     };
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const minPriceInput = evt.target.value;
-            handleSetMinTarget(minPriceInput);
+            // const maxPriceInput = evt.target.value;
+            const targetValue = evt.target.value.replaceAll(',', '');
+            const isValid = evt.target.validity.valid;
+            if (isValid) {
+                handleSetMinTarget(targetValue);
+            }
         } else {
             console.log('no event');
         }
@@ -97,8 +90,12 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const maxPriceInput = evt.target.value;
-            handleSetMaxTarget(maxPriceInput);
+            // const maxPriceInput = evt.target.value;
+            const targetValue = evt.target.value.replaceAll(',', '');
+            const isValid = evt.target.validity.valid;
+            if (isValid) {
+                handleSetMaxTarget(targetValue);
+            }
         } else {
             console.log('no event');
         }
@@ -106,26 +103,25 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const disableInputContent = (
         <div className={styles.disable_text}>
-            Invalid range selected. The min price must be lower than the max price.
+            Invalid range selected. The min price must be lower than the max
+            price.
         </div>
     );
 
     useEffect(() => {
-        if (targetData !== undefined) {
-            const high = targetData.filter((data) => {
-                return data.name === 'Max';
-            })[0].value;
-            const low = targetData.filter((data) => {
-                return data.name === 'Min';
-            })[0].value;
+        if (maxPrice !== undefined && minPrice !== undefined) {
+            const high = maxPrice;
+            const low = minPrice;
 
-            setMaxPriceInputString(high !== undefined ? high.toString() : '0.0');
+            setMaxPriceInputString(
+                high !== undefined ? high.toString() : '0.0',
+            );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
 
             // lowBoundOnBlur();
             // highBoundOnBlur();
         }
-    }, [JSON.stringify(targetData)]);
+    }, [maxPrice, minPrice]);
 
     const tickSize = lookupChain(chainId).gridSize;
 
@@ -155,11 +151,17 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Min Price'
                     percentageDifference={minPricePercentage}
                     handleChangeEvent={
-                        !isDenomBase ? handleMaxPriceChangeEvent : handleMinPriceChangeEvent
+                        !isDenomBase
+                            ? handleMaxPriceChangeEvent
+                            : handleMinPriceChangeEvent
                     }
                     onBlur={lowBoundOnBlur}
-                    increaseTick={!isDenomBase ? increaseLowTick : decreaseHighTick}
-                    decreaseTick={!isDenomBase ? decreaseLowTick : increaseHighTick}
+                    increaseTick={
+                        !isDenomBase ? increaseLowTick : decreaseHighTick
+                    }
+                    decreaseTick={
+                        !isDenomBase ? decreaseLowTick : increaseHighTick
+                    }
                     isRangeCopied={isRangeCopied}
                 />
                 <PriceInput
@@ -167,11 +169,17 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
                     handleChangeEvent={
-                        !isDenomBase ? handleMinPriceChangeEvent : handleMaxPriceChangeEvent
+                        !isDenomBase
+                            ? handleMinPriceChangeEvent
+                            : handleMaxPriceChangeEvent
                     }
                     onBlur={highBoundOnBlur}
-                    increaseTick={!isDenomBase ? increaseHighTick : decreaseLowTick}
-                    decreaseTick={!isDenomBase ? decreaseHighTick : increaseLowTick}
+                    increaseTick={
+                        !isDenomBase ? increaseHighTick : decreaseLowTick
+                    }
+                    decreaseTick={
+                        !isDenomBase ? decreaseHighTick : increaseLowTick
+                    }
                     isRangeCopied={isRangeCopied}
                 />
             </div>
