@@ -18,7 +18,13 @@ interface InitPriceExtraInfoProps {
 }
 
 export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
-    const { initialPrice, isDenomBase, initGasPriceinDollars, baseToken, quoteToken } = props;
+    const {
+        initialPrice,
+        isDenomBase,
+        initGasPriceinDollars,
+        baseToken,
+        quoteToken,
+    } = props;
 
     const [showExtraDetails] = useState<boolean>(true);
     // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
@@ -43,7 +49,8 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
     const extraInfoData = [
         {
             title: 'Price',
-            tooltipTitle: 'The initial price at which liquidity positions can be minted.',
+            tooltipTitle:
+                'The initial price at which liquidity positions can be minted.',
             // data: `${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
             //     tokenPair.dataTokenA.symbol
             // }`,
@@ -56,7 +63,8 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         },
         {
             title: 'Network Fee',
-            tooltipTitle: 'Estimated network fee (i.e. gas cost) to initialize pool',
+            tooltipTitle:
+                'Estimated network fee (i.e. gas cost) to initialize pool',
             data: `${initGasPriceinDollars}`,
         },
 

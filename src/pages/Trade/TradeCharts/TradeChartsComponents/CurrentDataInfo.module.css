@@ -1,4 +1,4 @@
-.chart_overlay_container{
+.chart_overlay_container {
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
@@ -13,7 +13,6 @@
     align-items: center;
     padding: 0.5rem 0.5rem 0.5rem 0;
 }
-
 
 .current_data_info {
     padding: 0.3rem 0 0 0.3rem;
@@ -36,11 +35,9 @@
     color: rgba(235, 235, 255, 0.4);
 }
 
-
 .settings_container:not(:last-child) {
     border-right: 1px solid var(--text-grey-light);
 }
-
 
 .active_selected_button,
 .non_active_selected_button {
@@ -76,7 +73,7 @@
     color: var(--text-grey-light);
 }
 
-.border_left{
+.border_left {
     text-decoration: underline;
     text-underline-offset: 3px;
 }

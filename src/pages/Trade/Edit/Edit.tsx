@@ -76,13 +76,21 @@ export default function Edit() {
                 setInitializationComplete(false);
             }
         }
-    }, [denominationsInBase, isAdvancedModeActive, rangeLowTick, rangeHighTick, location.pathname]);
+    }, [
+        denominationsInBase,
+        isAdvancedModeActive,
+        rangeLowTick,
+        rangeHighTick,
+        location.pathname,
+    ]);
 
     const baseTokenDecimals = position.baseDecimals;
     const quoteTokenDecimals = position.quoteDecimals;
 
-    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] = useState('');
-    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] = useState('');
+    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
+        useState('');
+    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
+        useState('');
 
     const currentPoolPriceTick = position.poolPriceInTicks ?? 0;
     const currentPoolPriceNonDisplay = tickToPrice(currentPoolPriceTick);
@@ -94,7 +102,12 @@ export default function Edit() {
     );
 
     const currentPoolDisplayPriceInBase =
-        1 / toDisplayPrice(currentPoolPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+        1 /
+        toDisplayPrice(
+            currentPoolPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
 
     const truncatedCurrentPoolDisplayPriceInQuote =
         currentPoolDisplayPriceInQuote < 2
@@ -115,12 +128,10 @@ export default function Edit() {
     const defaultMinPriceDifferencePercentage = -15;
     const defaultMaxPriceDifferencePercentage = 15;
 
-    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] = useState(
-        defaultMinPriceDifferencePercentage,
-    );
-    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] = useState(
-        defaultMaxPriceDifferencePercentage,
-    );
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
+        useState(defaultMinPriceDifferencePercentage);
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
+        useState(defaultMaxPriceDifferencePercentage);
 
     useEffect(() => {
         setRangeLowTick(position.bidTick);
@@ -141,14 +152,20 @@ export default function Edit() {
                 lookupChain(position.chainId).gridSize,
             );
 
-            setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
-            setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+            setPinnedMinPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            );
+            setPinnedMaxPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
 
             setRangeLowTick(pinnedDisplayPrices.pinnedLowTick);
             setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            const highTickDiff = pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
-            const lowTickDiff = pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+            const highTickDiff =
+                pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+            const lowTickDiff =
+                pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
 
             const highGeometricDifferencePercentage =
                 Math.abs(highTickDiff) < 200
@@ -159,12 +176,20 @@ export default function Edit() {
                     ? parseFloat(truncateDecimals(lowTickDiff / 100, 2))
                     : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
             denominationsInBase
-                ? setMaxPriceDifferencePercentage(-lowGeometricDifferencePercentage)
-                : setMaxPriceDifferencePercentage(highGeometricDifferencePercentage);
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
 
             denominationsInBase
-                ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
-                : setMinPriceDifferencePercentage(lowGeometricDifferencePercentage);
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
 
             // console.log({ pinnedDisplayPrices });
 
@@ -204,14 +229,16 @@ export default function Edit() {
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
 
-    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
+        useState(false);
 
     const lowBoundOnBlur = () => setRangeLowBoundFieldBlurred(true);
 
     // const rangeLowBoundDisplayPrice = 1;
     // const rangeHighBoundDisplayPrice = 1;
 
-    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
+        useState(false);
     const highBoundOnBlur = () => setRangeHighBoundFieldBlurred(true);
 
     useEffect(() => {
@@ -222,15 +249,19 @@ export default function Edit() {
             ) as HTMLInputElement;
             if (rangeLowBoundDisplayField) {
                 // rangeLowBoundDisplayField.value = pinnedMinPriceDisplayTruncated.toString();
-                if (rangeLowBoundDisplayField.value !== pinnedMinPriceDisplayTruncated) {
-                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                        denominationsInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        rangeLowBoundDisplayField.value,
-                        pinnedMaxPriceDisplayTruncated,
-                        lookupChain(position.chainId).gridSize,
-                    );
+                if (
+                    rangeLowBoundDisplayField.value !==
+                    pinnedMinPriceDisplayTruncated
+                ) {
+                    const pinnedDisplayPrices =
+                        getPinnedPriceValuesFromDisplayPrices(
+                            denominationsInBase,
+                            baseTokenDecimals,
+                            quoteTokenDecimals,
+                            rangeLowBoundDisplayField.value,
+                            pinnedMaxPriceDisplayTruncated,
+                            lookupChain(position.chainId).gridSize,
+                        );
 
                     !denominationsInBase
                         ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
@@ -248,15 +279,19 @@ export default function Edit() {
                 'edit-quote-price-input-quantity',
             ) as HTMLInputElement;
             if (rangeHighBoundDisplayField) {
-                if (rangeHighBoundDisplayField.value !== pinnedMaxPriceDisplayTruncated) {
-                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                        denominationsInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        pinnedMinPriceDisplayTruncated,
-                        rangeHighBoundDisplayField.value,
-                        lookupChain(position.chainId).gridSize,
-                    );
+                if (
+                    rangeHighBoundDisplayField.value !==
+                    pinnedMaxPriceDisplayTruncated
+                ) {
+                    const pinnedDisplayPrices =
+                        getPinnedPriceValuesFromDisplayPrices(
+                            denominationsInBase,
+                            baseTokenDecimals,
+                            quoteTokenDecimals,
+                            pinnedMinPriceDisplayTruncated,
+                            rangeHighBoundDisplayField.value,
+                            lookupChain(position.chainId).gridSize,
+                        );
 
                     denominationsInBase
                         ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
@@ -272,14 +307,18 @@ export default function Edit() {
     const baseTokenOfPosition = position.base;
     const quoteTokenOfPosition = position.quote;
     const userLocalStorage = localStorage.getItem('user');
-    const tokens = userLocalStorage ? JSON.parse(userLocalStorage).tokens : null;
+    const tokens = userLocalStorage
+        ? JSON.parse(userLocalStorage).tokens
+        : null;
 
     const baseTokenImageURL = tokens.find(
-        (token: TokenIF) => token.address.toLowerCase() === baseTokenOfPosition.toLowerCase(),
+        (token: TokenIF) =>
+            token.address.toLowerCase() === baseTokenOfPosition.toLowerCase(),
     ).logoURI;
 
     const quoteTokenImageURL = tokens.find(
-        (token: TokenIF) => token.address.toLowerCase() === quoteTokenOfPosition.toLowerCase(),
+        (token: TokenIF) =>
+            token.address.toLowerCase() === quoteTokenOfPosition.toLowerCase(),
     ).logoURI;
 
     const lowPriceNonDisplay = tickToPrice(position.bidTick);
@@ -300,8 +339,12 @@ export default function Edit() {
     const lowPriceDisplayInBase = 1 / highPriceDisplayInQuote;
     const highPriceDisplayInBase = 1 / lowPriceDisplayInQuote;
 
-    const lowPriceDisplay = denominationsInBase ? lowPriceDisplayInBase : lowPriceDisplayInQuote;
-    const highPriceDisplay = denominationsInBase ? highPriceDisplayInBase : highPriceDisplayInQuote;
+    const lowPriceDisplay = denominationsInBase
+        ? lowPriceDisplayInBase
+        : lowPriceDisplayInQuote;
+    const highPriceDisplay = denominationsInBase
+        ? highPriceDisplayInBase
+        : highPriceDisplayInQuote;
 
     const lowPriceDisplayTruncated =
         lowPriceDisplay < 2

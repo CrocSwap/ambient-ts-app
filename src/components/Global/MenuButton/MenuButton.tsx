@@ -75,9 +75,30 @@ const MenuButton = ({
             height={height}
             {...props}
         >
-            <motion.line x1='0' x2={unitWidth} y1='0' y2='0' variants={top} {...lineProps} />
-            <motion.line x1='0' x2={unitWidth} y1='2' y2='2' variants={center} {...lineProps} />
-            <motion.line x1='0' x2={unitWidth} y1='4' y2='4' variants={bottom} {...lineProps} />
+            <motion.line
+                x1='0'
+                x2={unitWidth}
+                y1='0'
+                y2='0'
+                variants={top}
+                {...lineProps}
+            />
+            <motion.line
+                x1='0'
+                x2={unitWidth}
+                y1='2'
+                y2='2'
+                variants={center}
+                {...lineProps}
+            />
+            <motion.line
+                x1='0'
+                x2={unitWidth}
+                y1='4'
+                y2='4'
+                variants={bottom}
+                {...lineProps}
+            />
         </motion.svg>
     );
 };

@@ -14,7 +14,11 @@ export const queryTokenDecimals = async (
     return crocEnv.token(tokenAddress).decimals;
 };
 
-type TokenDecimalFn = (provider: Provider, tokenAddr: string, chainId: string) => Promise<number>;
+type TokenDecimalFn = (
+    provider: Provider,
+    tokenAddr: string,
+    chainId: string,
+) => Promise<number>;
 
 export function memoizeTokenDecimals(): TokenDecimalFn {
     return memoizeProviderFn(queryTokenDecimals) as TokenDecimalFn;

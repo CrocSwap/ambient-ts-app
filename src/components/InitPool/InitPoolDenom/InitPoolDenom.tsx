@@ -38,7 +38,11 @@ export default function InitPoolDenom(props: propsIF) {
     return (
         <div className={styles.denomination_switch}>
             <button
-                className={!isDenomBase ? styles.active_button : styles.non_active_button}
+                className={
+                    !isDenomBase
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={() => {
                     invertInitialPrice ? invertInitialPrice() : null;
                     setIsDenomBase(!isDenomBase);
@@ -47,7 +51,11 @@ export default function InitPoolDenom(props: propsIF) {
                 {baseTokenSymbol}
             </button>
             <button
-                className={isDenomBase ? styles.active_button : styles.non_active_button}
+                className={
+                    isDenomBase
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={() => {
                     invertInitialPrice ? invertInitialPrice() : null;
                     setIsDenomBase(!isDenomBase);

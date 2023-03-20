@@ -20,6 +20,6 @@ export const useSkin = (defaultSkin: string) => {
     return {
         colors,
         choosePurpleDark: () => setSkin('purple_dark'),
-        choosePurpleLight: () => setSkin('purple_light')
+        choosePurpleLight: () => setSkin('purple_light'),
     };
-}
+};

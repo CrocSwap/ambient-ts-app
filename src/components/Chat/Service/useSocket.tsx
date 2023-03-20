@@ -66,7 +66,14 @@ const useSocket = (room: string) => {
         });
     }
 
-    return { messages, getMsg, sendMsg, lastMessage, messageUser, lastMessageText };
+    return {
+        messages,
+        getMsg,
+        sendMsg,
+        lastMessage,
+        messageUser,
+        lastMessageText,
+    };
 };
 
 export default useSocket;

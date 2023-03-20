@@ -1,10 +1,10 @@
 import { useAppSelector } from './reduxToolkit';
 
-export const useParamsBuilder = (chainId: string): (
-    (destination: string) => string
-) => {
+export const useParamsBuilder = (
+    chainId: string,
+): ((destination: string) => string) => {
     console.log('ran custom hook useParamsBuilder()');
-    const { tradeData } = useAppSelector(state => state);
+    const { tradeData } = useAppSelector((state) => state);
 
     const makeParam = (paramKey: string): string => {
         let value: string;
@@ -32,7 +32,7 @@ export const useParamsBuilder = (chainId: string): (
         }
         const output = value ? paramKey + '=' + value : '';
         return output;
-    }
+    };
 
     const getNavPath = (destination: string): string => {
         let baseUrl: string;
@@ -57,7 +57,13 @@ export const useParamsBuilder = (chainId: string): (
                 break;
             case 'range':
                 baseUrl = '/trade/range';
-                paramsNeeded = ['chain', 'tokenA', 'tokenB', 'lowTick', 'highTick'];
+                paramsNeeded = [
+                    'chain',
+                    'tokenA',
+                    'tokenB',
+                    'lowTick',
+                    'highTick',
+                ];
                 break;
             case 'portfolio':
             case 'account':
@@ -77,7 +83,7 @@ export const useParamsBuilder = (chainId: string): (
         const navPath = baseUrl + '/' + paramsString;
 
         return navPath;
-    }
+    };
 
     return getNavPath;
-}
+};

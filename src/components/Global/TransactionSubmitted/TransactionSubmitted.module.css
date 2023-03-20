@@ -3,7 +3,6 @@
     flex-direction: column;
     text-align: center;
     justify-content: space-between;
-   
 }
 .transaction_submitted h2 {
     font-size: var(--header2-size);
