@@ -8,6 +8,7 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import DividerDark from '../DividerDark/DividerDark';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
@@ -21,8 +22,7 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
     onClose: () => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: skipConfirmIF;
 }
 
 export default function TransactionSettings(props: propsIF) {
@@ -33,54 +33,77 @@ export default function TransactionSettings(props: propsIF) {
         isPairStable,
         onClose,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
 
-    const [newSlippage, setNewSlippage] = useState<string>(
-        isPairStable
-            ? slippage.stable.toString()
-            : slippage.volatile.toString(),
-    );
-
-    const handleSubmit = (): void => {
-        const slippageAsFloat = parseFloat(newSlippage);
-        isPairStable
-            ? slippage.updateStable(slippageAsFloat)
-            : slippage.updateVolatile(slippageAsFloat);
-        onClose();
-    };
-
     const handleKeyDown = (event: { keyCode: number }): void => {
-        event.keyCode === 13 && handleSubmit();
+        event.keyCode === 13 && updateSettings();
     };
 
     const shouldDisplaySlippageTolerance = module !== 'Limit Order';
+
+    const persistedSlippage = isPairStable
+        ? slippage.stable
+        : slippage.volatile;
+
+    const [currentSlippage, setCurrentSlippage] =
+        useState<number>(persistedSlippage);
+
+    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
+        bypassConfirm.isEnabled,
+    );
+
+    const updateSettings = (): void => {
+        isPairStable
+            ? slippage.updateStable(currentSlippage)
+            : slippage.updateVolatile(currentSlippage);
+        bypassConfirm.setValue(currentSkipConfirm);
+        onClose();
+    };
 
     return (
         <div className={styles.settings_container}>
             <div className={styles.settings_title}>{module + ' Settings'}</div>
             {shouldDisplaySlippageTolerance && (
                 <SlippageTolerance
-                    slippageValue={newSlippage}
-                    setNewSlippage={setNewSlippage}
-                    module={module}
+                    persistedSlippage={persistedSlippage}
+                    setCurrentSlippage={setCurrentSlippage}
                     handleKeyDown={handleKeyDown}
+                    presets={
+                        isPairStable
+                            ? slippage.presets.stable
+                            : slippage.presets.volatile
+                    }
                 />
             )}
             <DividerDark />
             <DividerDark />
 
             <ConfirmationModalControl
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
+                tempBypassConfirm={currentSkipConfirm}
+                setTempBypassConfirm={setCurrentSkipConfirm}
                 toggleFor={toggleFor}
                 displayInSettings={true}
             />
 
             <div className={styles.button_container}>
-                {shouldDisplaySlippageTolerance ? (
-                    <Button title='Submit' action={handleSubmit} flat={true} />
-                ) : null}
+                {module !== 'Limit Order' ? (
+                    <Button
+                        title={
+                            currentSlippage > 0
+                                ? 'Confirm'
+                                : 'Enter a Valid Slippage'
+                        }
+                        action={updateSettings}
+                        disabled={!(currentSlippage > 0)}
+                        flat
+                    />
+                ) : (
+                    <Button
+                        title='Confirm Settings'
+                        action={updateSettings}
+                        flat
+                    />
+                )}
             </div>
         </div>
     );

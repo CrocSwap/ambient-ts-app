@@ -23,6 +23,7 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -54,6 +55,7 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function RangesRow(props: propsIF) {
@@ -74,6 +76,7 @@ export default function RangesRow(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const {
@@ -346,8 +349,7 @@ export default function RangesRow(props: propsIF) {
     const tip = pair.join('\n');
 
     const tradeLinkPath =
-        '/trade/range/' +
-        'chain=' +
+        '/trade/range/chain=' +
         position.chainId +
         '&tokenA=' +
         position.quote +
@@ -739,6 +741,7 @@ export default function RangesRow(props: propsIF) {
                     showHighlightedButton={showHighlightedButton}
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     dexBalancePrefs={dexBalancePrefs}
+                    slippage={slippage}
                 />
             </li>
         </ul>

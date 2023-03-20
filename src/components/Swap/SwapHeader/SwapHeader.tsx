@@ -16,6 +16,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 // interface for props
 interface propsIF {
@@ -23,8 +24,7 @@ interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     shareOptionsDisplay: JSX.Element;
 }
 
@@ -36,7 +36,6 @@ export default function SwapHeader(props: propsIF) {
         isOnTradeRoute,
         openGlobalModal,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -48,20 +47,6 @@ export default function SwapHeader(props: propsIF) {
 
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
-
-    const settingsModalOrNull = isModalOpen ? (
-        <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings
-                module={isOnTradeRoute ? 'Market Order' : 'Swap'}
-                toggleFor='swap'
-                slippage={swapSlippage}
-                isPairStable={isPairStable}
-                onClose={closeModal}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-            />
-        </Modal>
-    ) : null;
 
     const tradeRouteHeader = (
         <ContentHeader>
@@ -120,7 +105,18 @@ export default function SwapHeader(props: propsIF) {
     return (
         <>
             {isOnTradeRoute ? tradeRouteHeader : mainHeader}
-            {settingsModalOrNull}
+            {isModalOpen && (
+                <Modal noHeader title='modal' onClose={closeModal}>
+                    <TransactionSettings
+                        module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                        toggleFor='swap'
+                        slippage={swapSlippage}
+                        isPairStable={isPairStable}
+                        onClose={closeModal}
+                        bypassConfirm={bypassConfirm.swap}
+                    />
+                </Modal>
+            )}
         </>
     );
 }

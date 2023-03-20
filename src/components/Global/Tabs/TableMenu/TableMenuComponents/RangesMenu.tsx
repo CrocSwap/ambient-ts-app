@@ -27,6 +27,7 @@ import {
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
+import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 
 // interface for React functional component props
 interface propsIF {
@@ -50,6 +51,7 @@ interface propsIF {
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
     isPositionInRange: boolean;
 }
 
@@ -68,6 +70,7 @@ export default function RangesMenu(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
         isPositionInRange,
     } = props;
 
@@ -100,18 +103,6 @@ export default function RangesMenu(props: propsIF) {
             <RangeDetails position={position} {...rangeDetailsProps} />,
         );
     };
-
-    // const openHarvestModal = () => {
-    //     setShowDropdownMenu(false);
-    //     openGlobalModal(
-    //         <HarvestPosition
-    //             crocEnv={crocEnv}
-    //             position={position}
-    //             dexBalancePrefs={dexBalancePrefs}
-    //             {...rangeDetailsProps}
-    //         />,
-    //     );
-    // };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
@@ -304,6 +295,7 @@ export default function RangesMenu(props: propsIF) {
                         crocEnv={crocEnv}
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
+                        slippage={slippage}
                         {...rangeDetailsProps}
                     />
                 </Modal>
@@ -318,6 +310,7 @@ export default function RangesMenu(props: propsIF) {
                         position={position}
                         handleModalClose={handleModalClose}
                         dexBalancePrefs={dexBalancePrefs}
+                        slippage={slippage}
                         {...rangeDetailsProps}
                     />
                 </Modal>

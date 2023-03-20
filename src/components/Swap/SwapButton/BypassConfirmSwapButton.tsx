@@ -1,22 +1,25 @@
-import styles from './BypassConfirmSwapButton.module.css';
-
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
+// START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
 import { CrocImpact } from '@crocswap-libs/sdk';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
+// START: Import JSX Components
+import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
+import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
+import TransactionException from '../../Global/TransactionException/TransactionException';
+import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import {
     CircleLoader,
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../Global/LoadingAnimations/CircleLoader/CircleLoader';
+
+// START: Import Other Local Files
+import styles from './BypassConfirmSwapButton.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
-import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../../Global/TransactionException/TransactionException';
-import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -36,15 +39,15 @@ interface propsIF {
     slippageTolerancePercentage: number;
     effectivePrice: number;
     isSellTokenBase: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
     sellQtyString: string;
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
     showBypassConfirm: boolean;
     showExtraInfo: boolean;
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
+    bypassConfirmSwap: skipConfirmIF;
 }
+
 export default function BypassConfirmSwapButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -63,8 +66,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
-    // console.log({ txErrorCode });
-    // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';

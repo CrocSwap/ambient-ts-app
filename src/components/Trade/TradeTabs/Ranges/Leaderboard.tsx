@@ -27,6 +27,7 @@ import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 
 // interface for props
 interface propsIF {
@@ -58,6 +59,7 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 // react functional component
@@ -84,6 +86,7 @@ export default function Leaderboard(props: propsIF) {
         showSidebar,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -369,6 +372,7 @@ export default function Leaderboard(props: propsIF) {
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
             dexBalancePrefs={dexBalancePrefs}
+            slippage={slippage}
         />
     ));
 

@@ -5,6 +5,10 @@ import { useEffect, useState } from 'react';
 interface SlippagePairIF {
     stable: number;
     volatile: number;
+    presets: {
+        stable: number[];
+        volatile: number[];
+    };
 }
 
 // interface for object returned by this hook
@@ -13,6 +17,16 @@ export interface SlippageMethodsIF {
     volatile: number;
     updateStable: (val: number) => void;
     updateVolatile: (val: number) => void;
+    presets: {
+        stable: number[];
+        volatile: number[];
+    };
+}
+
+export interface allSlippageMethodsIF {
+    swapSlippage: SlippageMethodsIF;
+    mintSlippage: SlippageMethodsIF;
+    repoSlippage: SlippageMethodsIF;
 }
 
 // custom hook to manage and interact a given slippage pair
@@ -79,5 +93,6 @@ export const useSlippage = (
         volatile,
         updateStable: (val: number) => updateSlippage('stable', val),
         updateVolatile: (val: number) => updateSlippage('volatile', val),
+        presets: defaults.presets,
     };
 };

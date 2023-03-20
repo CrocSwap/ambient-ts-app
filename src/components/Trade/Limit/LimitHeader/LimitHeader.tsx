@@ -1,44 +1,39 @@
 // START: Import React and Dongles
+import { AiOutlineShareAlt } from 'react-icons/ai';
 
-// START: Import React Functional Components
+// START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
+import ShareModal from '../../../Global/ShareModal/ShareModal';
+import Modal from '../../../../components/Global/Modal/Modal';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
-// START: Import Local Files
+// START: Import Other Local Files
 import styles from './LimitHeader.module.css';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
-import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import { AiOutlineShareAlt } from 'react-icons/ai';
-import ShareModal from '../../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
     chainId: string;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function LimitHeader(props: propsIF) {
-    const {
-        mintSlippage,
-        isPairStable,
-        openGlobalModal,
-        bypassConfirm,
-        toggleBypassConfirm,
-    } = props;
+    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm } =
+        props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -47,20 +42,6 @@ export default function LimitHeader(props: propsIF) {
     const isDenomBase = tradeData.isDenomBase;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
-
-    const settingsModalOrNull = isModalOpen ? (
-        <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings
-                module='Limit Order'
-                toggleFor='limit'
-                slippage={mintSlippage}
-                isPairStable={isPairStable}
-                onClose={closeModal}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-            />
-        </Modal>
-    ) : null;
 
     return (
         <ContentHeader>
@@ -88,7 +69,18 @@ export default function LimitHeader(props: propsIF) {
                     <img src={settingsIcon} alt='settings' />
                 </div>
             </IconWithTooltip>
-            {settingsModalOrNull}
+            {isModalOpen && (
+                <Modal noHeader title='modal' onClose={closeModal}>
+                    <TransactionSettings
+                        module='Limit Order'
+                        toggleFor='limit'
+                        slippage={mintSlippage}
+                        isPairStable={isPairStable}
+                        onClose={closeModal}
+                        bypassConfirm={bypassConfirm.limit}
+                    />
+                </Modal>
+            )}
         </ContentHeader>
     );
 }

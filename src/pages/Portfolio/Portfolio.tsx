@@ -21,18 +21,17 @@ import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-// import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import { Provider } from '@ethersproject/providers';
 import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
-    // setSecondaryImageDataRedux,
 } from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -94,6 +93,7 @@ interface propsIF {
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -142,6 +142,7 @@ export default function Portfolio(props: propsIF) {
         mainnetProvider,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -580,6 +581,7 @@ export default function Portfolio(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     const soloTokenSelectProps = {

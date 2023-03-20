@@ -1,25 +1,22 @@
-import { useId, useState } from 'react';
+import { useId, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
 
 interface propsIF {
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    tempBypassConfirm: boolean;
+    setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
     toggleFor: string;
     displayInSettings?: boolean;
 }
 
 export default function ConfirmationModalControl(props: propsIF) {
-    const { bypassConfirm, toggleBypassConfirm, toggleFor, displayInSettings } =
+    const { tempBypassConfirm, setTempBypassConfirm, displayInSettings } =
         props;
 
     const { pathname } = useLocation();
 
     const compKey = useId();
-
-    const [isBypassToggleEnabledLocal, setIsBypassToggleEnabledLocal] =
-        useState(bypassConfirm);
 
     // TODO:   @Junior  unless the `id` field is being used for DOM manipulation
     // TODO:   @Junior  ... or for CSS targeting, just take it out and use the
@@ -37,23 +34,18 @@ export default function ConfirmationModalControl(props: propsIF) {
         ? 'Repositions'
         : 'unhandled';
 
-    const label = displayInSettings ? (
-        <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
-    ) : (
-        <p>Skip this confirmation step in the future</p>
-    );
     return (
         <div className={styles.main_container}>
-            {label}
+            {displayInSettings ? (
+                <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
+            ) : (
+                <p>Skip this confirmation step in the future</p>
+            )}
             <Toggle2
                 key={compKey}
-                isOn={isBypassToggleEnabledLocal}
+                isOn={tempBypassConfirm}
                 disabled={false}
-                handleToggle={() => {
-                    console.log('setting to: ' + !isBypassToggleEnabledLocal);
-                    setIsBypassToggleEnabledLocal(!isBypassToggleEnabledLocal);
-                    toggleBypassConfirm(toggleFor, !isBypassToggleEnabledLocal);
-                }}
+                handleToggle={() => setTempBypassConfirm(!tempBypassConfirm)}
                 id='disabled_confirmation_modal_toggle'
             />
         </div>
