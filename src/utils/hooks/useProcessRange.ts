@@ -28,8 +28,12 @@ export const useProcessRange = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(position.base.toLowerCase() + '_' + position.chainId) -
-                getMoneynessRank(position.quote.toLowerCase() + '_' + position.chainId) >=
+            getMoneynessRank(
+                position.base.toLowerCase() + '_' + position.chainId,
+            ) -
+                getMoneynessRank(
+                    position.quote.toLowerCase() + '_' + position.chainId,
+                ) >=
             0,
         [position.base, position.base, position.chainId],
     );
@@ -56,9 +60,11 @@ export const useProcessRange = (
     const isAmbient = position.positionType === 'ambient';
 
     const ensName = position.ensResolution ? position.ensResolution : null;
-    const ownerId = position.user.length === 40 ? '0x' + position.user : position.user;
+    const ownerId =
+        position.user.length === 40 ? '0x' + position.user : position.user;
 
-    const isOwnerActiveAccount = position.user.toLowerCase() === account?.toLowerCase();
+    const isOwnerActiveAccount =
+        position.user.toLowerCase() === account?.toLowerCase();
 
     // -------------------------------POSITION HASH------------------------
 
@@ -67,7 +73,11 @@ export const useProcessRange = (
         posHash = ambientPosSlot(ownerId, position.base, position.quote, 36000);
     } else {
         posHash =
-            position.user && position.base && position.quote && position.bidTick && position.askTick
+            position.user &&
+            position.base &&
+            position.quote &&
+            position.bidTick &&
+            position.askTick
                 ? concPosSlot(
                       position.user,
                       position.base,
@@ -87,7 +97,8 @@ export const useProcessRange = (
     if (!isOnPortfolioPage)
         isPositionInRange =
             position.positionType === 'ambient' ||
-            (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
+            (position.bidTick <= poolPriceInTicks &&
+                poolPriceInTicks <= position.askTick);
 
     // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
 
@@ -96,8 +107,18 @@ export const useProcessRange = (
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
-    const baseTokenAddressTruncated = trimString(tokenAAddressLowerCase, 6, 0, '…');
-    const quoteTokenAddressTruncated = trimString(tokenBAddressLowerCase, 6, 0, '…');
+    const baseTokenAddressTruncated = trimString(
+        tokenAAddressLowerCase,
+        6,
+        0,
+        '…',
+    );
+    const quoteTokenAddressTruncated = trimString(
+        tokenBAddressLowerCase,
+        6,
+        0,
+        '…',
+    );
 
     const positionMatchesSelectedTokens =
         (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
@@ -106,15 +127,20 @@ export const useProcessRange = (
             positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
     const accountAddress = account ? account.toLowerCase() : null;
-    const userMatchesConnectedAccount = accountAddress === position.user.toLowerCase();
+    const userMatchesConnectedAccount =
+        accountAddress === position.user.toLowerCase();
     // ---------------------------------POSITIONS MIN AND MAX RANGE--------------------
 
-    const baseTokenCharacter = position.baseSymbol ? getUnicodeCharacter(position.baseSymbol) : '';
+    const baseTokenCharacter = position.baseSymbol
+        ? getUnicodeCharacter(position.baseSymbol)
+        : '';
     const quoteTokenCharacter = position.quoteSymbol
         ? getUnicodeCharacter(position.quoteSymbol)
         : '';
 
-    const minRange = isDenomBase ? position.lowRangeDisplayInBase : position.lowRangeDisplayInQuote;
+    const minRange = isDenomBase
+        ? position.lowRangeDisplayInBase
+        : position.lowRangeDisplayInQuote;
     // const minRange = isDenomBase
     //     ? quoteTokenCharacter + position.lowRangeDisplayInBase
     //     : baseTokenCharacter + position.lowRangeDisplayInQuote;
@@ -134,7 +160,8 @@ export const useProcessRange = (
     //     ? quoteTokenCharacter + position.highRangeDisplayInBase
     //     : baseTokenCharacter + position.highRangeDisplayInQuote;
 
-    const ambientOrMin = position.positionType === 'ambient' ? '0.00' : minRange;
+    const ambientOrMin =
+        position.positionType === 'ambient' ? '0.00' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
     const width = (position.askTick - position.bidTick) / 100;
@@ -184,7 +211,9 @@ export const useProcessRange = (
         : trimString(ownerId, 7, 4, '…');
     const posHashTruncated = trimString(posHash.toString(), 6, 4, '…');
 
-    const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
+    const userNameToDisplay = isOwnerActiveAccount
+        ? 'You'
+        : ensNameOrOwnerTruncated;
 
     const isPositionEmpty = position.positionLiq === '0';
 

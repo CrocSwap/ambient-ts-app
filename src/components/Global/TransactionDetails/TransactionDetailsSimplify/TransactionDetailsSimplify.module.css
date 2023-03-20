@@ -1,6 +1,7 @@
 .tx_details_container {
     max-width: 1000px;
-    background: url(../../../../assets/images/backgrounds/background.png) no-repeat;
+    background: url(../../../../assets/images/backgrounds/background.png)
+        no-repeat;
 }
 
 .main_container {

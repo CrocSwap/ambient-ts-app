@@ -21,8 +21,14 @@ interface propsIF {
     chainId: string;
 }
 export default function Home(props: propsIF) {
-    const { isServerEnabled, tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } =
-        props;
+    const {
+        isServerEnabled,
+        tokenMap,
+        lastBlockNumber,
+        crocEnv,
+        chainId,
+        cachedQuerySpotPrice,
+    } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const userData = useAppSelector((state) => state.userData);

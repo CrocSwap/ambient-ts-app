@@ -8,10 +8,12 @@ export const getLimitOrderData = async (
     const quoteTokenAddress = order.quote;
 
     const baseTokenLogoURI = searchableTokens.find(
-        (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
     const quoteTokenLogoURI = searchableTokens.find(
-        (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
 
     order.baseTokenLogoURI = baseTokenLogoURI ?? '';

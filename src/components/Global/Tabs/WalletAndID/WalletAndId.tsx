@@ -117,7 +117,9 @@ export default function WalletAndId(props: WalletAndIDProps) {
                 {displayENSorWallet}
             </section>
             <section className={styles.account_sing}>{IDWithTooltip}</section>
-            <section className={styles.account_sing}>{displayENSorWallet}</section>
+            <section className={styles.account_sing}>
+                {displayENSorWallet}
+            </section>
         </>
     );
 }

@@ -1,8 +1,14 @@
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolLiquidityCacheEndpoint = 'https://809821320828123.de:5000/pool_liquidity_distribution?';
+const poolLiquidityCacheEndpoint =
+    'https://809821320828123.de:5000/pool_liquidity_distribution?';
 
-const getPoolLiquidity = async (chainId: string, base: string, quote: string, poolIdx: number) => {
+const getPoolLiquidity = async (
+    chainId: string,
+    base: string,
+    quote: string,
+    poolIdx: number,
+) => {
     console.log('fetching pool liquidity ');
     return fetch(
         poolLiquidityCacheEndpoint +

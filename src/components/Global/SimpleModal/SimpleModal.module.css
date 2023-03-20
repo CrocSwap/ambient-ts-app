@@ -19,19 +19,21 @@
 }
 
 .modal_body {
-
-        border: solid 1px transparent;
-    background-image: linear-gradient(rgba(189, 27, 27, 0), rgba(255, 255, 255, 0)),
+    border: solid 1px transparent;
+    background-image: linear-gradient(
+            rgba(189, 27, 27, 0),
+            rgba(255, 255, 255, 0)
+        ),
         linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
 
-   height: fit-content;
-   min-height: 300px;
-   min-width: 300px;
-   top: 1rem;
+    height: fit-content;
+    min-height: 300px;
+    min-width: 300px;
+    top: 1rem;
     border-radius: var(--border-radius);
     position: relative;
     /* max-height: 80vh; */
@@ -67,15 +69,11 @@
     color: var(--text-grey-white);
 }
 
-
 .modal_content {
-    background:  var(--dark2);
+    background: var(--dark2);
     border-radius: var(--border-radius);
 
     min-height: 300px;
-
-    
-
 }
 @media only screen and (min-width: 500px) {
     .modal_body {

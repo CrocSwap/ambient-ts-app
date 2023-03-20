@@ -13,10 +13,15 @@ export const calculateSecondaryDepositQty = (
     const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const poolDisplayPrice = toDisplayPrice(poolPriceNonDisplay, baseDecimals, quoteDecimals);
+    const poolDisplayPrice = toDisplayPrice(
+        poolPriceNonDisplay,
+        baseDecimals,
+        quoteDecimals,
+    );
 
     const isPrimaryTokenBase =
-        (isTokenAPrimary && isTokenABase) || (!isTokenAPrimary && !isTokenABase);
+        (isTokenAPrimary && isTokenABase) ||
+        (!isTokenAPrimary && !isTokenABase);
 
     // console.log({
     //     baseDecimals,
@@ -44,9 +49,11 @@ export const calculateSecondaryDepositQty = (
     } else {
         if (depositSkew) {
             if (isPrimaryTokenBase) {
-                secondaryQuantity = primInputValueNum / (poolDisplayPrice * depositSkew);
+                secondaryQuantity =
+                    primInputValueNum / (poolDisplayPrice * depositSkew);
             } else {
-                secondaryQuantity = primInputValueNum * (poolDisplayPrice * depositSkew);
+                secondaryQuantity =
+                    primInputValueNum * (poolDisplayPrice * depositSkew);
             }
         }
     }
