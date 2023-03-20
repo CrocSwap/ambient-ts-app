@@ -290,6 +290,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [showNotificationTable, setShowNotificationTable] = useState(false);
 
+    // TODO (#1436): logo padding is problematic in mobile views
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
