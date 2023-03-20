@@ -33,7 +33,9 @@ import styles from './PortfolioBannerAccount.module.css';
 
 //     },
 // };
-export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPropsIF) {
+export default function PortfolioBannerAccount(
+    props: IPortfolioBannerAccountPropsIF,
+) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
     const {
@@ -53,7 +55,9 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
     // console.log({ activeAccount });
     // console.log({ truncatedAccountAddress });
 
-    const ensNameToDisplay = ensNameAvailable ? ensName : truncatedAccountAddress;
+    const ensNameToDisplay = ensNameAvailable
+        ? ensName
+        : truncatedAccountAddress;
 
     const addressToDisplay = resolvedAddress
         ? resolvedAddress
@@ -67,9 +71,19 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
     const [copiedData, setCopiedData] = useState('');
 
     function handleCopyEnsName() {
-        copy(ensNameAvailable ? ensName : resolvedAddress ? resolvedAddress : activeAccount);
+        copy(
+            ensNameAvailable
+                ? ensName
+                : resolvedAddress
+                ? resolvedAddress
+                : activeAccount,
+        );
         setCopiedData(
-            ensNameAvailable ? ensName : resolvedAddress ? resolvedAddress : activeAccount,
+            ensNameAvailable
+                ? ensName
+                : resolvedAddress
+                ? resolvedAddress
+                : activeAccount,
         );
 
         setOpenSnackbar(true);
@@ -104,7 +118,9 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         },
     };
 
-    const ambientLogoDisplay = <img src={ambientLogo} alt='' className={styles.ambi_logo} />;
+    const ambientLogoDisplay = (
+        <img src={ambientLogo} alt='' className={styles.ambi_logo} />
+    );
 
     return (
         <motion.main

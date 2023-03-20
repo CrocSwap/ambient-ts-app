@@ -1,14 +1,18 @@
 import styles from './FullChat.module.css';
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
-import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'react-icons/tb';
+import {
+    TbLayoutSidebarLeftCollapse,
+    TbLayoutSidebarLeftExpand,
+} from 'react-icons/tb';
 import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { topPools } from '../../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../../utils/interfaces/exports';
+import { useMediaQuery } from '@material-ui/core';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -24,19 +28,48 @@ interface FullChatPropsIF {
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     favePools: favePoolsMethodsIF;
     userCurrentPool: string;
+    favoritePoolsArray: PoolIF[];
+    // eslint-disable-next-line
+    setFavoritePoolsArray: any;
 }
 
 interface ChannelDisplayPropsIF {
     pool: PoolIF;
     isDropdown: boolean;
+    favoritePoolsArray: PoolIF[];
+    favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
+    const { params } = useParams();
+    const reconstructedReadableRoom = params
+        ? params.replace('&', '/').toUpperCase()
+        : undefined;
+
     // eslint-disable-next-line
     const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
-    const { messageList, chatNotification, messageInput, userName, userCurrentPool } = props;
+    const {
+        messageList,
+        chatNotification,
+        messageInput,
+        userName,
+        userCurrentPool,
+    } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
-    const [readableRoomName, setReadableName] = useState('Global');
+
+    const [readableRoomName, setReadableName] = useState(
+        reconstructedReadableRoom || 'global',
+    );
+
+    // eslint-disable-next-line
+    const [readableRoom, setReadableRoom] = useState<any>();
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
+
+    useEffect(() => {
+        if (reconstructedReadableRoom) {
+            setReadableName(reconstructedReadableRoom);
+            props.setRoom(reconstructedReadableRoom);
+        }
+    }, [reconstructedReadableRoom]);
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
@@ -45,6 +78,7 @@ export default function FullChat(props: FullChatPropsIF) {
 
         const readableRoomName = `${pool.base.symbol}/${pool.quote.symbol}`;
         setReadableName(readableRoomName);
+        setReadableRoom(pool);
 
         if (roomName.toString() === 'Current Pool') {
             props.setIsCurrentPool(true);
@@ -101,6 +135,32 @@ export default function FullChat(props: FullChatPropsIF) {
         }
     }
     useEffect(() => {
+        const fave:
+            | PoolIF[]
+            | {
+                  name: string;
+                  base: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  quote: {
+                      name: string;
+                      address: string;
+                      symbol: string;
+                      decimals: number;
+                      chainId: number;
+                      logoURI: string;
+                  };
+                  chainId: string;
+                  poolId: number;
+                  speed: number;
+                  id: number;
+              }[] = [];
+
         props.favePools.pools.map((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + '/' + pool.quote.symbol,
@@ -137,6 +197,10 @@ export default function FullChat(props: FullChatPropsIF) {
                     // do nothing
                 }
             }
+            fave.push(favPool);
+            props.setFavoritePoolsArray(() => {
+                return fave;
+            });
         });
     }, []);
 
@@ -153,19 +217,60 @@ export default function FullChat(props: FullChatPropsIF) {
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
         const { pool, isDropdown } = props;
 
-        const activePoolStyle = pool?.name === readableRoomName ? styles.active_room : '';
+        const activePoolStyle =
+            pool?.name === readableRoomName ? styles.active_room : '';
         const poolIsCurrentPool = pool.name === userCurrentPool;
-        const activePoolIsCurrentPool = poolIsCurrentPool && pool?.name === readableRoomName;
+        const activePoolIsCurrentPool =
+            poolIsCurrentPool && pool?.name === readableRoomName;
+        const smallScrenView = useMediaQuery('(max-width: 968px)');
+        const isButtonFavorited = props.favePools.check(
+            pool.base.address,
+            pool.quote.address,
+            pool.chainId,
+            pool.poolId,
+        );
 
         return (
             <div
                 className={`${styles.pool_display} ${activePoolStyle}`}
                 // eslint-disable-next-line
                 onClick={(event: any) => {
-                    // console.log({ pool });
                     handleRoomClick(event, pool, isDropdown);
                 }}
             >
+                {isButtonFavorited ? (
+                    <svg
+                        width={smallScrenView ? '15px' : '20px'}
+                        height={smallScrenView ? '15px' : '20px'}
+                        viewBox='0 0 15 15'
+                        fill='none'
+                        xmlns='http://www.w3.org/2000/svg'
+                    >
+                        <g clipPath='url(#clip0_1874_47746)'>
+                            <path
+                                d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
+                                fill={'#6b6f7d'}
+                                // fill={isButtonFavorited ? '#EBEBFF' : 'none'}
+                                stroke='#6b6f7d'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                            />
+                        </g>
+                        <defs>
+                            <clipPath id='clip0_1874_47746'>
+                                <rect
+                                    width='14'
+                                    height='14'
+                                    fill='white'
+                                    transform='translate(0.600098 0.599976)'
+                                />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                ) : (
+                    ''
+                )}
+
                 <div className={styles.token_logos}>
                     <img src={pool?.base.logoURI} alt='base token' />
                     <img src={pool?.quote.logoURI} alt='quote token' />
@@ -190,20 +295,37 @@ export default function FullChat(props: FullChatPropsIF) {
     const sidebarExpandOrCollapseIcon = (
         <div onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}>
             {isChatSidebarOpen ? (
-                <TbLayoutSidebarLeftCollapse size={20} color='var(--text-highlight)' />
+                <TbLayoutSidebarLeftCollapse
+                    size={20}
+                    color='var(--text-highlight)'
+                />
             ) : (
-                <TbLayoutSidebarLeftExpand size={20} color='var(--text-highlight)' />
+                <TbLayoutSidebarLeftExpand
+                    size={20}
+                    color='var(--text-highlight)'
+                />
             )}{' '}
         </div>
     );
 
     const chatOptionData = [
-        { title: 'Settings', icon: <FiSettings size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Settings',
+            icon: <FiSettings size={20} color='var(--text-highlight)' />,
+        },
         {
             title: 'Notification',
-            icon: <IoNotificationsOutline size={20} color='var(--text-highlight)' />,
+            icon: (
+                <IoNotificationsOutline
+                    size={20}
+                    color='var(--text-highlight)'
+                />
+            ),
         },
-        { title: 'Sound', icon: <AiOutlineSound size={20} color='var(--text-highlight)' /> },
+        {
+            title: 'Sound',
+            icon: <AiOutlineSound size={20} color='var(--text-highlight)' />,
+        },
     ];
     // eslint-disable-next-line
     const chatOptions = (
@@ -231,20 +353,32 @@ export default function FullChat(props: FullChatPropsIF) {
                 <MdOutlineChat size={20} color='var(--text-grey-light)' />
             </header>
 
-            <div className={styles.option_item} onClick={handleCurrentPoolClick}>
+            <div
+                className={styles.option_item}
+                onClick={handleCurrentPoolClick}
+            >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Current Pool</span>
             </div>
             <div
                 className={styles.option_item}
-                style={{ background: currentRoomIsGlobal ? 'var(--dark3)' : '' }}
+                style={{
+                    background: currentRoomIsGlobal ? 'var(--dark3)' : '',
+                }}
                 onClick={handleGlobalClick}
             >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Global</span>
             </div>
+
             {topPools.map((pool, idx) => (
-                <ChannelDisplay pool={pool} key={idx} isDropdown={false} />
+                <ChannelDisplay
+                    pool={pool}
+                    key={idx}
+                    isDropdown={false}
+                    favoritePoolsArray={props.favoritePoolsArray}
+                    favePools={props.favePools}
+                />
             ))}
         </section>
     );
@@ -266,13 +400,19 @@ export default function FullChat(props: FullChatPropsIF) {
                     }
                 >
                     {topPools.map((pool, idx) => (
-                        <ChannelDisplay pool={pool} key={idx} isDropdown={true} />
+                        <ChannelDisplay
+                            pool={pool}
+                            key={idx}
+                            isDropdown={true}
+                            favoritePoolsArray={props.favoritePoolsArray}
+                            favePools={props.favePools}
+                        />
                     ))}
                 </div>
             )}
         </div>
     );
-
+    const smallScrenView = useMediaQuery('(max-width: 968px)');
     const chatContainer = (
         <div className={styles.chat_main_container}>
             {messageList}
@@ -283,8 +423,77 @@ export default function FullChat(props: FullChatPropsIF) {
         </div>
     );
 
+    const isButtonFavorited = props.favePools.check(
+        readableRoom?.base.address,
+        readableRoom?.quote.address,
+        readableRoom?.chainId,
+        readableRoom?.poolId,
+    );
+    function handleFavButton() {
+        isButtonFavorited
+            ? props.favePools.remove(
+                  readableRoom.quote,
+                  readableRoom.base,
+                  readableRoom?.chainId,
+                  36000,
+              )
+            : props.favePools.add(
+                  readableRoom.quote,
+                  readableRoom.base,
+                  readableRoom?.chainId,
+                  36000,
+              );
+    }
+
+    const favButton =
+        readableRoomName !== 'Global' ? (
+            <button
+                className={styles.favorite_button}
+                onClick={handleFavButton}
+                id='trade_fav_button'
+            >
+                {
+                    <svg
+                        width={smallScrenView ? '20px' : '30px'}
+                        height={smallScrenView ? '20px' : '30px'}
+                        viewBox='0 0 15 15'
+                        fill='none'
+                        xmlns='http://www.w3.org/2000/svg'
+                    >
+                        <g clipPath='url(#clip0_1874_47746)'>
+                            <path
+                                d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
+                                fill={isButtonFavorited ? '#EBEBFF' : 'none'}
+                                stroke='#EBEBFF'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                            />
+                        </g>
+                        <defs>
+                            <clipPath id='clip0_1874_47746'>
+                                <rect
+                                    width='14'
+                                    height='14'
+                                    fill='white'
+                                    transform='translate(0.600098 0.599976)'
+                                />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                }
+            </button>
+        ) : (
+            ''
+        );
+
     return (
-        <div className={isChatSidebarOpen ? styles.main_container : styles.main_container_close}>
+        <div
+            className={
+                isChatSidebarOpen
+                    ? styles.main_container
+                    : styles.main_container_close
+            }
+        >
             <section className={styles.left_container}>
                 <header className={styles.user_wallet}>
                     <Link to='/account'>{userName}</Link>
@@ -295,7 +504,9 @@ export default function FullChat(props: FullChatPropsIF) {
             </section>
 
             <section className={styles.right_container}>
-                <header className={styles.right_container_header}># {readableRoomName}</header>{' '}
+                <header className={styles.right_container_header}>
+                    {favButton}# {readableRoomName}
+                </header>{' '}
                 {channelsDropdown}
                 {chatContainer}
             </section>

@@ -52,7 +52,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
             nextMessageDate.getTime() - currentMessageDate.getTime(),
         );
 
-        getDayAndName(props.previousMessage?.createdAt, props.message?.createdAt);
+        getDayAndName(
+            props.previousMessage?.createdAt,
+            props.message?.createdAt,
+        );
 
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 10 * 60 * 1000) {
@@ -109,9 +112,12 @@ export default function SentMessagePanel(props: SentMessageProps) {
         });
         const previousDayNumber = previousMessageDate.getUTCDate();
         const currentDayNumber = currentMessageDate.getUTCDate();
-        const currentDayMonthNumber = currentMessageDate.toLocaleString('default', {
-            month: 'long',
-        });
+        const currentDayMonthNumber = currentMessageDate.toLocaleString(
+            'default',
+            {
+                month: 'long',
+            },
+        );
         if (
             todayDayNumber === currentDayNumber &&
             todayMonthNumber === currentDayMonthNumber &&
@@ -155,6 +161,48 @@ export default function SentMessagePanel(props: SentMessageProps) {
     //     setOpenSnackbar(true);
     // }
 
+    function handleOpenExplorer(url: string) {
+        window.open(url);
+    }
+
+    function isLink(url: string) {
+        const urlPattern =
+            /^(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+        if (url.includes(' ')) {
+            const words: string[] = url.split(' ');
+            return (
+                <>
+                    {words.map((word, index) => (
+                        <span
+                            onClick={() => handleOpenExplorer(url)}
+                            key={index}
+                            style={
+                                urlPattern.test(word)
+                                    ? { color: '#ab7de7' }
+                                    : { color: 'white' }
+                            }
+                        >
+                            {' ' + word}
+                        </span>
+                    ))}
+                </>
+            );
+        } else {
+            if (urlPattern.test(url)) {
+                return (
+                    <p
+                        style={{ color: '#ab7de7' }}
+                        onClick={() => handleOpenExplorer(url)}
+                    >
+                        {url}
+                    </p>
+                );
+            } else {
+                return url;
+            }
+        }
+    }
+
     function mentionedMessage() {
         const messagesArray = props.message.message.split(' ');
         if (showAvatar === true) {
@@ -167,19 +215,24 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                 className={` ${
                                     props.isUserLoggedIn
                                         ? word.slice(1) === props.ensName ||
-                                          word.slice(1) === props.connectedAccountActive
+                                          word.slice(1) ===
+                                              props.connectedAccountActive
                                             ? styles.mention_message
                                             : styles.message
                                         : styles.message
                                 }`}
                             >
-                                {'' + word}
+                                {'' + isLink(word)}
                             </span>
                         ))}
                     </p>
                 );
             } else {
-                return <p className={styles.message}>{props.message.message}</p>;
+                return (
+                    <p className={styles.message}>
+                        {isLink(props.message.message)}
+                    </p>
+                );
             }
         } else {
             if (props.message.isMentionMessage === true) {
@@ -191,19 +244,24 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                 className={` ${
                                     props.isUserLoggedIn
                                         ? word.slice(1) === props.ensName ||
-                                          word.slice(1) === props.connectedAccountActive
+                                          word.slice(1) ===
+                                              props.connectedAccountActive
                                             ? styles.mention_message
                                             : styles.message
                                         : styles.message
                                 }`}
                             >
-                                {'' + word}
+                                {'' + isLink(word)}
                             </span>
                         ))}
                     </p>
                 );
             } else {
-                return <p className={styles.message_without_avatar}>{props.message.message}</p>;
+                return (
+                    <p className={styles.message_without_avatar}>
+                        {isLink(props.message.message)}
+                    </p>
+                );
             }
         }
     }
@@ -225,94 +283,112 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // console.log({ location });
-
-    const myBlockies = <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />;
+    const myBlockies = (
+        <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />
+    );
 
     return (
-        <div className={styles.main}>
-            {daySeparator === '' ? (
-                ''
-            ) : daySeparator !== '' ? (
-                <p className={styles.seperator}>{daySeparator}</p>
-            ) : (
-                ''
-            )}
-            <div
-                className={
-                    props.isUserLoggedIn
-                        ? props.message.isMentionMessage === false
-                            ? styles.sent_message_body
-                            : props.message.mentionedName?.trim() === props.ensName?.trim() ||
-                              props.message.mentionedName?.trim() ===
-                                  props.connectedAccountActive?.trim()
-                            ? styles.sent_message_body_with_mention
+        <div
+            style={
+                hasSeparator
+                    ? { width: '90%', marginBottom: 4 }
+                    : { width: '90%', marginBottom: -10 }
+            }
+        >
+            <div>
+                {daySeparator === '' ? (
+                    ''
+                ) : daySeparator !== '' ? (
+                    <p className={styles.seperator}>{daySeparator}</p>
+                ) : (
+                    ''
+                )}
+
+                <div
+                    className={
+                        props.isUserLoggedIn
+                            ? props.message.isMentionMessage === false
+                                ? styles.sent_message_body
+                                : props.message.mentionedName?.trim() ===
+                                      props.ensName?.trim() ||
+                                  props.message.mentionedName?.trim() ===
+                                      props.connectedAccountActive?.trim()
+                                ? styles.sent_message_body_with_mention
+                                : styles.sent_message_body
                             : styles.sent_message_body
-                        : styles.sent_message_body
-                }
-            >
-                {showAvatar && <div className={styles.nft_container}>{myBlockies}</div>}
-                <div className={styles.message_item}>
-                    <div
-                        className={
-                            showName && props.isCurrentUser
-                                ? styles.current_user_name
-                                : showName && !props.isCurrentUser
-                                ? styles.name
-                                : !showName && !props.isCurrentUser
-                                ? ''
-                                : ''
-                        }
-                        onClick={() => {
-                            if (
-                                location.pathname !==
-                                `/${
-                                    props.message.ensName === 'defaultValue'
-                                        ? props.message.walletID
-                                        : props.message.ensName
-                                }`
-                            ) {
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'lookupUserTxData',
-                                        loadingStatus: true,
-                                    }),
-                                );
-                                // handleCopyAddress(
-                                //     props.message.ensName === 'defaultValue'
-                                //         ? props.message.walletID
-                                //         : props.message.ensName,
-                                // );
-                                navigate(
+                    }
+                >
+                    {showAvatar && (
+                        <div className={styles.nft_container}>{myBlockies}</div>
+                    )}
+                    <div className={styles.message_item}>
+                        <div
+                            className={
+                                showName && props.isCurrentUser
+                                    ? styles.current_user_name
+                                    : showName && !props.isCurrentUser
+                                    ? styles.name
+                                    : !showName && !props.isCurrentUser
+                                    ? ''
+                                    : ''
+                            }
+                            onClick={() => {
+                                if (
+                                    location.pathname !==
                                     `/${
                                         props.message.ensName === 'defaultValue'
                                             ? props.message.walletID
                                             : props.message.ensName
-                                    }`,
-                                );
-                            }
-                        }}
-                    >
-                        {showName && getName()}
+                                    }`
+                                ) {
+                                    dispatch(
+                                        setDataLoadingStatus({
+                                            datasetName: 'lookupUserTxData',
+                                            loadingStatus: true,
+                                        }),
+                                    );
+                                    // handleCopyAddress(
+                                    //     props.message.ensName === 'defaultValue'
+                                    //         ? props.message.walletID
+                                    //         : props.message.ensName,
+                                    // );
+                                    navigate(
+                                        `/${
+                                            props.message.ensName ===
+                                            'defaultValue'
+                                                ? props.message.walletID
+                                                : props.message.ensName
+                                        }`,
+                                    );
+                                }
+                            }}
+                        >
+                            {showName && getName()}
+                        </div>
+                        <PositionBox
+                            message={props.message.message}
+                            isInput={false}
+                            isPosition={isPosition}
+                            setIsPosition={setIsPosition}
+                        />
+                        {!isPosition && mentionedMessage()}
                     </div>
-                    <PositionBox
-                        message={props.message.message}
-                        isInput={false}
-                        isPosition={isPosition}
-                        setIsPosition={setIsPosition}
-                    />
-                    {!isPosition && mentionedMessage()}
-                </div>
-                {props.moderator ? (
-                    <FiDelete color='red' onClick={() => deleteMessages(props.message._id)} />
-                ) : (
-                    ''
-                )}
-                <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
+                    {props.moderator ? (
+                        <FiDelete
+                            color='red'
+                            onClick={() => deleteMessages(props.message._id)}
+                        />
+                    ) : (
+                        ''
+                    )}
+                    <p className={styles.message_date}>
+                        {formatAMPM(props.message.createdAt)}
+                    </p>
 
-                {/* {snackbarContent} */}
+                    {/* {snackbarContent} */}
+                </div>
+                {hasSeparator ? <hr /> : ''}
             </div>
-            {hasSeparator ? <hr /> : ''}
         </div>
     );
 }

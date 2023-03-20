@@ -1,10 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // import { ethers } from 'ethers';
 
+interface TransactionByType {
+    txHash: string;
+    txType: string;
+}
 export interface receiptData {
     sessionReceipts: Array<string>;
     pendingTransactions: Array<string>;
     positionsPendingUpdate: Array<string>;
+    transactionsByType: Array<TransactionByType>;
     // sessionReceipts: Array<ethers.providers.TransactionReceipt>;
 }
 
@@ -12,12 +17,19 @@ const initialState: receiptData = {
     sessionReceipts: [],
     pendingTransactions: [],
     positionsPendingUpdate: [],
+    transactionsByType: [],
 };
 
 export const receiptDataSlice = createSlice({
     name: 'receiptData',
     initialState,
     reducers: {
+        addTransactionByType: (
+            state,
+            action: PayloadAction<TransactionByType>,
+        ) => {
+            state.transactionsByType.push(action.payload);
+        },
         addReceipt: (state, action: PayloadAction<string>) => {
             state.sessionReceipts.unshift(action.payload);
         },
@@ -38,10 +50,13 @@ export const receiptDataSlice = createSlice({
             const pendingTransactions = state.pendingTransactions;
             const txHash = action.payload;
 
-            const indexOfPendingTransaction = pendingTransactions.indexOf(action.payload);
+            const indexOfPendingTransaction = pendingTransactions.indexOf(
+                action.payload,
+            );
             const indexOfSessionReceipt = sessionReceipts.findIndex(
                 (receipt) =>
-                    JSON.parse(receipt).transactionHash.toLowerCase() === txHash.toLowerCase(),
+                    JSON.parse(receipt).transactionHash.toLowerCase() ===
+                    txHash.toLowerCase(),
             );
             if (indexOfPendingTransaction > -1) {
                 state.pendingTransactions.splice(indexOfPendingTransaction, 1);
@@ -62,6 +77,7 @@ export const receiptDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    addTransactionByType,
     addReceipt,
     addPendingTx,
     addPositionPendingUpdate,
