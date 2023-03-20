@@ -27,19 +27,11 @@ export default function HarvestPositionTokenHeader(props: propsIF) {
                 // }}
             >
                 <img
-                    src={
-                        props.isDenomBase
-                            ? props.baseTokenLogoURI
-                            : props.quoteTokenLogoURI
-                    }
+                    src={props.isDenomBase ? props.baseTokenLogoURI : props.quoteTokenLogoURI}
                     alt=''
                 />
                 <img
-                    src={
-                        props.isDenomBase
-                            ? props.quoteTokenLogoURI
-                            : props.baseTokenLogoURI
-                    }
+                    src={props.isDenomBase ? props.quoteTokenLogoURI : props.baseTokenLogoURI}
                     alt=''
                 />
                 <span>
@@ -47,11 +39,7 @@ export default function HarvestPositionTokenHeader(props: propsIF) {
                     {isDenomBase ? baseTokenSymbol : quoteTokenSymbol}
                 </span>
             </div>
-            <RangeStatus
-                isInRange={props.isPositionInRange}
-                isEmpty={false}
-                isAmbient={false}
-            />
+            <RangeStatus isInRange={props.isPositionInRange} isEmpty={false} isAmbient={false} />
         </div>
     );
 }

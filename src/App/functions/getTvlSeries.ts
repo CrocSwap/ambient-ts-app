@@ -9,8 +9,7 @@ export const getTvlSeries = async (
 ): Promise<TvlSeriesByPoolTimeAndResolution | undefined> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const poolTvlSeriesCacheEndpoint =
-        httpGraphCacheServerDomain + '/pool_tvl_series?';
+    const poolTvlSeriesCacheEndpoint = httpGraphCacheServerDomain + '/pool_tvl_series?';
     return fetch(
         poolTvlSeriesCacheEndpoint +
             new URLSearchParams({

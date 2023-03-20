@@ -120,8 +120,7 @@ export const devpun = [
     },
     {
         text: 'q. Why did the software company hire drama majors from Starbucks? a. Because they needed JavaScript experts!',
-        question:
-            'Why did the software company hire drama majors from Starbucks?',
+        question: 'Why did the software company hire drama majors from Starbucks?',
         answer: 'Because they needed JavaScript experts!',
         author: 'elijahmanor',
         created: '09/12/2013',

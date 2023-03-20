@@ -2,10 +2,14 @@ import { PositionIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import styles from '../SidebarRangePositionsCard.module.css';
 
+
 export const getRangeDisplay = (
     position: PositionIF,
-    isDenomBase: boolean,
-): [string, string] => {
+    isDenomBase: boolean
+): [
+    string,
+    string
+]=> {
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
         : '';
@@ -26,6 +30,6 @@ export const getRangeDisplay = (
             : position.isPositionInRange
             ? styles.inner_circle_positive
             : styles.inner_circle_negative;
-
+    
     return [rangeDisplay, rangeStatusStyle];
-};
+}

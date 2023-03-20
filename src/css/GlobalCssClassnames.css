@@ -144,11 +144,8 @@ aside.emoji-picker-react {
     bottom: 48px;
     padding: 4px 16px !important;
 
-    box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3),
-        0px 0px 60px rgba(205, 193, 255, 0.3),
-        0px 0px 20px rgba(205, 193, 255, 0.3),
-        0px 0px 12px rgba(205, 193, 255, 0.3),
-        0px 0px 6px rgba(205, 193, 255, 0.3),
-        0px 0px 3px rgba(205, 193, 255, 0.3);
+    box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3), 0px 0px 60px rgba(205, 193, 255, 0.3),
+        0px 0px 20px rgba(205, 193, 255, 0.3), 0px 0px 12px rgba(205, 193, 255, 0.3),
+        0px 0px 6px rgba(205, 193, 255, 0.3), 0px 0px 3px rgba(205, 193, 255, 0.3);
     border-radius: 4px;
 }

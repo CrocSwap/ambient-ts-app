@@ -2,10 +2,7 @@
 
 import { useEffect, useState, ChangeEvent } from 'react';
 
-export function useSearch<T = Record<string, unknown>>(
-    key: keyof T,
-    items: T[],
-) {
+export function useSearch<T = Record<string, unknown>>(key: keyof T, items: T[]) {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredData, setFilteredData] = useState<T[]>(items);
 

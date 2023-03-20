@@ -76,18 +76,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {baseTokenLogo ? (
                     <img src={baseTokenLogo} alt={baseTokenSymbol} />
                 ) : (
-                    <NoTokenIcon
-                        tokenInitial={baseTokenSymbol.charAt(0)}
-                        width='30px'
-                    />
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
                 )}
                 {quoteTokenLogo ? (
                     <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
                 ) : (
-                    <NoTokenIcon
-                        tokenInitial={quoteTokenSymbol.charAt(0)}
-                        width='30px'
-                    />
+                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
                 )}
             </div>
             <p>
@@ -218,50 +212,28 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             // }}
         >
             <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.quoteSymbol + ': '
-                        : 'Buy: '}
-                </p>
+                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Buy: '}</p>
 
                 <div>
                     {quoteQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {quoteTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={quoteTokenLogo}
-                            alt={quoteTokenSymbol}
-                        />
+                        <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
                     ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol.charAt(0)}
-                            width='15px'
-                        />
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
                     )}
                 </div>
             </Row>
             <span className={styles.divider}></span>
             <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.baseSymbol + ': '
-                        : 'Sell: '}
-                </p>
+                <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Sell: '}</p>
                 <div>
                     {baseQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {baseTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={baseTokenLogo}
-                            alt={baseTokenSymbol}
-                        />
+                        <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
                     ) : (
-                        <NoTokenIcon
-                            tokenInitial={baseTokenSymbol.charAt(0)}
-                            width='15px'
-                        />
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
                     )}
                 </div>
             </Row>
@@ -276,50 +248,28 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             // }}
         >
             <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.baseSymbol + ': '
-                        : 'Buy: '}
-                </p>
+                <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}</p>
 
                 <div>
                     {baseQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {baseTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={baseTokenLogo}
-                            alt={baseTokenSymbol}
-                        />
+                        <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
                     ) : (
-                        <NoTokenIcon
-                            tokenInitial={baseTokenSymbol.charAt(0)}
-                            width='15px'
-                        />
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
                     )}
                 </div>
             </Row>
             <span className={styles.divider}></span>
             <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.quoteSymbol + ': '
-                        : 'Sell: '}
-                </p>
+                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Sell: '}</p>
                 <div>
                     {quoteQuantityDisplayShort.replace(/[()]/g, '')}
 
                     {quoteTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={quoteTokenLogo}
-                            alt={quoteTokenSymbol}
-                        />
+                        <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
                     ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol.charAt(0)}
-                            width='15px'
-                        />
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
                     )}
                 </div>
             </Row>
@@ -362,39 +312,33 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             ) : isBaseTokenMoneynessGreaterOrEqual ? (
                 <span className={styles.min_price}>
                     {truncatedDisplayPriceDenomByMoneyness
-                        ? baseTokenCharacter +
-                          truncatedDisplayPriceDenomByMoneyness
+                        ? baseTokenCharacter + truncatedDisplayPriceDenomByMoneyness
                         : null}
 
                     {truncatedHighDisplayPriceDenomByMoneyness
-                        ? baseTokenCharacter +
-                          truncatedHighDisplayPriceDenomByMoneyness
+                        ? baseTokenCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
                     {!truncatedDisplayPrice ? (
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
                     {truncatedLowDisplayPriceDenomByMoneyness
-                        ? baseTokenCharacter +
-                          truncatedLowDisplayPriceDenomByMoneyness
+                        ? baseTokenCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
                 </span>
             ) : (
                 <span className={styles.min_price}>
                     {truncatedDisplayPriceDenomByMoneyness
-                        ? quoteTokenCharacter +
-                          truncatedDisplayPriceDenomByMoneyness
+                        ? quoteTokenCharacter + truncatedDisplayPriceDenomByMoneyness
                         : null}
 
                     {truncatedLowDisplayPriceDenomByMoneyness
-                        ? quoteTokenCharacter +
-                          truncatedLowDisplayPriceDenomByMoneyness
+                        ? quoteTokenCharacter + truncatedLowDisplayPriceDenomByMoneyness
                         : null}
                     {!truncatedDisplayPrice ? (
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
                     {truncatedHighDisplayPriceDenomByMoneyness
-                        ? quoteTokenCharacter +
-                          truncatedHighDisplayPriceDenomByMoneyness
+                        ? quoteTokenCharacter + truncatedHighDisplayPriceDenomByMoneyness
                         : null}
                 </span>
             )}

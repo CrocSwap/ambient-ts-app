@@ -1,7 +1,8 @@
+// import Divider from '../../../Global/Divider/Divider';
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
@@ -12,9 +13,8 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
-interface propsIF {
+interface ConfirmRepositionModalProps {
     onClose: () => void;
     crocEnv: CrocEnv | undefined;
     position: PositionIF;
@@ -47,18 +47,30 @@ interface propsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     isPositionInRange: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
 }
 
-export default function ConfirmRepositionModal(props: propsIF) {
+export default function ConfirmRepositionModal(
+    props: ConfirmRepositionModalProps,
+) {
     const {
+        // crocEnv,
+        // position,
         tokenPair,
+        // ambientApy,
+        // dailyVol,
         poolPriceDisplayNum,
+        // currentPoolPriceDisplay,
+        // currentPoolPriceTick,
+        // rangeWidthPercentage,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
         onSend,
+        // setMinPrice,
+        // setMaxPrice,
         showConfirmation,
         setShowConfirmation,
         newRepositionTransactionHash,
@@ -73,10 +85,13 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isDenomBase,
         isTokenABase,
         isPositionInRange,
+        // txErrorMessage,
         bypassConfirm,
+        toggleBypassConfirm,
     } = props;
 
-    const { dataTokenA, dataTokenB } = tokenPair;
+    // const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
 
     const transactionApproved = newRepositionTransactionHash !== '';
 
@@ -85,13 +100,30 @@ export default function ConfirmRepositionModal(props: propsIF) {
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
+    const sendButton = (
+        <Button
+            title={
+                isPositionInRange
+                    ? 'Position Currently In Range'
+                    : 'Send Reposition'
+            }
+            action={() => {
+                setShowConfirmation(false);
+
+                onSend();
+            }}
+            disabled={isPositionInRange}
+            flat={true}
+        />
+    );
+
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newRepositionTransactionHash}
-            tokenBSymbol={dataTokenB.symbol}
-            tokenBAddress={dataTokenB.address}
-            tokenBDecimals={dataTokenB.decimals}
-            tokenBImage={dataTokenB.logoURI}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
         />
     );
 
@@ -118,6 +150,37 @@ export default function ConfirmRepositionModal(props: propsIF) {
             : confirmSendMessage;
 
     // ------------------------------------
+    const dataTokenA = tokenPair.dataTokenA;
+    const dataTokenB = tokenPair.dataTokenB;
+
+    const rangeHeader = (
+        <section className={styles.position_display}>
+            <div className={styles.token_display}>
+                <div className={styles.tokens}>
+                    {dataTokenA.logoURI ? (
+                        <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={dataTokenA.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    )}
+                    {dataTokenB.logoURI ? (
+                        <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={dataTokenB.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    )}
+                </div>
+                <span className={styles.token_symbol}>
+                    {dataTokenA.symbol}/{dataTokenB.symbol}
+                </span>
+            </div>
+            <RangeStatus isInRange={true} isEmpty={false} isAmbient={false} />
+        </section>
+    );
 
     const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
@@ -222,56 +285,15 @@ export default function ConfirmRepositionModal(props: propsIF) {
         />
     ) : null;
 
-    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.repo.isEnabled,
-    );
-
-    const toggleFor = 'repo';
-
     const fullTxDetails2 = (
         <>
-            <section className={styles.position_display}>
-                <div className={styles.token_display}>
-                    <div className={styles.tokens}>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                    </div>
-                    <span className={styles.token_symbol}>
-                        {dataTokenA.symbol}/{dataTokenB.symbol}
-                    </span>
-                </div>
-                <RangeStatus
-                    isInRange={true}
-                    isEmpty={false}
-                    isAmbient={false}
-                />
-            </section>
+            {rangeHeader}
             {tokenAmountDisplay}
             {selectedRangeOrNull}
             <ConfirmationModalControl
-                tempBypassConfirm={currentSkipConfirm}
-                setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
+                bypassConfirm={bypassConfirm}
+                toggleBypassConfirm={toggleBypassConfirm}
+                toggleFor='repo'
             />
         </>
     );
@@ -280,22 +302,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
         <div className={styles.confirm_range_modal_container}>
             <div>{showConfirmation ? fullTxDetails2 : confirmationDisplay}</div>
             <footer className={styles.modal_footer}>
-                {showConfirmation && (
-                    <Button
-                        title={
-                            isPositionInRange
-                                ? 'Position Currently In Range'
-                                : 'Send Reposition'
-                        }
-                        action={() => {
-                            bypassConfirm.repo.setValue(currentSkipConfirm);
-                            setShowConfirmation(false);
-                            onSend();
-                        }}
-                        disabled={isPositionInRange}
-                        flat
-                    />
-                )}
+                {showConfirmation ? sendButton : null}
             </footer>
         </div>
     );

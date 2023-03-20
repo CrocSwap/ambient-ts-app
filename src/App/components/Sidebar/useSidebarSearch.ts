@@ -62,9 +62,7 @@ export const useSidebarSearch = (
             return '';
         }
         // add '0x' to the front of the cleaned string if not present
-        const fixedInput = cleanInput.startsWith('0x')
-            ? cleanInput
-            : '0x' + cleanInput;
+        const fixedInput = cleanInput.startsWith('0x') ? cleanInput : '0x' + cleanInput;
         // declare an output variable
         let output = cleanInput;
         // check if string is a correctly-formed contract address
@@ -96,9 +94,7 @@ export const useSidebarSearch = (
         if (shouldRecheckLocalStorage) {
             const getAckTokens = (): void => {
                 // retrieve and parse user data from local storage
-                const userData = JSON.parse(
-                    localStorage.getItem('user') as string,
-                );
+                const userData = JSON.parse(localStorage.getItem('user') as string);
                 const ackTokens: [] = (userData && userData.ackTokens) || [];
                 // set ackTokens if user data was pulled, otherwise check recursively
                 // if (ackTokens !== null) {
@@ -136,8 +132,7 @@ export const useSidebarSearch = (
             // filter array of tokens where both tokens can be verified
             const checkedPools = poolList.filter(
                 (pool: TempPoolIF) =>
-                    checkToken(pool.base, pool.chainId) &&
-                    checkToken(pool.quote, pool.chainId),
+                    checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId),
             );
             // return array of pools with both verified tokens
             setVerifiedPools(checkedPools);
@@ -165,12 +160,8 @@ export const useSidebarSearch = (
                 symb.length === 2
                     ? pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
                       pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                    : pool.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      pool.quoteSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()),
+                    : pool.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
+                      pool.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return list of verified pools with no search filtering
         const noSearch = (): TempPoolIF[] => verifiedPools;
@@ -209,15 +200,10 @@ export const useSidebarSearch = (
         const searchBySymbol = (symb: string): PositionIF[] =>
             positionList.filter((position: PositionIF) =>
                 symb.length === 2
-                    ? position.baseSymbol.toLowerCase() ===
-                          symb.toLowerCase() ||
+                    ? position.baseSymbol.toLowerCase() === symb.toLowerCase() ||
                       position.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                    : position.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      position.quoteSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()),
+                    : position.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
+                      position.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return list of range positions with no search filtering
         const noSearch = (): PositionIF[] => positionList;
@@ -259,9 +245,7 @@ export const useSidebarSearch = (
                 symb.length === 2
                     ? tx.baseSymbol.toLowerCase() === symb.toLowerCase() ||
                       tx.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                    : tx.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
+                    : tx.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
                       tx.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return array of txs with no search filtering
@@ -302,16 +286,10 @@ export const useSidebarSearch = (
         const searchBySymbol = (symb: string): LimitOrderIF[] =>
             limitOrderList.filter((limitOrder: LimitOrderIF) =>
                 symb.length === 2
-                    ? limitOrder.baseSymbol.toLowerCase() ===
-                          symb.toLowerCase() ||
-                      limitOrder.quoteSymbol.toLowerCase() ===
-                          symb.toLowerCase()
-                    : limitOrder.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      limitOrder.quoteSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()),
+                    ? limitOrder.baseSymbol.toLowerCase() === symb.toLowerCase() ||
+                      limitOrder.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                    : limitOrder.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
+                      limitOrder.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return array of txs with no search filtering
         const noSearch = (): LimitOrderIF[] => limitOrderList;
@@ -333,12 +311,5 @@ export const useSidebarSearch = (
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
 
-    return [
-        setRawInput,
-        !!searchAs,
-        outputPools,
-        outputPositions,
-        outputTxs,
-        outputLimits,
-    ];
+    return [setRawInput, !!searchAs, outputPools, outputPositions, outputTxs, outputLimits];
 };

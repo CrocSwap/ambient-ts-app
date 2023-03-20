@@ -6,10 +6,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import styles from './Orders.module.css';
 
 // START: Import Local Files
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     addLimitOrderChangesByPool,
     CandleData,
@@ -52,10 +49,7 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     lastBlockNumber: number;
     showSidebar: boolean;
     handlePulseAnimation?: (type: string) => void;
@@ -101,13 +95,10 @@ export default function Orders(props: propsIF) {
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
-    const isConnectedUserOrderDataLoading =
-        dataLoadingStatus?.isConnectedUserOrderDataLoading;
-    const isLookupUserOrderDataLoading =
-        dataLoadingStatus?.isLookupUserOrderDataLoading;
+    const isConnectedUserOrderDataLoading = dataLoadingStatus?.isConnectedUserOrderDataLoading;
+    const isLookupUserOrderDataLoading = dataLoadingStatus?.isLookupUserOrderDataLoading;
     const isPoolOrderDataLoading = dataLoadingStatus?.isPoolOrderDataLoading;
 
     const isOrderDataLoadingForPortfolio =
@@ -122,36 +113,28 @@ export default function Orders(props: propsIF) {
         (isOnPortfolioPage && isOrderDataLoadingForPortfolio) ||
         (!isOnPortfolioPage && isOrderDataLoadingForTradeTable);
 
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        1000,
-    ); // debounce 1/4 second
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
 
-    const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter(
-        (tx) => {
-            if (
-                tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-                tx.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-    );
+    const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter((tx) => {
+        if (
+            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
 
     const dispatch = useAppDispatch();
 
     // const isDenomBase = tradeData.isDenomBase;
 
     const [limitOrderData, setLimitOrderData] = useState(
-        isOnPortfolioPage
-            ? activeAccountLimitOrderData || []
-            : limitOrdersByPool,
+        isOnPortfolioPage ? activeAccountLimitOrderData || [] : limitOrdersByPool,
     );
 
-    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] =
-        useState(false);
+    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
     useEffect(() => {
         if (isOnPortfolioPage) {
@@ -171,21 +154,18 @@ export default function Orders(props: propsIF) {
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
-        const handler = setTimeout(
-            () => setDebouncedIsShowAllEnabled(isShowAllEnabled),
-            5000,
-        );
+        const handler = setTimeout(() => setDebouncedIsShowAllEnabled(isShowAllEnabled), 5000);
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
     const nonEmptyOrders = isShowAllEnabled
-        ? limitOrdersByPool.filter(
-              (limitOrder) => limitOrder.totalValueUSD !== 0,
-          )
+        ? limitOrdersByPool.filter((limitOrder) => limitOrder.totalValueUSD !== 0)
         : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
-        useSortedLimits('time', nonEmptyOrders);
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
+        'time',
+        nonEmptyOrders,
+    );
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {
             fetchPoolLimitOrderStates({
@@ -199,10 +179,7 @@ export default function Orders(props: propsIF) {
                     if (orderJsonData) {
                         Promise.all(
                             orderJsonData.map((limitOrder: LimitOrderIF) => {
-                                return getLimitOrderData(
-                                    limitOrder,
-                                    importedTokens,
-                                );
+                                return getLimitOrderData(limitOrder, importedTokens);
                             }),
                         ).then((updatedLimitOrderStates) => {
                             dispatch(
@@ -266,9 +243,7 @@ export default function Orders(props: propsIF) {
 
     useEffect(() => {
         if (lastPoolLimitOrderChangeMessage !== null) {
-            const lastMessageData = JSON.parse(
-                lastPoolLimitOrderChangeMessage.data,
-            ).data;
+            const lastMessageData = JSON.parse(lastPoolLimitOrderChangeMessage.data).data;
             // console.log({ lastMessageData });
             if (lastMessageData) {
                 console.log({ lastMessageData });
@@ -277,9 +252,7 @@ export default function Orders(props: propsIF) {
                         return getLimitOrderData(limitOrder, importedTokens);
                     }),
                 ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByPool(updatedLimitOrderStates),
-                    );
+                    dispatch(addLimitOrderChangesByPool(updatedLimitOrderStates));
                 });
             }
         }
@@ -293,12 +266,8 @@ export default function Orders(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
     const walID = (
         <>
@@ -445,9 +414,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
     ];
-    const headerStyle = isOnPortfolioPage
-        ? styles.portfolio_header
-        : styles.trade_header;
+    const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -462,25 +429,16 @@ export default function Orders(props: propsIF) {
 
     const regularOrdersItems = Math.round((height - 250) / 30);
     const showColumnOrdersItems = Math.round((height - 250) / 50);
-    const ordersPerPage = showColumns
-        ? showColumnOrdersItems
-        : regularOrdersItems;
+    const ordersPerPage = showColumns ? showColumnOrdersItems : regularOrdersItems;
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * ordersPerPage;
     const indexOfFirstRanges = indexOfLastRanges - ordersPerPage;
-    const currentRangess = sortedLimits?.slice(
-        indexOfFirstRanges,
-        indexOfLastRanges,
-    );
+    const currentRangess = sortedLimits?.slice(indexOfFirstRanges, indexOfLastRanges);
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
@@ -561,25 +519,14 @@ export default function Orders(props: propsIF) {
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 
-    const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
-        : mobileViewHeight;
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
 
-    const portfolioPageStyle = props.isOnPortfolioPage
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
+    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
 
     return (
-        <section
-            className={styles.main_list_container}
-            style={{ height: portfolioPageStyle }}
-        >
+        <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TableSkeletons />
-            ) : (
-                orderDataOrNull
-            )}
+            {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : orderDataOrNull}
             {footerDisplay}
 
             {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}

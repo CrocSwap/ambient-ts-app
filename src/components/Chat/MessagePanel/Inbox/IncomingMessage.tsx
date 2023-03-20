@@ -104,10 +104,7 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                 </div>
 
                 <div className={styles.message_message}>
-                    <div
-                        className={styles.name}
-                        onClick={() => handleCopyAddress(props.name)}
-                    >
+                    <div className={styles.name} onClick={() => handleCopyAddress(props.name)}>
                         {namerOrWalletID(props.name)}
                     </div>
                     {!isPosition && mentionedMessage()}
@@ -120,9 +117,7 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                     />
                 </div>
 
-                <div className={styles.message_date}>
-                    {formatAMPM(props.message.createdAt)}
-                </div>
+                <div className={styles.message_date}>{formatAMPM(props.message.createdAt)}</div>
             </div>
             {snackbarContent}
         </div>

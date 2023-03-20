@@ -36,9 +36,8 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <div className={styles.price_info_row}>
             <span>Current Price</span>
             <span>
-                {currentPoolPriceDisplay}{' '}
-                {denominationsInBase ? quoteTokenSymbol : baseTokenSymbol} per{' '}
-                {denominationsInBase ? baseTokenSymbol : quoteTokenSymbol}
+                {currentPoolPriceDisplay} {denominationsInBase ? quoteTokenSymbol : baseTokenSymbol}{' '}
+                per {denominationsInBase ? baseTokenSymbol : quoteTokenSymbol}
             </span>
         </div>
     );
@@ -85,9 +84,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <tr>
             <td data-column='Target: '>Range Upper Limit</td>
             <td data-column='Current'>{highPriceDisplayTruncated}</td>
-            <td data-column='Repositioned To'>
-                {pinnedMaxPriceDisplayTruncated}
-            </td>
+            <td data-column='Repositioned To'>{pinnedMaxPriceDisplayTruncated}</td>
         </tr>
     );
 
@@ -96,9 +93,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <tr>
             <td data-column='Target: '>Range Lower Limit</td>
             <td data-column='Current'>{lowPriceDisplayTruncated}</td>
-            <td data-column='Repositioned To'>
-                {pinnedMinPriceDisplayTruncated}
-            </td>
+            <td data-column='Repositioned To'>{pinnedMinPriceDisplayTruncated}</td>
         </tr>
     );
 

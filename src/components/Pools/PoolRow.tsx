@@ -20,7 +20,7 @@ interface propsIF {
 }
 
 export default function PoolRow(props: propsIF) {
-    const { pool, favePools } = props;
+    const {pool, favePools} = props;
 
     const poolData = pool;
 
@@ -62,17 +62,17 @@ export default function PoolRow(props: propsIF) {
     const handleFavButton = (event: MouseEvent<HTMLDivElement>) => {
         isButtonFavorited
             ? favePools.remove(
-                  { address: poolData.token0.address } as TokenIF,
-                  { address: poolData.token1.address } as TokenIF,
-                  '',
-                  36000,
-              )
+                { address: poolData.token0.address } as TokenIF,
+                { address: poolData.token1.address } as TokenIF,
+                '',
+                36000,
+            )
             : favePools.add(
-                  { address: poolData.token0.address } as TokenIF,
-                  { address: poolData.token1.address } as TokenIF,
-                  '',
-                  36000,
-              );
+                { address: poolData.token0.address } as TokenIF,
+                { address: poolData.token1.address } as TokenIF,
+                '',
+                36000,
+            );
         event.stopPropagation();
     };
 
@@ -119,10 +119,7 @@ export default function PoolRow(props: propsIF) {
             </div>
 
             <div className={styles.row_container}>
-                <PoolDisplay
-                    token0={poolData.token0.symbol}
-                    token1={poolData.token1.symbol}
-                />
+                <PoolDisplay token0={poolData.token0.symbol} token1={poolData.token1.symbol} />
                 <>
                     <section className={styles.display}>
                         {formatDollarAmount(poolData.tvlUSD)}
@@ -143,11 +140,7 @@ export default function PoolRow(props: propsIF) {
 
                 <>
                     <section
-                        className={
-                            props.poolType === 'trend'
-                                ? styles.feeTierHide
-                                : styles.display
-                        }
+                        className={props.poolType === 'trend' ? styles.feeTierHide : styles.display}
                     >
                         {feeTierPercent(poolData.feeTier)}
                     </section>

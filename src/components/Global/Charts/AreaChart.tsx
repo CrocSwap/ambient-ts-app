@@ -25,14 +25,8 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
         interface IntrinsicElements {
-            'd3fc-group': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
-            'd3fc-svg': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
+            'd3fc-group': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+            'd3fc-svg': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
         }
     }
 }
@@ -56,10 +50,7 @@ export default function AreaChart(props: AreaChartProps) {
             .xLabel('')
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .decorate((selection: any) => {
-                selection
-                    .enter()
-                    .attr('stroke-dasharray', '6 6')
-                    .style('pointer-events', 'all');
+                selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
                 selection
                     .enter()
                     .select('g.annotation-line.horizontal')
@@ -96,10 +87,7 @@ export default function AreaChart(props: AreaChartProps) {
             .yScale(yScale);
 
         crosshairVertical.decorate((selection: any) => {
-            selection
-                .enter()
-                .attr('stroke-dasharray', '6 6')
-                .style('pointer-events', 'all');
+            selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
             selection.enter().select('g.left-handle').remove();
             selection.enter().select('g.right-handle').remove();
         });
@@ -144,8 +132,7 @@ export default function AreaChart(props: AreaChartProps) {
                 xScale: xScale,
                 yScale: yScale,
                 xAxis: {
-                    bottom: (d: any) =>
-                        d3fc.axisLabelRotate(d3fc.axisOrdinalBottom(d)),
+                    bottom: (d: any) => d3fc.axisLabelRotate(d3fc.axisOrdinalBottom(d)),
                 },
             })
             .yTicks([5])
@@ -169,13 +156,8 @@ export default function AreaChart(props: AreaChartProps) {
             if (point == undefined) return [];
             const xScale = series.xScale(),
                 xValue = series.crossValue();
-            const filtered =
-                data.length > 1
-                    ? data.filter((d: any) => xValue(d) != null)
-                    : data;
-            const nearest = minimum(filtered, (d: any) =>
-                Math.abs(point.x - xScale(xValue(d))),
-            )[1];
+            const filtered = data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+            const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
             const newX = new Date(nearest.time.getTime());
             const value = new Date(newX.setTime(newX.getTime()));
             props.setValueTvl?.(nearest?.value);
@@ -196,18 +178,14 @@ export default function AreaChart(props: AreaChartProps) {
                 })
                 .reduce(
                     function (accumulator: any, dataPoint: any) {
-                        return accumulator[0] > dataPoint[0]
-                            ? dataPoint
-                            : accumulator;
+                        return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
                     },
                     [Number.MAX_VALUE, null, -1],
                 );
         };
 
         const getDate = (date: any) => {
-            return date === undefined
-                ? '-'
-                : moment.utc(date).format('MMM D, YYYY');
+            return date === undefined ? '-' : moment.utc(date).format('MMM D, YYYY');
         };
 
         function render() {

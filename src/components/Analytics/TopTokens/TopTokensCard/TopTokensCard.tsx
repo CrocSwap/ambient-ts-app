@@ -11,12 +11,7 @@ export default function TopTokensCard(props: TopTokensCardProp) {
         <div className={styles.container}>
             <div>{props.number}</div>
             <div className={styles.token_info}>
-                <img
-                    src={props.img}
-                    alt=''
-                    width='25px'
-                    style={{ borderRadius: '50%' }}
-                />
+                <img src={props.img} alt='' width='25px' style={{ borderRadius: '50%' }} />
                 <p>{props.name}</p>
                 <p>{props.symbol}</p>
             </div>

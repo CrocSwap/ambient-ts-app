@@ -1,8 +1,13 @@
+// import React, { useState } from 'react';
+// import Medal from '../../components/Global/Medal/Medal';
+// import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
+// import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
 import styles from './TestPage.module.css';
+// import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+// import { Steps, Hints } from 'intro.js-react';
 import 'intro.js/introjs.css';
 import { tosMethodsIF } from '../../App/hooks/useTermsOfService';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
-import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -11,24 +16,23 @@ interface TestPageProps {
     togggggggleSidebar: () => void;
     walletToS: tosMethodsIF;
     chartSettings: chartSettingsMethodsIF;
-    bypassConf: allSkipConfirmMethodsIF;
 }
 // eslint-disable-next-line
 export default function TestPage(props: TestPageProps) {
-    const { bypassConf } = props;
+    const { walletToS } = props;
 
     return (
         <section className={styles.main}>
             <p>
-                Confirmation for swap is:{' '}
-                {JSON.stringify(bypassConf.swap.isEnabled)}
+                {walletToS.isAgreed
+                    ? `You agreed to ToS on ${walletToS.lastAgreement?.acceptedOn}`
+                    : 'Please agree to our ToS'}
             </p>
-            <button onClick={() => bypassConf.swap.enable()}>
-                Turn it on!
-            </button>
-            <button onClick={() => bypassConf.swap.disable()}>
-                Turn it off!
-            </button>
+            {!walletToS.isAgreed && (
+                <button onClick={() => walletToS.acceptToS()}>
+                    Accept the ToS!
+                </button>
+            )}
         </section>
     );
 }

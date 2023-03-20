@@ -21,9 +21,7 @@ export const usePoolStats = (
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
-            const volumeString = volume
-                ? '$' + formatAmountOld(volume)
-                : undefined;
+            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;

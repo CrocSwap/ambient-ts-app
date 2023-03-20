@@ -1,6 +1,9 @@
-.scrollable_container {
+
+.scrollable_container{
+
     height: auto;
     overflow-y: scroll;
+
 }
 
 .scrollable_container::-webkit-scrollbar {
@@ -14,18 +17,20 @@
     gap: 4px;
 }
 
+
+
 /* options control */
-.option_control_container {
+.option_control_container{
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-.options_control_display_container {
+.options_control_display_container{
     display: flex;
     flex-direction: column;
 }
 
-.options_control_display_container ul {
+.options_control_display_container ul{
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -34,22 +39,23 @@
     list-style: none;
 }
 
-.control_title {
-    color: var(--text-grey-light);
+.control_title{
+    color: var(--text-grey-light)
 }
 
-.url_link {
+.url_link{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
-    color: var(--text-highlight);
+    color: var(--text-highlight)
 }
 
-.url_link div {
+.url_link div{
     cursor: pointer;
+    
 }
-.authenticate_button {
+.authenticate_button{
     width: 100%;
     outline: none;
 
@@ -60,7 +66,7 @@
 
     display: block;
 
-    height: auto;
+   height: auto;
     cursor: pointer;
     text-align: center;
 
@@ -69,6 +75,7 @@
 
     border-radius: 4px;
     transition: box-shadow var(--animation-speed) ease-in-out;
+
 
     background: var(--title-gradient);
     border: none;
@@ -79,21 +86,22 @@
 }
 
 .authenticate_button:hover {
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
-        0px 0px 2px rgba(205, 193, 255, 0.2);
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+    0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+    0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
+
+    
 }
 
-.tutorial_button_container {
+.tutorial_button_container{
+
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
     padding: 0 8px;
 }
-.tutorial_button {
+.tutorial_button{
     outline: none;
     background: var(--dark3);
     border: 1px solid var(--text-highlight-dark);
@@ -104,15 +112,21 @@
     cursor: pointer;
 
     box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca,
-        0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
+    0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
 }
-.tutorial_button:hover {
-    color: var(--text-grey-white);
+.tutorial_button:hover{
+    color: var(--text-grey-white)
 }
 
+
+
 @media only screen and (min-width: 1280px) {
-    .scrollable_container {
+    .scrollable_container{
+
         height: 100vh;
         overflow-y: scroll;
+    
     }
+    
+
 }

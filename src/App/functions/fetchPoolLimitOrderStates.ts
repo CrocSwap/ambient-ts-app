@@ -6,9 +6,7 @@ interface IFetchPoolLimitOrderStatesProps {
     ensResolution: boolean;
 }
 
-export const fetchPoolLimitOrderStates = (
-    props: IFetchPoolLimitOrderStatesProps,
-) => {
+export const fetchPoolLimitOrderStates = (props: IFetchPoolLimitOrderStatesProps) => {
     const { chainId, base, quote, poolIdx, ensResolution } = props;
 
     const poolLimitOrderStatesCacheEndpoint =

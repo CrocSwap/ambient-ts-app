@@ -18,8 +18,7 @@ export default function WalletCard(props: propsIF) {
 
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 
-    const tokenFromMap =
-        tokenMap && tokenAddress ? tokenMap.get(tokenAddress) : null;
+    const tokenFromMap = tokenMap && tokenAddress ? tokenMap.get(tokenAddress) : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
         nativePrice?:
@@ -38,14 +37,9 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const mainnetAddress = testTokenMap
-                    .get(tokenAddress)
-                    ?.split('_')[0];
+                const mainnetAddress = testTokenMap.get(tokenAddress)?.split('_')[0];
                 if (mainnetAddress) {
-                    const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
-                    );
+                    const price = await cachedFetchTokenPrice(mainnetAddress, '0x1');
                     if (price) setTokenPrice(price);
                 }
             } catch (err) {
@@ -101,21 +95,14 @@ export default function WalletCard(props: propsIF) {
     const tokenInfo = (
         <div className={styles.token_info}>
             {iconAndSymbolWithTooltip}
-            <p>
-                {tokenFromMap?.name
-                    ? tokenFromMap?.name
-                    : token?.name
-                    ? token?.name
-                    : '???'}
-            </p>
+            <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ? token?.name : '???'}</p>
         </div>
     );
 
     if (
         !token ||
         !tokenFromMap ||
-        (token?.address !== ZERO_ADDRESS &&
-            (!token.walletBalance || token.walletBalance === '0'))
+        (token?.address !== ZERO_ADDRESS && (!token.walletBalance || token.walletBalance === '0'))
     )
         return <></>;
 

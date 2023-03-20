@@ -17,9 +17,7 @@ function Token(props: TokenPropsIF) {
 
     return (
         <div
-            className={`${styles.token_container} ${
-                active && styles.token_container_active
-            }`}
+            className={`${styles.token_container} ${active && styles.token_container_active}`}
             onClick={() => setActive(!active)}
         >
             <IconWithTooltip title={symbol} placement='bottom'>
@@ -41,8 +39,7 @@ export default function AnalyticsTokenRows(props: AnalyticsTokenRowsPropsIF) {
     return (
         <>
             <p style={{ color: 'pink' }}>
-                concept: clicking on the following tokens will filter pools with
-                that token
+                concept: clicking on the following tokens will filter pools with that token
             </p>
             <div className={styles.token_rows_container}>
                 {tokenData.slice(0, itemsToMap).map((token, i) => (

@@ -13,10 +13,7 @@ export const useClick = (
 
     function handleClick(position: PositionIF) {
         let locationSlug = '';
-        if (
-            pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
-        ) {
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
@@ -29,13 +26,7 @@ export const useClick = (
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            locationSlug +
-                '/chain=0x5&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote,
-        );
+        navigate(locationSlug + '/chain=0x5&tokenA=' + position.base + '&tokenB=' + position.quote);
     }
     return handleClick;
 };

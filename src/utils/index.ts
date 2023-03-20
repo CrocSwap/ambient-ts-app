@@ -27,16 +27,11 @@ export function shortenAddress(address: string, chars = 4): string {
 
 // add 10%
 export function calculateGasMargin(value: BigNumber): BigNumber {
-    return value
-        .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
-        .div(BigNumber.from(10000));
+    return value.mul(BigNumber.from(10000).add(BigNumber.from(1000))).div(BigNumber.from(10000));
 }
 
 // account is not optional
-export function getSigner(
-    library: Web3Provider,
-    account: string,
-): JsonRpcSigner {
+export function getSigner(library: Web3Provider, account: string): JsonRpcSigner {
     return library.getSigner(account).connectUnchecked();
 }
 
@@ -59,11 +54,7 @@ export function getContract(
         throw Error(`Invalid 'address' parameter '${address}'.`);
     }
 
-    return new Contract(
-        address,
-        ABI,
-        getProviderOrSigner(library, account) as any,
-    );
+    return new Contract(address, ABI, getProviderOrSigner(library, account) as any);
 }
 
 export function escapeRegExp(string: string): string {
@@ -74,8 +65,6 @@ export function feeTierPercent(fee: number): string {
     return (fee / 10000).toPrecision(1) + '%';
 }
 
-export function notEmpty<TValue>(
-    value: TValue | null | undefined,
-): value is TValue {
+export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
 }

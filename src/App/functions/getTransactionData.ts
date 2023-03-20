@@ -15,21 +15,17 @@ export const getTransactionData = async (
     // const quoteTokenName = tokensOnActiveLists.get(quoteKey)?.name;
 
     const baseTokenName = tokenList.find(
-        (token) =>
-            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.name;
     const quoteTokenName = tokenList.find(
-        (token) =>
-            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.name;
 
     const baseTokenLogoURI = tokenList.find(
-        (token) =>
-            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
     const quoteTokenLogoURI = tokenList.find(
-        (token) =>
-            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
     // const baseTokenLogoURI = tokensOnActiveLists.get(baseKey)?.logoURI;
     // const quoteTokenLogoURI = tokensOnActiveLists.get(quoteKey)?.logoURI;

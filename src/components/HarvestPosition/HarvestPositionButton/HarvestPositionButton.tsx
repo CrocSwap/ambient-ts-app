@@ -8,19 +8,12 @@ interface IHarvestPositionButtonProps {
     disabled?: boolean;
 }
 
-export default function HarvestPositionButton(
-    props: IHarvestPositionButtonProps,
-) {
+export default function HarvestPositionButton(props: IHarvestPositionButtonProps) {
     const { harvestFn, title } = props;
 
     return (
         <div>
-            <Button
-                title={title}
-                disabled={props.disabled}
-                action={harvestFn}
-                flat
-            />
+            <Button title={title} disabled={props.disabled} action={harvestFn} flat />
         </div>
     );
 }

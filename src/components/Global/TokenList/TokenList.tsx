@@ -39,21 +39,13 @@ export default function TokenList(props: propsIF) {
         <div className={styles.header_container}>
             <div className={styles.header_content}>
                 <div
-                    className={
-                        !showImportedTokens
-                            ? styles.active_button
-                            : styles.inactive_button
-                    }
+                    className={!showImportedTokens ? styles.active_button : styles.inactive_button}
                     onClick={() => setShowImportedTokens(!showImportedTokens)}
                 >
                     Lists
                 </div>
                 <div
-                    className={
-                        showImportedTokens
-                            ? styles.active_button
-                            : styles.inactive_button
-                    }
+                    className={showImportedTokens ? styles.active_button : styles.inactive_button}
                     onClick={() => setShowImportedTokens(!showImportedTokens)}
                 >
                     Tokens
@@ -96,9 +88,7 @@ export default function TokenList(props: propsIF) {
     };
 
     // get allTokenLists value from local storage
-    const tokenListElements = JSON.parse(
-        localStorage.getItem('allTokenLists') as string,
-    );
+    const tokenListElements = JSON.parse(localStorage.getItem('allTokenLists') as string);
     // map over the array and make a bank of <li> for the DOM
 
     const TokenListContent = (
@@ -125,9 +115,7 @@ export default function TokenList(props: propsIF) {
             {TokenListContainerHeader}
             {TokenListInput}
             <Divider />
-            <div className={styles.token_list_content_container}>
-                {TokenListContent}
-            </div>
+            <div className={styles.token_list_content_container}>{TokenListContent}</div>
         </div>
     );
 
@@ -144,11 +132,7 @@ export default function TokenList(props: propsIF) {
     );
 
     return (
-        <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.3 }}
-        >
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.3 }}>
             {showImportedTokens ? ImportedTokensDisplay : TokenListDisplay}
         </motion.div>
     );

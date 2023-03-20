@@ -15,17 +15,12 @@ export default function OrderDetailsActions() {
     const [showMenuItems, setShowMenuItems] = useState(false);
 
     const menuButton = (
-        <div
-            className={styles.menu_button}
-            onClick={() => setShowMenuItems(!showMenuItems)}
-        >
+        <div className={styles.menu_button} onClick={() => setShowMenuItems(!showMenuItems)}>
             <BsPlusCircleFill size={50} />
         </div>
     );
 
-    const wrapperStyle = showMenuItems
-        ? styles.menu_wrapper_active
-        : styles.menu_wrapper;
+    const wrapperStyle = showMenuItems ? styles.menu_wrapper_active : styles.menu_wrapper;
 
     const actionItems = (
         <div className={styles.action_items}>

@@ -13,11 +13,7 @@ function TokenItem(props: TokenItemPropsIF) {
     const { data, reverse } = props;
 
     return (
-        <section
-            className={
-                reverse ? styles.scroll_item_reverse : styles.scroll_item
-            }
-        >
+        <section className={reverse ? styles.scroll_item_reverse : styles.scroll_item}>
             {
                 // eslint-disable-next-line
                 data.map((token: any, idx: number) => (

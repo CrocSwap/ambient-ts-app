@@ -2,8 +2,12 @@ import { useState } from 'react';
 
 export const useModal = (
     modalCloseCustom?: () => void,
-    initialMode = false,
-): [boolean, () => void, () => void] => {
+    initialMode = false
+): [
+    boolean,
+    () => void,
+    () => void
+] => {
     // create a useState hook to track if the modal should be rendered
     const [isModalOpen, setIsModalOpen] = useState<boolean>(initialMode);
 
@@ -23,8 +27,7 @@ export const useModal = (
         document.getElementById('Modal_Global')?.dispatchEvent(closeEvent);
         // remove the event listener from  the window
         // the presence of a close function implies the event listener was created
-        modalCloseCustom &&
-            window.removeEventListener('closeModalEvent', modalCloseCustom);
+        modalCloseCustom && window.removeEventListener('closeModalEvent', modalCloseCustom);
     };
 
     // return all data and functions needed for local use

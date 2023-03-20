@@ -8,8 +8,7 @@
 
     border-radius: var(--border-radius);
 
-    background: url('../../../assets/images/home/home_wallpaper.png') no-repeat
-        center center;
+    background: url('../../../assets/images/home/home_wallpaper.png') no-repeat center center;
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -24,7 +23,7 @@
     gap: 2rem;
 }
 
-.content_container img {
+.content_container img{
     width: 250px;
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -76,23 +75,28 @@
     /* color: #CDC1FF; */
 }
 
-.button_text {
+
+.button_text{
     font-family: var(--font-logo);
 }
 
 @keyframes shine {
-    0% {
+    0%{
+
         background-position: 0% 50%;
     }
-    50% {
+    50%
+    {
+        
         background-position: 100% 50%;
         color: rgb(0, 0, 0);
     }
-    100% {
-        background-position: 0% 50%;
-        color: rgb(0, 0, 0);
+  100% {
+      
+      background-position :0%  50%;
+      color: rgb(0, 0, 0);
     }
-}
+  }
 
 .action_button:hover {
     border: 1px solid rgba(223, 190, 106, 0);
@@ -101,20 +105,25 @@
     animation-play-state: paused;
 }
 .action_button p {
-    color: var(--text-highlight);
+  color: var(--text-highlight);
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;
 }
 
-.action_button p:hover {
-    color: var(--dark2);
+
+ .action_button p:hover {
+color: var(--dark2)
+
 
     /* color: var(--dark3); */
 }
 
+
 @media only screen and (min-width: 768px) {
-    .content_container img {
+
+    .content_container img{
         width: 500px;
     }
+
 }

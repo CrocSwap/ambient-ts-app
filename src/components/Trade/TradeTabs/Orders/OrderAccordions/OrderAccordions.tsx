@@ -101,13 +101,9 @@ export default function OrderAccordions(props: propsIF) {
 
     return (
         <motion.div
-            className={`${styles.main_container} ${
-                isOpen ? styles.open_border : ''
-            }`}
+            className={`${styles.main_container} ${isOpen ? styles.open_border : ''}`}
             initial={false}
-            animate={{
-                border: isOpen ? '1px solid rgba( 255, 255, 255, 0.18 )' : '',
-            }}
+            animate={{ border: isOpen ? '1px solid rgba( 255, 255, 255, 0.18 )' : '' }}
         >
             <motion.header
                 initial={false}
@@ -133,10 +129,7 @@ export default function OrderAccordions(props: propsIF) {
                             open: { opacity: 1, height: 'auto' },
                             collapsed: { opacity: 0, height: 0 },
                         }}
-                        transition={{
-                            duration: 0.8,
-                            ease: [0.04, 0.62, 0.23, 0.98],
-                        }}
+                        transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
                     >
                         <OrderAccordionContent
                             posHash={posHashTruncated}

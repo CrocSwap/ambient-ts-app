@@ -2,8 +2,7 @@
     margin: 0 5px;
 }
 
-.settings_icon,
-.share_button {
+.settings_icon, .share_button {
     cursor: pointer;
 }
 

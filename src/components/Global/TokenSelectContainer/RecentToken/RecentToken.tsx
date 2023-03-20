@@ -20,10 +20,7 @@ export default function RecentToken(props: propsIF) {
                     width='20px'
                 />
             ) : (
-                <NoTokenIcon
-                    tokenInitial={token.symbol.charAt(0)}
-                    width='20px'
-                />
+                <NoTokenIcon tokenInitial={token.symbol.charAt(0)} width='20px' />
             )}
             <span>{token.symbol}</span>
         </div>

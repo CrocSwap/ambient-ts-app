@@ -1,29 +1,24 @@
-// START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { RiSettings5Line } from 'react-icons/ri';
-import { VscClose } from 'react-icons/vsc';
-
-// START: Import JSX Components
+import { useRepoExitPath } from './useRepoExitPath';
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
+import { RiSettings5Line } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
+import trimString from '../../../../utils/functions/trimString';
+import styles from './RepositionHeader.module.css';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
 import Modal from '../../../../components/Global/Modal/Modal';
-
-// START: Import Local Files
-import styles from './RepositionHeader.module.css';
-import trimString from '../../../../utils/functions/trimString';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { useRepoExitPath } from './useRepoExitPath';
+import { VscClose } from 'react-icons/vsc';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { Dispatch, SetStateAction } from 'react';
 
 interface propsIF {
     positionHash: string;
     repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
+    bypassConfirm: boolean;
+    toggleBypassConfirm: (item: string, pref: boolean) => void;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
@@ -35,6 +30,7 @@ export default function RepositionHeader(props: propsIF) {
         repoSlippage,
         isPairStable,
         bypassConfirm,
+        toggleBypassConfirm,
         setSimpleRangeWidth,
     } = props;
 
@@ -66,7 +62,8 @@ export default function RepositionHeader(props: propsIF) {
                         slippage={repoSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.repo}
+                        bypassConfirm={bypassConfirm}
+                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                 </Modal>
             )}

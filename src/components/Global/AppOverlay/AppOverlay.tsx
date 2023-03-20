@@ -1,10 +1,7 @@
 import styles from './AppOverlay.module.css';
 import { useState, Dispatch, SetStateAction } from 'react';
 import OverlayComponent from '../OverlayComponent/OverlayComponent';
-import {
-    MdOutlineArrowBackIosNew,
-    MdOutlineArrowForwardIos,
-} from 'react-icons/md';
+import { MdOutlineArrowBackIosNew, MdOutlineArrowForwardIos } from 'react-icons/md';
 import { VscClose } from 'react-icons/vsc';
 
 // import { useNavigate } from 'react-router-dom';

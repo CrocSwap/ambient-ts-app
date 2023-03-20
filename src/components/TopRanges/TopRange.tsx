@@ -13,8 +13,7 @@ import TokenQty from '../Global/Tabs/TokenQty/TokenQty';
 import styles from './TopRange.module.css';
 
 export default function TopRange() {
-    const tempOwnerId =
-        '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
+    const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
     const quoteToken: TokenIF = {
         address: tempPosHash,
@@ -33,20 +32,13 @@ export default function TopRange() {
         logoURI: '',
     };
 
-    const baseTokenCharacter = baseToken.symbol
-        ? getUnicodeCharacter(baseToken.symbol)
-        : '';
-    const quoteTokenCharacter = quoteToken.symbol
-        ? getUnicodeCharacter(quoteToken.symbol)
-        : '';
+    const baseTokenCharacter = baseToken.symbol ? getUnicodeCharacter(baseToken.symbol) : '';
+    const quoteTokenCharacter = quoteToken.symbol ? getUnicodeCharacter(quoteToken.symbol) : '';
 
     return (
         <div className={styles.main_container}>
             <div className={styles.tokens_container}>
-                <TokenDisplay
-                    token0={isAddress(tempOwnerId)}
-                    token1={isAddress(tempPosHash)}
-                />
+                <TokenDisplay token0={isAddress(tempOwnerId)} token1={isAddress(tempPosHash)} />
             </div>
 
             <div className={styles.row_container}>
@@ -62,11 +54,7 @@ export default function TopRange() {
                 />
                 <Apy amount={10} />
 
-                <RangeStatus
-                    isInRange={true}
-                    isEmpty={false}
-                    isAmbient={true}
-                />
+                <RangeStatus isInRange={true} isEmpty={false} isAmbient={true} />
             </div>
 
             <div className={styles.menu_container}>

@@ -1,4 +1,6 @@
 .currency_quantity {
+
+    
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
@@ -18,7 +20,7 @@
     transition: border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 
-    font-family: var(--mono);
+        font-family: var(--mono);
 }
 .currency_quantity::placeholder {
     color: var(--text-grey-dark);

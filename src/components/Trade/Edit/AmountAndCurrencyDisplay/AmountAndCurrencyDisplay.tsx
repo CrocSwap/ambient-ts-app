@@ -9,9 +9,7 @@ interface AmountAndCurrencyDisplayProps {
     disable?: boolean;
 }
 
-export default function AmountAndCurrencyDisplay(
-    props: AmountAndCurrencyDisplayProps,
-) {
+export default function AmountAndCurrencyDisplay(props: AmountAndCurrencyDisplayProps) {
     const { tokenImg, qty, symbol, fieldId, disable } = props;
     const currencyQuantity = (
         <div className={styles.token_amount}>

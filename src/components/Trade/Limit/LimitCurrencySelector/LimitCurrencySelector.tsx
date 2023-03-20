@@ -60,16 +60,10 @@ interface propsIF {
 
     isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
     outputTokens: TokenIF[];
@@ -126,8 +120,7 @@ export default function LimitCurrencySelector(props: propsIF) {
         dexBalancePrefs,
     } = props;
 
-    const thisToken =
-        fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
 
     const isSellTokenSelector = fieldId === 'sell';
 
@@ -139,10 +132,8 @@ export default function LimitCurrencySelector(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
 
     const handleInputClear = (): void => {
         setInput('');
@@ -154,9 +145,7 @@ export default function LimitCurrencySelector(props: propsIF) {
 
     const tokenSelect = (
         <div
-            className={`${styles.token_select} ${
-                isOrderCopied && styles.pulse_animation
-            }`}
+            className={`${styles.token_select} ${isOrderCopied && styles.pulse_animation}`}
             onClick={openTokenModal}
             id='limit_token_selector'
         >
@@ -168,10 +157,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                     width='30px'
                 />
             ) : (
-                <NoTokenIcon
-                    tokenInitial={thisToken.symbol.charAt(0)}
-                    width='30px'
-                />
+                <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
             )}
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
@@ -184,10 +170,7 @@ export default function LimitCurrencySelector(props: propsIF) {
     const walletBalanceNonLocaleString =
         tokenABalance && gasPriceInGwei
             ? isSellTokenEth
-                ? (
-                      parseFloat(tokenABalance) -
-                      gasPriceInGwei * 400000 * 1e-9
-                  ).toFixed(18)
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
                 : tokenABalance
             : '';
 
@@ -201,10 +184,7 @@ export default function LimitCurrencySelector(props: propsIF) {
     const surplusBalanceNonLocaleString =
         tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
-                ? (
-                      parseFloat(tokenADexBalance) -
-                      gasPriceInGwei * 400000 * 1e-9
-                  ).toFixed(18)
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
                 : tokenADexBalance
             : '';
 
@@ -304,8 +284,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         <MdAccountBalanceWallet
                             size={20}
                             color={
-                                (isSellTokenSelector &&
-                                    !isWithdrawFromDexChecked) ||
+                                (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                 (isSellTokenSelector &&
                                     isSellTokenEth === false &&
                                     isWithdrawFromDexChecked &&
@@ -317,20 +296,13 @@ export default function LimitCurrencySelector(props: propsIF) {
                         />
                     </div>
                     <div className={styles.balance_column}>
-                        <div>
-                            {isUserLoggedIn ? walletBalanceLocaleString : ''}
-                        </div>
+                        <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
                         <div
                             style={{
-                                color: isSellTokenSelector
-                                    ? '#f6385b'
-                                    : '#15be67',
+                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
                             }}
                         >
-                            <p style={{ fontSize: '9px' }}>
-                                {' '}
-                                {sellTokenWalletBalanceChange}
-                            </p>
+                            <p style={{ fontSize: '9px' }}> {sellTokenWalletBalanceChange}</p>
                         </div>
                     </div>
                 </div>
@@ -340,18 +312,9 @@ export default function LimitCurrencySelector(props: propsIF) {
     );
     const exchangeBalanceTitle = (
         <p
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer',
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
             onClick={() =>
-                openGlobalPopup(
-                    <ExchangeBalanceExplanation />,
-                    'Exchange Balance',
-                    'right',
-                )
+                openGlobalPopup(<ExchangeBalanceExplanation />, 'Exchange Balance', 'right')
             }
         >
             Exchange Balance <AiOutlineQuestionCircle size={14} />
@@ -370,9 +333,7 @@ export default function LimitCurrencySelector(props: propsIF) {
             >
                 <div
                     className={`${styles.balance_with_pointer} ${
-                        isSellTokenSelector && !isWithdrawFromDexChecked
-                            ? styles.grey_logo
-                            : null
+                        isSellTokenSelector && !isWithdrawFromDexChecked ? styles.grey_logo : null
                     }`}
                     style={{
                         color:
@@ -392,21 +353,13 @@ export default function LimitCurrencySelector(props: propsIF) {
                 >
                     {surplusMaxButton}
                     <div className={styles.balance_column}>
-                        <div>
-                            {' '}
-                            {isUserLoggedIn ? surplusBalanceLocaleString : ''}
-                        </div>
+                        <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                         <div
                             style={{
-                                color: isSellTokenSelector
-                                    ? '#f6385b'
-                                    : '#15be67',
+                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
                             }}
                         >
-                            <p style={{ fontSize: '9px' }}>
-                                {' '}
-                                {sellTokenSurplusChange}
-                            </p>
+                            <p style={{ fontSize: '9px' }}> {sellTokenSurplusChange}</p>
                         </div>
                     </div>
                     <div
@@ -438,9 +391,7 @@ export default function LimitCurrencySelector(props: propsIF) {
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='limit_sell_qty'>
                     <LimitCurrencyQuantity
-                        value={
-                            tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
-                        }
+                        value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
                         thisToken={thisToken}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
@@ -469,9 +420,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
+                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
                         outputTokens={outputTokens}
                         validatedInput={validatedInput}
                         setInput={setInput}

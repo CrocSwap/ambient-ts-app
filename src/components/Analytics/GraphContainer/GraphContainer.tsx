@@ -43,30 +43,21 @@ export default function GraphContainer() {
 
     const [valueTvlDate, setValueTvlDate] = useState<string | undefined>();
 
-    const [valueVolumeDate, setValueVolumeDate] = useState<
-        string | undefined
-    >();
+    const [valueVolumeDate, setValueVolumeDate] = useState<string | undefined>();
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
-    const [totalVolumeString, setTotalVolumeString] = useState<
-        string | undefined
-    >();
-    const [totalFeesString, setTotalFeesString] = useState<
-        string | undefined
-    >();
+    const [totalVolumeString, setTotalVolumeString] = useState<string | undefined>();
+    const [totalFeesString, setTotalFeesString] = useState<string | undefined>();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [tvlSeriesData, setTvlSeriesData] = useState<
-        ITvlSeriesData | undefined
-    >();
+    const [tvlSeriesData, setTvlSeriesData] = useState<ITvlSeriesData | undefined>();
     // const [tvlSeriesData, setTvlSeriesData] = useState<tvlSeriesData | undefined>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [volumeSeriesData, setVolumeSeriesData] = useState<
-        IVolumeSeriesData | undefined
-    >();
+    const [volumeSeriesData, setVolumeSeriesData] = useState<IVolumeSeriesData | undefined>();
     // const [volumeSeriesData, setVolumeSeriesData] = useState<volumeSeriesData | undefined>();
-    const [selectedTimeFrame, setVelectedTimeFrame] =
-        useState<ChartDataTimeframe>(ChartDataTimeframe.all);
+    const [selectedTimeFrame, setVelectedTimeFrame] = useState<ChartDataTimeframe>(
+        ChartDataTimeframe.all,
+    );
 
     useEffect(() => {
         console.log({ tvlSeriesData });
@@ -79,12 +70,9 @@ export default function GraphContainer() {
     useEffect(() => {
         getDexStatsFresh()
             .then((dexStats) => {
-                if (dexStats.tvl)
-                    setTotalTvlString('$' + formatAmount(dexStats.tvl));
-                if (dexStats.volume)
-                    setTotalVolumeString('$' + formatAmount(dexStats.volume));
-                if (dexStats.fees)
-                    setTotalFeesString('$' + formatAmount(dexStats.fees));
+                if (dexStats.tvl) setTotalTvlString('$' + formatAmount(dexStats.tvl));
+                if (dexStats.volume) setTotalVolumeString('$' + formatAmount(dexStats.volume));
+                if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
             })
             .catch(console.log);
         getDexTvlSeries(selectedTimeFrame.toString())
@@ -151,9 +139,7 @@ export default function GraphContainer() {
                             ? styles.active_button2
                             : styles.non_active_button2
                     }
-                    onClick={() =>
-                        setVelectedTimeFrame(ChartDataTimeframe.oneDay)
-                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.oneDay)}
                 >
                     1d
                     {selectedTimeFrame === ChartDataTimeframe.oneDay && (
@@ -171,9 +157,7 @@ export default function GraphContainer() {
                             ? styles.active_button2
                             : styles.non_active_button2
                     }
-                    onClick={() =>
-                        setVelectedTimeFrame(ChartDataTimeframe.oneMonth)
-                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.oneMonth)}
                 >
                     1M
                     {selectedTimeFrame === ChartDataTimeframe.oneMonth && (
@@ -191,9 +175,7 @@ export default function GraphContainer() {
                             ? styles.active_button2
                             : styles.non_active_button2
                     }
-                    onClick={() =>
-                        setVelectedTimeFrame(ChartDataTimeframe.sixMonth)
-                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.sixMonth)}
                 >
                     6M
                     {selectedTimeFrame === ChartDataTimeframe.sixMonth && (
@@ -211,9 +193,7 @@ export default function GraphContainer() {
                             ? styles.active_button2
                             : styles.non_active_button2
                     }
-                    onClick={() =>
-                        setVelectedTimeFrame(ChartDataTimeframe.oneYear)
-                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.oneYear)}
                 >
                     1Y
                     {selectedTimeFrame === ChartDataTimeframe.oneYear && (
@@ -306,8 +286,7 @@ export default function GraphContainer() {
                             snapType={
                                 selectedTimeFrame === ChartDataTimeframe.oneDay
                                     ? 'days'
-                                    : selectedTimeFrame ===
-                                      ChartDataTimeframe.oneMonth
+                                    : selectedTimeFrame === ChartDataTimeframe.oneMonth
                                     ? 'months'
                                     : 'weeks'
                             }
@@ -338,17 +317,13 @@ export default function GraphContainer() {
 
             <div className={styles.info_content}>
                 <div className={styles.info_title}>24h Volume</div>
-                <div className={styles.info_value}>
-                    {totalVolumeString || '...'}
-                </div>
+                <div className={styles.info_value}>{totalVolumeString || '...'}</div>
                 {/* <div className={styles.info_value}>{formatDollarAmount(volumeHover, 2)}</div> */}
             </div>
 
             <div className={styles.info_content}>
                 <div className={styles.info_title}>24h Fees</div>
-                <div className={styles.info_value}>
-                    {totalFeesString || '...'}
-                </div>
+                <div className={styles.info_value}>{totalFeesString || '...'}</div>
                 {/* <div className={styles.info_value}>{formatDollarAmount(protocolData?.feesUSD)}</div> */}
             </div>
         </motion.div>

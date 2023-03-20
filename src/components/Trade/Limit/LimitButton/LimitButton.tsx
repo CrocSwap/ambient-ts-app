@@ -1,25 +1,23 @@
+// START: Import React and Dongles
+// import { useState } from 'react';
+
 // START: Import React Functional Components
 import Button from '../../../Global/Button/Button';
 
 // START: Import Local Files
 import styles from './LimitButton.module.css';
-import { skipConfirmIF } from '../../../../App/hooks/useSkipConfirm';
 
-interface propsIF {
+// central react functional component
+
+interface ILimitButtonProps {
     onClickFn: () => void;
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
-    bypassConfirmLimit: skipConfirmIF;
+    bypassConfirm: boolean;
 }
 
-export default function LimitButton(props: propsIF) {
-    const {
-        onClickFn,
-        limitAllowed,
-        limitButtonErrorMessage,
-        bypassConfirmLimit,
-    } = props;
-
+export default function LimitButton(props: ILimitButtonProps) {
+    const { bypassConfirm } = props;
     // TODO:  @Junior do we need the top-level `<div>` here or can it be eliminated
     // TODO:  ... as an unnecessary wrapper?
 
@@ -27,14 +25,15 @@ export default function LimitButton(props: propsIF) {
         <div className={styles.button_container}>
             <Button
                 title={
-                    limitAllowed
-                        ? bypassConfirmLimit.isEnabled
+                    props.limitAllowed
+                        ? bypassConfirm
                             ? 'Send Limit'
                             : 'Open Confirmation'
-                        : limitButtonErrorMessage
+                        : props.limitButtonErrorMessage
                 }
-                action={onClickFn}
-                disabled={!limitAllowed}
+                // action={() => console.log('clicked')}
+                action={props.onClickFn}
+                disabled={!props.limitAllowed}
                 flat={true}
             />
         </div>

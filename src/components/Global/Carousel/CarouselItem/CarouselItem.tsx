@@ -10,10 +10,7 @@ interface CarouselItemPropsIF {
 export default function CarouselItem(props: CarouselItemPropsIF) {
     const { children, width } = props;
     return (
-        <div
-            className={styles.carousel_item}
-            style={{ width: width, height: '526px' }}
-        >
+        <div className={styles.carousel_item} style={{ width: width, height: '526px' }}>
             {children}
         </div>
     );

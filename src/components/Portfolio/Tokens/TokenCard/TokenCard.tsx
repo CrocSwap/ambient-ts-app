@@ -22,10 +22,7 @@ export default function TokenCard(props: propsIF) {
                         alt={''}
                     />
                 ) : (
-                    <NoTokenIcon
-                        tokenInitial={token.symbol.charAt(0)}
-                        width='30px'
-                    />
+                    <NoTokenIcon tokenInitial={token.symbol.charAt(0)} width='30px' />
                 )}
 
                 <div>

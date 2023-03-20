@@ -24,28 +24,18 @@ function LimitOrderLI(props: limitOrderPropsIF) {
     const { limitOrder, isDenomBase, handleClick } = props;
 
     const symbols = {
-        base: limitOrder.baseSymbol
-            ? getUnicodeCharacter(limitOrder.baseSymbol)
-            : '',
-        quote: limitOrder.quoteSymbol
-            ? getUnicodeCharacter(limitOrder.quoteSymbol)
-            : '',
+        base: limitOrder.baseSymbol ? getUnicodeCharacter(limitOrder.baseSymbol) : '',
+        quote: limitOrder.quoteSymbol ? getUnicodeCharacter(limitOrder.quoteSymbol) : '',
     };
 
     const displayPrice = isDenomBase
-        ? getDisplayPrice(
-              symbols.quote,
-              limitOrder.invLimitPriceDecimalCorrected,
-          )
+        ? getDisplayPrice(symbols.quote, limitOrder.invLimitPriceDecimalCorrected)
         : getDisplayPrice(symbols.base, limitOrder.limitPriceDecimalCorrected);
 
     const valueUSD = getValueUSD(limitOrder.totalValueUSD);
 
     return (
-        <li
-            className={styles.card_container}
-            onClick={() => handleClick(limitOrder)}
-        >
+        <li className={styles.card_container} onClick={() => handleClick(limitOrder)}>
             <p>
                 {limitOrder.baseSymbol} / {limitOrder.quoteSymbol}
             </p>
@@ -94,18 +84,14 @@ export default function OrdersSearchResults(props: propsIF) {
                         <div>Value</div>
                     </header>
                     <ol className={styles.main_result_container}>
-                        {searchedLimitOrders
-                            .slice(0, 4)
-                            .map((limitOrder: LimitOrderIF) => (
-                                <LimitOrderLI
-                                    key={`order-search-result-${JSON.stringify(
-                                        limitOrder,
-                                    )}`}
-                                    limitOrder={limitOrder}
-                                    isDenomBase={isDenomBase}
-                                    handleClick={handleClick}
-                                />
-                            ))}
+                        {searchedLimitOrders.slice(0, 4).map((limitOrder: LimitOrderIF) => (
+                            <LimitOrderLI
+                                key={`order-search-result-${JSON.stringify(limitOrder)}`}
+                                limitOrder={limitOrder}
+                                isDenomBase={isDenomBase}
+                                handleClick={handleClick}
+                            />
+                        ))}
                     </ol>
                 </>
             ) : (

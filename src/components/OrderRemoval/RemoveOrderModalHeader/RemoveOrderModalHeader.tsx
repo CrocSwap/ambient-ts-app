@@ -12,9 +12,7 @@ interface RemoveOrderModalHeaderPropsIF {
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
 }
-export default function RemoveOrderModalHeader(
-    props: RemoveOrderModalHeaderPropsIF,
-) {
+export default function RemoveOrderModalHeader(props: RemoveOrderModalHeaderPropsIF) {
     const goBackButton = (
         <div onClick={props.onGoBack}>
             <BsArrowLeft size={22} />

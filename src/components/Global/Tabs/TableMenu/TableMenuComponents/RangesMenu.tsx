@@ -27,7 +27,6 @@ import {
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
-import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 
 // interface for React functional component props
 interface propsIF {
@@ -51,8 +50,6 @@ interface propsIF {
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
-    isPositionInRange: boolean;
 }
 
 // React functional component
@@ -62,7 +59,7 @@ export default function RangesMenu(props: propsIF) {
     const {
         crocEnv,
         isEmpty,
-        isPositionEmpty,
+        // isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         posHash,
@@ -70,8 +67,6 @@ export default function RangesMenu(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         dexBalancePrefs,
-        slippage,
-        isPositionInRange,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -103,6 +98,18 @@ export default function RangesMenu(props: propsIF) {
             <RangeDetails position={position} {...rangeDetailsProps} />,
         );
     };
+
+    // const openHarvestModal = () => {
+    //     setShowDropdownMenu(false);
+    //     openGlobalModal(
+    //         <HarvestPosition
+    //             crocEnv={crocEnv}
+    //             position={position}
+    //             dexBalancePrefs={dexBalancePrefs}
+    //             {...rangeDetailsProps}
+    //         />,
+    //     );
+    // };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
@@ -229,9 +236,9 @@ export default function RangesMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
-        !isPositionInRange &&
-        !isPositionEmpty &&
-        userMatchesConnectedAccount &&
+        // !isPositionInRange &&
+        // !isPositionEmpty &&
+        // userMatchesConnectedAccount &&
         view1;
     // ----------------------
 
@@ -295,7 +302,6 @@ export default function RangesMenu(props: propsIF) {
                         crocEnv={crocEnv}
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         {...rangeDetailsProps}
                     />
                 </Modal>
@@ -310,7 +316,6 @@ export default function RangesMenu(props: propsIF) {
                         position={position}
                         handleModalClose={handleModalClose}
                         dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         {...rangeDetailsProps}
                     />
                 </Modal>

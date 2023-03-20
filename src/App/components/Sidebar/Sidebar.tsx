@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    MouseEvent,
-    SetStateAction,
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-} from 'react';
+import { MouseEvent, SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
@@ -59,9 +52,7 @@ interface propsIF {
     isDenomBase: boolean;
     showSidebar: boolean;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -240,12 +231,8 @@ export default function Sidebar(props: propsIF) {
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
                     coinGeckoTokenMap={tokenMap}
-                    currentTxActiveInTransactions={
-                        currentTxActiveInTransactions
-                    }
-                    setCurrentTxActiveInTransactions={
-                        setCurrentTxActiveInTransactions
-                    }
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
@@ -290,9 +277,7 @@ export default function Sidebar(props: propsIF) {
     const handleInputClear = () => {
         setSearchInput([]);
         setSearchMode(false);
-        const currentInput = document.getElementById(
-            'search_input',
-        ) as HTMLInputElement;
+        const currentInput = document.getElementById('search_input') as HTMLInputElement;
         currentInput.value = '';
     };
 
@@ -300,17 +285,13 @@ export default function Sidebar(props: propsIF) {
     // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
 
     const focusInput = () => {
-        const inputField = document.getElementById(
-            'search_input',
-        ) as HTMLInputElement;
+        const inputField = document.getElementById('search_input') as HTMLInputElement;
 
         inputField.focus();
     };
 
     const handleInputClearAnalytics = () => {
-        const currentInput = document.getElementById(
-            'search_input_analytics',
-        ) as HTMLInputElement;
+        const currentInput = document.getElementById('search_input_analytics') as HTMLInputElement;
 
         currentInput.value = '';
     };
@@ -330,10 +311,7 @@ export default function Sidebar(props: propsIF) {
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
             {searchInput !== undefined && (
-                <div
-                    onClick={handleInputClearAnalytics}
-                    className={styles.close_icon}
-                >
+                <div onClick={handleInputClearAnalytics} className={styles.close_icon}>
                     <MdClose size={18} color='#ebebeb66' />{' '}
                 </div>
             )}
@@ -341,9 +319,7 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    const inputContent = document.getElementById(
-        'search_input',
-    ) as HTMLInputElement;
+    const inputContent = document.getElementById('search_input') as HTMLInputElement;
 
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
@@ -402,18 +378,13 @@ export default function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {'Collapse All'}
+            <BsChevronBarDown size={18} color='var(--text-grey-light)' /> {'Collapse All'}
         </button>
     );
 
     const searchContainerDisplay = (
-        <div
-            className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}
-        >
-            {location.pathname.includes('analytics')
-                ? AnalyticsSearchContainer
-                : searchContainer}
+        <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
+            {location.pathname.includes('analytics') ? AnalyticsSearchContainer : searchContainer}
             {showSidebar ? (
                 <DefaultTooltip
                     interactive
@@ -425,11 +396,7 @@ export default function Sidebar(props: propsIF) {
                     leaveDelay={200}
                 >
                     <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='close sidebar'
-                            onClick={toggleSidebar}
-                        />
+                        <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
                     </div>
                 </DefaultTooltip>
             ) : (
@@ -443,11 +410,7 @@ export default function Sidebar(props: propsIF) {
                     leaveDelay={200}
                 >
                     <div style={{ cursor: 'pointer', rotate: '180deg' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='open sidebar'
-                            onClick={toggleSidebar}
-                        />
+                        <img src={closeSidebarImage} alt='open sidebar' onClick={toggleSidebar} />
                     </div>
                 </DefaultTooltip>
             )}
@@ -597,9 +560,7 @@ export default function Sidebar(props: propsIF) {
                             setOutsideControl={setOutsideControl}
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}
-                            setCurrentTxActiveInTransactions={
-                                setCurrentTxActiveInTransactions
-                            }
+                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             searchedTxs={searchedTxs}
                             searchedLimitOrders={searchedLimitOrders}

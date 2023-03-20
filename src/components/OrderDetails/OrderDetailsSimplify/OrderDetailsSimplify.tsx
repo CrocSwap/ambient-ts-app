@@ -40,9 +40,7 @@ interface OrderDetailsSimplifyPropsIF {
     truncatedDisplayPrice: string | undefined;
     isOnPortfolioPage: boolean;
 }
-export default function OrderDetailsSimplify(
-    props: OrderDetailsSimplifyPropsIF,
-) {
+export default function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
     const {
         isBid,
         account,
@@ -189,9 +187,7 @@ export default function OrderDetailsSimplify(
         </div>
     );
 
-    const submissionTime = moment(limitOrder.timeFirstMint * 1000).format(
-        'MM/DD/YYYY HH:mm',
-    );
+    const submissionTime = moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm');
     // const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const status = isOrderFilled ? 'Filled' : 'Not Filled';
@@ -223,11 +219,7 @@ export default function OrderDetailsSimplify(
             explanation: 'The time the owner first added a limit at this price',
         },
         // { title: 'Fill Time ', content: fillTime, explanation: 'this is explanation' },
-        {
-            title: 'Status ',
-            content: status,
-            explanation: 'The current fill status of the order.',
-        },
+        { title: 'Status ', content: status, explanation: 'The current fill status of the order.' },
 
         {
             title: 'From Token ',
@@ -251,8 +243,7 @@ export default function OrderDetailsSimplify(
                 isFillStarted
                 ? approximateSellQtyTruncated
                 : quoteDisplayFrontend,
-            explanation:
-                'The quantity of the sell token (scaled by its decimals value)',
+            explanation: 'The quantity of the sell token (scaled by its decimals value)',
         },
 
         {
@@ -277,24 +268,18 @@ export default function OrderDetailsSimplify(
                 isOrderFilled
                 ? baseDisplayFrontend
                 : approximateBuyQtyTruncated,
-            explanation:
-                'The quantity of the to/buy token (scaled by its decimals value)',
+            explanation: 'The quantity of the to/buy token (scaled by its decimals value)',
         },
 
         {
             title: 'Fill Start ',
-            content: isOnPortfolioPage
-                ? startPriceDisplayDenomByMoneyness
-                : startPriceDisplay,
+            content: isOnPortfolioPage ? startPriceDisplayDenomByMoneyness : startPriceDisplay,
             explanation: 'Price at which the limit order fill starts',
         },
         {
             title: 'Fill Middle ',
-            content: isOnPortfolioPage
-                ? middlePriceDisplayDenomByMoneyness
-                : middlePriceDisplay,
-            explanation:
-                'The effective price - halfway between start and finish',
+            content: isOnPortfolioPage ? middlePriceDisplayDenomByMoneyness : middlePriceDisplay,
+            explanation: 'The effective price - halfway between start and finish',
         },
         {
             title: 'Fill End ',
@@ -348,16 +333,14 @@ export default function OrderDetailsSimplify(
                 </section>
 
                 <section>
-                    {infoContent
-                        .slice(10, infoContent.length)
-                        .map((info, idx) => (
-                            <InfoRow
-                                key={info.title + idx}
-                                title={info.title}
-                                content={info.content}
-                                explanation={info.explanation}
-                            />
-                        ))}
+                    {infoContent.slice(10, infoContent.length).map((info, idx) => (
+                        <InfoRow
+                            key={info.title + idx}
+                            title={info.title}
+                            content={info.content}
+                            explanation={info.explanation}
+                        />
+                    ))}
                 </section>
             </div>
             {snackbarContent}

@@ -64,24 +64,26 @@
     /* padding: 10px; */
     /* padding:  2px; */
     cursor: pointer;
-}
 
-.switch[data-isOn='true'] {
+
+  }
+  
+  .switch[data-isOn="true"] {
     justify-content: flex-end;
     background-color: #7371fc;
-}
-.switch[data-isOn='true'] .handle {
+  }
+  .switch[data-isOn="true"] .handle{
     background: var(--text-grey-light);
-}
-
-.handle {
+  }
+  
+  .handle {
     /* width: 36px; */
     width: 18px;
     height: 18px;
     background: var(--text-grey-light);
     border-radius: 40px;
-}
-
+  }
+  
 .disabled {
     pointer-events: none;
     opacity: 0.4;

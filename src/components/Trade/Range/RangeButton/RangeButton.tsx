@@ -1,46 +1,39 @@
 import styles from './RangeButton.module.css';
+// import { useState } from 'react';
 import Button from '../../../Global/Button/Button';
-import { skipConfirmIF } from '../../../../App/hooks/useSkipConfirm';
 
-interface propsIF {
+interface IRangeButtonProps {
     onClickFn: () => void;
     rangeAllowed: boolean;
     rangeButtonErrorMessage: string;
-    bypassConfirmRange: skipConfirmIF;
+    bypassConfirm: boolean;
     isAmbient: boolean;
     isAdd: boolean;
 }
 
-export default function RangeButton(props: propsIF) {
-    const {
-        bypassConfirmRange,
-        isAmbient,
-        isAdd,
-        rangeButtonErrorMessage,
-        onClickFn,
-        rangeAllowed,
-    } = props;
+export default function RangeButton(props: IRangeButtonProps) {
+    const { bypassConfirm, isAmbient, isAdd } = props;
+    // const [allowedButton] = useState<boolean>(props.isAmountEntered);
 
-    return (
+    const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
                 title={
-                    rangeAllowed
-                        ? bypassConfirmRange.isEnabled
+                    props.rangeAllowed
+                        ? bypassConfirm
                             ? isAdd
-                                ? `Add to ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
-                                : `Create ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
+                                ? `Add to ${isAmbient ? 'Ambient' : 'Range'} Position`
+                                : `Create ${isAmbient ? 'Ambient' : 'Range'} Position`
                             : 'Open Confirmation'
-                        : rangeButtonErrorMessage
+                        : props.rangeButtonErrorMessage
                 }
-                action={onClickFn}
-                disabled={!rangeAllowed}
+                // action={() => console.log('clicked')}
+                action={props.onClickFn}
+                disabled={!props.rangeAllowed}
                 flat={true}
             />
         </div>
     );
+
+    return <div>{ButtonDisplay}</div>;
 }

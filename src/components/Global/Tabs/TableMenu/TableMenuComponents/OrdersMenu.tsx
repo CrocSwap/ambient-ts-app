@@ -97,9 +97,7 @@ export default function OrdersMenu(props: propsIF) {
         console.log({ limitOrder });
         const shouldMovePrimaryQuantity =
             tradeData.tokenA.address.toLowerCase() ===
-            (limitOrder.isBid
-                ? limitOrder.quote.toLowerCase()
-                : limitOrder.base.toLowerCase());
+            (limitOrder.isBid ? limitOrder.quote.toLowerCase() : limitOrder.base.toLowerCase());
 
         console.log({ shouldMovePrimaryQuantity });
         const shouldClearNonPrimaryQty =
@@ -120,12 +118,8 @@ export default function OrdersMenu(props: propsIF) {
         if (shouldMovePrimaryQuantity) {
             console.log('flipping primary');
             // setTimeout(() => {
-            const sellQtyField = document.getElementById(
-                'sell-limit-quantity',
-            ) as HTMLInputElement;
-            const buyQtyField = document.getElementById(
-                'buy-limit-quantity',
-            ) as HTMLInputElement;
+            const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+            const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
             if (tradeData.isTokenAPrimary) {
                 if (buyQtyField) {
@@ -168,11 +162,7 @@ export default function OrdersMenu(props: propsIF) {
             // dispatch(setPrimaryQuantity(''));
         }
         setTimeout(() => {
-            dispatch(
-                setLimitTick(
-                    limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,
-                ),
-            );
+            dispatch(setLimitTick(limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick));
         }, 500);
 
         // dispatch(
@@ -221,9 +211,7 @@ export default function OrdersMenu(props: propsIF) {
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
+                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
                 isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
@@ -244,8 +232,7 @@ export default function OrdersMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
-    const view2WithNoSidebar =
-        useMediaQuery('(min-width: 1680px)') && !showSidebar;
+    const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
 
     const removeButtonOnClick = () => {
         setShowDropdownMenu(false);
@@ -263,19 +250,13 @@ export default function OrdersMenu(props: propsIF) {
 
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
-            <button
-                className={styles.option_button}
-                onClick={removeButtonOnClick}
-            >
+            <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
             </button>
         ) : null;
     const claimButton =
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
-            <button
-                className={styles.option_button}
-                onClick={claimButtonOnClick}
-            >
+            <button className={styles.option_button} onClick={claimButtonOnClick}>
                 Claim
             </button>
         ) : null;
@@ -293,17 +274,11 @@ export default function OrdersMenu(props: propsIF) {
                         'chain=' +
                         limitOrder.chainId +
                         '&tokenA=' +
-                        (limitOrder.isBid
-                            ? limitOrder.base
-                            : limitOrder.quote) +
+                        (limitOrder.isBid ? limitOrder.base : limitOrder.quote) +
                         '&tokenB=' +
-                        (limitOrder.isBid
-                            ? limitOrder.quote
-                            : limitOrder.base) +
+                        (limitOrder.isBid ? limitOrder.quote : limitOrder.base) +
                         '&limitTick=' +
-                        (limitOrder.isBid
-                            ? limitOrder.bidTick
-                            : limitOrder.askTick),
+                        (limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick),
                 );
                 handleCopyOrder();
             }}

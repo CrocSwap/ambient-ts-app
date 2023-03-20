@@ -35,8 +35,7 @@ interface RangeCardHeaderPropsIF {
 }
 
 export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
-    const { sortBy, setSortBy, reverseSort, setReverseSort, columnHeaders } =
-        props;
+    const { sortBy, setSortBy, reverseSort, setReverseSort, columnHeaders } = props;
     const tradeData = useAppSelector((state) => state.tradeData);
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
@@ -88,9 +87,7 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         return (
             <section
                 onClick={() => handleClick(data.name.toLowerCase())}
-                className={`${styles.sortable_container} ${
-                    styles[data.className]
-                }`}
+                className={`${styles.sortable_container} ${styles[data.className]}`}
             >
                 <p>{data.name}</p>
                 <div className={styles.arrow_wrapper}>{arrow}</div>
@@ -160,10 +157,9 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
                 <div />
             </div> */}
             <p>
-                This file has been refactored and updated to RangeHeader.tsx on
-                10/13/2022. It is no longer in use. If not uncommented by
-                12/13/2022, it can be safely deleted, along with
-                RangeCardHeader.module.css. -Jr
+                This file has been refactored and updated to RangeHeader.tsx on 10/13/2022. It is no
+                longer in use. If not uncommented by 12/13/2022, it can be safely deleted, along
+                with RangeCardHeader.module.css. -Jr
             </p>
         </>
     );

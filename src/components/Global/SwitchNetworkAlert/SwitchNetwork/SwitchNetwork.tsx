@@ -19,9 +19,7 @@ export default function SwitchNetwork() {
                         <h2>Unsupported Network</h2>
                     </header>
                     <section className={styles.modal_content}>
-                        <span className={styles.content_title}>
-                            Please choose a network below
-                        </span>
+                        <span className={styles.content_title}>Please choose a network below</span>
                         <NetworkButtons />
                     </section>
                 </div>

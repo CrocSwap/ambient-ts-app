@@ -29,10 +29,8 @@ export default function TransactionException(props: TransactionSubmittedProps) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isEthSecondary =
-        (tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenB.address === ZERO_ADDRESS) ||
-        (!tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenA.address === ZERO_ADDRESS);
+        (tradeData.isTokenAPrimaryRange && tradeData.tokenB.address === ZERO_ADDRESS) ||
+        (!tradeData.isTokenAPrimaryRange && tradeData.tokenA.address === ZERO_ADDRESS);
 
     const primaryTokenSymbol = tradeData.isTokenAPrimaryRange
         ? tradeData.tokenA.symbol
@@ -45,31 +43,30 @@ export default function TransactionException(props: TransactionSubmittedProps) {
             {rangeModuleActive && isEthSecondary ? (
                 <div>
                     <p>
-                        A preliminary simulation of your transaction has failed.
-                        We apologize for this inconvenience.
+                        A preliminary simulation of your transaction has failed. We apologize for
+                        this inconvenience.
                     </p>
                     <Divider />
                     <p>
-                        This may have occurred due to an insufficient ETH
-                        balance to cover potential slippage.
+                        This may have occurred due to an insufficient ETH balance to cover potential
+                        slippage.
                     </p>
                     <Divider />
                     <p>
-                        Please try entering a specific amount of ETH, rather
-                        than
+                        Please try entering a specific amount of ETH, rather than
                         {' ' + primaryTokenSymbol}.
                     </p>
                 </div>
             ) : (
                 <div>
                     <p>
-                        A preliminary simulation of your transaction has failed.
-                        We apologize for this inconvenience.
+                        A preliminary simulation of your transaction has failed. We apologize for
+                        this inconvenience.
                     </p>
                     <Divider />
                     <p>
-                        Check the Metamask extension in your browser for
-                        notifications, or click &quot;Try Again&quot;.
+                        Check the Metamask extension in your browser for notifications, or click
+                        &quot;Try Again&quot;.
                     </p>
                 </div>
             )}

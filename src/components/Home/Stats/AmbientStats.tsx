@@ -35,24 +35,15 @@ export default function Stats(props: StatsProps) {
     const { t } = useTranslation();
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
-    const [totalVolumeString, setTotalVolumeString] = useState<
-        string | undefined
-    >();
-    const [totalFeesString, setTotalFeesString] = useState<
-        string | undefined
-    >();
+    const [totalVolumeString, setTotalVolumeString] = useState<string | undefined>();
+    const [totalFeesString, setTotalFeesString] = useState<string | undefined>();
 
     useEffect(() => {
         if (isServerEnabled && !isUserIdle)
             getDexStatsFresh().then((dexStats) => {
-                if (dexStats.tvl)
-                    setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
-                if (dexStats.volume)
-                    setTotalVolumeString(
-                        '$' + formatAmountOld(dexStats.volume),
-                    );
-                if (dexStats.fees)
-                    setTotalFeesString('$' + formatAmountOld(dexStats.fees));
+                if (dexStats.tvl) setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
+                if (dexStats.volume) setTotalVolumeString('$' + formatAmountOld(dexStats.volume));
+                if (dexStats.fees) setTotalFeesString('$' + formatAmountOld(dexStats.fees));
             });
     }, [isServerEnabled, isUserIdle, lastBlockNumber]);
 

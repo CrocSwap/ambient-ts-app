@@ -47,44 +47,22 @@ export default function RangeStatus(props: RangeStatusProps) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <span
-                className={
-                    isInRange
-                        ? styles.range_text_positive
-                        : styles.range_text_negative
-                }
-            />
+            <span className={isInRange ? styles.range_text_positive : styles.range_text_negative} />
         </DefaultTooltip>
     );
 
     const symbolOnlyDisplay = (
-        <div
-            className={`${styles.range_container} ${styles.symbol_only_display}`}
-        >
-            {isAmbient
-                ? ambientWithTooltip
-                : isEmpty
-                ? emptyWithTooltip
-                : rangeWithTooltip}
+        <div className={`${styles.range_container} ${styles.symbol_only_display}`}>
+            {isAmbient ? ambientWithTooltip : isEmpty ? emptyWithTooltip : rangeWithTooltip}
         </div>
     );
 
     const rangeDisplay = (
         <div className={styles.in_range_display}>
             <div className={styles.range_container}>
-                {isAmbient
-                    ? ambientWithTooltip
-                    : isEmpty
-                    ? emptyWithTooltip
-                    : rangeWithTooltip}
+                {isAmbient ? ambientWithTooltip : isEmpty ? emptyWithTooltip : rangeWithTooltip}
             </div>
-            <p>
-                {isAmbient
-                    ? 'Ambient'
-                    : isInRange
-                    ? 'In Range'
-                    : fullTextDisplay}
-            </p>
+            <p>{isAmbient ? 'Ambient' : isInRange ? 'In Range' : fullTextDisplay}</p>
         </div>
     );
 

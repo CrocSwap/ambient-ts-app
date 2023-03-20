@@ -1,8 +1,7 @@
 export default function validateEmail(inputText: string): [boolean, string] {
     let isValid: boolean;
     let message: string;
-    const regEx =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    const regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     // input is a valid email address
     if (regEx.test(inputText)) {
         isValid = true;

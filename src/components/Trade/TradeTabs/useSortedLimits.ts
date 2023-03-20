@@ -38,14 +38,8 @@ export const useSortedLimits = (
     // sort by value of limit order
     const sortByValue = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => {
-            const aValue =
-                a.claimableLiqTotalUSD !== 0
-                    ? a.claimableLiqTotalUSD
-                    : a.totalValueUSD;
-            const bValue =
-                b.claimableLiqTotalUSD !== 0
-                    ? b.claimableLiqTotalUSD
-                    : b.totalValueUSD;
+            const aValue = a.claimableLiqTotalUSD !== 0 ? a.claimableLiqTotalUSD : a.totalValueUSD;
+            const bValue = b.claimableLiqTotalUSD !== 0 ? b.claimableLiqTotalUSD : b.totalValueUSD;
             return bValue - aValue;
         });
 

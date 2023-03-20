@@ -10,11 +10,8 @@ interface AnalyticsTransactionsHeaderPropsIF {
     currentTransactions: txData;
     tabControlData: txData[];
 }
-export default function AnalyticsTransactionsHeader(
-    props: AnalyticsTransactionsHeaderPropsIF,
-) {
-    const { currentTransactions, setCurrentTransactions, tabControlData } =
-        props;
+export default function AnalyticsTransactionsHeader(props: AnalyticsTransactionsHeaderPropsIF) {
+    const { currentTransactions, setCurrentTransactions, tabControlData } = props;
 
     const tabsControl = (
         <div className={styles.tabs_container}>

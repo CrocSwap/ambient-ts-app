@@ -3,7 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { VscClose } from 'react-icons/vsc';
 import { BsArrowLeft } from 'react-icons/bs';
@@ -37,8 +37,6 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
-import { checkIsStable } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 
 interface propsIF {
@@ -64,31 +62,21 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    openGlobalModal: (content: ReactNode) => void;
+    openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
 }
 
 export default function RemoveRange(props: propsIF) {
-    const {
-        crocEnv,
-        chainData,
-        position,
-        dexBalancePrefs,
-        slippage,
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainId,
-        handleModalClose,
-    } = props;
+    const { handleModalClose, crocEnv, chainData, position, dexBalancePrefs } =
+        props;
 
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData,
     ).lastBlock;
 
-    const [removalPercentage, setRemovalPercentage] = useState<number>(100);
+    const [removalPercentage, setRemovalPercentage] = useState(100);
 
     const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
         useState<number | undefined>();
@@ -180,6 +168,7 @@ export default function RemoveRange(props: propsIF) {
             position.positionType
         ) {
             (async () => {
+                // console.log('fetching details');
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
@@ -241,6 +230,8 @@ export default function RemoveRange(props: propsIF) {
         }
     }, [txErrorCode]);
 
+    const liquiditySlippageTolerance = 1;
+
     const posHash =
         position.positionType === 'ambient'
             ? ambientPosSlot(
@@ -261,16 +252,6 @@ export default function RemoveRange(props: propsIF) {
     const isPositionPendingUpdate =
         positionsPendingUpdate.indexOf(posHash as string) > -1;
 
-    const isPairStable: boolean = checkIsStable(
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainId,
-    );
-
-    const persistedSlippage: number = isPairStable
-        ? slippage.mintSlippage.stable
-        : slippage.mintSlippage.volatile;
-
     const removeFn = async () => {
         if (!crocEnv) return;
         console.log('removing');
@@ -279,8 +260,8 @@ export default function RemoveRange(props: propsIF) {
         const pool = crocEnv.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - persistedSlippage / 100);
-        const highLimit = spotPrice * (1 + persistedSlippage / 100);
+        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
+        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
 
         dispatch(addPositionPendingUpdate(posHash as string));
 
@@ -365,6 +346,7 @@ export default function RemoveRange(props: propsIF) {
                 console.log({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
+                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -521,7 +503,7 @@ export default function RemoveRange(props: propsIF) {
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    function handleConfirmationChange(): void {
+    function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
 
         if (transactionApproved) {
@@ -581,28 +563,13 @@ export default function RemoveRange(props: propsIF) {
         </div>
     );
 
-    const [currentSlippage, setCurrentSlippage] =
-        useState<number>(persistedSlippage);
-
-    const updateSettings = (): void => {
-        setShowSettings(false);
-        isPairStable
-            ? slippage.mintSlippage.updateStable(currentSlippage)
-            : slippage.mintSlippage.updateVolatile(currentSlippage);
-    };
-
     const buttonToDisplay = (
         <div style={{ padding: '1rem' }}>
             {showSettings ? (
                 <Button
-                    title={
-                        currentSlippage > 0
-                            ? 'Confirm'
-                            : 'Enter a Valid Slippage'
-                    }
-                    action={updateSettings}
+                    title='Confirm'
+                    action={() => setShowSettings(false)}
                     flat
-                    disabled={!(currentSlippage > 0)}
                 />
             ) : isPositionPendingUpdate ? (
                 <RemoveRangeButton
@@ -628,13 +595,8 @@ export default function RemoveRange(props: propsIF) {
 
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings
-            persistedSlippage={persistedSlippage}
-            setCurrentSlippage={setCurrentSlippage}
-            presets={
-                isPairStable
-                    ? slippage.mintSlippage.presets.stable
-                    : slippage.mintSlippage.presets.volatile
-            }
+            showSettings={showSettings}
+            setShowSettings={setShowSettings}
         />
     ) : (
         <>

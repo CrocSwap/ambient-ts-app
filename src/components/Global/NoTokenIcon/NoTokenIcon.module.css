@@ -1,11 +1,12 @@
-.no_token_icon {
+.no_token_icon{
     padding: 1.5px;
 
     background: var(--title-gradient);
 
     border-radius: 50%;
+    
 }
-.no_token_icon p {
+.no_token_icon p{
     width: 100%;
     height: 100%;
     background: black;
@@ -16,4 +17,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+
 }

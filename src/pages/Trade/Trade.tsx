@@ -44,7 +44,6 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 // interface for React functional component props
 interface propsIF {
@@ -118,7 +117,6 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
-    slippage: allSlippageMethodsIF;
 }
 
 // React functional component
@@ -182,7 +180,6 @@ export default function Trade(props: propsIF) {
         dexBalancePrefs,
         setChartTriggeredBy,
         chartTriggeredBy,
-        slippage,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(
@@ -621,7 +618,6 @@ export default function Trade(props: propsIF) {
         setIsCandleDataArrived: setIsCandleDataArrived,
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
-        slippage: slippage,
     };
 
     const mobileTrade = (

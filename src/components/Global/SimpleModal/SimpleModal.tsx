@@ -48,9 +48,7 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 style={{ justifyContent: 'flex-start' }}
             >
                 <section className={styles.modal_content}>
-                    {title && (
-                        <SimpleModalHeader title={title} onClose={onClose} />
-                    )}
+                    {title && <SimpleModalHeader title={title} onClose={onClose} />}
                     {children}
                 </section>
             </motion.div>

@@ -27,8 +27,7 @@ export default function AdvancedPriceInfo(props: propsIF) {
         daysInRange,
     } = props;
 
-    const reverseDisplay =
-        (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
     const currentPrice = (
         <div className={styles.price_info_row}>

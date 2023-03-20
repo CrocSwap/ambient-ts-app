@@ -151,11 +151,7 @@ export default function Chat(props: ChatPropsIF) {
                         idx={idx}
                         message={message.message}
                         time={message.time}
-                        name={
-                            props.ensName
-                                ? props.ensName
-                                : props.connectedAccount
-                        }
+                        name={props.ensName ? props.ensName : props.connectedAccount}
                         isUser={message.isUser}
                         aiMessageIsAJoke={aiMessageIsAJoke}
                         isFullScreen={props.fullScreen}
@@ -181,9 +177,7 @@ export default function Chat(props: ChatPropsIF) {
     // }, []);
 
     const wrapperStyleFull = styles.chat_wrapper_full;
-    const wrapperStyle = showChatBot
-        ? styles.chat_wrapper_active
-        : styles.chat_wrapper;
+    const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
     // current configurations of trade as specified by the user
     const tradeData = useAppSelector((state) => state.tradeData);
     const currentPoolInfo = tradeData;
@@ -192,11 +186,7 @@ export default function Chat(props: ChatPropsIF) {
             <div className={styles.chat_container}>
                 {/* {showWelcomeBack && !showChatBot && welcomeBack} */}
 
-                <div
-                    className={
-                        props.fullScreen ? wrapperStyleFull : wrapperStyle
-                    }
-                >
+                <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
                     {/* {chatHeader}
                     {messagesDisplay}
                     {chatInput} */}

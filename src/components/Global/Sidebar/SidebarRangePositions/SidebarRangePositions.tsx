@@ -47,14 +47,7 @@ export default function SidebarRangePositions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                pos.base +
-                '&tokenB=' +
-                pos.quote,
-        );
+        navigate('/trade/range/chain=' + chainId + '&tokenA=' + pos.base + '&tokenB=' + pos.quote);
     };
 
     const handleViewMoreClick = () => {

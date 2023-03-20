@@ -121,7 +121,7 @@
     margin: 5px 0;
 }
 
-.gas_pump {
+.gas_pump{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -130,5 +130,6 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-light)
+   
 }

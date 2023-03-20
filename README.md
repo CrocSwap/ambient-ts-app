@@ -17,4 +17,5 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 ### `yarn lint`
 
-Lints the app
+Lints the app 
+

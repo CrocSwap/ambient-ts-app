@@ -12,7 +12,12 @@ interface propsIF {
 }
 
 export default function FavoritePools(props: propsIF) {
-    const { favePools, lastBlockNumber, cachedPoolStatsFetch, chainId } = props;
+    const {
+        favePools,
+        lastBlockNumber,
+        cachedPoolStatsFetch,
+        chainId,
+    } = props;
 
     const { tradeData } = useAppSelector((state) => state);
 
@@ -20,7 +25,7 @@ export default function FavoritePools(props: propsIF) {
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         chainId,
-        36000,
+        36000
     );
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
@@ -32,21 +37,21 @@ export default function FavoritePools(props: propsIF) {
                 <div>Volume</div>
                 <div>TVL</div>
             </div>
-            {isAlreadyFavorited || (
-                <div
-                    className={styles.view_more}
-                    onClick={() =>
-                        favePools.add(
+            {
+                isAlreadyFavorited || (
+                    <div
+                        className={styles.view_more}
+                        onClick={() => favePools.add(
                             tradeData.baseToken,
                             tradeData.quoteToken,
                             chainId,
-                            36000,
-                        )
-                    }
-                >
-                    Add Current Pool
-                </div>
-            )}
+                            36000
+                        )}
+                    >
+                        Add Current Pool
+                    </div>
+                )
+            }
             <div className={styles.content}>
                 {favePools.pools.map((pool, idx) => (
                     <FavoritePoolsCard

@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    MouseEvent,
-    ReactNode,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-} from 'react';
+import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -28,9 +21,7 @@ interface propsIF {
 
     openModalWallet: () => void;
     isDefaultOverridden: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
+    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
         name: string;
         icon: string;
@@ -78,9 +69,7 @@ export default function SidebarAccordion(props: propsIF) {
         >
             <div
                 className={styles.sidebar_item_content}
-                onClick={
-                    overflowSidebarMQ ? () => setShowSidebar(false) : undefined
-                }
+                onClick={overflowSidebarMQ ? () => setShowSidebar(false) : undefined}
             >
                 {item.data}
             </div>
@@ -120,9 +109,7 @@ export default function SidebarAccordion(props: propsIF) {
     }, [props.openAllDefault, isDefaultOverridden]);
 
     const accordionContentToShow =
-        !isConnected &&
-        !shouldDisplayContentWhenUserNotLoggedIn &&
-        showSidebar ? (
+        !isConnected && !shouldDisplayContentWhenUserNotLoggedIn && showSidebar ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
                 <button onClick={openModalWallet}>Connect Wallet</button>
@@ -143,12 +130,7 @@ export default function SidebarAccordion(props: propsIF) {
             >
                 <div>
                     <div className={styles.sidebar_link}>
-                        {showSidebar && (
-                            <MdPlayArrow
-                                size={12}
-                                className={sidebarIconStyle}
-                            />
-                        )}
+                        {showSidebar && <MdPlayArrow size={12} className={sidebarIconStyle} />}
                         <img src={item.icon} alt={item.name} width='20px' />
 
                         <span className={styles.link_text}>{item.name}</span>
@@ -157,9 +139,7 @@ export default function SidebarAccordion(props: propsIF) {
                     {/* { notificationBell} */}
                 </div>
             </motion.li>
-            <AnimatePresence>
-                {isOpen && accordionContentToShow}
-            </AnimatePresence>
+            <AnimatePresence>{isOpen && accordionContentToShow}</AnimatePresence>
         </>
     );
 }

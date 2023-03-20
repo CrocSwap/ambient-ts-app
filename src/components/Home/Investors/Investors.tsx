@@ -26,11 +26,7 @@ interface RowAnimatePropsIF {
 function RowAnimate(props: RowAnimatePropsIF) {
     const { children, speed } = props;
     const { scrollYProgress } = useViewportScroll();
-    const yValue = useTransform(
-        scrollYProgress,
-        [0, 0.5, 1],
-        [0, 50, 100 * speed],
-    );
+    const yValue = useTransform(scrollYProgress, [0, 0.5, 1], [0, 50, 100 * speed]);
 
     return (
         <motion.div

@@ -42,4 +42,4 @@ export const useRepoExitPath = (): string => {
 
     // return memoized URL pathway
     return exitPath;
-};
+}

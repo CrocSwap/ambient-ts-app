@@ -44,14 +44,10 @@ export function fetchTokenLists(
         )
         .then((lists) => {
             // indicate the list was fetched from the array of lists hardcoded in the front
-            lists.forEach(
-                (list) => (list.default = defaultListURIs.includes(list.uri)),
-            );
+            lists.forEach((list) => (list.default = defaultListURIs.includes(list.uri)));
             // indicate which list each token data object was imported with
             lists.forEach((list) =>
-                list.tokens.forEach(
-                    (token: TokenIF) => (token.fromList = list.uri),
-                ),
+                list.tokens.forEach((token: TokenIF) => (token.fromList = list.uri)),
             );
             // send list with custom-added values to local storage
             localStorage.setItem('allTokenLists', JSON.stringify(lists));

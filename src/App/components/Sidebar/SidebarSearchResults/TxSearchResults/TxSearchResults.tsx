@@ -32,13 +32,13 @@ export default function TxSearchResults(props: propsIF) {
         setCurrentTxActiveInTransactions(tx.id);
         navigate(
             '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
+            chainId +
+            '&tokenA=' +
+            tx.base +
+            '&tokenB=' +
+            tx.quote
         );
-    };
+    }
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
     // TODO:   @Junior  also make the <div> elems inside it into <hX> elements
@@ -56,9 +56,7 @@ export default function TxSearchResults(props: propsIF) {
                     <div className={styles.main_result_container}>
                         {searchedTxs.slice(0, 4).map((tx: TransactionIF) => (
                             <TxLI
-                                key={`tx-sidebar-search-result-${JSON.stringify(
-                                    tx,
-                                )}`}
+                                key={`tx-sidebar-search-result-${JSON.stringify(tx)}`}
                                 tx={tx}
                                 handleClick={handleClick}
                             />

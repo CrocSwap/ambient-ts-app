@@ -75,7 +75,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             </NavLink>
         </div>
     );
-
+    // props: TokenAmountDisplayPropsIF
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF) {
         const { logo, symbol, amount, usdValue } = props;
 

@@ -16,26 +16,16 @@ export default function FavoritePoolsCard(props: propsIF) {
     const { pool, chainId, cachedPoolStatsFetch, lastBlockNumber } = props;
 
     // hook to get human-readable values for pool volume and TVL
-    const [volume, tvl] = usePoolStats(
-        pool,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-    );
+    const [volume, tvl] = usePoolStats(pool, lastBlockNumber, cachedPoolStatsFetch);
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
     const [addrTokenA, addrTokenB] =
-        tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-            ? [pool.quote.address, pool.base.address]
-            : [pool.base.address, pool.quote.address];
+    tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+        ? [pool.quote.address, pool.base.address]
+        : [pool.base.address, pool.quote.address];
 
-    const linkPath =
-        '/trade/market/chain=' +
-        chainId +
-        '&tokenA=' +
-        addrTokenA +
-        '&tokenB=' +
-        addrTokenB;
+    const linkPath = '/trade/market/chain=' + chainId + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB
 
     return (
         <Link className={styles.container} to={linkPath}>

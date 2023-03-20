@@ -1,62 +1,71 @@
-.menu {
+.menu{
     z-index: 999;
     position: relative;
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
     color: var(--text-grey-white);
+   
 }
 
-.menu ul,
-.menu li {
+.menu ul, .menu li{
     list-style: none;
     margin: 0;
     padding: 10px;
+   
 }
 
-.menu ul {
+
+.menu ul{
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--select);
+  flex-direction: column;
+  gap: 10px;
+  background: var(--select);
 }
-.main_container {
+.main_container{
     position: absolute;
     width: 222px;
     top: 45px;
     right: 0;
+    
 }
 
-.main_container li {
-    display: flex;
-
-    color: var(--text-grey-white);
+.main_container li{
+  
+       
+        display: flex;
+        
+        color: var(--text-grey-white);
+      
 }
 
-.main_button {
+.main_button{
     -webkit-appearance: button;
-    color: var(--text-grey-white);
-    width: 222px;
-    padding: 2px 10px 2px 4px;
-    height: 40px;
-    border-radius: 4px;
-    background: var(--select);
-    border: none;
+  color: var(--text-grey-white);
+  width: 222px;
+  padding: 2px 10px 2px 4px; 
+  height: 40px;
+  border-radius: 4px;
+  background: var(--select);
+  border: none;
 
-    cursor: pointer;
-
-    /* text-align: left; */
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
+  cursor: pointer;
+ 
+  /* text-align: left; */
+  display: flex;
+ justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  
+ 
 }
 
 .main_button path {
     fill: var(--text-grey-white);
-}
+  }
 
-.theme_item_container {
+  .theme_item_container{
+    
     /* padding: 10px 1.3rem; */
     cursor: pointer;
     padding: 10px 0;
@@ -71,10 +80,11 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text-grey-white)
+
 }
 
-.theme_color {
+.theme_color{
     width: 10px;
     height: 10px;
     border-radius: 50%;

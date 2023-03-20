@@ -8,22 +8,8 @@
     "nm": "Comp 2",
     "ddd": 0,
     "assets": [
-        {
-            "id": "image_0",
-            "w": 234,
-            "h": 234,
-            "u": "images/",
-            "p": "img_0.png",
-            "e": 0
-        },
-        {
-            "id": "image_1",
-            "w": 233,
-            "h": 233,
-            "u": "images/",
-            "p": "img_1.png",
-            "e": 0
-        }
+        { "id": "image_0", "w": 234, "h": 234, "u": "images/", "p": "img_0.png", "e": 0 },
+        { "id": "image_1", "w": 233, "h": 233, "u": "images/", "p": "img_1.png", "e": 0 }
     ],
     "layers": [
         {

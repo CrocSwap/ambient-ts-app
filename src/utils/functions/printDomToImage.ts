@@ -1,6 +1,5 @@
 import domtoimage from 'dom-to-image';
-const photoName =
-    'ambient-chart' + new Date().toLocaleString().replace(/\s/g, '');
+const photoName = 'ambient-chart' + new Date().toLocaleString().replace(/\s/g, '');
 
 const saveAs = (uri: string, filename: string) => {
     const link = document.createElement('a');

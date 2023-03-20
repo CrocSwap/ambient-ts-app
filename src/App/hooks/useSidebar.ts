@@ -48,9 +48,7 @@ export const useSidebar = (
         // array of url paths on which to hide the sidebar
         const hiddenPaths = ['/', '/swap'];
         // determine if the current URL path starts with any proscribed strings
-        const isPathHidden = hiddenPaths.some((path: string) =>
-            pathname.startsWith(path),
-        );
+        const isPathHidden = hiddenPaths.some((path: string) => pathname.startsWith(path));
         // return boolean value showing if sidebar is hidden on current route
         return isPathHidden;
     }, [pathname]);

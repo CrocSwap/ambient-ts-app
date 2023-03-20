@@ -30,8 +30,8 @@ export default function ConfirmPoolCreation(props: confirmPoolCreationPropsIF) {
             className={styles.container}
         >
             <p>
-                Currently deciding whether this is needed or if it should be
-                replace with a Confirm Pool Modal
+                Currently deciding whether this is needed or if it should be replace with a Confirm
+                Pool Modal
             </p>
         </motion.div>
     );

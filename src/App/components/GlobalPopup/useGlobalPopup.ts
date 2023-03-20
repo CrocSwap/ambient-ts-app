@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 
 export const useGlobalPopup = (initialMode = false) => {
     // create a useState hook to track if the modal should be rendered
-    const [isGlobalPopupOpen, setIsGlobalPopupOpen] =
-        useState<boolean>(initialMode);
+    const [isGlobalPopupOpen, setIsGlobalPopupOpen] = useState<boolean>(initialMode);
 
-    const [popupContent, setPopupContent] = useState<React.ReactNode>(
-        'I am example content',
-    );
+    const [popupContent, setPopupContent] = useState<React.ReactNode>('I am example content');
 
     const [popupTitle, setPopupTitle] = useState<string>('');
     const [popupPlacement, setPopupPlacement] = useState('center');

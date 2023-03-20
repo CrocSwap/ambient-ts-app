@@ -19,8 +19,7 @@ export const useProcessTransaction = (
     const txHash = tx.tx;
     const ownerId = tx.user;
     const ensName = tx.ensResolution ? tx.ensResolution : null;
-    const isOwnerActiveAccount =
-        ownerId.toLowerCase() === account?.toLowerCase();
+    const isOwnerActiveAccount = ownerId.toLowerCase() === account?.toLowerCase();
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
@@ -94,12 +93,8 @@ export const useProcessTransaction = (
     let isBaseFlowPositive = false;
     let isQuoteFlowPositive = false;
 
-    const baseTokenCharacter = tx.baseSymbol
-        ? getUnicodeCharacter(tx.baseSymbol)
-        : '';
-    const quoteTokenCharacter = tx.quoteSymbol
-        ? getUnicodeCharacter(tx.quoteSymbol)
-        : '';
+    const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
+    const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
 
     if (tx.entityType === 'limitOrder') {
         if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
@@ -138,10 +133,9 @@ export const useProcessTransaction = (
                           maximumFractionDigits: 2,
                       });
 
-            truncatedDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+            truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
 
             truncatedDisplayPrice = isDenomBase
                 ? invertedPriceTruncated
@@ -156,14 +150,10 @@ export const useProcessTransaction = (
             tx.askTickPriceDecimalCorrected &&
             tx.askTickInvPriceDecimalCorrected
         ) {
-            const bidTickPriceDecimalCorrected =
-                tx.bidTickPriceDecimalCorrected;
-            const bidTickInvPriceDecimalCorrected =
-                tx.bidTickInvPriceDecimalCorrected;
-            const askTickPriceDecimalCorrected =
-                tx.askTickPriceDecimalCorrected;
-            const askTickInvPriceDecimalCorrected =
-                tx.askTickInvPriceDecimalCorrected;
+            const bidTickPriceDecimalCorrected = tx.bidTickPriceDecimalCorrected;
+            const bidTickInvPriceDecimalCorrected = tx.bidTickInvPriceDecimalCorrected;
+            const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
+            const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
             const nonInvertedBidPriceTruncated =
                 bidTickPriceDecimalCorrected === 1000000000000
                     ? '∞'
@@ -194,13 +184,10 @@ export const useProcessTransaction = (
                     ? bidTickInvPriceDecimalCorrected.toPrecision(5)
                     : bidTickInvPriceDecimalCorrected >= 100000
                     ? formatAmountOld(bidTickInvPriceDecimalCorrected, 1)
-                    : bidTickInvPriceDecimalCorrected.toLocaleString(
-                          undefined,
-                          {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          },
-                      );
+                    : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             const nonInvertedAskPriceTruncated =
                 askTickPriceDecimalCorrected === 1000000000000
                     ? '∞'
@@ -231,13 +218,10 @@ export const useProcessTransaction = (
                     ? askTickInvPriceDecimalCorrected.toPrecision(5)
                     : askTickInvPriceDecimalCorrected >= 100000
                     ? formatAmountOld(askTickInvPriceDecimalCorrected, 1)
-                    : askTickInvPriceDecimalCorrected.toLocaleString(
-                          undefined,
-                          {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          },
-                      );
+                    : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
             truncatedLowDisplayPrice = isDenomBase
                 ? `${invertedAskPriceTruncated}`
                 : `${nonInvertedBidPriceTruncated}`;
@@ -245,14 +229,12 @@ export const useProcessTransaction = (
                 ? `${invertedBidPriceTruncated}`
                 : `${nonInvertedAskPriceTruncated}`;
 
-            truncatedLowDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedAskPriceTruncated}`
-                    : `${invertedAskPriceTruncated}`;
-            truncatedHighDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedBidPriceTruncated}`
-                    : `${invertedBidPriceTruncated}`;
+            truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? `${nonInvertedAskPriceTruncated}`
+                : `${invertedAskPriceTruncated}`;
+            truncatedHighDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? `${nonInvertedBidPriceTruncated}`
+                : `${invertedBidPriceTruncated}`;
         } else {
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
@@ -294,10 +276,9 @@ export const useProcessTransaction = (
                           maximumFractionDigits: 2,
                       });
 
-            truncatedDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+            truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
 
             truncatedDisplayPrice = isDenomBase
                 ? invertedPriceTruncated
@@ -307,10 +288,7 @@ export const useProcessTransaction = (
         }
     }
 
-    if (
-        tx.baseFlowDecimalCorrected !== undefined &&
-        tx.baseFlowDecimalCorrected !== null
-    ) {
+    if (tx.baseFlowDecimalCorrected !== undefined && tx.baseFlowDecimalCorrected !== null) {
         const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
         const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
         isBaseFlowPositive = baseFlowDisplayNum > 0;
@@ -350,10 +328,7 @@ export const useProcessTransaction = (
         //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
         baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
-    if (
-        tx.quoteFlowDecimalCorrected !== undefined &&
-        tx.quoteFlowDecimalCorrected !== null
-    ) {
+    if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
         const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
         const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
         isQuoteFlowPositive = quoteFlowDisplayNum > 0;
@@ -390,9 +365,7 @@ export const useProcessTransaction = (
     }
 
     const priceType =
-        (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
-            ? 'priceBuy'
-            : 'priceSell';
+        (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
@@ -465,8 +438,7 @@ export const useProcessTransaction = (
     const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
     const totalFlowUSD = tx.totalFlowUSD;
-    const totalFlowAbsNum =
-        totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
+    const totalFlowAbsNum = totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
 
     const usdValueTruncated = !usdValueNum
         ? undefined
@@ -539,16 +511,11 @@ export const useProcessTransaction = (
     // --------------------------------------------------------
 
     const quantitiesAvailable =
-        baseFlowDisplayShort !== undefined ||
-        quoteFlowDisplayShort !== undefined;
+        baseFlowDisplayShort !== undefined || quoteFlowDisplayShort !== undefined;
 
-    const baseQuantityDisplayLong = quantitiesAvailable
-        ? baseFlowDisplayLong || '0.00'
-        : '…';
+    const baseQuantityDisplayLong = quantitiesAvailable ? baseFlowDisplayLong || '0.00' : '…';
 
-    const quoteQuantityDisplayLong = quantitiesAvailable
-        ? quoteFlowDisplayLong || '0.00'
-        : '…';
+    const quoteQuantityDisplayLong = quantitiesAvailable ? quoteFlowDisplayLong || '0.00' : '…';
 
     const baseQuantityDisplayShort = quantitiesAvailable
         ? `${baseFlowDisplayShort || '0.00'}`
@@ -586,9 +553,7 @@ export const useProcessTransaction = (
 
     const txHashTruncated = trimString(txHash, 6, 4, '…');
 
-    const userNameToDisplay = isOwnerActiveAccount
-        ? 'You'
-        : ensNameOrOwnerTruncated;
+    const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
     // if (!tx) return null;
     return {

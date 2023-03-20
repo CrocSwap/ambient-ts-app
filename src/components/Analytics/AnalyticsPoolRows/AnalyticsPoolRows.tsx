@@ -21,10 +21,7 @@ function Token(props: TokenPropsIF) {
         >
             <div>
                 <img src={img} alt='token' />
-                <img
-                    src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
-                    alt='token'
-                />
+                <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='token' />
             </div>
             <section className={styles.align_center}>
                 <div className={styles.row}>

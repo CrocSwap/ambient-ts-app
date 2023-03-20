@@ -30,16 +30,10 @@ export default function BarChart(props: BarData) {
 
             const pointer = d3fc.pointer().on('point', (event: any) => {
                 if (event[0] !== undefined) {
-                    chartData.crosshair = snap(
-                        lineSeries,
-                        chartData.lineseries,
-                        event[0],
-                    );
+                    chartData.crosshair = snap(lineSeries, chartData.lineseries, event[0]);
 
                     props.setValueVolume?.(getValue(chartData.crosshair[0].x));
-                    props.setValueVolumeDate?.(
-                        getDate(chartData.crosshair[0].x),
-                    );
+                    props.setValueVolumeDate?.(getDate(chartData.crosshair[0].x));
                     render();
                 }
             });
@@ -53,9 +47,7 @@ export default function BarChart(props: BarData) {
                 })
                 .reduce(
                     function (accumulator: any, dataPoint: any) {
-                        return accumulator[0] > dataPoint[0]
-                            ? dataPoint
-                            : accumulator;
+                        return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
                     },
                     [Number.MAX_VALUE, null, -1],
                 );
@@ -66,13 +58,8 @@ export default function BarChart(props: BarData) {
             const xScale = series.xScale(),
                 xValue = series.crossValue();
 
-            const filtered =
-                data.length > 1
-                    ? data.filter((d: any) => xValue(d) != null)
-                    : data;
-            const nearest = minimum(filtered, (d: any) =>
-                Math.abs(point.x - xScale(xValue(d))),
-            )[1];
+            const filtered = data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+            const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
             const newX = new Date(nearest.time.getTime());
             const value = new Date(newX.setTime(newX.getTime()));
 
@@ -112,24 +99,18 @@ export default function BarChart(props: BarData) {
                 )
                     return chartData.lineseries[index];
             });
-            return lineValue === undefined
-                ? lineValue
-                : formatDollarAmountAxis(lineValue.value);
+            return lineValue === undefined ? lineValue : formatDollarAmountAxis(lineValue.value);
         };
 
         const getDate = (date: any) => {
-            return date === undefined
-                ? '-'
-                : dayjs(xScale.invert(date)).format('MMM D, YYYY');
+            return date === undefined ? '-' : dayjs(xScale.invert(date)).format('MMM D, YYYY');
         };
 
         const zoom = d3
             .zoom()
             .scaleExtent([1, 20])
             .on('zoom', (event: any) => {
-                xScale.domain(
-                    event.transform.rescaleX(xScaleOriginal).domain(),
-                );
+                xScale.domain(event.transform.rescaleX(xScaleOriginal).domain());
                 render();
             });
 
@@ -149,10 +130,7 @@ export default function BarChart(props: BarData) {
             .xLabel('')
             .yLabel('')
             .decorate((selection: any) => {
-                selection
-                    .enter()
-                    .attr('stroke-dasharray', '6 6')
-                    .style('pointer-events', 'all');
+                selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
                 selection
                     .selectAll('.point>path')
                     .attr('transform', 'scale(0.2)')
@@ -181,17 +159,14 @@ export default function BarChart(props: BarData) {
                 xScale: xScale,
                 yScale: yScale,
                 xAxis: {
-                    bottom: (d: any) =>
-                        d3fc.axisLabelRotate(d3fc.axisOrdinalBottom(d)),
+                    bottom: (d: any) => d3fc.axisLabelRotate(d3fc.axisOrdinalBottom(d)),
                 },
             })
             .yOrient('right')
             .svgPlotArea(multi)
             .xTickFormat(xFormat)
             .yTickFormat(formatDollarAmountAxis)
-            .yDecorate((sel: any) =>
-                sel.select('text').attr('transform', 'translate(20, -6)'),
-            )
+            .yDecorate((sel: any) => sel.select('text').attr('transform', 'translate(20, -6)'))
             .decorate((sel: any) => {
                 sel.enter()
                     .append('d3fc-svg')
@@ -211,7 +186,5 @@ export default function BarChart(props: BarData) {
         render();
     }, [barValue, snapType]);
 
-    return (
-        <div style={{ height: '100%', width: '100%' }} id='chart-element'></div>
-    );
+    return <div style={{ height: '100%', width: '100%' }} id='chart-element'></div>;
 }

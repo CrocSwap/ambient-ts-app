@@ -19,8 +19,7 @@ export const fetchDepositBalances = (
 > => {
     const { chainId, user } = props;
 
-    const depositBalancesCacheEndpoint =
-        'https://809821320828123.de:5000' + '/user_balances?';
+    const depositBalancesCacheEndpoint = 'https://809821320828123.de:5000' + '/user_balances?';
 
     console.log('fetching deposit balances');
 

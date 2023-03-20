@@ -56,13 +56,9 @@ export const useCustomToken = (
         // determine if user entered a proper 0x[...] contract address
         // any value that gets here has already been lower-cased
         if (searchInput.match(/^0x[a-f0-9]{40}$/)) {
-            const importedTokens = JSON.parse(
-                localStorage.getItem('user') as string,
-            ).tokens;
+            const importedTokens = JSON.parse(localStorage.getItem('user') as string).tokens;
             const tokenFromImportedList = importedTokens.filter(
-                (tkn: TokenIF) =>
-                    tkn.address === searchInput &&
-                    tkn.chainId === parseInt(chainId),
+                (tkn: TokenIF) => tkn.address === searchInput && tkn.chainId === parseInt(chainId),
             );
 
             if (tokenFromImportedList.length) {
@@ -104,10 +100,7 @@ export const useCustomToken = (
                 }
             }
             // action if user did not enter a proper contract address
-        } else if (
-            !searchInput.match(/^0x[a-f0-9]{40}$/) &&
-            searchInput.length
-        ) {
+        } else if (!searchInput.match(/^0x[a-f0-9]{40}$/) && searchInput.length) {
             setErrorText('Please enter a valid 0x[...] address.');
         }
         // run this hook every time user inputs a new value in the DOM

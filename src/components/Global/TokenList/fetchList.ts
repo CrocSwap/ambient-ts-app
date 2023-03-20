@@ -33,9 +33,7 @@ export default function getList(listURI: string) {
     Promise.resolve(list)
         .then((resolvedList) => {
             // get allTokenLists from local storage
-            const allTokenLists = JSON.parse(
-                localStorage.getItem('allTokenLists') as string,
-            );
+            const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
             // determine if a token list from the URI exists in local storage already
             const listExistsInLocalStorage = allTokenLists
                 .map((tokenList: TokenListIF) => tokenList.uri)
@@ -45,8 +43,7 @@ export default function getList(listURI: string) {
             if (listExistsInLocalStorage) {
                 console.log('already got it, boss!');
                 const otherLists = allTokenLists.filter(
-                    (tokenList: TokenListIF) =>
-                        tokenList.uri !== resolvedList.uri,
+                    (tokenList: TokenListIF) => tokenList.uri !== resolvedList.uri,
                 );
                 localStorage.setItem(
                     'allTokenLists',
@@ -59,9 +56,7 @@ export default function getList(listURI: string) {
                     JSON.stringify([...allTokenLists, resolvedList]),
                 );
             } else {
-                throw new Error(
-                    'could not determine if token list is already in local storage',
-                );
+                throw new Error('could not determine if token list is already in local storage');
             }
         })
         // error logging in console

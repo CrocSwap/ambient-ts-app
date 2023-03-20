@@ -14,8 +14,7 @@
     height: 16px;
 }
 
-.value,
-.amount {
+.value, .amount {
     display: flex;
     justify-content: flex-end;
     margin: 0 5px;

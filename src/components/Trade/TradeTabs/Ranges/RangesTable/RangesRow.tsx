@@ -19,11 +19,11 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -55,7 +55,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
 }
 
 export default function RangesRow(props: propsIF) {
@@ -76,7 +75,6 @@ export default function RangesRow(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         dexBalancePrefs,
-        slippage,
     } = props;
 
     const {
@@ -159,7 +157,6 @@ export default function RangesRow(props: propsIF) {
         quoteTokenDexBalance: props.quoteTokenDexBalance,
         isOnPortfolioPage: props.isOnPortfolioPage,
         handlePulseAnimation: handlePulseAnimation,
-        isPositionInRange: isPositionInRange,
     };
 
     const openDetailsModal = () => {
@@ -292,30 +289,71 @@ export default function RangesRow(props: propsIF) {
     const navigate = useNavigate();
 
     const walletWithTooltip = (
-        <li
-            onClick={() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: true,
-                    }),
-                );
-                navigate(
-                    `/${
-                        isOwnerActiveAccount
-                            ? 'account'
-                            : ensName
-                            ? ensName
-                            : ownerId
-                    }`,
-                );
-            }}
-            data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    <p>{ensName ? ensName : ownerId}</p>
+                    <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
+                    >
+                        {'View Account' + 'ㅤ'}
+                        <FiExternalLink size={'12px'} />
+                    </NavLink>
+                </div>
+            }
+            placement={'right'}
+            enterDelay={750}
+            leaveDelay={0}
         >
-            {userNameToDisplay}
-        </li>
+            <li
+                onClick={() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: true,
+                        }),
+                    );
+                    navigate(
+                        `/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`,
+                    );
+                }}
+                data-label='wallet'
+                className={`${usernameStyle} ${styles.hover_style}`}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </TextOnlyTooltip>
     );
 
     const baseTokenLogoComponent =
@@ -349,7 +387,8 @@ export default function RangesRow(props: propsIF) {
     const tip = pair.join('\n');
 
     const tradeLinkPath =
-        '/trade/range/chain=' +
+        '/trade/range/' +
+        'chain=' +
         position.chainId +
         '&tokenA=' +
         position.quote +
@@ -503,28 +542,6 @@ export default function RangesRow(props: propsIF) {
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
 
-    const handleAccountClick = () => {
-        if (!isOnPortfolioPage) {
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
-            navigate(
-                `/${
-                    isOwnerActiveAccount
-                        ? 'account'
-                        : ensName
-                        ? ensName
-                        : ownerId
-                }`,
-            );
-        } else {
-            openDetailsModal();
-        }
-    };
-
     return (
         <ul
             onMouseEnter={() => setShowHighlightedButton(true)}
@@ -545,12 +562,33 @@ export default function RangesRow(props: propsIF) {
             {idOrNull}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={handleAccountClick}>
-                    <p className={`base_color ${styles.hover_style}`}>
-                        {posHashTruncated}
-                    </p>{' '}
+                <li
+                    data-label='id'
+                    onClick={() => {
+                        if (!isOnPortfolioPage) {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                            navigate(
+                                `/${
+                                    isOwnerActiveAccount
+                                        ? 'account'
+                                        : ensName
+                                        ? ensName
+                                        : ownerId
+                                }`,
+                            );
+                        } else {
+                            openDetailsModal();
+                        }
+                    }}
+                >
+                    <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
+                        className={usernameStyle}
                         style={{ textTransform: 'lowercase' }}
                     >
                         {userNameToDisplay}
@@ -741,7 +779,6 @@ export default function RangesRow(props: propsIF) {
                     showHighlightedButton={showHighlightedButton}
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     dexBalancePrefs={dexBalancePrefs}
-                    slippage={slippage}
                 />
             </li>
         </ul>

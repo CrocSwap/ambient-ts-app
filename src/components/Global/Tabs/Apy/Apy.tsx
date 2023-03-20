@@ -20,25 +20,14 @@ export default function Apy(props: ApyProps) {
 
     // const aprColor = styles.apr_green;
     const aprColor =
-        amount !== undefined
-            ? amount > 0
-                ? styles.apr_green
-                : styles.apr_red
-            : styles.apr_green;
+        amount !== undefined ? (amount > 0 ? styles.apr_green : styles.apr_red) : styles.apr_green;
     return (
-        <section
-            className={`${styles.apr} ${aprColor} ${
-                center && styles.align_center
-            }`}
-        >
+        <section className={`${styles.apr} ${aprColor} ${center && styles.align_center}`}>
             <p style={{ fontSize: fs ? fs : '', lineHeight: lh ? lh : '' }}>
                 {amountString ? amountString : '…'}
             </p>
             {showTitle && (
-                <p
-                    className={aprColor}
-                    style={{ fontSize: '24px', lineHeight: '30px' }}
-                >
+                <p className={aprColor} style={{ fontSize: '24px', lineHeight: '30px' }}>
                     APR
                 </p>
             )}

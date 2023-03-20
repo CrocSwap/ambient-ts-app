@@ -54,12 +54,10 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 placeholder='0.0'
                 onChange={(event) => {
                     const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
+                        precisionOfInput(event.target.value) > thisToken.decimals;
                     const isValid =
                         !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
+                        (event.target.value === '' || event.target.validity.valid);
                     isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}

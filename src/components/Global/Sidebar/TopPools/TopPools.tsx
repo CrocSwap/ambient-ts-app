@@ -15,13 +15,7 @@ interface propsIF {
 }
 
 export default function TopPools(props: propsIF) {
-    const {
-        tradeData,
-        chainId,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        poolList,
-    } = props;
+    const { tradeData, chainId, lastBlockNumber, cachedPoolStatsFetch, poolList } = props;
     false && poolList;
 
     return (

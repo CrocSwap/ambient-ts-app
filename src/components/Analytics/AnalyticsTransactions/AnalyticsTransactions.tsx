@@ -8,9 +8,7 @@ interface AnalyticsTransactionsPropsIF {
     analyticsSearchInput: string;
     setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
 }
-export default function AnalyticsTransactions(
-    props: AnalyticsTransactionsPropsIF,
-) {
+export default function AnalyticsTransactions(props: AnalyticsTransactionsPropsIF) {
     const { analyticsSearchInput } = props;
 
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -21,9 +19,7 @@ export default function AnalyticsTransactions(
         { label: 'Adds', data: 'Add' },
         { label: 'Removes', data: 'Remove' },
     ];
-    const [currentTransactions, setCurrentTransactions] = useState(
-        tabControlData[0],
-    );
+    const [currentTransactions, setCurrentTransactions] = useState(tabControlData[0]);
     const container = (
         <div className={styles.item_container}>
             {items.map((item, idx) => (

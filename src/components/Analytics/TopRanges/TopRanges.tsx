@@ -24,11 +24,7 @@ const TopRanges = (props: TopRangesPropsIF) => {
     const exampleSearch = (
         <div className={styles.item_container}>
             {items.slice(0, 3).map((item, idx) => (
-                <TopRangesCard
-                    key={idx}
-                    number={item + 1}
-                    searchInput={analyticsSearchInput}
-                />
+                <TopRangesCard key={idx} number={item + 1} searchInput={analyticsSearchInput} />
             ))}
         </div>
     );
@@ -41,11 +37,7 @@ const TopRanges = (props: TopRangesPropsIF) => {
             transition={{ duration: 0.5 }}
         >
             {analyticsSearchInput == '' && <AnalyticsTokenRows />}
-            <p>
-                {analyticsSearchInput
-                    ? `Top Ranges with ${analyticsSearchInput}`
-                    : 'Top Ranges'}
-            </p>
+            <p>{analyticsSearchInput ? `Top Ranges with ${analyticsSearchInput}` : 'Top Ranges'}</p>
             <TopRangesHeader />
 
             {analyticsSearchInput !== '' ? exampleSearch : container}

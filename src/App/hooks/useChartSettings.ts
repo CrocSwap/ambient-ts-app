@@ -50,13 +50,15 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     // hooks to memoize user preferences in local state
     // initializer fallback value is default setting for new users
-    const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] =
-        useState<boolean>(getPreference('volume') ?? true);
+    const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] = useState<boolean>(
+        getPreference('volume') ?? true,
+    );
     const [isTvlSubchartEnabled, setIsTvlSubchartEnabled] = useState<boolean>(
         getPreference('tvl') ?? false,
     );
-    const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] =
-        useState<boolean>(getPreference('feeRate') ?? false);
+    const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] = useState<boolean>(
+        getPreference('feeRate') ?? false,
+    );
 
     // hook to update local storage any time one of the preference primitives changes
     // this must be implemented as a response to change, not in Subchart methods
@@ -69,11 +71,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 isFeeRateSubchartEnabled,
             }),
         );
-    }, [
-        isVolumeSubchartEnabled,
-        isTvlSubchartEnabled,
-        isFeeRateSubchartEnabled,
-    ]);
+    }, [isVolumeSubchartEnabled, isTvlSubchartEnabled, isFeeRateSubchartEnabled]);
 
     // class definition for subchart setting and methods
     // checked against subchartSettingsIF
@@ -84,10 +82,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         private readonly setter: Dispatch<SetStateAction<boolean>>;
         // @param enabled ➡ current value from local state
         // @param setterFn ➡ fn to update local state
-        constructor(
-            enabled: boolean,
-            setterFn: Dispatch<SetStateAction<boolean>>,
-        ) {
+        constructor(enabled: boolean, setterFn: Dispatch<SetStateAction<boolean>>) {
             this.isEnabled = enabled;
             this.setter = setterFn;
         }
@@ -105,17 +100,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     }
 
     return {
-        volumeSubchart: new Subchart(
-            isVolumeSubchartEnabled,
-            setIsVolumeSubchartEnabled,
-        ),
-        tvlSubchart: new Subchart(
-            isTvlSubchartEnabled,
-            setIsTvlSubchartEnabled,
-        ),
-        feeRateSubchart: new Subchart(
-            isFeeRateSubchartEnabled,
-            setIsFeeRateSubchartEnabled,
-        ),
+        volumeSubchart: new Subchart(isVolumeSubchartEnabled, setIsVolumeSubchartEnabled),
+        tvlSubchart: new Subchart(isTvlSubchartEnabled, setIsTvlSubchartEnabled),
+        feeRateSubchart: new Subchart(isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled),
     };
 };

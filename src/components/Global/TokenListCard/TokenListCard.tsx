@@ -26,9 +26,8 @@ export default function TokenListCard(props: propsIF) {
     const cardBackground = listIsActive ? ' ' : '';
     const cardBorder = listIsActive ? '1px solid #7371fc ' : '';
 
-    const handleClick = (
-        event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>,
-    ) => setAnchorEl(event.currentTarget);
+    const handleClick = (event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLDivElement>) =>
+        setAnchorEl(event.currentTarget);
 
     const handleClose = () => setAnchorEl(null);
 
@@ -49,15 +48,11 @@ export default function TokenListCard(props: propsIF) {
                             <p>{list?.name}</p>
                             <RiRefreshFill
                                 size={16}
-                                onClick={() =>
-                                    refreshTokenList(list.uri as string)
-                                }
+                                onClick={() => refreshTokenList(list.uri as string)}
                             />
                         </div>
                         <div className={styles.bottom_container_menu}>
-                            <div className={styles.token_count}>
-                                {list?.tokens?.length} tokens
-                            </div>
+                            <div className={styles.token_count}>{list?.tokens?.length} tokens</div>
                             <div
                                 aria-controls='list settings'
                                 aria-haspopup='true'
@@ -78,25 +73,16 @@ export default function TokenListCard(props: propsIF) {
                             onClose={handleClose}
                             className={classes.menu}
                         >
-                            <MenuItem
-                                onClick={handleClose}
-                                className={classes.menuItem}
-                            >
+                            <MenuItem onClick={handleClose} className={classes.menuItem}>
                                 <a
-                                    href={
-                                        'https://tokenlists.org/token-list?url=' +
-                                        list.uri
-                                    }
+                                    href={'https://tokenlists.org/token-list?url=' + list.uri}
                                     target='_blank'
                                     rel='noreferrer'
                                 >
                                     View List
                                 </a>
                             </MenuItem>
-                            <MenuItem
-                                onClick={handleClose}
-                                className={classes.menuItem}
-                            >
+                            <MenuItem onClick={handleClose} className={classes.menuItem}>
                                 Remove List
                             </MenuItem>
                         </Menu>

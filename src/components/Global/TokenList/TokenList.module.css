@@ -18,8 +18,7 @@
     max-height: 200px;
     overflow-y: scroll;
     overflow-x: hidden;
-    transition: all var(--animation-speed)
-        cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
 }
 .token_list_content_container {
@@ -58,6 +57,7 @@
 }
 .search_input button:hover {
     color: var(--text-grey-white);
+  
 }
 
 .header_container {

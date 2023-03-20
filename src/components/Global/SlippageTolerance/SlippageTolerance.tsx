@@ -1,22 +1,19 @@
 import { Dispatch, SetStateAction } from 'react';
-import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
 
-interface propsIF {
-    persistedSlippage: number;
-    setCurrentSlippage: Dispatch<SetStateAction<number>>;
+interface TransactionSettingsPropsIF {
+    slippageValue: string;
+    module: string;
+    setNewSlippage: Dispatch<SetStateAction<string>>;
     handleKeyDown: (event: { keyCode: number }) => void;
-    presets: number[];
 }
 
-export default function SlippageTolerance(props: propsIF) {
-    const { persistedSlippage, setCurrentSlippage, handleKeyDown, presets } =
-        props;
+export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
+    const { slippageValue, setNewSlippage, module, handleKeyDown } = props;
 
-    const [slip, takeNewSlippage] = useSlippageInput(
-        persistedSlippage,
-        setCurrentSlippage,
-    );
+    const preset1 = module === 'Range Order' ? '1' : '0.1';
+    const preset2 = module === 'Range Order' ? '2' : '0.3';
+    const preset3 = module === 'Range Order' ? '3' : '0.5';
 
     return (
         <div className={styles.slippage_tolerance_container}>
@@ -26,22 +23,17 @@ export default function SlippageTolerance(props: propsIF) {
                     <div className={styles.input_container}>
                         <input
                             id='slippage_tolerance_input_field'
-                            onChange={(e) => takeNewSlippage(e.target.value)}
+                            onChange={(e) => {setNewSlippage(e.target.value)}}
                             type='text'
-                            value={slip}
+                            value={slippageValue}
                             autoComplete={'off'}
                             placeholder={'e.g. 0.3'}
                             onKeyDown={handleKeyDown}
                         />
                     </div>
-                    {presets.map((preset: number) => (
-                        <button
-                            key={`slippage-preset-button-${preset}`}
-                            onClick={() => takeNewSlippage(preset)}
-                        >
-                            {preset}%
-                        </button>
-                    ))}
+                    <button onClick={() => setNewSlippage(preset1)}>{preset1}%</button>
+                    <button onClick={() => setNewSlippage(preset2)}>{preset2}%</button>
+                    <button onClick={() => setNewSlippage(preset3)}>{preset3}%</button>
                 </div>
             </div>
         </div>

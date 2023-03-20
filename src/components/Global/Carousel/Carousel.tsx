@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    cloneElement,
-    Children,
-    ReactElement,
-    ReactNode,
-    useState,
-    useEffect,
-} from 'react';
+import { cloneElement, Children, ReactElement, ReactNode, useState, useEffect } from 'react';
 
 // START: Import Local Files
 import styles from './Carousel.module.css';
@@ -44,9 +37,7 @@ export default function Carousel(props: CarouselPropsIF) {
             {Children.map(children, (child, index) => {
                 return (
                     <div
-                        className={`${
-                            index === activeIndex ? styles.active : ''
-                        }`}
+                        className={`${index === activeIndex ? styles.active : ''}`}
                         onClick={() => {
                             updateIndex(index);
                         }}
