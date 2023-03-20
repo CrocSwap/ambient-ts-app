@@ -283,8 +283,6 @@ export default function Portfolio(props: propsIF) {
                     }
                 } catch (error) {
                     console.log({ error });
-                    setResolvedAddress(addressFromParams);
-                    dispatch(setResolvedAddressRedux(addressFromParams));
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
