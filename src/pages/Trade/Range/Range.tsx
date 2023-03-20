@@ -1679,7 +1679,7 @@ export default function Range(props: propsIF) {
                     ) : (
                         <RangeButton
                             onClickFn={
-                                bypassConfirm
+                                bypassConfirm.range.isEnabled
                                     ? handleRangeButtonClickWithBypass
                                     : openModal
                             }

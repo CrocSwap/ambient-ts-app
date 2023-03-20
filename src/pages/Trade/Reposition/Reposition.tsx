@@ -619,12 +619,12 @@ export default function Reposition(props: propsIF) {
                         title={
                             isPositionInRange
                                 ? 'Position Currently In Range'
-                                : bypassConfirm
+                                : bypassConfirm.repo.isEnabled
                                 ? 'Reposition'
                                 : 'Open Confirmation'
                         }
                         action={
-                            bypassConfirm
+                            bypassConfirm.repo.isEnabled
                                 ? sendRepositionTransaction
                                 : openModal
                         }
