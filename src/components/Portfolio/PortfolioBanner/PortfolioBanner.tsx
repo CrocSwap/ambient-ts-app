@@ -104,10 +104,13 @@ export default function PortfolioBanner(props: propsIF) {
                 chainData={chainData}
             />
             <div className={styles.nft_container}>
-                {/* {imageData[0] ? <img src={imageData[0]} alt='nft' /> : null} */}
-                {imageData[1] ? <img src={imageData[1]} alt='nft' /> : null}
-                {imageData[2] ? <img src={imageData[2]} alt='nft' /> : null}
-                {imageData[3] ? <img src={imageData[3]} alt='nft' /> : null}
+                {imageData.slice(0, 3).map((image: string) => (
+                    <img
+                        src={image}
+                        alt='nft'
+                        key={`nft-image-${JSON.stringify(image)}`}
+                    />
+                ))}
                 {blockiesToDisplay}
             </div>
             {/* {snackbarContent} */}
