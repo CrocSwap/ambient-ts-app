@@ -39,12 +39,15 @@ export interface chartSettingsMethodsIF {
 export const useChartSettings = (): chartSettingsMethodsIF => {
     const localStorageKey = 'chart_settings';
 
+    const getDataFromLocalStorage = (): chartSettingsLocalStorageIF | null => {
+        return JSON.parse(localStorage.getItem(localStorageKey) as string);
+    };
+
     // fn to check a user preference for any given subchart
     const getPreference = (subchart: string): boolean | undefined => {
         // persisted data from local storage, returns undefined if not present
-        const chartSettings: chartSettingsLocalStorageIF | null = JSON.parse(
-            localStorage.getItem(localStorageKey) as string,
-        );
+        const chartSettings: chartSettingsLocalStorageIF | null =
+            getDataFromLocalStorage();
         let output: boolean | undefined;
         switch (subchart) {
             case 'volume':
@@ -63,9 +66,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     };
 
     const getOverlay = (overlay: string): string | undefined => {
-        const chartSettings: chartSettingsLocalStorageIF | null = JSON.parse(
-            localStorage.getItem(localStorageKey) as string,
-        );
+        const chartSettings: chartSettingsLocalStorageIF | null =
+            getDataFromLocalStorage();
         let output: string | undefined;
         switch (overlay) {
             case 'market':
