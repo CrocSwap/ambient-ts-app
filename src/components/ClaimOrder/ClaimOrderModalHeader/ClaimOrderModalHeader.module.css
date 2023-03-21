@@ -1,11 +1,13 @@
 .header_container {
-    height: 41px;
+    padding: 10px 20px;
+  
 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-
+    background: var(--dark1);
+    border-radius: var(--border-radius);
     /* background: red; */
 }
 
