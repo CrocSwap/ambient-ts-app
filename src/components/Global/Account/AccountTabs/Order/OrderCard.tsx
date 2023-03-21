@@ -124,7 +124,10 @@ export default function OrderCard(props: propsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                 />
                 {/* ------------------------------------------------------ */}
-                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+                <Price
+                    priceType={priceType}
+                    displayPrice={truncatedDisplayPrice}
+                />
                 {/* ------------------------------------------------------ */}
                 <OrderTypeSide
                     type='order'
@@ -134,7 +137,9 @@ export default function OrderCard(props: propsIF) {
                     quoteTokenCharacter={quoteTokenCharacter}
                 />
                 {/* ------------------------------------------------------ */}
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                <Value
+                    usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'}
+                />
                 <TokenQty
                     baseQty={baseQtyTruncated}
                     quoteQty={quoteQtyTruncated}

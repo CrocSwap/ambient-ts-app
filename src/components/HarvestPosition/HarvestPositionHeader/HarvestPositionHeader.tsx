@@ -8,7 +8,9 @@ interface HarvestPositionHeaderPropsIF {
     onBackButton: () => void;
     showBackButton: boolean;
 }
-export default function HarvestPositionHeader(props: HarvestPositionHeaderPropsIF) {
+export default function HarvestPositionHeader(
+    props: HarvestPositionHeaderPropsIF,
+) {
     return (
         <header className={styles.header_container}>
             {props.showBackButton ? (

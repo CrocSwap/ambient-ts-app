@@ -4,7 +4,12 @@ import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
 import MobileSidebarItem from './MobileSidebarItem';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
-import { BsMedium, BsFillMoonStarsFill, BsFillSunFill, BsFillHeartFill } from 'react-icons/bs';
+import {
+    BsMedium,
+    BsFillMoonStarsFill,
+    BsFillSunFill,
+    BsFillHeartFill,
+} from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -75,7 +80,10 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         { name: 'Connect Wallet/ Logout ' },
     ];
     const dataToDisplay = (
-        <motion.div variants={navigationVariants} className={styles.simple_data}>
+        <motion.div
+            variants={navigationVariants}
+            className={styles.simple_data}
+        >
             {simpleData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>{item.name}</MobileSidebarItem>
             ))}
@@ -91,7 +99,10 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         { name: 'Forum', link: '#' },
     ];
     const ecosystemDisplay = (
-        <motion.div variants={navigationVariants} className={styles.ecosystem_container}>
+        <motion.div
+            variants={navigationVariants}
+            className={styles.ecosystem_container}
+        >
             <p>Ecosystem</p>
             {ecosystemData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>
@@ -111,7 +122,10 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         { icon: <FaGithub />, link: '#' },
     ];
     const socialIconsDisplay = (
-        <motion.div variants={navigationVariants} className={styles.social_container}>
+        <motion.div
+            variants={navigationVariants}
+            className={styles.social_container}
+        >
             {socialIconsData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>
                     <a href={item.link}>{item.icon}</a>
@@ -223,7 +237,9 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
                 <div className={styles.toggle_button}>
                     <MenuButton
                         isOpen={isMobileSidebarOpen}
-                        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                        onClick={() =>
+                            setIsMobileSidebarOpen(!isMobileSidebarOpen)
+                        }
                         strokeWidth='2'
                         color='#7371fc'
                         transition={{ ease: 'easeOut', duration: 0.2 }}

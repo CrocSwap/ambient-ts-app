@@ -10,7 +10,9 @@ interface AnalyticsTransactionsCardProp {
     searchInput?: string;
 }
 // eslint-disable-next-line
-export default function AnalyticsTransactionsCard(props: AnalyticsTransactionsCardProp) {
+export default function AnalyticsTransactionsCard(
+    props: AnalyticsTransactionsCardProp,
+) {
     const { currentTransactions, searchInput } = props;
     return (
         <div className={styles.container}>

@@ -5,7 +5,9 @@ import { ContractReceipt, ContractTransaction } from 'ethers';
 import { Logger } from 'ethers/lib/utils';
 
 // union type of TransactionError's that we can grow.
-export type TransactionError = TransactionReplacedError | TransactionFailedError;
+export type TransactionError =
+    | TransactionReplacedError
+    | TransactionFailedError;
 
 export interface TransactionReplacedError extends Error {
     code: 'TRANSACTION_REPLACED';
@@ -43,7 +45,9 @@ export interface TransactionFailedError {
     receipt: ContractReceipt;
 }
 
-export function isTransactionFailedError(error: TransactionError): error is TransactionError {
+export function isTransactionFailedError(
+    error: TransactionError,
+): error is TransactionError {
     if (error?.message?.includes('transaction failed')) {
         // if (error?.message?.includes('-32000')) {
         return true;

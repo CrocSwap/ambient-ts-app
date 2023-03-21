@@ -34,17 +34,20 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const { closeModalWallet } = props;
     const { disconnect } = useDisconnect();
 
-    const { connect, connectors, error, isLoading, pendingConnector } = useConnect({
-        onSettled(data, error) {
-            if (error) console.log({ error });
-            // console.log('Settled', { data, error });
-            const connectedAddress = data?.account;
-            // console.log({ connectedAddress });
-            const isBlacklisted = connectedAddress ? checkBlacklist(connectedAddress) : false;
-            // console.log({ isBlacklisted });
-            if (isBlacklisted) disconnect();
-        },
-    });
+    const { connect, connectors, error, isLoading, pendingConnector } =
+        useConnect({
+            onSettled(data, error) {
+                if (error) console.log({ error });
+                // console.log('Settled', { data, error });
+                const connectedAddress = data?.account;
+                // console.log({ connectedAddress });
+                const isBlacklisted = connectedAddress
+                    ? checkBlacklist(connectedAddress)
+                    : false;
+                // console.log({ isBlacklisted });
+                if (isBlacklisted) disconnect();
+            },
+        });
     const { address, connector, isConnected } = useAccount();
 
     // const { data: ensAvatar } = useEnsAvatar({ address });
@@ -58,8 +61,10 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const [page, setPage] = useState('wallets');
     // const [email, setEmail] = useState('');
 
-    const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] = useState(false);
-    const [delayForHelpTextElapsed, setDelayForHelpTextElapsed] = useState(false);
+    const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] =
+        useState(false);
+    const [delayForHelpTextElapsed, setDelayForHelpTextElapsed] =
+        useState(false);
 
     // prevent the pending page from appearing for less than a second
     useEffect(() => {
@@ -107,8 +112,12 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div className={styles.wall_buttons_container}>
             {connectors.map((connector) => (
                 <WalletButton
-                    title={`${connector.name} ${!connector.ready ? ' (unavailable)' : ''}  ${
-                        isLoading && connector.id === pendingConnector?.id ? ' (connecting)' : ''
+                    title={`${connector.name} ${
+                        !connector.ready ? ' (unavailable)' : ''
+                    }  ${
+                        isLoading && connector.id === pendingConnector?.id
+                            ? ' (connecting)'
+                            : ''
                     }`}
                     disabled={!connector.ready}
                     key={connector.id}
@@ -174,7 +183,9 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
 
     const coinbaseWalletPendingPage = (
         <div className={styles.metamask_pending_container}>
-            <WaitingConfirmation content={'Please complete authentication via WalletConnect.'} />
+            <WaitingConfirmation
+                content={'Please complete authentication via WalletConnect.'}
+            />
             {/* <CircleLoader size='5rem' borderColor='#171d27' /> */}
             {/* <p>Check the Metamask extension in your browser for notifications.</p> */}
         </div>
@@ -184,8 +195,9 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div className={styles.metamask_pending_container}>
             <CircleLoaderFailed />
             <p>
-                Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to choose a different wallet.
+                Check the Metamask extension in your browser for notifications,
+                or click &quot;Try Again&quot;. You can also click the left
+                arrow above to choose a different wallet.
             </p>
             <Button
                 title='Try Again'

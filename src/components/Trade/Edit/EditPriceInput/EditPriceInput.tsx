@@ -50,7 +50,9 @@ export default function EditPriceInput(props: EditPriceInputProps) {
     );
 
     const percentageDifferenceString =
-        percentageDifference >= 0 ? '+' + percentageDifference : percentageDifference.toString();
+        percentageDifference >= 0
+            ? '+' + percentageDifference
+            : percentageDifference.toString();
 
     return (
         <div className={styles.minMax_container}>
@@ -64,7 +66,9 @@ export default function EditPriceInput(props: EditPriceInputProps) {
                     <FaPlus size={16} />
                 </span>
             </div>
-            <span className={styles.percentage}>{percentageDifferenceString}%</span>
+            <span className={styles.percentage}>
+                {percentageDifferenceString}%
+            </span>
         </div>
     );
 }

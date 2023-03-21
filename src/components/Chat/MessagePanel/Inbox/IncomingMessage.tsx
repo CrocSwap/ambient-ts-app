@@ -2,10 +2,9 @@ import styles from './IncomingMessage.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
-import useChatApi from '../../Service/ChatApi';
 
 export interface IncomingMessageProps {
     message: Message;
@@ -29,8 +28,6 @@ export default function IncomingMessage(props: IncomingMessageProps) {
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [minute, setMinute] = useState(1);
-    const [isSequential, setIsSequential] = useState(false);
 
     function handleCopyAddress(item: string) {
         copy(item);
@@ -47,17 +44,6 @@ export default function IncomingMessage(props: IncomingMessageProps) {
             {value} copied
         </SnackbarComponent>
     );
-
-    function interval(str: string, string: string) {
-        const endDate = new Date(str);
-        const purchaseDate = new Date(string);
-        const diffMs = +endDate - +purchaseDate; // milliseconds
-        const diffDays = Math.floor(diffMs / 86400000); // days
-        const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-        const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-        console.log(diffMins, ' min');
-        return diffMins;
-    }
 
     function namerOrWalletID(content: string) {
         if (content.includes('0x')) {
@@ -104,7 +90,10 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                 </div>
 
                 <div className={styles.message_message}>
-                    <div className={styles.name} onClick={() => handleCopyAddress(props.name)}>
+                    <div
+                        className={styles.name}
+                        onClick={() => handleCopyAddress(props.name)}
+                    >
                         {namerOrWalletID(props.name)}
                     </div>
                     {!isPosition && mentionedMessage()}
@@ -117,7 +106,9 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                     />
                 </div>
 
-                <div className={styles.message_date}>{formatAMPM(props.message.createdAt)}</div>
+                <div className={styles.message_date}>
+                    {formatAMPM(props.message.createdAt)}
+                </div>
             </div>
             {snackbarContent}
         </div>

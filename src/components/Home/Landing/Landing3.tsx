@@ -9,15 +9,17 @@ export default function Landing3() {
             <div className={styles.header_text}>
                 <span className={styles.ambient_text}>ambient </span>
                 {t('slide3.part1')}{' '}
-                <span className={styles.highlight_text}>{t('slide3.part2')}</span>
+                <span className={styles.highlight_text}>
+                    {t('slide3.part2')}
+                </span>
             </div>
             <div className={styles.amm_pools}>
-                Individual AMM pools are lightweight data structures instead of separate smart
-                contracts
+                Individual AMM pools are lightweight data structures instead of
+                separate smart contracts
             </div>
             <div className={styles.efficiency}>
-                This and other design decisions makes Ambient the most efficient Ethereum-based DEX
-                in existence.
+                This and other design decisions makes Ambient the most efficient
+                Ethereum-based DEX in existence.
             </div>
         </div>
     );

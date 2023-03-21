@@ -1,38 +1,42 @@
+// START: Import React and Dongles
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useAccount, useEnsName } from 'wagmi';
+import { BigNumber, ethers } from 'ethers';
+import { Provider } from '@ethersproject/providers';
+import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+
+// START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
+import Modal from '../../components/Global/Modal/Modal';
+import NotFound from '../NotFound/NotFound';
+import Button from '../../components/Global/Button/Button';
+import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
+import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
+
+// START: Import Other Local Files
 import styles from './Portfolio.module.css';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
-import { BigNumber, ethers } from 'ethers';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
-import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
-import { TokenIF } from '../../utils/interfaces/exports';
-import Button from '../../components/Global/Button/Button';
 import {
     Erc20TokenBalanceFn,
     nativeTokenBalanceFn,
 } from '../../App/functions/fetchTokenBalances';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
-import NotFound from '../NotFound/NotFound';
-import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
-import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-// import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
-import { Provider } from '@ethersproject/providers';
 import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
-    // setSecondaryImageDataRedux,
 } from '../../utils/state/userDataSlice';
-import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -94,6 +98,7 @@ interface propsIF {
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -142,6 +147,7 @@ export default function Portfolio(props: propsIF) {
         mainnetProvider,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -185,14 +191,14 @@ export default function Portfolio(props: propsIF) {
                 .token(selectedToken.address)
                 .wallet(connectedAccount)
                 .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
-                .catch(console.log);
+                .catch(console.error);
             crocEnv
                 .token(selectedToken.address)
                 .balance(connectedAccount)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
 
         if (recheckTokenBalances) {
@@ -242,7 +248,7 @@ export default function Portfolio(props: propsIF) {
                         .allowance(connectedAccount);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
                 setRecheckTokenAllowance(false);
             }
@@ -281,11 +287,14 @@ export default function Portfolio(props: propsIF) {
                         dispatch(setResolvedAddressRedux(newResolvedAddress));
                     }
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
                 dispatch(setResolvedAddressRedux(addressFromParams));
+            } else {
+                setResolvedAddress('');
+                dispatch(setResolvedAddressRedux(''));
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
@@ -319,7 +328,7 @@ export default function Portfolio(props: propsIF) {
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
-                    console.log({ error });
+                    console.warn({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
@@ -438,7 +447,7 @@ export default function Portfolio(props: propsIF) {
                         setResolvedAddressNativeToken(newNativeToken);
                     }
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
                 try {
                     const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
@@ -471,7 +480,7 @@ export default function Portfolio(props: propsIF) {
                     });
                     setResolvedAddressErc20Tokens(updatedTokens);
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
             }
         })();
@@ -580,6 +589,7 @@ export default function Portfolio(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     const soloTokenSelectProps = {
@@ -616,6 +626,7 @@ export default function Portfolio(props: propsIF) {
         imageData: connectedAccountActive ? userImageData : secondaryImageData,
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        chainData: chainData,
     };
 
     const profileSettingsProps = {

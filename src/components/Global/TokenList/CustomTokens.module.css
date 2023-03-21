@@ -64,9 +64,17 @@
 .imported_token_container {
     background: linear-gradient(var(--dark1) 33%, rgba(13, 17, 23, 0)),
         linear-gradient(rgba(13, 17, 23, 0), var(--dark1) 66%) 0 100%,
-        radial-gradient(farthest-side at 50% 0, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0)),
-        radial-gradient(farthest-side at 50% 100%, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0)) 0
-            100%;
+        radial-gradient(
+            farthest-side at 50% 0,
+            rgba(255, 255, 255, 0.5),
+            rgba(0, 0, 0, 0)
+        ),
+        radial-gradient(
+                farthest-side at 50% 100%,
+                rgba(255, 255, 255, 0.5),
+                rgba(0, 0, 0, 0)
+            )
+            0 100%;
     background-color: var(--dark1);
     background-repeat: no-repeat;
     background-attachment: local, local, scroll, scroll;

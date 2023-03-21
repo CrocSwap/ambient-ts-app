@@ -84,7 +84,7 @@
     margin: 4px !important;
     background: var(--dark3);
     border-radius: var(--border-radius);
- 
+
     padding: 5px 8px;
 
     cursor: pointer;
@@ -92,12 +92,11 @@
 
     color: var(--text-grey-light);
     border: none;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
 
-.percentage_option_buttons:hover{
+.percentage_option_buttons:hover {
     color: var(--text-grey-white);
-   
 }
 .percentage_input {
     /* padding: 15px 0px;  */

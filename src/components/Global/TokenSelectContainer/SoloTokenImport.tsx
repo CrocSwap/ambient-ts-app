@@ -13,7 +13,10 @@ export default function SoloTokenImport(props: propsIF) {
     const tokenLogo = customToken?.logoURI ? (
         <img src={customToken.logoURI} alt='' width='30px' />
     ) : (
-        <NoTokenIcon tokenInitial={customToken?.symbol?.charAt(0) || '?'} width='30px' />
+        <NoTokenIcon
+            tokenInitial={customToken?.symbol?.charAt(0) || '?'}
+            width='30px'
+        />
     );
 
     const tokenNotFound = (
@@ -27,8 +30,9 @@ export default function SoloTokenImport(props: propsIF) {
     return (
         <div className={styles.main_container}>
             <p>
-                A match for this token was found on chain... Inventore molestias maiores ullam ipsa
-                impedit accusantium, itaque animi vitae libero dolore!
+                A match for this token was found on chain... Inventore molestias
+                maiores ullam ipsa impedit accusantium, itaque animi vitae
+                libero dolore!
             </p>
 
             <div className={styles.token_display}>
@@ -39,11 +43,14 @@ export default function SoloTokenImport(props: propsIF) {
                 <h6>{customToken?.name}</h6>
             </div>
             <p>
-                Warning message before importing. Modi sapiente molestiae voluptatibus quidem
-                blanditiis repellat magnam officiis, omnis impedit nostrum?
+                Warning message before importing. Modi sapiente molestiae
+                voluptatibus quidem blanditiis repellat magnam officiis, omnis
+                impedit nostrum?
             </p>
             <div className={styles.import_button}>
-                <button onClick={() => chooseToken(customToken, true)}>Acknowledge</button>
+                <button onClick={() => chooseToken(customToken, true)}>
+                    Acknowledge
+                </button>
             </div>
         </div>
     );

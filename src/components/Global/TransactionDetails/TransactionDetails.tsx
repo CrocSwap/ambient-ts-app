@@ -18,7 +18,12 @@ interface propsIF {
 }
 
 export default function TransactionDetails(props: propsIF) {
-    const { account, tx, isBaseTokenMoneynessGreaterOrEqual, isOnPortfolioPage } = props;
+    const {
+        account,
+        tx,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isOnPortfolioPage,
+    } = props;
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
@@ -91,7 +96,9 @@ export default function TransactionDetails(props: propsIF) {
                         tx={tx}
                         transactionType={tx.entityType}
                         useTx={true}
-                        isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
                         isOnPortfolioPage={isOnPortfolioPage}
                     />
                 </div>

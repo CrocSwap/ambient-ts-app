@@ -87,7 +87,10 @@ export default function SidebarLimitOrders(props: propsIF) {
                 {limitOrderByUser &&
                     limitOrderByUser.map((order: LimitOrderIF) => (
                         <SidebarLimitOrdersCard
-                            key={'Sidebar-Limit-Orders-Card-' + JSON.stringify(order)}
+                            key={
+                                'Sidebar-Limit-Orders-Card-' +
+                                JSON.stringify(order)
+                            }
                             isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}

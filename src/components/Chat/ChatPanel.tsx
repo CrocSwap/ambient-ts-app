@@ -52,9 +52,6 @@ interface propsIF {
 
 export default function ChatPanel(props: propsIF) {
     const { isFullScreen, favePools, currentPool, setIsChatOpen } = props;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-    // const navigate = useNavigate();
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
@@ -76,7 +73,6 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    // console.log('running ChatPanel');
     const { messages, getMsg, lastMessage, messageUser } = useSocket(
         room.toUpperCase(),
     );
@@ -302,11 +298,6 @@ export default function ChatPanel(props: propsIF) {
             setScrollDirection('Scroll Down');
         }
     };
-
-    // const handleFullScreenRedirect = () => {
-    //     navigate('/app/chat');
-    //     props.setIsChatOpen(true);
-    // };
 
     const header = (
         <div
