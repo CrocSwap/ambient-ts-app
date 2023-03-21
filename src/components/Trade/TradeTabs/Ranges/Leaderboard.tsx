@@ -60,6 +60,8 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 // react functional component
@@ -87,6 +89,8 @@ export default function Leaderboard(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -373,6 +377,8 @@ export default function Leaderboard(props: propsIF) {
             setSimpleRangeWidth={setSimpleRangeWidth}
             dexBalancePrefs={dexBalancePrefs}
             slippage={slippage}
+            gasPriceInGwei={gasPriceInGwei}
+            ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
 
