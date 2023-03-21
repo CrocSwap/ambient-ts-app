@@ -229,7 +229,10 @@ export default function InitPool(props: propsIF) {
     const [initialPrice, setInitialPrice] = useState<number | undefined>();
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
 
-    const [placeHolderPrice, setPlaceholderPrice] = useState<number>(2000);
+    const defaultInitialPrice = 2000;
+
+    const [placeHolderPrice, setPlaceholderPrice] =
+        useState<number>(defaultInitialPrice);
 
     const [valueDisplayString, setValueDisplayString] = useState<string>('');
 
