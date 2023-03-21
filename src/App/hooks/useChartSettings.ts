@@ -20,7 +20,7 @@ interface subchartSettingsIF {
 
 // interface for class to manage a given chart overlay
 interface overlayIF {
-    readonly pref: string;
+    readonly overlay: string;
     readonly showDepth: () => void;
     readonly showCurve: () => void;
     readonly showNone: () => void;
@@ -163,7 +163,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // class definition for overlay setting and methods
     class Overlay implements overlayIF {
         // base value
-        public readonly pref: string;
+        public readonly overlay: string;
         // pre-loaded setter functions
         public readonly showDepth: () => void;
         public readonly showCurve: () => void;
@@ -171,7 +171,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         // @param value ➡ current value from local state
         // @param setterFn ➡ fn to update local state
         constructor(value: string, setterFn: Dispatch<SetStateAction<string>>) {
-            this.pref = value;
+            this.overlay = value;
             this.showDepth = () => setterFn('depth');
             this.showCurve = () => setterFn('curve');
             this.showNone = () => setterFn('none');
