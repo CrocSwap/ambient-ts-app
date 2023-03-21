@@ -119,6 +119,8 @@ interface propsIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 // React functional component
@@ -183,6 +185,8 @@ export default function Trade(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(
@@ -622,6 +626,8 @@ export default function Trade(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
         slippage: slippage,
+        gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     const mobileTrade = (
