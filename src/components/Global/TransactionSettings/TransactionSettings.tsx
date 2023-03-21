@@ -62,28 +62,33 @@ export default function TransactionSettings(props: propsIF) {
 
     return (
         <div className={styles.settings_container}>
-            <div className={styles.settings_title}>{module + ' Settings'}</div>
-            {shouldDisplaySlippageTolerance && (
-                <SlippageTolerance
-                    persistedSlippage={persistedSlippage}
-                    setCurrentSlippage={setCurrentSlippage}
-                    handleKeyDown={handleKeyDown}
-                    presets={
-                        isPairStable
-                            ? slippage.presets.stable
-                            : slippage.presets.volatile
-                    }
-                />
-            )}
-            <DividerDark />
-            <DividerDark />
+            <section>
+                <div className={styles.settings_title}>
+                    {module + ' Settings'}
+                </div>
 
-            <ConfirmationModalControl
-                tempBypassConfirm={currentSkipConfirm}
-                setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
-                displayInSettings={true}
-            />
+                {shouldDisplaySlippageTolerance && (
+                    <SlippageTolerance
+                        persistedSlippage={persistedSlippage}
+                        setCurrentSlippage={setCurrentSlippage}
+                        handleKeyDown={handleKeyDown}
+                        presets={
+                            isPairStable
+                                ? slippage.presets.stable
+                                : slippage.presets.volatile
+                        }
+                    />
+                )}
+                {/* <DividerDark />
+            <DividerDark /> */}
+
+                <ConfirmationModalControl
+                    tempBypassConfirm={currentSkipConfirm}
+                    setTempBypassConfirm={setCurrentSkipConfirm}
+                    toggleFor={toggleFor}
+                    displayInSettings={true}
+                />
+            </section>
 
             <div className={styles.button_container}>
                 {module !== 'Limit Order' ? (

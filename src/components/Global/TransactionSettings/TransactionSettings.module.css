@@ -2,10 +2,14 @@
     height: 405px;
     /* max-width: 407px; */
     /* width: 300px; */
-
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     row-gap: 12px;
     margin-top: 0.2rem;
     position: relative;
+    padding: 20px;
+    
 }
 .settings_title {
     display: flex;
@@ -15,8 +19,8 @@
     margin-bottom: 1rem;
 }
 .button_container {
-    position: absolute;
+    /* position: absolute;
     bottom: 0;
-    width: 100%;
-    padding: 0 2rem;
+    width: 100%; */
+    /* padding: 0 2rem; */
 }
