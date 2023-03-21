@@ -48,6 +48,10 @@
     /* align-items: center; */
 }
 
+.confirmation_content{
+    padding: 1rem;
+}
+
 .button {
     cursor: pointer;
 }
