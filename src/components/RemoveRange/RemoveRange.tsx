@@ -5,8 +5,6 @@ import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { ReactNode, useEffect, useState } from 'react';
 
-import { VscClose } from 'react-icons/vsc';
-import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import {

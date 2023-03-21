@@ -5,7 +5,6 @@ import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton
 import { useEffect, useState } from 'react';
 
 import { RiListSettingsLine } from 'react-icons/ri';
-import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import Button from '../Global/Button/Button';

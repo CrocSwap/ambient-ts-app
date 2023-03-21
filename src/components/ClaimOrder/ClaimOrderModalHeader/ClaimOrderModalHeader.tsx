@@ -1,7 +1,6 @@
 import styles from './ClaimOrderModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BsArrowLeft } from 'react-icons/bs';
-import { Dispatch, SetStateAction } from 'react';
 // import { RiListSettingsLine } from 'react-icons/ri';
 interface ClaimOrderModalHeaderPropsIF {
     title: string;
