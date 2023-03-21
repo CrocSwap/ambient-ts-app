@@ -19,7 +19,7 @@ interface subchartSettingsIF {
 }
 
 // interface for class to manage a given chart overlay
-interface overlayIF {
+export interface overlayIF {
     readonly overlay: string;
     readonly showDepth: () => void;
     readonly showCurve: () => void;
