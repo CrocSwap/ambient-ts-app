@@ -46,7 +46,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         JSON.parse(localStorage.getItem(localStorageKey) as string);
 
     // fn to check a user preference for any given subchart
-    const getPreference = (subchart: string): boolean | undefined => {
+    const getSubchart = (subchart: string): boolean | undefined => {
         // persisted data from local storage, returns `null` if not present
         const chartSettings: chartSettingsLocalStorageIF | null =
             getDataFromLocalStorage();
@@ -97,12 +97,12 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // hooks to memoize user preferences in local state
     // initializer fallback value is default setting for new users
     const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] =
-        useState<boolean>(getPreference('volume') ?? true);
+        useState<boolean>(getSubchart('volume') ?? true);
     const [isTvlSubchartEnabled, setIsTvlSubchartEnabled] = useState<boolean>(
-        getPreference('tvl') ?? false,
+        getSubchart('tvl') ?? false,
     );
     const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] =
-        useState<boolean>(getPreference('feeRate') ?? false);
+        useState<boolean>(getSubchart('feeRate') ?? false);
 
     const [marketOverlay, setMarketOverlay] = useState<string>(
         getOverlay('market') ?? 'depth',
