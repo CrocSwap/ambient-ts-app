@@ -190,6 +190,9 @@ export default function Chart(props: ChartData) {
     const d3CanvasLiqBid = useRef(null);
     const d3CanvasLiqAsk = useRef(null);
 
+    const d3CanvasLiqBidLine = useRef(null);
+    const d3CanvasLiqAskLine = useRef(null);
+
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
     const dispatch = useAppDispatch();
@@ -345,6 +348,9 @@ export default function Chart(props: ChartData) {
 
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
+
+    const [gradientForAskLine, setGradientForAskLine] = useState();
+    const [gradientForBidLine, setGradientForBidLine] = useState();
 
     // Subcharts
     const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
@@ -1116,25 +1122,25 @@ export default function Chart(props: ChartData) {
         scaleData,
     ]);
 
-    const showHighlightedLines = () => {
-        d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'visible');
+    // const showHighlightedLines = () => {
+    //     d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'visible');
 
-        d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'visible');
+    //     d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'visible');
 
-        d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'visible');
+    //     d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'visible');
 
-        d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'visible');
-    };
+    //     d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'visible');
+    // };
 
-    const hideHighlightedLines = () => {
-        d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'hidden');
+    // const hideHighlightedLines = () => {
+    //     d3.select(d3PlotArea.current).select('.lineAskSeries').style('visibility', 'hidden');
 
-        d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'hidden');
+    //     d3.select(d3PlotArea.current).select('.lineBidSeries').style('visibility', 'hidden');
 
-        d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'hidden');
+    //     d3.select(d3PlotArea.current).select('.lineDepthAskSeries').style('visibility', 'hidden');
 
-        d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'hidden');
-    };
+    //     d3.select(d3PlotArea.current).select('.lineDepthBidSeries').style('visibility', 'hidden');
+    // };
 
     useEffect(() => {
         if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
@@ -4072,15 +4078,29 @@ export default function Chart(props: ChartData) {
         }
     }, [showVolume]);
 
+    const hideHighlightedLines = () => {
+        d3.select(d3CanvasLiqAskLine.current).select('canvas').style('display', 'none');
+        d3.select(d3CanvasLiqBidLine.current).select('canvas').style('display', 'none');
+    };
+
+    const showHighlightedLines = () => {
+        d3.select(d3CanvasLiqAskLine.current).select('canvas').style('display', 'inline');
+        d3.select(d3CanvasLiqBidLine.current).select('canvas').style('display', 'inline');
+    };
     useEffect(() => {
         if (liqMode === 'Off') {
             d3.select(d3CanvasLiqAsk.current).select('canvas').style('display', 'none');
             d3.select(d3CanvasLiqBid.current).select('canvas').style('display', 'none');
+            hideHighlightedLines();
         } else {
             d3.select(d3CanvasLiqAsk.current).select('canvas').style('display', 'inline');
             d3.select(d3CanvasLiqBid.current).select('canvas').style('display', 'inline');
+
+            if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
+                showHighlightedLines();
+            }
         }
-    }, [liqMode]);
+    }, [liqMode, location]);
 
     function renderCanvas() {
         if (d3CanvasCandle) {
@@ -4423,17 +4443,17 @@ export default function Chart(props: ChartData) {
                         lineAskSeriesJoin(svg, [
                             liqMode === 'Curve' ? liquidityData.liqAskData : [],
                         ]).call(lineAskSeries);
-                        lineBidSeriesJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.liqBidData : [],
-                        ]).call(lineBidSeries);
+                        // lineBidSeriesJoin(svg, [
+                        //     liqMode === 'Curve' ? liquidityData.liqBidData : [],
+                        // ]).call(lineBidSeries);
 
-                        lineDepthBidSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
-                        ]).call(lineDepthAskSeries);
+                        // lineDepthBidSeriesJoin(svg, [
+                        //     liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
+                        // ]).call(lineDepthAskSeries);
 
-                        lineDepthAskSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
-                        ]).call(lineDepthBidSeries);
+                        // lineDepthAskSeriesJoin(svg, [
+                        //     liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
+                        // ]).call(lineDepthBidSeries);
                     }
                 });
             }
@@ -4558,18 +4578,16 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const lineAskSeries = d3fc
-                .seriesSvgLine()
+                .seriesCanvasLine()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
+                .xScale(liqMode === 'Curve' ? liquidityScale : liquidityDepthScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
-                    selection.style('stroke', () => {
-                        return 'url(#lineAskGradient)';
-                    });
-                    selection.attr('stroke-width', '2');
+                    selection.strokeStyle = gradientForAskLine;
+                    selection.strokeWidth = 4;
                 });
 
             setLineAskSeries(() => {
@@ -4577,19 +4595,16 @@ export default function Chart(props: ChartData) {
             });
 
             const lineBidSeries = d3fc
-                .seriesSvgLine()
+                .seriesCanvasLine()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
+                .xScale(liqMode === 'Curve' ? liquidityScale : liquidityDepthScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
-                    // selection.enter().style('stroke', () => '#7371FC');
-                    selection.style('stroke', () => {
-                        return 'url(#lineBidGradient)';
-                    });
-                    selection.attr('stroke-width', '2');
+                    selection.strokeStyle = gradientForBidLine;
+                    selection.strokeWidth = 4;
                 });
 
             setLineBidSeries(() => {
@@ -4693,8 +4708,50 @@ export default function Chart(props: ChartData) {
         liquidityData,
         location,
         lineGradient,
+        gradientForAskLine,
+        gradientForBidLine,
         JSON.stringify(d3Container.current?.offsetWidth),
     ]);
+
+    useEffect(() => {
+        const ctx = (
+            d3.select(d3CanvasLiqBidLine.current).select('canvas').node() as any
+        ).getContext('2d');
+
+        if (lineBidSeries && liquidityData.liqBidData) {
+            d3.select(d3CanvasLiqBidLine.current)
+                .on('draw', () => {
+                    lineBidSeries(
+                        liqMode === 'Curve'
+                            ? liquidityData.liqBidData
+                            : liquidityData.depthLiqBidData,
+                    );
+                })
+                .on('measure', () => {
+                    lineBidSeries.context(ctx);
+                });
+        }
+    }, [liquidityData.liqBidData, liquidityData.depthLiqBidData, lineBidSeries, liqMode]);
+
+    useEffect(() => {
+        const ctx = (
+            d3.select(d3CanvasLiqAskLine.current).select('canvas').node() as any
+        ).getContext('2d');
+
+        if (lineAskSeries && liquidityData.liqBidData) {
+            d3.select(d3CanvasLiqAskLine.current)
+                .on('draw', () => {
+                    lineAskSeries(
+                        liqMode === 'Curve'
+                            ? liquidityData.liqAskData
+                            : liquidityData.depthLiqAskData,
+                    );
+                })
+                .on('measure', () => {
+                    lineAskSeries.context(ctx);
+                });
+        }
+    }, [liquidityData.liqAskData, liquidityData.depthLiqAskData, lineAskSeries, liqMode]);
 
     // NoGoZone
     useEffect(() => {
@@ -5202,6 +5259,65 @@ export default function Chart(props: ChartData) {
         renderCanvas();
     };
 
+    useEffect(() => {
+        const liqDataBid =
+            liqMode === 'Depth' ? liquidityData.depthLiqBidData : liquidityData.liqBidData;
+        const liqDataAsk =
+            liqMode === 'Depth' ? liquidityData.depthLiqAskData : liquidityData.liqAskData;
+
+        const bidMinBoudnary = d3.min(liqDataBid, (d: any) => d.liqPrices);
+        const bidMaxBoudnary = d3.max(liqDataBid, (d: any) => d.liqPrices);
+
+        const askMinBoudnary = d3.min(liqDataAsk, (d: any) => d.liqPrices);
+        const askMaxBoudnary = d3.max(liqDataAsk, (d: any) => d.liqPrices);
+
+        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+        const canvas = d3.select(d3CanvasLiqBidLine.current).select('canvas').node() as any;
+        const ctx = canvas.getContext('2d');
+        if (bidMaxBoudnary && bidMinBoudnary) {
+            const percentageBid =
+                Math.abs(high - parseFloat(bidMinBoudnary)) /
+                (parseFloat(bidMaxBoudnary) - parseFloat(bidMinBoudnary));
+
+            if (percentageBid > 0) {
+                const gradient = ctx.createLinearGradient(
+                    0,
+                    scaleData.yScale(high),
+                    0,
+                    scaleData.yScale(bidMinBoudnary),
+                );
+
+                gradient.addColorStop(percentageBid, 'transparent');
+
+                gradient.addColorStop(percentageBid, '#7371FC');
+
+                setGradientForBidLine(gradient);
+            }
+        }
+
+        if (askMaxBoudnary !== undefined && askMinBoudnary !== undefined) {
+            const percentageAsk =
+                (parseFloat(askMaxBoudnary) - low) /
+                (parseFloat(askMaxBoudnary) - parseFloat(askMinBoudnary));
+
+            if (percentageAsk > 0) {
+                const gradient = ctx.createLinearGradient(
+                    0,
+                    scaleData.yScale(askMaxBoudnary),
+                    0,
+                    scaleData.yScale(low),
+                );
+
+                gradient.addColorStop(1 - percentageAsk, 'rgba(205, 193, 255)');
+                gradient.addColorStop(1 - percentageAsk, 'transparent');
+
+                setGradientForAskLine(gradient);
+            }
+        }
+    }, [JSON.stringify(ranges), scaleData && JSON.stringify(scaleData.yScale.domain())]);
+
     const selectedDateEvent = (
         isHoverCandleOrVolumeData: any,
         _selectedDate: any,
@@ -5480,17 +5596,17 @@ export default function Chart(props: ChartData) {
                             lineAskSeriesJoin(svg, [
                                 liqMode === 'Curve' ? liquidityData.liqAskData : [],
                             ]).call(lineAskSeries);
-                            lineBidSeriesJoin(svg, [
-                                liqMode === 'Curve' ? liquidityData.liqBidData : [],
-                            ]).call(lineBidSeries);
+                            // lineBidSeriesJoin(svg, [
+                            //     liqMode === 'Curve' ? liquidityData.liqBidData : [],
+                            // ]).call(lineBidSeries);
 
-                            lineDepthBidSeriesJoin(svg, [
-                                liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
-                            ]).call(lineDepthAskSeries);
+                            // lineDepthBidSeriesJoin(svg, [
+                            //     liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
+                            // ]).call(lineDepthAskSeries);
 
-                            lineDepthAskSeriesJoin(svg, [
-                                liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
-                            ]).call(lineDepthBidSeries);
+                            // lineDepthAskSeriesJoin(svg, [
+                            //     liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
+                            // ]).call(lineDepthBidSeries);
                         }
                     }
 
@@ -5977,6 +6093,8 @@ export default function Chart(props: ChartData) {
                     <div className='chart_grid'>
                         <d3fc-canvas ref={d3CanvasCandle} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasBar} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLiqBidLine} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-canvas ref={d3CanvasLiqAskLine} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasLiqBid} className='plot-canvas'></d3fc-canvas>
                         <d3fc-canvas ref={d3CanvasLiqAsk} className='plot-canvas'></d3fc-canvas>
 
