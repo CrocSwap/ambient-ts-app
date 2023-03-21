@@ -16,9 +16,21 @@ export default function CurveDepth(props: propsIF) {
     const desktopView = useMediaQuery('(max-width: 968px)');
 
     const curveDepthData = [
-        { name: 'Off', action: () => overlayMethods.showNone() },
-        { name: 'Curve', action: () => overlayMethods.showCurve() },
-        { name: 'Depth', action: () => overlayMethods.showDepth() },
+        {
+            readable: 'Off',
+            name: 'None',
+            action: () => overlayMethods.showNone(),
+        },
+        {
+            readable: 'Curve',
+            name: 'Curve',
+            action: () => overlayMethods.showCurve(),
+        },
+        {
+            readable: 'Depth',
+            name: 'Depth',
+            action: () => overlayMethods.showDepth(),
+        },
     ];
 
     const wrapperStyle = showCurveDepthDropdown
@@ -89,7 +101,7 @@ export default function CurveDepth(props: propsIF) {
                                 : styles.non_active_selected_button
                         }
                     >
-                        {button.name}
+                        {button.readable}
                     </button>
                 </div>
             ))}
