@@ -229,9 +229,10 @@ export default function RangesMenu(props: propsIF) {
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
-        // !isPositionInRange &&
-        // !isPositionEmpty &&
-        userMatchesConnectedAccount && view1;
+        !isPositionInRange &&
+        !isPositionEmpty &&
+        userMatchesConnectedAccount &&
+        view1;
     // ----------------------
 
     const rangesMenu = (
