@@ -31,7 +31,7 @@
     transition: box-shadow var(--animation-speed) ease-in-out;
 
     height: fit-content;
-    min-height: 300px;
+    min-height: 200px;
     min-width: 300px;
     border-radius: var(--border-radius);
     position: relative;
@@ -74,7 +74,7 @@
     background: var(--dark2);
     border-radius: var(--border-radius);
 
-    min-height: 250px;
+    /* min-height: 250px; */
 }
 
 .close_button {

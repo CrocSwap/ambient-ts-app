@@ -1,5 +1,6 @@
 .main_container {
     justify-content: space-between;
+    padding-bottom: 1rem;
 }
 
 .main_container,

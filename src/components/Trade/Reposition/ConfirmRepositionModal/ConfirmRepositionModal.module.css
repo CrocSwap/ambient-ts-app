@@ -1,6 +1,7 @@
 .modal_container {
     width: 400px;
     min-height: 300px;
+   
 }
 
 .modal_footer {
@@ -17,6 +18,7 @@
     width: 400px;
     display: flex;
     flex-direction: column;
+    padding: 20px;
 }
 
 /* range header */
