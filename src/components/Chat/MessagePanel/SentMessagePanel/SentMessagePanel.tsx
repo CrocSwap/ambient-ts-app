@@ -2,8 +2,6 @@ import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
-// import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-// import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -144,22 +142,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
             return props.message.ensName;
         }
     }
-
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
-    //     </SnackbarComponent>
-    // );
-    // function handleCopyAddress(item: string) {
-    //     copy(item);
-    //     setOpenSnackbar(true);
-    // }
 
     function handleOpenExplorer(url: string) {
         window.open(url);
@@ -347,11 +329,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                             loadingStatus: true,
                                         }),
                                     );
-                                    // handleCopyAddress(
-                                    //     props.message.ensName === 'defaultValue'
-                                    //         ? props.message.walletID
-                                    //         : props.message.ensName,
-                                    // );
+
                                     navigate(
                                         `/${
                                             props.message.ensName ===
