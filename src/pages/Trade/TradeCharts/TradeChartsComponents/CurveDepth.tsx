@@ -16,7 +16,7 @@ export default function CurveDepth(props: propsIF) {
     const desktopView = useMediaQuery('(max-width: 968px)');
 
     const curveDepthData = [
-        { name: 'None', action: () => overlayMethods.showNone() },
+        { name: 'Off', action: () => overlayMethods.showNone() },
         { name: 'Curve', action: () => overlayMethods.showCurve() },
         { name: 'Depth', action: () => overlayMethods.showDepth() },
     ];
