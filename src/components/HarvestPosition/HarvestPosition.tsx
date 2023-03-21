@@ -131,10 +131,16 @@ export default function HarvestPosition(props: propsIF) {
         string | undefined
     >();
 
+    const averageGasUnitsForHarvestTx = 92500;
+    const numGweiInWei = 1e-9;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 92500 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageGasUnitsForHarvestTx *
+                numGweiInWei *
+                ethMainnetUsdPrice;
 
             setHarvestGasPriceinDollars(
                 '$' +

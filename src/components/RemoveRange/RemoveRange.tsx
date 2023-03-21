@@ -121,10 +121,16 @@ export default function RemoveRange(props: propsIF) {
         string | undefined
     >();
 
+    const averageGasUnitsForRemovalTx = 94500;
+    const numGweiInWei = 1e-9;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 94500 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageGasUnitsForRemovalTx *
+                numGweiInWei *
+                ethMainnetUsdPrice;
 
             setRemovalGasPriceinDollars(
                 '$' +
