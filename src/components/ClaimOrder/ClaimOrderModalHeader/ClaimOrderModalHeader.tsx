@@ -9,8 +9,8 @@ interface ClaimOrderModalHeaderPropsIF {
     // eslint-disable-next-line
     onGoBack?: any;
 
-    showSettings: boolean;
-    setShowSettings: Dispatch<SetStateAction<boolean>>;
+    // showSettings: boolean;
+    // setShowSettings: Dispatch<SetStateAction<boolean>>;
 }
 export default function ClaimOrderModalHeader(
     props: ClaimOrderModalHeaderPropsIF,

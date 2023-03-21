@@ -281,6 +281,11 @@ export default function ClaimOrder(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
+            <ClaimOrderModalHeader
+                onClose={closeGlobalModal}
+                title={'Claim Limit Order Confirmation'}
+                onGoBack={showSettings ? () => setShowSettings(false) : null}
+            />
             <div className={styles.confirmation_content}>
                 {currentConfirmationData}
             </div>
@@ -344,9 +349,7 @@ export default function ClaimOrder(props: propsIF) {
         <div style={{ padding: '1rem' }}>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Claim Limit Order'}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
+                title={'Claim Limit Order '}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
 
