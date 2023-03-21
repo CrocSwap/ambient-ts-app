@@ -516,7 +516,10 @@ export default function InitPool(props: propsIF) {
                                                         : targetValue;
                                                 const targetValueNum =
                                                     parseFloat(input);
-                                                setValueDisplayString(input);
+                                                isValid &&
+                                                    setValueDisplayString(
+                                                        input,
+                                                    );
                                                 if (
                                                     isValid &&
                                                     ((!isNaN(targetValueNum) &&
