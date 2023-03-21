@@ -532,11 +532,19 @@ export default function HarvestPosition(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
-                </div>
-            )}
+            <HarvestPositionHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Harvest Settings'
+                        : 'Harvest Rewards Confirmation'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
             <div className={styles.confirmation_content}>
                 {currentConfirmationData}
             </div>
@@ -546,37 +554,37 @@ export default function HarvestPosition(props: propsIF) {
     if (showConfirmation) return confirmationContent;
 
     return (
-        <div className={styles.remove_range_container}>
-            <div className={styles.main_content}>
-                <HarvestPositionHeader
-                    onClose={handleModalClose}
-                    title={
-                        showSettings ? 'Harvest Settings' : 'Harvest Rewards'
-                    }
-                    onBackButton={() => {
-                        resetConfirmation();
-                        setShowSettings(false);
-                    }}
-                    showBackButton={showSettings}
-                />
-                {mainModalContent}
-                <div style={{ padding: '0 1rem' }}>
-                    {showSettings ? (
-                        <Button
-                            title={
-                                currentSlippage > 0
-                                    ? 'Confirm'
-                                    : 'Enter a Valid Slippage'
-                            }
-                            action={updateSettings}
-                            flat
-                            disabled={!(currentSlippage > 0)}
-                        />
-                    ) : (
-                        harvestButtonOrNull
-                    )}
+        <>
+            <HarvestPositionHeader
+                onClose={handleModalClose}
+                title={showSettings ? 'Harvest Settings' : 'Harvest Rewards'}
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
+            <div className={styles.remove_range_container}>
+                <div className={styles.main_content}>
+                    {mainModalContent}
+                    <div style={{ padding: '0 1rem' }}>
+                        {showSettings ? (
+                            <Button
+                                title={
+                                    currentSlippage > 0
+                                        ? 'Confirm'
+                                        : 'Enter a Valid Slippage'
+                                }
+                                action={updateSettings}
+                                flat
+                                disabled={!(currentSlippage > 0)}
+                            />
+                        ) : (
+                            harvestButtonOrNull
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

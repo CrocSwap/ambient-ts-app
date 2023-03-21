@@ -1,13 +1,13 @@
 .header_container {
+    background: var(--dark1);
     padding: 10px 20px;
+    border-radius: var(--border-radius);
   
 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: var(--dark1);
-    border-radius: var(--border-radius);
     /* background: red; */
 }
 
