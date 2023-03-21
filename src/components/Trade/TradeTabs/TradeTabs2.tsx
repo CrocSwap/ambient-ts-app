@@ -99,6 +99,8 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function TradeTabs2(props: propsIF) {
@@ -155,6 +157,8 @@ export default function TradeTabs2(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -417,6 +421,8 @@ export default function TradeTabs2(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
         slippage: slippage,
+        gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     // Props for <Transactions/> React Element

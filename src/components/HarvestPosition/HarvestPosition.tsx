@@ -39,6 +39,7 @@ import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -67,6 +68,8 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     handleModalClose: () => void;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function HarvestPosition(props: propsIF) {
@@ -79,6 +82,8 @@ export default function HarvestPosition(props: propsIF) {
         dexBalancePrefs,
         handleModalClose,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     // settings
@@ -121,6 +126,25 @@ export default function HarvestPosition(props: propsIF) {
         useState<number | undefined>();
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
+
+    const [harvestGasPriceinDollars, setHarvestGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei * 92500 * 1e-9 * ethMainnetUsdPrice;
+
+            setHarvestGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -525,6 +549,10 @@ export default function HarvestPosition(props: propsIF) {
                     removalPercentage={removalPercentage}
                 />
                 <HarvestExtraControls dexBalancePrefs={dexBalancePrefs} />
+            </div>
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} />
+                {harvestGasPriceinDollars ? harvestGasPriceinDollars : '…'}
             </div>
         </>
     );

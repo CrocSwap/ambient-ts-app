@@ -38,6 +38,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { checkIsStable } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -67,6 +68,8 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function RemoveRange(props: propsIF) {
@@ -80,6 +83,8 @@ export default function RemoveRange(props: propsIF) {
         quoteTokenAddress,
         chainId,
         handleModalClose,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const lastBlockNumber = useAppSelector(
@@ -111,6 +116,25 @@ export default function RemoveRange(props: propsIF) {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
+
+    const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei * 94500 * 1e-9 * ethMainnetUsdPrice;
+
+            setRemovalGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -684,6 +708,10 @@ export default function RemoveRange(props: propsIF) {
                     quoteRemovalNum={quoteRemovalNum}
                 />
                 <ExtraControls dexBalancePrefs={dexBalancePrefs} />
+            </div>
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} />{' '}
+                {removalGasPriceinDollars ? removalGasPriceinDollars : '…'}
             </div>
         </>
     );

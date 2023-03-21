@@ -3117,6 +3117,8 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     chartSettings={chartSettings}
                                     tokenList={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
@@ -3496,6 +3498,8 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
@@ -3554,7 +3558,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    gasPriceInGwei={gasPriceInGwei}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
@@ -3580,6 +3583,8 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
@@ -3638,7 +3643,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    gasPriceInGwei={gasPriceInGwei}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
@@ -3695,6 +3699,8 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
@@ -3753,7 +3759,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    gasPriceInGwei={gasPriceInGwei}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}

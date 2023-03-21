@@ -48,7 +48,7 @@
     /* align-items: center; */
 }
 
-.confirmation_content{
+.confirmation_content {
     padding: 1rem;
 }
 
@@ -65,4 +65,14 @@
 
 .confirmation_container header div {
     cursor: pointer;
+}
+
+.gas_pump {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 20px;
+}
+.gas_pump svg {
+    margin-right: 5px;
 }

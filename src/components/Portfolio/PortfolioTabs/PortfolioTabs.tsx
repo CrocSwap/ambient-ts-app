@@ -90,6 +90,8 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 // React functional component
@@ -124,6 +126,8 @@ export default function PortfolioTabs(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -390,6 +394,8 @@ export default function PortfolioTabs(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
         slippage: slippage,
+        gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     // props for <Transactions/> React Element
