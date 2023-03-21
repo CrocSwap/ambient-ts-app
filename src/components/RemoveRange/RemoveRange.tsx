@@ -561,7 +561,7 @@ export default function RemoveRange(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
+            {/* {showConfirmation && (
                 <header>
                     <div className={styles.button} onClick={resetConfirmation}>
                         {newRemovalTransactionHash == '' && (
@@ -574,7 +574,20 @@ export default function RemoveRange(props: propsIF) {
                         </div>
                     )}
                 </header>
-            )}
+            )} */}
+            <RemoveRangeHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Remove Position Settings'
+                        : 'Remove Position'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
             <div className={styles.confirmation_content}>
                 {currentConfirmationData}
             </div>
@@ -679,24 +692,26 @@ export default function RemoveRange(props: propsIF) {
 
     if (showConfirmation) return confirmationContent;
     return (
-        <div className={styles.remove_range_container}>
-            <div className={styles.main_content}>
-                <RemoveRangeHeader
-                    onClose={handleModalClose}
-                    title={
-                        showSettings
-                            ? 'Remove Position Settings'
-                            : 'Remove Position'
-                    }
-                    onBackButton={() => {
-                        resetConfirmation();
-                        setShowSettings(false);
-                    }}
-                    showBackButton={showSettings}
-                />
-                {mainModalContent}
-                {buttonToDisplay}
+        <>
+            <RemoveRangeHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Remove Position Settings'
+                        : 'Remove Position'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
+            <div className={styles.remove_range_container}>
+                <div className={styles.main_content}>
+                    {mainModalContent}
+                    {buttonToDisplay}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
