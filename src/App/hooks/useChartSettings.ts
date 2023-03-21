@@ -37,11 +37,13 @@ export interface chartSettingsMethodsIF {
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (): chartSettingsMethodsIF => {
+    const localStorageKey = 'chart_settings';
+
     // fn to check a user preference for any given subchart
     const getPreference = (subchart: string): boolean | undefined => {
         // persisted data from local storage, returns undefined if not present
         const chartSettings: chartSettingsLocalStorageIF | null = JSON.parse(
-            localStorage.getItem('chart_settings') as string,
+            localStorage.getItem(localStorageKey) as string,
         );
         let output: boolean | undefined;
         switch (subchart) {
@@ -62,7 +64,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     const getOverlay = (overlay: string): string | undefined => {
         const chartSettings: chartSettingsLocalStorageIF | null = JSON.parse(
-            localStorage.getItem('chart_settings') as string,
+            localStorage.getItem(localStorageKey) as string,
         );
         let output: string | undefined;
         switch (overlay) {
@@ -100,7 +102,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
         localStorage.setItem(
-            'chart_settings',
+            localStorageKey,
             JSON.stringify({
                 isVolumeSubchartEnabled,
                 isTvlSubchartEnabled,
