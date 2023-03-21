@@ -6,9 +6,9 @@ import styles from './TransactionSettings.module.css';
 import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
-import DividerDark from '../DividerDark/DividerDark';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { VscClose } from 'react-icons/vsc';
 
 // interface for component props
 interface propsIF {
@@ -61,50 +61,59 @@ export default function TransactionSettings(props: propsIF) {
     };
 
     return (
-        <div className={styles.settings_container}>
-            <div className={styles.settings_title}>{module + ' Settings'}</div>
-            {shouldDisplaySlippageTolerance && (
-                <SlippageTolerance
-                    persistedSlippage={persistedSlippage}
-                    setCurrentSlippage={setCurrentSlippage}
-                    handleKeyDown={handleKeyDown}
-                    presets={
-                        isPairStable
-                            ? slippage.presets.stable
-                            : slippage.presets.volatile
-                    }
-                />
-            )}
-            <DividerDark />
-            <DividerDark />
+        <>
+            <div className={styles.settings_title}>
+                {module + ' Settings'}
 
-            <ConfirmationModalControl
-                tempBypassConfirm={currentSkipConfirm}
-                setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
-                displayInSettings={true}
-            />
-
-            <div className={styles.button_container}>
-                {module !== 'Limit Order' ? (
-                    <Button
-                        title={
-                            currentSlippage > 0
-                                ? 'Confirm'
-                                : 'Enter a Valid Slippage'
-                        }
-                        action={updateSettings}
-                        disabled={!(currentSlippage > 0)}
-                        flat
-                    />
-                ) : (
-                    <Button
-                        title='Confirm Settings'
-                        action={updateSettings}
-                        flat
-                    />
-                )}
+                <span onClick={onClose}>
+                    {' '}
+                    <VscClose size={22} />
+                </span>
             </div>
-        </div>
+            <div className={styles.settings_container}>
+                <section>
+                    {shouldDisplaySlippageTolerance && (
+                        <SlippageTolerance
+                            persistedSlippage={persistedSlippage}
+                            setCurrentSlippage={setCurrentSlippage}
+                            handleKeyDown={handleKeyDown}
+                            presets={
+                                isPairStable
+                                    ? slippage.presets.stable
+                                    : slippage.presets.volatile
+                            }
+                        />
+                    )}
+
+                    <ConfirmationModalControl
+                        tempBypassConfirm={currentSkipConfirm}
+                        setTempBypassConfirm={setCurrentSkipConfirm}
+                        toggleFor={toggleFor}
+                        displayInSettings={true}
+                    />
+                </section>
+
+                <div className={styles.button_container}>
+                    {module !== 'Limit Order' ? (
+                        <Button
+                            title={
+                                currentSlippage > 0
+                                    ? 'Confirm'
+                                    : 'Enter a Valid Slippage'
+                            }
+                            action={updateSettings}
+                            disabled={!(currentSlippage > 0)}
+                            flat
+                        />
+                    ) : (
+                        <Button
+                            title='Confirm Settings'
+                            action={updateSettings}
+                            flat
+                        />
+                    )}
+                </div>
+            </div>
+        </>
     );
 }

@@ -12,6 +12,8 @@ import Landing1 from './Landing1';
 // import Landing from './Landing';
 // import 'swiper/css/effect-fade'
 // import 'swiper/css/navigation'
+
+// Todo: @Team : Leave this component for the moment. Although unused, it could be refactored if we decide to bring back the slides.
 export default function HomeSlider() {
     return (
         <div className={styles.container}>

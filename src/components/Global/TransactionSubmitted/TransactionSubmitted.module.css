@@ -3,6 +3,7 @@
     flex-direction: column;
     text-align: center;
     justify-content: space-between;
+    /* padding: 20px; */
 }
 .transaction_submitted h2 {
     font-size: var(--header2-size);
@@ -16,7 +17,7 @@
 }
 .completed_animation {
     display: flex;
-    min-height: 100px;
+    min-height: 150px;
     /* min-width: 400px;
     max-width: 400px; */
 
