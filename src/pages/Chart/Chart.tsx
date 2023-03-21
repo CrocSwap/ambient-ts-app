@@ -4736,7 +4736,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [scaleData === undefined, selectedDate]);
+    }, [scaleData, selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -5288,7 +5288,7 @@ export default function Chart(props: ChartData) {
             render();
         }
     }, [
-        scaleData === undefined,
+        scaleData,
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5568,7 +5568,7 @@ export default function Chart(props: ChartData) {
     }, [noGoZoneBoudnaries, limitNoGoZone]);
 
     useEffect(() => {
-        if (isLineDrag) {
+        if (isLineDrag && location.pathname.includes('/limit')) {
             d3.select(d3CanvasNoGoZone.current)
                 .select('canvas')
                 .style('display', 'inline');
