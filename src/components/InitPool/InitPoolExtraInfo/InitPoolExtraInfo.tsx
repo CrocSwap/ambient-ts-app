@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 // import { FaGasPump } from 'react-icons/fa';
 // import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -15,6 +15,8 @@ interface InitPriceExtraInfoProps {
     isDenomBase: boolean;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    setIsDenomBase: Dispatch<SetStateAction<boolean>>;
+    invertInitialPrice?: () => void;
 }
 
 export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
@@ -24,6 +26,8 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         initGasPriceinDollars,
         baseToken,
         quoteToken,
+        invertInitialPrice,
+        setIsDenomBase,
     } = props;
 
     const [showExtraDetails] = useState<boolean>(true);
@@ -46,6 +50,18 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         ? `1 ${baseToken.symbol} = ${initialPriceLocaleString} ${quoteToken.symbol}`
         : `1 ${quoteToken.symbol} = ${initialPriceLocaleString} ${baseToken.symbol}`;
 
+    const priceDisplayDiv = (
+        <div
+            onClick={() => {
+                invertInitialPrice ? invertInitialPrice() : null;
+                setIsDenomBase(!isDenomBase);
+            }}
+            style={{ cursor: 'pointer' }}
+        >
+            {priceDisplayString}
+        </div>
+    );
+
     const extraInfoData = [
         {
             title: 'Price',
@@ -54,7 +70,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
             // data: `${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
             //     tokenPair.dataTokenA.symbol
             // }`,
-            data: priceDisplayString,
+            data: priceDisplayDiv,
         },
         {
             title: 'Liquidity Provider Fee',
