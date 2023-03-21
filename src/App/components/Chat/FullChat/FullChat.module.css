@@ -136,6 +136,20 @@
     padding: 0;
 }
 
+.favorite_button {
+    margin-left: 3px;
+    margin-top: -3px;
+    margin-bottom: 6px;
+    background: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+.favorite_button svg {
+    transition: all var(--animation-speed) ease-in-out;
+}
+
 /* .chat_scrollable{
     padding: 1rem;
     overflow-y: scroll;

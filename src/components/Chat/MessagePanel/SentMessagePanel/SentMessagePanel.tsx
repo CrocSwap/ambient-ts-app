@@ -143,6 +143,64 @@ export default function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
+    // const [value, copy] = useCopyToClipboard();
+    // const [openSnackbar, setOpenSnackbar] = useState(false);
+    // const snackbarContent = (
+    //     <SnackbarComponent
+    //         severity='info'
+    //         setOpenSnackbar={setOpenSnackbar}
+    //         openSnackbar={openSnackbar}
+    //     >
+    //         {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
+    //     </SnackbarComponent>
+    // );
+    // function handleCopyAddress(item: string) {
+    //     copy(item);
+    //     setOpenSnackbar(true);
+    // }
+
+    function handleOpenExplorer(url: string) {
+        window.open(url);
+    }
+
+    function isLink(url: string) {
+        const urlPattern =
+            /^(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+        if (url.includes(' ')) {
+            const words: string[] = url.split(' ');
+            return (
+                <>
+                    {words.map((word, index) => (
+                        <span
+                            onClick={() => handleOpenExplorer(url)}
+                            key={index}
+                            style={
+                                urlPattern.test(word)
+                                    ? { color: '#ab7de7' }
+                                    : { color: 'white' }
+                            }
+                        >
+                            {' ' + word}
+                        </span>
+                    ))}
+                </>
+            );
+        } else {
+            if (urlPattern.test(url)) {
+                return (
+                    <p
+                        style={{ color: '#ab7de7' }}
+                        onClick={() => handleOpenExplorer(url)}
+                    >
+                        {url}
+                    </p>
+                );
+            } else {
+                return url;
+            }
+        }
+    }
+
     function mentionedMessage() {
         const messagesArray = props.message.message.split(' ');
         if (showAvatar === true) {
@@ -162,14 +220,16 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + word}
+                                {'' + isLink(word)}
                             </span>
                         ))}
                     </p>
                 );
             } else {
                 return (
-                    <p className={styles.message}>{props.message.message}</p>
+                    <p className={styles.message}>
+                        {isLink(props.message.message)}
+                    </p>
                 );
             }
         } else {
@@ -189,7 +249,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + word}
+                                {'' + isLink(word)}
                             </span>
                         ))}
                     </p>
@@ -197,7 +257,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <p className={styles.message_without_avatar}>
-                        {props.message.message}
+                        {isLink(props.message.message)}
                     </p>
                 );
             }
@@ -226,90 +286,107 @@ export default function SentMessagePanel(props: SentMessageProps) {
     );
 
     return (
-        <div className={styles.main}>
-            {daySeparator === '' ? (
-                ''
-            ) : daySeparator !== '' ? (
-                <p className={styles.seperator}>{daySeparator}</p>
-            ) : (
-                ''
-            )}
-            <div
-                className={
-                    props.isUserLoggedIn
-                        ? props.message.isMentionMessage === false
-                            ? styles.sent_message_body
-                            : props.message.mentionedName?.trim() ===
-                                  props.ensName?.trim() ||
-                              props.message.mentionedName?.trim() ===
-                                  props.connectedAccountActive?.trim()
-                            ? styles.sent_message_body_with_mention
-                            : styles.sent_message_body
-                        : styles.sent_message_body
-                }
-            >
-                {showAvatar && (
-                    <div className={styles.nft_container}>{myBlockies}</div>
+        <div
+            style={
+                hasSeparator
+                    ? { width: '90%', marginBottom: 4 }
+                    : { width: '90%', marginBottom: -10 }
+            }
+        >
+            <div>
+                {daySeparator === '' ? (
+                    ''
+                ) : daySeparator !== '' ? (
+                    <p className={styles.seperator}>{daySeparator}</p>
+                ) : (
+                    ''
                 )}
-                <div className={styles.message_item}>
-                    <div
-                        className={
-                            showName && props.isCurrentUser
-                                ? styles.current_user_name
-                                : showName && !props.isCurrentUser
-                                ? styles.name
-                                : !showName && !props.isCurrentUser
-                                ? ''
-                                : ''
-                        }
-                        onClick={() => {
-                            if (
-                                location.pathname !==
-                                `/${
-                                    props.message.ensName === 'defaultValue'
-                                        ? props.message.walletID
-                                        : props.message.ensName
-                                }`
-                            ) {
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'lookupUserTxData',
-                                        loadingStatus: true,
-                                    }),
-                                );
-                                navigate(
+
+                <div
+                    className={
+                        props.isUserLoggedIn
+                            ? props.message.isMentionMessage === false
+                                ? styles.sent_message_body
+                                : props.message.mentionedName?.trim() ===
+                                      props.ensName?.trim() ||
+                                  props.message.mentionedName?.trim() ===
+                                      props.connectedAccountActive?.trim()
+                                ? styles.sent_message_body_with_mention
+                                : styles.sent_message_body
+                            : styles.sent_message_body
+                    }
+                >
+                    {showAvatar && (
+                        <div className={styles.nft_container}>{myBlockies}</div>
+                    )}
+                    <div className={styles.message_item}>
+                        <div
+                            className={
+                                showName && props.isCurrentUser
+                                    ? styles.current_user_name
+                                    : showName && !props.isCurrentUser
+                                    ? styles.name
+                                    : !showName && !props.isCurrentUser
+                                    ? ''
+                                    : ''
+                            }
+                            onClick={() => {
+                                if (
+                                    location.pathname !==
                                     `/${
                                         props.message.ensName === 'defaultValue'
                                             ? props.message.walletID
                                             : props.message.ensName
-                                    }`,
-                                );
-                            }
-                        }}
-                    >
-                        {showName && getName()}
+                                    }`
+                                ) {
+                                    dispatch(
+                                        setDataLoadingStatus({
+                                            datasetName: 'lookupUserTxData',
+                                            loadingStatus: true,
+                                        }),
+                                    );
+                                    // handleCopyAddress(
+                                    //     props.message.ensName === 'defaultValue'
+                                    //         ? props.message.walletID
+                                    //         : props.message.ensName,
+                                    // );
+                                    navigate(
+                                        `/${
+                                            props.message.ensName ===
+                                            'defaultValue'
+                                                ? props.message.walletID
+                                                : props.message.ensName
+                                        }`,
+                                    );
+                                }
+                            }}
+                        >
+                            {showName && getName()}
+                        </div>
+                        <PositionBox
+                            message={props.message.message}
+                            isInput={false}
+                            isPosition={isPosition}
+                            setIsPosition={setIsPosition}
+                        />
+                        {!isPosition && mentionedMessage()}
                     </div>
-                    <PositionBox
-                        message={props.message.message}
-                        isInput={false}
-                        isPosition={isPosition}
-                        setIsPosition={setIsPosition}
-                    />
-                    {!isPosition && mentionedMessage()}
+                    {props.moderator ? (
+                        <FiDelete
+                            color='red'
+                            onClick={() => deleteMessages(props.message._id)}
+                        />
+                    ) : (
+                        ''
+                    )}
+                    <p className={styles.message_date}>
+                        {formatAMPM(props.message.createdAt)}
+                    </p>
+
+                    {/* {snackbarContent} */}
                 </div>
-                {props.moderator ? (
-                    <FiDelete
-                        color='red'
-                        onClick={() => deleteMessages(props.message._id)}
-                    />
-                ) : (
-                    ''
-                )}
-                <p className={styles.message_date}>
-                    {formatAMPM(props.message.createdAt)}
-                </p>
+                {hasSeparator ? <hr /> : ''}
             </div>
-            {hasSeparator ? <hr /> : ''}
         </div>
     );
 }
