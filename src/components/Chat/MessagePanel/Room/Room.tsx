@@ -2,7 +2,6 @@
 import styles from './Room.module.css';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { RiArrowDownSLine } from 'react-icons/ri';
-// import { BsSuitHeartFill } from 'react-icons/bs';
 import { useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { topPools } from '../../../../App/mockData';
@@ -43,6 +42,8 @@ interface propsIF {
     setUserCurrentPool: any;
     ensName: any;
     currentUser: any;
+    favoritePoolsArray: PoolIF[];
+    setFavoritePoolsArray: any;
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -54,12 +55,11 @@ export default function RoomDropdown(props: propsIF) {
         setIsCurrentPool,
         showCurrentPoolButton,
         setShowCurrentPoolButton,
+        favoritePoolsArray,
+        setFavoritePoolsArray,
     } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
     const [roomArray] = useState<PoolIF[]>([]);
-    // const [isCurrentPool, setIsCurrentPool] = useState(false);
-    // const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [isHovering, setIsHovering] = useState(false);
     const { updateUser } = useChatApi();
 
@@ -70,11 +70,6 @@ export default function RoomDropdown(props: propsIF) {
             name: '   @Global',
             value: 'Global',
         },
-        // {
-        //     id: 101,
-        //     name: 'Current Pool',
-        //     value: currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
-        // },
     ];
 
     const isFullScreenDefaultRooms = [
@@ -216,8 +211,6 @@ export default function RoomDropdown(props: propsIF) {
             for (let x = 0; x < roomArray.length; x++) {
                 if (favPool.name === roomArray[x].name) {
                     roomArray.push(roomArray.splice(x, 1)[0]);
-                } else {
-                    // do nothing
                 }
             }
             fave.push(favPool);
@@ -291,8 +284,6 @@ export default function RoomDropdown(props: propsIF) {
             for (let x = 0; x < roomArray.length; x++) {
                 if (favPool.name === roomArray[x].name) {
                     roomArray.push(roomArray.splice(x, 1)[0]);
-                } else {
-                    // do nothing
                 }
             }
             fave.push(favPool);
@@ -300,11 +291,7 @@ export default function RoomDropdown(props: propsIF) {
         setFavoritePoolsArray(() => {
             return fave;
         });
-        // const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-        // favoritePoolsArray.splice(0, middleIndex);
-        if (props.selectedRoom === 'Global') {
-            // do nothing
-        } else {
+        if (props.selectedRoom !== 'Global') {
             const index = roomArray
                 .map((e) => e.name)
                 .indexOf(props.selectedRoom);
