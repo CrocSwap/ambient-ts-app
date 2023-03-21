@@ -204,7 +204,10 @@ export default function TradeCharts(props: propsIF) {
         chartTriggeredBy,
     } = props;
 
-    // console.log('rendering TradeCharts.tsx');
+    const { pathname } = useLocation();
+
+    const isMarketOrLimitModule =
+        pathname.includes('market') || pathname.includes('limit');
 
     const dispatch = useAppDispatch();
 
@@ -263,22 +266,6 @@ export default function TradeCharts(props: propsIF) {
                 <AiOutlineDownload />
                 Save Chart Image
             </div>
-            {/* <div className={styles.save_image_content}>
-                <AiOutlineCopy />
-                Copy Chart Image
-            </div>
-            <div className={styles.save_image_content}>
-                <AiOutlineLink />
-                Copy link to the chart image
-            </div>
-            <div className={styles.save_image_content}>
-                <HiOutlineExternalLink />
-                Open image in new tab
-            </div>
-            <div className={styles.save_image_content}>
-                <AiOutlineTwitter />
-                Tweet chart image
-            </div> */}
         </div>
     );
     // CHART SETTINGS------------------------------------------------------------
@@ -291,22 +278,24 @@ export default function TradeCharts(props: propsIF) {
         chartSettings.volumeSubchart.isEnabled,
     );
 
-    const [liqMode, setLiqMode] = useState('Curve'); // TODO: switch default back to depth once depth mode is fixed
+    // const [liqMode, setLiqMode] = useState('Curve'); // TODO: switch default back to depth once depth mode is fixed
 
-    const path = useLocation().pathname;
+    // useEffect(() => {
+    //     if (isMarketOrLimitModule) {
+    //         // setLiqMode('Depth'); // TODO: the following code will be uncommented once depth mode is fixed
+    //     } else {
+    //         setLiqMode('Curve');
+    //     }
+    // }, [isMarketOrLimitModule]);
 
-    const isMarketOrLimitModule =
-        path.includes('market') || path.includes('limit');
-
-    useEffect(() => {
-        if (isMarketOrLimitModule) {
-            // setLiqMode('Depth'); // TODO: the following code will be uncommented once depth mode is fixed
-        } else {
-            setLiqMode('Curve');
-        }
-    }, [isMarketOrLimitModule]);
-
-    const chartItemStates = { showFeeRate, showTvl, showVolume, liqMode };
+    const chartItemStates = {
+        showFeeRate,
+        showTvl,
+        showVolume,
+        liqMode: isMarketOrLimitModule
+            ? chartSettings.marketOverlay.overlay
+            : chartSettings.rangeOverlay.overlay,
+    };
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
@@ -365,15 +354,9 @@ export default function TradeCharts(props: propsIF) {
             ))}
         </ul>
     );
-    // useEffect(() => {
-    //     const currentTabData = chartSettingsData.find(
-    //         (item) => item.label === selectedChartSetting.label,
-    //     );
-    //     if (currentTabData) setSelectedChartSetting(currentTabData);
-    // }, [chartSettingsData]);
+
     const mainChartSettingsContent = (
         <div
-            // ref={chartSettingsRef}
             className={`${styles.main_settings_container} ${
                 showChartSettings && styles.main_settings_container_active
             }`}
@@ -503,7 +486,13 @@ export default function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth setLiqMode={setLiqMode} liqMode={liqMode} />
+                <CurveDepth
+                    overlayMethods={
+                        isMarketOrLimitModule
+                            ? chartSettings.marketOverlay
+                            : chartSettings.rangeOverlay
+                    }
+                />
             </div>
         </div>
     );
