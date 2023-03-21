@@ -6,6 +6,8 @@ interface chartSettingsLocalStorageIF {
     isVolumeSubchartEnabled: boolean;
     isTvlSubchartEnabled: boolean;
     isFeeRateSubchartEnabled: boolean;
+    marketOverlay: string | null;
+    rangeOverlay: string | null;
 }
 
 // interface for class to manage a given subchart setting
@@ -16,11 +18,21 @@ interface subchartSettingsIF {
     toggle: () => void;
 }
 
+// interface for class to manage a given chart overlay
+interface overlayIF {
+    readonly pref: string;
+    readonly showDepth: () => void;
+    readonly showCurve: () => void;
+    readonly showNone: () => void;
+}
+
 // interface for return value of this hool
 export interface chartSettingsMethodsIF {
     volumeSubchart: subchartSettingsIF;
     tvlSubchart: subchartSettingsIF;
     feeRateSubchart: subchartSettingsIF;
+    marketOverlay: overlayIF;
+    rangeOverlay: overlayIF;
 }
 
 // hook to manage user preferences for chart settings
@@ -48,6 +60,25 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         return output;
     };
 
+    const getOverlay = (overlay: string): string | undefined => {
+        const chartSettings: chartSettingsLocalStorageIF | null = JSON.parse(
+            localStorage.getItem('chart_settings') as string,
+        );
+        let output: string | undefined;
+        switch (overlay) {
+            case 'market':
+            case 'limit':
+                output = chartSettings?.marketOverlay ?? 'depth';
+                break;
+            case 'range':
+                output = chartSettings?.rangeOverlay ?? 'curve';
+                break;
+            default:
+                return;
+        }
+        return output;
+    };
+
     // hooks to memoize user preferences in local state
     // initializer fallback value is default setting for new users
     const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] =
@@ -58,6 +89,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] =
         useState<boolean>(getPreference('feeRate') ?? false);
 
+    const [marketOverlay, setMarketOverlay] = useState<string>(
+        getOverlay('market') ?? 'depth',
+    );
+    const [rangeOverlay, setRangeOverlay] = useState<string>(
+        getOverlay('range') ?? 'curve',
+    );
+
     // hook to update local storage any time one of the preference primitives changes
     // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
@@ -67,12 +105,16 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 isVolumeSubchartEnabled,
                 isTvlSubchartEnabled,
                 isFeeRateSubchartEnabled,
+                marketOverlay,
+                rangeOverlay,
             }),
         );
     }, [
         isVolumeSubchartEnabled,
         isTvlSubchartEnabled,
         isFeeRateSubchartEnabled,
+        marketOverlay,
+        rangeOverlay,
     ]);
 
     // class definition for subchart setting and methods
@@ -104,6 +146,19 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         }
     }
 
+    class Overlay implements overlayIF {
+        public readonly pref: string;
+        public readonly showDepth: () => void;
+        public readonly showCurve: () => void;
+        public readonly showNone: () => void;
+        constructor(value: string, setterFn: Dispatch<SetStateAction<string>>) {
+            this.pref = value;
+            this.showDepth = () => setterFn('depth');
+            this.showCurve = () => setterFn('curve');
+            this.showNone = () => setterFn('none');
+        }
+    }
+
     return {
         volumeSubchart: new Subchart(
             isVolumeSubchartEnabled,
@@ -117,5 +172,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             isFeeRateSubchartEnabled,
             setIsFeeRateSubchartEnabled,
         ),
+        marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
+        rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
     };
 };
