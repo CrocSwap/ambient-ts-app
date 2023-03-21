@@ -7,20 +7,20 @@
     justify-content: space-between;
     row-gap: 12px;
     margin-top: 0.2rem;
-    position: relative;
+   
     padding: 20px;
     
 }
 .settings_title {
     display: flex;
-    justify-content: center;
-    font-size: var(--header-size);
-    line-height: var(--header2-lh);
-    margin-bottom: 1rem;
+    justify-content: space-between;
+    font-size: 24px;
+    line-height: 30px;
+   padding: 10px 20px;
+   border-radius: var(--border-radius);
+   background: var(--dark1)
 }
-.button_container {
-    /* position: absolute;
-    bottom: 0;
-    width: 100%; */
-    /* padding: 0 2rem; */
+
+.settings_title  span{
+    cursor: pointer;
 }
