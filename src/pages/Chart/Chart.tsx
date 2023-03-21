@@ -1181,13 +1181,7 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
-                    const _width =
-                        (Math.abs(
-                            scaleData.xScale(scaleData.xScale.domain()[0]) -
-                                scaleData.xScale(scaleData.xScale.domain()[1]),
-                        ) *
-                            6) /
-                        100;
+                    const _width = 65; // magic number of pixels to blur surrounding price
 
                     selection
                         .select('text')
@@ -2665,6 +2659,8 @@ export default function Chart(props: ChartData) {
             const sortLiqaData = tempLiqData.sort(function (a, b) {
                 return a.liqPrices - b.liqPrices;
             });
+
+            if (!sortLiqaData) return;
 
             const closestMin = sortLiqaData.reduce(function (prev, curr) {
                 return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
@@ -4204,8 +4200,6 @@ export default function Chart(props: ChartData) {
                 .attr('width', 1.5)
                 .attr('id', 'crossHairBgX');
 
-            // crosshairDefsX.append('feOffset').attr('dy', '5').attr('dx','5').attr('result', 'bg');
-
             crosshairDefsX
                 .append('feFlood')
                 .attr('flood-color', '#242F3F')
@@ -4742,7 +4736,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [scaleData === undefined, selectedDate]);
+    }, [scaleData, selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -5294,7 +5288,7 @@ export default function Chart(props: ChartData) {
             render();
         }
     }, [
-        scaleData === undefined,
+        scaleData,
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5532,12 +5526,6 @@ export default function Chart(props: ChartData) {
     // NoGoZone
     useEffect(() => {
         if (scaleData !== undefined) {
-            const canvas = d3
-                .select(d3CanvasNoGoZone.current)
-                .select('canvas')
-                .node() as any;
-            const ctx = canvas.getContext('2d');
-
             const limitNoGoZone = d3fc
                 .annotationCanvasBand()
                 .xScale(scaleData.xScale)
@@ -5580,7 +5568,7 @@ export default function Chart(props: ChartData) {
     }, [noGoZoneBoudnaries, limitNoGoZone]);
 
     useEffect(() => {
-        if (isLineDrag) {
+        if (isLineDrag && location.pathname.includes('/limit')) {
             d3.select(d3CanvasNoGoZone.current)
                 .select('canvas')
                 .style('display', 'inline');
@@ -5768,8 +5756,6 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
-                limitNoGoZone,
-                limitNoGoZoneJoin,
             );
         }
     }, [
@@ -6286,8 +6272,6 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
-            limitNoGoZone: any,
-            limitNoGoZoneJoin: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars

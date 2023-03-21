@@ -52,7 +52,6 @@ interface propsIF {
 
 export default function ChatPanel(props: propsIF) {
     const { isFullScreen, favePools, currentPool, setIsChatOpen } = props;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);

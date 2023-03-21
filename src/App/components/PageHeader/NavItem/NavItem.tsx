@@ -13,7 +13,6 @@ import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 interface NavItemPropsIF {
     children: ReactNode;
     icon: ReactNode;
-    // eslint-disable-next-line
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
 }

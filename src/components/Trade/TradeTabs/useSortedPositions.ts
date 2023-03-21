@@ -41,17 +41,23 @@ export const useSortedPositions = (
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
             (a, b) =>
-                (b.apy * 1000000000000 || b.bidTickInvPriceDecimalCorrected * 0.000001) -
-                (a.apy * 1000000000000 || a.bidTickInvPriceDecimalCorrected * 0.000001),
+                (b.apy * 1000000000000 ||
+                    b.bidTickInvPriceDecimalCorrected * 0.000001) -
+                (a.apy * 1000000000000 ||
+                    a.bidTickInvPriceDecimalCorrected * 0.000001),
         );
     // TODO: for some reason sortByMin() is leaving the final value out of sequence?
     const sortByMin = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
-            (a, b) => parseFloat(b.lowRangeDisplayInBase) - parseFloat(a.lowRangeDisplayInBase),
+            (a, b) =>
+                parseFloat(b.lowRangeDisplayInBase) -
+                parseFloat(a.lowRangeDisplayInBase),
         );
     const sortByMax = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
-            (a, b) => parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase),
+            (a, b) =>
+                parseFloat(b.highRangeDisplayInBase) -
+                parseFloat(a.highRangeDisplayInBase),
         );
     const sortByValue = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
@@ -69,7 +75,11 @@ export const useSortedPositions = (
         const empty: PositionIF[] = [];
         const huh: PositionIF[] = [];
 
-        const checkInRange = (val: number, low: number, high: number): boolean => {
+        const checkInRange = (
+            val: number,
+            low: number,
+            high: number,
+        ): boolean => {
             return val > low && val < high;
         };
         unsortedData.forEach((pos: PositionIF) => {
@@ -77,26 +87,41 @@ export const useSortedPositions = (
                 empty.push(pos);
             } else if (pos.positionType === 'ambient') {
                 ambient.push(pos);
-            } else if (checkInRange(pos.poolPriceInTicks, pos.bidTick, pos.askTick)) {
+            } else if (
+                checkInRange(pos.poolPriceInTicks, pos.bidTick, pos.askTick)
+            ) {
                 inRange.push(pos);
-            } else if (!checkInRange(pos.poolPriceInTicks, pos.bidTick, pos.askTick)) {
+            } else if (
+                !checkInRange(pos.poolPriceInTicks, pos.bidTick, pos.askTick)
+            ) {
                 outOfRange.push(pos);
             } else {
                 huh.push(pos);
             }
         });
 
-        const outOfRangeAfterSecondarySort: PositionIF[] = sortByTime(outOfRange);
+        const outOfRangeAfterSecondarySort: PositionIF[] =
+            sortByTime(outOfRange);
         const inRangeAfterSecondarySort: PositionIF[] = sortByTime(inRange);
         const ambientAfterSecondarySort: PositionIF[] = sortByTime(ambient);
         const emptyAfterSecondarySort: PositionIF[] = sortByTime(empty);
         const huhAfterSecondarySort: PositionIF[] = sortByTime(huh);
 
-        const outOfRangeAfterTertiarySort: PositionIF[] = sortById(outOfRangeAfterSecondarySort);
-        const inRangeAfterTertiarySorte: PositionIF[] = sortById(inRangeAfterSecondarySort);
-        const ambientAfterTertiarySort: PositionIF[] = sortById(ambientAfterSecondarySort);
-        const emptyAfterTertiarySort: PositionIF[] = sortById(emptyAfterSecondarySort);
-        const huhAfterTertiarySort: PositionIF[] = sortById(huhAfterSecondarySort);
+        const outOfRangeAfterTertiarySort: PositionIF[] = sortById(
+            outOfRangeAfterSecondarySort,
+        );
+        const inRangeAfterTertiarySorte: PositionIF[] = sortById(
+            inRangeAfterSecondarySort,
+        );
+        const ambientAfterTertiarySort: PositionIF[] = sortById(
+            ambientAfterSecondarySort,
+        );
+        const emptyAfterTertiarySort: PositionIF[] = sortById(
+            emptyAfterSecondarySort,
+        );
+        const huhAfterTertiarySort: PositionIF[] = sortById(
+            huhAfterSecondarySort,
+        );
 
         return [
             ...outOfRangeAfterTertiarySort,

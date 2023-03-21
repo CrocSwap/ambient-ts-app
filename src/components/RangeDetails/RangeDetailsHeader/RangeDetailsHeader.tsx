@@ -27,7 +27,13 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         setShowShareComponent,
     } = props;
     // const [openSnackbar, setOpenSnackbar] = useState(false);
-    const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
+    const phIcon = (
+        <FiCopy
+            size={25}
+            color='var(--text-grey-dark)'
+            style={{ opacity: '0' }}
+        />
+    );
 
     // const [value, copy] = useCopyToClipboard();
 
@@ -38,7 +44,10 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     //    }
 
     const copyIconWithTooltip = (
-        <IconWithTooltip title='Copy position slot ID to clipboard' placement='bottom'>
+        <IconWithTooltip
+            title='Copy position slot ID to clipboard'
+            placement='bottom'
+        >
             <div onClick={handleCopyPositionId}>
                 <FiCopy size={25} color='var(--text-grey-dark)' />
             </div>

@@ -26,7 +26,10 @@ export default function TxLI(props: propsIF) {
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </p>
             <p style={{ textAlign: 'center' }}>{txType}</p>
-            <p style={{ textAlign: 'center' }} className={styles.status_display}>
+            <p
+                style={{ textAlign: 'center' }}
+                className={styles.status_display}
+            >
                 {txValue}
             </p>
         </div>

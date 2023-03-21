@@ -5,7 +5,9 @@ export function updateRangeWithButton(
     value: number,
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>,
 ) {
-    const inputSlider = document.getElementById('reposition-input-slider-range');
+    const inputSlider = document.getElementById(
+        'reposition-input-slider-range',
+    );
     const valueString = value.toString();
     if (inputSlider && valueString) {
         (inputSlider as HTMLInputElement).value = valueString;

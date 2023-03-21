@@ -45,6 +45,7 @@ import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 // interface for React functional component props
 interface propsIF {
@@ -88,6 +89,7 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 // React functional component
@@ -121,6 +123,7 @@ export default function PortfolioTabs(props: propsIF) {
         account,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -386,6 +389,7 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     // props for <Transactions/> React Element

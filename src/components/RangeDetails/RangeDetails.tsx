@@ -86,20 +86,32 @@ export default function RangeDetails(props: propsIF) {
             printDomToImage(detailsRef.current);
         }
     };
-    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
+    const lastBlockNumber = useAppSelector(
+        (state) => state.graphData,
+    ).lastBlock;
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<string | undefined>();
-    const [quoteCollateralDisplay, setQuoteCollateralDisplay] = useState<string | undefined>();
+    const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
+        string | undefined
+    >();
+    const [quoteCollateralDisplay, setQuoteCollateralDisplay] = useState<
+        string | undefined
+    >();
 
-    const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>();
-    const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>();
+    const [baseFeesDisplay, setBaseFeesDisplay] = useState<
+        string | undefined
+    >();
+    const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<
+        string | undefined
+    >();
 
     const [usdValue, setUsdValue] = useState<string | undefined>();
 
     // eslint-disable-next-line
-    const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
+    const [updatedPositionApy, setUpdatedPositionApy] = useState<
+        number | undefined
+    >(positionApy);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
@@ -124,7 +136,8 @@ export default function RangeDetails(props: propsIF) {
     );
 
     useEffect(() => {
-        const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+        const positionStatsCacheEndpoint =
+            httpGraphCacheServerDomain + '/position_stats?';
         const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
@@ -147,8 +160,10 @@ export default function RangeDetails(props: propsIF) {
                 .then((response) => response?.json())
                 .then((json) => {
                     const positionStats = json?.data;
-                    const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
-                    const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
+                    const liqBaseNum =
+                        positionStats.positionLiqBaseDecimalCorrected;
+                    const liqQuoteNum =
+                        positionStats.positionLiqQuoteDecimalCorrected;
                     const liqBaseDisplay = liqBaseNum
                         ? liqBaseNum < 2
                             ? liqBaseNum.toLocaleString(undefined, {
@@ -188,8 +203,10 @@ export default function RangeDetails(props: propsIF) {
                         );
                     }
 
-                    const baseFeeDisplayNum = positionStats.feesLiqBaseDecimalCorrected;
-                    const quoteFeeDisplayNum = positionStats.feesLiqQuoteDecimalCorrected;
+                    const baseFeeDisplayNum =
+                        positionStats.feesLiqBaseDecimalCorrected;
+                    const quoteFeeDisplayNum =
+                        positionStats.feesLiqQuoteDecimalCorrected;
 
                     const baseFeeDisplayTruncated = !baseFeeDisplayNum
                         ? '0.00'
@@ -345,7 +362,9 @@ export default function RangeDetails(props: propsIF) {
                     <TransactionDetailsGraph
                         tx={position}
                         transactionType={'liqchange'}
-                        isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
                         isOnPortfolioPage={isOnPortfolioPage}
                     />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}

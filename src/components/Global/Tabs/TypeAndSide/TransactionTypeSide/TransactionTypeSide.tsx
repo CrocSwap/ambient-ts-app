@@ -8,7 +8,8 @@ interface TransactionTypeSideProps {
     isDenomBase?: boolean;
 }
 export default function TransactionTypeSide(props: TransactionTypeSideProps) {
-    const { type, side, isDenomBase, baseTokenCharacter, quoteTokenCharacter } = props;
+    const { type, side, isDenomBase, baseTokenCharacter, quoteTokenCharacter } =
+        props;
 
     const removeType = <p className={styles.remove_style}>Remove</p>;
     const claimType = <p className={styles.claim_style}>Claimed</p>;

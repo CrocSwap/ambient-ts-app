@@ -5,7 +5,9 @@ export default class swapParams {
 
     constructor(inputArray: string[][]) {
         const findValue = (key: string) => {
-            const queriedPair = inputArray.find((pair: string[]) => pair[0] === key);
+            const queriedPair = inputArray.find(
+                (pair: string[]) => pair[0] === key,
+            );
             return queriedPair ? queriedPair[1] : '';
         };
         this.chain = findValue('chain');

@@ -19,14 +19,13 @@
     justify-content: center;
     align-items: center;
     flex-direction: row;
-background: var(--dark2);
+    background: var(--dark2);
     border-radius: 4px;
-    outline:none;
+    outline: none;
     /* max-width: 200px; */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    
 }
 .reposition_toggle_container a {
     font-size: var(--body-size);

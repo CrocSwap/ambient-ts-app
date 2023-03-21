@@ -9,8 +9,10 @@ const addFirstDayMonth = (data: any[]) => {
         tempfirstDayMonth.setDate(1);
         tempfirstDayMonth.setHours(0);
         if (
-            tempArray.find((item: any) => item.date.getTime() === tempfirstDayMonth.getTime()) ===
-            undefined
+            tempArray.find(
+                (item: any) =>
+                    item.date.getTime() === tempfirstDayMonth.getTime(),
+            ) === undefined
         ) {
             tempArray.push({ date: tempfirstDayMonth, style: true });
         }
@@ -54,7 +56,12 @@ const filteredHour = (startDate: Date, endDate: Date, data: any) => {
     );
 };
 
-const filteredMinute = (startDate: Date, endDate: Date, data: any, minuteControl: number) => {
+const filteredMinute = (
+    startDate: Date,
+    endDate: Date,
+    data: any,
+    minuteControl: number,
+) => {
     return (
         data.filter(
             (item: any) =>
@@ -87,7 +94,8 @@ const correctStyleForData = (startDate: Date, endDate: Date, data: any) => {
         data = data.map((item: any) => {
             return {
                 date: item.date,
-                style: item.date.getHours() === 0 && item.date.getMinutes() === 0,
+                style:
+                    item.date.getHours() === 0 && item.date.getMinutes() === 0,
             };
         });
     } else if (!filteredMinute(startDate, endDate, data, 0)) {
@@ -140,8 +148,9 @@ export const getHourAxisTicks = (
             for (let i = 0; i < 24; i += hour) {
                 const res = new Date(element.setHours(i));
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({
                         date: res,
@@ -153,8 +162,9 @@ export const getHourAxisTicks = (
             for (let i = 0; i < 8; i += hour) {
                 const res = new Date(element.setHours(3 * i));
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({
                         date: res,
@@ -166,8 +176,9 @@ export const getHourAxisTicks = (
             for (let i = 0; i < 4; i += hour) {
                 const res = new Date(element.setHours(6 * i));
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({
                         date: res,
@@ -179,8 +190,9 @@ export const getHourAxisTicks = (
             for (let i = 0; i < 2; i += hour) {
                 const res = new Date(element.setHours(12 * i));
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({
                         date: res,
@@ -190,8 +202,9 @@ export const getHourAxisTicks = (
             }
         } else {
             if (
-                tempArray.find((item: any) => item.date.getTime() === element.getTime()) ===
-                undefined
+                tempArray.find(
+                    (item: any) => item.date.getTime() === element.getTime(),
+                ) === undefined
             ) {
                 tempArray.push({ date: element, style: false });
             }
@@ -200,7 +213,9 @@ export const getHourAxisTicks = (
 
     const _resData: any = correctStyleForData(startDate, endDate, tempArray);
 
-    return _resData.sort((a: any, b: any) => b.date.getTime() - a.date.getTime());
+    return _resData.sort(
+        (a: any, b: any) => b.date.getTime() - a.date.getTime(),
+    );
 };
 
 export const getOneDayAxisTicks = (
@@ -221,8 +236,10 @@ export const getOneDayAxisTicks = (
             for (let i = 0; i < 16; i++) {
                 const tempData = new Date(res.setTime(res.getTime() + oneDay));
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === tempData.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) =>
+                            item.date.getTime() === tempData.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: tempData, style: false });
                 }
@@ -236,8 +253,10 @@ export const getOneDayAxisTicks = (
             for (let i = 0; i < 16; i++) {
                 const tempData = new Date(res.setTime(res.getTime() + oneDay));
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === tempData.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) =>
+                            item.date.getTime() === tempData.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: tempData, style: false });
                 }
@@ -249,7 +268,9 @@ export const getOneDayAxisTicks = (
             res.setHours(0);
             res.setMinutes(0);
             for (let i = 0; i < 12; i++) {
-                const tempData = new Date(res.setTime(res.getTime() + 2 * oneDay));
+                const tempData = new Date(
+                    res.setTime(res.getTime() + 2 * oneDay),
+                );
                 if (
                     tempArray.find((item: any) => {
                         return item.date.getTime() === tempData.getTime();
@@ -265,10 +286,14 @@ export const getOneDayAxisTicks = (
             res.setHours(0);
             res.setMinutes(0);
             for (let i = 1; i < 5; i += 3) {
-                const tempData = new Date(res.setTime(res.getTime() + i * oneDay));
+                const tempData = new Date(
+                    res.setTime(res.getTime() + i * oneDay),
+                );
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === tempData.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) =>
+                            item.date.getTime() === tempData.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: tempData, style: false });
                 }
@@ -278,8 +303,9 @@ export const getOneDayAxisTicks = (
         if (bandwidth <= 10) {
             const tempData = new Date(element.setDate(15));
             if (
-                tempArray.find((item: any) => item.date.getTime() === tempData.getTime()) ===
-                undefined
+                tempArray.find(
+                    (item: any) => item.date.getTime() === tempData.getTime(),
+                ) === undefined
             ) {
                 tempArray.push({ date: tempData, style: false });
             }
@@ -288,7 +314,9 @@ export const getOneDayAxisTicks = (
 
     const _resData: any = correctStyleForData(startDate, endDate, tempArray);
 
-    return _resData.sort((a: any, b: any) => b.date.getTime() - a.date.getTime());
+    return _resData.sort(
+        (a: any, b: any) => b.date.getTime() - a.date.getTime(),
+    );
 };
 
 export const get15MinutesAxisTicks = (
@@ -305,8 +333,9 @@ export const get15MinutesAxisTicks = (
                 const _res = new Date(element.getTime());
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -319,8 +348,10 @@ export const get15MinutesAxisTicks = (
             for (let i = 0; i < 24; i += 1) {
                 element.setHours(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === element.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) =>
+                            item.date.getTime() === element.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(element), style: false });
                 }
@@ -333,8 +364,10 @@ export const get15MinutesAxisTicks = (
             for (let i = 0; i < 24; i += 2) {
                 element.setHours(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === element.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) =>
+                            item.date.getTime() === element.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(element), style: false });
                 }
@@ -347,8 +380,10 @@ export const get15MinutesAxisTicks = (
             for (let i = 0; i < 24; i += 4) {
                 element.setHours(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === element.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) =>
+                            item.date.getTime() === element.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(element), style: false });
                 }
@@ -358,7 +393,9 @@ export const get15MinutesAxisTicks = (
 
     const _resData: any = correctStyleForData(startDate, endDate, tempArray);
 
-    return _resData.sort((a: any, b: any) => b.date.getTime() - a.date.getTime());
+    return _resData.sort(
+        (a: any, b: any) => b.date.getTime() - a.date.getTime(),
+    );
 };
 
 export const get5MinutesAxisTicks = (
@@ -375,8 +412,9 @@ export const get5MinutesAxisTicks = (
                 const _res = new Date(element.getTime());
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -390,8 +428,9 @@ export const get5MinutesAxisTicks = (
                 const _res = new Date(element.getTime());
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -405,8 +444,9 @@ export const get5MinutesAxisTicks = (
                 const _res = new Date(element.getTime());
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -420,8 +460,9 @@ export const get5MinutesAxisTicks = (
                 const _res = new Date(element.getTime());
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -435,8 +476,9 @@ export const get5MinutesAxisTicks = (
                 const _res = new Date(element.getTime());
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -446,7 +488,9 @@ export const get5MinutesAxisTicks = (
 
     const _resData: any = correctStyleForData(startDate, endDate, tempArray);
 
-    return _resData.sort((a: any, b: any) => b.date.getTime() - a.date.getTime());
+    return _resData.sort(
+        (a: any, b: any) => b.date.getTime() - a.date.getTime(),
+    );
 };
 
 export const get1MinuteAxisTicks = (
@@ -464,8 +508,9 @@ export const get1MinuteAxisTicks = (
                 _res.setSeconds(0);
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -479,8 +524,9 @@ export const get1MinuteAxisTicks = (
                 _res.setSeconds(0);
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -495,8 +541,9 @@ export const get1MinuteAxisTicks = (
                 _res.setSeconds(0);
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -511,8 +558,9 @@ export const get1MinuteAxisTicks = (
                 _res.setSeconds(0);
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -527,8 +575,9 @@ export const get1MinuteAxisTicks = (
                 _res.setSeconds(0);
                 _res.setMinutes(i);
                 if (
-                    tempArray.find((item: any) => item.date.getTime() === _res.getTime()) ===
-                    undefined
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
                 ) {
                     tempArray.push({ date: new Date(_res), style: false });
                 }
@@ -538,5 +587,7 @@ export const get1MinuteAxisTicks = (
 
     const _resData: any = correctStyleForData(startDate, endDate, tempArray);
 
-    return _resData.sort((a: any, b: any) => b.date.getTime() - a.date.getTime());
+    return _resData.sort(
+        (a: any, b: any) => b.date.getTime() - a.date.getTime(),
+    );
 };

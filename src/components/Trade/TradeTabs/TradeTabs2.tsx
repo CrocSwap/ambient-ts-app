@@ -38,6 +38,7 @@ import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsCo
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -97,6 +98,7 @@ interface propsIF {
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function TradeTabs2(props: propsIF) {
@@ -152,6 +154,7 @@ export default function TradeTabs2(props: propsIF) {
         setIsCandleDataArrived,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -413,6 +416,7 @@ export default function TradeTabs2(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     // Props for <Transactions/> React Element

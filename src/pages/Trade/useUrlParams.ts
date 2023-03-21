@@ -9,7 +9,7 @@ import {
     setTokenB,
     setAdvancedMode,
     setAdvancedLowTick,
-    setAdvancedHighTick
+    setAdvancedHighTick,
 } from '../../utils/state/tradeDataSlice';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
@@ -46,7 +46,9 @@ export const useUrlParams = (
 
     const getAddress = (tkn: string) => {
         const tokenParam = urlParams.find((param) => param[0] === tkn);
-        const tokenAddress = tokenParam ? tokenParam[1] : ethers.constants.AddressZero;
+        const tokenAddress = tokenParam
+            ? tokenParam[1]
+            : ethers.constants.AddressZero;
         return tokenAddress.toLowerCase();
     };
 
@@ -62,15 +64,17 @@ export const useUrlParams = (
             } else if (tick === 'high') {
                 neededTick = 'highTick';
             }
-            const tickParam = urlParams.find((param) => param[0] === neededTick);
+            const tickParam = urlParams.find(
+                (param) => param[0] === neededTick,
+            );
             return tickParam ? parseInt(tickParam[1]) : null;
         };
         const advLowTick = getTick('low') ?? 0;
         const advHighTick = getTick('high') ?? 0;
         advLowTick && dispatch(setAdvancedLowTick(advLowTick));
         advHighTick && dispatch(setAdvancedHighTick(advHighTick));
-        console.log({advHighTick});
-        console.log({advLowTick});
+        console.log({ advHighTick });
+        console.log({ advLowTick });
         if (![advLowTick, advHighTick].includes(0)) {
             console.log('doing it!!');
             dispatch(setAdvancedMode(true));
@@ -79,12 +83,17 @@ export const useUrlParams = (
     }, [urlParams]);
 
     const limitTick = useMemo<number | null>(() => {
-        const limitTickParam = urlParams.find((param) => param[0] === 'limitTick');
+        const limitTickParam = urlParams.find(
+            (param) => param[0] === 'limitTick',
+        );
         return limitTickParam ? parseInt(limitTickParam[1]) : null;
     }, [urlParams]);
 
     // make a list of params found in the URL queried
-    const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
+    const paramsUsed = useMemo(
+        () => urlParams.map((param) => param[0]),
+        [urlParams],
+    );
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -142,19 +151,25 @@ export const useUrlParams = (
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
                 console.log('looking for token!!');
-                const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
+                const allTokenLists = tokenList
+                    ? JSON.parse(tokenList as string)
+                    : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (
                     // make sure allTokenLists is not undefined
                     allTokenLists &&
                     // make sure desired list is in allTokenLists
                     allTokenLists.some(
-                        (list: TokenListIF) => list.name === listNames[listCounter] && list.default,
+                        (list: TokenListIF) =>
+                            list.name === listNames[listCounter] &&
+                            list.default,
                     )
                 ) {
                     // extract desired token list
                     const { tokens } = allTokenLists.find(
-                        (list: TokenListIF) => list.name === listNames[listCounter] && list.default,
+                        (list: TokenListIF) =>
+                            list.name === listNames[listCounter] &&
+                            list.default,
                     );
                     // see if the desired token is in the list
                     const tokenOnList = tokens.some(
@@ -165,7 +180,8 @@ export const useUrlParams = (
 
                     if (tokenOnList) {
                         const token = tokens.find(
-                            (token: TokenIF) => token.address.toLowerCase() === addr,
+                            (token: TokenIF) =>
+                                token.address.toLowerCase() === addr,
                         );
                         return token;
                     } else if (listCounter < listNames.length - 1) {
@@ -176,7 +192,11 @@ export const useUrlParams = (
                     }
                 }
             };
-            return findToken(['Ambient Token List', 'CoinGecko', 'Testnet Token List']);
+            return findToken([
+                'Ambient Token List',
+                'CoinGecko',
+                'Testnet Token List',
+            ]);
         };
 
         // TODO: find a way to correctly type this return
@@ -208,7 +228,8 @@ export const useUrlParams = (
             paramsUsed.includes('tokenA') &&
             paramsUsed.includes('tokenB') &&
             addrTokenA !== addrTokenB;
-        const paramsIncludesToken = paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
+        const paramsIncludesToken =
+            paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
             Promise.all([

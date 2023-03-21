@@ -56,7 +56,10 @@ export function checkIsStable(addr1: string, addr2: string, chain: string) {
     const stablePairs = getStablePairsByChain(chain);
     let pairIsIncluded = false;
     stablePairs.forEach((stablePair: string[]) => {
-        if (stablePair.includes(addr1.toLowerCase()) && stablePair.includes(addr2.toLowerCase())) {
+        if (
+            stablePair.includes(addr1.toLowerCase()) &&
+            stablePair.includes(addr2.toLowerCase())
+        ) {
             pairIsIncluded = true;
         }
     });

@@ -1,14 +1,10 @@
-// START: Import React and Dongles
 import { useState, Dispatch, SetStateAction, useRef, useEffect } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
-
-// START: Import Local Files
 import styles from './Account.module.css';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
-// import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
@@ -16,7 +12,6 @@ import { useAccount } from 'wagmi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
-// import { formatAmountOld } from '../../../../utils/numbers';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -24,7 +19,6 @@ interface AccountPropsIF {
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
-    // openModal: () => void;
     ensName: string;
     chainId: string;
     isAppOverlayActive: boolean;
@@ -46,7 +40,6 @@ export default function Account(props: AccountPropsIF) {
         ethMainnetUsdPrice,
         clickLogout,
         ensName,
-        // openModal,
         chainId,
         isAppOverlayActive,
         setIsAppOverlayActive,
@@ -125,7 +118,6 @@ export default function Account(props: AccountPropsIF) {
         <section className={styles.wallet_display} ref={walletDropdownItemRef}>
             <div
                 className={`${styles.title_gradient} `}
-                // onClick={handleCopyAddress}
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
             >
                 <MdAccountBalanceWallet color='var(--text-grey-white)' />
@@ -158,7 +150,6 @@ export default function Account(props: AccountPropsIF) {
         <DefaultTooltip
             interactive
             title={`Latest block number on ${chainData.displayName}`}
-            // placement={'bottom'}
             placement={'bottom'}
             arrow
             enterDelay={100}
@@ -182,7 +173,6 @@ export default function Account(props: AccountPropsIF) {
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
-                    // openModal={openModal}
                     chainId={chainId}
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}

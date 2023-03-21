@@ -9,7 +9,6 @@ export const useUrlParams = (): {
 } => {
     // current URL pathway
     const { pathname } = useLocation();
-    // const { params } = useParams();
 
     // function to isolate the URL params from the full pathway
     const makeParamsSlug = (url: string) => {
@@ -26,7 +25,9 @@ export const useUrlParams = (): {
     // params slug to use in URL bar on header navigation
     // useState() + useEffect() is necessary over useMemo() to
     // ... only overwrite the value conditionally
-    const [paramsSlug, setParamsSlug] = useState<string>(makeParamsSlug(pathname));
+    const [paramsSlug, setParamsSlug] = useState<string>(
+        makeParamsSlug(pathname),
+    );
     useEffect(() => {
         // make a new params slug from the URL path
         const newSlug = makeParamsSlug(pathname);
@@ -52,18 +53,16 @@ export const useUrlParams = (): {
         );
     }, [paramsSlug]);
 
-    // console.log({ paramsSlug });
-
     const findParamValue = (key: string) =>
         urlParams.find((param) => param[0] === key)?.slice(-1)[0];
 
     const tokenAparam = findParamValue('tokenA');
-    // console.log({ tokenAparam });
     const tokenBparam = findParamValue('tokenB');
-    // console.log({ tokenBparam });
 
     const sortedTokens =
-        tokenAparam && tokenBparam ? sortBaseQuoteTokens(tokenAparam, tokenBparam) : [];
+        tokenAparam && tokenBparam
+            ? sortBaseQuoteTokens(tokenAparam, tokenBparam)
+            : [];
 
     return {
         paramsSlug,

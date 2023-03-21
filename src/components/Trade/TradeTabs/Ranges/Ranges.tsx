@@ -39,6 +39,7 @@ import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 
 // interface for props
 interface propsIF {
@@ -74,6 +75,7 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 // react functional component
@@ -104,6 +106,7 @@ export default function Ranges(props: propsIF) {
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         dexBalancePrefs,
+        slippage,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -498,6 +501,7 @@ export default function Ranges(props: propsIF) {
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
             dexBalancePrefs={dexBalancePrefs}
+            slippage={slippage}
         />
     ));
 

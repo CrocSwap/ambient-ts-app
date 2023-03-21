@@ -19,7 +19,6 @@ import {
 } from 'react-icons/md';
 import { RiErrorWarningLine } from 'react-icons/ri';
 
-// START: Import Local Files
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 
@@ -37,9 +36,7 @@ interface NavbarDropdownItemPropsIF {
 
 interface NavbarDropdownMenuPropsIF {
     isUserLoggedIn: boolean | undefined;
-    // isWeb3Enabled?: boolean;
     clickLogout: () => void;
-    // openModal: () => void;
     closeMenu?: () => void;
     chainId: string;
     isAppOverlayActive: boolean;
@@ -55,11 +52,8 @@ interface NavbarDropdownMenuPropsIF {
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const {
         isUserLoggedIn,
-        // isWeb3Enabled,
         clickLogout,
-        // openModal,
         closeMenu,
-        // setIsAppOverlayActive,
         setIsNavbarMenuOpen,
         isTutorialMode,
         setIsTutorialMode,
@@ -139,27 +133,15 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         clickLogout();
         closeMenu ? closeMenu() : null;
     }
-    // function handleLoginWithEmail() {
-    // openModal();
-    // closeMenu ? closeMenu() : null;
-    // }
 
     const logoutButton = (
         <div className={styles.button_container} onClick={handleLogout}>
             <button className={styles.authenticate_button}>Logout</button>
         </div>
     );
-    // const magicButton = (
-    //     <div className={styles.button_container} onClick={handleLoginWithEmail}>
-    //         <button className={styles.authenticate_button}>Log in with Email</button>
-    //     </div>
-    // );
 
     const settingsItems = (
         <>
-            {/* <NavbarDropdownItem leftIcon={<FaSun size={20} />} onClick={switchTheme}>
-                {theme === 'dark' ? 'Light' : 'Dark'} Mode
-            </NavbarDropdownItem> */}
             <NavbarDropdownItem
                 leftIcon={<MdLanguage size={20} />}
                 rightIcon={<MdArrowForwardIos />}
@@ -184,7 +166,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 Terms of Service
             </NavbarDropdownItem>
             {isUserLoggedIn && logoutButton}
-            {/* {!isUserLoggedIn && magicButton} */}
         </>
     );
 
@@ -208,7 +189,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             </NavbarDropdownItem>
         </>
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lngs: any = {
@@ -241,13 +221,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         </>
     );
 
-    // const moreItems = (
-    //     <>
-    //         <NavbarDropdownItem leftIcon={<AiFillInfoCircle size={20} />}>About</NavbarDropdownItem>
-    //         <NavbarDropdownItem leftIcon={<BsBook size={20} />}>Docs</NavbarDropdownItem>
-    //     </>
-    // );
-
     const NavbardropdownItemData = [
         {
             title: 'Settings & Privacy',
@@ -264,11 +237,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             data: socialsItems,
             leftIcon: <FaDiscord size={20} />,
         },
-        // {
-        //     title: 'More',
-        //     data: moreItems,
-        //     leftIcon: <FiMoreHorizontal size={20} />,
-        // },
     ];
 
     return (
