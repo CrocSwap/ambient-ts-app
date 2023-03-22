@@ -972,7 +972,11 @@ export default function Limit(props: propsIF) {
                 )}
             </ContentContainer>
             {isModalOpen && (
-                <Modal onClose={handleModalClose} title='Limit Confirmation'>
+                <Modal
+                    onClose={handleModalClose}
+                    title='Limit Confirmation'
+                    centeredTitle
+                >
                     <ConfirmLimitModal {...confirmLimitModalProps} />
                 </Modal>
             )}

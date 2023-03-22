@@ -106,7 +106,12 @@ export default function SwapHeader(props: propsIF) {
         <>
             {isOnTradeRoute ? tradeRouteHeader : mainHeader}
             {isModalOpen && (
-                <Modal noHeader title='modal' onClose={closeModal}>
+                <Modal
+                    noHeader
+                    title='modal'
+                    onClose={closeModal}
+                    centeredTitle
+                >
                     <TransactionSettings
                         module={isOnTradeRoute ? 'Market Order' : 'Swap'}
                         toggleFor='swap'
