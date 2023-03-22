@@ -59,7 +59,12 @@ export default function RepositionHeader(props: propsIF) {
             </div>
 
             {isModalOpen && (
-                <Modal noHeader title='modal' onClose={closeModal}>
+                <Modal
+                    noHeader
+                    title='modal'
+                    onClose={closeModal}
+                    centeredTitle
+                >
                     <TransactionSettings
                         module='Reposition'
                         toggleFor='repo'

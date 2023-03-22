@@ -63,6 +63,7 @@ export default function TransactionSettings(props: propsIF) {
     return (
         <>
             <div className={styles.settings_title}>
+                <div />
                 {module + ' Settings'}
 
                 <span onClick={onClose}>
