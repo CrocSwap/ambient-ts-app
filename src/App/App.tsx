@@ -463,21 +463,30 @@ export default function App() {
     } = useSigner();
 
     const setNewCrocEnv = () => {
+        console.log({ provider });
+        console.log({ signer });
+        console.log({ crocEnv });
+        console.log({ signerStatus });
         if (isError) {
             console.log({ isError });
             setCrocEnv(undefined);
         } else if (!provider && !signer) {
+            console.log('setting crocEnv to undefined');
             setCrocEnv(undefined);
             return;
+        } else if (!signer && !!crocEnv) {
+            console.log('keeping provider');
+            return;
         } else {
-            console.log('setting new crocEnv');
-            setCrocEnv(new CrocEnv(signer?.provider || provider));
+            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+            console.log({ newCrocEnv });
+            setCrocEnv(newCrocEnv);
         }
     };
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus, crocEnv === undefined]);
+    }, [signerStatus === 'success', crocEnv === undefined]);
 
     useEffect(() => {
         if (provider) {
