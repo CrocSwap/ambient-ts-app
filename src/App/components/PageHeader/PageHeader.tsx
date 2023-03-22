@@ -65,7 +65,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     } = props; // TODO (#1391)
 
     const { address, isConnected } = useAccount();
-    // const { disconnect } = useDisconnect();
     const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
