@@ -372,12 +372,10 @@ export default function Chart(props: ChartData) {
 
     // NoGoZone Joins
     const [limitNoGoZone, setLimitNoGoZone] = useState<any>();
-    const [limitNoGoZoneJoin, setlimitNoGoZoneJoin] = useState<any>();
     const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
 
     // Ghost Lines
     const [ghostLines, setGhostLines] = useState<any>();
-    const [ghostJoin, setGhostJoin] = useState<any>();
     const [ghostLineValues, setGhostLineValues] = useState<any>();
 
     // Liq Series
@@ -3093,27 +3091,21 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const ghostLines = d3fc
-                .annotationSvgLine()
+                .annotationCanvasLine()
                 .value((d: any) => d.tickValue)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
             ghostLines.decorate((selection: any) => {
-                selection.enter().attr('id', (d: any) => d.name);
-                selection.enter().select('g.right-handle').remove();
-                selection.enter().select('g.left-handle').remove();
-                selection.enter().select('line').attr('class', 'ghostline');
-                selection.enter().attr('pointer-events', 'none');
+                selection.visibility = location.pathname.includes('/limit')
+                    ? 'visible'
+                    : 'hidden';
+                selection.pointerEvents = 'none';
+                selection.lineWidth = 0.5;
             });
 
             setGhostLines(() => {
                 return ghostLines;
-            });
-
-            const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
-
-            setGhostJoin(() => {
-                return ghostJoin;
             });
         }
     }, [scaleData]);
@@ -3511,10 +3503,6 @@ export default function Chart(props: ChartData) {
                         },
                     ]);
                     setIsLineDrag(false);
-                    d3.select(d3Container.current)
-                        .select('.ghostLines')
-                        .selectAll('.horizontal')
-                        .remove();
 
                     if (
                         (!isAdvancedModeActive ||
@@ -3593,16 +3581,6 @@ export default function Chart(props: ChartData) {
                     d3.select(d3Container.current)
                         .select('.targets')
                         .style('cursor', 'row-resize');
-
-                    d3.select(d3Container.current)
-                        .select('.ghostLines')
-                        .selectAll('.horizontal')
-                        .style('visibility', 'visible');
-
-                    d3.select(d3Container.current)
-                        .select('.limitNoGoZone')
-                        .select('.horizontal')
-                        .style('visibility', 'visible');
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
@@ -3622,11 +3600,6 @@ export default function Chart(props: ChartData) {
                 })
                 .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
-
-                    d3.select(d3Container.current)
-                        .select('.limitNoGoZone')
-                        .select('.horizontal')
-                        .style('visibility', 'hidden');
                     setGhostLineValues([]);
                     setCrosshairData([
                         {
@@ -3645,11 +3618,6 @@ export default function Chart(props: ChartData) {
                     ]);
 
                     setIsLineDrag(false);
-
-                    d3.select(d3Container.current)
-                        .select('.ghostLines')
-                        .selectAll('.horizontal')
-                        .remove();
 
                     const xmin = new Date(
                         Math.floor(scaleData.xScale.domain()[0]),
@@ -5555,12 +5523,6 @@ export default function Chart(props: ChartData) {
             setLimitNoGoZone(() => {
                 return limitNoGoZone;
             });
-
-            const limitNoGoZoneJoin = d3fc.dataJoin('g', 'limitNoGoZone');
-
-            setlimitNoGoZoneJoin(() => {
-                return limitNoGoZoneJoin;
-            });
         }
     }, [scaleData]);
 
@@ -5571,16 +5533,18 @@ export default function Chart(props: ChartData) {
             .node() as any;
         const ctx = canvas.getContext('2d');
 
-        if (limitNoGoZone) {
+        if (limitNoGoZone && ghostLines && ghostLineValues !== undefined) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
                     limitNoGoZone(noGoZoneBoudnaries);
+                    ghostLines(ghostLineValues);
                 })
                 .on('measure', () => {
                     limitNoGoZone.context(ctx);
+                    ghostLines.context(ctx);
                 });
         }
-    }, [noGoZoneBoudnaries, limitNoGoZone]);
+    }, [noGoZoneBoudnaries, limitNoGoZone, ghostLineValues, ghostLines]);
 
     useEffect(() => {
         if (isLineDrag && location.pathname.includes('/limit')) {
@@ -5702,8 +5666,6 @@ export default function Chart(props: ChartData) {
             scaleData !== undefined &&
             zoomUtils !== undefined &&
             liqTooltip !== undefined &&
-            ghostLines !== undefined &&
-            ghostJoin !== undefined &&
             candlestick !== undefined &&
             lineBidSeries !== undefined &&
             lineAskSeries !== undefined &&
@@ -5713,10 +5675,7 @@ export default function Chart(props: ChartData) {
             lineAskSeriesJoin !== undefined &&
             lineDepthBidSeriesJoin !== undefined &&
             lineDepthAskSeriesJoin !== undefined &&
-            noGoZoneBoudnaries !== undefined &&
             volumeData !== undefined &&
-            limitNoGoZone !== undefined &&
-            limitNoGoZoneJoin !== undefined &&
             liquidityScale !== undefined
         ) {
             drawChart(
@@ -5725,9 +5684,6 @@ export default function Chart(props: ChartData) {
                 scaleData,
                 liquidityData,
                 zoomUtils,
-                ghostJoin,
-                ghostLineValues,
-                ghostLines,
                 candlestick,
                 lineBidSeries,
                 lineAskSeries,
@@ -5740,7 +5696,6 @@ export default function Chart(props: ChartData) {
                 mouseMoveEventCharts,
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
-                noGoZoneBoudnaries,
                 volumeData,
                 selectedDate,
                 liqMode,
@@ -5753,8 +5708,6 @@ export default function Chart(props: ChartData) {
         denomInBase,
         liqTooltip,
         candlestick,
-        ghostJoin,
-        ghostLines,
         lineBidSeries,
         lineAskSeries,
         lineDepthAskSeries,
@@ -5765,14 +5718,11 @@ export default function Chart(props: ChartData) {
         lineDepthAskSeriesJoin,
         mouseMoveEventCharts,
         isZoomForSubChart,
-        noGoZoneBoudnaries,
         selectedDate,
         liqMode,
         liquidityScale,
         liquidityDepthScale,
         showSidebar,
-        limitNoGoZone,
-        limitNoGoZoneJoin,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -6192,9 +6142,6 @@ export default function Chart(props: ChartData) {
             scaleData: any,
             liquidityData: any,
             zoomUtils: any,
-            ghostJoin: any,
-            ghostLineValues: any,
-            ghostLines: any,
             candlestick: any,
             lineBidSeries: any,
             lineAskSeries: any,
@@ -6207,7 +6154,6 @@ export default function Chart(props: ChartData) {
             mouseMoveEventCharts: any,
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
-            noGoZoneBoudnaries: any,
             volumeData: any,
             selectedDate: any,
             liqMode: any,
@@ -6405,10 +6351,6 @@ export default function Chart(props: ChartData) {
                             isNaN(scaleData.yScale.domain()[1])
                         )
                     ) {
-                        ghostJoin(svg, [
-                            ghostLineValues ? ghostLineValues : [],
-                        ]).call(ghostLines);
-
                         if (
                             JSON.stringify(liquidityScale.domain()) !== '[0,0]'
                         ) {
@@ -7120,7 +7062,6 @@ export default function Chart(props: ChartData) {
                             ref={d3CanvasNoGoZone}
                             className='no-go-zone-canvas'
                         ></d3fc-canvas>
-
                         <d3fc-svg
                             ref={d3PlotArea}
                             className='plot-area'
