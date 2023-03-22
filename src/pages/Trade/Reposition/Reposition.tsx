@@ -634,7 +634,11 @@ export default function Reposition(props: propsIF) {
                 </div>
             </div>
             {isModalOpen && (
-                <Modal onClose={handleModalClose} title=' Confirm Reposition'>
+                <Modal
+                    onClose={handleModalClose}
+                    title=' Confirm Reposition'
+                    centeredTitle
+                >
                     <ConfirmRepositionModal
                         isPositionInRange={isPositionInRange}
                         crocEnv={crocEnv}
