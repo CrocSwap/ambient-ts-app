@@ -59,7 +59,7 @@
     color: var(--text-grey-white);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
-    padding: 10px 20px;
+    padding: 1rem;
 }
 
 .modal_header h2 {

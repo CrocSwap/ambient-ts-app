@@ -7,7 +7,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center; 
-    padding: 10px 20px;
+    padding: 1rem;
     text-transform: capitalize;
 
     border-top-left-radius: 4px;

@@ -68,7 +68,7 @@ export default function Modal(props: ModalPropsIF) {
                 <span />
                 <RiCloseFill
                     size={27}
-                    color='var(--text-grey-light)'
+                    // color='var(--text-grey-light)'
                     className={styles.close_button}
                     onClick={onClose}
                 />
