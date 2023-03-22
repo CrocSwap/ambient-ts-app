@@ -417,37 +417,41 @@ export default function OrderRemoval(props: propsIF) {
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
                 />
-                <RemoveOrderWidth
-                    removalPercentage={removalPercentage}
-                    setRemovalPercentage={setRemovalPercentage}
-                />
-                <RemoveOrderInfo
-                    baseTokenSymbol={baseTokenSymbol}
-                    quoteTokenSymbol={quoteTokenSymbol}
-                    baseTokenLogoURI={baseTokenLogo}
-                    quoteTokenLogoURI={quoteTokenLogo}
-                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                    removalPercentage={removalPercentage}
-                    usdValue={usdValue}
-                    bidTick={bidTick}
-                    askTick={askTick}
-                    baseDisplayFrontend={baseDisplayFrontend}
-                    quoteDisplayFrontend={quoteDisplayFrontend}
-                    baseDisplay={baseDisplay}
-                    quoteDisplay={quoteDisplay}
-                    positionLiqTotalUSD={positionLiqTotalUSD}
-                    positionLiquidity={limitOrder.positionLiq.toString()}
-                    baseRemovalString={baseQtyToBeRemoved}
-                    quoteRemovalString={quoteQtyToBeRemoved}
-                />
-                {/* {gaslesssTransactionControl} */}
-                {/* {tooltipExplanationDataDisplay} */}
-                <RemoveOrderButton
-                    removeFn={removeFn}
-                    disabled={false}
-                    title='Remove Limit Order'
-                />
+                <div style={{ padding: '0 8px' }}>
+                    <RemoveOrderWidth
+                        removalPercentage={removalPercentage}
+                        setRemovalPercentage={setRemovalPercentage}
+                    />
+                    <RemoveOrderInfo
+                        baseTokenSymbol={baseTokenSymbol}
+                        quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenLogoURI={baseTokenLogo}
+                        quoteTokenLogoURI={quoteTokenLogo}
+                        posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                        posLiqQuoteDecimalCorrected={
+                            posLiqQuoteDecimalCorrected
+                        }
+                        removalPercentage={removalPercentage}
+                        usdValue={usdValue}
+                        bidTick={bidTick}
+                        askTick={askTick}
+                        baseDisplayFrontend={baseDisplayFrontend}
+                        quoteDisplayFrontend={quoteDisplayFrontend}
+                        baseDisplay={baseDisplay}
+                        quoteDisplay={quoteDisplay}
+                        positionLiqTotalUSD={positionLiqTotalUSD}
+                        positionLiquidity={limitOrder.positionLiq.toString()}
+                        baseRemovalString={baseQtyToBeRemoved}
+                        quoteRemovalString={quoteQtyToBeRemoved}
+                    />
+                    {/* {gaslesssTransactionControl} */}
+                    {/* {tooltipExplanationDataDisplay} */}
+                    <RemoveOrderButton
+                        removeFn={removeFn}
+                        disabled={false}
+                        title='Remove Limit Order'
+                    />
+                </div>
             </div>
         </>
     );
