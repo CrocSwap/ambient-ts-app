@@ -56,7 +56,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             className={styles.view_etherscan}
         >
             View on Etherscan
-            <FiExternalLink size={20} color='black' />
+            <FiExternalLink size={20} color='var(--text-grey-white)' />
         </a>
     );
     return (
@@ -69,7 +69,9 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                     <Animation animData={completed} loop={false} />
                 </div>
             )}
-            <h2 style={{ marginBottom: '15px' }}>Transaction Submitted</h2>
+            <h2 style={{ marginBottom: '15px' }}>
+                Swap Transaction Successfully Submitted.
+            </h2>
             <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'

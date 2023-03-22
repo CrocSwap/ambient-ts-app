@@ -48,24 +48,20 @@
 
 .modal_header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 1rem;
-    padding: 0;
-
-    letter-spacing: 1px;
+    font-weight: 200;
     text-transform: capitalize;
     font-size: 14px;
     color: var(--text-grey-white);
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
     padding: 10px 20px;
+    
 }
 
 .modal_header h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    font-weight: 300;
+    font-weight: 200;
     color: var(--text-grey-white);
 }
 
