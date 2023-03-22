@@ -219,6 +219,7 @@ export default function Chart(props: ChartData) {
     const d3CanvasMarketLine = useRef(null);
     const d3CanvasLimitLine = useRef(null);
     const d3CanvasRangeLine = useRef(null);
+    const d3CanvasNoGoZone = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -1248,13 +1249,7 @@ export default function Chart(props: ChartData) {
                     });
 
                 xAxis.decorate((selection: any) => {
-                    const _width =
-                        (Math.abs(
-                            scaleData.xScale(scaleData.xScale.domain()[0]) -
-                                scaleData.xScale(scaleData.xScale.domain()[1]),
-                        ) *
-                            6) /
-                        100;
+                    const _width = 65; // magic number of pixels to blur surrounding price
 
                     selection
                         .select('text')
@@ -2730,6 +2725,8 @@ export default function Chart(props: ChartData) {
             const sortLiqaData = tempLiqData.sort(function (a, b) {
                 return a.liqPrices - b.liqPrices;
             });
+
+            if (!sortLiqaData) return;
 
             const closestMin = sortLiqaData.reduce(function (prev, curr) {
                 return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
@@ -4604,7 +4601,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [scaleData === undefined, selectedDate]);
+    }, [scaleData, selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -5309,7 +5306,7 @@ export default function Chart(props: ChartData) {
             render();
         }
     }, [
-        scaleData === undefined,
+        scaleData,
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5545,16 +5542,14 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const limitNoGoZone = d3fc
-                .annotationSvgBand()
+                .annotationCanvasBand()
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
-                    selection
-                        .select('path')
-                        .attr('fill', 'rgba(235, 235, 255, 0.1)');
-                    selection.enter().style('visibility', 'hidden');
+                    selection.fillStyle = 'rgba(235, 235, 255, 0.1)';
+                    // selection.fillStyle = 'rgba(235, 235, 255, 0.1)';
                 });
 
             setLimitNoGoZone(() => {
@@ -5568,6 +5563,36 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [scaleData]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasNoGoZone.current)
+            .select('canvas')
+            .node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (limitNoGoZone) {
+            d3.select(d3CanvasNoGoZone.current)
+                .on('draw', () => {
+                    limitNoGoZone(noGoZoneBoudnaries);
+                })
+                .on('measure', () => {
+                    limitNoGoZone.context(ctx);
+                });
+        }
+    }, [noGoZoneBoudnaries, limitNoGoZone]);
+
+    useEffect(() => {
+        if (isLineDrag && location.pathname.includes('/limit')) {
+            d3.select(d3CanvasNoGoZone.current)
+                .select('canvas')
+                .style('display', 'inline');
+        } else {
+            d3.select(d3CanvasNoGoZone.current)
+                .select('canvas')
+                .style('display', 'none');
+        }
+    }, [isLineDrag]);
 
     function noGoZone(poolPrice: any) {
         return [[poolPrice * 0.99, poolPrice * 1.01]];
@@ -5720,8 +5745,6 @@ export default function Chart(props: ChartData) {
                 selectedDate,
                 liqMode,
                 liquidityScale,
-                limitNoGoZone,
-                limitNoGoZoneJoin,
             );
         }
     }, [
@@ -6189,8 +6212,6 @@ export default function Chart(props: ChartData) {
             selectedDate: any,
             liqMode: any,
             liquidityScale: any,
-            limitNoGoZone: any,
-            limitNoGoZoneJoin: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -6344,6 +6365,8 @@ export default function Chart(props: ChartData) {
                             )
                         ) {
                             onBlurLimitRate(newLimitValue);
+                        } else {
+                            flashNoGoZone();
                         }
                     }
                 };
@@ -6382,10 +6405,6 @@ export default function Chart(props: ChartData) {
                             isNaN(scaleData.yScale.domain()[1])
                         )
                     ) {
-                        limitNoGoZoneJoin(svg, [noGoZoneBoudnaries]).call(
-                            limitNoGoZone,
-                        );
-
                         ghostJoin(svg, [
                             ghostLineValues ? ghostLineValues : [],
                         ]).call(ghostLines);
@@ -6875,6 +6894,71 @@ export default function Chart(props: ChartData) {
         }
     };
 
+    const flashNoGoZone = () => {
+        d3.select(d3CanvasNoGoZone.current)
+            .select('canvas')
+            .style('display', 'inline');
+
+        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+        const beforeCanvas = d3
+            .select(d3CanvasNoGoZone.current)
+            .select('canvas') as any;
+        const canvas = beforeCanvas.node() as any;
+        const ctx = canvas.getContext('2d');
+
+        let requestId: any = null;
+        let y = scaleData.yScale(noGoZoneMax);
+
+        function animate() {
+            ctx.strokeStyle = 'rgba(235, 235, 255, 0.01)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = 'transparent';
+
+            ctx.strokeRect(
+                -1,
+                scaleData.yScale(noGoZoneMax),
+                Math.abs(
+                    scaleData.xScale(scaleData.xScale.domain()[0]) -
+                        scaleData.xScale(scaleData.xScale.domain()[1]),
+                ) + 10,
+                Math.abs(
+                    scaleData.yScale(noGoZoneMax) -
+                        scaleData.yScale(noGoZoneMin),
+                ),
+            );
+
+            if (y > scaleData.yScale(noGoZoneMax) - 50) {
+                ctx.strokeRect(
+                    -1,
+                    y,
+                    Math.abs(
+                        scaleData.xScale(scaleData.xScale.domain()[0]) -
+                            scaleData.xScale(scaleData.xScale.domain()[1]),
+                    ),
+                    Math.abs(
+                        scaleData.yScale(noGoZoneMax) -
+                            scaleData.yScale(noGoZoneMin),
+                    ) + 20,
+                );
+
+                y -= 10;
+
+                ctx.strokeStyle = 'transparent';
+            }
+
+            requestId = requestAnimationFrame(animate);
+        }
+
+        animate();
+        setTimeout(() => {
+            if (requestId !== null) cancelAnimationFrame(requestId);
+            d3.select(d3CanvasNoGoZone.current)
+                .select('canvas')
+                .style('display', 'none');
+        }, 1000);
+    };
+
     const onBlurLimitRate = (newLimitValue: any) => {
         const limitPreviousData = limit[0].value;
         if (newLimitValue === undefined) {
@@ -7030,6 +7114,11 @@ export default function Chart(props: ChartData) {
                         <d3fc-canvas
                             ref={d3CanvasCrVertical}
                             className='cr-vertical-canvas'
+                        ></d3fc-canvas>
+
+                        <d3fc-canvas
+                            ref={d3CanvasNoGoZone}
+                            className='no-go-zone-canvas'
                         ></d3fc-canvas>
 
                         <d3fc-svg

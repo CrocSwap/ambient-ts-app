@@ -1,41 +1,40 @@
 import styles from './SwapButton.module.css';
-// import { useState } from 'react';
 import Button from '../../Global/Button/Button';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     onClickFn: () => void;
     swapAllowed: boolean;
     swapButtonErrorMessage: string;
-    isSwapConfirmationBypassEnabled: boolean;
-    bypassConfirm: boolean;
+    bypassConfirmSwap: skipConfirmIF;
 }
 
 export default function SwapButton(props: propsIF) {
-    const { bypassConfirm, swapAllowed, swapButtonErrorMessage, isSwapConfirmationBypassEnabled } =
-        props;
-    // console.log({ swapAllowed });
-    // console.log({ swapButtonErrorMessage });
-    const ButtonDisplay = (
+    const {
+        bypassConfirmSwap,
+        swapAllowed,
+        swapButtonErrorMessage,
+        onClickFn,
+    } = props;
+
+    return (
         <div className={styles.button_container}>
             <Button
                 title={
-                    isSwapConfirmationBypassEnabled
+                    bypassConfirmSwap.isEnabled
                         ? swapAllowed
                             ? 'Send Swap'
                             : swapButtonErrorMessage
                         : swapAllowed
-                        ? bypassConfirm
+                        ? bypassConfirmSwap.isEnabled
                             ? 'Send Transaction'
                             : 'Open Confirmation'
                         : swapButtonErrorMessage
                 }
-                // action={() => console.log('clicked')}
-                action={props.onClickFn}
+                action={onClickFn}
                 disabled={!swapAllowed}
-                flat={true}
+                flat
             />
         </div>
     );
-
-    return <div>{ButtonDisplay}</div>;
 }

@@ -72,15 +72,19 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
 
-    const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
-    const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;
+    const tokenAQty = (
+        document.getElementById('A-range-quantity') as HTMLInputElement
+    )?.value;
+    const tokenBQty = (
+        document.getElementById('B-range-quantity') as HTMLInputElement
+    )?.value;
 
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
-                tokenBQty ? tokenBQty : '0'
-            } ${
+            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
+                tokenA.symbol
+            } and ${tokenBQty ? tokenBQty : '0'} ${
                 tokenB.symbol
             }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
@@ -115,7 +119,11 @@ export default function BypassConfirmRangeButton(props: propsIF) {
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
+            ? JSON.parse(
+                  receiptData.sessionReceipts[
+                      receiptData.sessionReceipts.length - 1
+                  ],
+              )
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -131,7 +139,9 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         />
     );
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
@@ -142,7 +152,9 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             : confirmSendMessage;
 
     const buttonColor =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? 'orange'
             : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
             ? 'var(--negative)'
@@ -151,7 +163,9 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             : 'var(--text-highlight-dark)';
 
     const animationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException ? (
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException ? (
             <CircleLoaderFailed size='30px' />
         ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
             <CircleLoaderFailed size='30px' />
@@ -162,7 +176,9 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         );
 
     const buttonText =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? 'Transaction Exception'
             : isTransactionDenied
             ? 'Transaction Denied'
@@ -170,9 +186,9 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             ? 'Transaction Failed'
             : transactionApproved
             ? 'Transaction Submitted'
-            : `Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
-                  tokenBQty ? tokenBQty : '0'
-              } ${tokenB.symbol}`;
+            : `Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
+                  tokenA.symbol
+              } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
@@ -187,11 +203,17 @@ export default function BypassConfirmRangeButton(props: propsIF) {
                         {animationDisplay}
                         {buttonText}
                     </div>
-                    {showExtraInfo ? <RiArrowUpSLine size={20} /> : <RiArrowDownSLine size={20} />}
+                    {showExtraInfo ? (
+                        <RiArrowUpSLine size={20} />
+                    ) : (
+                        <RiArrowDownSLine size={20} />
+                    )}
                 </button>
 
                 {showExtraInfo && (
-                    <section className={styles.extra_info_container}>{confirmationDisplay}</section>
+                    <section className={styles.extra_info_container}>
+                        {confirmationDisplay}
+                    </section>
                 )}
                 <span className={styles.close_icon_container}>
                     <button onClick={() => setShowBypassConfirmButton(false)}>

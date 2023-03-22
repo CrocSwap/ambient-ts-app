@@ -8,53 +8,57 @@ export interface favePoolsMethodsIF {
         addrTokenA: string,
         addrTokenB: string,
         chainId: string,
-        poolId: number
-    ) => boolean,
+        poolId: number,
+    ) => boolean;
     add: (
         tokenA: TokenIF,
         tokenB: TokenIF,
         chainId: string,
-        poolId: number
-    ) => void,
+        poolId: number,
+    ) => void;
     remove: (
         tokenA: TokenIF,
         tokenB: TokenIF,
         chainId: string,
-        poolId: number
-    ) => void,
+        poolId: number,
+    ) => void;
 }
 
 export const useFavePools = (): favePoolsMethodsIF => {
     // list of favorite pools, will initialize from local storage or use an empty
     // ... array if local storage has no value (for first-time users)
     const [favePools, setFavePools] = useState<PoolIF[]>(
-        JSON.parse(localStorage.getItem('favePools') as string) ?? []
+        JSON.parse(localStorage.getItem('favePools') as string) ?? [],
     );
 
     // fn to remove a PoolIF item from a PoolIF[] array
     // this is not returned from the hook, just to centralize logic
-    const removePoolFromArray = (targetPool: PoolIF, poolsArray: PoolIF[]): PoolIF[] => {
+    const removePoolFromArray = (
+        targetPool: PoolIF,
+        poolsArray: PoolIF[],
+    ): PoolIF[] => {
         // comparator fn to use as callback in .filter() method
         // returns `true` if any value does not match between objects
         // returns `false` if all values are identical (meaning pools are identical)
-        const comparePools = (pool1: PoolIF, pool2: PoolIF): boolean => (
-            pool1.base.address.toLowerCase() !== pool2.base.address.toLowerCase() ||
-            pool1.quote.address.toLowerCase() !== pool2.quote.address.toLowerCase() ||
+        const comparePools = (pool1: PoolIF, pool2: PoolIF): boolean =>
+            pool1.base.address.toLowerCase() !==
+                pool2.base.address.toLowerCase() ||
+            pool1.quote.address.toLowerCase() !==
+                pool2.quote.address.toLowerCase() ||
             pool1.chainId !== pool2.chainId ||
-            pool1.poolId !== pool2.poolId
-        );
+            pool1.poolId !== pool2.poolId;
         // return filtered array of pools
-        return poolsArray.filter(
-            (poolFromArray: PoolIF) => comparePools(poolFromArray, targetPool)
+        return poolsArray.filter((poolFromArray: PoolIF) =>
+            comparePools(poolFromArray, targetPool),
         );
-    }
+    };
 
     // fn to add a pool to the favorites list (both local state and local storage)
     const addPoolToFaves = (
         tokenA: TokenIF,
         tokenB: TokenIF,
         chainId: string,
-        poolId: number
+        poolId: number,
     ): void => {
         // sort tokenA and tokenB as [base, quote]
         const [baseAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
@@ -68,7 +72,10 @@ export const useFavePools = (): favePoolsMethodsIF => {
             poolId: poolId,
         };
         // local copy of favePools with newPool removed
-        const favesWithNewRemoved: PoolIF[] = removePoolFromArray(newPool, favePools);
+        const favesWithNewRemoved: PoolIF[] = removePoolFromArray(
+            newPool,
+            favePools,
+        );
         // new array with newPool as the first value
         const updatedPoolsArray: PoolIF[] = [newPool, ...favesWithNewRemoved];
         // send new array of favorite pools to local state and local storage
@@ -84,7 +91,10 @@ export const useFavePools = (): favePoolsMethodsIF => {
         poolId: number,
     ): void => {
         // sort tokenA and tokenB addresses as [base, quote]
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(tokenA.address, tokenB.address);
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+            tokenA.address,
+            tokenB.address,
+        );
         // local copy of favePools with the specified pool parameters filtered out
         const updatedPoolsArray: PoolIF[] = favePools.filter(
             (pool: PoolIF) =>
@@ -106,20 +116,26 @@ export const useFavePools = (): favePoolsMethodsIF => {
         poolId: number,
     ): boolean => {
         // sort token addresses as [base, quote]
-        const [baseAddr, quoteAddr]: string[] = sortBaseQuoteTokens(addrTokenA, addrTokenB);
+        const [baseAddr, quoteAddr]: string[] = sortBaseQuoteTokens(
+            addrTokenA,
+            addrTokenB,
+        );
         // return boolean indicating whether a relevant pool is favorited
-        return favePools.some((favePool: PoolIF) => (
-            favePool.base.address.toLowerCase() === baseAddr.toLowerCase() &&
-            favePool.quote.address.toLowerCase() === quoteAddr.toLowerCase() &&
-            favePool.chainId === chainId &&
-            favePool.poolId === poolId
-        ));
+        return favePools.some(
+            (favePool: PoolIF) =>
+                favePool.base.address.toLowerCase() ===
+                    baseAddr.toLowerCase() &&
+                favePool.quote.address.toLowerCase() ===
+                    quoteAddr.toLowerCase() &&
+                favePool.chainId === chainId &&
+                favePool.poolId === poolId,
+        );
     };
 
     return {
         pools: favePools,
         check: checkFavePools,
         add: addPoolToFaves,
-        remove: removePoolFromFaves
+        remove: removePoolFromFaves,
     };
 };

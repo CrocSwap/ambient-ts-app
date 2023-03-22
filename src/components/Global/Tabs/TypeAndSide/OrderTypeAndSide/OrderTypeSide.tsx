@@ -8,7 +8,8 @@ interface OrderTypeSideProps {
     isDenomBase?: boolean;
 }
 export default function OrderTypeSide(props: OrderTypeSideProps) {
-    const { type, side, isDenomBase, baseTokenCharacter, quoteTokenCharacter } = props;
+    const { type, side, isDenomBase, baseTokenCharacter, quoteTokenCharacter } =
+        props;
 
     const limitType = <p className={styles.limit_style}>Limit</p>;
     const orderType = <p className={styles.order_style}>Order</p>;

@@ -1,11 +1,9 @@
-
-
 .button_container {
     padding: 8px 12px 0px;
     margin-top: 1rem;
 }
 
-.close_icon_container{
+.close_icon_container {
     margin: 8px 0;
 
     /* padding: 8px 12px 0px; */
@@ -14,24 +12,23 @@
     align-items: flex-end;
 }
 
-.close_icon_container button{
+.close_icon_container button {
     background: transparent;
     outline: none;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-highlight);
     cursor: pointer;
-    border: 1px solid  var(--text-highlight-dark);
+    border: 1px solid var(--text-highlight-dark);
     transition: all var(--animation-speed) ease-in-out;
     border-radius: 50px;
     padding: 3px 8px;
-
 }
 
-.close_icon_container button:hover{
-   color: var(--text-highlight-dark)
+.close_icon_container button:hover {
+    color: var(--text-highlight-dark);
 }
-.button_container .button_content{
+.button_container .button_content {
     width: 100%;
     outline: none;
 
@@ -44,20 +41,18 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-border: none;
-   height: auto;
+    border: none;
+    height: auto;
     cursor: pointer;
     text-align: center;
 
     background: transparent;
     text-transform: capitalize;
-	/* background: var(--text-highlight); */
-	background: var(--dark3);
-	color: var(--text-grey-white);
+    /* background: var(--text-highlight); */
+    background: var(--dark3);
+    color: var(--text-grey-white);
 
     border-radius: 4px;
-
-
 }
 
 /* .button_container .button_content:hover{
@@ -65,27 +60,22 @@ border: none;
     box-shadow: 4px 4px var( --text-highlight);
 } */
 
-.extra_info_container{
+.extra_info_container {
     padding: 8px;
-	background: var(--dark3);
-	margin: 8px;
+    background: var(--dark3);
+    margin: 8px;
 }
-.loading_animation{
+.loading_animation {
     width: 50px;
-   
-
 }
 
-.button_content div{
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 8px;
+.button_content div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
-.loading_animation svg{
-    transition: all var(--animation-speed) ease-in-out
+.loading_animation svg {
+    transition: all var(--animation-speed) ease-in-out;
 }
-
-
-

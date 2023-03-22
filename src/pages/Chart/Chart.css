@@ -38,22 +38,18 @@ d3fc-svg {
 }
 
 text.crossHairText {
-    /* filter: url(#crossHairBg); */
     font-size: 13px;
     font-weight: bold;
-    
 }
 
-
 text.blur {
-    filter: blur(4px);
+    filter: blur(7px);
 }
 
 text.startDate {
     font-size: 13px;
     font-weight: bolder;
 }
-
 
 text.y_axis {
     font-size: 13px;
@@ -303,26 +299,20 @@ label {
     height: 5%;
 }
 
-
-
-
 @media (max-width: 1700px) and (min-width: 1500px) {
-
     .xAxis {
-        height: 10%!important;
+        height: 10% !important;
     }
 }
 
 @media (max-width: 1500px) and (min-width: 1270px) {
-
     .xAxis {
-        height: 10%!important;
+        height: 10% !important;
     }
 }
 
 @media (max-width: 1270px) {
-
     .xAxis {
-        height: 10%!important;
+        height: 10% !important;
     }
 }

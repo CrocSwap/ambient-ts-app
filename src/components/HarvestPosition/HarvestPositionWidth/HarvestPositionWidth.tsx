@@ -7,20 +7,28 @@ interface HarvestPositionWidthPropsIF {
     setRemovalPercentage: Dispatch<SetStateAction<number>>;
 }
 
-export default function HarvestPositionWidth(props: HarvestPositionWidthPropsIF) {
+export default function HarvestPositionWidth(
+    props: HarvestPositionWidthPropsIF,
+) {
     const { removalPercentage, setRemovalPercentage } = props;
 
     const handlePercentageUpdate = (percentage: number) => {
         setRemovalPercentage(percentage);
-        const sliderInputField = document.getElementById('harvest-range-slider');
+        const sliderInputField = document.getElementById(
+            'harvest-range-slider',
+        );
         if (sliderInputField) {
-            (sliderInputField as HTMLInputElement).value = percentage.toString();
+            (sliderInputField as HTMLInputElement).value =
+                percentage.toString();
         }
     };
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
-                <span className={styles.percentage_amount} id='harvest-percentage-output'>
+                <span
+                    className={styles.percentage_amount}
+                    id='harvest-percentage-output'
+                >
                     {removalPercentage}%
                 </span>
                 <button
@@ -76,7 +84,9 @@ export default function HarvestPositionWidth(props: HarvestPositionWidthPropsIF)
                         defaultValue={removalPercentage}
                         type='range'
                         className={styles.percentage_input}
-                        onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}
+                        onChange={(e) =>
+                            handlePercentageUpdate(parseInt(e.target.value))
+                        }
                     />
                 </div>
                 <div className={styles.percentage_container}></div>

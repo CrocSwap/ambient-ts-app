@@ -17,9 +17,11 @@ export default function SelectedCandleData(props: InformationData) {
         >
             {' '}
             Showing Transactions for{' '}
-            {moment(props.filter?.time !== undefined ? props.filter?.time * 1000 : null).format(
-                'DD MMM  HH:mm',
-            )}{' '}
+            {moment(
+                props.filter?.time !== undefined
+                    ? props.filter?.time * 1000
+                    : null,
+            ).format('DD MMM  HH:mm')}{' '}
         </div>
     );
 }

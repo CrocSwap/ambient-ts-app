@@ -20,7 +20,8 @@ export const fetchTransactionGraphData = async (
         try {
             if (httpGraphCacheServerDomain) {
                 // console.log('fetching candles');
-                const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
+                const candleSeriesCacheEndpoint =
+                    httpGraphCacheServerDomain + '/candle_series?';
 
                 return fetch(
                     candleSeriesCacheEndpoint +
@@ -37,9 +38,12 @@ export const fetchTransactionGraphData = async (
                             poolStats: 'true',
                             concise: 'true',
                             poolStatsChainIdOverride: '0x5',
-                            poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                            poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                            poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                            poolStatsBaseOverride:
+                                baseTokenAddress.toLowerCase(),
+                            poolStatsQuoteOverride:
+                                quoteTokenAddress.toLowerCase(),
+                            poolStatsPoolIdxOverride:
+                                chainData.poolIndex.toString(),
                         }),
                 )
                     .then((response) => response?.json())
@@ -75,5 +79,7 @@ export type TransactionGraphDataFn = (
 ) => Promise<any>;
 
 export function memoizeFetchTransactionGraphData(): TransactionGraphDataFn {
-    return memoizeTransactionGraphFn(fetchTransactionGraphData) as TransactionGraphDataFn;
+    return memoizeTransactionGraphFn(
+        fetchTransactionGraphData,
+    ) as TransactionGraphDataFn;
 }

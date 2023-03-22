@@ -63,11 +63,17 @@ export default function TopTokenRow(props: TokenProps) {
 
             <div className={styles.row_container}>
                 <>
-                    <section className={styles.displayName}> {tokenData.name}</section>
+                    <section className={styles.displayName}>
+                        {' '}
+                        {tokenData.name}
+                    </section>
                 </>
 
                 <>
-                    <section className={styles.display}> {IDWithTooltip}</section>
+                    <section className={styles.display}>
+                        {' '}
+                        {IDWithTooltip}
+                    </section>
                 </>
 
                 <>

@@ -72,12 +72,20 @@ export default function TabComponent(props: TabPropsIF) {
     }
 
     useEffect(() => {
-        const currentTabData = data.find((item) => item.label === selectedTab.label);
+        const currentTabData = data.find(
+            (item) => item.label === selectedTab.label,
+        );
         if (currentTabData) setSelectedTab(currentTabData);
 
-        if (!currentTabData?.showRightSideOption && setShowPositionsOnlyToggle) {
+        if (
+            !currentTabData?.showRightSideOption &&
+            setShowPositionsOnlyToggle
+        ) {
             setShowPositionsOnlyToggle(false);
-        } else if (currentTabData?.showRightSideOption && setShowPositionsOnlyToggle) {
+        } else if (
+            currentTabData?.showRightSideOption &&
+            setShowPositionsOnlyToggle
+        ) {
             setShowPositionsOnlyToggle(true);
         }
     }, [data, outsideControl]);
@@ -110,7 +118,12 @@ export default function TabComponent(props: TabPropsIF) {
                     enterDelay={400}
                     leaveDelay={200}
                 >
-                    <img className={styles.tab_icon} src={icon} alt={label} width='15px' />
+                    <img
+                        className={styles.tab_icon}
+                        src={icon}
+                        alt={label}
+                        width='15px'
+                    />
                 </DefaultTooltip>
             </div>
         );
@@ -127,15 +140,26 @@ export default function TabComponent(props: TabPropsIF) {
                 {data.map((item) => (
                     <li
                         key={item.label}
-                        className={item.label === selectedTab.label ? styles.selected : ''}
+                        className={
+                            item.label === selectedTab.label
+                                ? styles.selected
+                                : ''
+                        }
                         onClick={() => handleSelectedTab(item)}
                     >
-                        {item.icon ? handleMobileMenuIcon(item.icon, item.label) : null}
+                        {item.icon
+                            ? handleMobileMenuIcon(item.icon, item.label)
+                            : null}
 
                         <div className={styles.item_label}> {item.label}</div>
-                        {item.label === selectedTab.label && <div className={styles.underline} />}
+                        {item.label === selectedTab.label && (
+                            <div className={styles.underline} />
+                        )}
                         {item === selectedTab ? (
-                            <motion.div className={styles.underline} layoutId='underline' />
+                            <motion.div
+                                className={styles.underline}
+                                layoutId='underline'
+                            />
                         ) : null}
                     </li>
                 ))}
@@ -154,14 +178,23 @@ export default function TabComponent(props: TabPropsIF) {
                 return (
                     <li
                         key={item.label}
-                        className={item.label === selectedTab.label ? styles.selected : ''}
+                        className={
+                            item.label === selectedTab.label
+                                ? styles.selected
+                                : ''
+                        }
                         onClick={() => handleSelectedTab(item)}
                     >
-                        {item.icon ? handleMobileMenuIcon(item.icon, item.label) : null}
+                        {item.icon
+                            ? handleMobileMenuIcon(item.icon, item.label)
+                            : null}
                         <div className={styles.item_label}> {item.label}</div>
 
                         {item.label === selectedTab.label && (
-                            <motion.div className={styles.underline} layoutId='underline' />
+                            <motion.div
+                                className={styles.underline}
+                                layoutId='underline'
+                            />
                         )}
                     </li>
                 );

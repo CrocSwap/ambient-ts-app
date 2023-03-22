@@ -8,13 +8,21 @@ interface NoTableDataPropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>> | undefined;
     type: string;
     // setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    changeState?: (
+        isOpen: boolean | undefined,
+        candleData: CandleData | undefined,
+    ) => void;
     setSelectedDate?: Dispatch<Date | undefined>;
     isOnPortfolioPage: boolean;
 }
 export default function NoTableData(props: NoTableDataPropsIF) {
-    const { isShowAllEnabled, setIsShowAllEnabled, type, setSelectedDate, isOnPortfolioPage } =
-        props;
+    const {
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        type,
+        setSelectedDate,
+        isOnPortfolioPage,
+    } = props;
 
     const toggleAllEnabled = () => {
         console.log('setting show all to true');

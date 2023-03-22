@@ -23,21 +23,18 @@
     color: var(--text-grey-light);
 }
 
-.main_surplus_container, .main_wallet_container{
+.main_surplus_container,
+.main_wallet_container {
     display: flex;
     align-items: center;
 }
-.main_wallet_container{
+.main_wallet_container {
     justify-content: flex-start;
 }
 
-.main_surplus_container{
+.main_surplus_container {
     justify-content: flex-end;
-
-
 }
-
-
 
 /* .surplus_container {
     margin-right: 15px;
@@ -135,18 +132,14 @@
 } */
 
 .swapbox_bottom {
-  
     margin: 6px 10px;
-       height: 33px;
-    
-       
-       display: grid;
-       grid-template-columns: repeat(2, 1fr);
-       gap: 4px;
-    padding: 0 2rem;
-       
-    }
+    height: 33px;
 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    padding: 0 2rem;
+}
 
 .token_select_button {
     cursor: pointer;
@@ -194,10 +187,9 @@
     /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
-.max_button_enable{
+.max_button_enable {
     border-radius: 4px;
     background: var(--dark3);
-
 }
 
 .max_button:hover {
@@ -210,7 +202,8 @@
     max-height: 400px;
     overflow-y: scroll;
     overflow-x: hidden;
-    transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all var(--animation-speed)
+        cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .pool_modal::-webkit-scrollbar {
@@ -249,23 +242,21 @@
     gap: 10px;
 }
 
-@keyframes shadow-pulse
-{
-  0% {
-    box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
-    border-radius: var(--border-radius);
-  }
-  /* 50% {
+@keyframes shadow-pulse {
+    0% {
+        box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
+        border-radius: var(--border-radius);
+    }
+    /* 50% {
     box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
     border-radius: var(--border-radius);
   } */
-  100% {
-    box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
-    border-radius: var(--border-radius);
-  }
+    100% {
+        box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+        border-radius: var(--border-radius);
+    }
 }
 
-.pulse_animation
-{
-  animation: shadow-pulse 1s 6;
+.pulse_animation {
+    animation: shadow-pulse 1s 6;
 }

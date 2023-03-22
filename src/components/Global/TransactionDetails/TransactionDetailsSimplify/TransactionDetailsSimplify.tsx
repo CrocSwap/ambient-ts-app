@@ -19,7 +19,9 @@ interface TransactionDetailsSimplifyPropsIF {
     account: string;
     isOnPortfolioPage: boolean;
 }
-export default function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
+export default function TransactionDetailsSimplify(
+    props: TransactionDetailsSimplifyPropsIF,
+) {
     const { account, tx, isOnPortfolioPage } = props;
     const {
         userNameToDisplay,
@@ -76,7 +78,9 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
     const isSwap = tx.entityType === 'swap' || tx.entityType === 'limitOrder';
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount
+            ? '/account'
+            : `/account/${ownerId}`;
         window.open(walletUrl);
     }
     function handleOpenExplorer() {
@@ -165,7 +169,11 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             explanation: 'The account of the transaction owner',
         },
 
-        { title: 'Transaction ', content: txContent, explanation: 'The transaction hash' },
+        {
+            title: 'Transaction ',
+            content: txContent,
+            explanation: 'The transaction hash',
+        },
 
         {
             title: 'Time ',
@@ -190,7 +198,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             content: isBuy
                 ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
                 : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`,
-            explanation: 'The quantity of the sell token (scaled by its decimals value)',
+            explanation:
+                'The quantity of the sell token (scaled by its decimals value)',
         },
 
         {
@@ -210,7 +219,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
             content: !isBuy
                 ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
                 : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`,
-            explanation: 'The quantity of the to/buy token (scaled by its decimals value)',
+            explanation:
+                'The quantity of the to/buy token (scaled by its decimals value)',
         },
 
         {
@@ -232,7 +242,9 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
                 : isDenomBase
                 ? `${quoteTokenCharacter}${truncatedLowDisplayPrice} / ${baseTokenSymbol}`
                 : `${baseTokenCharacter}${truncatedLowDisplayPrice} / ${quoteTokenSymbol}`,
-            explanation: isSwap ? 'The transaction price' : 'The low price boundary',
+            explanation: isSwap
+                ? 'The transaction price'
+                : 'The low price boundary',
         },
 
         // {
@@ -269,7 +281,8 @@ export default function TransactionDetailsSimplify(props: TransactionDetailsSimp
                 title: 'Value ',
                 content: txUsdValueLocaleString,
 
-                explanation: 'The appoximate US dollar value of the transaction',
+                explanation:
+                    'The appoximate US dollar value of the transaction',
             },
         );
     }
