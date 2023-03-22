@@ -453,16 +453,14 @@ export default function App() {
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
+    const provider = useProvider();
+    const isInitialized = !!provider;
     const {
         data: signer,
         isError,
         status: signerStatus,
         //  isLoading
     } = useSigner();
-
-    const provider = useProvider();
-
-    const isInitialized = !!provider;
 
     const setNewCrocEnv = () => {
         if (isError) {
@@ -479,7 +477,7 @@ export default function App() {
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus]);
+    }, [signerStatus, crocEnv === undefined]);
 
     useEffect(() => {
         if (provider) {
