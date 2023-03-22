@@ -218,6 +218,7 @@ export default function Chart(props: ChartData) {
     const d3CanvasCrVertical = useRef(null);
     const d3CanvasMarketLine = useRef(null);
     const d3CanvasPlotArea = useRef(null);
+    const d3CanvasGhostLines = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -2980,17 +2981,17 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const ghostLines = d3fc
-                .annotationSvgLine()
+                .annotationCanvasLine()
                 .value((d: any) => d.tickValue)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
             ghostLines.decorate((selection: any) => {
-                selection.enter().attr('id', (d: any) => d.name);
-                selection.enter().select('g.right-handle').remove();
-                selection.enter().select('g.left-handle').remove();
-                selection.enter().select('line').attr('class', 'ghostline');
-                selection.enter().attr('pointer-events', 'none');
+                selection.visibility = location.pathname.includes('/limit')
+                    ? 'visible'
+                    : 'hidden';
+                selection.pointerEvents = 'none';
+                selection.lineWidth = 0.5;
             });
 
             setGhostLines(() => {
@@ -3004,6 +3005,24 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [scaleData]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasGhostLines.current)
+            .select('canvas')
+            .node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (ghostLines !== undefined && ghostLineValues !== undefined) {
+            d3.select(d3CanvasGhostLines.current)
+                .on('draw', () => {
+                    ghostLines(ghostLineValues);
+                })
+                .on('measure', () => {
+                    ghostLines.context(ctx);
+                });
+        }
+    }, [ghostLineValues, ghostLines, limit]);
 
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
         if (poolPriceDisplay) {
@@ -6308,10 +6327,6 @@ export default function Chart(props: ChartData) {
                             limitNoGoZone,
                         );
 
-                        ghostJoin(svg, [
-                            ghostLineValues ? ghostLineValues : [],
-                        ]).call(ghostLines);
-
                         if (
                             JSON.stringify(liquidityScale.domain()) !== '[0,0]'
                         ) {
@@ -6918,7 +6933,10 @@ export default function Chart(props: ChartData) {
                             ref={d3CanvasCrVertical}
                             className='cr-vertical-canvas'
                         ></d3fc-canvas>
-
+                        <d3fc-canvas
+                            ref={d3CanvasGhostLines}
+                            className='plot-canvas'
+                        ></d3fc-canvas>
                         <d3fc-svg
                             ref={d3PlotArea}
                             className='plot-area'
