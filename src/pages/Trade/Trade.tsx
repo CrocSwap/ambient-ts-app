@@ -434,7 +434,10 @@ export default function Trade(props: propsIF) {
         </section>
     );
 
-    useCandleTime();
+    // hooks to manage user candle time preference
+    useCandleTime('market');
+    useCandleTime('limit');
+    useCandleTime('range');
 
     const [activeTimeFrame, setActiveTimeFrame] = useState(
         activeChartPeriod === 60
