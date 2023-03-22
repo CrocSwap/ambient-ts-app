@@ -1974,7 +1974,9 @@ export default function App() {
         baseTokenAddress: string,
         quoteTokenAddress: string,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         return await cachedQuerySpotPrice(
             crocEnv,
             baseTokenAddress,

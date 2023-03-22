@@ -100,55 +100,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
-    // const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
-    //     pinnedMinPriceDisplayTruncated || '0.00',
-    // );
-    // const [maxPriceDisplay, setMaxPriceDisplay] = useState<string>(
-    //     pinnedMaxPriceDisplayTruncated || '0.00',
-    // );
-
-    // useEffect(() => {
-    //     setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
-    //     if (pinnedMinPriceDisplayTruncated !== undefined) {
-    //         setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
-    //     }
-    // }, [pinnedMinPriceDisplayTruncated]);
-
-    // useEffect(() => {
-    //     setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
-    //     setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
-    // }, [pinnedMaxPriceDisplayTruncated]);
-    // const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    // const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
-
-    // useEffect(() => {
-    //     if (!crocEnv) {
-    //         return;
-    //     }
-    //     const pool = crocEnv.pool(position.base, position.quote);
-
-    //     const repo = new CrocReposition(pool, {
-    //         liquidity: position.positionLiq,
-    //         burn: [position.bidTick, position.askTick],
-    //         mint: [pinnedLowTick, pinnedHighTick],
-    //     });
-
-    //     repo.postBalance().then(([base, quote]: [number, number]) => {
-    //         setNewBaseQtyDisplay(truncateString(base));
-    //         setNewQuoteQtyDisplay(truncateString(quote));
-    //     });
-    // }, [
-    //     crocEnv,
-    //     useDebounce(pinnedLowTick, 500),
-    //     useDebounce(pinnedHighTick, 500),
-    //     position.baseSymbol,
-    //     position.quoteSymbol,
-    //     currentPoolPriceTick,
-    //     position.positionLiq,
-    //     position.bidTick,
-    //     position.askTick,
-    // ]);
-
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
         : '';

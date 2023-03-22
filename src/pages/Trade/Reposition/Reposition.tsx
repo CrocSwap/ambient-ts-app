@@ -256,6 +256,7 @@ export default function Reposition(props: propsIF) {
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
+            location.reload();
             return;
         }
         let tx;
