@@ -14,6 +14,7 @@ interface TransactionSubmittedProps {
     tokenBImage: string;
     noAnimation?: boolean;
     limit?: boolean;
+    range?: boolean;
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
@@ -25,6 +26,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         tokenBImage,
         noAnimation,
         limit,
+        range,
     } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
@@ -74,6 +76,8 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
                     ? 'Limit Transaction Successfully Submitted.'
+                    : range
+                    ? 'Range Transaction Successfully Submitted.'
                     : 'Swap Transaction Successfully Submitted.'}
             </h2>
             <div className={styles.action_buttons}>
