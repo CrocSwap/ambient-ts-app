@@ -456,6 +456,7 @@ export default function App() {
     const {
         data: signer,
         isError,
+        status: signerStatus,
         //  isLoading
     } = useSigner();
 
@@ -463,18 +464,22 @@ export default function App() {
 
     const isInitialized = !!provider;
 
+    const setNewCrocEnv = () => {
+        if (isError) {
+            console.log({ isError });
+            setCrocEnv(undefined);
+        } else if (!provider && !signer) {
+            setCrocEnv(undefined);
+            return;
+        } else {
+            console.log('setting new crocEnv');
+            setCrocEnv(new CrocEnv(signer?.provider || provider));
+        }
+    };
+
     useEffect(() => {
-        (async () => {
-            if (isError) {
-                console.log({ isError });
-            } else if (!provider && !signer) {
-                return;
-            } else {
-                console.log('setting new crocEnv');
-                setCrocEnv(new CrocEnv(signer?.provider || provider));
-            }
-        })();
-    }, [provider, signer, isError]);
+        setNewCrocEnv();
+    }, [signerStatus]);
 
     useEffect(() => {
         if (provider) {
