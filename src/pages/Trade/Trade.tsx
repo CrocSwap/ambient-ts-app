@@ -45,6 +45,7 @@ import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
 interface propsIF {
@@ -432,6 +433,8 @@ export default function Trade(props: propsIF) {
             </div>
         </section>
     );
+
+    useCandleTime();
 
     const [activeTimeFrame, setActiveTimeFrame] = useState(
         activeChartPeriod === 60
