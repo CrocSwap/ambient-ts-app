@@ -3,7 +3,6 @@ import { capitalConcFactor, CrocEnv, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import {
@@ -57,7 +56,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const {
         position,
         ambientApy,
-        dailyVol,
         currentPoolPriceDisplay,
         currentPoolPriceTick,
         rangeWidthPercentage,
@@ -77,10 +75,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const isDenomBase = useAppSelector((state) => state.tradeData)?.isDenomBase;
 
-    // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
-
-    // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
-
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -97,8 +91,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
 
     const dispatch = useAppDispatch();
-
-    // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
@@ -128,37 +120,11 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
           })}%`
         : '…';
 
-    let daysInRange = rangeWidthPercentage === 100 ? Infinity : 0;
-
-    if (dailyVol && rangeWidthPercentage !== 100) {
-        const poolPrice = tickToPrice(currentPoolPriceTick);
-        const lowPrice = tickToPrice(pinnedLowTick);
-        const highPrice = tickToPrice(pinnedHighTick);
-
-        const upperPercent = Math.log(highPrice / poolPrice);
-        const lowerPercent = Math.log(poolPrice / lowPrice);
-
-        if (upperPercent > 0 && lowerPercent > 0) {
-            const daysBelow = Math.pow(upperPercent / dailyVol, 2);
-            const daysAbove = Math.pow(lowerPercent / dailyVol, 2);
-            daysInRange = Math.min(daysBelow, daysAbove);
-        }
-    }
-
-    const daysInRangeString = daysInRange
-        ? daysInRange === Infinity
-            ? 'Est. Time in Range | ∞'
-            : `Est. Time in Range | ${formatDaysRange(daysInRange)}`
-        : '…';
-
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
     // JSX frag for estimated APR of position
 
     const apr = <span className={styles.apr}>{aprPercentageString}</span>;
-    const days = (
-        <span className={styles.time_in_range}>{daysInRangeString}</span>
-    );
 
     // JSX frag for lowest price in range
     const minimumPrice = (
@@ -170,9 +136,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             </span>
         </div>
     );
-
-    // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
-    // const currentPrice = spotPriceDisplay;
 
     // JSX frag for highest price in range
     const maximumPrice = (
@@ -231,7 +194,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     return (
         <div className={styles.price_info_container}>
             {!isConfirmModal ? apr : null}
-            {!isConfirmModal ? days : null}
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>
