@@ -197,11 +197,11 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const extraInfoData = (
         <div className={styles.extra_info_container}>
-            <div className={styles.convRate}>
+            {/* <div className={styles.convRate}>
                 {isDenomBase
                     ? `${trunctatedInsideTickDisplayPrice} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                     : `${trunctatedInsideTickDisplayPrice} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-            </div>
+            </div> */}
             <div className={styles.row}>
                 <p>Current Price</p>
                 <p>
