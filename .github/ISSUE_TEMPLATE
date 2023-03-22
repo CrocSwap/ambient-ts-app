@@ -21,7 +21,7 @@ body:
     attributes:
       label: How?
       description: How can we replicate the issue?
-      placeholder: How can we replicate the issue?
+      placeholder: e.x. 1. go to page XXX, 2. connect wallet, 3. ...
       value: ""
     validations:
       required: true
