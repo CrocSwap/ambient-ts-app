@@ -73,9 +73,7 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(
-        room.toUpperCase(),
-    );
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 

@@ -41,9 +41,36 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     const { params } = useParams();
-    const reconstructedReadableRoom = params
-        ? params.replace('&', '/').toUpperCase()
-        : undefined;
+    const reconstructedReadableRoom =
+        params && !params.includes('global')
+            ? params.replace('&', '/').toUpperCase()
+            : params && params.includes('global')
+            ? 'Global'
+            : 'Global';
+
+    const currencies: string[] | null =
+        params && !params.includes('global') ? params.split('&') : null;
+
+    const swappedReconstructedReadableRoom: string =
+        currencies && currencies.length === 2
+            ? (() => {
+                  const [currency1, currency2] = currencies;
+                  return currency1 + '/' + currency2;
+              })()
+            : params && params.includes('global')
+            ? 'Global'
+            : 'Global';
+
+    const reSwappedReconstructedReadableRoom: string =
+        currencies && currencies.length === 2
+            ? (() => {
+                  const [currency1, currency2] = currencies;
+                  return (currency2 + '/' + currency1).toUpperCase();
+              })()
+            : swappedReconstructedReadableRoom &&
+              swappedReconstructedReadableRoom.includes('global')
+            ? 'Global'
+            : 'Global';
 
     // eslint-disable-next-line
     const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
@@ -57,7 +84,7 @@ export default function FullChat(props: FullChatPropsIF) {
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
 
     const [readableRoomName, setReadableName] = useState(
-        reconstructedReadableRoom || 'global',
+        reconstructedReadableRoom || 'Global',
     );
 
     // eslint-disable-next-line
@@ -65,9 +92,24 @@ export default function FullChat(props: FullChatPropsIF) {
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (reconstructedReadableRoom) {
+        if (topPools.some(({ name }) => name === reconstructedReadableRoom)) {
             setReadableName(reconstructedReadableRoom);
             props.setRoom(reconstructedReadableRoom);
+            setReadableName(readableRoomName);
+        } else {
+            if (
+                topPools.some(
+                    ({ name }) => name === reSwappedReconstructedReadableRoom,
+                )
+            ) {
+                setReadableName(reSwappedReconstructedReadableRoom);
+                props.setRoom(reSwappedReconstructedReadableRoom);
+                setReadableName(reSwappedReconstructedReadableRoom);
+            } else {
+                setReadableName('Global');
+                props.setRoom('Global');
+                setReadableName('Global');
+            }
         }
     }, [reconstructedReadableRoom]);
 
@@ -343,7 +385,7 @@ export default function FullChat(props: FullChatPropsIF) {
         </section>
     );
 
-    const currentRoomIsGlobal = readableRoomName === 'GLOBAL';
+    const currentRoomIsGlobal = readableRoomName.toLowerCase() === 'global';
 
     const chatChanels = (
         <section className={styles.options}>
@@ -388,7 +430,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 className={styles.active_channel_dropdown}
                 onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
             >
-                # {readableRoomName}
+                {readableRoomName}
             </button>
             {showChannelsDropdown && (
                 <div
@@ -444,7 +486,7 @@ export default function FullChat(props: FullChatPropsIF) {
               );
     }
 
-    const favButton = currentRoomIsGlobal ? (
+    const favButton = !currentRoomIsGlobal ? (
         <button
             className={styles.favorite_button}
             onClick={handleFavButton}
@@ -503,7 +545,8 @@ export default function FullChat(props: FullChatPropsIF) {
 
             <section className={styles.right_container}>
                 <header className={styles.right_container_header}>
-                    {favButton}# {readableRoomName}
+                    {favButton} {currentRoomIsGlobal ? '#' : ''}{' '}
+                    {readableRoomName}
                 </header>{' '}
                 {channelsDropdown}
                 {chatContainer}
