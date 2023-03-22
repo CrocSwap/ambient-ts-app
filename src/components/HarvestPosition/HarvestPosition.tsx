@@ -5,7 +5,6 @@ import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton
 import { useEffect, useState } from 'react';
 
 import { RiListSettingsLine } from 'react-icons/ri';
-import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import Button from '../Global/Button/Button';
@@ -40,6 +39,7 @@ import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -68,6 +68,8 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     handleModalClose: () => void;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function HarvestPosition(props: propsIF) {
@@ -80,6 +82,8 @@ export default function HarvestPosition(props: propsIF) {
         dexBalancePrefs,
         handleModalClose,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     // settings
@@ -122,6 +126,31 @@ export default function HarvestPosition(props: propsIF) {
         useState<number | undefined>();
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
+
+    const [harvestGasPriceinDollars, setHarvestGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const averageGasUnitsForHarvestTx = 92500;
+    const numGweiInWei = 1e-9;
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageGasUnitsForHarvestTx *
+                numGweiInWei *
+                ethMainnetUsdPrice;
+
+            setHarvestGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -527,16 +556,28 @@ export default function HarvestPosition(props: propsIF) {
                 />
                 <HarvestExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} />
+                {harvestGasPriceinDollars ? harvestGasPriceinDollars : '…'}
+            </div>
         </>
     );
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
-                </div>
-            )}
+            <HarvestPositionHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Harvest Settings'
+                        : 'Harvest Rewards Confirmation'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
             <div className={styles.confirmation_content}>
                 {currentConfirmationData}
             </div>
@@ -546,37 +587,37 @@ export default function HarvestPosition(props: propsIF) {
     if (showConfirmation) return confirmationContent;
 
     return (
-        <div className={styles.remove_range_container}>
-            <div className={styles.main_content}>
-                <HarvestPositionHeader
-                    onClose={handleModalClose}
-                    title={
-                        showSettings ? 'Harvest Settings' : 'Harvest Rewards'
-                    }
-                    onBackButton={() => {
-                        resetConfirmation();
-                        setShowSettings(false);
-                    }}
-                    showBackButton={showSettings}
-                />
-                {mainModalContent}
-                <div style={{ padding: '0 1rem' }}>
-                    {showSettings ? (
-                        <Button
-                            title={
-                                currentSlippage > 0
-                                    ? 'Confirm'
-                                    : 'Enter a Valid Slippage'
-                            }
-                            action={updateSettings}
-                            flat
-                            disabled={!(currentSlippage > 0)}
-                        />
-                    ) : (
-                        harvestButtonOrNull
-                    )}
+        <>
+            <HarvestPositionHeader
+                onClose={handleModalClose}
+                title={showSettings ? 'Harvest Settings' : 'Harvest Rewards'}
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
+            <div className={styles.remove_range_container}>
+                <div className={styles.main_content}>
+                    {mainModalContent}
+                    <div style={{ padding: '0 1rem' }}>
+                        {showSettings ? (
+                            <Button
+                                title={
+                                    currentSlippage > 0
+                                        ? 'Confirm'
+                                        : 'Enter a Valid Slippage'
+                                }
+                                action={updateSettings}
+                                flat
+                                disabled={!(currentSlippage > 0)}
+                            />
+                        ) : (
+                            harvestButtonOrNull
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

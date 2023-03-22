@@ -4,9 +4,9 @@ import styles from './TransactionException.module.css';
 // import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
 // import { Dispatch, SetStateAction } from 'react';
 import Button from '../Button/Button';
-import Divider from '../Divider/Divider';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../constants';
+import DividerDark from '../DividerDark/DividerDark';
 
 // interface TransactionSubmittedProps {
 //     hash: string;
@@ -48,12 +48,12 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                         A preliminary simulation of your transaction has failed.
                         We apologize for this inconvenience.
                     </p>
-                    <Divider />
+                    <DividerDark />
                     <p>
                         This may have occurred due to an insufficient ETH
                         balance to cover potential slippage.
                     </p>
-                    <Divider />
+                    <DividerDark />
                     <p>
                         Please try entering a specific amount of ETH, rather
                         than
@@ -66,7 +66,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                         A preliminary simulation of your transaction has failed.
                         We apologize for this inconvenience.
                     </p>
-                    <Divider />
+                    <DividerDark />
                     <p>
                         Check the Metamask extension in your browser for
                         notifications, or click &quot;Try Again&quot;.
@@ -74,6 +74,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                 </div>
             )}
             <Button
+                flat
                 title='Try Again'
                 action={() => {
                     if (initiateTx) initiateTx();

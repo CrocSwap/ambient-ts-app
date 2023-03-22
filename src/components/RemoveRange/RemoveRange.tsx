@@ -5,8 +5,6 @@ import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { ReactNode, useEffect, useState } from 'react';
 
-import { VscClose } from 'react-icons/vsc';
-import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import {
@@ -40,6 +38,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { checkIsStable } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -69,6 +68,8 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function RemoveRange(props: propsIF) {
@@ -82,6 +83,8 @@ export default function RemoveRange(props: propsIF) {
         quoteTokenAddress,
         chainId,
         handleModalClose,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const lastBlockNumber = useAppSelector(
@@ -113,6 +116,31 @@ export default function RemoveRange(props: propsIF) {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
+
+    const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const averageGasUnitsForRemovalTx = 94500;
+    const numGweiInWei = 1e-9;
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageGasUnitsForRemovalTx *
+                numGweiInWei *
+                ethMainnetUsdPrice;
+
+            setRemovalGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -561,7 +589,7 @@ export default function RemoveRange(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
+            {/* {showConfirmation && (
                 <header>
                     <div className={styles.button} onClick={resetConfirmation}>
                         {newRemovalTransactionHash == '' && (
@@ -574,7 +602,20 @@ export default function RemoveRange(props: propsIF) {
                         </div>
                     )}
                 </header>
-            )}
+            )} */}
+            <RemoveRangeHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Remove Position Settings'
+                        : 'Remove Position'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
             <div className={styles.confirmation_content}>
                 {currentConfirmationData}
             </div>
@@ -674,29 +715,35 @@ export default function RemoveRange(props: propsIF) {
                 />
                 <ExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} />{' '}
+                {removalGasPriceinDollars ? removalGasPriceinDollars : '…'}
+            </div>
         </>
     );
 
     if (showConfirmation) return confirmationContent;
     return (
-        <div className={styles.remove_range_container}>
-            <div className={styles.main_content}>
-                <RemoveRangeHeader
-                    onClose={handleModalClose}
-                    title={
-                        showSettings
-                            ? 'Remove Position Settings'
-                            : 'Remove Position'
-                    }
-                    onBackButton={() => {
-                        resetConfirmation();
-                        setShowSettings(false);
-                    }}
-                    showBackButton={showSettings}
-                />
-                {mainModalContent}
-                {buttonToDisplay}
+        <>
+            <RemoveRangeHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Remove Position Settings'
+                        : 'Remove Position'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
+            <div className={styles.remove_range_container}>
+                <div className={styles.main_content}>
+                    {mainModalContent}
+                    {buttonToDisplay}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
