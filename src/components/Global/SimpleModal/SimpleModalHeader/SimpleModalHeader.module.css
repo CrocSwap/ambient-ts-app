@@ -1,15 +1,19 @@
 .header_container {
-    /* height: 41px; */
+     height: 41px; 
+     background: var(--dark1);
 
-    background: var(--dark1);
-    padding: 1rem;
-    border-radius: 4px;
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; 
+    padding: 10px 20px;
+    text-transform: capitalize;
 
-    /* background: red; */
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+
+
 }
 
 .header_container svg {
@@ -19,15 +23,13 @@
     justify-content: center;
     align-items: center;
 }
+.header_container svg:hover{
+    color: var(--text-grey-white)
+}
 
 .header_container h2 {
-    font-weight: 300;
     font-size: var(--header1-size);
-    line-height: 30px;
-    display: flex;
-    /* align-items: center;
-text-align: center; */
-    letter-spacing: -0.02em;
-
+    line-height: var(--header1-lh);
+    font-weight: 200;
     color: var(--text-grey-white);
 }
