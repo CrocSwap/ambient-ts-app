@@ -296,8 +296,9 @@ input[type='range']:focus::-ms-fill-upper {
     57%,
     100% {
         text-shadow: 0 0 7px rgb(144, 132, 216), 0 0 10px rgb(86, 153, 212),
-            0 0 21px rgb(83, 157, 222), 0 0 42px rgb(40, 160, 179), 0 0 82px rgb(84, 91, 220),
-            0 0 92px rgb(67, 99, 175), 0 0 102px rgb(75, 67, 213), 0 0 151px rgb(61, 108, 207);
+            0 0 21px rgb(83, 157, 222), 0 0 42px rgb(40, 160, 179),
+            0 0 82px rgb(84, 91, 220), 0 0 92px rgb(67, 99, 175),
+            0 0 102px rgb(75, 67, 213), 0 0 151px rgb(61, 108, 207);
     }
     20%,
     24%,
@@ -308,7 +309,8 @@ input[type='range']:focus::-ms-fill-upper {
 
 .pulse_animation {
     animation: flicker 2s 3 alternate;
-    text-shadow: 0 0 7px rgb(144, 132, 216), 0 0 10px rgb(86, 153, 212), 0 0 21px rgb(83, 157, 222),
-        0 0 42px rgb(40, 160, 179), 0 0 82px rgb(84, 91, 220), 0 0 92px rgb(67, 99, 175),
+    text-shadow: 0 0 7px rgb(144, 132, 216), 0 0 10px rgb(86, 153, 212),
+        0 0 21px rgb(83, 157, 222), 0 0 42px rgb(40, 160, 179),
+        0 0 82px rgb(84, 91, 220), 0 0 92px rgb(67, 99, 175),
         0 0 102px rgb(75, 67, 213), 0 0 151px rgb(61, 108, 207);
 }

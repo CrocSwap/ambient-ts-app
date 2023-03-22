@@ -7,8 +7,8 @@
     height: 100%;
 
     border-radius: var(--border-radius);
-    background: url('../../../assets/images/home/featured.png')  no-repeat center center;
-
+    background: url('../../../assets/images/home/featured.png') no-repeat center
+        center;
 
     -webkit-background-size: cover;
     -moz-background-size: cover;

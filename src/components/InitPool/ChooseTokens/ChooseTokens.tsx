@@ -69,8 +69,9 @@ export default function ChooseTokens(props: chooseTokensPropsIF) {
             <div className={styles.extra_info}>
                 <FiInfo size={35} />
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore nulla laborum
-                    hic quaerat eaque necessitatibus minima cumque debitis sunt libero!
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    Labore nulla laborum hic quaerat eaque necessitatibus minima
+                    cumque debitis sunt libero!
                 </p>
             </div>
         </motion.div>

@@ -42,7 +42,11 @@ export default function TopPools(props: TrendingPoolsPropsIF) {
 
             {<AnalyticsPoolRows searchInput={analyticsSearchInput} />}
 
-            <p>{analyticsSearchInput ? `All Pools with ${analyticsSearchInput}` : 'All Pools'}</p>
+            <p>
+                {analyticsSearchInput
+                    ? `All Pools with ${analyticsSearchInput}`
+                    : 'All Pools'}
+            </p>
 
             {analyticsSearchInput == '' && <AnalyticsTokenRows />}
 

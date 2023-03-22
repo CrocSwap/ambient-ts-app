@@ -65,7 +65,11 @@ export default function Modal(props: ModalPropsIF) {
             <h2 className={styles.modal_title}>{title}</h2>
             <div className={styles.header_right}>
                 {headerRightItems && headerRightItems}
-                <RiCloseFill size={27} className={styles.close_button} onClick={onClose} />
+                <RiCloseFill
+                    size={27}
+                    className={styles.close_button}
+                    onClick={onClose}
+                />
             </div>
         </header>
     );

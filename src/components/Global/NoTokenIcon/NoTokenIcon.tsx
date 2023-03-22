@@ -10,7 +10,10 @@ export default function NoTokenIcon(props: NoTokenIconPropsIF) {
     const widthStyle = width ? width : '30px';
 
     return (
-        <div className={styles.no_token_icon} style={{ width: widthStyle, height: widthStyle }}>
+        <div
+            className={styles.no_token_icon}
+            style={{ width: widthStyle, height: widthStyle }}
+        >
             <p>{tokenInitial}</p>
         </div>
     );

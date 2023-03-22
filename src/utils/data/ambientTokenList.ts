@@ -53,7 +53,8 @@ export const ambientTokenList = {
             symbol: 'DAI',
             decimals: 18,
             chainId: 3,
-            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+            logoURI:
+                'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         {
             name: 'USDCoin',
@@ -70,7 +71,8 @@ export const ambientTokenList = {
             symbol: 'DAI',
             decimals: 18,
             chainId: 5,
-            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+            logoURI:
+                'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         {
             name: 'Dai Stablecoin',
@@ -78,7 +80,8 @@ export const ambientTokenList = {
             symbol: 'DAI',
             decimals: 18,
             chainId: 42,
-            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+            logoURI:
+                'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         {
             name: 'USDCoin',
@@ -113,7 +116,8 @@ export const ambientTokenList = {
             symbol: 'DAI',
             decimals: 18,
             chainId: 1,
-            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+            logoURI:
+                'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         {
             name: 'USDCoin',

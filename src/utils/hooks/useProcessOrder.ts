@@ -22,7 +22,9 @@ export const useProcessOrder = (
     const blockExplorer = 'https://goerli.etherscan.io/';
 
     // eslint-disable-next-line
-    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
+    const lastBlockNumber = useAppSelector(
+        (state) => state.graphData,
+    ).lastBlock;
 
     const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
@@ -33,10 +35,13 @@ export const useProcessOrder = (
     const quoteTokenLogo = limitOrder.quoteTokenLogoURI;
     const baseTokenLogo = limitOrder.baseTokenLogoURI;
 
-    const isOwnerActiveAccount = limitOrder.user.toLowerCase() === account?.toLowerCase();
+    const isOwnerActiveAccount =
+        limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
+    const ownerId = limitOrder.ensResolution
+        ? limitOrder.ensResolution
+        : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
     const isOrderFilled = limitOrder.claimableLiq !== '0';
@@ -62,10 +67,14 @@ export const useProcessOrder = (
 
     const posHashTruncated = trimString(posHash ?? '', 6, 4, '…');
 
-    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
+    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
+        string | undefined
+    >();
 
-    const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
-        useState<string | undefined>();
+    const [
+        truncatedDisplayPriceDenomByMoneyness,
+        setTruncatedDisplayPriceDenomByMoneyness,
+    ] = useState<string | undefined>();
 
     const baseTokenCharacter = limitOrder.baseSymbol
         ? getUnicodeCharacter(limitOrder.baseSymbol)
@@ -76,27 +85,43 @@ export const useProcessOrder = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(limitOrder.base.toLowerCase() + '_' + limitOrder.chainId) -
-                getMoneynessRank(limitOrder.quote.toLowerCase() + '_' + limitOrder.chainId) >=
+            getMoneynessRank(
+                limitOrder.base.toLowerCase() + '_' + limitOrder.chainId,
+            ) -
+                getMoneynessRank(
+                    limitOrder.quote.toLowerCase() + '_' + limitOrder.chainId,
+                ) >=
             0,
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
 
-    const [startPriceDisplay, setStartPriceDisplay] = useState<string | undefined>();
-    const [startPriceDisplayDenomByMoneyness, setStartPriceDisplayDenomByMoneyness] = useState<
+    const [startPriceDisplay, setStartPriceDisplay] = useState<
         string | undefined
     >();
-    const [middlePriceDisplay, setMiddlePriceDisplay] = useState<string | undefined>();
-    const [middlePriceDisplayDenomByMoneyness, setMiddlePriceDisplayDenomByMoneyness] = useState<
+    const [
+        startPriceDisplayDenomByMoneyness,
+        setStartPriceDisplayDenomByMoneyness,
+    ] = useState<string | undefined>();
+    const [middlePriceDisplay, setMiddlePriceDisplay] = useState<
         string | undefined
     >();
-    const [finishPriceDisplay, setFinishPriceDisplay] = useState<string | undefined>();
+    const [
+        middlePriceDisplayDenomByMoneyness,
+        setMiddlePriceDisplayDenomByMoneyness,
+    ] = useState<string | undefined>();
+    const [finishPriceDisplay, setFinishPriceDisplay] = useState<
+        string | undefined
+    >();
 
     useEffect(() => {
         // console.log({ limitOrder });
-        if (limitOrder.limitPriceDecimalCorrected && limitOrder.invLimitPriceDecimalCorrected) {
+        if (
+            limitOrder.limitPriceDecimalCorrected &&
+            limitOrder.invLimitPriceDecimalCorrected
+        ) {
             const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
-            const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
+            const invPriceDecimalCorrected =
+                limitOrder.invLimitPriceDecimalCorrected;
 
             const nonInvertedPriceTruncated =
                 priceDecimalCorrected === 0
@@ -126,16 +151,19 @@ export const useProcessOrder = (
                           maximumFractionDigits: 2,
                       });
 
-            const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                ? nonInvertedPriceTruncated
-                : invertedPriceTruncated;
+            const truncatedDisplayPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? nonInvertedPriceTruncated
+                    : invertedPriceTruncated;
 
             const truncatedDisplayPrice = isDenomBase
                 ? `${invertedPriceTruncated}`
                 : `${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
-            setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
+            setTruncatedDisplayPriceDenomByMoneyness(
+                truncatedDisplayPriceDenomByMoneyness,
+            );
         } else {
             setTruncatedDisplayPrice(undefined);
         }
@@ -162,7 +190,12 @@ export const useProcessOrder = (
             limitOrder.quoteDecimals,
         );
 
-        if (askTickPrice && askTickInvPrice && bidTickPrice && bidTickInvPrice) {
+        if (
+            askTickPrice &&
+            askTickInvPrice &&
+            bidTickPrice &&
+            bidTickInvPrice
+        ) {
             const startPriceDisplayNum = isDenomBase
                 ? isBid
                     ? askTickInvPrice
@@ -188,13 +221,14 @@ export const useProcessOrder = (
                           maximumFractionDigits: 2,
                       });
 
-            const startPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                ? isBid
-                    ? askTickPrice
-                    : bidTickPrice
-                : isBid
-                ? askTickInvPrice
-                : bidTickInvPrice;
+            const startPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? isBid
+                        ? askTickPrice
+                        : bidTickPrice
+                    : isBid
+                    ? askTickInvPrice
+                    : bidTickInvPrice;
 
             const startPriceDisplayDenomByMoneyness =
                 startPriceDenomByMoneyness === 0
@@ -238,13 +272,14 @@ export const useProcessOrder = (
                           maximumFractionDigits: 2,
                       });
 
-            const middlePriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                ? isBid
-                    ? priceHalfBelow
-                    : priceHalfAbove
-                : isBid
-                ? 1 / priceHalfBelow
-                : 1 / priceHalfAbove;
+            const middlePriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? isBid
+                        ? priceHalfBelow
+                        : priceHalfAbove
+                    : isBid
+                    ? 1 / priceHalfBelow
+                    : 1 / priceHalfAbove;
 
             const middlePriceDisplayDenomByMoneyness =
                 middlePriceDenomByMoneyness === 0
@@ -289,8 +324,12 @@ export const useProcessOrder = (
                       });
 
             setStartPriceDisplay(startPriceDisplay);
-            setStartPriceDisplayDenomByMoneyness(startPriceDisplayDenomByMoneyness);
-            setMiddlePriceDisplayDenomByMoneyness(middlePriceDisplayDenomByMoneyness);
+            setStartPriceDisplayDenomByMoneyness(
+                startPriceDisplayDenomByMoneyness,
+            );
+            setMiddlePriceDisplayDenomByMoneyness(
+                middlePriceDisplayDenomByMoneyness,
+            );
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
@@ -298,7 +337,10 @@ export const useProcessOrder = (
 
     const isBid = limitOrder.isBid;
 
-    const priceType = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'priceBuy' : 'priceSell';
+    const priceType =
+        (isDenomBase && !isBid) || (!isDenomBase && isBid)
+            ? 'priceBuy'
+            : 'priceSell';
 
     const sideType = isOnPortfolioPage
         ? isBaseTokenMoneynessGreaterOrEqual
@@ -317,8 +359,18 @@ export const useProcessOrder = (
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
 
-    const baseTokenAddressTruncated = trimString(baseTokenAddressLowerCase, 6, 0, '…');
-    const quoteTokenAddressTruncated = trimString(quoteTokenAddressLowerCase, 6, 0, '…');
+    const baseTokenAddressTruncated = trimString(
+        baseTokenAddressLowerCase,
+        6,
+        0,
+        '…',
+    );
+    const quoteTokenAddressTruncated = trimString(
+        quoteTokenAddressLowerCase,
+        6,
+        0,
+        '…',
+    );
 
     const orderMatchesSelectedTokens =
         selectedBaseToken === baseTokenAddressLowerCase &&
@@ -394,24 +446,27 @@ export const useProcessOrder = (
 
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line
-    const [positionLiqTotalUSD, setTotalValueUSD] = useState<number | undefined>();
+    const [positionLiqTotalUSD, setTotalValueUSD] = useState<
+        number | undefined
+    >();
 
     // eslint-disable-next-line
     const [bidTick, setBidTick] = useState<number | undefined>();
     // eslint-disable-next-line
     const [askTick, setAskTick] = useState<number | undefined>();
     // eslint-disable-next-line
-    const [positionLiquidity, setPositionLiquidity] = useState<string | undefined>();
-    // eslint-disable-next-line
-    const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] = useState<
-        number | undefined
+    const [positionLiquidity, setPositionLiquidity] = useState<
+        string | undefined
     >();
     // eslint-disable-next-line
-    const [posLiqQuoteDecimalCorrected, setPosLiqQuoteDecimalCorrected] = useState<
-        number | undefined
-    >();
+    const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
+        useState<number | undefined>();
     // eslint-disable-next-line
-    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+    const [posLiqQuoteDecimalCorrected, setPosLiqQuoteDecimalCorrected] =
+        useState<number | undefined>();
+    // eslint-disable-next-line
+    const positionStatsCacheEndpoint =
+        'https://809821320828123.de:5000/position_stats?';
 
     // useEffect(() => {
     //     if (
@@ -475,9 +530,13 @@ export const useProcessOrder = (
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
-    const baseDisplayFrontend = quantitiesAvailable ? `${baseQty || '0.00'}` : '…';
+    const baseDisplayFrontend = quantitiesAvailable
+        ? `${baseQty || '0.00'}`
+        : '…';
 
-    const quoteDisplayFrontend = quantitiesAvailable ? `${quoteQty || '0.00'}` : '…';
+    const quoteDisplayFrontend = quantitiesAvailable
+        ? `${quoteQty || '0.00'}`
+        : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
@@ -490,7 +549,9 @@ export const useProcessOrder = (
             : ensName
         : trimString(ownerId, 7, 4, '…');
 
-    const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
+    const userNameToDisplay = isOwnerActiveAccount
+        ? 'You'
+        : ensNameOrOwnerTruncated;
 
     return {
         // wallet and id data

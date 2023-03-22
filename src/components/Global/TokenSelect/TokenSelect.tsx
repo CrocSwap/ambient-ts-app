@@ -27,7 +27,9 @@ export default function TokenSelect(props: propsIF) {
     const isMatchingToken = (tokenInRtk: TokenIF) =>
         tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
 
-    const indexOfToken = connectedUserTokens ? connectedUserTokens.findIndex(isMatchingToken) : -1;
+    const indexOfToken = connectedUserTokens
+        ? connectedUserTokens.findIndex(isMatchingToken)
+        : -1;
 
     const tokenIsEth = indexOfToken === 0;
 
@@ -38,7 +40,10 @@ export default function TokenSelect(props: propsIF) {
 
     return (
         <>
-            <div className={styles.main_container} onClick={() => chooseToken(token, false)}>
+            <div
+                className={styles.main_container}
+                onClick={() => chooseToken(token, false)}
+            >
                 <section className={styles.left_side_container}>
                     <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>
@@ -50,11 +55,18 @@ export default function TokenSelect(props: propsIF) {
                                     width='27px'
                                 />
                             ) : (
-                                <NoTokenIcon tokenInitial={token.symbol.charAt(0)} width='27px' />
+                                <NoTokenIcon
+                                    tokenInitial={token.symbol.charAt(0)}
+                                    width='27px'
+                                />
                             )}
                             <div className={styles.name_container}>
-                                <span className={styles.modal_token_symbol}>{token.symbol}</span>
-                                <span className={styles.modal_token_name}>{token.name}</span>
+                                <span className={styles.modal_token_symbol}>
+                                    {token.symbol}
+                                </span>
+                                <span className={styles.modal_token_name}>
+                                    {token.name}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -66,7 +78,10 @@ export default function TokenSelect(props: propsIF) {
                                 ? connectedUserErc20Tokens !== undefined
                                     ? '0'
                                     : '...'
-                                : tokenIsEth && parseFloat(combinedBalanceDisplayTruncated) === 0
+                                : tokenIsEth &&
+                                  parseFloat(
+                                      combinedBalanceDisplayTruncated,
+                                  ) === 0
                                 ? '0'
                                 : combinedBalanceDisplayTruncated
                             : ''}

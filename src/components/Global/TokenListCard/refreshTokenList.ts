@@ -5,7 +5,9 @@ export default function refreshTokenList(uri: string) {
     console.log('user clicked button to refresh: ', uriToHttp(uri));
 
     // get allTokenLists array from local storage
-    const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+    const allTokenLists = JSON.parse(
+        localStorage.getItem('allTokenLists') as string,
+    );
 
     // find the index in allTokenLists of the list we're updating
     const tokenListIndex = allTokenLists.findIndex(

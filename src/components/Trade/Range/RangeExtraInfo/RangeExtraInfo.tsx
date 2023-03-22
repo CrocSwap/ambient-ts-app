@@ -42,7 +42,8 @@ export default function RangeExtraInfo(props: propsIF) {
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
+    const reverseDisplay =
+        (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
     const extraInfoDataAdvanced = [
         {
@@ -84,7 +85,9 @@ export default function RangeExtraInfo(props: propsIF) {
         },
     ];
 
-    const extraInfoData = isBalancedMode ? extraInfoDataBalanced : extraInfoDataAdvanced;
+    const extraInfoData = isBalancedMode
+        ? extraInfoDataBalanced
+        : extraInfoDataAdvanced;
 
     const RangeExtraInfoDetails = (
         <div className={styles.extra_details}>
@@ -112,7 +115,8 @@ export default function RangeExtraInfo(props: propsIF) {
             }
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} /> {rangeGasPriceinDollars ? rangeGasPriceinDollars : '…'}
+                <FaGasPump size={15} />{' '}
+                {rangeGasPriceinDollars ? rangeGasPriceinDollars : '…'}
             </div>
             <div className={styles.token_amount}>
                 {reverseDisplay

@@ -30,7 +30,9 @@ export const getDexFeeSeries = async () => {
         .catch(console.log);
 };
 
-export const getDexVolumeSeries = async (day: string): Promise<IVolumeSeriesData> => {
+export const getDexVolumeSeries = async (
+    day: string,
+): Promise<IVolumeSeriesData> => {
     return fetch(
         'https://809821320828123.de:5000/dex_volume_series?' +
             new URLSearchParams({

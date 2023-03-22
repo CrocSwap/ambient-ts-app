@@ -24,7 +24,9 @@ interface RangeDetailsSimplifyPropsIF {
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
 }
-export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
+export default function RangeDetailsSimplify(
+    props: RangeDetailsSimplifyPropsIF,
+) {
     const { account, position, baseFeesDisplay, quoteFeesDisplay } = props;
 
     const {
@@ -69,7 +71,9 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
     );
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount ? '/account' : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount
+            ? '/account'
+            : `/account/${ownerId}`;
         window.open(walletUrl);
     }
     // function handleOpenExplorer() {
@@ -134,9 +138,15 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         </div>
     );
 
-    const status = isAmbient ? 'Ambient' : isPositionInRange ? 'In Range' : 'Out of Range';
+    const status = isAmbient
+        ? 'Ambient'
+        : isPositionInRange
+        ? 'In Range'
+        : 'Out of Range';
 
-    const submissionTime = moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm');
+    const submissionTime = moment(position.timeFirstMint * 1000).format(
+        'MM/DD/YYYY HH:mm',
+    );
     // const fillTime = moment(position.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const infoContent = [
@@ -164,7 +174,8 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         {
             title: 'Add Time ',
             content: submissionTime,
-            explanation: 'The time the owner first added a range at these prices',
+            explanation:
+                'The time the owner first added a range at these prices',
         },
         // { title: 'Remove Time ', content: 'remove time', explanation: 'this is explanation' },
         {
@@ -173,7 +184,11 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             explanation: 'e.g. Ambient / In Range / Out of Range',
         },
 
-        { title: 'Token 1 ', content: baseTokenSymbol, explanation: 'Token #1 in the token pair' },
+        {
+            title: 'Token 1 ',
+            content: baseTokenSymbol,
+            explanation: 'Token #1 in the token pair',
+        },
 
         {
             title: 'Token 1 Address ',
@@ -188,7 +203,11 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
                 'The quantity of token #1 in the token pair (scaled by its decimals value)',
         },
 
-        { title: 'Token 2 ', content: quoteTokenSymbol, explanation: 'Token #2 in the token pair' },
+        {
+            title: 'Token 2 ',
+            content: quoteTokenSymbol,
+            explanation: 'Token #2 in the token pair',
+        },
 
         {
             title: 'Token 2 Address ',
@@ -221,7 +240,8 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         {
             title: 'APR',
             content: apyString,
-            explanation: 'The estimated APR of the position based on fees earned',
+            explanation:
+                'The estimated APR of the position based on fees earned',
         },
 
         // {
@@ -259,12 +279,14 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
             {
                 title: 'Low Tick ',
                 content: position.bidTick.toString(),
-                explanation: 'The low price boundary represented in a geometric scale',
+                explanation:
+                    'The low price boundary represented in a geometric scale',
             },
             {
                 title: 'High Tick ',
                 content: position.askTick.toString(),
-                explanation: 'The high price boundary represented in a geometric scale',
+                explanation:
+                    'The high price boundary represented in a geometric scale',
             },
         );
     }
@@ -288,14 +310,16 @@ export default function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF)
         <div className={styles.tx_details_container}>
             <div className={styles.main_container}>
                 <section>
-                    {infoContent.slice(0, infoContent.length / 2).map((info, idx) => (
-                        <InfoRow
-                            key={info.title + idx}
-                            title={info.title}
-                            content={info.content}
-                            explanation={info.explanation}
-                        />
-                    ))}
+                    {infoContent
+                        .slice(0, infoContent.length / 2)
+                        .map((info, idx) => (
+                            <InfoRow
+                                key={info.title + idx}
+                                title={info.title}
+                                content={info.content}
+                                explanation={info.explanation}
+                            />
+                        ))}
                 </section>
 
                 <section>
