@@ -2426,7 +2426,7 @@ export default function App() {
             toggleTradeTabBasedOnRoute();
     }, [location, isCandleSelected]);
 
-    // function to sever connection between user wallet and Moralis server
+    // function to sever connection between user wallet and the app
     const clickLogout = async () => {
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
@@ -2437,7 +2437,7 @@ export default function App() {
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
         dispatch(resetUserAddresses());
-
+        setIsShowAllEnabled(true);
         disconnect();
     };
 
