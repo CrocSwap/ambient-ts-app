@@ -2,13 +2,16 @@ import styles from './TimeFrame.module.css';
 import { Dispatch, SetStateAction, useState, useRef } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 
-interface TimeFramePropsIF {
+interface propsIF {
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
     setActivePeriod: (period: number) => void;
+    candleTime: candleTimeIF;
 }
-export default function TimeFrame(props: TimeFramePropsIF) {
+
+export default function TimeFrame(props: propsIF) {
     const { setActiveTimeFrame, setActivePeriod, activeTimeFrame } = props;
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);

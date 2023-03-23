@@ -31,6 +31,7 @@ export interface overlayIF {
 export interface candleTimeIF {
     time: number;
     changeTime: (val: number) => void;
+    defaults: Array<{readable: string, seconds: number}>;
 }
 
 // interface for return value of this hook
@@ -215,6 +216,14 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     class CandleTime implements candleTimeIF {
         time: number;
         changeTime: (_val: number) => void;
+        defaults = [
+            { readable: '1m', seconds: 60 },
+            { readable: '5m', seconds: 300 },
+            { readable: '15m', seconds: 900 },
+            { readable: '1h', seconds: 3600 },
+            { readable: '4h', seconds: 14400 },
+            { readable: '1d', seconds: 86400 },
+        ];
         constructor(t: number, setterFn: Dispatch<SetStateAction<number>>) {
             this.time = t;
             this.changeTime = (val: number) => setterFn(val)

@@ -458,6 +458,11 @@ export default function TradeCharts(props: propsIF) {
                     activeTimeFrame={activeTimeFrame}
                     setActiveTimeFrame={setActiveTimeFrame}
                     setActivePeriod={setActivePeriod}
+                    candleTime={
+                        isMarketOrLimitModule
+                            ? chartSettings.candleTime.market
+                            : chartSettings.candleTime.range
+                    }
                 />
             </div>
             <div
