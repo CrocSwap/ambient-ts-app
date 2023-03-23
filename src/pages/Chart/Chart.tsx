@@ -1522,8 +1522,11 @@ export default function Chart(props: ChartData) {
                     .select('canvas')
                     .style(
                         'display',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')) &&
+                            (isAdvancedModeActive ||
+                                (rangeSimpleRangeWidth !== 100 &&
+                                    repositionRangeWidth !== 100))
                             ? 'inline'
                             : 'none',
                     );
@@ -3735,10 +3738,7 @@ export default function Chart(props: ChartData) {
                 .yScale(scaleData.yScale);
 
             limitLine.decorate((context: any) => {
-                context.visibility = location.pathname.includes('/limit')
-                    ? 'visible'
-                    : 'hidden';
-                context.strokeStyle = 'var(--accent-secondary)';
+                context.strokeStyle = 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 3;
             });
@@ -3816,11 +3816,13 @@ export default function Chart(props: ChartData) {
                           );
                 })
                 .mainValue((d: any) => d.value)
-                .size(100)
+                .size(110)
                 .type(d3.symbolTriangle)
                 .decorate((context: any, datum: any, index: any) => {
                     const rotateDegree = !(index % 2) ? 90 : -90;
                     context.rotate((rotateDegree * Math.PI) / 180);
+                    context.strokeStyle = 'rgba(235, 235, 255)';
+                    context.fillStyle = 'rgba(235, 235, 255)';
                 });
 
             setTriangle(() => {
@@ -3850,6 +3852,47 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         limit,
         isUserLoggedIn,
+    ]);
+
+    useEffect(() => {
+        if (limitLine !== undefined && triangle !== undefined) {
+            limitLine.decorate((context: any) => {
+                context.strokeStyle = checkLimitOrder
+                    ? sellOrderStyle === 'order_sell'
+                        ? '#e480ff'
+                        : '#7371FC'
+                    : 'rgba(235, 235, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 3;
+            });
+
+            triangle.decorate((context: any, datum: any, index: any) => {
+                const rotateDegree = !(index % 2) ? 90 : -90;
+                context.rotate((rotateDegree * Math.PI) / 180);
+                context.strokeStyle = location.pathname.includes('/limit')
+                    ? checkLimitOrder
+                        ? sellOrderStyle === 'order_sell'
+                            ? '#e480ff'
+                            : '#7371FC'
+                        : 'rgba(235, 235, 255)'
+                    : 'rgba(235, 235, 255)';
+                context.fillStyle = location.pathname.includes('/limit')
+                    ? checkLimitOrder
+                        ? sellOrderStyle === 'order_sell'
+                            ? '#e480ff'
+                            : '#7371FC'
+                        : 'rgba(235, 235, 255)'
+                    : 'rgba(235, 235, 255)';
+            });
+
+            renderCanvas();
+        }
+    }, [
+        limitLine,
+        triangle,
+        checkLimitOrder,
+        sellOrderStyle,
+        location.pathname,
     ]);
 
     useEffect(() => {
@@ -4917,11 +4960,11 @@ export default function Chart(props: ChartData) {
                 .select('canvas')
                 .style(
                     'display',
-                    simpleRangeWidthGra === 100 &&
-                        (!isAdvancedModeActive ||
-                            location.pathname.includes('reposition'))
-                        ? 'none'
-                        : 'inline',
+                    (location.pathname.includes('reposition') ||
+                        location.pathname.includes('range')) &&
+                        (isAdvancedModeActive || simpleRangeWidthGra !== 100)
+                        ? 'inline'
+                        : 'none',
                 );
 
             const low = ranges.filter((target: any) => target.name === 'Min')[0]
@@ -6513,7 +6556,7 @@ export default function Chart(props: ChartData) {
                         'cursor',
                         'row-resize',
                     );
-                    crosshairData[0].x = -1;
+                    mouseLeaveCanvas();
                 });
 
                 d3.select(d3Yaxis.current).on(
