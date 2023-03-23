@@ -20,6 +20,7 @@
     margin: 0 auto;
     display: grid;
     grid-gap: 1rem;
+    list-style-type: none;
     /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
 }
 

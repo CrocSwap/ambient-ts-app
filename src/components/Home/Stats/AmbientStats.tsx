@@ -20,10 +20,10 @@ function StatCard(props: StatCardProps) {
     const { title, value } = props;
 
     return (
-        <div className={styles.stat_card_container}>
+        <li className={styles.stat_card_container}>
             <div className={styles.title}>{title}</div>
             <div className={styles.value}>{value}</div>
-        </div>
+        </li>
     );
 }
 
@@ -73,11 +73,11 @@ export default function Stats(props: StatsProps) {
     return (
         <div className={styles.container}>
             <div className={styles.title}>{t('homeStatsTitle')}</div>
-            <div className={styles.content}>
+            <ul className={styles.content}>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
-            </div>
+            </ul>
         </div>
     );
 }

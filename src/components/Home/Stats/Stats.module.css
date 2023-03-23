@@ -20,6 +20,7 @@
 
     display: grid;
     grid-gap: 1rem;
+    list-style-type: none;
 }
 
 .stat_card_container {

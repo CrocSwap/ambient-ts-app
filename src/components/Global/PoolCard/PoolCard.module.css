@@ -1,6 +1,7 @@
 .pool_card {
     cursor: pointer;
     position: relative;
+    list-style: none;
 }
 
 .main_container {
