@@ -93,6 +93,7 @@ export default function ConfirmRangeModal(props: propsIF) {
             tokenBAddress={dataTokenB.address}
             tokenBDecimals={dataTokenB.decimals}
             tokenBImage={dataTokenB.logoURI}
+            range
         />
     );
 

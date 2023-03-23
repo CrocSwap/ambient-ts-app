@@ -31,7 +31,7 @@
     transition: box-shadow var(--animation-speed) ease-in-out;
 
     height: fit-content;
-    min-height: 300px;
+    min-height: 200px;
     min-width: 300px;
     border-radius: var(--border-radius);
     position: relative;
@@ -47,25 +47,23 @@
 }
 
 .modal_header {
+    height: 50px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 1rem;
-    padding: 0;
-
-    letter-spacing: 1px;
+    font-weight: 200;
     text-transform: capitalize;
     font-size: 14px;
     color: var(--text-grey-white);
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    padding: 10px 20px;
+    padding: 1rem;
+    
+    
 }
 
 .modal_header h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    font-weight: 300;
+    font-weight: 200;
     color: var(--text-grey-white);
 }
 
@@ -74,7 +72,11 @@
     background: var(--dark2);
     border-radius: var(--border-radius);
 
-    min-height: 300px;
+    /* min-height: 250px; */
+}
+
+.modal_header svg:hover{
+    color: var(--text-grey-white);
 }
 
 .close_button {

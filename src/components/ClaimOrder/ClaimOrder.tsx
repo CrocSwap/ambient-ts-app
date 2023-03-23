@@ -280,11 +280,18 @@ export default function ClaimOrder(props: propsIF) {
     ]);
 
     const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            <div className={styles.confirmation_content}>
-                {currentConfirmationData}
+        <>
+            <ClaimOrderModalHeader
+                onClose={closeGlobalModal}
+                title={'Claim Limit Order Confirmation'}
+                onGoBack={showSettings ? () => setShowSettings(false) : null}
+            />
+            <div className={styles.confirmation_container}>
+                <div className={styles.confirmation_content}>
+                    {currentConfirmationData}
+                </div>
             </div>
-        </div>
+        </>
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
@@ -341,54 +348,53 @@ export default function ClaimOrder(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <div style={{ padding: '1rem' }}>
+        <>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Claim Limit Order'}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
+                title={'Claim Limit Order '}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
+            <div style={{ padding: '1rem' }}>
+                <ClaimOrderTokenHeader
+                    isDenomBase={isDenomBase}
+                    isOrderFilled={isOrderFilled}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogo}
+                    quoteTokenLogoURI={quoteTokenLogo}
+                />
 
-            <ClaimOrderTokenHeader
-                isDenomBase={isDenomBase}
-                isOrderFilled={isOrderFilled}
-                baseTokenSymbol={baseTokenSymbol}
-                quoteTokenSymbol={quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogo}
-                quoteTokenLogoURI={quoteTokenLogo}
-            />
-
-            <ClaimOrderInfo
-                pivotTime={claimablePivotTime}
-                baseTokenSymbol={baseTokenSymbol}
-                quoteTokenSymbol={quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogo}
-                quoteTokenLogoURI={quoteTokenLogo}
-                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                claimPercentage={claimPercentage}
-                usdValue={usdValue}
-                bidTick={bidTick}
-                askTick={askTick}
-                baseDisplayFrontend={baseDisplayFrontend}
-                quoteDisplayFrontend={quoteDisplayFrontend}
-                baseDisplay={baseDisplay}
-                quoteDisplay={quoteDisplay}
-                positionLiqTotalUSD={positionLiqTotalUSD}
-                positionLiquidity={limitOrder.positionLiq.toString()}
-                baseClaimString={'2344'}
-                quoteClaimString={'4543'}
-                truncatedDisplayPrice={truncatedDisplayPrice}
-            />
-            {/* {gaslesssTransactionControl} */}
-            {/* {tooltipExplanationDataDisplay} */}
-            <ClaimOrderButton
-                claimFn={claimFn}
-                disabled={false}
-                title='Claim Limit Order'
-            />
-        </div>
+                <ClaimOrderInfo
+                    pivotTime={claimablePivotTime}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogo}
+                    quoteTokenLogoURI={quoteTokenLogo}
+                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                    claimPercentage={claimPercentage}
+                    usdValue={usdValue}
+                    bidTick={bidTick}
+                    askTick={askTick}
+                    baseDisplayFrontend={baseDisplayFrontend}
+                    quoteDisplayFrontend={quoteDisplayFrontend}
+                    baseDisplay={baseDisplay}
+                    quoteDisplay={quoteDisplay}
+                    positionLiqTotalUSD={positionLiqTotalUSD}
+                    positionLiquidity={limitOrder.positionLiq.toString()}
+                    baseClaimString={'2344'}
+                    quoteClaimString={'4543'}
+                    truncatedDisplayPrice={truncatedDisplayPrice}
+                />
+                {/* {gaslesssTransactionControl} */}
+                {/* {tooltipExplanationDataDisplay} */}
+                <ClaimOrderButton
+                    claimFn={claimFn}
+                    disabled={false}
+                    title='Claim Limit Order'
+                />
+            </div>
+        </>
     );
 
     // --------------------------------------------------------------------------------------

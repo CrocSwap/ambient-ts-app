@@ -325,16 +325,20 @@ export default function OrderRemoval(props: propsIF) {
     ]);
 
     const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            {/* {showConfirmation && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
+        <>
+            <RemoveOrderModalHeader
+                onClose={closeGlobalModal}
+                title={'Remove Limit Order Confirmation'}
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+                onGoBack={showSettings ? () => setShowSettings(false) : null}
+            />
+            <div className={styles.confirmation_container}>
+                <div className={styles.confirmation_content}>
+                    {currentConfirmationData}
                 </div>
-            )} */}
-            <div className={styles.confirmation_content}>
-                {currentConfirmationData}
             </div>
-        </div>
+        </>
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
@@ -396,7 +400,7 @@ export default function OrderRemoval(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <div style={{ padding: '1rem ' }}>
+        <>
             <RemoveOrderModalHeader
                 onClose={closeGlobalModal}
                 title={showConfirmation ? '' : 'Remove Limit Order'}
@@ -404,47 +408,52 @@ export default function OrderRemoval(props: propsIF) {
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
-
-            <RemoveOrderTokenHeader
-                isDenomBase={isDenomBase}
-                isOrderFilled={isOrderFilled}
-                baseTokenSymbol={baseTokenSymbol}
-                quoteTokenSymbol={quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogo}
-                quoteTokenLogoURI={quoteTokenLogo}
-            />
-            <RemoveOrderWidth
-                removalPercentage={removalPercentage}
-                setRemovalPercentage={setRemovalPercentage}
-            />
-            <RemoveOrderInfo
-                baseTokenSymbol={baseTokenSymbol}
-                quoteTokenSymbol={quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogo}
-                quoteTokenLogoURI={quoteTokenLogo}
-                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                removalPercentage={removalPercentage}
-                usdValue={usdValue}
-                bidTick={bidTick}
-                askTick={askTick}
-                baseDisplayFrontend={baseDisplayFrontend}
-                quoteDisplayFrontend={quoteDisplayFrontend}
-                baseDisplay={baseDisplay}
-                quoteDisplay={quoteDisplay}
-                positionLiqTotalUSD={positionLiqTotalUSD}
-                positionLiquidity={limitOrder.positionLiq.toString()}
-                baseRemovalString={baseQtyToBeRemoved}
-                quoteRemovalString={quoteQtyToBeRemoved}
-            />
-            {/* {gaslesssTransactionControl} */}
-            {/* {tooltipExplanationDataDisplay} */}
-            <RemoveOrderButton
-                removeFn={removeFn}
-                disabled={false}
-                title='Remove Limit Order'
-            />
-        </div>
+            <div style={{ padding: '1rem ' }}>
+                <RemoveOrderTokenHeader
+                    isDenomBase={isDenomBase}
+                    isOrderFilled={isOrderFilled}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogo}
+                    quoteTokenLogoURI={quoteTokenLogo}
+                />
+                <div style={{ padding: '0 8px' }}>
+                    <RemoveOrderWidth
+                        removalPercentage={removalPercentage}
+                        setRemovalPercentage={setRemovalPercentage}
+                    />
+                    <RemoveOrderInfo
+                        baseTokenSymbol={baseTokenSymbol}
+                        quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenLogoURI={baseTokenLogo}
+                        quoteTokenLogoURI={quoteTokenLogo}
+                        posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                        posLiqQuoteDecimalCorrected={
+                            posLiqQuoteDecimalCorrected
+                        }
+                        removalPercentage={removalPercentage}
+                        usdValue={usdValue}
+                        bidTick={bidTick}
+                        askTick={askTick}
+                        baseDisplayFrontend={baseDisplayFrontend}
+                        quoteDisplayFrontend={quoteDisplayFrontend}
+                        baseDisplay={baseDisplay}
+                        quoteDisplay={quoteDisplay}
+                        positionLiqTotalUSD={positionLiqTotalUSD}
+                        positionLiquidity={limitOrder.positionLiq.toString()}
+                        baseRemovalString={baseQtyToBeRemoved}
+                        quoteRemovalString={quoteQtyToBeRemoved}
+                    />
+                    {/* {gaslesssTransactionControl} */}
+                    {/* {tooltipExplanationDataDisplay} */}
+                    <RemoveOrderButton
+                        removeFn={removeFn}
+                        disabled={false}
+                        title='Remove Limit Order'
+                    />
+                </div>
+            </div>
+        </>
     );
 
     // --------------------------------------------------------------------------------------

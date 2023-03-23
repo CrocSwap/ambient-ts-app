@@ -281,7 +281,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
 
     const showBackArrow = useMemo(() => {
         switch (page) {
-            case 'wallets':
+            // case 'wallets':
             case 'magicLogin':
             case 'metamaskError':
                 return true;
@@ -311,6 +311,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
                 title={activeTitle}
+                centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
                 // footer={tosText}
             >
                 {activeContent}

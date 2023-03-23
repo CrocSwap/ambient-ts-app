@@ -83,7 +83,12 @@ export default function RangeHeader(props: propsIF) {
                 </div>
             </IconWithTooltip>
             {isModalOpen && (
-                <Modal noHeader title='modal' onClose={closeModal}>
+                <Modal
+                    noHeader
+                    title='modal'
+                    onClose={closeModal}
+                    centeredTitle
+                >
                     <TransactionSettings
                         module='Range Order'
                         toggleFor='range'

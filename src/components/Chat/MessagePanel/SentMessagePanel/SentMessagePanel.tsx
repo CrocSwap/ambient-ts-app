@@ -266,7 +266,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const location = useLocation();
 
     const myBlockies = (
-        <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />
+        <Blockies seed={props.message.walletID.toLowerCase()} scale={3} />
     );
 
     return (

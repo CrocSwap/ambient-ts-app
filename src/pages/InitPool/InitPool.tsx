@@ -33,7 +33,6 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import InitPoolDenom from '../../components/InitPool/InitPoolDenom/InitPoolDenom';
 
 // interface for props
 interface propsIF {
@@ -230,6 +229,13 @@ export default function InitPool(props: propsIF) {
     const [initialPrice, setInitialPrice] = useState<number | undefined>();
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
 
+    const defaultInitialPrice = 2000;
+
+    const [placeHolderPrice, setPlaceholderPrice] =
+        useState<number>(defaultInitialPrice);
+
+    const [valueDisplayString, setValueDisplayString] = useState<string>('');
+
     const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
         (state) => state.tradeData,
     );
@@ -238,7 +244,14 @@ export default function InitPool(props: propsIF) {
 
     const invertInitialPrice = () => {
         if (initialPrice) setInitialPrice(1 / initialPrice);
+        setPlaceholderPrice(1 / placeHolderPrice);
     };
+
+    useEffect(() => {
+        if (initialPrice !== undefined) {
+            setValueDisplayString(initialPrice.toString() || '');
+        }
+    }, [initialPrice]);
 
     useEffect(() => {
         if (initialPrice) {
@@ -478,32 +491,63 @@ export default function InitPool(props: propsIF) {
                                         <input
                                             id={'initial-pool-price-quantity'}
                                             className={styles.currency_quantity}
-                                            placeholder={`e.g. 1500 (${baseToken.symbol}/${quoteToken.symbol})`}
+                                            placeholder={`e.g. ${placeHolderPrice} (${
+                                                isDenomBase
+                                                    ? baseToken.symbol
+                                                    : quoteToken.symbol
+                                            }/${
+                                                isDenomBase
+                                                    ? quoteToken.symbol
+                                                    : baseToken.symbol
+                                            })`}
                                             type='string'
                                             onChange={(event) => {
-                                                if (
-                                                    parseFloat(
-                                                        event.target.value,
-                                                    ) > 0
-                                                ) {
-                                                    setInitialPrice(
-                                                        parseFloat(
-                                                            event.target.value,
-                                                        ),
+                                                const isValid =
+                                                    event.target.value === '' ||
+                                                    event.target.validity.valid;
+                                                const targetValue =
+                                                    event.target.value.replaceAll(
+                                                        ',',
+                                                        '',
                                                     );
-                                                } else if (
-                                                    event.target.value === ''
+                                                const input =
+                                                    targetValue.startsWith('.')
+                                                        ? '0' + targetValue
+                                                        : targetValue;
+                                                const targetValueNum =
+                                                    parseFloat(input);
+                                                isValid &&
+                                                    setValueDisplayString(
+                                                        input,
+                                                    );
+                                                if (
+                                                    isValid &&
+                                                    ((!isNaN(targetValueNum) &&
+                                                        targetValueNum !== 0) ||
+                                                        event.target.value ===
+                                                            '')
                                                 ) {
-                                                    setInitialPrice(undefined);
+                                                    if (
+                                                        event.target.value ===
+                                                        ''
+                                                    ) {
+                                                        setInitialPrice(
+                                                            undefined,
+                                                        );
+                                                    } else {
+                                                        setInitialPrice(
+                                                            targetValueNum,
+                                                        );
+                                                    }
                                                 }
                                             }}
-                                            value={initialPrice || ''}
+                                            value={valueDisplayString}
                                             inputMode='decimal'
                                             autoComplete='off'
                                             autoCorrect='off'
                                             min='0'
                                             minLength={1}
-                                            pattern='^[0-9]*[.,]?[0-9]*$'
+                                            pattern='^[0-9,]*[.]?[0-9]*$'
                                             required
                                         />
                                     </section>
@@ -516,13 +560,11 @@ export default function InitPool(props: propsIF) {
                                     }
                                     baseToken={baseToken}
                                     quoteToken={quoteToken}
+                                    setIsDenomBase={setIsDenomBase}
+                                    invertInitialPrice={invertInitialPrice}
                                 />
                             </div>
-                            <InitPoolDenom
-                                isDenomBase={isDenomBase}
-                                setIsDenomBase={setIsDenomBase}
-                                invertInitialPrice={invertInitialPrice}
-                            />
+
                             <footer>
                                 {poolExists ? (
                                     <Button

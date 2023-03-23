@@ -4819,7 +4819,7 @@ export default function Chart(props: ChartData) {
     }, [showVolume]);
 
     useEffect(() => {
-        if (liqMode === 'Off') {
+        if (liqMode === 'none') {
             d3.select(d3CanvasLiqAsk.current)
                 .select('canvas')
                 .style('display', 'none');
@@ -4937,21 +4937,21 @@ export default function Chart(props: ChartData) {
             )[0].value;
 
             const minBoudnary = d3.min(
-                liqMode === 'Depth'
+                liqMode === 'depth'
                     ? liquidityData.depthLiqBidData
                     : liquidityData.liqBidData,
                 (d: any) => d.liqPrices,
             );
 
             const maxBoudnary = d3.max(
-                liqMode === 'Depth'
+                liqMode === 'depth'
                     ? liquidityData.depthLiqBidData
                     : liquidityData.liqBidData,
                 (d: any) => d.liqPrices,
             );
 
             const liqData =
-                liqMode === 'Depth'
+                liqMode === 'depth'
                     ? liquidityData.depthLiqAskData
                     : liquidityData.liqAskData;
 
@@ -5214,20 +5214,20 @@ export default function Chart(props: ChartData) {
 
                     if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                         lineAskSeriesJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.liqAskData : [],
+                            liqMode === 'curve' ? liquidityData.liqAskData : [],
                         ]).call(lineAskSeries);
                         lineBidSeriesJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.liqBidData : [],
+                            liqMode === 'curve' ? liquidityData.liqBidData : [],
                         ]).call(lineBidSeries);
 
                         lineDepthBidSeriesJoin(svg, [
-                            liqMode === 'Depth'
+                            liqMode === 'depth'
                                 ? liquidityData.depthLiqBidData
                                 : [],
                         ]).call(lineDepthAskSeries);
 
                         lineDepthAskSeriesJoin(svg, [
-                            liqMode === 'Depth'
+                            liqMode === 'depth'
                                 ? liquidityData.depthLiqAskData
                                 : [],
                         ]).call(lineDepthBidSeries);
@@ -5275,11 +5275,11 @@ export default function Chart(props: ChartData) {
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
-                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
+                .curve(liqMode === 'curve' ? d3.curveBasis : d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(
-                    liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
+                    liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
                 )
                 .yScale(scaleData.yScale);
 
@@ -5304,7 +5304,7 @@ export default function Chart(props: ChartData) {
             d3.select(d3CanvasLiqAsk.current)
                 .on('draw', () => {
                     liqAskSeries(
-                        liqMode === 'Curve'
+                        liqMode === 'curve'
                             ? liquidityData.liqAskData
                             : liquidityData.depthLiqAskData,
                     );
@@ -5329,11 +5329,11 @@ export default function Chart(props: ChartData) {
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
-                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
+                .curve(liqMode === 'curve' ? d3.curveBasis : d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(
-                    liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
+                    liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
                 )
                 .yScale(scaleData.yScale);
 
@@ -5358,7 +5358,7 @@ export default function Chart(props: ChartData) {
             d3.select(d3CanvasLiqBid.current)
                 .on('draw', () => {
                     liqBidSeries(
-                        liqMode === 'Curve'
+                        liqMode === 'curve'
                             ? liquidityData.liqBidData
                             : isAdvancedModeActive
                             ? liquidityData.depthLiqBidData
@@ -5906,11 +5906,11 @@ export default function Chart(props: ChartData) {
 
     const liqDataHover = (event: any) => {
         const liqDataBid =
-            liqMode === 'Depth'
+            liqMode === 'depth'
                 ? liquidityData.depthLiqBidData
                 : liquidityData.liqBidData;
         const liqDataAsk =
-            liqMode === 'Depth'
+            liqMode === 'depth'
                 ? liquidityData.depthLiqAskData
                 : liquidityData.liqAskData;
 
@@ -5920,7 +5920,7 @@ export default function Chart(props: ChartData) {
 
         const currentDataY = scaleData.yScale.invert(event.offsetY);
         const currentDataX =
-            liqMode === 'Depth'
+            liqMode === 'depth'
                 ? liquidityDepthScale.invert(event.offsetX)
                 : liquidityScale.invert(event.offsetX);
 
@@ -6479,24 +6479,24 @@ export default function Chart(props: ChartData) {
                             JSON.stringify(liquidityScale.domain()) !== '[0,0]'
                         ) {
                             lineAskSeriesJoin(svg, [
-                                liqMode === 'Curve'
+                                liqMode === 'curve'
                                     ? liquidityData.liqAskData
                                     : [],
                             ]).call(lineAskSeries);
                             lineBidSeriesJoin(svg, [
-                                liqMode === 'Curve'
+                                liqMode === 'curve'
                                     ? liquidityData.liqBidData
                                     : [],
                             ]).call(lineBidSeries);
 
                             lineDepthBidSeriesJoin(svg, [
-                                liqMode === 'Depth'
+                                liqMode === 'depth'
                                     ? liquidityData.depthLiqBidData
                                     : [],
                             ]).call(lineDepthAskSeries);
 
                             lineDepthAskSeriesJoin(svg, [
-                                liqMode === 'Depth'
+                                liqMode === 'depth'
                                     ? liquidityData.depthLiqAskData
                                     : [],
                             ]).call(lineDepthBidSeries);
@@ -6767,7 +6767,7 @@ export default function Chart(props: ChartData) {
             // };
 
             if (liqTooltipSelectedLiqBar.liqPrices != null) {
-                // if (liqMode === 'Depth') {
+                // if (liqMode === 'depth') {
                 //     if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
                 //         liqTextData.totalValue = snap(
                 //             liquidityData.depthLiqAskData,
