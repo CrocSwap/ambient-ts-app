@@ -92,10 +92,12 @@ export default function Modal(props: ModalPropsIF) {
     const desktopView = useMediaQuery('(min-width: 720px)');
 
     return (
-        <div
+        <aside
             id='Modal_Global'
             className={styles.outside_modal}
             onMouseDown={desktopView ? onClose : undefined}
+            role='dialog'
+            aria-modal='true'
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -111,6 +113,6 @@ export default function Modal(props: ModalPropsIF) {
                 <section className={styles.modal_content}>{children}</section>
                 {footerOrNull}
             </motion.div>
-        </div>
+        </aside>
     );
 }

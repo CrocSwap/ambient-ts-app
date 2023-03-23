@@ -109,7 +109,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             </button>
         </div>
     ) : (
-        <div className={styles.wall_buttons_container}>
+        <div className={styles.wall_buttons_container} tabIndex={0}>
             {connectors.map((connector) => (
                 <WalletButton
                     title={`${connector.name} ${
@@ -151,7 +151,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
 
     const walletsPage = useMemo(
         () => (
-            <div className={styles.main_container}>
+            <div className={styles.main_container} tabIndex={0}>
                 <section>
                     {connectorsDisplay}
                     {/* {walletsDisplay} */}

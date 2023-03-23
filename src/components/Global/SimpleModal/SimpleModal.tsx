@@ -35,7 +35,11 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
     }, []);
 
     return (
-        <div className={styles.outside_modal} onMouseDown={onClose}>
+        <div
+            className={styles.outside_modal}
+            onMouseDown={onClose}
+            tabIndex={-1}
+        >
             <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
