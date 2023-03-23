@@ -18,6 +18,7 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -32,6 +33,7 @@ interface propsIF {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     openTokenModal: () => void;
     selectedTokenDecimals: number;
+    ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
 }
 
@@ -48,6 +50,7 @@ export default function Deposit(props: propsIF) {
         openTokenModal,
         selectedTokenDecimals,
         gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -340,6 +343,35 @@ export default function Deposit(props: propsIF) {
         }
     };
 
+    const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const averageGasUnitsForEthDeposit = 40000;
+    const averageGasUnitsForErc20Deposit = 67000;
+    const gweiInWei = 1e-9;
+
+    // calculate price of gas for exchange balance deposit
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                gweiInWei *
+                ethMainnetUsdPrice *
+                (isTokenEth
+                    ? averageGasUnitsForEthDeposit
+                    : averageGasUnitsForErc20Deposit);
+
+            setDepositGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text_non_clickable}>
@@ -375,6 +407,12 @@ export default function Deposit(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
+            <div className={styles.gas_pump}>
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
+                {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
+            </div>
         </div>
     );
 }
