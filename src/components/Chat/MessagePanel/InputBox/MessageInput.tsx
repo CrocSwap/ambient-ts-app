@@ -104,7 +104,6 @@ export default function MessageInput(
         handleSendMsg(message, roomId);
         setMessage('');
         dontShowEmojiPanel();
-        console.log('handle send message: ', roomId);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
