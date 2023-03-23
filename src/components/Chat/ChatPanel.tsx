@@ -47,7 +47,7 @@ interface propsIF {
     fullScreen?: boolean;
     userImageData: string[];
     appPage?: boolean;
-    username?: string | undefined | null;
+    username?: string | null;
 }
 
 export default function ChatPanel(props: propsIF) {

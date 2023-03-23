@@ -359,9 +359,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     ) : (
                         ''
                     )}
-                    <p className={styles.message_date}>
-                        {formatAMPM(props.message.createdAt)}
-                    </p>
+                    <div>
+                        <p className={styles.message_date}>
+                            {formatAMPM(props.message.createdAt)}
+                        </p>
+                    </div>
 
                     {/* {snackbarContent} */}
                 </div>

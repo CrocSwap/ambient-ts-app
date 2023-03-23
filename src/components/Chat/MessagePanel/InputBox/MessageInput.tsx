@@ -66,7 +66,7 @@ export default function MessageInput(
         props.room === 'Current Pool'
             ? prop.currentPool.baseToken.symbol.toUpperCase() +
               prop.currentPool.quoteToken.symbol.toUpperCase()
-            : props.room.toUpperCase();
+            : props.room;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
