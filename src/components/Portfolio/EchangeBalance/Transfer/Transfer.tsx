@@ -443,7 +443,9 @@ export default function Transfer(props: propsIF) {
                 buttonMessage={buttonMessage}
             />
             <div className={styles.gas_pump}>
-                <FaGasPump size={12} />{' '}
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
                 {transferGasPriceinDollars ? transferGasPriceinDollars : '…'}
             </div>
         </div>

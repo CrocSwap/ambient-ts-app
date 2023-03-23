@@ -408,7 +408,9 @@ export default function Deposit(props: propsIF) {
                 buttonMessage={buttonMessage}
             />
             <div className={styles.gas_pump}>
-                <FaGasPump size={12} />{' '}
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
                 {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
             </div>
         </div>

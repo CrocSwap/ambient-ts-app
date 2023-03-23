@@ -540,7 +540,9 @@ export default function Withdraw(props: propsIF) {
                 buttonMessage={buttonMessage}
             />
             <div className={styles.gas_pump}>
-                <FaGasPump size={12} />{' '}
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
                 {withdrawGasPriceinDollars ? withdrawGasPriceinDollars : '…'}
             </div>
         </div>
