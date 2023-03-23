@@ -18,25 +18,16 @@ const useChatApi = () => {
                 },
             );
             const data = await response.json();
-            if (data.status === 'OK') {
-                return data;
-            } else {
-                return data;
-            }
+            return data;
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async function getName(id: any) {
+    async function getName(id: string) {
         const response = await fetch(host + '/api/auth/getNamebyID/' + id, {
             method: 'GET',
         });
         const data = await response.json();
-        if (data.status === 'OK') {
-            return data;
-        } else {
-            return data;
-        }
+        return data;
     }
 
     async function getNameOrWallet(_account: string) {
