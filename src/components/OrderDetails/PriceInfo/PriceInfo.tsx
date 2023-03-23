@@ -83,12 +83,18 @@ export default function PriceInfo(props: propsIF) {
                     quoteTokenLogo ? (
                         <img src={quoteTokenLogo} alt='quote token' />
                     ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                        <NoTokenIcon
+                            tokenInitial={quoteTokenSymbol.charAt(0)}
+                            width='27px'
+                        />
                     )
                 ) : baseTokenLogo ? (
                     <img src={baseTokenLogo} alt='base token' />
                 ) : (
-                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
+                    <NoTokenIcon
+                        tokenInitial={baseTokenSymbol.charAt(0)}
+                        width='27px'
+                    />
                 )}
             </p>
         </div>
@@ -106,12 +112,18 @@ export default function PriceInfo(props: propsIF) {
                     quoteTokenLogo ? (
                         <img src={quoteTokenLogo} alt='quote token' />
                     ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='27px' />
+                        <NoTokenIcon
+                            tokenInitial={quoteTokenSymbol.charAt(0)}
+                            width='27px'
+                        />
                     )
                 ) : baseTokenLogo ? (
                     <img src={baseTokenLogo} alt='base token' />
                 ) : (
-                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='27px' />
+                    <NoTokenIcon
+                        tokenInitial={baseTokenSymbol.charAt(0)}
+                        width='27px'
+                    />
                 )}
             </p>
         </div>

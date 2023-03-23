@@ -92,7 +92,8 @@ export const topPools = [
             symbol: 'DAI',
             decimals: 18,
             chainId: 0x5,
-            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+            logoURI:
+                'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         chainId: '0x5',
         poolId: 36000,
@@ -144,7 +145,8 @@ export const topTokens = [
             symbol: 'DAI',
             decimals: 18,
             chainId: 0x5,
-            logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+            logoURI:
+                'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         chainId: '0x5',
         poolId: 36000,

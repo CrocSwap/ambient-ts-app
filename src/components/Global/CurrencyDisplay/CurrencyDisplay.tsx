@@ -36,7 +36,9 @@ export default function CurrencyDisplay(props: propsIF) {
                         className={styles.token_list_img}
                         alt={tokenData.name}
                     />
-                    <span className={styles.token_list_text}>{tokenData.symbol}</span>
+                    <span className={styles.token_list_text}>
+                        {tokenData.symbol}
+                    </span>
                 </div>
                 <div className={styles.token_amount}>
                     <span className={styles.currency_quantity}>{amount}</span>

@@ -2,7 +2,13 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    ReactNode,
+    useEffect,
+    useState,
+} from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -15,15 +21,14 @@ import {
     graphData,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
-
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    // updateApy,
-    updatePositionStats,
-} from '../../../../App/functions/getPositionData';
+import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -33,7 +38,8 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-// import RangeAccordions from './RangeAccordions/RangeAccordions';
+import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 
 // interface for props
 interface propsIF {
@@ -59,16 +65,17 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
     importedTokens: TokenIF[];
-    openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
-
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 // react functional component
@@ -80,7 +87,6 @@ export default function Ranges(props: propsIF) {
         crocEnv,
         chainData,
         provider,
-
         chainId,
         isShowAllEnabled,
         baseTokenBalance,
@@ -99,6 +105,8 @@ export default function Ranges(props: propsIF) {
         showSidebar,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
+        dexBalancePrefs,
+        slippage,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -108,10 +116,13 @@ export default function Ranges(props: propsIF) {
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase =
+        tradeData.quoteToken.address.toLowerCase();
 
-    const isConnectedUserRangeDataLoading = dataLoadingStatus?.isConnectedUserRangeDataLoading;
-    const isLookupUserRangeDataLoading = dataLoadingStatus?.isLookupUserRangeDataLoading;
+    const isConnectedUserRangeDataLoading =
+        dataLoadingStatus?.isConnectedUserRangeDataLoading;
+    const isLookupUserRangeDataLoading =
+        dataLoadingStatus?.isLookupUserRangeDataLoading;
     const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
 
     const isRangeDataLoadingForPortfolio =
@@ -126,12 +137,15 @@ export default function Ranges(props: propsIF) {
         (isOnPortfolioPage && isRangeDataLoadingForPortfolio) ||
         (!isOnPortfolioPage && isRangeDataLoadingForTradeTable);
 
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(
+        shouldDisplayLoadingAnimation,
+        1000,
+    ); // debounce 1/4 second
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
-    const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
-        (position) => {
+    const positionsByUserMatchingSelectedTokens =
+        graphData?.positionsByUser?.positions.filter((position) => {
             if (
                 position.base.toLowerCase() === baseTokenAddressLowerCase &&
                 position.quote.toLowerCase() === quoteTokenAddressLowerCase
@@ -140,18 +154,16 @@ export default function Ranges(props: propsIF) {
             } else {
                 return false;
             }
-        },
-    );
+        });
 
-    const userPositionsToDisplayOnTrade = positionsByUserMatchingSelectedTokens.filter(
-        (position) => {
+    const userPositionsToDisplayOnTrade =
+        positionsByUserMatchingSelectedTokens.filter((position) => {
             if (position.positionLiq !== '0' || position.source === 'manual') {
                 return true;
             } else {
                 return false;
             }
-        },
-    );
+        });
 
     const [rangeData, setRangeData] = useState(
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
@@ -161,15 +173,13 @@ export default function Ranges(props: propsIF) {
         if (
             isOnPortfolioPage &&
             activeAccountPositionData &&
-            JSON.stringify(activeAccountPositionData) !== JSON.stringify(rangeData)
+            JSON.stringify(activeAccountPositionData) !==
+                JSON.stringify(rangeData)
         ) {
-            // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            // console.log({ userPositionsToDisplayOnTrade });
             setRangeData(userPositionsToDisplayOnTrade);
         } else if (positionsByPool && !isOnPortfolioPage) {
-            // console.log({ positionsByPool });
             setRangeData(positionsByPool);
         }
     }, [
@@ -181,10 +191,8 @@ export default function Ranges(props: propsIF) {
         JSON.stringify(positionsByPool),
     ]);
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        'time',
-        rangeData,
-    );
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
+        useSortedPositions('time', rangeData);
 
     const dispatch = useAppDispatch();
 
@@ -200,20 +208,29 @@ export default function Ranges(props: propsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            if (updatedPositions) dispatch(addPositionsByPool(updatedPositions));
+                            if (updatedPositions)
+                                dispatch(addPositionsByPool(updatedPositions));
                         } else {
-                            const updatedPositionsMatchingUser = updatedPositions.filter(
-                                (position) => position.user.toLowerCase() === account.toLowerCase(),
-                            );
+                            const updatedPositionsMatchingUser =
+                                updatedPositions.filter(
+                                    (position) =>
+                                        position.user.toLowerCase() ===
+                                        account.toLowerCase(),
+                                );
                             if (updatedPositionsMatchingUser.length)
                                 // console.log({ updatedPositionsMatchingUser });
-                                dispatch(addPositionsByUser(updatedPositionsMatchingUser));
+                                dispatch(
+                                    addPositionsByUser(
+                                        updatedPositionsMatchingUser,
+                                    ),
+                                );
                         }
                     } else {
                         // console.log({ updatedPositions });
                         // console.log({ sortedPositions });
-                        const newArray = updatedPositions.concat(sortedPositions.slice(3));
-                        // console.log({ newArray });
+                        const newArray = updatedPositions.concat(
+                            sortedPositions.slice(3),
+                        );
                         setRangeData(newArray);
                     }
                 })
@@ -245,23 +262,34 @@ export default function Ranges(props: propsIF) {
 
     const regularRangesItems = Math.round((height - 250) / 36);
     const showColumnRangesItems = Math.round((height - 250) / 60);
-    const rangesPerPage = showColumns ? showColumnRangesItems : regularRangesItems;
+    const rangesPerPage = showColumns
+        ? showColumnRangesItems
+        : regularRangesItems;
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
+    }, [
+        account,
+        isShowAllEnabled,
+        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
+    ]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
     const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRanges = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const currentRanges = sortedPositions?.slice(
+        indexOfFirstRanges,
+        indexOfLastRanges,
+    );
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
     const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage && largeScreenView ? currentRanges : sortedPositions;
+        expandTradeTable && !isOnPortfolioPage && largeScreenView
+            ? currentRanges
+            : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
@@ -282,8 +310,12 @@ export default function Ranges(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
-    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+    const baseTokenCharacter = baseTokenSymbol
+        ? getUnicodeCharacter(baseTokenSymbol)
+        : '';
+    const quoteTokenCharacter = quoteTokenSymbol
+        ? getUnicodeCharacter(quoteTokenSymbol)
+        : '';
 
     const walID = (
         <>
@@ -420,7 +452,9 @@ export default function Ranges(props: propsIF) {
         },
     ];
 
-    const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
+    const headerStyle = isOnPortfolioPage
+        ? styles.portfolio_header
+        : styles.trade_header;
 
     const headerColumnsDisplay = (
         <ul className={`${styles.header} ${headerStyle}`}>
@@ -466,6 +500,8 @@ export default function Ranges(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
+            dexBalancePrefs={dexBalancePrefs}
+            slippage={slippage}
         />
     ));
 
@@ -473,8 +509,12 @@ export default function Ranges(props: propsIF) {
 
     const mobileViewHeight = mobileView ? '70vh' : '250px';
 
-    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
-    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+    const expandStyle = expandTradeTable
+        ? 'calc(100vh - 10rem)'
+        : mobileViewHeight;
+    const portfolioPageStyle = props.isOnPortfolioPage
+        ? 'calc(100vh - 19.5rem)'
+        : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
         rowItemContent
     ) : (
@@ -492,7 +532,11 @@ export default function Ranges(props: propsIF) {
             style={{ height: portfolioPageStyle }}
         >
             {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : rangeDataOrNull}
+            {debouncedShouldDisplayLoadingAnimation ? (
+                <TableSkeletons />
+            ) : (
+                rangeDataOrNull
+            )}
             {footerDisplay}
         </section>
     );

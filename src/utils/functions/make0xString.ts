@@ -1,4 +1,7 @@
-export default function make0xString(num: number, lower = false): string | undefined {
+export default function make0xString(
+    num: number,
+    lower = false,
+): string | undefined {
     try {
         if (Number.isSafeInteger(num)) {
             const output = '0x' + num.toString(16);

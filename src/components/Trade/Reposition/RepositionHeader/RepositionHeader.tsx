@@ -1,27 +1,42 @@
-import { useRepoExitPath } from './useRepoExitPath';
-import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
-import { RiSettings5Line } from 'react-icons/ri';
+// START: Import React and Dongles
+import { Dispatch, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
-import trimString from '../../../../utils/functions/trimString';
-import styles from './RepositionHeader.module.css';
+import { RiSettings5Line } from 'react-icons/ri';
+import { VscClose } from 'react-icons/vsc';
+
+// START: Import JSX Components
+import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
 import Modal from '../../../../components/Global/Modal/Modal';
+
+// START: Import Local Files
+import styles from './RepositionHeader.module.css';
+import trimString from '../../../../utils/functions/trimString';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { VscClose } from 'react-icons/vsc';
+import { useRepoExitPath } from './useRepoExitPath';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     positionHash: string;
     repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
+    setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
+    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 export default function RepositionHeader(props: propsIF) {
-    const { positionHash, repoSlippage, isPairStable, bypassConfirm, toggleBypassConfirm } = props;
+    const {
+        setRangeWidthPercentage,
+        positionHash,
+        repoSlippage,
+        isPairStable,
+        bypassConfirm,
+        setSimpleRangeWidth,
+    } = props;
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -33,10 +48,15 @@ export default function RepositionHeader(props: propsIF) {
 
     return (
         <ContentHeader>
-            <div onClick={() => openModal()} style={{ cursor: 'pointer', marginLeft: '10px' }}>
+            <div
+                onClick={() => openModal()}
+                style={{ cursor: 'pointer', marginLeft: '10px' }}
+            >
                 <RiSettings5Line />
             </div>
-            <div className={styles.title}>Reposition: {trimString(positionHash, 4, 4, '…')}</div>
+            <div className={styles.title}>
+                Reposition: {trimString(positionHash, 4, 4, '…')}
+            </div>
 
             {isModalOpen && (
                 <Modal noHeader title='modal' onClose={closeModal}>
@@ -46,14 +66,15 @@ export default function RepositionHeader(props: propsIF) {
                         slippage={repoSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm}
-                        toggleBypassConfirm={toggleBypassConfirm}
+                        bypassConfirm={bypassConfirm.repo}
                     />
                 </Modal>
             )}
             <div
                 onClick={() => {
                     dispatch(setAdvancedMode(false));
+                    setRangeWidthPercentage(10);
+                    setSimpleRangeWidth(10);
                     navigate(exitPath, { replace: true });
                 }}
                 style={{ cursor: 'pointer', marginRight: '10px' }}

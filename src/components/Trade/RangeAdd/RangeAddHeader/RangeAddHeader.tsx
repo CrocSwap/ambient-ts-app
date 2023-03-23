@@ -14,7 +14,10 @@ export default function RangeAddHeader() {
         <ContentHeader>
             <div />
             <div className={styles.title}>
-                Add: {positionHash ? trimString(positionHash, 4, 4, '…') : ' 0xFD05...A3FF'}
+                Add:{' '}
+                {positionHash
+                    ? trimString(positionHash, 4, 4, '…')
+                    : ' 0xFD05...A3FF'}
             </div>
             <div onClick={() => navigate(-1)}>
                 <RiCloseFill />

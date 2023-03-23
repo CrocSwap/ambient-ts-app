@@ -1,6 +1,5 @@
-
-.GraphContainers{
-    transition: all var(--animation-speed) ease-in-out
+.GraphContainers {
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 /* timeframe */
@@ -23,7 +22,6 @@
     align-items: center;
     gap: 10px;
 }
-
 
 /* graph data */
 
@@ -116,7 +114,6 @@
     border: 1px solid #242f3f;
 }
 
-
 .outline2 {
     z-index: 1;
     position: absolute;
@@ -133,7 +130,8 @@
     padding: 1px;
     /* control the border thickness */
     background: var(--title-gradient);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -180,5 +178,3 @@
         transform: rotate(360deg);
     }
 }
-
-

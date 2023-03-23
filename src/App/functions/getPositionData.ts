@@ -17,8 +17,10 @@ export const getPositionData = async (
 ): Promise<PositionIF> => {
     const newPosition = { ...position };
 
-    const baseTokenAddress = position.base.length === 40 ? '0x' + position.base : position.base;
-    const quoteTokenAddress = position.quote.length === 40 ? '0x' + position.quote : position.quote;
+    const baseTokenAddress =
+        position.base.length === 40 ? '0x' + position.base : position.base;
+    const quoteTokenAddress =
+        position.quote.length === 40 ? '0x' + position.quote : position.quote;
 
     const poolPriceNonDisplay = await cachedQuerySpotPrice(
         crocEnv,
@@ -33,7 +35,8 @@ export const getPositionData = async (
 
     const isPositionInRange =
         position.positionType === 'ambient' ||
-        (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
+        (position.bidTick <= poolPriceInTicks &&
+            poolPriceInTicks <= position.askTick);
 
     newPosition.isPositionInRange = isPositionInRange;
 
@@ -44,10 +47,20 @@ export const getPositionData = async (
     const upperPriceNonDisplay = tickToPrice(position.askTick);
 
     const lowerPriceDisplayInBase =
-        1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+        1 /
+        toDisplayPrice(
+            upperPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
 
     const upperPriceDisplayInBase =
-        1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+        1 /
+        toDisplayPrice(
+            lowerPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
 
     const lowerPriceDisplayInQuote = toDisplayPrice(
         lowerPriceNonDisplay,
@@ -106,10 +119,12 @@ export const getPositionData = async (
               });
 
     const baseTokenLogoURI = importedTokens.find(
-        (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
     const quoteTokenLogoURI = importedTokens.find(
-        (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
 
     newPosition.baseTokenLogoURI = baseTokenLogoURI ?? '';
@@ -208,20 +223,32 @@ export const getPositionData = async (
     return newPosition;
 };
 
-export const updatePositionStats = async (position: PositionIF): Promise<PositionIF> => {
+export const updatePositionStats = async (
+    position: PositionIF,
+): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        httpGraphCacheServerDomain + '/position_stats?';
 
     // console.log('fetching position apy');
 
     const updatedPosition = await fetch(
         positionStatsCacheEndpoint +
             new URLSearchParams({
-                user: position.user.length === 40 ? '0x' + position.user : position.user,
+                user:
+                    position.user.length === 40
+                        ? '0x' + position.user
+                        : position.user,
                 askTick: position.askTick.toString(),
                 bidTick: position.bidTick.toString(),
-                base: position.base.length === 40 ? '0x' + position.base : position.base,
-                quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
+                base:
+                    position.base.length === 40
+                        ? '0x' + position.base
+                        : position.base,
+                quote:
+                    position.quote.length === 40
+                        ? '0x' + position.quote
+                        : position.quote,
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
                 // chainId: position.chainId,
@@ -236,9 +263,11 @@ export const updatePositionStats = async (position: PositionIF): Promise<Positio
             const totalValueUSD = json?.data.totalValueUSD;
             const positionLiq = json?.data.positionLiq;
             const positionLiqBase = json?.data.positionLiqBase;
-            const positionLiqBaseDecimalCorrected = json?.data.positionLiqBaseDecimalCorrected;
+            const positionLiqBaseDecimalCorrected =
+                json?.data.positionLiqBaseDecimalCorrected;
             const positionLiqQuote = json?.data.positionLiqQuote;
-            const positionLiqQuoteDecimalCorrected = json?.data.positionLiqQuoteDecimalCorrected;
+            const positionLiqQuoteDecimalCorrected =
+                json?.data.positionLiqQuoteDecimalCorrected;
 
             const liqBaseNum = positionLiqBaseDecimalCorrected;
             const liqQuoteNum = positionLiqQuoteDecimalCorrected;
@@ -283,8 +312,10 @@ export const updatePositionStats = async (position: PositionIF): Promise<Positio
                 positionLiq: positionLiq,
                 positionLiqBase: positionLiqBase,
                 positionLiqQuote: positionLiqQuote,
-                positionLiqBaseDecimalCorrected: positionLiqBaseDecimalCorrected,
-                positionLiqQuoteDecimalCorrected: positionLiqQuoteDecimalCorrected,
+                positionLiqBaseDecimalCorrected:
+                    positionLiqBaseDecimalCorrected,
+                positionLiqQuoteDecimalCorrected:
+                    positionLiqQuoteDecimalCorrected,
                 positionLiqBaseTruncated: positionLiqBaseTruncated,
                 positionLiqQuoteTruncated: positionLiqQuoteTruncated,
             });
@@ -298,18 +329,28 @@ export const updatePositionStats = async (position: PositionIF): Promise<Positio
 
 export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-    const positionApyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
+    const positionApyCacheEndpoint =
+        httpGraphCacheServerDomain + '/position_apy?';
 
     // console.log('fetching position apy');
 
     const updatedPosition = await fetch(
         positionApyCacheEndpoint +
             new URLSearchParams({
-                user: position.user.length === 40 ? '0x' + position.user : position.user,
+                user:
+                    position.user.length === 40
+                        ? '0x' + position.user
+                        : position.user,
                 askTick: position.askTick.toString(),
                 bidTick: position.bidTick.toString(),
-                base: position.base.length === 40 ? '0x' + position.base : position.base,
-                quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
+                base:
+                    position.base.length === 40
+                        ? '0x' + position.base
+                        : position.base,
+                quote:
+                    position.quote.length === 40
+                        ? '0x' + position.quote
+                        : position.quote,
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
                 // chainId: position.chainId,

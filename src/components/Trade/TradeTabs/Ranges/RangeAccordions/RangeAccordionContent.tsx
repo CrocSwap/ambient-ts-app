@@ -89,7 +89,11 @@ export default function RangeAccordionContent(props: propsIF) {
     const statusDisplay = (
         <div className={styles.row}>
             <p>Status:</p>
-            <RangeStatus isAmbient={isAmbient} isEmpty={isEmpty} isInRange={isPositionInRange} />
+            <RangeStatus
+                isAmbient={isAmbient}
+                isEmpty={isEmpty}
+                isInRange={isPositionInRange}
+            />
         </div>
     );
 
@@ -97,8 +101,12 @@ export default function RangeAccordionContent(props: propsIF) {
         <div className={styles.buttons_container}>
             <button className={styles.option_button}>Details</button>
             <button className={styles.option_button}>Copy</button>
-            {isOwnerActiveAccount && <button className={styles.option_button}>Edit</button>}
-            {isOwnerActiveAccount && <button className={styles.option_button}>Remove</button>}
+            {isOwnerActiveAccount && (
+                <button className={styles.option_button}>Edit</button>
+            )}
+            {isOwnerActiveAccount && (
+                <button className={styles.option_button}>Remove</button>
+            )}
         </div>
     );
 

@@ -23,7 +23,10 @@ export default function TopTokensCard(props: propsIF) {
     const linkPath = useMemo(() => {
         const { pathname } = location;
         let locationSlug = '';
-        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
+        if (
+            pathname.startsWith('/trade/market') ||
+            pathname.startsWith('/account')
+        ) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
@@ -44,7 +47,9 @@ export default function TopTokensCard(props: propsIF) {
     const topTokenName = pool.name;
 
     const [tokenPrice, setTokenPrice] = useState<string | undefined>();
-    const [tokenPrice24hChange, setTokenPrice24hChange] = useState<string | undefined>();
+    const [tokenPrice24hChange, setTokenPrice24hChange] = useState<
+        string | undefined
+    >();
 
     const fetchPoolPriceChange = () => {
         (async () => {

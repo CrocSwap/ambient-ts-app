@@ -15,10 +15,19 @@ import Button from '../../components/Global/Button/Button';
 import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import { TokenIF, TokenListIF, TokenPairIF } from '../../utils/interfaces/exports';
+import {
+    TokenIF,
+    TokenListIF,
+    TokenPairIF,
+} from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
-import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+import {
+    addPendingTx,
+    addReceipt,
+    addTransactionByType,
+    removePendingTx,
+} from '../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -73,7 +82,9 @@ export default function InitPool(props: propsIF) {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
-            const doesPoolExist = crocEnv.pool(baseAddr as string, quoteAddr as string).isInit();
+            const doesPoolExist = crocEnv
+                .pool(baseAddr as string, quoteAddr as string)
+                .isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
                 // update value of poolExists, use `null` for `undefined`
@@ -88,9 +99,13 @@ export default function InitPool(props: propsIF) {
     }, [crocEnv]);
 
     const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
-    const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(null);
+    const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(
+        null,
+    );
     // useEffect(() => console.log(tokenALocal), [tokenALocal]);
-    const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(null);
+    const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(
+        null,
+    );
     // useEffect(() => console.log(tokenBLocal), [tokenBLocal]);
     useEffect(() => {
         tokenALocal && dispatch(setTokenA(tokenALocal));
@@ -121,7 +136,10 @@ export default function InitPool(props: propsIF) {
         if (tokenList && baseAddr && quoteAddr) {
             // console.log('running!');
             const findToken = (addr: string) =>
-                tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase());
+                tokenList.find(
+                    (tkn: TokenIF) =>
+                        tkn.address.toLowerCase() === addr.toLowerCase(),
+                );
 
             // console.log(tokenList);
             // console.log(baseAddr, quoteAddr);
@@ -173,11 +191,15 @@ export default function InitPool(props: propsIF) {
                 .then((res) => setTarget(res, target));
         }
         tokenALocal === undefined && setTokenFromChain(baseAddr, 'tokenALocal');
-        tokenBLocal === undefined && setTokenFromChain(quoteAddr, 'tokenBLocal');
+        tokenBLocal === undefined &&
+            setTokenFromChain(quoteAddr, 'tokenBLocal');
     }, [tokenALocal, tokenBLocal]);
 
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
-    const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<string | undefined>();
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
+        useState(false);
+    const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<
+        string | undefined
+    >();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -189,7 +211,8 @@ export default function InitPool(props: propsIF) {
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const gasPriceInDollarsNum = gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
+            const gasPriceInDollarsNum =
+                gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
                 '$' +
@@ -207,7 +230,9 @@ export default function InitPool(props: propsIF) {
     const [initialPrice, setInitialPrice] = useState<number | undefined>();
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
 
-    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
@@ -234,6 +259,13 @@ export default function InitPool(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Pool Initialization',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -281,11 +313,20 @@ export default function InitPool(props: propsIF) {
                 try {
                     setIsInitPending(true);
                     tx = await crocEnv
-                        ?.pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                        ?.pool(
+                            tokenPair.dataTokenA.address,
+                            tokenPair.dataTokenB.address,
+                        )
                         .initPool(initialPriceInBaseDenom);
 
                     if (tx) dispatch(addPendingTx(tx?.hash));
-
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Pool Initialization',
+                            }),
+                        );
                     let receipt;
                     try {
                         if (tx) receipt = await tx.wait();
@@ -312,14 +353,20 @@ export default function InitPool(props: propsIF) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
-                            '/trade/range/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr,
+                            '/trade/range/chain=0x5&tokenA=' +
+                                baseAddr +
+                                '&tokenB=' +
+                                quoteAddr,
                             {
                                 replace: true,
                             },
                         );
                     }
                 } catch (error) {
-                    if (error.reason === 'sending a transaction requires a signer') {
+                    if (
+                        error.reason ===
+                        'sending a transaction requires a signer'
+                    ) {
                         location.reload();
                     }
                     console.error({ error });
@@ -364,7 +411,12 @@ export default function InitPool(props: propsIF) {
         <section className={styles.main}>
             {poolExists && (
                 <Navigate
-                    to={'/trade/market/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr}
+                    to={
+                        '/trade/market/chain=0x5&tokenA=' +
+                        baseAddr +
+                        '&tokenB=' +
+                        quoteAddr
+                    }
                     replace={true}
                 />
             )}
@@ -383,10 +435,15 @@ export default function InitPool(props: propsIF) {
                                     {/* <img src={tokenA.logoURI} alt='token a' /> */}
                                     {tokenA &&
                                         (tokenA.logoURI ? (
-                                            <img src={tokenA.logoURI} alt={tokenA.symbol} />
+                                            <img
+                                                src={tokenA.logoURI}
+                                                alt={tokenA.symbol}
+                                            />
                                         ) : (
                                             <NoTokenIcon
-                                                tokenInitial={tokenA.symbol.charAt(0)}
+                                                tokenInitial={tokenA.symbol.charAt(
+                                                    0,
+                                                )}
                                                 width='30px'
                                             />
                                         ))}
@@ -398,10 +455,15 @@ export default function InitPool(props: propsIF) {
                                 <div>
                                     {tokenB &&
                                         (tokenB.logoURI ? (
-                                            <img src={tokenB.logoURI} alt={tokenB.symbol} />
+                                            <img
+                                                src={tokenB.logoURI}
+                                                alt={tokenB.symbol}
+                                            />
                                         ) : (
                                             <NoTokenIcon
-                                                tokenInitial={tokenB.symbol.charAt(0)}
+                                                tokenInitial={tokenB.symbol.charAt(
+                                                    0,
+                                                )}
                                                 width='30px'
                                             />
                                         ))}
@@ -419,9 +481,19 @@ export default function InitPool(props: propsIF) {
                                             placeholder={`e.g. 1500 (${baseToken.symbol}/${quoteToken.symbol})`}
                                             type='string'
                                             onChange={(event) => {
-                                                if (parseFloat(event.target.value) > 0) {
-                                                    setInitialPrice(parseFloat(event.target.value));
-                                                } else if (event.target.value === '') {
+                                                if (
+                                                    parseFloat(
+                                                        event.target.value,
+                                                    ) > 0
+                                                ) {
+                                                    setInitialPrice(
+                                                        parseFloat(
+                                                            event.target.value,
+                                                        ),
+                                                    );
+                                                } else if (
+                                                    event.target.value === ''
+                                                ) {
                                                     setInitialPrice(undefined);
                                                 }
                                             }}
@@ -439,7 +511,9 @@ export default function InitPool(props: propsIF) {
                                 <InitPoolExtraInfo
                                     initialPrice={initialPrice}
                                     isDenomBase={isDenomBase}
-                                    initGasPriceinDollars={initGasPriceinDollars}
+                                    initGasPriceinDollars={
+                                        initGasPriceinDollars
+                                    }
                                     baseToken={baseToken}
                                     quoteToken={quoteToken}
                                 />
@@ -457,23 +531,29 @@ export default function InitPool(props: propsIF) {
                                         action={() => console.log('clicked')}
                                         flat={true}
                                     />
-                                ) : isUserLoggedIn || !connectButtonDelayElapsed ? (
+                                ) : isUserLoggedIn ||
+                                  !connectButtonDelayElapsed ? (
                                     !isTokenAAllowanceSufficient ? (
                                         tokenAApprovalButton
                                     ) : !isTokenBAllowanceSufficient ? (
                                         tokenBApprovalButton
-                                    ) : initialPrice === undefined || initialPrice <= 0 ? (
+                                    ) : initialPrice === undefined ||
+                                      initialPrice <= 0 ? (
                                         <Button
                                             title='Enter an Initial Price'
                                             disabled={true}
-                                            action={() => console.log('clicked')}
+                                            action={() =>
+                                                console.log('clicked')
+                                            }
                                             flat={true}
                                         />
                                     ) : isInitPending === true ? (
                                         <Button
                                             title='Initialization Pending'
                                             disabled={true}
-                                            action={() => console.log('clicked')}
+                                            action={() =>
+                                                console.log('clicked')
+                                            }
                                             flat={true}
                                         />
                                     ) : (
@@ -484,7 +564,11 @@ export default function InitPool(props: propsIF) {
                                         />
                                     )
                                 ) : (
-                                    <Button title='Login' action={openModalWallet} flat={true} />
+                                    <Button
+                                        title='Login'
+                                        action={openModalWallet}
+                                        flat={true}
+                                    />
                                 )}
                             </footer>
                         </div>

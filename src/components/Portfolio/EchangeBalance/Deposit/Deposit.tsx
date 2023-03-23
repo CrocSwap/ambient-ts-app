@@ -8,6 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../../utils/state/receiptDataSlice';
 import {
@@ -39,8 +40,6 @@ export default function Deposit(props: propsIF) {
         crocEnv,
         tokenAllowance,
         connectedAccount,
-        // openGlobalModal,
-        // closeGlobalModal,
         selectedToken,
         tokenWalletBalance,
         tokenDexBalance,
@@ -55,17 +54,39 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
+    /* 
+        below is the magic number (60000) determined by trial and error 
+        to avoid a metamask error that the additional cost 
+        of gas would exceed the user's ETH balance by decreasing
+        the amount of ETH being deposited by the estimated gas
+         cost of the transaction.
+    */
+
+    const estimatedGasAmountForDepositTransaction = 60000;
+
+    const numberOfWeiInGwei = 1e9;
+
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!gasPriceInGwei && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
-                  .sub(BigNumber.from(Math.floor(gasPriceInGwei * 200000 * 1e8)))
-                  //   .sub(BigNumber.from(Math.floor(1000000000000000)))
-                  //   .sub(BigNumber.from(Math.floor(gasPriceInGwei * 11500000 * 1e-9)))
+
+                  .sub(
+                      BigNumber.from(
+                          Math.floor(
+                              gasPriceInGwei *
+                                  estimatedGasAmountForDepositTransaction *
+                                  numberOfWeiInGwei,
+                          ),
+                      ),
+                  )
                   .toString()
             : tokenWalletBalance;
 
-    const tokenWalletBalanceDisplay = tokenWalletBalance
-        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+    const tokenWalletBalanceDisplay = tokenWalletBalanceAdjustedNonDisplayString
+        ? toDisplayQty(
+              tokenWalletBalanceAdjustedNonDisplayString,
+              selectedTokenDecimals,
+          )
         : undefined;
 
     const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
@@ -77,9 +98,7 @@ export default function Deposit(props: propsIF) {
             ? tokenWalletBalanceDisplayNum.toExponential(2)
             : tokenWalletBalanceDisplayNum < 2
             ? tokenWalletBalanceDisplayNum.toPrecision(3)
-            : // : tokenWalletBalanceNum >= 100000
-              // ? formatAmountOld(tokenWalletBalanceNum)
-              tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+            : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -98,15 +117,15 @@ export default function Deposit(props: propsIF) {
             ? tokenExchangeDepositsDisplayNum.toExponential(2)
             : tokenExchangeDepositsDisplayNum < 2
             ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-            : // : tokenDexBalanceNum >= 100000
-              // ? formatAmountOld(tokenDexBalanceNum)
-              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
+            : tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
         : undefined;
 
-    const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<string | undefined>();
+    const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<
+        string | undefined
+    >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
@@ -121,9 +140,9 @@ export default function Deposit(props: propsIF) {
     const isWalletBalanceSufficient = useMemo(
         () =>
             tokenWalletBalanceAdjustedNonDisplayString && !!depositQtyNonDisplay
-                ? BigNumber.from(tokenWalletBalanceAdjustedNonDisplayString).gte(
-                      BigNumber.from(depositQtyNonDisplay),
-                  )
+                ? BigNumber.from(
+                      tokenWalletBalanceAdjustedNonDisplayString,
+                  ).gte(BigNumber.from(depositQtyNonDisplay))
                 : false,
         [tokenWalletBalanceAdjustedNonDisplayString, depositQtyNonDisplay],
     );
@@ -148,7 +167,9 @@ export default function Deposit(props: propsIF) {
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
         } else if (!isWalletBalanceSufficient) {
             setIsButtonDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Wallet Balance Insufficient`);
+            setButtonMessage(
+                `${selectedToken.symbol} Wallet Balance Insufficient`,
+            );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
             setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
@@ -165,24 +186,6 @@ export default function Deposit(props: propsIF) {
         selectedToken.symbol,
     ]);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeGlobalModal();
-    // };
-
-    // const chooseTokenDiv = (
-    //     <div>
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))}
-    //     </div>
-    // );
-
     useEffect(() => {
         setIsDepositPending(false);
     }, [JSON.stringify(selectedToken)]);
@@ -190,7 +193,10 @@ export default function Deposit(props: propsIF) {
     const deposit = async (depositQtyNonDisplay: string) => {
         if (crocEnv && depositQtyNonDisplay) {
             try {
-                const depositQtyDisplay = toDisplayQty(depositQtyNonDisplay, selectedTokenDecimals);
+                const depositQtyDisplay = toDisplayQty(
+                    depositQtyNonDisplay,
+                    selectedTokenDecimals,
+                );
 
                 setIsDepositPending(true);
 
@@ -199,6 +205,13 @@ export default function Deposit(props: propsIF) {
                     .deposit(depositQtyDisplay, connectedAccount);
 
                 dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Deposit',
+                        }),
+                    );
 
                 let receipt;
 
@@ -218,28 +231,6 @@ export default function Deposit(props: propsIF) {
 
                         console.log({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         // console.log({ error });
                         receipt = error.receipt;
@@ -252,7 +243,9 @@ export default function Deposit(props: propsIF) {
                     resetDepositQty();
                 }
             } catch (error) {
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
                 console.warn({ error });
@@ -275,6 +268,13 @@ export default function Deposit(props: propsIF) {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -317,14 +317,7 @@ export default function Deposit(props: propsIF) {
         await approve(selectedToken.address);
     };
 
-    // const depositInput = document.getElementById(
-    //     'exchange-balance-deposit-exchange-balance-deposit-quantity',
-    // ) as HTMLInputElement;
-
     const resetDepositQty = () => {
-        // if (depositInput) {
-        //     depositInput.value = '';
-        // }
         setDepositQtyNonDisplay(undefined);
         setInputValue('');
     };
@@ -333,22 +326,8 @@ export default function Deposit(props: propsIF) {
         resetDepositQty();
     }, [selectedToken.address]);
 
-    // useEffect(() => {
-    //     if (depositInput) {
-    //         const inputDisplayValueString = depositInput.value;
-    //         if (parseFloat(inputDisplayValueString) > 0) {
-    //             const nonDisplayQty = fromDisplayQty(
-    //                 inputDisplayValueString,
-    //                 selectedToken.decimals,
-    //             );
-    //             setDepositQtyNonDisplay(nonDisplayQty.toString());
-    //         } else {
-    //             setDepositQtyNonDisplay(undefined);
-    //         }
-    //     }
-    // }, [selectedToken.decimals]);
-
-    const isTokenWalletBalanceGreaterThanZero = parseFloat(tokenWalletBalance) > 0;
+    const isTokenWalletBalanceGreaterThanZero =
+        parseFloat(tokenWalletBalance) > 0;
 
     const [inputValue, setInputValue] = useState('');
 
@@ -356,9 +335,8 @@ export default function Deposit(props: propsIF) {
         if (isTokenWalletBalanceGreaterThanZero) {
             setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
 
-            if (tokenWalletBalanceDisplay) setInputValue(tokenWalletBalanceDisplay);
-            // if (depositInput && tokenWalletBalanceDisplay)
-            //     depositInput.value = tokenWalletBalanceDisplay;
+            if (tokenWalletBalanceDisplay)
+                setInputValue(tokenWalletBalanceDisplay);
         }
     };
 
@@ -383,7 +361,8 @@ export default function Deposit(props: propsIF) {
                         : styles.info_text_non_clickable
                 }
             >
-                Your Wallet Balance ({selectedToken.symbol}): {tokenWalletBalanceTruncated || '0.0'}
+                Your Wallet Balance ({selectedToken.symbol}):{' '}
+                {tokenWalletBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
                 Your Exchange Balance ({selectedToken.symbol}):{' '}

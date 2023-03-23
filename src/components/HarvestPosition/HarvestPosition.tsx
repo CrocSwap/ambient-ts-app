@@ -1,27 +1,22 @@
 import styles from './HarvestPosition.module.css';
-// import HarvestPositionWidth from './HarvestPositionWidth/HarvestPositionWidth';
 import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
 import { useEffect, useState } from 'react';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
 
-// import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
-// import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
-
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
+
 import {
-    CircleLoader,
-    CircleLoaderFailed,
-} from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
+    ambientPosSlot,
+    ChainSpec,
+    concPosSlot,
+    CrocEnv,
+} from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 import {
@@ -34,10 +29,17 @@ import {
     addPendingTx,
     addPositionPendingUpdate,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
+import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { checkIsStable } from '../../utils/data/stablePairs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -63,6 +65,9 @@ interface propsIF {
     isDenomBase: boolean;
     position: PositionIF;
     closeGlobalModal: () => void;
+    dexBalancePrefs: allDexBalanceMethodsIF;
+    handleModalClose: () => void;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function HarvestPosition(props: propsIF) {
@@ -71,59 +76,61 @@ export default function HarvestPosition(props: propsIF) {
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
-        // baseTokenBalance,
-        // quoteTokenBalance,
-        // baseTokenDexBalance,
-        // quoteTokenDexBalance,
-        // chainId,
-        // poolIdx,
-        // user,
-        // bidTick,
-        // askTick,
-        // baseTokenAddress,
-        // quoteTokenAddress,
-        // provider,
-        closeGlobalModal,
         position,
+        dexBalancePrefs,
+        handleModalClose,
+        slippage,
     } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
-    const harvestPositionSetttingIcon = (
-        <div onClick={() => setShowSettings(!showSettings)} className={styles.settings_icon}>
-            {showSettings ? null : <RiListSettingsLine size={20} />}
-        </div>
+    const isPairStable: boolean = checkIsStable(
+        position.base,
+        position.quote,
+        chainData.chainId,
     );
 
-    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
+    const persistedSlippage: number = isPairStable
+        ? slippage.mintSlippage.stable
+        : slippage.mintSlippage.volatile;
 
-    // const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [currentSlippage, setCurrentSlippage] =
+        useState<number>(persistedSlippage);
+
+    const updateSettings = (): void => {
+        setShowSettings(false);
+        isPairStable
+            ? slippage.mintSlippage.updateStable(currentSlippage)
+            : slippage.mintSlippage.updateVolatile(currentSlippage);
+    };
+
+    const lastBlockNumber = useAppSelector(
+        (state) => state.graphData,
+    ).lastBlock;
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     // eslint-disable-next-line
-    const [newHarvestTransactionHash, setNewHarvestTransactionHash] = useState('');
+    const [newHarvestTransactionHash, setNewHarvestTransactionHash] =
+        useState('');
     // eslint-disable-next-line
     const [txErrorCode, setTxErrorCode] = useState('');
     // eslint-disable-next-line
     // const [txErrorMessage, setTxErrorMessage] = useState('');
 
-    const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] = useState<
-        number | undefined
-    >();
-    const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] = useState<
-        number | undefined
-    >();
+    const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] =
+        useState<number | undefined>();
+    const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
+        useState<number | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewHarvestTransactionHash('');
         setTxErrorCode('');
-
-        // setTxErrorMessage('');
     };
 
-    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+    const positionStatsCacheEndpoint =
+        'https://809821320828123.de:5000/position_stats?';
     const dispatch = useAppDispatch();
 
     const positionsPendingUpdate = useAppSelector(
@@ -148,16 +155,24 @@ export default function HarvestPosition(props: propsIF) {
                             base: position.base,
                             quote: position.quote,
                             poolIdx: position.poolIdx.toString(),
-                            bidTick: position.bidTick ? position.bidTick.toString() : '0',
-                            askTick: position.askTick ? position.askTick.toString() : '0',
+                            bidTick: position.bidTick
+                                ? position.bidTick.toString()
+                                : '0',
+                            askTick: position.askTick
+                                ? position.askTick.toString()
+                                : '0',
                             addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )
                     .then((response) => response.json())
                     .then((json) => {
-                        setFeeLiqBaseDecimalCorrected(json?.data?.feesLiqBaseDecimalCorrected);
-                        setFeeLiqQuoteDecimalCorrected(json?.data?.feesLiqQuoteDecimalCorrected);
+                        setFeeLiqBaseDecimalCorrected(
+                            json?.data?.feesLiqBaseDecimalCorrected,
+                        );
+                        setFeeLiqQuoteDecimalCorrected(
+                            json?.data?.feesLiqQuoteDecimalCorrected,
+                        );
                     });
             })();
         }
@@ -166,7 +181,8 @@ export default function HarvestPosition(props: propsIF) {
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
+        useState<string>('');
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -216,13 +232,22 @@ export default function HarvestPosition(props: propsIF) {
                     .catch(console.log);
             }
         })();
-    }, [crocEnv, position.user, position.base, position.quote, lastBlockNumber]);
-
-    const liquiditySlippageTolerance = 1;
+    }, [
+        crocEnv,
+        position.user,
+        position.base,
+        position.quote,
+        lastBlockNumber,
+    ]);
 
     const posHash =
         position.positionType === 'ambient'
-            ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
+            ? ambientPosSlot(
+                  position.user,
+                  position.base,
+                  position.quote,
+                  chainData.poolIndex,
+              )
             : concPosSlot(
                   position.user,
                   position.base,
@@ -232,7 +257,8 @@ export default function HarvestPosition(props: propsIF) {
                   chainData.poolIndex,
               );
 
-    const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
+    const isPositionPendingUpdate =
+        positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const harvestFn = async () => {
         setShowConfirmation(true);
@@ -241,8 +267,8 @@ export default function HarvestPosition(props: propsIF) {
         const pool = env.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+        const lowLimit = spotPrice * (1 - persistedSlippage / 100);
+        const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
         let tx;
         if (position.positionType === 'concentrated') {
@@ -252,18 +278,26 @@ export default function HarvestPosition(props: propsIF) {
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: isSaveAsDexSurplusChecked },
+                    { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
                 );
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewHarvestTransactionHash(tx?.hash);
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Harvest',
+                        }),
+                    );
             } catch (error) {
                 console.log('caught error');
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
             }
@@ -271,7 +305,8 @@ export default function HarvestPosition(props: propsIF) {
             console.log('unsupported position type for harvest');
         }
 
-        const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint =
+            'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
             fetch(
                 newLiqChangeCacheEndpoint +
@@ -282,8 +317,12 @@ export default function HarvestPosition(props: propsIF) {
                         base: position.base,
                         quote: position.quote,
                         poolIdx: position.poolIdx.toString(),
-                        bidTick: position.bidTick ? position.bidTick.toString() : '0',
-                        askTick: position.askTick ? position.askTick.toString() : '0',
+                        bidTick: position.bidTick
+                            ? position.bidTick.toString()
+                            : '0',
+                        askTick: position.askTick
+                            ? position.askTick.toString()
+                            : '0',
                         positionType: position.positionType,
                         changeType: 'harvest',
                     }),
@@ -319,15 +358,18 @@ export default function HarvestPosition(props: propsIF) {
                                 base: position.base,
                                 quote: position.quote,
                                 poolIdx: position.poolIdx.toString(),
-                                bidTick: position.bidTick ? position.bidTick.toString() : '0',
-                                askTick: position.askTick ? position.askTick.toString() : '0',
+                                bidTick: position.bidTick
+                                    ? position.bidTick.toString()
+                                    : '0',
+                                askTick: position.askTick
+                                    ? position.askTick.toString()
+                                    : '0',
                                 positionType: position.positionType,
                                 changeType: 'harvest',
                             }),
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -343,7 +385,8 @@ export default function HarvestPosition(props: propsIF) {
     const positionType = 'concentrated';
 
     const feesGreaterThanZero =
-        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) > 0;
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
+        0;
 
     const harvestButtonOrNull = isPositionPendingUpdate ? (
         <HarvestPositionButton
@@ -351,58 +394,46 @@ export default function HarvestPosition(props: propsIF) {
             harvestFn={harvestFn}
             title={'Position Update Pending…'}
         />
-    ) : positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
+    ) : positionType === 'concentrated' &&
+      feesGreaterThanZero &&
+      !showSettings ? (
         <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
     ) : (
-        <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
+        <HarvestPositionButton
+            disabled={true}
+            harvestFn={harvestFn}
+            title={'…'}
+        />
     );
 
     const removalPercentage = 100;
 
-    const baseRemovalNum = ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
+    const baseRemovalNum =
+        ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
 
-    const quoteRemovalNum = ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
+    const quoteRemovalNum =
+        ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
 
     // confirmation modal
     const removalDenied = (
-        <div className={styles.removal_denied}>
-            <CircleLoaderFailed size='10rem' />
-            <p>
-                Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat />
-        </div>
+        <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const etherscanLink = chainData.blockExplorer + 'tx/' + newHarvestTransactionHash;
-
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-                <p>Harvest Transaction Successfully Submitted!</p>
-            </div>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newHarvestTransactionHash}
+            content='Harvest Transaction Successfully Submitted!'
+        />
     );
 
     const removalPending = (
-        <div className={styles.removal_pending}>
-            <CircleLoader size='10rem' borderColor='#171d27' />
-            <p>Check the Metamask extension in your browser for notifications.</p>
-        </div>
+        <WaitingConfirmation
+            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+        />
     );
 
-    const [currentConfirmationData, setCurrentConfirmationData] = useState(removalPending);
+    const [currentConfirmationData, setCurrentConfirmationData] =
+        useState(removalPending);
 
     const transactionApproved = newHarvestTransactionHash !== '';
 
@@ -411,11 +442,9 @@ export default function HarvestPosition(props: propsIF) {
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
-
-    // const isRemovalDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
@@ -424,7 +453,11 @@ export default function HarvestPosition(props: propsIF) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+        } else if (
+            isTransactionException ||
+            isGasLimitException ||
+            isInsufficientFundsException
+        ) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -439,37 +472,22 @@ export default function HarvestPosition(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        // removalDenied,
         newHarvestTransactionHash,
         txErrorCode,
         showConfirmation,
         isRemovalDenied,
     ]);
 
-    const buttonToDisplay = (
-        <div style={{ padding: '0 1rem' }}>
-            {showSettings ? (
-                <Button title='Confirm' action={() => setShowSettings(false)} flat />
-            ) : (
-                harvestButtonOrNull
-            )}
-        </div>
-    );
-
-    const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                <div className={styles.button} onClick={resetConfirmation}>
-                    <BsArrowLeft size={30} />
-                </div>
-            )}
-            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
-        </div>
-    );
-    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
-
     const mainModalContent = showSettings ? (
-        <HarvestPositionSettings showSettings={showSettings} setShowSettings={setShowSettings} />
+        <HarvestPositionSettings
+            persistedSlippage={persistedSlippage}
+            setCurrentSlippage={setCurrentSlippage}
+            presets={
+                isPairStable
+                    ? slippage.mintSlippage.presets.stable
+                    : slippage.mintSlippage.presets.volatile
+            }
+        />
     ) : (
         <>
             <div className={styles.header_container}>
@@ -482,53 +500,59 @@ export default function HarvestPosition(props: propsIF) {
                     quoteTokenLogoURI={quoteTokenLogoURI}
                     isDenomBase={props.isDenomBase}
                 />
-                {harvestPositionSetttingIcon}
+                <div
+                    onClick={() => setShowSettings(!showSettings)}
+                    className={styles.settings_icon}
+                >
+                    {showSettings ? null : <RiListSettingsLine size={20} />}
+                </div>
             </div>
-            {/* <HarvestPositionWidth
-                removalPercentage={removalPercentage}
-                setRemovalPercentage={setRemovalPercentage}
-            /> */}
             <div style={{ padding: '0 1rem' }}>
                 <HarvestPositionInfo
                     baseTokenSymbol={props.baseTokenSymbol}
                     quoteTokenSymbol={props.quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogoURI}
                     quoteTokenLogoURI={quoteTokenLogoURI}
-                    posLiqBaseDecimalCorrected={position.positionLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={position.positionLiqQuoteDecimalCorrected}
+                    posLiqBaseDecimalCorrected={
+                        position.positionLiqBaseDecimalCorrected
+                    }
+                    posLiqQuoteDecimalCorrected={
+                        position.positionLiqQuoteDecimalCorrected
+                    }
                     feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
                     feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
                     removalPercentage={removalPercentage}
                 />
-                <HarvestExtraControls
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseRemovalNum={baseRemovalNum}
-                    quoteRemovalNum={quoteRemovalNum}
-                    baseTokenBalance={baseTokenBalance}
-                    quoteTokenBalance={quoteTokenBalance}
-                    baseTokenDexBalance={baseTokenDexBalance}
-                    quoteTokenDexBalance={quoteTokenDexBalance}
-                />
+                <HarvestExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>
         </>
+    );
+
+    const confirmationContent = (
+        <div className={styles.confirmation_container}>
+            {showConfirmation && (
+                <div className={styles.button} onClick={resetConfirmation}>
+                    <BsArrowLeft size={30} />
+                </div>
+            )}
+            <div className={styles.confirmation_content}>
+                {currentConfirmationData}
+            </div>
+        </div>
     );
 
     if (showConfirmation) return confirmationContent;
 
     return (
         <div className={styles.remove_range_container}>
-            {/* {removeRangeSettingsPage} */}
-            {/* <RemoveRangeSettings showSettings={showSettings} setShowSettings={setShowSettings} /> */}
-
             <div className={styles.main_content}>
                 <HarvestPositionHeader
-                    onClose={closeGlobalModal}
-                    title={showSettings ? 'Harvest Position Settings' : 'Harvest Position'}
+                    onClose={handleModalClose}
+                    title={
+                        showSettings ? 'Harvest Settings' : 'Harvest Rewards'
+                    }
                     onBackButton={() => {
                         resetConfirmation();
                         setShowSettings(false);
@@ -536,8 +560,22 @@ export default function HarvestPosition(props: propsIF) {
                     showBackButton={showSettings}
                 />
                 {mainModalContent}
-                {/* {harvestButtonOrNull} */}
-                {buttonToDisplay}
+                <div style={{ padding: '0 1rem' }}>
+                    {showSettings ? (
+                        <Button
+                            title={
+                                currentSlippage > 0
+                                    ? 'Confirm'
+                                    : 'Enter a Valid Slippage'
+                            }
+                            action={updateSettings}
+                            flat
+                            disabled={!(currentSlippage > 0)}
+                        />
+                    ) : (
+                        harvestButtonOrNull
+                    )}
+                </div>
             </div>
         </div>
     );

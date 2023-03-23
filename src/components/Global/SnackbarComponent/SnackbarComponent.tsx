@@ -1,22 +1,30 @@
 // START: Import React and Dongles
-import { forwardRef, Dispatch, SetStateAction, ReactNode, SyntheticEvent } from 'react';
+import {
+    forwardRef,
+    Dispatch,
+    SetStateAction,
+    ReactNode,
+    SyntheticEvent,
+} from 'react';
 import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps, AlertColor } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(function SnackbarAlert(props, ref) {
-    return (
-        <Alert
-            elevation={6}
-            ref={ref}
-            {...props}
-            sx={{
-                backgroundColor: '#171D27',
-                color: 'white',
-            }}
-        />
-    );
-});
+const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
+    function SnackbarAlert(props, ref) {
+        return (
+            <Alert
+                elevation={6}
+                ref={ref}
+                {...props}
+                sx={{
+                    backgroundColor: '#171D27',
+                    color: 'white',
+                }}
+            />
+        );
+    },
+);
 
 // interface for React functional component props
 interface SnackbarPropsIF {
@@ -39,7 +47,11 @@ export default function SnackbarComponent(props: SnackbarPropsIF) {
 
     return (
         <motion.div>
-            <Snackbar open={openSnackbar} autoHideDuration={8000} onClose={handleClose}>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={8000}
+                onClose={handleClose}
+            >
                 <motion.div
                     initial={{ scale: 0.5 }}
                     animate={{ scale: 1 }}

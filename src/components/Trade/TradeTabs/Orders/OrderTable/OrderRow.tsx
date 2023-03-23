@@ -6,7 +6,10 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import {
+    DefaultTooltip,
+    TextOnlyTooltip,
+} from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -143,7 +146,9 @@ export default function OrderRow(props: propsIF) {
             ? styles.gradient_text
             : styles.base_color;
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
+        userNameToDisplay === 'You' && isShowAllEnabled
+            ? styles.border_left
+            : null;
 
     const openDetailsModal = () => {
         console.log({ limitOrder });
@@ -154,7 +159,9 @@ export default function OrderRow(props: propsIF) {
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}
-                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
                 isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
@@ -175,11 +182,17 @@ export default function OrderRow(props: propsIF) {
 
     function scrollToDiv() {
         const element = document.getElementById(orderDomId);
-        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest',
+        });
     }
 
     useEffect(() => {
-        limitOrder.limitOrderIdentifier === currentPositionActive ? scrollToDiv() : null;
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? scrollToDiv()
+            : null;
     }, [currentPositionActive]);
 
     const activePositionStyle =
@@ -225,14 +238,6 @@ export default function OrderRow(props: propsIF) {
     );
 
     const ValueWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={'$' + usdValueLocaleString}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={750}
-        //     leaveDelay={0}
-        // >
         <li
             onClick={openDetailsModal}
             data-label='value'
@@ -244,7 +249,6 @@ export default function OrderRow(props: propsIF) {
             {' '}
             {'$' + usdValue}
         </li>
-        // </DefaultTooltip>
     );
     const navigate = useNavigate();
 
@@ -272,7 +276,13 @@ export default function OrderRow(props: propsIF) {
                                 }),
                             );
                         }}
-                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
                     >
                         {'View Account' + 'ㅤ'}
                         <FiExternalLink size={'12px'} />
@@ -291,7 +301,15 @@ export default function OrderRow(props: propsIF) {
                             loadingStatus: true,
                         }),
                     );
-                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
+                    navigate(
+                        `/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`,
+                    );
                 }}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.hover_style}`}
@@ -305,37 +323,20 @@ export default function OrderRow(props: propsIF) {
     const baseTokenLogoComponent = baseTokenLogo ? (
         <img src={baseTokenLogo} alt='base token' width={logoSizes} />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width={logoSizes} />
+        <NoTokenIcon
+            tokenInitial={limitOrder.baseSymbol.charAt(0)}
+            width={logoSizes}
+        />
     );
 
     const quoteTokenLogoComponent = quoteTokenLogo ? (
         <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width={logoSizes} />
+        <NoTokenIcon
+            tokenInitial={limitOrder.quoteSymbol.charAt(0)}
+            width={logoSizes}
+        />
     );
-
-    // const tokensTogether = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'row',
-    //             alignItems: 'center',
-    //             gap: '4px',
-    //         }}
-    //     >
-    //         {baseTokenLogoComponent}
-    //         {quoteTokenLogoComponent}
-    //     </div>
-    // );
-
-    // portfolio page li element ---------------
-    // const accountTokenImages = (
-    //     <li className={styles.token_images_account}>
-
-    //         {tokensTogether}
-
-    //     </li>
-    // );
 
     const pair =
         limitOrder.base !== ZERO_ADDRESS
@@ -369,53 +370,19 @@ export default function OrderRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                {/* {tokensTogether} */}
-                <NavLink
-                    // onClick={() => {
-                    //     console.log({ tx });
-                    //     console.log({ tradeLinkPath });
-                    // }}
-                    to={tradeLinkPath}
-                >
-                    <p>
-                        {baseTokenSymbol} / {quoteTokenSymbol}
-                    </p>
+                <NavLink to={tradeLinkPath}>
+                    {baseTokenSymbol} / {quoteTokenSymbol}
                 </NavLink>
             </li>
         </DefaultTooltip>
     );
 
-    // const poolName = (
-    //     <li className='base_color'>
-    //         {baseTokenSymbol} / {quoteTokenSymbol}
-    //     </li>
-    // );
-    // end of portfolio page li element ---------------
-
-    // if (!orderMatchesSelectedTokens) return null;
-
-    // const fillTime = new Intl.DateTimeFormat('en-US', {
-    //     month: 'short',
-    //     day: 'numeric',
-    //     // hour12: false,
-    //     hour: '2-digit',
-    //     minute: '2-digit',
-    //     // second: '2-digit',
-    // }).format(limitOrder.time * 1000);
-
-    const positionTime = limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+    const positionTime =
+        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
 
     const elapsedTimeInSecondsNum = positionTime
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
         : 0;
-
-    // const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-    //     (limitOrder.latestUpdateTime !== 0
-    //         ? limitOrder.latestUpdateTime
-    //         : limitOrder.timeFirstMint) * 1000,
-    //     // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
-    //     'seconds',
-    // );
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
@@ -434,19 +401,7 @@ export default function OrderRow(props: propsIF) {
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
-    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
-    // const quoteQtyToolTipStyle = (
-    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
-    // );
     const baseQtyDisplayWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={baseQtyToolTipStyle}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={200}
-        // >
         <li
             onClick={openDetailsModal}
             data-label={baseTokenSymbol}
@@ -466,21 +421,10 @@ export default function OrderRow(props: propsIF) {
             >
                 {baseDisplay}
                 {baseTokenLogoComponent}
-                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
-                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </div>
         </li>
-        /* </DefaultTooltip> */
     );
     const quoteQtyDisplayWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={quoteQtyToolTipStyle}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={200}
-        // >
         <li
             onClick={openDetailsModal}
             data-label={quoteTokenSymbol}
@@ -500,11 +444,8 @@ export default function OrderRow(props: propsIF) {
             >
                 {quoteDisplay}
                 {quoteTokenLogoComponent}
-                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
-                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </div>
         </li>
-        /* </DefaultTooltip> */
     );
 
     const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
@@ -522,7 +463,9 @@ export default function OrderRow(props: propsIF) {
                     }}
                 >
                     {'First Minted: ' +
-                        moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')}
+                        moment(limitOrder.timeFirstMint * 1000).format(
+                            'MM/DD/YYYY HH:mm',
+                        )}
                 </p>
             }
             placement={'right'}
@@ -538,7 +481,6 @@ export default function OrderRow(props: propsIF) {
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
-                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </TextOnlyTooltip>
     ) : (
@@ -555,6 +497,29 @@ export default function OrderRow(props: propsIF) {
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
+
+    const handleAccountClick = () => {
+        if (!isOnPortfolioPage) {
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'lookupUserTxData',
+                    loadingStatus: true,
+                }),
+            );
+            navigate(
+                `/${
+                    isOwnerActiveAccount
+                        ? 'account'
+                        : ensName
+                        ? ensName
+                        : ownerId
+                }`,
+            );
+        } else {
+            openDetailsModal();
+        }
+    };
+
     return (
         <ul
             onMouseEnter={() => setShowHighlightedButton(true)}
@@ -569,37 +534,18 @@ export default function OrderRow(props: propsIF) {
             }
             ref={currentPositionActive ? activePositionRef : null}
         >
-            {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {!showColumns && IDWithTooltip}
             {!isOnPortfolioPage && !showColumns && walletWithTooltip}
             {showColumns && (
-                <li
-                    data-label='id'
-                    onClick={() => {
-                        if (!isOnPortfolioPage) {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                            navigate(
-                                `/${
-                                    isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-                                }`,
-                            );
-                        } else {
-                            openDetailsModal();
-                        }
-                    }}
-                >
-                    <p className={`${styles.base_color} ${styles.hover_style}`}>
+                <li data-label='id'>
+                    <p className={`base_color ${styles.hover_style}`}>
                         {posHashTruncated}
                     </p>{' '}
                     <p
                         className={`${usernameStyle} ${styles.hover_style}`}
+                        onClick={handleAccountClick}
                         style={{ textTransform: 'lowercase' }}
                     >
                         {userNameToDisplay}
@@ -678,9 +624,6 @@ export default function OrderRow(props: propsIF) {
             {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
-                    // className='color_white'
-                    // style={{ textAlign: 'right' }}
-
                     className='base_color'
                     onClick={openDetailsModal}
                     onMouseEnter={handleRowMouseDown}
@@ -688,7 +631,10 @@ export default function OrderRow(props: propsIF) {
                 >
                     <div
                         className={styles.token_qty}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
@@ -696,7 +642,10 @@ export default function OrderRow(props: propsIF) {
 
                     <div
                         className={styles.token_qty}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {' '}
                         {quoteDisplay}
@@ -712,7 +661,11 @@ export default function OrderRow(props: propsIF) {
                     onMouseLeave={handleRowMouseOut}
                 >
                     <div
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
                     >
                         <OpenOrderStatus isFilled={isOrderFilled} />
                     </div>
@@ -730,7 +683,9 @@ export default function OrderRow(props: propsIF) {
                     handlePulseAnimation={handlePulseAnimation}
                     lastBlockNumber={lastBlockNumber}
                     showHighlightedButton={showHighlightedButton}
-                    isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             </li>

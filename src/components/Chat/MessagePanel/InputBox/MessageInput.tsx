@@ -3,7 +3,6 @@ import useSocket from '../../Service/useSocket';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
-// import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -48,23 +47,26 @@ export interface ChatProps {
     setChatStatus: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function MessageInput(props: MessageInputProps, prop: ChatProps) {
+export default function MessageInput(
+    props: MessageInputProps,
+    prop: ChatProps,
+) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
-    // const { roomId } = props.match.params;
 
-    const { sendMsg } = useSocket(props.room);
+    const { sendMsg } = useSocket(props.room.toUpperCase());
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
     const roomId =
         props.room === 'Current Pool'
-            ? prop.currentPool.baseToken.symbol + prop.currentPool.quoteToken.symbol
-            : props.room;
+            ? prop.currentPool.baseToken.symbol.toUpperCase() +
+              prop.currentPool.quoteToken.symbol.toUpperCase()
+            : props.room.toUpperCase();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -98,12 +100,12 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     }, [isConnected, address]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
         setMessage('');
         dontShowEmojiPanel();
     };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
@@ -147,9 +149,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMsg = async (msg: string, roomId: any) => {
-        if (msg === '' || !address) {
-            // do nothing
-        } else {
+        if (msg !== '' && address) {
             sendMsg(props.currentUser, message, roomId, props.ensName, address);
         }
     };
@@ -160,7 +160,11 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     return (
-        <div className={!isConnected ? styles.input_box_not_allowed : styles.input_box}>
+        <div
+            className={
+                !isConnected ? styles.input_box_not_allowed : styles.input_box
+            }
+        >
             <PositionBox
                 message={message}
                 isInput={true}
@@ -168,13 +172,21 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                 setIsPosition={setIsPosition}
             />
 
-            <div className={!isConnected ? styles.input_not_allowed : styles.input}>
+            <div
+                className={
+                    !isConnected ? styles.input_not_allowed : styles.input
+                }
+            >
                 <input
                     type='text'
                     id='box'
                     placeholder={messageInputText()}
                     disabled={!isConnected}
-                    className={!isConnected ? styles.input_text_not_allowed : styles.input_text}
+                    className={
+                        !isConnected
+                            ? styles.input_text_not_allowed
+                            : styles.input_text
+                    }
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
@@ -232,7 +244,9 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                             <hr></hr>
                             <li>Ctrl + Alt + C - opens/closes chat</li>
                             <li>Esc- closes chat</li>
-                            <li>Alt + X - opens emoji panel when chat is open</li>
+                            <li>
+                                Alt + X - opens emoji panel when chat is open
+                            </li>
                             <li>Alt+ Q - close emoji panel</li>
                             <li>Ctrl + M - opens info</li>
                             <li>Enter - sends message directly</li>
@@ -242,15 +256,6 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                             pickerStyle={{
                                 width: '100%',
                                 height: '89%',
-                                // filter: 'invert(100%)',
-                                // height: '100%',
-                                // backgroundColor: '#2e4960',
-                                // indicatorColor: '#b04c2d',
-                                // fontColor: 'lightgrey',
-                                // searchBackgroundColor: '#263d51',
-                                // tabsFontColor: '#8cdce4',
-                                // searchFontColor: 'lightgrey',
-                                // skinTonePickerBackgroundColor: '#284155',
                             }}
                             onEmojiClick={handleEmojiClick}
                             disableSkinTonePicker={true}

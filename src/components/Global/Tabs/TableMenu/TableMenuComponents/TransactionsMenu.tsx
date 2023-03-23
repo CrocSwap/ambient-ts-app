@@ -119,7 +119,9 @@ export default function TransactionsMenu(props: propsIF) {
             }, 1000);
         } else if (tx.entityType === 'swap') {
             dispatch(
-                setIsTokenAPrimary((tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty)),
+                setIsTokenAPrimary(
+                    (tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty),
+                ),
             );
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
@@ -135,11 +137,15 @@ export default function TransactionsMenu(props: propsIF) {
                 tradeData.limitTick !== tx.askTick &&
                 (tradeData.isTokenAPrimary
                     ? tradeData.tokenA.address.toLowerCase() ===
-                      (tx.isBid ? tx.base.toLowerCase() : tx.quote.toLowerCase())
+                      (tx.isBid
+                          ? tx.base.toLowerCase()
+                          : tx.quote.toLowerCase())
                         ? true
                         : false
                     : tradeData.tokenB.address.toLowerCase() ===
-                      (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase())
+                      (tx.isBid
+                          ? tx.quote.toLowerCase()
+                          : tx.base.toLowerCase())
                     ? true
                     : false);
             if (shouldMovePrimaryQuantity) {
@@ -246,7 +252,9 @@ export default function TransactionsMenu(props: propsIF) {
                 account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
-                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
                 isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
@@ -346,11 +354,18 @@ export default function TransactionsMenu(props: propsIF) {
     const explorerButton = (
         <button className={styles.option_button} onClick={handleOpenExplorer}>
             Explorer
-            <FiExternalLink size={15} color='white' style={{ marginLeft: '.5rem' }} />
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
         </button>
     );
     const detailsButton = (
-        <button className={styles.option_button} onClick={() => openDetailsModal()}>
+        <button
+            className={styles.option_button}
+            onClick={() => openDetailsModal()}
+        >
             Details
         </button>
     );
@@ -413,7 +428,10 @@ export default function TransactionsMenu(props: propsIF) {
     };
 
     useEffect(() => {
-        if (showDropdownMenu && document.activeElement !== menuItemRef.current) {
+        if (
+            showDropdownMenu &&
+            document.activeElement !== menuItemRef.current
+        ) {
             const interval = setTimeout(() => {
                 setShowDropdownMenu(false);
             }, 5000);

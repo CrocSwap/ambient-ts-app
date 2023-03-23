@@ -1,42 +1,57 @@
+// START: Import React and Dongles
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useAccount, useEnsName } from 'wagmi';
+import { BigNumber, ethers } from 'ethers';
+import { Provider } from '@ethersproject/providers';
+import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+
+// START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
-import styles from './Portfolio.module.css';
-import { useParams } from 'react-router-dom';
-import { getNFTs } from '../../App/functions/getNFTs';
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { fetchAddress } from '../../App/functions/fetchAddress';
-import { BigNumber, ethers } from 'ethers';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
-import { useModal } from '../../components/Global/Modal/useModal';
-import { TokenIF } from '../../utils/interfaces/exports';
-import Button from '../../components/Global/Button/Button';
-import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
+import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-// import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
-import { Provider } from '@ethersproject/providers';
+
+// START: Import Other Local Files
+import styles from './Portfolio.module.css';
+import { TokenIF } from '../../utils/interfaces/exports';
+import { useParams } from 'react-router-dom';
+import { getNFTs } from '../../App/functions/getNFTs';
+import { fetchAddress } from '../../App/functions/fetchAddress';
+import { useModal } from '../../components/Global/Modal/useModal';
+import {
+    Erc20TokenBalanceFn,
+    nativeTokenBalanceFn,
+} from '../../App/functions/fetchTokenBalances';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
-    // setSecondaryImageDataRedux,
 } from '../../utils/state/userDataSlice';
-import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
+import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
+    getRecentTokens: (options?: {
+        onCurrentChain?: boolean;
+        count?: number | null;
+    }) => TokenIF[];
     getAmbientTokens: () => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
@@ -71,7 +86,6 @@ interface propsIF {
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
     handlePulseAnimation: (type: string) => void;
-
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     gasPriceInGwei: number | undefined;
@@ -83,6 +97,8 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -92,7 +108,6 @@ export default function Portfolio(props: propsIF) {
         crocEnv,
         addRecentToken,
         getRecentTokens,
-        // getAmbientTokens,
         getTokensByName,
         getTokenByAddress,
         verifyToken,
@@ -103,8 +118,6 @@ export default function Portfolio(props: propsIF) {
         cachedFetchTokenPrice,
         lastBlockNumber,
         userImageData,
-        // connectedAccount,
-        // chainId,
         tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
@@ -133,6 +146,8 @@ export default function Portfolio(props: propsIF) {
         chainData,
         mainnetProvider,
         setSimpleRangeWidth,
+        dexBalancePrefs,
+        slippage,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -147,8 +162,10 @@ export default function Portfolio(props: propsIF) {
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
-    const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
-    const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
+    const [recheckTokenAllowance, setRecheckTokenAllowance] =
+        useState<boolean>(false);
+    const [recheckTokenBalances, setRecheckTokenBalances] =
+        useState<boolean>(false);
 
     const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
     const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
@@ -159,16 +176,12 @@ export default function Portfolio(props: propsIF) {
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
         const tokenAddress = token.address;
-        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-
+        const key =
+            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
         const tokenName = tokensOnActiveLists.get(key)?.name;
-
         const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-
         newToken.name = tokenName ?? '';
-
         newToken.logoURI = tokenLogoURI ?? '';
-
         return newToken;
     };
 
@@ -178,35 +191,39 @@ export default function Portfolio(props: propsIF) {
                 .token(selectedToken.address)
                 .wallet(connectedAccount)
                 .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
-                .catch(console.log);
+                .catch(console.error);
             crocEnv
                 .token(selectedToken.address)
                 .balance(connectedAccount)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
 
         if (recheckTokenBalances) {
             (async () => {
                 if (connectedAccount) {
-                    const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
-                        connectedAccount,
-                        chainData.chainId,
-                        lastBlockNumber,
-                        crocEnv,
-                    );
+                    const newNativeToken: TokenIF =
+                        await cachedFetchNativeTokenBalance(
+                            connectedAccount,
+                            chainData.chainId,
+                            lastBlockNumber,
+                            crocEnv,
+                        );
 
                     dispatch(setNativeToken(newNativeToken));
 
-                    const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
-                        connectedAccount,
-                        chainData.chainId,
-                        lastBlockNumber,
-                        crocEnv,
+                    const erc20Results: TokenIF[] =
+                        await cachedFetchErc20TokenBalances(
+                            connectedAccount,
+                            chainData.chainId,
+                            lastBlockNumber,
+                            crocEnv,
+                        );
+                    const erc20TokensWithLogos = erc20Results.map((token) =>
+                        addTokenInfo(token),
                     );
-                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
 
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 }
@@ -214,7 +231,13 @@ export default function Portfolio(props: propsIF) {
         }
 
         setRecheckTokenBalances(false);
-    }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
+    }, [
+        crocEnv,
+        selectedToken.address,
+        connectedAccount,
+        lastBlockNumber,
+        recheckTokenBalances,
+    ]);
 
     useEffect(() => {
         (async () => {
@@ -224,47 +247,54 @@ export default function Portfolio(props: propsIF) {
                         .token(selectedTokenAddress)
                         .allowance(connectedAccount);
                     setTokenAllowance(allowance.toString());
-                    // setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
                 setRecheckTokenAllowance(false);
             }
         })();
-    }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
+    }, [
+        crocEnv,
+        selectedTokenAddress,
+        lastBlockNumber,
+        connectedAccount,
+        recheckTokenAllowance,
+    ]);
 
     const { address: addressFromParams } = useParams();
 
     const isAddressEns = addressFromParams?.endsWith('.eth');
-    const isAddressHex = addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
+    const isAddressHex =
+        addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
-    if (addressFromParams && !isAddressEns && !isAddressHex) return <NotFound />;
-    // if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
+    if (addressFromParams && !isAddressEns && !isAddressHex)
+        return <NotFound />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
     const connectedAccountActive =
-        !addressFromParams || resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
+        !addressFromParams ||
+        resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
 
     useEffect(() => {
         (async () => {
-            // console.log({ mainnetProvider });
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    // console.log({ addressFromParams });
-                    const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
-                    // console.log({ newResolvedAddress });
+                    const newResolvedAddress =
+                        await mainnetProvider.resolveName(addressFromParams);
                     if (newResolvedAddress) {
                         setResolvedAddress(newResolvedAddress);
                         dispatch(setResolvedAddressRedux(newResolvedAddress));
                     }
                 } catch (error) {
-                    console.log({ error });
-                    // window.location.reload();
+                    console.error({ error });
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
                 dispatch(setResolvedAddressRedux(addressFromParams));
+            } else {
+                setResolvedAddress('');
+                dispatch(setResolvedAddressRedux(''));
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
@@ -274,11 +304,9 @@ export default function Portfolio(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (resolvedAddress && !connectedAccountActive) {
-                // console.log('fetching NFTs belonging to resolved address');
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) {
                     setSecondaryImageData(imageLocalURLs);
-                    // dispatch(setSecondaryImageDataRedux(imageLocalURLs));
                 }
             }
         })();
@@ -300,7 +328,7 @@ export default function Portfolio(props: propsIF) {
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
-                    console.log({ error });
+                    console.warn({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
@@ -310,7 +338,8 @@ export default function Portfolio(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
+        useModal(modalCloseCustom);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -340,7 +369,9 @@ export default function Portfolio(props: propsIF) {
     );
 
     useEffect(() => {
-        !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
+        !connectedAccountActive
+            ? setFullLayoutActive(true)
+            : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
     const fullLayerToggle = (
@@ -356,11 +387,7 @@ export default function Portfolio(props: propsIF) {
                     } `}
                 />
             </section>
-
-            <section
-                // onClick={() => setFullLayoutActive(!fullLayoutActive)}
-                className={styles.shared_layout_svg}
-            >
+            <section className={styles.shared_layout_svg}>
                 <div
                     className={`${styles.full_layout_svg_copied} ${
                         !fullLayoutActive && styles.active_layout_style
@@ -375,75 +402,25 @@ export default function Portfolio(props: propsIF) {
         </div>
     );
 
-    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
+    const connectedUserNativeToken = useAppSelector(
+        (state) => state.userData.tokens.nativeToken,
+    );
+    const connectedUserErc20Tokens = useAppSelector(
+        (state) => state.userData.tokens.erc20Tokens,
+    );
 
-    // // TODO: move this function up to App.tsx
-    // const getImportedTokensPlus = () => {
-    //     // array of all tokens on Ambient list from useToken() hook
-    //     const ambientTokens = getAmbientTokens();
-    //     // array of addresses on Ambient list
-    //     const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
-    //     // use Ambient token list as scaffold to build larger token array
-    //     const output = ambientTokens;
-    //     // limiter for tokens to add from connected wallet
-    //     let tokensAdded = 0;
-    //     // iterate over tokens in connected wallet
-    //     console.log({connectedUserErc20Tokens});
-    //     connectedUserErc20Tokens?.forEach((tkn) => {
-    //         // gatekeep to make sure token is not already in the array,
-    //         // ... that the token can be verified against a known list,
-    //         // ... that user has a positive balance of the token, and
-    //         // ... that the limiter has not been reached
-    //         if (
-    //             !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-    //             verifyToken(tkn.address, chainId) &&
-    //             parseInt(tkn.combinedBalance as string) > 0 &&
-    //             tokensAdded < 4
-    //         ) {
-    //             tokensAdded++;
-    //             output.push({ ...tkn, fromList: 'wallet' });
-    //             // increment the limiter by one
-    //             tokensAdded++;
-    //             // add the token to the output array
-    //             output.push({ ...tkn, fromList: 'wallet' });
-    //         }
-    //     });
-    //     // limiter for tokens to add from in-session recent tokens list
-    //     let recentTokensAdded = 0;
-    //     // iterate over tokens in recent tokens list
-    //     getRecentTokens().forEach((tkn) => {
-    //         // gatekeep to make sure the token isn't already in the list,
-    //         // ... is on the current chain, and that the limiter has not
-    //         // ... yet been reached
-    //         if (
-    //             !output.some(
-    //                 (tk) =>
-    //                     tk.address.toLowerCase() === tkn.address.toLowerCase() &&
-    //                     tk.chainId === tkn.chainId,
-    //             ) &&
-    //             tkn.chainId === parseInt(chainId) &&
-    //             recentTokensAdded < 2
-    //         ) {
-    //             // increment the limiter by one
-    //             recentTokensAdded++;
-    //             // add the token to the output array
-    //             output.push(tkn);
-    //         }
-    //     });
-    //     // return compiled array of tokens
-    //     console.log({output});
-    //     return output;
-    // };
+    const connectedUserTokens = [connectedUserNativeToken].concat(
+        connectedUserErc20Tokens,
+    );
 
-    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
+    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
+        useState<TokenIF | undefined>();
+    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] =
+        useState<TokenIF[]>([]);
 
-    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
-        TokenIF | undefined
-    >();
-    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] = useState<TokenIF[]>([]);
-
-    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(resolvedAddressErc20Tokens);
+    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(
+        resolvedAddressErc20Tokens,
+    );
 
     useEffect(() => {
         (async () => {
@@ -470,7 +447,7 @@ export default function Portfolio(props: propsIF) {
                         setResolvedAddressNativeToken(newNativeToken);
                     }
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
                 try {
                     const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
@@ -483,42 +460,42 @@ export default function Portfolio(props: propsIF) {
                     );
 
                     erc20Results.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = resolvedAddressErc20Tokens.findIndex(
-                            (existingToken) => existingToken.address === newToken.address,
-                        );
+                        const indexOfExistingToken =
+                            resolvedAddressErc20Tokens.findIndex(
+                                (existingToken) =>
+                                    existingToken.address === newToken.address,
+                            );
 
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
                         } else if (
-                            JSON.stringify(resolvedAddressErc20Tokens[indexOfExistingToken]) !==
-                            JSON.stringify(newToken)
+                            JSON.stringify(
+                                resolvedAddressErc20Tokens[
+                                    indexOfExistingToken
+                                ],
+                            ) !== JSON.stringify(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
                     });
                     setResolvedAddressErc20Tokens(updatedTokens);
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
             }
         })();
-    }, [crocEnv, resolvedAddress, chainData.chainId, lastBlockNumber, connectedAccountActive]);
+    }, [
+        crocEnv,
+        resolvedAddress,
+        chainData.chainId,
+        lastBlockNumber,
+        connectedAccountActive,
+    ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    // const defaultTokens = getImportedTokensPlus();
-
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    // hook to process search input and return an array of relevant tokens
-    // also returns state setter function and values for control flow
-    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-    //     chainId,
-    //     importedTokens,
-    //     verifyToken,
-    //     getTokenByAddress,
-    //     getTokensByName,
-    //     defaultTokens
-    // );
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
+        useState(true);
 
     const handleInputClear = () => {
         setInput('');
@@ -529,18 +506,15 @@ export default function Portfolio(props: propsIF) {
     };
 
     const showLoggedInButton = userAccount && !isUserLoggedIn;
-
-    // console.log({ secondaryEnsName });
-    // console.log({ ensName });
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
-    // const hideTabs = useMediaQuery('(max-width: 1200px)') && showTabsAndNotExchange;
-    // const hideExchange = useMediaQuery('(max-width: 1200px)') && !showTabsAndNotExchange;
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
             <button
-                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                onClick={() =>
+                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                }
                 className={
                     showTabsAndNotExchange
                         ? styles.non_active_button_mobile_toggle
@@ -550,7 +524,9 @@ export default function Portfolio(props: propsIF) {
                 Transactions
             </button>
             <button
-                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                onClick={() =>
+                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                }
                 className={
                     showTabsAndNotExchange
                         ? styles.active_button_mobile_toggle
@@ -565,7 +541,11 @@ export default function Portfolio(props: propsIF) {
     const notConnectedContent = (
         <div className={styles.non_connected_content}>
             <p>Please connect your wallet.</p>
-            <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+            <Button
+                flat
+                title='Connect Wallet'
+                action={() => openModalWallet()}
+            />
         </div>
     );
 
@@ -608,6 +588,8 @@ export default function Portfolio(props: propsIF) {
         fullLayoutToggle: fullLayerToggle,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        dexBalancePrefs: dexBalancePrefs,
+        slippage: slippage,
     };
 
     const soloTokenSelectProps = {
@@ -634,12 +616,17 @@ export default function Portfolio(props: propsIF) {
     };
 
     const portfolioBannerProps = {
-        ensName: connectedAccountActive ? ensName ?? '' : secondaryEnsName ? secondaryEnsName : '',
+        ensName: connectedAccountActive
+            ? ensName ?? ''
+            : secondaryEnsName
+            ? secondaryEnsName
+            : '',
         resolvedAddress: resolvedAddress,
         activeAccount: address ?? connectedAccount ?? '',
         imageData: connectedAccountActive ? userImageData : secondaryImageData,
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
+        chainData: chainData,
     };
 
     const profileSettingsProps = {
@@ -680,7 +667,9 @@ export default function Portfolio(props: propsIF) {
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {userAccount && showProfileSettings && <ProfileSettings {...profileSettingsProps} />}
+            {userAccount && showProfileSettings && (
+                <ProfileSettings {...profileSettingsProps} />
+            )}
             <PortfolioBanner {...portfolioBannerProps} />
 
             <div

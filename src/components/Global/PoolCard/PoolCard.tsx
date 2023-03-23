@@ -3,11 +3,18 @@ import styles from './PoolCard.module.css';
 // import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CrocEnv, sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    sortBaseQuoteTokens,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get24hChange, memoizePoolStats } from '../../../App/functions/getPoolStats';
+import {
+    get24hChange,
+    memoizePoolStats,
+} from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
@@ -46,20 +53,34 @@ export default function PoolCard(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
-    const baseTokenKey = baseTokenAddress?.toLowerCase() + '_0x' + baseToken?.chainId.toString();
-    const quoteTokenKey = quoteTokenAddress?.toLowerCase() + '_0x' + quoteToken?.chainId.toString();
+    const baseTokenKey =
+        baseTokenAddress?.toLowerCase() + '_0x' + baseToken?.chainId.toString();
+    const quoteTokenKey =
+        quoteTokenAddress?.toLowerCase() +
+        '_0x' +
+        quoteToken?.chainId.toString();
 
-    const baseTokenFromMap = tokenMap && baseToken?.address ? tokenMap.get(baseTokenKey) : null;
+    const baseTokenFromMap =
+        tokenMap && baseToken?.address ? tokenMap.get(baseTokenKey) : null;
 
-    const quoteTokenFromMap = tokenMap && quoteToken?.address ? tokenMap.get(quoteTokenKey) : null;
+    const quoteTokenFromMap =
+        tokenMap && quoteToken?.address ? tokenMap.get(quoteTokenKey) : null;
 
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState<string | undefined>();
-    const [shouldInvertDisplay, setShouldInvertDisplay] = useState<boolean | undefined>();
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<
+        string | undefined
+    >();
+    const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
+        boolean | undefined
+    >();
 
     const baseTokenCharacter =
-        baseToken && poolPriceDisplay ? getUnicodeCharacter(baseToken?.symbol) : '';
+        baseToken && poolPriceDisplay
+            ? getUnicodeCharacter(baseToken?.symbol)
+            : '';
     const quoteTokenCharacter =
-        quoteToken && poolPriceDisplay ? getUnicodeCharacter(quoteToken?.symbol) : '';
+        quoteToken && poolPriceDisplay
+            ? getUnicodeCharacter(quoteToken?.symbol)
+            : '';
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -89,11 +110,16 @@ export default function PoolCard(props: propsIF) {
                     );
 
                     const isBaseTokenMoneynessGreaterOrEqual =
-                        getMoneynessRank(baseTokenAddress.toLowerCase() + '_' + chainId) -
-                            getMoneynessRank(quoteTokenAddress.toLowerCase() + '_' + chainId) >=
+                        getMoneynessRank(
+                            baseTokenAddress.toLowerCase() + '_' + chainId,
+                        ) -
+                            getMoneynessRank(
+                                quoteTokenAddress.toLowerCase() + '_' + chainId,
+                            ) >=
                         0;
 
-                    const shouldInvertDisplay = !isBaseTokenMoneynessGreaterOrEqual;
+                    const shouldInvertDisplay =
+                        !isBaseTokenMoneynessGreaterOrEqual;
 
                     setShouldInvertDisplay(shouldInvertDisplay);
 
@@ -115,10 +141,13 @@ export default function PoolCard(props: propsIF) {
                             : displayPriceWithInversion >= 100000
                             ? formatAmountOld(displayPriceWithInversion, 1)
                             : // ? baseLiqDisplayNum.toExponential(2)
-                              displayPriceWithInversion.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                              displayPriceWithInversion.toLocaleString(
+                                  undefined,
+                                  {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  },
+                              );
 
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {
@@ -126,15 +155,26 @@ export default function PoolCard(props: propsIF) {
                 }
             })();
         }
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, baseToken, quoteToken, chainId, crocEnv]);
+    }, [
+        isServerEnabled,
+        isUserIdle,
+        lastBlockNumber,
+        baseToken,
+        quoteToken,
+        chainId,
+        crocEnv,
+    ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
     const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
 
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
+        string | undefined
+    >();
 
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
+        useState<boolean>(true);
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
@@ -176,7 +216,10 @@ export default function PoolCard(props: propsIF) {
                     setPoolApy(apyString);
                 }
 
-                const sortedTokens = sortBaseQuoteTokens(baseTokenAddress, quoteTokenAddress);
+                const sortedTokens = sortBaseQuoteTokens(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                );
 
                 try {
                     const priceChangeResult = await get24hChange(
@@ -224,11 +267,19 @@ export default function PoolCard(props: propsIF) {
     const tokenImagesDisplay = (
         <div className={styles.token_images}>
             <img
-                src={shouldInvertDisplay ? baseTokenFromMap?.logoURI : quoteTokenFromMap?.logoURI}
+                src={
+                    shouldInvertDisplay
+                        ? baseTokenFromMap?.logoURI
+                        : quoteTokenFromMap?.logoURI
+                }
                 alt=''
             />
             <img
-                src={shouldInvertDisplay ? quoteTokenFromMap?.logoURI : baseTokenFromMap?.logoURI}
+                src={
+                    shouldInvertDisplay
+                        ? quoteTokenFromMap?.logoURI
+                        : baseTokenFromMap?.logoURI
+                }
                 alt=''
             />
         </div>
@@ -247,7 +298,9 @@ export default function PoolCard(props: propsIF) {
             <div></div>
             <div>
                 <div className={styles.row_title}>24h APR</div>
-                <div className={styles.apr}>{poolApy === undefined ? '…' : `${poolApy}%`}</div>
+                <div className={styles.apr}>
+                    {poolApy === undefined ? '…' : `${poolApy}%`}
+                </div>
             </div>
         </>
     );
@@ -269,7 +322,9 @@ export default function PoolCard(props: propsIF) {
             <div></div>
             <div>
                 <div className={styles.row_title}>TVL</div>
-                <div className={styles.vol}>{poolTvl === undefined ? '…' : `$${poolTvl}`}</div>
+                <div className={styles.vol}>
+                    {poolTvl === undefined ? '…' : `$${poolTvl}`}
+                </div>
             </div>
         </>
     );
@@ -289,10 +344,13 @@ export default function PoolCard(props: propsIF) {
             <div className={styles.pool_price_title}>24h Δ</div>
             <div
                 className={
-                    isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+                    isPoolPriceChangePositive
+                        ? styles.change_positive
+                        : styles.change_negative
                 }
             >
-                {poolPriceDisplay === undefined || poolPriceChangePercent === undefined
+                {poolPriceDisplay === undefined ||
+                poolPriceChangePercent === undefined
                     ? '…'
                     : poolPriceChangePercent}
             </div>
@@ -302,17 +360,22 @@ export default function PoolCard(props: propsIF) {
     if (!baseToken || !quoteToken) return <PoolCardSkeleton />;
 
     const baseTokenString =
-        baseToken.address.toLowerCase() === tradeData.quoteToken.address.toLowerCase()
+        baseToken.address.toLowerCase() ===
+        tradeData.quoteToken.address.toLowerCase()
             ? quoteToken.address
             : baseToken.address;
 
     const quoteTokenString =
-        baseToken.address.toLowerCase() === tradeData.quoteToken.address.toLowerCase()
+        baseToken.address.toLowerCase() ===
+        tradeData.quoteToken.address.toLowerCase()
             ? baseToken.address
             : quoteToken.address;
 
     const linkpath =
-        '/trade/market/chain=0x5&tokenA=' + quoteTokenString + '&tokenB=' + baseTokenString;
+        '/trade/market/chain=0x5&tokenA=' +
+        quoteTokenString +
+        '&tokenB=' +
+        baseTokenString;
 
     return (
         <Link className={styles.pool_card} to={linkpath}>

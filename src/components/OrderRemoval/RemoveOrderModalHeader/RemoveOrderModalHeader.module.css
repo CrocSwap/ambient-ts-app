@@ -1,5 +1,4 @@
-.header_container{
-    
+.header_container {
     height: 41px;
 
     display: flex;
@@ -10,7 +9,7 @@
     /* background: red; */
 }
 
-.header_container svg{
+.header_container svg {
     cursor: pointer;
     color: var(--text-grey-light);
     display: flex;
@@ -18,19 +17,19 @@
     align-items: center;
 }
 
-.header_container h2{
+.header_container h2 {
     font-weight: 300;
-font-size: var(--header1-size);
-line-height: 30px;
-display: flex;
-/* align-items: center;
+    font-size: var(--header1-size);
+    line-height: 30px;
+    display: flex;
+    /* align-items: center;
 text-align: center; */
-letter-spacing: -0.02em;
+    letter-spacing: -0.02em;
 
-color: var(--text-grey-white)
+    color: var(--text-grey-white);
 }
 
-.align_center{
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;

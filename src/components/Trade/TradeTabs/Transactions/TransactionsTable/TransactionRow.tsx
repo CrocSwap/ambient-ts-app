@@ -3,11 +3,12 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import { DefaultTooltip, TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import {
+    DefaultTooltip,
+    TextOnlyTooltip,
+} from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
-
 import { NavLink, useNavigate } from 'react-router-dom';
-// import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
@@ -46,14 +47,11 @@ export default function TransactionRow(props: propsIF) {
         showColumns,
         tradeData,
         ipadView,
-        // view2,
         isTokenABase,
         tx,
-        // showSidebar,
         blockExplorer,
         handlePulseAnimation,
-        // openGlobalModal,
-        // closeGlobalModal,
+
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
@@ -61,7 +59,6 @@ export default function TransactionRow(props: propsIF) {
         closeGlobalModal,
         openGlobalModal,
         showPair,
-        // showSidebar,
         setSimpleRangeWidth,
     } = props;
 
@@ -73,20 +70,13 @@ export default function TransactionRow(props: propsIF) {
         baseTokenLogo,
         baseQuantityDisplayShort,
         quoteQuantityDisplayShort,
-        // isBaseFlowPositive,
-        // isQuoteFlowPositive,
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
         ownerId,
-        // isOrderFilled,
         truncatedDisplayPrice,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         sideType,
-
         type,
         usdValue,
-        // txUsdValueLocaleString,
         baseTokenSymbol,
         baseTokenAddress,
         quoteTokenSymbol,
@@ -100,7 +90,6 @@ export default function TransactionRow(props: propsIF) {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
@@ -130,24 +119,18 @@ export default function TransactionRow(props: propsIF) {
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     const valueArrows = tx.entityType !== 'liqchange';
-    // const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
     const positiveArrow = '↑';
-    // const positiveArrow = valueArrows && '↑';
     const negativeArrow = '↓';
-    // const negativeArrow = valueArrows && '↓';
-    // const baseFlowArrow =
-    //     valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
-    // const quoteFlowArrow =
-    //     valueArrows && quoteDisplay !== '0.00' ? (!isQuoteFlowPositive ? '↑' : '↓') : null;
 
-    // const posOrNegativeBase = !isBaseFlowPositive ? styles.positive_value : styles.negative_value;
-    // const posOrNegativeQuote = !isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
-    const isSellQtyZero = (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
-    const isBuyQtyZero = (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
-    const isOrderRemove = tx.entityType === 'limitOrder' && sideType === 'remove';
+    const isSellQtyZero =
+        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+    const isBuyQtyZero =
+        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+    const isOrderRemove =
+        tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
         baseQuantityDisplayShort === '0.00' ||
@@ -156,19 +139,12 @@ export default function TransactionRow(props: propsIF) {
         tx.source === 'manual'
             ? styles.light_grey
             : styles.positive_value;
-    // baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
     const negativeDisplayStyle =
         quoteQuantityDisplayShort === '0.00' ||
         !valueArrows ||
         (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
             ? styles.light_grey
             : styles.negative_value;
-    // const baseDisplayStyle =
-    //     baseDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeBase;
-    // const quoteDisplayStyle =
-    //     quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
-
-    // console.log(baseDisplay);
 
     const openDetailsModal = () => {
         openGlobalModal(
@@ -176,17 +152,23 @@ export default function TransactionRow(props: propsIF) {
                 account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
-                isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
                 isOnPortfolioPage={isOnPortfolioPage}
             />,
         );
     };
 
     const activeTransactionStyle =
-        tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';
+        tx.id === currentTxActiveInTransactions
+            ? styles.active_transaction_style
+            : '';
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
+        userNameToDisplay === 'You' && isShowAllEnabled
+            ? styles.border_left
+            : null;
 
     const usernameStyle =
         isOwnerActiveAccount && isShowAllEnabled
@@ -195,12 +177,17 @@ export default function TransactionRow(props: propsIF) {
             ? 'gradient_text'
             : 'base_color';
 
-    const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
+    const txDomId =
+        tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
     function scrollToDiv() {
         const element = document.getElementById(txDomId);
 
-        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest',
+        });
     }
 
     const activePositionRef = useRef(null);
@@ -242,7 +229,6 @@ export default function TransactionRow(props: propsIF) {
                     }}
                 >
                     {txHash + 'ㅤ'}
-                    {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
                     <FiExternalLink size={'12px'} />
                 </div>
             } // invisible space character added
@@ -262,83 +248,43 @@ export default function TransactionRow(props: propsIF) {
     );
 
     const usdValueWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={txUsdValueLocaleString}
-        //     placement={'right-end'}
-        //     arrow
-        //     disableHoverListener={true}
-        //     enterDelay={750}
-        //     leaveDelay={0}
-        // >
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             onClick={openDetailsModal}
             data-label='value'
             className='base_color'
-            // className='gradient_text'
             style={{ textAlign: 'right', fontFamily: 'monospace' }}
         >
             {usdValue}
         </li>
-        // </DefaultTooltip>
     );
 
     const navigate = useNavigate();
 
+    const handleWalletClick = () => {
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'lookupUserTxData',
+                loadingStatus: true,
+            }),
+        );
+        navigate(
+            `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`,
+        );
+    };
+
     const walletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <p>{ensName ? ensName : ownerId}</p>
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
-                    >
-                        {'View Account' + 'ㅤ'}
-                        <FiExternalLink size={'12px'} />
-                    </NavLink>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
+        <li
+            onClick={handleWalletClick}
+            data-label='wallet'
+            className={`${usernameStyle} ${styles.hover_style}`}
+            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
         >
-            <li
-                onClick={() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: true,
-                        }),
-                    );
-                    navigate(`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`);
-                }}
-                data-label='wallet'
-                className={`${usernameStyle} ${styles.hover_style}`}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
-            >
-                {userNameToDisplay}
-            </li>
-        </TextOnlyTooltip>
+            {userNameToDisplay}
+        </li>
     );
 
     const baseTokenLogoComponent =
@@ -346,13 +292,14 @@ export default function TransactionRow(props: propsIF) {
             <DefaultTooltip
                 interactive
                 title={
-                    <div>
-                        <p>
-                            {baseTokenSymbol}
-                            {`${baseTokenSymbol === 'ETH' ? '' : ': ' + baseTokenAddress}`}
-                        </p>
-                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
-                    </div>
+                    <p>
+                        {baseTokenSymbol}
+                        {`${
+                            baseTokenSymbol === 'ETH'
+                                ? ''
+                                : ': ' + baseTokenAddress
+                        }`}
+                    </p>
                 }
                 placement={'left'}
                 disableHoverListener={!isOnPortfolioPage}
@@ -363,8 +310,14 @@ export default function TransactionRow(props: propsIF) {
                 <img src={baseTokenLogo} alt='base token' width={logoSizes} />
             </DefaultTooltip>
         ) : (
-            <IconWithTooltip title={`${baseTokenSymbol}: ${baseTokenAddress}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width={logoSizes} />
+            <IconWithTooltip
+                title={`${baseTokenSymbol}: ${baseTokenAddress}`}
+                placement='bottom'
+            >
+                <NoTokenIcon
+                    tokenInitial={tx.baseSymbol.charAt(0)}
+                    width={logoSizes}
+                />
             </IconWithTooltip>
         );
 
@@ -374,10 +327,7 @@ export default function TransactionRow(props: propsIF) {
                 interactive
                 title={
                     <div>
-                        <p>
-                            {quoteTokenSymbol}: {quoteTokenAddress}
-                        </p>
-                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                        {quoteTokenSymbol}: {quoteTokenAddress}
                     </div>
                 }
                 placement={'left'}
@@ -389,33 +339,16 @@ export default function TransactionRow(props: propsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
             </DefaultTooltip>
         ) : (
-            <IconWithTooltip title={`${quoteTokenSymbol}: ${quoteTokenAddress}`} placement='right'>
-                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width={logoSizes} />
+            <IconWithTooltip
+                title={`${quoteTokenSymbol}: ${quoteTokenAddress}`}
+                placement='right'
+            >
+                <NoTokenIcon
+                    tokenInitial={tx.quoteSymbol.charAt(0)}
+                    width={logoSizes}
+                />
             </IconWithTooltip>
         );
-
-    // const tokensTogether = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'row',
-    //             alignItems: 'center',
-    //             gap: '4px',
-    //         }}
-    //     >
-    //         {baseTokenLogoComponent}
-    //         {quoteTokenLogoComponent}
-    //     </div>
-    // );
-
-    // portfolio page li element ---------------
-    // const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
-
-    // const poolName = (
-    //     <li className='base_color'>
-    //         {baseTokenSymbol} / {quoteTokenSymbol}
-    //     </li>
-    // );
 
     const pair =
         tx.base !== ZERO_ADDRESS
@@ -450,41 +383,17 @@ export default function TransactionRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                {/* {tokensTogether} */}
-                <NavLink
-                    // onClick={() => {
-                    //     console.log({ tx });
-                    //     console.log({ tradeLinkPath });
-                    // }}
-                    to={tradeLinkPath}
-                >
-                    <p>
-                        {baseTokenSymbol} / {quoteTokenSymbol}
-                    </p>
+                <NavLink to={tradeLinkPath}>
+                    {baseTokenSymbol} / {quoteTokenSymbol}
                 </NavLink>
             </li>
         </DefaultTooltip>
     );
 
-    // const fillTime = new Intl.DateTimeFormat('en-US', {
-    //     month: 'short',
-    //     day: 'numeric',
-    //     // hour12: false,
-    //     // hour: '2-digit',
-    //     // minute: '2-digit',
-    // }).format(tx.time * 1000);
-
-    // const txTimeInDays = moment(Date.now()).diff(tx.time * 1000, 'days');
-    // const txTimeInHours = moment(Date.now()).diff(tx.time * 1000, 'hours');
-
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(tx.time * 1000, 'seconds');
-
-    // const txTimeDisplay =
-    //     txTimeInDays === 0
-    //         ? 'Today'
-    //         : txTimeInDays === 1
-    //         ? '1 day '
-    //         : `${txTimeInDays} days `;
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+        tx.time * 1000,
+        'seconds',
+    );
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
@@ -534,23 +443,11 @@ export default function TransactionRow(props: propsIF) {
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
-                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </TextOnlyTooltip>
     );
-    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
-    // const quoteQtyToolTipStyle = (
-    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
-    // );
+
     const baseQtyDisplayWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={baseQtyToolTipStyle}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={200}
-        // >
         <li
             onClick={openDetailsModal}
             data-label={baseTokenSymbol}
@@ -570,21 +467,10 @@ export default function TransactionRow(props: propsIF) {
             >
                 {baseQuantityDisplayShort}
                 {baseTokenLogoComponent}
-                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
-                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </div>
         </li>
-        /* </DefaultTooltip> */
     );
     const quoteQtyDisplayWithTooltip = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={quoteQtyToolTipStyle}
-        //     placement={'right'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={200}
-        // >
         <li
             onClick={openDetailsModal}
             data-label={quoteTokenSymbol}
@@ -603,12 +489,9 @@ export default function TransactionRow(props: propsIF) {
                 }}
             >
                 {quoteQuantityDisplayShort}
-                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
                 {quoteTokenLogoComponent}
-                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </div>
         </li>
-        /* </DefaultTooltip> */
     );
 
     // end of portfolio page li element ---------------
@@ -626,67 +509,55 @@ export default function TransactionRow(props: propsIF) {
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
-            {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <DefaultTooltip
-                    interactive
-                    title={
-                        <div>
-                            {isOnPortfolioPage ? (
-                                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
-                                    {txHash + 'ㅤ'}
-                                    {/* {'View transaction on Etherscan: ' + txHash + 'ㅤ'} */}
-                                    <FiExternalLink size={'12px'} />
-                                </div>
-                            ) : (
-                                <NavLink
-                                    onClick={() => {
-                                        dispatch(
-                                            setDataLoadingStatus({
-                                                datasetName: 'lookupUserTxData',
-                                                loadingStatus: true,
-                                            }),
-                                        );
-                                    }}
-                                    to={`/${
-                                        isOwnerActiveAccount
-                                            ? 'account'
-                                            : ensName
-                                            ? ensName
-                                            : ownerId
-                                    }`}
-                                >
-                                    <p>{ensName ? ensName : ownerId}</p>
-                                    {'View Account' + 'ㅤ'}
-                                    <FiExternalLink size={'12px'} />
-                                </NavLink>
-                            )}
-                        </div>
-                    }
-                    placement={'right'}
-                    arrow
-                    enterDelay={750}
-                    leaveDelay={0}
-                >
-                    <li
-                        data-label='id'
+                <li data-label='id'>
+                    <p
                         onClick={() => {
                             handleOpenExplorer();
                         }}
+                        className={`base_color ${styles.hover_style}`}
                     >
-                        <p className={`${styles.base_color} ${styles.hover_style}`}>
-                            {txHashTruncated}
-                        </p>{' '}
+                        {txHashTruncated}
+                    </p>{' '}
+                    {isOnPortfolioPage ? (
                         <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
-                            style={{ textTransform: 'lowercase' }}
+                            className={`${usernameStyle}`}
+                            style={{
+                                textTransform: 'lowercase',
+                                cursor: 'default',
+                            }}
                         >
                             {userNameToDisplay}
                         </p>
-                    </li>
-                </DefaultTooltip>
+                    ) : (
+                        <NavLink
+                            onClick={() => {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'lookupUserTxData',
+                                        loadingStatus: true,
+                                    }),
+                                );
+                            }}
+                            to={`/${
+                                isOwnerActiveAccount
+                                    ? 'account'
+                                    : ensName
+                                    ? ensName
+                                    : ownerId
+                            }`}
+                        >
+                            <p
+                                className={`${usernameStyle} ${styles.hover_style}`}
+                                style={{ textTransform: 'lowercase' }}
+                            >
+                                {userNameToDisplay}
+                            </p>
+                        </NavLink>
+                    )}
+                </li>
             )}
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
@@ -714,7 +585,11 @@ export default function TransactionRow(props: propsIF) {
                             className={`${priceStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
-                                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
+                                <span>
+                                    {truncatedLowDisplayPrice
+                                        ? priceCharacter
+                                        : '…'}
+                                </span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
@@ -722,7 +597,11 @@ export default function TransactionRow(props: propsIF) {
                                 </span>
                             </p>
                             <p className={`${styles.align_right} `}>
-                                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
+                                <span>
+                                    {truncatedHighDisplayPrice
+                                        ? priceCharacter
+                                        : '…'}
+                                </span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
@@ -737,7 +616,9 @@ export default function TransactionRow(props: propsIF) {
                         onMouseLeave={handleRowMouseOut}
                         onClick={() => {
                             console.log({ isOnPortfolioPage });
-                            console.log({ truncatedDisplayPriceDenomByMoneyness });
+                            console.log({
+                                truncatedDisplayPriceDenomByMoneyness,
+                            });
                             openDetailsModal();
                         }}
                         data-label='price'
@@ -753,13 +634,19 @@ export default function TransactionRow(props: propsIF) {
                                               : '…'}
                                       </span>
                                       <span style={{ fontFamily: 'monospace' }}>
-                                          {truncatedDisplayPriceDenomByMoneyness}
+                                          {
+                                              truncatedDisplayPriceDenomByMoneyness
+                                          }
                                       </span>
                                   </p>
                               ) || '…'
                             : (
                                   <p className={`${styles.align_right} `}>
-                                      <span>{truncatedDisplayPrice ? priceCharacter : '…'}</span>
+                                      <span>
+                                          {truncatedDisplayPrice
+                                              ? priceCharacter
+                                              : '…'}
+                                      </span>
                                       <span style={{ fontFamily: 'monospace' }}>
                                           {truncatedDisplayPrice}
                                       </span>
@@ -776,7 +663,8 @@ export default function TransactionRow(props: propsIF) {
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
                 >
-                    {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                    {tx.entityType === 'liqchange' ||
+                    tx.entityType === 'limitOrder'
                         ? `${sideType}`
                         : `${sideType} ${sideCharacter}`}
                 </li>
@@ -804,7 +692,8 @@ export default function TransactionRow(props: propsIF) {
                 >
                     <p>{type}</p>
                     <p>
-                        {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                        {tx.entityType === 'liqchange' ||
+                        tx.entityType === 'limitOrder'
                             ? `${sideType}`
                             : `${sideType} ${sideCharacter}`}
                     </p>
@@ -819,16 +708,15 @@ export default function TransactionRow(props: propsIF) {
                     className='color_white'
                     style={{ textAlign: 'right' }}
                     onClick={() => {
-                        // console.log({ isBuy });
-                        // console.log({ isOrderRemove });
-                        // console.log({ baseDisplay });
-                        // console.log({ quoteDisplay });
                         openDetailsModal();
                     }}
                 >
                     <div
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {isBuy
                             ? isOrderRemove
@@ -838,7 +726,6 @@ export default function TransactionRow(props: propsIF) {
                             ? quoteQuantityDisplayShort
                             : baseQuantityDisplayShort}
                         {valueArrows ? positiveArrow : ' '}
-                        {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy
                             ? isOrderRemove
                                 ? baseTokenLogoComponent
@@ -850,7 +737,10 @@ export default function TransactionRow(props: propsIF) {
 
                     <div
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
-                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
                         {isBuy
                             ? `${
@@ -863,7 +753,6 @@ export default function TransactionRow(props: propsIF) {
                                       ? baseQuantityDisplayShort
                                       : quoteQuantityDisplayShort
                               }${valueArrows ? negativeArrow : ' '}`}
-                        {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy
                             ? isOrderRemove
                                 ? quoteTokenLogoComponent
@@ -887,7 +776,9 @@ export default function TransactionRow(props: propsIF) {
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
-                    isBaseTokenMoneynessGreaterOrEqual={isBaseTokenMoneynessGreaterOrEqual}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
                     setSimpleRangeWidth={setSimpleRangeWidth}
                 />
             </li>

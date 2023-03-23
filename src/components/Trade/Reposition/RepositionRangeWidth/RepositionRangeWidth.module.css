@@ -111,8 +111,7 @@ input[type='range'] {
         #7371fc 0%,
         #cdc1ff 49.48%,
         #7371fc 100%
-    ); 
- 
+    );
 
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
 }

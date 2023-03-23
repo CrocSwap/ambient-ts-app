@@ -10,12 +10,16 @@ export default function TrendingPoolsCard(props: TrendingPoolsCardProp) {
             <div className={styles.token_info}>
                 <div>
                     <img
-                        src={'https://cryptologos.cc/logos/usd-coin-usdc-logo.png'}
+                        src={
+                            'https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
+                        }
                         alt=''
                         width='25px'
                     />
                     <img
-                        src={'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'}
+                        src={
+                            'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png'
+                        }
                         alt=''
                         width='25px'
                     />

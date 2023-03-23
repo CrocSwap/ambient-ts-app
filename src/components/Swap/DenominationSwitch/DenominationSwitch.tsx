@@ -1,7 +1,10 @@
 // START: Import Local Files
 import styles from './DenominationSwitch.module.css';
 // import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 
 // interface for props
@@ -36,7 +39,11 @@ export default function DenominationSwitch() {
     return (
         <div className={styles.denomination_switch}>
             <button
-                className={!isDenomBase ? styles.active_button : styles.non_active_button}
+                className={
+                    !isDenomBase
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={(e) => {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
@@ -45,7 +52,11 @@ export default function DenominationSwitch() {
                 {baseTokenSymbol}
             </button>
             <button
-                className={isDenomBase ? styles.active_button : styles.non_active_button}
+                className={
+                    isDenomBase
+                        ? styles.active_button
+                        : styles.non_active_button
+                }
                 onClick={(e) => {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();

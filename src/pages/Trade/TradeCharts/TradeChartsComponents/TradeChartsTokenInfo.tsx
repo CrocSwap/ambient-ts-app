@@ -3,7 +3,10 @@ import {
     DefaultTooltip,
     NoColorTooltip,
 } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import { useAppSelector, useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppSelector,
+    useAppDispatch,
+} from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { Dispatch, SetStateAction } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -36,12 +39,16 @@ export default function TradeChartsTokenInfo(props: propsIF) {
 
     const denomInBase = tradeData.isDenomBase;
 
-    const topTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
+    const topTokenLogo = denomInBase
+        ? tradeData.baseToken.logoURI
+        : tradeData.quoteToken.logoURI;
     const bottomTokenLogo = denomInBase
         ? tradeData.quoteToken.logoURI
         : tradeData.baseToken.logoURI;
 
-    const topTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const topTokenSymbol = denomInBase
+        ? tradeData.baseToken.symbol
+        : tradeData.quoteToken.symbol;
     const bottomTokenSymbol = denomInBase
         ? tradeData.quoteToken.symbol
         : tradeData.baseToken.symbol;
@@ -70,7 +77,11 @@ export default function TradeChartsTokenInfo(props: propsIF) {
     const logoSizes = smallScrenView ? '18px' : '25px';
 
     const currentAmountDisplay = (
-        <span className={styles.amount} style={{ marginTop: '2.5px' }}>
+        <span
+            onClick={() => dispatch(toggleDidUserFlipDenom())}
+            className={styles.amount}
+            style={{ marginTop: '2.5px', cursor: 'pointer' }}
+        >
             {poolPriceDisplay === Infinity || poolPriceDisplay === 0
                 ? '…'
                 : `${currencyCharacter}${truncatedPoolPrice}`}
@@ -89,11 +100,17 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             <span
                 style={
                     isPoolPriceChangePositive
-                        ? { color: 'green', marginTop: '4.5px', fontSize: '15px' }
+                        ? {
+                              color: 'green',
+                              marginTop: '4.5px',
+                              fontSize: '15px',
+                          }
                         : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
                 }
             >
-                {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
+                {poolPriceChangePercent === undefined
+                    ? '…'
+                    : poolPriceChangePercent}
             </span>
         </NoColorTooltip>
     );
@@ -113,13 +130,29 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         currentPoolData.poolId,
     );
 
-    const handleFavButton = () =>
+    function handleFavButton() {
         isButtonFavorited
-            ? favePools.remove(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
-            : favePools.add(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
+            ? favePools.remove(
+                  tradeData.baseToken,
+                  tradeData.quoteToken,
+                  chainId,
+                  36000,
+              )
+            : favePools.add(
+                  tradeData.quoteToken,
+                  tradeData.baseToken,
+                  chainId,
+                  36000,
+              );
+        console.log(tradeData);
+    }
 
     const favButton = (
-        <button className={styles.favorite_button} onClick={handleFavButton} id='trade_fav_button'>
+        <button
+            className={styles.favorite_button}
+            onClick={handleFavButton}
+            id='trade_fav_button'
+        >
             {
                 <svg
                     width={smallScrenView ? '20px' : '30px'}
@@ -163,7 +196,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         interactive
                         title={`${tradeData.baseToken.symbol + ':'} ${
                             tradeData.baseToken.address
-                        } ${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}
+                        } ${tradeData.quoteToken.symbol}: ${
+                            tradeData.quoteToken.address
+                        }`}
                         placement={'top'}
                     >
                         <div
@@ -179,7 +214,10 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                                 />
                             )}
                             {bottomTokenLogo ? (
-                                <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
+                                <img
+                                    src={bottomTokenLogo}
+                                    alt={bottomTokenSymbol}
+                                />
                             ) : (
                                 <NoTokenIcon
                                     tokenInitial={bottomTokenSymbol.charAt(0)}
@@ -192,7 +230,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         interactive
                         title={`${tradeData.baseToken.symbol + ':'} ${
                             tradeData.baseToken.address
-                        } ${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}
+                        } ${tradeData.quoteToken.symbol}: ${
+                            tradeData.quoteToken.address
+                        }`}
                         placement={'top'}
                     >
                         <div
@@ -219,9 +259,11 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             {favButton}
             <DefaultTooltip
                 interactive
-                title={`${tradeData.baseToken.symbol + ':'} ${tradeData.baseToken.address} ${
-                    tradeData.quoteToken.symbol
-                }: ${tradeData.quoteToken.address}`}
+                title={`${tradeData.baseToken.symbol + ':'} ${
+                    tradeData.baseToken.address
+                } ${tradeData.quoteToken.symbol}: ${
+                    tradeData.quoteToken.address
+                }`}
                 placement={'top'}
             >
                 <div
@@ -232,20 +274,28 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     {topTokenLogo ? (
                         <img src={topTokenLogo} alt={topTokenSymbol} />
                     ) : (
-                        <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width={logoSizes} />
+                        <NoTokenIcon
+                            tokenInitial={topTokenSymbol.charAt(0)}
+                            width={logoSizes}
+                        />
                     )}
                     {bottomTokenLogo ? (
                         <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
                     ) : (
-                        <NoTokenIcon tokenInitial={bottomTokenSymbol.charAt(0)} width={logoSizes} />
+                        <NoTokenIcon
+                            tokenInitial={bottomTokenSymbol.charAt(0)}
+                            width={logoSizes}
+                        />
                     )}
                 </div>
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={`${tradeData.baseToken.symbol + ':'} ${tradeData.baseToken.address} ${
-                    tradeData.quoteToken.symbol
-                }: ${tradeData.quoteToken.address}`}
+                title={`${tradeData.baseToken.symbol + ':'} ${
+                    tradeData.baseToken.address
+                } ${tradeData.quoteToken.symbol}: ${
+                    tradeData.quoteToken.address
+                }`}
                 placement={'top'}
             >
                 <div

@@ -9,13 +9,16 @@ interface propsIF {
 }
 
 export default function TokenQty(props: propsIF) {
-    const { baseTokenCharacter, quoteTokenCharacter, baseQty, quoteQty } = props;
+    const { baseTokenCharacter, quoteTokenCharacter, baseQty, quoteQty } =
+        props;
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
     const baseDisplay = (
         <section className={styles.qty_sing}>
-            {quantitiesAvailable ? `${baseTokenCharacter}${baseQty || '0.00'}` : '…'}
+            {quantitiesAvailable
+                ? `${baseTokenCharacter}${baseQty || '0.00'}`
+                : '…'}
             {/* {baseTokenCharacter} <p>{baseQty}</p> */}
             {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
         </section>
@@ -23,7 +26,9 @@ export default function TokenQty(props: propsIF) {
 
     const quoteDisplay = (
         <section className={styles.qty_sing}>
-            {quantitiesAvailable ? `${quoteTokenCharacter}${quoteQty || '0.00'}` : '…'}
+            {quantitiesAvailable
+                ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
+                : '…'}
 
             {/* {quoteTokenCharacter}<p>{quoteQty}</p> */}
             {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}

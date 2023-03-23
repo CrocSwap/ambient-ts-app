@@ -5,7 +5,9 @@ interface DropdownMenuContainerPropsIF {
     children: ReactNode;
 }
 
-export default function DropdownMenuContainer(props: DropdownMenuContainerPropsIF) {
+export default function DropdownMenuContainer(
+    props: DropdownMenuContainerPropsIF,
+) {
     const { children } = props;
     return <div className={styles.dropdown}>{children}</div>;
 }
