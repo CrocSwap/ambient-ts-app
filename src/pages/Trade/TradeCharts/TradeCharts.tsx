@@ -262,6 +262,9 @@ export default function TradeCharts(props: propsIF) {
             <div
                 className={styles.save_image_content}
                 onClick={downloadAsImage}
+                role='button'
+                tabIndex={0}
+                aria-label='Download chart image button'
             >
                 <AiOutlineDownload />
                 Save Chart Image
@@ -379,16 +382,23 @@ export default function TradeCharts(props: propsIF) {
     );
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <div
+            <AiOutlineFullscreen
+                size={20}
                 onClick={() => setFullScreenChart(!fullScreenChart)}
                 id='trade_chart_full_screen_button'
-            >
-                <AiOutlineFullscreen size={20} />
-            </div>
+                role='button'
+                tabIndex={0}
+                aria-label='Full screen chart button'
+            />
+
             <DefaultTooltip interactive title={saveImageContent}>
-                <div id='trade_chart_save_image'>
-                    <AiOutlineCamera size={20} />
-                </div>
+                <AiOutlineCamera
+                    size={20}
+                    id='trade_chart_save_image'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Save chart image button'
+                />
             </DefaultTooltip>
         </div>
     );

@@ -152,6 +152,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             className={styles.favorite_button}
             onClick={handleFavButton}
             id='trade_fav_button'
+            role='button'
+            tabIndex={0}
+            aria-label={
+                isButtonFavorited
+                    ? ' Remove pool from favorites'
+                    : 'Add pool from favorites'
+            }
         >
             {
                 <svg
