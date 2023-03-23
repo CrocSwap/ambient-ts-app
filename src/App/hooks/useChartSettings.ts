@@ -157,6 +157,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 isFeeRateSubchartEnabled,
                 marketOverlay,
                 rangeOverlay,
+                marketCandleTime,
+                rangeCandleTime
             }),
         );
     }, [
@@ -165,6 +167,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         isFeeRateSubchartEnabled,
         marketOverlay,
         rangeOverlay,
+        marketCandleTime,
+        rangeCandleTime
     ]);
 
     // class definition for subchart setting and methods

@@ -12,20 +12,20 @@ interface propsIF {
 }
 
 export default function TimeFrame(props: propsIF) {
-    const { setActiveTimeFrame, setActivePeriod, activeTimeFrame } = props;
+    const { setActiveTimeFrame, setActivePeriod, activeTimeFrame, candleTime } = props;
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
 
     const desktopView = useMediaQuery('(max-width: 968px)');
 
-    const activeTimeFrameData = [
-        { label: '1m', activePeriod: 60 },
-        { label: '5m', activePeriod: 300 },
-        { label: '15m', activePeriod: 900 },
-        { label: '1h', activePeriod: 3600 },
-        { label: '4h', activePeriod: 14400 },
-        { label: '1d', activePeriod: 86400 },
-    ];
+    // const activeTimeFrameData = [
+    //     { label: '1m', activePeriod: 60 },
+    //     { label: '5m', activePeriod: 300 },
+    //     { label: '15m', activePeriod: 900 },
+    //     { label: '1h', activePeriod: 3600 },
+    //     { label: '4h', activePeriod: 14400 },
+    //     { label: '1d', activePeriod: 86400 },
+    // ];
 
     function handleTimeFrameButtonClick(label: string, time: number) {
         setActiveTimeFrame(label);
@@ -56,22 +56,22 @@ export default function TimeFrame(props: propsIF) {
             </button>
 
             <div className={wrapperStyle}>
-                {activeTimeFrameData.map((time, idx) => (
+                {candleTime.defaults.map((time, idx) => (
                     <div className={styles.main_time_frame_container} key={idx}>
                         <button
                             onClick={() =>
                                 handleTimeFrameClickMobile(
-                                    time.label,
-                                    time.activePeriod,
+                                    time.readable,
+                                    time.seconds,
                                 )
                             }
                             className={
-                                time.label === activeTimeFrame
+                                time.readable === activeTimeFrame
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
                         >
-                            {time.label}
+                            {time.readable}
                         </button>
                     </div>
                 ))}
@@ -83,22 +83,22 @@ export default function TimeFrame(props: propsIF) {
 
     return (
         <div className={styles.chart_overlay_container}>
-            {activeTimeFrameData.map((time, idx) => (
+            {candleTime.defaults.map((time, idx) => (
                 <div className={styles.main_time_frame_container} key={idx}>
                     <button
                         onClick={() =>
                             handleTimeFrameButtonClick(
-                                time.label,
-                                time.activePeriod,
+                                time.readable,
+                                time.seconds,
                             )
                         }
                         className={
-                            time.label === activeTimeFrame
+                            time.readable === activeTimeFrame
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
                     >
-                        {time.label}
+                        {time.readable}
                     </button>
                 </div>
             ))}
