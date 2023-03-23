@@ -292,6 +292,8 @@ export default function App() {
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
+        // reload to avoid stale wallet connections and excessive state accumulation
+        window.location.reload();
     };
 
     const onActive = () => {
@@ -306,7 +308,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
+        timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
