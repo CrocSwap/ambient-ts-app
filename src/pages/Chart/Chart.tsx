@@ -387,8 +387,6 @@ export default function Chart(props: ChartData) {
     // Liq Line Series
     const [lineAskSeries, setLineAskSeries] = useState<any>();
     const [lineBidSeries, setLineBidSeries] = useState<any>();
-    const [lineDepthAskSeries, setLineDepthAskSeries] = useState<any>();
-    const [lineDepthBidSeries, setLineDepthBidSeries] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -2101,7 +2099,7 @@ export default function Chart(props: ChartData) {
                                     setLiqHighlightedLinesAndArea(ranges);
                                     setLiqHighlightedLinesGradient(
                                         ranges,
-                                        domainY,
+                                        scaleData.yScale,
                                     );
                                 }
                             }
@@ -5018,7 +5016,7 @@ export default function Chart(props: ChartData) {
     }, [scaleData && JSON.stringify(scaleData.yScale.domain())]);
 
     const setLiqHighlightedLinesGradient = (ranges: any, scale: any) => {
-        if (scale) {
+        if (scale && lineBidSeries && lineAskSeries) {
             const low = ranges.filter((target: any) => target.name === 'Min')[0]
                 .value;
             const high = ranges.filter(
@@ -5050,16 +5048,16 @@ export default function Chart(props: ChartData) {
                     Math.abs(high - parseFloat(bidMinBoudnary)) /
                     (parseFloat(bidMaxBoudnary) - parseFloat(bidMinBoudnary));
 
-                if (percentageBid > 0) {
+                if (percentageBid >= 0 && percentageBid <= 1) {
                     const gradient = ctx.createLinearGradient(
                         0,
-                        scale(high),
+                        scale(bidMaxBoudnary),
                         0,
                         scale(bidMinBoudnary),
                     );
 
-                    gradient.addColorStop(percentageBid, 'transparent');
-                    gradient.addColorStop(percentageBid, '#7371FC');
+                    gradient.addColorStop(1 - percentageBid, 'transparent');
+                    gradient.addColorStop(1 - percentageBid, '#7371FC');
 
                     setGradientForBidLine(gradient);
                 }
@@ -5070,23 +5068,23 @@ export default function Chart(props: ChartData) {
                     (parseFloat(askMaxBoudnary) - low) /
                     (parseFloat(askMaxBoudnary) - parseFloat(askMinBoudnary));
 
-                if (percentageAsk > 0) {
+                if (percentageAsk >= 0 && percentageAsk <= 1) {
                     const gradient = ctx.createLinearGradient(
                         0,
                         scale(askMaxBoudnary),
                         0,
-                        scale(low),
+                        scale(0),
                     );
 
-                    gradient.addColorStop(
-                        1 - percentageAsk,
-                        'rgba(205, 193, 255)',
-                    );
-                    gradient.addColorStop(1 - percentageAsk, 'transparent');
+                    gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255)');
+                    gradient.addColorStop(percentageAsk, 'transparent');
 
                     setGradientForAskLine(gradient);
                 }
             }
+
+            render();
+            renderCanvas();
         }
     };
     // line gradient
@@ -5537,21 +5535,6 @@ export default function Chart(props: ChartData) {
 
     // Call drawChart()
     useEffect(() => {
-        console.log('NE MANA', {
-            parsedChartData,
-            scaleData,
-            zoomUtils,
-            liqTooltip,
-            candlestick,
-            lineBidSeries,
-            lineAskSeries,
-            lineDepthAskSeries,
-            lineDepthBidSeries,
-            barSeries,
-            volumeData,
-            liquidityScale,
-        });
-
         if (
             parsedChartData !== undefined &&
             scaleData !== undefined &&
@@ -6304,11 +6287,7 @@ export default function Chart(props: ChartData) {
                     showCrosshairHorizontal();
                 };
 
-                console.log('draww');
-
                 const mousemove = (event: any) => {
-                    console.log({ event });
-
                     mousemoveEventForCrosshair(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
