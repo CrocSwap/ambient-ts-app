@@ -460,17 +460,19 @@ export default function App() {
     const {
         data: signer,
         isError,
+        error,
         status: signerStatus,
         //  isLoading
     } = useSigner();
 
+    // 1535 - remove console logging
     const setNewCrocEnv = () => {
         console.log({ provider });
         console.log({ signer });
         console.log({ crocEnv });
         console.log({ signerStatus });
         if (isError) {
-            console.log({ isError });
+            console.error({ error });
             setCrocEnv(undefined);
         } else if (!provider && !signer) {
             console.log('setting crocEnv to undefined');
