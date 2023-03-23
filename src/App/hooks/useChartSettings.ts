@@ -32,7 +32,7 @@ export interface overlayIF {
 export interface candleTimeIF {
     time: number;
     changeTime: (val: number) => void;
-    defaults: Array<{readable: string, seconds: number}>;
+    defaults: Array<{ readable: string; seconds: number }>;
     readableTime: string;
 }
 
@@ -64,8 +64,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // fn to check a user preference for any given subchart
     const getSubchart = (subchart: string): boolean | undefined => {
         // persisted data from local storage, returns `null` if not present
-        const chartSettings: chartSettingsIF | null =
-            getDataFromLocalStorage();
+        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
         // declare an output variable to be assigned in switch router
         let output: boolean | undefined;
         // logic router to assign a value to output
@@ -90,8 +89,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
     const getOverlay = (overlayFor: string): string | undefined => {
-        const chartSettings: chartSettingsIF | null =
-            getDataFromLocalStorage();
+        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
         // logic router to assign a value to output
@@ -110,9 +108,9 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         return output;
     };
 
-    const getCandleTime = (timeFor: string): number|undefined => {
+    const getCandleTime = (timeFor: string): number | undefined => {
         const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
-        let time: number|undefined;
+        let time: number | undefined;
         switch (timeFor) {
             case 'market':
             case 'limit':
@@ -125,7 +123,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 return;
         }
         return time;
-    }
+    };
 
     // hooks to memoize user preferences in local state
     // initializer fallback value is default setting for new users
@@ -144,10 +142,10 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('range') ?? 'curve',
     );
     const [marketCandleTime, setMarketCandleTime] = useState<number>(
-        getCandleTime('market') ?? 900
+        getCandleTime('market') ?? 900,
     );
     const [rangeCandleTime, setRangeCandleTime] = useState<number>(
-        getCandleTime('range') ?? 3600
+        getCandleTime('range') ?? 86400,
     );
 
     // hook to update local storage any time one of the preference primitives changes
@@ -162,7 +160,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 marketOverlay,
                 rangeOverlay,
                 marketCandleTime,
-                rangeCandleTime
+                rangeCandleTime,
             }),
         );
     }, [
@@ -172,7 +170,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         marketOverlay,
         rangeOverlay,
         marketCandleTime,
-        rangeCandleTime
+        rangeCandleTime,
     ]);
 
     // class definition for subchart setting and methods
@@ -232,15 +230,15 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             { readable: '4h', seconds: 14400 },
             { readable: '1d', seconds: 86400 },
         ];
-        readableTime = this.defaults.find(
-            (pair) => pair.seconds === this.time
-        )?.readable ?? '';
+        readableTime =
+            this.defaults.find((pair) => pair.seconds === this.time)
+                ?.readable ?? '';
         constructor(t: number, setterFn: Dispatch<SetStateAction<number>>) {
             this.time = t;
             this.changeTime = (val: number) => {
                 setterFn(val);
                 dispatch(setActiveChartPeriod(val));
-            }
+            };
         }
     }
 
@@ -262,6 +260,6 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         candleTime: {
             market: new CandleTime(marketCandleTime, setMarketCandleTime),
             range: new CandleTime(rangeCandleTime, setRangeCandleTime),
-        }
+        },
     };
 };
