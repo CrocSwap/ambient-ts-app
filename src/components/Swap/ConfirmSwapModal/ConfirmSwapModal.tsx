@@ -38,6 +38,7 @@ interface propsIF {
     sellQtyString: string;
     buyQtyString: string;
     bypassConfirm: allSkipConfirmMethodsIF;
+    lastBlockNumber: number;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -59,6 +60,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         sellQtyString,
         buyQtyString,
         bypassConfirm,
+        lastBlockNumber,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -72,6 +74,10 @@ export default function ConfirmSwapModal(props: propsIF) {
     const buyTokenData = tokenPair.dataTokenB;
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
+
+    const [blockNumberWhenModalOpened] = useState<number>(lastBlockNumber);
+
+    console.log({ blockNumberWhenModalOpened });
 
     const isPriceInverted =
         (isDenomBaseLocal && !isSellTokenBase) ||

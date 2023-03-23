@@ -545,6 +545,7 @@ export default function Swap(props: propsIF) {
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
         bypassConfirm: bypassConfirm,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
