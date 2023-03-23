@@ -54,6 +54,7 @@ import {
     getOneDayAxisTicks,
 } from './calcuteDateAxis';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
+import { candleTimeIF } from '../../App/hooks/useChartSettings';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -83,7 +84,7 @@ type chartItemStates = {
     showFeeRate: boolean;
     liqMode: string;
 };
-interface ChartData {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
@@ -128,7 +129,6 @@ interface ChartData {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
     liquidityScale: any;
     liquidityDepthScale: any;
@@ -146,9 +146,10 @@ interface ChartData {
     repositionRangeWidth: number;
     setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
     chartTriggeredBy: string;
+    candleTime: candleTimeIF;
 }
 
-export default function Chart(props: ChartData) {
+export default function Chart(props: propsIF) {
     const {
         isUserLoggedIn,
         pool,
@@ -172,7 +173,6 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
-        activeTimeFrame,
         liquidityData,
         handlePulseAnimation,
         liquidityScale,
@@ -190,6 +190,7 @@ export default function Chart(props: ChartData) {
         repositionRangeWidth,
         setChartTriggeredBy,
         chartTriggeredBy,
+        candleTime,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -228,9 +229,6 @@ export default function Chart(props: ChartData) {
     const setSimpleRangeWidth = location.pathname.includes('reposition')
         ? setRepositionRangeWidth
         : setRangeSimpleRangeWidth;
-
-    // const simpleRangeWidth = rangeSimpleRangeWidth;
-    // const setSimpleRangeWidth = setRangeSimpleRangeWidth;
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -1072,7 +1070,7 @@ export default function Chart(props: ChartData) {
         let result = oldTickValues;
 
         const domainX = scaleData.xScale.domain();
-        if (activeTimeFrame === '1h') {
+        if (candleTime.time === 3600) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1082,7 +1080,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '1d') {
+        if (candleTime.time === 86400) {
             result = await getOneDayAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1091,7 +1089,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '4h') {
+        if (candleTime.time === 14400) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1101,7 +1099,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '15m') {
+        if (candleTime.time === 900) {
             result = get15MinutesAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1110,7 +1108,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '5m') {
+        if (candleTime.time === 300) {
             result = get5MinutesAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1119,7 +1117,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '1m') {
+        if (candleTime.time === 60) {
             result = get1MinuteAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1150,7 +1148,7 @@ export default function Chart(props: ChartData) {
                     ])
                     .tickFormat((d: any) => {
                         if (d === crosshairData[0].x) {
-                            if (activeTimeFrame === '1d') {
+                            if (candleTime.time === 86400) {
                                 return moment(d)
                                     .subtract(utcDiffHours, 'hours')
                                     .format('MMM DD YYYY');
@@ -1172,7 +1170,7 @@ export default function Chart(props: ChartData) {
 
                         if (
                             moment(d).format('HH:mm') === '00:00' ||
-                            activeTimeFrame.match(/^(1d)$/)
+                            candleTime.time === 86400
                         ) {
                             return moment(d).format('DD');
                         } else {
@@ -1235,7 +1233,7 @@ export default function Chart(props: ChartData) {
         xAxis,
         JSON.stringify(d3Container.current?.offsetWidth),
         mouseMoveEventCharts,
-        activeTimeFrame,
+        candleTime.time,
         latest,
         rescale,
         bandwidth,
@@ -3672,7 +3670,7 @@ export default function Chart(props: ChartData) {
                     .remove();
             });
         }
-    }, [scaleData, activeTimeFrame]);
+    }, [scaleData, candleTime.time]);
 
     // Horizontal Lines
     useEffect(() => {

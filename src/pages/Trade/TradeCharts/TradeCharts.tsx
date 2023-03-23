@@ -15,19 +15,13 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import {
-    candleDomain,
-    setActiveChartPeriod,
-} from '../../../utils/state/tradeDataSlice';
+import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import {
     CandleData,
     CandlesByPoolAndDuration,
     LiquidityData,
 } from '../../../utils/state/graphDataSlice';
-import {
-    useAppSelector,
-    useAppDispatch,
-} from '../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { get24hChange } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
@@ -80,8 +74,6 @@ interface propsIF {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
-    activeTimeFrame: string;
-    setActiveTimeFrame: Dispatch<SetStateAction<string>>;
     TradeSettingsColor: JSX.Element;
 
     poolPriceChangePercent: string | undefined;
@@ -180,8 +172,6 @@ export default function TradeCharts(props: propsIF) {
         expandTradeTable,
         selectedDate,
         setSelectedDate,
-        activeTimeFrame,
-        setActiveTimeFrame,
         TradeSettingsColor,
         poolPriceChangePercent,
         setPoolPriceChangePercent,
@@ -209,8 +199,6 @@ export default function TradeCharts(props: propsIF) {
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
 
-    const dispatch = useAppDispatch();
-
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -228,9 +216,6 @@ export default function TradeCharts(props: propsIF) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [reset, setReset] = useState(false);
 
-    const setActivePeriod = (period: number) => {
-        dispatch(setActiveChartPeriod(period));
-    };
     const denomInBase = tradeData.isDenomBase;
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
@@ -455,9 +440,11 @@ export default function TradeCharts(props: propsIF) {
                 id='trade_charts_time_frame'
             >
                 <TimeFrame
-                    activeTimeFrame={activeTimeFrame}
-                    setActiveTimeFrame={setActiveTimeFrame}
-                    setActivePeriod={setActivePeriod}
+                    candleTime={
+                        isMarketOrLimitModule
+                            ? chartSettings.candleTime.market
+                            : chartSettings.candleTime.range
+                    }
                 />
             </div>
             <div
@@ -622,7 +609,6 @@ export default function TradeCharts(props: propsIF) {
                         setReset={setReset}
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
-                        activeTimeFrame={activeTimeFrame}
                         setShowTooltip={setShowTooltip}
                         handlePulseAnimation={handlePulseAnimation}
                         fetchingCandle={fetchingCandle}
@@ -644,6 +630,8 @@ export default function TradeCharts(props: propsIF) {
                         repositionRangeWidth={props.repositionRangeWidth}
                         setChartTriggeredBy={setChartTriggeredBy}
                         chartTriggeredBy={chartTriggeredBy}
+                        chartSettings={chartSettings}
+                        isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>
             )}
