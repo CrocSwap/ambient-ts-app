@@ -3850,6 +3850,44 @@ export default function Chart(props: ChartData) {
             setHorizontalBand(() => {
                 return horizontalBand;
             });
+
+            const lineAskSeries = d3fc
+                .seriesCanvasLine()
+                .orient('horizontal')
+                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(
+                    liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
+                )
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.strokeStyle = gradientForAskLine;
+                    selection.strokeWidth = 4;
+                });
+
+            setLineAskSeries(() => {
+                return lineAskSeries;
+            });
+
+            const lineBidSeries = d3fc
+                .seriesCanvasLine()
+                .orient('horizontal')
+                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(
+                    liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
+                )
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.strokeStyle = gradientForBidLine;
+                    selection.strokeWidth = 4;
+                });
+
+            setLineBidSeries(() => {
+                return lineBidSeries;
+            });
         }
     }, [
         parsedChartData?.chartData,
@@ -3858,6 +3896,8 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         limit,
         isUserLoggedIn,
+        gradientForBidLine,
+        gradientForAskLine,
     ]);
 
     useEffect(() => {
@@ -4903,6 +4943,20 @@ export default function Chart(props: ChartData) {
             if (container) container.requestRedraw();
         }
 
+        if (d3CanvasLiqAskLine) {
+            const container = d3
+                .select(d3CanvasLiqAskLine.current)
+                .node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasLiqBidLine) {
+            const container = d3
+                .select(d3CanvasLiqBidLine.current)
+                .node() as any;
+            if (container) container.requestRedraw();
+        }
+
         if (d3CanvasBand) {
             const container = d3.select(d3CanvasBand.current).node() as any;
             if (container) container.requestRedraw();
@@ -5266,81 +5320,8 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            const lineAskSeries = d3fc
-                .seriesCanvasLine()
-                .orient('horizontal')
-                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
-                .mainValue((d: any) => d.activeLiq)
-                .crossValue((d: any) => d.liqPrices)
-                .xScale(
-                    liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
-                )
-                .yScale(scaleData.yScale)
-                .decorate((selection: any) => {
-                    selection.strokeStyle = gradientForAskLine;
-                    selection.strokeWidth = 4;
-                });
-
-            setLineAskSeries(() => {
-                return lineAskSeries;
-            });
-
-            const lineBidSeries = d3fc
-                .seriesCanvasLine()
-                .orient('horizontal')
-                .curve(liqMode === 'Curve' ? d3.curveBasis : d3.curveStep)
-                .mainValue((d: any) => d.activeLiq)
-                .crossValue((d: any) => d.liqPrices)
-                .xScale(
-                    liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
-                )
-                .yScale(scaleData.yScale)
-                .decorate((selection: any) => {
-                    selection.strokeStyle = gradientForBidLine;
-                    selection.strokeWidth = 4;
-                });
-
-            setLineBidSeries(() => {
-                return lineBidSeries;
-            });
-
-            const lineDepthAskSeries = d3fc
-                .seriesSvgLine()
-                .orient('horizontal')
-                .curve(d3.curveStep)
-                .mainValue((d: any) => d.activeLiq)
-                .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityDepthScale)
-                .yScale(scaleData.yScale)
-                .decorate((selection: any) => {
-                    selection.style('stroke', () => {
-                        return 'url(#lineBidGradient)';
-                    });
-                    selection.attr('stroke-width', '2');
-                });
-
-            setLineDepthAskSeries(() => {
-                return lineDepthAskSeries;
-            });
-
-            const lineDepthBidSeries = d3fc
-                .seriesSvgLine()
-                .orient('horizontal')
-                .curve(d3.curveStep)
-                .mainValue((d: any) => d.activeLiq)
-                .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityDepthScale)
-                .yScale(scaleData.yScale)
-                .decorate((selection: any) => {
-                    selection.style('stroke', () => {
-                        return 'url(#lineAskGradient)';
-                    });
-                    selection.attr('stroke-width', '2');
-                });
-
-            setLineDepthBidSeries(() => {
-                return lineDepthBidSeries;
-            });
+            renderCanvas();
+            render();
         }
     }, [
         scaleData,
@@ -5348,7 +5329,7 @@ export default function Chart(props: ChartData) {
         location,
         gradientForAskLine,
         gradientForBidLine,
-        JSON.stringify(d3Container.current?.offsetWidth),
+        // JSON.stringify(d3Container.current?.offsetWidth),
     ]);
 
     useEffect(() => {
@@ -5556,16 +5537,27 @@ export default function Chart(props: ChartData) {
 
     // Call drawChart()
     useEffect(() => {
+        console.log('NE MANA', {
+            parsedChartData,
+            scaleData,
+            zoomUtils,
+            liqTooltip,
+            candlestick,
+            lineBidSeries,
+            lineAskSeries,
+            lineDepthAskSeries,
+            lineDepthBidSeries,
+            barSeries,
+            volumeData,
+            liquidityScale,
+        });
+
         if (
             parsedChartData !== undefined &&
             scaleData !== undefined &&
             zoomUtils !== undefined &&
             liqTooltip !== undefined &&
             candlestick !== undefined &&
-            lineBidSeries !== undefined &&
-            lineAskSeries !== undefined &&
-            lineDepthAskSeries !== undefined &&
-            lineDepthBidSeries !== undefined &&
             barSeries !== undefined &&
             volumeData !== undefined &&
             liquidityScale !== undefined
@@ -5591,10 +5583,6 @@ export default function Chart(props: ChartData) {
         denomInBase,
         liqTooltip,
         candlestick,
-        lineBidSeries,
-        lineAskSeries,
-        lineDepthAskSeries,
-        lineDepthBidSeries,
         mouseMoveEventCharts,
         isZoomForSubChart,
         selectedDate,
@@ -6314,10 +6302,13 @@ export default function Chart(props: ChartData) {
                     setCrossHairLocation(event);
                     setMouseMoveEventCharts(event);
                     showCrosshairHorizontal();
-                    showCrosshairVertical();
                 };
 
+                console.log('draww');
+
                 const mousemove = (event: any) => {
+                    console.log({ event });
+
                     mousemoveEventForCrosshair(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
@@ -6535,19 +6526,6 @@ export default function Chart(props: ChartData) {
         ],
     );
 
-    function showCrosshairVertical() {
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
-    }
     function showCrosshairHorizontal() {
         if (
             crosshairVertical !== undefined &&
