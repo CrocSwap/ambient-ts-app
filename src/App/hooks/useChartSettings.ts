@@ -1,5 +1,6 @@
-// START: Import React and Dongles
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { setActiveChartPeriod } from '../../utils/state/tradeDataSlice';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {
@@ -32,6 +33,7 @@ export interface candleTimeIF {
     time: number;
     changeTime: (val: number) => void;
     defaults: Array<{readable: string, seconds: number}>;
+    readableTime: string;
 }
 
 // interface for return value of this hook
@@ -51,6 +53,8 @@ export interface chartSettingsMethodsIF {
 export const useChartSettings = (): chartSettingsMethodsIF => {
     // key for data held in local storage
     const localStorageKey = 'chart_settings';
+
+    const dispatch = useAppDispatch();
 
     // fn to retrieve and parse persisted data from local storage
     // will return `null` if the key-val pair does not exist
@@ -140,7 +144,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('range') ?? 'curve',
     );
     const [marketCandleTime, setMarketCandleTime] = useState<number>(
-        getCandleTime('market') ?? 300
+        getCandleTime('market') ?? 900
     );
     const [rangeCandleTime, setRangeCandleTime] = useState<number>(
         getCandleTime('range') ?? 3600
@@ -228,9 +232,15 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             { readable: '4h', seconds: 14400 },
             { readable: '1d', seconds: 86400 },
         ];
+        readableTime = this.defaults.find(
+            (pair) => pair.seconds === this.time
+        )?.readable ?? '';
         constructor(t: number, setterFn: Dispatch<SetStateAction<number>>) {
             this.time = t;
-            this.changeTime = (val: number) => setterFn(val)
+            this.changeTime = (val: number) => {
+                setterFn(val);
+                dispatch(setActiveChartPeriod(val));
+            }
         }
     }
 
