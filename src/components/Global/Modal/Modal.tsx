@@ -71,6 +71,9 @@ export default function Modal(props: ModalPropsIF) {
                     // color='var(--text-grey-light)'
                     className={styles.close_button}
                     onClick={onClose}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close modal button'
                 />
             </div>
         </header>
