@@ -1524,8 +1524,9 @@ export default function Chart(props: ChartData) {
                         'display',
                         (location.pathname.includes('range') ||
                             location.pathname.includes('reposition')) &&
-                            rangeSimpleRangeWidth !== 100 &&
-                            repositionRangeWidth !== 100
+                            (isAdvancedModeActive ||
+                                (rangeSimpleRangeWidth !== 100 &&
+                                    repositionRangeWidth !== 100))
                             ? 'inline'
                             : 'none',
                     );
@@ -4959,11 +4960,11 @@ export default function Chart(props: ChartData) {
                 .select('canvas')
                 .style(
                     'display',
-                    simpleRangeWidthGra === 100 &&
-                        (!isAdvancedModeActive ||
-                            location.pathname.includes('reposition'))
-                        ? 'none'
-                        : 'inline',
+                    (location.pathname.includes('reposition') ||
+                        location.pathname.includes('range')) &&
+                        (isAdvancedModeActive || simpleRangeWidthGra !== 100)
+                        ? 'inline'
+                        : 'none',
                 );
 
             const low = ranges.filter((target: any) => target.name === 'Min')[0]
