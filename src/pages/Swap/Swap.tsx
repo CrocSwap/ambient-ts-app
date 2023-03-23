@@ -550,7 +550,11 @@ export default function Swap(props: propsIF) {
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={handleModalClose} title='Swap Confirmation'>
+        <Modal
+            onClose={handleModalClose}
+            title='Swap Confirmation'
+            centeredTitle
+        >
             <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
     ) : null;

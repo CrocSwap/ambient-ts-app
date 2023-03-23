@@ -6,7 +6,7 @@
 .main_container,
 .main_container section,
 .magic_login_container section {
-    min-height: 200px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -136,4 +136,6 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+
+    padding: 0 1rem;
 }

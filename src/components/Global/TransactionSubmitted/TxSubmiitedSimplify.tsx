@@ -22,7 +22,7 @@ export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
             className={styles.view_etherscan}
         >
             View on Etherscan
-            <FiExternalLink size={20} color='black' />
+            <FiExternalLink size={20} color='var(--text-grey-white)' />
         </a>
     );
     return (

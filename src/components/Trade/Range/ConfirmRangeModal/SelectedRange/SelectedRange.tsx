@@ -153,7 +153,7 @@ export default function SelectedRange(props: propsIF) {
                 {/* {switchButtons} */}
                 {<div />}
                 {!isAmbient ? selectedRangeDisplay : null}
-                {extraInfoData}
+                <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
             </div>
         </>
     );

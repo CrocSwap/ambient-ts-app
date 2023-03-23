@@ -31,7 +31,7 @@
     transition: box-shadow var(--animation-speed) ease-in-out;
 
     height: fit-content;
-    min-height: 300px;
+    /* min-height: 300px; */
     min-width: 300px;
     top: 1rem;
     border-radius: var(--border-radius);
@@ -59,7 +59,7 @@
     color: var(--text-grey-white);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
-    padding: 10px 20px;
+    padding: 1rem;
 }
 
 .modal_header h2 {
@@ -73,7 +73,7 @@
     background: var(--dark2);
     border-radius: var(--border-radius);
 
-    min-height: 300px;
+    /* min-height: 300px; */
 }
 @media only screen and (min-width: 500px) {
     .modal_body {

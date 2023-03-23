@@ -9,11 +9,10 @@ import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link, useParams } from 'react-router-dom';
-import { topPools } from '../../../../App/mockData';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
-import { PoolIF } from '../../../../utils/interfaces/exports';
+import { topPools } from '../../../App/mockData';
+import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
+import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
-
 interface FullChatPropsIF {
     messageList: JSX.Element;
     chatNotification: JSX.Element;
