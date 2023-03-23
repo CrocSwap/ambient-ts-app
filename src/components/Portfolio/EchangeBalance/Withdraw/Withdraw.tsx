@@ -22,6 +22,8 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
+import { FaGasPump } from 'react-icons/fa';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -39,6 +41,7 @@ interface propsIF {
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
     gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Withdraw(props: propsIF) {
@@ -59,6 +62,8 @@ export default function Withdraw(props: propsIF) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -455,6 +460,37 @@ export default function Withdraw(props: propsIF) {
         }
     };
 
+    const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
+
+    const averageGasUnitsForEthWithdrawal = 47000;
+    const averageGasUnitsForErc20Withdrawal = 60000;
+    const gweiInWei = 1e-9;
+
+    // calculate price of gas for withdrawal
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                gweiInWei *
+                ethMainnetUsdPrice *
+                (isTokenEth
+                    ? averageGasUnitsForEthWithdrawal
+                    : averageGasUnitsForErc20Withdrawal);
+
+            setWithdrawGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text_non_clickable}>
@@ -503,6 +539,10 @@ export default function Withdraw(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
+            <div className={styles.gas_pump}>
+                <FaGasPump size={12} />{' '}
+                {withdrawGasPriceinDollars ? withdrawGasPriceinDollars : '…'}
+            </div>
         </div>
     );
 }

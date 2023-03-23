@@ -351,6 +351,7 @@ export default function Portfolio(props: propsIF) {
             <ExchangeBalance
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
+                ethMainnetUsdPrice={ethMainnetUsdPrice}
                 connectedAccount={connectedAccount || ''}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 setOutsideControl={setOutsideControl}
