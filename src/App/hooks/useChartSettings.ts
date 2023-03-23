@@ -110,19 +110,14 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     const getCandleTime = (timeFor: string): number | undefined => {
         const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
-        console.log({ chartSettings });
         let time: number | undefined;
         switch (timeFor) {
             case 'market':
             case 'limit':
-                console.log('getting market/limit time');
                 time = chartSettings?.candleTimeMarket;
-                console.log({ time });
                 break;
             case 'range':
-                console.log('getting range time');
                 time = chartSettings?.candleTimeRange;
-                console.log({ time });
                 break;
             default:
                 return;
