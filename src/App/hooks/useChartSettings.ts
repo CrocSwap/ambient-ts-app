@@ -110,14 +110,19 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     const getCandleTime = (timeFor: string): number | undefined => {
         const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
+        console.log({ chartSettings });
         let time: number | undefined;
         switch (timeFor) {
             case 'market':
             case 'limit':
+                console.log('getting market/limit time');
                 time = chartSettings?.candleTimeMarket;
+                console.log({ time });
                 break;
             case 'range':
+                console.log('getting range time');
                 time = chartSettings?.candleTimeRange;
+                console.log({ time });
                 break;
             default:
                 return;
@@ -141,10 +146,10 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const [rangeOverlay, setRangeOverlay] = useState<string>(
         getOverlay('range') ?? 'curve',
     );
-    const [marketCandleTime, setMarketCandleTime] = useState<number>(
+    const [candleTimeMarket, setCandleTimeMarket] = useState<number>(
         getCandleTime('market') ?? 900,
     );
-    const [rangeCandleTime, setRangeCandleTime] = useState<number>(
+    const [candleTimeRange, setCandleTimeRange] = useState<number>(
         getCandleTime('range') ?? 86400,
     );
 
@@ -159,8 +164,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 isFeeRateSubchartEnabled,
                 marketOverlay,
                 rangeOverlay,
-                marketCandleTime,
-                rangeCandleTime,
+                candleTimeMarket,
+                candleTimeRange,
             }),
         );
     }, [
@@ -169,8 +174,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         isFeeRateSubchartEnabled,
         marketOverlay,
         rangeOverlay,
-        marketCandleTime,
-        rangeCandleTime,
+        candleTimeMarket,
+        candleTimeRange,
     ]);
 
     // class definition for subchart setting and methods
@@ -258,8 +263,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
         rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
         candleTime: {
-            market: new CandleTime(marketCandleTime, setMarketCandleTime),
-            range: new CandleTime(rangeCandleTime, setRangeCandleTime),
+            market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
+            range: new CandleTime(candleTimeRange, setCandleTimeRange),
         },
     };
 };
