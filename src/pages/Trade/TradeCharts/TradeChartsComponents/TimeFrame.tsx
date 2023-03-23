@@ -23,6 +23,7 @@ export default function TimeFrame(props: propsIF) {
     const clickOutsideHandler = () => {
         setShowTimeFrameDropdown(false);
     };
+
     useOnClickOutside(dropdownItemRef, clickOutsideHandler);
 
     const timeFrameMobile = (
