@@ -54,10 +54,16 @@ export default function CurrencyQuantity(props: propsIF) {
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         if (event && fieldId === 'sell') {
             setBuyQtyString('');
-            setSellQtyString(event.target.value);
+            const valueWithLeadingZero = event.target.value.startsWith('.')
+                ? '0' + event.target.value
+                : event.target.value;
+            setSellQtyString(valueWithLeadingZero);
         } else if (event && fieldId === 'buy') {
             setSellQtyString('');
-            setBuyQtyString(event.target.value);
+            const valueWithLeadingZero = event.target.value.startsWith('.')
+                ? '0' + event.target.value
+                : event.target.value;
+            setBuyQtyString(valueWithLeadingZero);
         }
 
         const input = event.target.value.startsWith('.')

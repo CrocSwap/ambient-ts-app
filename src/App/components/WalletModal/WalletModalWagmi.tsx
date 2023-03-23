@@ -311,6 +311,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
                 title={activeTitle}
+                centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
                 // footer={tosText}
             >
                 {activeContent}

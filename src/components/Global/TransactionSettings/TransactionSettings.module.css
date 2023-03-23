@@ -1,5 +1,5 @@
 .settings_container {
-    height: 405px;
+    min-height: 305px;
     /* max-width: 407px; */
     /* width: 300px; */
     display: flex;
@@ -8,7 +8,7 @@
     row-gap: 12px;
     margin-top: 0.2rem;
    
-    padding: 20px;
+    padding: 1rem;
     
 }
 .settings_title {
@@ -23,4 +23,8 @@
 
 .settings_title  span{
     cursor: pointer;
+}
+
+.settings_title svg:hover{
+    color: var(--text-grey-white)
 }

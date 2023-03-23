@@ -191,6 +191,7 @@ export default function MessageInput(
                     value={message}
                     onChange={onChangeMessage}
                     autoComplete={'off'}
+                    tabIndex={-1}
                 />
 
                 <BsEmojiSmileFill

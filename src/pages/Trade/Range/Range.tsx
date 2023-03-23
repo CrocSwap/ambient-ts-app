@@ -1478,6 +1478,7 @@ export default function Range(props: propsIF) {
         <Modal
             onClose={handleModalClose}
             title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
+            centeredTitle
         >
             <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
