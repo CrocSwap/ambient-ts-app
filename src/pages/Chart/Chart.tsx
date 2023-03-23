@@ -3806,21 +3806,11 @@ export default function Chart(props: ChartData) {
                 .yScale(scaleData.yScale)
                 .crossValue((d: any, index: any) => {
                     return !(index % 2)
-                        ? new Date(
-                              scaleData.xScale
-                                  .invert(scaleData.xScale.range()[0])
-                                  .getTime() +
-                                  parsedChartData?.period * 500,
-                          )
-                        : new Date(
-                              scaleData.xScale.invert(
-                                  scaleData.xScale.range()[1],
-                              ) -
-                                  parsedChartData?.period * 500,
-                          );
+                        ? scaleData.xScale.domain()[0]
+                        : scaleData.xScale.domain()[1];
                 })
                 .mainValue((d: any) => d.value)
-                .size(110)
+                .size(270)
                 .type(d3.symbolTriangle)
                 .decorate((context: any, datum: any, index: any) => {
                     const rotateDegree = !(index % 2) ? 90 : -90;
