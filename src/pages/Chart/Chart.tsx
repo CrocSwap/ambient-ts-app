@@ -3878,9 +3878,20 @@ export default function Chart(props: ChartData) {
                     liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
                 )
                 .yScale(scaleData.yScale)
-                .decorate((selection: any) => {
-                    selection.strokeStyle = gradientForBidLine;
-                    selection.strokeWidth = 4;
+                .decorate((selection: any, path: any) => {
+                    // selection.strokeStyle = gradientForBidLine;
+                    path.forEach((x: any) => {
+                        console.log(x, scaleData.xScale(x.liqPrices));
+                        if (
+                            scaleData.xScale(x.liqPrices) >= 200 &&
+                            scaleData.xScale(x.liqPrices) <= 400
+                        ) {
+                            console.log('öff');
+
+                            selection.strokeStyle = 'pink';
+                        }
+                        selection.strokeWidth = 4;
+                    });
                 });
 
             setLineBidSeries(() => {
@@ -5043,46 +5054,84 @@ export default function Chart(props: ChartData) {
                 .select('canvas')
                 .node() as any;
             const ctx = canvas.getContext('2d');
-            if (bidMaxBoudnary && bidMinBoudnary) {
-                const percentageBid =
-                    Math.abs(high - parseFloat(bidMinBoudnary)) /
-                    (parseFloat(bidMaxBoudnary) - parseFloat(bidMinBoudnary));
+            if (
+                poolPriceDisplay !== undefined &&
+                bidMaxBoudnary !== undefined &&
+                bidMinBoudnary !== undefined &&
+                askMaxBoudnary !== undefined &&
+                askMinBoudnary !== undefined
+            ) {
+                if (isAdvancedModeActive) {
+                    ctx.strokeStyle = 'orange';
 
-                if (percentageBid >= 0 && percentageBid <= 1) {
-                    const gradient = ctx.createLinearGradient(
-                        0,
-                        scale(bidMaxBoudnary),
-                        0,
-                        scale(bidMinBoudnary),
-                    );
+                    renderCanvas();
+                    // const data = liqDataBid.filter((item:any)=> item.liqPrices<= high && item.liqPrices >= low)
+                    // const areaPathGenerator = d3.line().context(ctx);
+                    // areaPathGenerator(data);
+                    // console.log({data});
 
-                    gradient.addColorStop(1 - percentageBid, 'transparent');
-                    gradient.addColorStop(1 - percentageBid, '#7371FC');
+                    // if (low > poolPriceDisplay && high> poolPriceDisplay) {
 
-                    setGradientForBidLine(gradient);
+                    //     const percentageBid =
+                    //     Math.abs(high - low) /
+                    //     (parseFloat(bidMaxBoudnary) - parseFloat(bidMinBoudnary));
+
+                    //     const gradient = ctx.createLinearGradient(
+                    //         0,
+                    //         scale(high),
+                    //         0,
+                    //         scale(low),
+                    //     );
+
+                    //     gradient.addColorStop(percentageBid, '#7371FC');
+                    //     // gradient.addColorStop(percentageBid, 'transparent');
+
+                    //     setGradientForBidLine(gradient);
+                    //     setGradientForAskLine(setLineGradientDefault());
+                    // }
+                } else {
+                    const percentageBid =
+                        Math.abs(high - parseFloat(bidMinBoudnary)) /
+                        (parseFloat(bidMaxBoudnary) -
+                            parseFloat(bidMinBoudnary));
+
+                    if (percentageBid >= 0 && percentageBid <= 1) {
+                        const gradient = ctx.createLinearGradient(
+                            0,
+                            scale(bidMaxBoudnary),
+                            0,
+                            scale(bidMinBoudnary),
+                        );
+
+                        gradient.addColorStop(1 - percentageBid, 'transparent');
+                        gradient.addColorStop(1 - percentageBid, '#7371FC');
+
+                        setGradientForBidLine(gradient);
+                    }
+
+                    const percentageAsk =
+                        (parseFloat(askMaxBoudnary) - low) /
+                        (parseFloat(askMaxBoudnary) -
+                            parseFloat(askMinBoudnary));
+
+                    if (percentageAsk >= 0 && percentageAsk <= 1) {
+                        const gradient = ctx.createLinearGradient(
+                            0,
+                            scale(askMaxBoudnary),
+                            0,
+                            scale(0),
+                        );
+
+                        gradient.addColorStop(
+                            percentageAsk,
+                            'rgba(205, 193, 255)',
+                        );
+                        gradient.addColorStop(percentageAsk, 'transparent');
+
+                        setGradientForAskLine(gradient);
+                    }
                 }
             }
-
-            if (askMaxBoudnary !== undefined && askMinBoudnary !== undefined) {
-                const percentageAsk =
-                    (parseFloat(askMaxBoudnary) - low) /
-                    (parseFloat(askMaxBoudnary) - parseFloat(askMinBoudnary));
-
-                if (percentageAsk >= 0 && percentageAsk <= 1) {
-                    const gradient = ctx.createLinearGradient(
-                        0,
-                        scale(askMaxBoudnary),
-                        0,
-                        scale(0),
-                    );
-
-                    gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255)');
-                    gradient.addColorStop(percentageAsk, 'transparent');
-
-                    setGradientForAskLine(gradient);
-                }
-            }
-
             render();
             renderCanvas();
         }
@@ -5180,6 +5229,16 @@ export default function Chart(props: ChartData) {
             renderCanvas();
         }
     };
+
+    function setLineGradientDefault() {
+        const ctx = (
+            d3.select(d3CanvasLiqAsk.current).select('canvas').node() as any
+        ).getContext('2d');
+
+        const gradient = ctx.createLinearGradient(0, 0, 100, 0);
+        gradient.addColorStop(1, 'transparent');
+        return gradient;
+    }
 
     function setAskGradientDefault() {
         const ctx = (
