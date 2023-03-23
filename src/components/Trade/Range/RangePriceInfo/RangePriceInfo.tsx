@@ -3,7 +3,6 @@ import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
-import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
@@ -44,7 +43,6 @@ export default function RangePriceInfo(props: propsIF) {
         // maxPriceDisplay,
         // minPriceDisplay,
         aprPercentage,
-        daysInRange,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         pinnedDisplayPrices,
@@ -64,12 +62,6 @@ export default function RangePriceInfo(props: propsIF) {
         : '…';
     // JSX frag for estimated APR of position
     const apr = <span className={styles.apr}>{aprPercentageString}</span>;
-
-    const daysInRangeString = daysInRange
-        ? `Est. Time in Range | ${formatDaysRange(daysInRange)}`
-        : '…';
-    // JSX frag for estimated APR of position
-    const days = <span className={styles.apr}>{daysInRangeString}</span>;
 
     const minPrice =
         pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas;
@@ -104,7 +96,6 @@ export default function RangePriceInfo(props: propsIF) {
     return (
         <div className={styles.price_info_container}>
             {apr}
-            {days}
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>

@@ -1,14 +1,14 @@
 .modal_container {
     width: 400px;
-    padding: 20px;
+    padding: 1rem;
     /* min-height: 300px; */
 }
 
-.modal_footer {
+/* .modal_footer {
     width: 100%;
     padding: 0 20px;
     margin-top: 10px;
-}
+} */
 
 /* Transaction details */
 
@@ -149,5 +149,6 @@
 .confSwap_detail_note {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var( --accent-secondary);
+    text-align: center;
 }

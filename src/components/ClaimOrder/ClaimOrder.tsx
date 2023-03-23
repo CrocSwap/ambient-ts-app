@@ -354,7 +354,7 @@ export default function ClaimOrder(props: propsIF) {
                 title={'Claim Limit Order '}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
-            <div style={{ padding: '20px' }}>
+            <div style={{ padding: '1rem' }}>
                 <ClaimOrderTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}

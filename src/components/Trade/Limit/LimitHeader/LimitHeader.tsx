@@ -70,7 +70,12 @@ export default function LimitHeader(props: propsIF) {
                 </div>
             </IconWithTooltip>
             {isModalOpen && (
-                <Modal noHeader title='modal' onClose={closeModal}>
+                <Modal
+                    noHeader
+                    title='modal'
+                    onClose={closeModal}
+                    centeredTitle
+                >
                     <TransactionSettings
                         module='Limit Order'
                         toggleFor='limit'

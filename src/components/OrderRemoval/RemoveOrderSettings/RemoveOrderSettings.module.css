@@ -9,7 +9,7 @@
 }
 
 .header_container {
-    height: 41px;
+    height: 50px;
 
     display: flex;
     flex-direction: row;
