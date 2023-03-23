@@ -53,13 +53,14 @@ export default function RangeHeader(props: propsIF) {
 
     return (
         <ContentHeader>
-            <div
-                className={styles.share_button}
+            <AiOutlineShareAlt
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 id='range_share_button'
-            >
-                <AiOutlineShareAlt />
-            </div>
+                role='button'
+                tabIndex={0}
+                aria-label='Share button'
+            />
+
             <div
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
@@ -78,6 +79,9 @@ export default function RangeHeader(props: propsIF) {
                     style={{ cursor: 'pointer' }}
                     className={`${styles.settings_container} ${styles.settings_icon}`}
                     id='range_settings_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
