@@ -22,6 +22,8 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
+import { FaGasPump } from 'react-icons/fa';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -39,6 +41,7 @@ interface propsIF {
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
     gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Withdraw(props: propsIF) {
@@ -59,6 +62,8 @@ export default function Withdraw(props: propsIF) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -200,21 +205,13 @@ export default function Withdraw(props: propsIF) {
         [withdrawQtyNonDisplay],
     );
 
-    // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
     useEffect(() => {
         setIsWithdrawPending(false);
     }, [JSON.stringify(selectedToken)]);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeGlobalModal();
-    // };
-
     useEffect(() => {
-        // console.log({ isDepositQtyValid });
         if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter a Valid Address');
@@ -226,45 +223,21 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        }
-        // else if (isApprovalPending) {
-        //     setIsButtonDisabled(true);
-        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        // }
-        else if (isWithdrawPending) {
+        } else if (isWithdrawPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
-        }
-        // else if (!isTokenAllowanceSufficient) {
-        //     setIsButtonDisabled(false);
-        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        // }
-        else if (isWithdrawQtyValid) {
+        } else if (isWithdrawQtyValid) {
             setIsButtonDisabled(false);
             setButtonMessage('Withdraw');
         }
     }, [
-        // isApprovalPending,
         isWithdrawPending,
-        // isTokenAllowanceSufficient,
         isDexBalanceSufficient,
         isWithdrawQtyValid,
         selectedToken.symbol,
         isResolvedAddressValid,
         isSendToAddressChecked,
     ]);
-
-    // const chooseTokenDiv = (
-    //     <div>
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))}
-    //     </div>
-    // );
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {
         if (crocEnv && withdrawQtyNonDisplay) {
@@ -388,25 +361,6 @@ export default function Withdraw(props: propsIF) {
         />
     ) : null;
 
-    // const approve = async (tokenAddress: string) => {
-    //     if (!crocEnv) return;
-    //     try {
-    //         setIsApprovalPending(true);
-    //         const tx = await crocEnv.token(tokenAddress).approve();
-    //         if (tx) {
-    //             await tx.wait();
-    //         }
-    //     } catch (error) {
-    //         console.warn({ error });
-    //     } finally {
-    //         setIsApprovalPending(false);
-    //         setRecheckTokenAllowance(true);
-    //     }
-    // };
-
-    // const approvalFn = async () => {
-    //     await approve(selectedToken.address);
-    // };
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull =
@@ -454,6 +408,37 @@ export default function Withdraw(props: propsIF) {
             //     withdrawInput.value = tokenExchangeDepositsDisplay;
         }
     };
+
+    const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
+
+    const averageGasUnitsForEthWithdrawal = 47000;
+    const averageGasUnitsForErc20Withdrawal = 60000;
+    const gweiInWei = 1e-9;
+
+    // calculate price of gas for withdrawal
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                gweiInWei *
+                ethMainnetUsdPrice *
+                (isTokenEth
+                    ? averageGasUnitsForEthWithdrawal
+                    : averageGasUnitsForErc20Withdrawal);
+
+            setWithdrawGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
         <div className={styles.deposit_container}>
@@ -503,6 +488,12 @@ export default function Withdraw(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
+            <div className={styles.gas_pump}>
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
+                {withdrawGasPriceinDollars ? withdrawGasPriceinDollars : '…'}
+            </div>
         </div>
     );
 }

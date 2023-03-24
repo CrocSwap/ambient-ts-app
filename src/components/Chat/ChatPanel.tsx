@@ -34,7 +34,6 @@ interface currentPoolInfo {
     advancedLowTick: number;
     advancedHighTick: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
 }
 
 interface propsIF {
@@ -47,7 +46,7 @@ interface propsIF {
     fullScreen?: boolean;
     userImageData: string[];
     appPage?: boolean;
-    username?: string | undefined | null;
+    username?: string | null;
 }
 
 export default function ChatPanel(props: propsIF) {
@@ -73,9 +72,7 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(
-        room.toUpperCase(),
-    );
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
@@ -171,7 +168,6 @@ export default function ChatPanel(props: propsIF) {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
                                 if (result.status === 'OK') {
-                                    console.log(result);
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     updateMessageUser(
                                         currentUser as string,
@@ -219,7 +215,6 @@ export default function ChatPanel(props: propsIF) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (result: any) => {
                             if (result.status === 'OK') {
-                                console.log(result);
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(
                                     currentUser as string,
@@ -248,7 +243,6 @@ export default function ChatPanel(props: propsIF) {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
-        console.log('scrolling to bottom');
     }, [props.isChatOpen]);
 
     function handleCloseChatPanel() {

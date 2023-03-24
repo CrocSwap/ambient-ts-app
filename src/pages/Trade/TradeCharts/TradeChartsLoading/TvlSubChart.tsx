@@ -69,7 +69,7 @@ export default function TvlSubChart(props: TvlData) {
         period,
         tvlData,
         zoomAndYdragControl,
-        JSON.stringify(scaleData.xScale.domain()[0]),
+        JSON.stringify(scaleData?.xScale.domain()[0]),
     ]);
 
     const render = useCallback(() => {
@@ -83,8 +83,12 @@ export default function TvlSubChart(props: TvlData) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const yScale = d3.scaleLinear();
 
-                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                const xmin = new Date(
+                    Math.floor(scaleData?.xScale.domain()[0]),
+                );
+                const xmax = new Date(
+                    Math.floor(scaleData?.xScale.domain()[1]),
+                );
 
                 const filtered = tvlData?.filter(
                     (data: any) => data.time >= xmin && data.time <= xmax,
@@ -134,7 +138,7 @@ export default function TvlSubChart(props: TvlData) {
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
                     .value((d: any) => yScale.invert(d.y))
-                    .xScale(scaleData.xScale)
+                    .xScale(scaleData?.xScale)
                     .yScale(yScale);
 
                 crosshairVertical.decorate((selection: any) => {
@@ -173,7 +177,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaSeries = d3fc
                     .seriesSvgArea()
-                    .xScale(scaleData.xScale)
+                    .xScale(scaleData?.xScale)
                     .yScale(yScale)
                     .mainValue((d: any) => d.value)
                     .crossValue((d: any) => d.time)
@@ -187,7 +191,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const lineSeries = d3fc
                     .seriesSvgLine()
-                    .xScale(scaleData.xScale)
+                    .xScale(scaleData?.xScale)
                     .yScale(yScale)
                     .mainValue((d: any) => d.value)
                     .crossValue((d: any) => d.time)
@@ -199,7 +203,7 @@ export default function TvlSubChart(props: TvlData) {
                 d3.select(d3PlotTvl.current).on(
                     'measure',
                     function (event: any) {
-                        scaleData.xScale.range([0, event.detail.width]);
+                        scaleData?.xScale.range([0, event.detail.width]);
                         yScale.range([event.detail.height, 0]);
                     },
                 );
@@ -218,10 +222,10 @@ export default function TvlSubChart(props: TvlData) {
                                 }
                             })
                             .on('zoom', (event: any) => {
-                                const domainX = scaleData.xScale.domain();
+                                const domainX = scaleData?.xScale.domain();
                                 const linearX = d3
                                     .scaleTime()
-                                    .domain(scaleData.xScale.range())
+                                    .domain(scaleData?.xScale.range())
                                     .range([0, domainX[1] - domainX[0]]);
 
                                 const deltaX = linearX(
@@ -233,7 +237,7 @@ export default function TvlSubChart(props: TvlData) {
                                     date,
                                 );
 
-                                scaleData.xScale.domain([
+                                scaleData?.xScale.domain([
                                     new Date(domainX[0].getTime() + deltaX),
                                     new Date(domainX[1].getTime() + deltaX),
                                 ]);
@@ -322,7 +326,7 @@ export default function TvlSubChart(props: TvlData) {
                             newData.filter(
                                 (target: any) => target.name === 'tvl',
                             )[0].value = snap(areaSeries, tvlData, {
-                                x: scaleData.xScale(crosshairDataLocal[0].x),
+                                x: scaleData?.xScale(crosshairDataLocal[0].x),
                                 y: crosshairDataLocal[0].y,
                             })[0].value;
 
@@ -346,7 +350,7 @@ export default function TvlSubChart(props: TvlData) {
         },
         [
             crosshairForSubChart,
-            JSON.stringify(scaleData.xScale.domain()[0]),
+            JSON.stringify(scaleData?.xScale.domain()[0]),
             tvlData,
         ],
     );
