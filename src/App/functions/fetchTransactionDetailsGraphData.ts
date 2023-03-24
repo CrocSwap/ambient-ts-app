@@ -19,7 +19,6 @@ export const fetchTransactionGraphData = async (
     if (isFetchEnabled) {
         try {
             if (httpGraphCacheServerDomain) {
-                // console.log('fetching candles');
                 const candleSeriesCacheEndpoint =
                     httpGraphCacheServerDomain + '/candle_series?';
 
@@ -32,7 +31,6 @@ export const fetchTransactionGraphData = async (
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
-                            // page: '0', // nonnegative integer
                             chainId: '0x1',
                             dex: 'all',
                             poolStats: 'true',
@@ -50,7 +48,6 @@ export const fetchTransactionGraphData = async (
                     .then((json) => {
                         const candles = json?.data;
                         if (candles) {
-                            // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                             return {
                                 duration: period,
                                 candles: candles,

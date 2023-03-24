@@ -3,7 +3,6 @@ import { getTransactionData } from './getTransactionData';
 
 interface argsIF {
     tokenList: TokenIF[];
-
     base: string;
     quote: string;
     poolIdx: number;
@@ -34,7 +33,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         n,
         period,
         time,
-        // page,
     } = args;
 
     const poolRecentChangesCacheEndpoint =

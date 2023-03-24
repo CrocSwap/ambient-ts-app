@@ -4,15 +4,8 @@ export const getTransactionData = async (
     tx: TransactionIF,
     tokenList: TokenIF[],
 ): Promise<TransactionIF> => {
-    // console.log({ tokenList });
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
-
-    // const baseKey = baseTokenAddress.toLowerCase() + '_' + tx.chainId;
-    // const quoteKey = quoteTokenAddress.toLowerCase() + '_' + tx.chainId;
-
-    // const baseTokenName = tokensOnActiveLists.get(baseKey)?.name;
-    // const quoteTokenName = tokensOnActiveLists.get(quoteKey)?.name;
 
     const baseTokenName = tokenList.find(
         (token) =>
@@ -31,8 +24,6 @@ export const getTransactionData = async (
         (token) =>
             token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
-    // const baseTokenLogoURI = tokensOnActiveLists.get(baseKey)?.logoURI;
-    // const quoteTokenLogoURI = tokensOnActiveLists.get(quoteKey)?.logoURI;
 
     tx.baseName = baseTokenName ?? '';
     tx.quoteName = quoteTokenName ?? '';
