@@ -1,8 +1,8 @@
 import styles from './HomeSlider.module.css';
-import { SwiperSlide, Swiper } from 'swiper/react';
+// import { SwiperSlide, Swiper } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import 'swiper/modules/pagination/pagination.min.css';
-import { Navigation, EffectFade, Autoplay, Pagination } from 'swiper';
+// import { Navigation, EffectFade, Autoplay, Pagination } from 'swiper';
 import Landing1 from './Landing1';
 // import Landing2 from './Landing2';
 // import Landing3 from './Landing3';

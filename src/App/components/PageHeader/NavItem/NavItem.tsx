@@ -6,7 +6,6 @@ import {
     cloneElement,
     Dispatch,
     SetStateAction,
-    useEffect,
 } from 'react';
 import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';

@@ -1,6 +1,7 @@
 // START: Import React and Dongles
 import { useCallback, useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import Local Files
 import styles from './SimpleModal.module.css';
@@ -35,29 +36,40 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
     }, []);
 
     return (
-        <div
+        <aside
             className={styles.outside_modal}
             onMouseDown={onClose}
-            tabIndex={-1}
+            // tabIndex={-1}
+            role='dialog'
+            aria-modal='true'
         >
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className={`
+            <FocusTrap
+                focusTrapOptions={{
+                    initialFocus: '#close_simple_modal_button',
+                }}
+            >
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className={`
                 ${styles.modal_body}
                 ${noBackground ? styles.no_background_modal : null}
                 `}
-                onMouseDown={(e) => e.stopPropagation()}
-                style={{ justifyContent: 'flex-start' }}
-            >
-                <section className={styles.modal_content}>
-                    {title && (
-                        <SimpleModalHeader title={title} onClose={onClose} />
-                    )}
-                    {children}
-                </section>
-            </motion.div>
-        </div>
+                    onMouseDown={(e) => e.stopPropagation()}
+                    style={{ justifyContent: 'flex-start' }}
+                >
+                    <section className={styles.modal_content}>
+                        {title && (
+                            <SimpleModalHeader
+                                title={title}
+                                onClose={onClose}
+                            />
+                        )}
+                        {children}
+                    </section>
+                </motion.div>
+            </FocusTrap>
+        </aside>
     );
 }

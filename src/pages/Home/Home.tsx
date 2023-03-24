@@ -11,7 +11,7 @@ import styles from './Home.module.css';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Home1 from '../../components/Home/Landing/Home1';
-import Landing1 from '../../components/Home/Landing/Landing1';
+// import Landing1 from '../../components/Home/Landing/Landing1';
 
 interface propsIF {
     isServerEnabled: boolean;

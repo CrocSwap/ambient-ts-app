@@ -3,7 +3,6 @@ import styles from './TopPools.module.css';
 import { motion } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
 
 import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/exports';
