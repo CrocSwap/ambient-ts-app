@@ -8,7 +8,7 @@ export default function TradeNowButton() {
         <Link
             to={'/trade/market'}
             tabIndex={0}
-            aria-label='Go to trade page'
+            aria-label='Go to trade page button'
             className={styles.action_button}
         >
             <p className={styles.button_text}>{t('marketCTA')}</p>

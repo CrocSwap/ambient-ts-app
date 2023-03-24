@@ -90,7 +90,9 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>
             <div>New to Ethereum?</div>
-            <a href='#'>Learn more about Wallets</a>
+            <a href='https://ethereum.org/en/wallets/'>
+                Learn more about Wallets
+            </a>
         </div>
     );
 
