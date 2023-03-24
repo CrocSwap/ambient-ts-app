@@ -6,6 +6,7 @@ export default async (request: Request, context: Context) => {
         return;
     }
 
+    console.log({ context });
     console.log({ request });
 
     const url = new URL(
