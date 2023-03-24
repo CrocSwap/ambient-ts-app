@@ -393,25 +393,6 @@ export default function Withdraw(props: propsIF) {
         />
     ) : null;
 
-    // const approve = async (tokenAddress: string) => {
-    //     if (!crocEnv) return;
-    //     try {
-    //         setIsApprovalPending(true);
-    //         const tx = await crocEnv.token(tokenAddress).approve();
-    //         if (tx) {
-    //             await tx.wait();
-    //         }
-    //     } catch (error) {
-    //         console.warn({ error });
-    //     } finally {
-    //         setIsApprovalPending(false);
-    //         setRecheckTokenAllowance(true);
-    //     }
-    // };
-
-    // const approvalFn = async () => {
-    //     await approve(selectedToken.address);
-    // };
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull =

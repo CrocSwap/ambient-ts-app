@@ -266,7 +266,10 @@ export default function Deposit(props: propsIF) {
     };
 
     const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();

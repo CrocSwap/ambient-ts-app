@@ -447,7 +447,9 @@ export default function Limit(props: propsIF) {
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         if (!limitTick) return;
 
         const testOrder = isTokenAPrimary
@@ -530,7 +532,11 @@ export default function Limit(props: propsIF) {
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
-        if (!crocEnv || limitTick === undefined) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
+        if (limitTick === undefined) return;
         // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
         //     return;
         // }
@@ -715,7 +721,10 @@ export default function Limit(props: propsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();

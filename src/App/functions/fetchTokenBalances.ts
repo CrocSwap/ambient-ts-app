@@ -46,7 +46,9 @@ export const fetchNativeTokenBalance = async (
     _lastBlockNumber: number,
     crocEnv: CrocEnv | undefined,
 ) => {
-    if (!crocEnv) return;
+    if (!crocEnv) {
+        return;
+    }
 
     // const options = { address: address, chain: chain as '0x5' };
 
@@ -172,7 +174,10 @@ export const fetchErc20TokenBalances = async (
     _lastBlockNumber: number,
     crocEnv: CrocEnv | undefined,
 ): Promise<TokenIF[] | undefined> => {
-    if (!crocEnv) return;
+    if (!crocEnv) {
+        location.reload();
+        return;
+    }
 
     const options = { address: address, chain: chain as '0x5' };
 
