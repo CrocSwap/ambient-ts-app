@@ -130,8 +130,7 @@ export default function RoomDropdown(props: propsIF) {
             props.userCurrentPool,
         ).then((result: any) => {
             if (result.status === 'OK') {
-                console.log(result);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return true;
             }
         });
 
@@ -179,7 +178,7 @@ export default function RoomDropdown(props: propsIF) {
                   speed: number;
                   id: number;
               }[] = [];
-        favePools.pools.map((pool: PoolIF) => {
+        favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + '/' + pool.quote.symbol,
                 base: {
@@ -220,77 +219,6 @@ export default function RoomDropdown(props: propsIF) {
         });
         const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
         favoritePoolsArray.splice(0, middleIndex);
-    }, [favePools]);
-
-    useEffect(() => {
-        rooms?.map((pool: PoolIF) => {
-            if (!roomArray.some(({ name }) => name === pool.name)) {
-                roomArray.push(pool);
-            }
-        });
-        const fave:
-            | PoolIF[]
-            | {
-                  name: string;
-                  base: {
-                      name: string;
-                      address: string;
-                      symbol: string;
-                      decimals: number;
-                      chainId: number;
-                      logoURI: string;
-                  };
-                  quote: {
-                      name: string;
-                      address: string;
-                      symbol: string;
-                      decimals: number;
-                      chainId: number;
-                      logoURI: string;
-                  };
-                  chainId: string;
-                  poolId: number;
-                  speed: number;
-                  id: number;
-              }[] = [];
-        favePools.pools.map((pool: PoolIF) => {
-            const favPool = {
-                name: pool.base.symbol + '/' + pool.quote.symbol,
-                base: {
-                    name: pool.base.name,
-                    address: pool.base.address,
-                    symbol: pool.base.symbol,
-                    decimals: pool.base.decimals,
-                    chainId: pool.base.chainId,
-                    logoURI: pool.base.logoURI,
-                },
-                quote: {
-                    name: pool.quote.name,
-                    address: pool.quote.address,
-                    symbol: pool.quote.symbol,
-                    decimals: pool.quote.decimals,
-                    chainId: pool.quote.chainId,
-                    logoURI: pool.quote.logoURI,
-                },
-                chainId: pool.chainId,
-                poolId: pool.poolId,
-                speed: findSpeed(pool),
-                id: findId(pool),
-            };
-
-            if (!roomArray.some(({ name }) => name === favPool.name)) {
-                roomArray.push(favPool);
-            }
-            for (let x = 0; x < roomArray.length; x++) {
-                if (favPool.name === roomArray[x].name) {
-                    roomArray.push(roomArray.splice(x, 1)[0]);
-                }
-            }
-            fave.push(favPool);
-        });
-        setFavoritePoolsArray(() => {
-            return fave;
-        });
         if (props.selectedRoom !== 'Global') {
             const index = roomArray
                 .map((e) => e.name)
@@ -300,7 +228,7 @@ export default function RoomDropdown(props: propsIF) {
             const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
             favoritePoolsArray.splice(0, middleIndex);
         }
-    }, [props.selectedRoom]);
+    }, [favePools, props.selectedRoom]);
 
     const [isActive, setIsActive] = useState(false);
 
@@ -340,15 +268,6 @@ export default function RoomDropdown(props: propsIF) {
         setIsCurrentPool(true);
     }
 
-    function handleShowSelectedRoom(selectedRoom: string) {
-        if (selectedRoom === 'Global') {
-            return '';
-        } else {
-            return '';
-            // return <BsSuitHeartFill className={styles.star_icon_selected_room} />;
-        }
-    }
-
     function handleShowRoomsExceptGlobal(selectedRoom: string) {
         if (isFullScreen) {
             if (selectedRoom === 'Global') {
@@ -384,7 +303,8 @@ export default function RoomDropdown(props: propsIF) {
                     return '';
                 }
             } else {
-                return defaultRooms.reverse().map((tab) => (
+                const reverseRooms = [...defaultRooms].reverse();
+                return reverseRooms.map((tab) => (
                     <div
                         className={styles.dropdown_item}
                         key={tab.id}
@@ -437,10 +357,7 @@ export default function RoomDropdown(props: propsIF) {
                 ) : (
                     ''
                 )}
-                <div onClick={() => handleDropdownMenu()}>
-                    {' '}
-                    {handleShowSelectedRoom(props.selectedRoom)}
-                </div>
+                <div onClick={() => handleDropdownMenu()}> </div>
                 <div onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine
                         className={styles.star_icon}
@@ -482,7 +399,6 @@ export default function RoomDropdown(props: propsIF) {
                                             <path
                                                 d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
                                                 fill={'#6b6f7d'}
-                                                // fill={isButtonFavorited ? '#EBEBFF' : 'none'}
                                                 stroke='#6b6f7d'
                                                 strokeLinecap='round'
                                                 strokeLinejoin='round'

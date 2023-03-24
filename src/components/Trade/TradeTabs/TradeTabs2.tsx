@@ -39,6 +39,7 @@ import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -84,7 +85,6 @@ interface propsIF {
     setSelectedDate: Dispatch<Date | undefined>;
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
-    activeTimeFrame: string;
     unselectCandle: () => void;
     favePools: favePoolsMethodsIF;
     poolPriceDisplay: number;
@@ -101,6 +101,7 @@ interface propsIF {
     slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    candleTime: candleTimeIF;
 }
 
 export default function TradeTabs2(props: propsIF) {
@@ -143,7 +144,6 @@ export default function TradeTabs2(props: propsIF) {
         setSelectedDate,
         hasInitialized,
         setHasInitialized,
-        activeTimeFrame,
         unselectCandle,
         tokenList,
         favePools,
@@ -159,6 +159,7 @@ export default function TradeTabs2(props: propsIF) {
         slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        candleTime,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -574,9 +575,9 @@ export default function TradeTabs2(props: propsIF) {
             <DefaultTooltip
                 interactive
                 title={
-                    activeTimeFrame === '1d'
+                    candleTime.time === 86400
                         ? 'Transactions for 24 hours since Midnight UTC'
-                        : `Transactions for ${activeTimeFrame} timeframe`
+                        : `Transactions for ${candleTime.readableTime} timeframe`
                 }
                 placement={'bottom'}
                 arrow
@@ -592,7 +593,7 @@ export default function TradeTabs2(props: propsIF) {
                     }
                 >
                     {isCandleSelected &&
-                        activeTimeFrame === '1d' &&
+                        candleTime.time === 86400 &&
                         `Showing Transactions ${moment(selectedDate)
                             .subtract(utcDiffHours, 'hours')
                             .calendar(null, {
@@ -605,7 +606,7 @@ export default function TradeTabs2(props: propsIF) {
                                 sameElse: 'for ' + 'MM/DD/YYYY',
                             })}`}
                     {isCandleSelected &&
-                        activeTimeFrame !== '1d' &&
+                        candleTime.time === 86400 &&
                         `Showing Transactions for ${moment(
                             selectedDate,
                         ).calendar()}`}

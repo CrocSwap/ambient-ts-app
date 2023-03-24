@@ -54,6 +54,7 @@ import {
     getOneDayAxisTicks,
 } from './calcuteDateAxis';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
+import { candleTimeIF } from '../../App/hooks/useChartSettings';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -83,7 +84,7 @@ type chartItemStates = {
     showFeeRate: boolean;
     liqMode: string;
 };
-interface ChartData {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
@@ -128,7 +129,6 @@ interface ChartData {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
     liquidityScale: any;
     liquidityDepthScale: any;
@@ -146,9 +146,10 @@ interface ChartData {
     repositionRangeWidth: number;
     setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
     chartTriggeredBy: string;
+    candleTime: candleTimeIF;
 }
 
-export default function Chart(props: ChartData) {
+export default function Chart(props: propsIF) {
     const {
         isUserLoggedIn,
         pool,
@@ -172,7 +173,6 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
-        activeTimeFrame,
         liquidityData,
         handlePulseAnimation,
         liquidityScale,
@@ -190,6 +190,7 @@ export default function Chart(props: ChartData) {
         repositionRangeWidth,
         setChartTriggeredBy,
         chartTriggeredBy,
+        // candleTime,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -228,9 +229,6 @@ export default function Chart(props: ChartData) {
     const setSimpleRangeWidth = location.pathname.includes('reposition')
         ? setRepositionRangeWidth
         : setRangeSimpleRangeWidth;
-
-    // const simpleRangeWidth = rangeSimpleRangeWidth;
-    // const setSimpleRangeWidth = setRangeSimpleRangeWidth;
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -1072,7 +1070,7 @@ export default function Chart(props: ChartData) {
         let result = oldTickValues;
 
         const domainX = scaleData.xScale.domain();
-        if (activeTimeFrame === '1h') {
+        if (parsedChartData?.period === 3600) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1082,7 +1080,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '1d') {
+        if (parsedChartData?.period === 86400) {
             result = await getOneDayAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1091,7 +1089,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '4h') {
+        if (parsedChartData?.period === 14400) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1101,7 +1099,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '15m') {
+        if (parsedChartData?.period === 900) {
             result = get15MinutesAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1110,7 +1108,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '5m') {
+        if (parsedChartData?.period === 300) {
             result = get5MinutesAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1119,7 +1117,7 @@ export default function Chart(props: ChartData) {
             );
         }
 
-        if (activeTimeFrame === '1m') {
+        if (parsedChartData?.period === 60) {
             result = get1MinuteAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1150,7 +1148,7 @@ export default function Chart(props: ChartData) {
                     ])
                     .tickFormat((d: any) => {
                         if (d === crosshairData[0].x) {
-                            if (activeTimeFrame === '1d') {
+                            if (parsedChartData?.period === 86400) {
                                 return moment(d)
                                     .subtract(utcDiffHours, 'hours')
                                     .format('MMM DD YYYY');
@@ -1172,7 +1170,7 @@ export default function Chart(props: ChartData) {
 
                         if (
                             moment(d).format('HH:mm') === '00:00' ||
-                            activeTimeFrame.match(/^(1d)$/)
+                            parsedChartData?.period === 86400
                         ) {
                             return moment(d).format('DD');
                         } else {
@@ -1235,7 +1233,7 @@ export default function Chart(props: ChartData) {
         xAxis,
         JSON.stringify(d3Container.current?.offsetWidth),
         mouseMoveEventCharts,
-        activeTimeFrame,
+        parsedChartData?.period,
         latest,
         rescale,
         bandwidth,
@@ -2650,39 +2648,43 @@ export default function Chart(props: ChartData) {
     };
 
     const findLiqNearest = (liqDataAll: any[]) => {
-        const point = scaleData.yScale(scaleData.yScale.domain()[0]);
+        if (scaleData !== undefined) {
+            const point = scaleData.yScale(scaleData.yScale.domain()[0]);
 
-        if (point == undefined) return 0;
-        if (liqDataAll) {
-            const tempLiqData = liqDataAll;
+            if (point == undefined) return 0;
+            if (liqDataAll) {
+                const tempLiqData = liqDataAll;
 
-            const sortLiqaData = tempLiqData.sort(function (a, b) {
-                return a.liqPrices - b.liqPrices;
-            });
+                const sortLiqaData = tempLiqData.sort(function (a, b) {
+                    return a.liqPrices - b.liqPrices;
+                });
 
-            if (!sortLiqaData) return;
+                if (!sortLiqaData) return;
 
-            const closestMin = sortLiqaData.reduce(function (prev, curr) {
-                return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
-                    Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
-                    ? curr
-                    : prev;
-            });
+                const closestMin = sortLiqaData.reduce(function (prev, curr) {
+                    return Math.abs(
+                        curr.liqPrices - scaleData.yScale.domain()[0],
+                    ) < Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
+                        ? curr
+                        : prev;
+                });
 
-            const closestMax = sortLiqaData.reduce(function (prev, curr) {
-                return Math.abs(curr.liqPrices - scaleData.yScale.domain()[1]) <
-                    Math.abs(prev.liqPrices - scaleData.yScale.domain()[1])
-                    ? curr
-                    : prev;
-            });
+                const closestMax = sortLiqaData.reduce(function (prev, curr) {
+                    return Math.abs(
+                        curr.liqPrices - scaleData.yScale.domain()[1],
+                    ) < Math.abs(prev.liqPrices - scaleData.yScale.domain()[1])
+                        ? curr
+                        : prev;
+                });
 
-            if (closestMin !== undefined && closestMin !== undefined) {
-                return {
-                    min: closestMin.liqPrices ? closestMin.liqPrices : 0,
-                    max: closestMax.liqPrices,
-                };
-            } else {
-                return { min: 0, max: 0 };
+                if (closestMin !== undefined && closestMin !== undefined) {
+                    return {
+                        min: closestMin.liqPrices ? closestMin.liqPrices : 0,
+                        max: closestMax.liqPrices,
+                    };
+                } else {
+                    return { min: 0, max: 0 };
+                }
             }
         }
     };
@@ -3672,7 +3674,7 @@ export default function Chart(props: ChartData) {
                     .remove();
             });
         }
-    }, [scaleData, activeTimeFrame]);
+    }, [scaleData, parsedChartData?.period]);
 
     // Horizontal Lines
     useEffect(() => {
