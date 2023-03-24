@@ -12,7 +12,7 @@ export default async (request: Request, context: Context) => {
     const headers = request?.headers;
     const host = headers?.host;
     const host2 = headers.get('host');
-    const userAgent = headers?.user - agent;
+    const userAgent = headers.get('user-agent');
 
     console.log({ headers });
     console.log({ host });
