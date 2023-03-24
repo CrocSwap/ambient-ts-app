@@ -9,8 +9,10 @@ export default async (request: Request, context: Context) => {
     console.log({ context });
     console.log({ request });
 
-    const host = request.headers.host;
+    const headers = request?.headers;
+    const host = headers?.host;
 
+    console.log({ headers });
     console.log({ host });
 
     const url = new URL(
