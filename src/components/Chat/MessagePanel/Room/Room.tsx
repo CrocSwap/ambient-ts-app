@@ -24,7 +24,6 @@ interface currentPoolInfo {
     advancedLowTick: number;
     advancedHighTick: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
 }
 
 interface propsIF {
