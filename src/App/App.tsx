@@ -1469,12 +1469,7 @@ export default function App() {
         setIsCandleDataNull(false);
         setExpandTradeTable(false);
         fetchCandles();
-    }, [
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        chartSettings.candleTime.market.time,
-        chartSettings.candleTime.range.time,
-    ]);
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
 
     const fetchCandles = () => {
         if (
@@ -3484,7 +3479,6 @@ export default function App() {
                                 />
                             }
                         />
-
                         <Route
                             path='range2'
                             element={<Range {...rangeProps} />}
