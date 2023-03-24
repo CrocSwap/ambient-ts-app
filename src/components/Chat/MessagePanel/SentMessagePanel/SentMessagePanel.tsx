@@ -143,22 +143,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value?.startsWith('0x') ? value.slice(0, 6) + '...' : value} copied
-    //     </SnackbarComponent>
-    // );
-    // function handleCopyAddress(item: string) {
-    //     copy(item);
-    //     setOpenSnackbar(true);
-    // }
-
     function handleOpenExplorer(url: string) {
         window.open(url);
     }
@@ -172,7 +156,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 <>
                     {words.map((word, index) => (
                         <span
-                            onClick={() => handleOpenExplorer(url)}
+                            onClick={() => handleOpenExplorer(word)}
                             key={index}
                             style={
                                 urlPattern.test(word)
@@ -345,11 +329,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                             loadingStatus: true,
                                         }),
                                     );
-                                    // handleCopyAddress(
-                                    //     props.message.ensName === 'defaultValue'
-                                    //         ? props.message.walletID
-                                    //         : props.message.ensName,
-                                    // );
+
                                     navigate(
                                         `/${
                                             props.message.ensName ===
@@ -379,9 +359,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     ) : (
                         ''
                     )}
-                    <p className={styles.message_date}>
-                        {formatAMPM(props.message.createdAt)}
-                    </p>
+                    <div>
+                        <p className={styles.message_date}>
+                            {formatAMPM(props.message.createdAt)}
+                        </p>
+                    </div>
 
                     {/* {snackbarContent} */}
                 </div>

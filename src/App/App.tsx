@@ -3805,8 +3805,7 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
-                    currentLocation !== '/app/chat' &&
-                    currentLocation !== '/chat' && (
+                    !currentLocation.includes('/chat') && (
                         <ChatPanel
                             isChatOpen={isChatOpen}
                             onClose={() => {

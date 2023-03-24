@@ -71,13 +71,7 @@
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    font-family: 'Lexend Deca';
-    font-style: normal;
-    font-weight: 300;
-    font-size: 15px;
-    line-height: 15px;
     color: #ebebff;
-    white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
@@ -98,11 +92,6 @@
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    font-family: 'Lexend Deca';
-    font-style: normal;
-    font-weight: 300;
-    font-size: 15px;
-    line-height: 15px;
     color: #ebebff;
     white-space: pre-line;
     align-self: stretch;
@@ -126,15 +115,9 @@
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    font-family: 'Lexend Deca';
-    font-style: normal;
-    font-weight: 300;
-    font-size: 15px;
-    line-height: 15px;
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
-    white-space: normal;
 }
 
 .mention_message_without_avatar {
@@ -153,15 +136,9 @@
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    font-family: 'Lexend Deca';
-    font-style: normal;
-    font-weight: 300;
-    font-size: 15px;
-    line-height: 15px;
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
-    white-space: normal;
 }
 
 .right_image_box {
@@ -178,15 +155,12 @@
     flex-direction: row;
     align-items: flex-end;
     gap: 0px;
-
     height: 100%;
     width: 100%;
     height: auto;
     min-height: 53%;
     padding: 0px 4px 8px;
-
     box-sizing: border-box;
-    flex: none;
     order: 4;
     align-self: stretch;
 }
