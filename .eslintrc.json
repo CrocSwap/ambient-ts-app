@@ -25,7 +25,15 @@
         "spaced-comment": "error",
         "quotes": ["error", "single"],
         "no-duplicate-imports": "error",
-        "@typescript-eslint/explicit-module-boundary-types": "off"
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "warn", // or "error"
+            { 
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_"
+            }
+        ]
     },
     "settings": {
         "import/resolver": {

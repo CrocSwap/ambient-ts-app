@@ -28,6 +28,8 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
+import { FaGasPump } from 'react-icons/fa';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -43,6 +45,8 @@ interface propsIF {
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
+    ethMainnetUsdPrice: number | undefined;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function Transfer(props: propsIF) {
@@ -61,6 +65,8 @@ export default function Transfer(props: propsIF) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -362,6 +368,37 @@ export default function Transfer(props: propsIF) {
         }
     };
 
+    const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
+
+    const averageGasUnitsForEthTransfer = 45000;
+    const averageGasUnitsForErc20Transfer = 45000;
+    const gweiInWei = 1e-9;
+
+    // calculate price of gas for exchange balance transfer
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                gweiInWei *
+                ethMainnetUsdPrice *
+                (isTokenEth
+                    ? averageGasUnitsForEthTransfer
+                    : averageGasUnitsForErc20Transfer);
+
+            setTransferGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text_non_clickable}>
@@ -405,6 +442,12 @@ export default function Transfer(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
+            <div className={styles.gas_pump}>
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
+                {transferGasPriceinDollars ? transferGasPriceinDollars : '…'}
+            </div>
         </div>
     );
 }
