@@ -9,6 +9,10 @@ export default async (request: Request, context: Context) => {
     console.log({ context });
     console.log({ request });
 
+    const host = request.headers.host;
+
+    console.log({ host });
+
     const url = new URL(
         'https://ambient-proven.netlify.app' + request.url,
         request.url,
