@@ -6,12 +6,16 @@ export default async (request: Request, context: Context) => {
         return;
     }
 
-    const html = await fetch('https://ambient-proven.netlify.app/', {
-        headers: {
-            Accept: 'application/json',
-        },
-    });
+    const url = new URL('https://www.example.com', req.url);
 
-    // const jsonData = await joke.json();
-    return Response.html(html);
+    return Response.redirect(url);
+
+    // const html = await fetch('https://ambient-proven.netlify.app/', {
+    //     headers: {
+    //         Accept: 'application/json',
+    //     },
+    // });
+
+    // // const jsonData = await joke.json();
+    // return Response.html(html);
 };
