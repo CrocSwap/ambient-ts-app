@@ -205,21 +205,13 @@ export default function Withdraw(props: propsIF) {
         [withdrawQtyNonDisplay],
     );
 
-    // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
     useEffect(() => {
         setIsWithdrawPending(false);
     }, [JSON.stringify(selectedToken)]);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeGlobalModal();
-    // };
-
     useEffect(() => {
-        // console.log({ isDepositQtyValid });
         if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter a Valid Address');
@@ -231,45 +223,21 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        }
-        // else if (isApprovalPending) {
-        //     setIsButtonDisabled(true);
-        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        // }
-        else if (isWithdrawPending) {
+        } else if (isWithdrawPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
-        }
-        // else if (!isTokenAllowanceSufficient) {
-        //     setIsButtonDisabled(false);
-        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        // }
-        else if (isWithdrawQtyValid) {
+        } else if (isWithdrawQtyValid) {
             setIsButtonDisabled(false);
             setButtonMessage('Withdraw');
         }
     }, [
-        // isApprovalPending,
         isWithdrawPending,
-        // isTokenAllowanceSufficient,
         isDexBalanceSufficient,
         isWithdrawQtyValid,
         selectedToken.symbol,
         isResolvedAddressValid,
         isSendToAddressChecked,
     ]);
-
-    // const chooseTokenDiv = (
-    //     <div>
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))}
-    //     </div>
-    // );
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {
         if (crocEnv && withdrawQtyNonDisplay) {

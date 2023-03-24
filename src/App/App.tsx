@@ -1452,14 +1452,24 @@ export default function App() {
         crocEnv,
     ]);
 
-    const activePeriod = tradeData.activeChartPeriod;
+    // local logic to determine current chart period
+    // this is situation-dependant but used in this file
+    let candleTimeLocal: number;
+    if (
+        location.pathname.startsWith('/trade/range') ||
+        location.pathname.startsWith('/trade/reposition')
+    ) {
+        candleTimeLocal = chartSettings.candleTime.range.time;
+    } else {
+        candleTimeLocal = chartSettings.candleTime.market.time;
+    }
 
     useEffect(() => {
         setCandleData(undefined);
         setIsCandleDataNull(false);
         setExpandTradeTable(false);
         fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
 
     const fetchCandles = () => {
         if (
@@ -1468,7 +1478,7 @@ export default function App() {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            activePeriod
+            candleTimeLocal
         ) {
             console.log('fetching new candles');
             try {
@@ -1483,7 +1493,7 @@ export default function App() {
                                 base: mainnetBaseTokenAddress.toLowerCase(),
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
-                                period: activePeriod.toString(),
+                                period: candleTimeLocal.toString(),
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
@@ -1507,7 +1517,6 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                                 if (
                                     JSON.stringify(candleData) !==
                                     JSON.stringify(candles)
@@ -1521,7 +1530,7 @@ export default function App() {
                                             poolIdx: chainData.poolIndex,
                                             network: chainData.chainId,
                                         },
-                                        duration: activePeriod,
+                                        duration: candleTimeLocal,
                                         candles: candles,
                                     });
                                 }
@@ -1610,7 +1619,7 @@ export default function App() {
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
-                period: activePeriod.toString(),
+                period: candleTimeLocal.toString(),
                 chainId: '0x1',
                 dex: 'all',
                 poolStats: 'true',
@@ -1624,7 +1633,7 @@ export default function App() {
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
             chainData.poolIndex,
-            activePeriod,
+            candleTimeLocal,
         ],
     );
 
@@ -1670,7 +1679,7 @@ export default function App() {
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / activePeriod,
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
@@ -1684,7 +1693,7 @@ export default function App() {
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
-                    period: activePeriod.toString(),
+                    period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
@@ -1743,7 +1752,7 @@ export default function App() {
 
     useEffect(() => {
         // console.log({ debouncedBoundary });
-        // console.log({ activePeriod });
+        // console.log({ candleTime });
         // console.log({ candleData });
 
         if (!numDurationsNeeded) return;
@@ -2460,7 +2469,6 @@ export default function App() {
     };
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-    // const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
 
     useEffect(() => {
         fetch(
@@ -2473,7 +2481,6 @@ export default function App() {
                         response.result.ProposeGasPrice,
                     );
                     if (gasPriceInGwei !== newGasPrice) {
-                        // console.log('setting new gas price');
                         setGasPriceinGwei(newGasPrice);
                     }
                 }
@@ -2551,19 +2558,6 @@ export default function App() {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
     };
-
-    // const themeButtons = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'column',
-    //             justifyContent: 'center',
-    //             alignItems: 'center',
-    //         }}
-    //     >
-    //         <button onClick={switchTheme}>Switch Theme</button>
-    //     </div>
-    // );
 
     // --------------END OF THEME--------------------------
 
@@ -3485,7 +3479,6 @@ export default function App() {
                                 />
                             }
                         />
-
                         <Route
                             path='range2'
                             element={<Range {...rangeProps} />}
