@@ -11,6 +11,7 @@ import {
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import { useState, useEffect } from 'react';
+
 interface propsIF {
     searchedPools: TempPoolIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;

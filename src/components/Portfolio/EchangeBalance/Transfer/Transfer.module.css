@@ -20,3 +20,27 @@
     color: var(--text-grey-light);
     cursor: pointer;
 }
+
+
+.gas_pump {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    /* padding: 0 1rem; */
+    gap: 1rem;
+    
+
+}
+
+.svg_container{
+    background: var(--dark3);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
