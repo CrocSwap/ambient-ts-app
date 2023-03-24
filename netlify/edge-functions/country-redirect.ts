@@ -6,21 +6,17 @@ export default async (request: Request, context: Context) => {
         return;
     }
 
-    console.log({ context });
-    console.log({ request });
-
     const headers = request?.headers;
-    const host = headers?.host;
-    const host2 = headers.get('host');
-    const userAgent = headers.get('user-agent');
+    const host = headers.get('host');
 
-    console.log({ headers });
-    console.log({ host });
-    console.log({ host2 });
-    console.log({ userAgent });
+    const splitArray = request.url.split(host);
+
+    const path = splitArray[1];
+
+    console.log({ path });
 
     const url = new URL(
-        'https://ambient-proven.netlify.app' + request.url,
+        'https://ambient-proven.netlify.app/' + path,
         request.url,
     );
 
