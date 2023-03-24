@@ -3860,7 +3860,7 @@ export default function Chart(props: ChartData) {
                 )
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = gradientForAskLine;
+                    selection.strokeStyle = 'rgba(205, 193, 255)';
                     selection.strokeWidth = 4;
                 });
 
@@ -3878,20 +3878,19 @@ export default function Chart(props: ChartData) {
                     liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
                 )
                 .yScale(scaleData.yScale)
-                .decorate((selection: any, path: any) => {
-                    // selection.strokeStyle = gradientForBidLine;
-                    path.forEach((x: any) => {
-                        console.log(x, scaleData.xScale(x.liqPrices));
-                        if (
-                            scaleData.xScale(x.liqPrices) >= 200 &&
-                            scaleData.xScale(x.liqPrices) <= 400
-                        ) {
-                            console.log('öff');
+                .decorate((selection: any) => {
+                    selection.strokeStyle = '#7371FC';
+                    // path.forEach((x: any) => {
+                    //     if (
+                    //         scaleData.xScale(x.liqPrices) >= 200 &&
+                    //         scaleData.xScale(x.liqPrices) <= 400
+                    //     ) {
+                    //         console.log('öff');
 
-                            selection.strokeStyle = 'pink';
-                        }
-                        selection.strokeWidth = 4;
-                    });
+                    //         selection.strokeStyle = 'pink';
+                    //     }
+                    //     selection.strokeWidth = 4;
+                    // });
                 });
 
             setLineBidSeries(() => {
@@ -5106,29 +5105,28 @@ export default function Chart(props: ChartData) {
                         gradient.addColorStop(1 - percentageBid, 'transparent');
                         gradient.addColorStop(1 - percentageBid, '#7371FC');
 
-                        setGradientForBidLine(gradient);
+                        // setGradientForBidLine(gradient);
                     }
 
                     const percentageAsk =
-                        (parseFloat(askMaxBoudnary) - low) /
-                        (parseFloat(askMaxBoudnary) -
-                            parseFloat(askMinBoudnary));
+                        (parseFloat(high) - poolPriceDisplay) /
+                        (parseFloat(high) - parseFloat(low));
 
                     if (percentageAsk >= 0 && percentageAsk <= 1) {
                         const gradient = ctx.createLinearGradient(
                             0,
-                            scale(askMaxBoudnary),
+                            scale(high),
                             0,
-                            scale(0),
+                            scale(low),
                         );
 
+                        gradient.addColorStop(percentageAsk, '#7371FC');
                         gradient.addColorStop(
                             percentageAsk,
                             'rgba(205, 193, 255)',
                         );
-                        gradient.addColorStop(percentageAsk, 'transparent');
 
-                        setGradientForAskLine(gradient);
+                        // setGradientForAskLine(gradient);
                     }
                 }
             }
@@ -5390,31 +5388,105 @@ export default function Chart(props: ChartData) {
     ]);
 
     useEffect(() => {
-        const ctx = (
-            d3.select(d3CanvasLiqBidLine.current).select('canvas').node() as any
-        ).getContext('2d');
+        const low = ranges.filter((target: any) => target.name === 'Min')[0]
+            .value;
+        const high = ranges.filter((target: any) => target.name === 'Max')[0]
+            .value;
 
-        if (lineBidSeries && liquidityData.liqBidData) {
-            d3.select(d3CanvasLiqBidLine.current)
-                .on('draw', () => {
-                    lineBidSeries(
-                        liqMode === 'Curve'
-                            ? liquidityData.liqBidData
-                            : liquidityData.depthLiqBidData,
-                    );
-                })
-                .on('measure', () => {
-                    lineBidSeries.context(ctx);
-                });
+        const liqDataBid =
+            liqMode === 'Depth'
+                ? liquidityData.depthLiqBidData
+                : liquidityData.liqBidData;
+
+        if (liquidityData) {
+            const filtered = liqDataBid.filter(
+                (item: any) => item.liqPrices >= low && item.liqPrices <= high,
+            );
+
+            console.log({ filtered });
+
+            const index = liqDataBid.findIndex(
+                (item: any) => filtered[0] === item,
+            );
+
+            const lastData = liqDataBid[index + 1];
+            const currentData = filtered[0];
+            console.log('last', lastData.liqPrices);
+            console.log('current', currentData.liqPrices);
+
+            console.log('lastAct', lastData.activeLiq);
+            console.log('currentAcy', currentData.activeLiq);
+            // filtered.unshift(lastData);
+            // console.log({lastData},{currentData},{liqDataBid});
+
+            // let slope =0;
+            // console.log(lastData?.activeLiq - currentData?.activeLiq);
+
+            // if (lastData?.activeLiq - currentData?.activeLiq !== 0 ) {
+            //     slope = (lastData?.liqPrices - currentData?.liqPrices) / (lastData?.activeLiq - currentData?.activeLiq);
+            // }
+
+            // console.log({slope},filtered.find((item:any)=>item.liqPrices === high));
+
+            // if (filtered.find((item:any)=>item.liqPrices === high) === undefined) {
+            //     filtered.unshift({activeLiq:filtered[0]?.activeLiq+slope,liqPrices:high})
+            // }
+
+            console.log({ filtered });
+
+            const ctx = (
+                d3
+                    .select(d3CanvasLiqBidLine.current)
+                    .select('canvas')
+                    .node() as any
+            ).getContext('2d');
+
+            if (lineBidSeries && liquidityData.liqBidData) {
+                d3.select(d3CanvasLiqBidLine.current)
+                    .on('draw', () => {
+                        lineBidSeries(filtered);
+                    })
+                    .on('measure', () => {
+                        lineBidSeries.context(ctx);
+                    });
+            }
+
+            render();
+            renderCanvas();
         }
     }, [
         liquidityData.liqBidData,
         liquidityData.depthLiqBidData,
         lineBidSeries,
         liqMode,
+        ranges,
     ]);
 
     useEffect(() => {
+        const low = ranges.filter((target: any) => target.name === 'Min')[0]
+            .value;
+        const high = ranges.filter((target: any) => target.name === 'Max')[0]
+            .value;
+
+        const liqDataAsk =
+            liqMode === 'Depth'
+                ? liquidityData.depthLiqAskData
+                : liquidityData.liqAskData;
+
+        const filtered = liqDataAsk.filter(
+            (item: any) => item.liqPrices >= low && item.liqPrices <= high,
+        );
+
+        const areaHeight = d3.sum(filtered, function (d: any) {
+            return scaleData.yScale(d.liqPrices);
+        });
+
+        console.log({ areaHeight });
+
+        filtered.push({
+            activeLiq: filtered[filtered.length - 1].activeLiq,
+            liqPrices: low,
+        });
         const ctx = (
             d3.select(d3CanvasLiqAskLine.current).select('canvas').node() as any
         ).getContext('2d');
@@ -5422,21 +5494,21 @@ export default function Chart(props: ChartData) {
         if (lineAskSeries && liquidityData.liqBidData) {
             d3.select(d3CanvasLiqAskLine.current)
                 .on('draw', () => {
-                    lineAskSeries(
-                        liqMode === 'Curve'
-                            ? liquidityData.liqAskData
-                            : liquidityData.depthLiqAskData,
-                    );
+                    lineAskSeries(filtered);
                 })
                 .on('measure', () => {
                     lineAskSeries.context(ctx);
                 });
         }
+
+        render();
+        renderCanvas();
     }, [
         liquidityData.liqAskData,
         liquidityData.depthLiqAskData,
         lineAskSeries,
         liqMode,
+        ranges,
     ]);
 
     // NoGoZone
