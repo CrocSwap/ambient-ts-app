@@ -54,6 +54,12 @@
     color: var(--text-grey-light);
 }
 
+.copy_button{
+    background: transparent;
+    outline: none;
+    border: none;
+}
+
 .actions_container {
     width: 100%;
     /* position: absolute; */
