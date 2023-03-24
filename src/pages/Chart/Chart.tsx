@@ -1070,7 +1070,7 @@ export default function Chart(props: propsIF) {
         let result = oldTickValues;
 
         const domainX = scaleData.xScale.domain();
-        if (candleTime.time === 3600) {
+        if (parsedChartData?.period === 3600) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1080,7 +1080,7 @@ export default function Chart(props: propsIF) {
             );
         }
 
-        if (candleTime.time === 86400) {
+        if (parsedChartData?.period === 86400) {
             result = await getOneDayAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1089,7 +1089,7 @@ export default function Chart(props: propsIF) {
             );
         }
 
-        if (candleTime.time === 14400) {
+        if (parsedChartData?.period === 14400) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1099,7 +1099,7 @@ export default function Chart(props: propsIF) {
             );
         }
 
-        if (candleTime.time === 900) {
+        if (parsedChartData?.period === 900) {
             result = get15MinutesAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1108,7 +1108,7 @@ export default function Chart(props: propsIF) {
             );
         }
 
-        if (candleTime.time === 300) {
+        if (parsedChartData?.period === 300) {
             result = get5MinutesAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1117,7 +1117,7 @@ export default function Chart(props: propsIF) {
             );
         }
 
-        if (candleTime.time === 60) {
+        if (parsedChartData?.period === 60) {
             result = get1MinuteAxisTicks(
                 domainX[0],
                 domainX[1],
@@ -1148,7 +1148,7 @@ export default function Chart(props: propsIF) {
                     ])
                     .tickFormat((d: any) => {
                         if (d === crosshairData[0].x) {
-                            if (candleTime.time === 86400) {
+                            if (parsedChartData?.period === 86400) {
                                 return moment(d)
                                     .subtract(utcDiffHours, 'hours')
                                     .format('MMM DD YYYY');
@@ -1170,7 +1170,7 @@ export default function Chart(props: propsIF) {
 
                         if (
                             moment(d).format('HH:mm') === '00:00' ||
-                            candleTime.time === 86400
+                            parsedChartData?.period === 86400
                         ) {
                             return moment(d).format('DD');
                         } else {
@@ -1233,7 +1233,7 @@ export default function Chart(props: propsIF) {
         xAxis,
         JSON.stringify(d3Container.current?.offsetWidth),
         mouseMoveEventCharts,
-        candleTime.time,
+        parsedChartData?.period,
         latest,
         rescale,
         bandwidth,
@@ -2648,39 +2648,43 @@ export default function Chart(props: propsIF) {
     };
 
     const findLiqNearest = (liqDataAll: any[]) => {
-        const point = scaleData.yScale(scaleData.yScale.domain()[0]);
+        if (scaleData !== undefined) {
+            const point = scaleData.yScale(scaleData.yScale.domain()[0]);
 
-        if (point == undefined) return 0;
-        if (liqDataAll) {
-            const tempLiqData = liqDataAll;
+            if (point == undefined) return 0;
+            if (liqDataAll) {
+                const tempLiqData = liqDataAll;
 
-            const sortLiqaData = tempLiqData.sort(function (a, b) {
-                return a.liqPrices - b.liqPrices;
-            });
+                const sortLiqaData = tempLiqData.sort(function (a, b) {
+                    return a.liqPrices - b.liqPrices;
+                });
 
-            if (!sortLiqaData) return;
+                if (!sortLiqaData) return;
 
-            const closestMin = sortLiqaData.reduce(function (prev, curr) {
-                return Math.abs(curr.liqPrices - scaleData.yScale.domain()[0]) <
-                    Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
-                    ? curr
-                    : prev;
-            });
+                const closestMin = sortLiqaData.reduce(function (prev, curr) {
+                    return Math.abs(
+                        curr.liqPrices - scaleData.yScale.domain()[0],
+                    ) < Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
+                        ? curr
+                        : prev;
+                });
 
-            const closestMax = sortLiqaData.reduce(function (prev, curr) {
-                return Math.abs(curr.liqPrices - scaleData.yScale.domain()[1]) <
-                    Math.abs(prev.liqPrices - scaleData.yScale.domain()[1])
-                    ? curr
-                    : prev;
-            });
+                const closestMax = sortLiqaData.reduce(function (prev, curr) {
+                    return Math.abs(
+                        curr.liqPrices - scaleData.yScale.domain()[1],
+                    ) < Math.abs(prev.liqPrices - scaleData.yScale.domain()[1])
+                        ? curr
+                        : prev;
+                });
 
-            if (closestMin !== undefined && closestMin !== undefined) {
-                return {
-                    min: closestMin.liqPrices ? closestMin.liqPrices : 0,
-                    max: closestMax.liqPrices,
-                };
-            } else {
-                return { min: 0, max: 0 };
+                if (closestMin !== undefined && closestMin !== undefined) {
+                    return {
+                        min: closestMin.liqPrices ? closestMin.liqPrices : 0,
+                        max: closestMax.liqPrices,
+                    };
+                } else {
+                    return { min: 0, max: 0 };
+                }
             }
         }
     };
@@ -3670,7 +3674,7 @@ export default function Chart(props: propsIF) {
                     .remove();
             });
         }
-    }, [scaleData, candleTime.time]);
+    }, [scaleData, parsedChartData?.period]);
 
     // Horizontal Lines
     useEffect(() => {
