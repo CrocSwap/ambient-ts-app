@@ -292,6 +292,8 @@ export default function App() {
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
+        // reload to avoid stale wallet connections and excessive state accumulation
+        window.location.reload();
     };
 
     const onActive = () => {
@@ -306,7 +308,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
+        timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -453,28 +455,42 @@ export default function App() {
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
+    const provider = useProvider();
+    const isInitialized = !!provider;
     const {
         data: signer,
         isError,
+        error,
+        status: signerStatus,
         //  isLoading
     } = useSigner();
 
-    const provider = useProvider();
-
-    const isInitialized = !!provider;
+    // 1535 - remove console logging
+    const setNewCrocEnv = () => {
+        console.log({ provider });
+        console.log({ signer });
+        console.log({ crocEnv });
+        console.log({ signerStatus });
+        if (isError) {
+            console.error({ error });
+            setCrocEnv(undefined);
+        } else if (!provider && !signer) {
+            console.log('setting crocEnv to undefined');
+            setCrocEnv(undefined);
+            return;
+        } else if (!signer && !!crocEnv) {
+            console.log('keeping provider');
+            return;
+        } else {
+            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+            console.log({ newCrocEnv });
+            setCrocEnv(newCrocEnv);
+        }
+    };
 
     useEffect(() => {
-        (async () => {
-            if (isError) {
-                console.log({ isError });
-            } else if (!provider && !signer) {
-                return;
-            } else {
-                console.log('setting new crocEnv');
-                setCrocEnv(new CrocEnv(signer?.provider || provider));
-            }
-        })();
-    }, [provider, signer, isError]);
+        setNewCrocEnv();
+    }, [signerStatus === 'success', crocEnv === undefined]);
 
     useEffect(() => {
         if (provider) {
@@ -1969,7 +1985,9 @@ export default function App() {
         baseTokenAddress: string,
         quoteTokenAddress: string,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         return await cachedQuerySpotPrice(
             crocEnv,
             baseTokenAddress,
