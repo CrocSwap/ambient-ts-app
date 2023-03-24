@@ -2472,7 +2472,6 @@ export default function App() {
     };
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-    // const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
 
     useEffect(() => {
         fetch(
@@ -2485,7 +2484,6 @@ export default function App() {
                         response.result.ProposeGasPrice,
                     );
                     if (gasPriceInGwei !== newGasPrice) {
-                        // console.log('setting new gas price');
                         setGasPriceinGwei(newGasPrice);
                     }
                 }
@@ -2563,19 +2561,6 @@ export default function App() {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
     };
-
-    // const themeButtons = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'column',
-    //             justifyContent: 'center',
-    //             alignItems: 'center',
-    //         }}
-    //     >
-    //         <button onClick={switchTheme}>Switch Theme</button>
-    //     </div>
-    // );
 
     // --------------END OF THEME--------------------------
 
