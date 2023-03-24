@@ -190,7 +190,7 @@ export default function Chart(props: propsIF) {
         repositionRangeWidth,
         setChartTriggeredBy,
         chartTriggeredBy,
-        candleTime,
+        // candleTime,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
