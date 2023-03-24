@@ -205,27 +205,15 @@ export default function Transfer(props: propsIF) {
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        }
-        // else if (isApprovalPending) {
-        //     setIsButtonDisabled(true);
-        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        // }
-        else if (isTransferPending) {
+        } else if (isTransferPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
-        }
-        // else if (!isTokenAllowanceSufficient) {
-        //     setIsButtonDisabled(false);
-        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        // }
-        else if (isTransferQtyValid) {
+        } else if (isTransferQtyValid) {
             setIsButtonDisabled(false);
             setButtonMessage('Transfer');
         }
     }, [
-        // isApprovalPending,
         isTransferPending,
-        // isTokenAllowanceSufficient,
         isDexBalanceSufficient,
         isTransferQtyValid,
         selectedToken.symbol,

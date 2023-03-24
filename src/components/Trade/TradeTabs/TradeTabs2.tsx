@@ -171,8 +171,6 @@ export default function TradeTabs2(props: propsIF) {
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
-    const activeChartPeriod = tradeData.activeChartPeriod;
-
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     const userPositions = graphData?.positionsByUser?.positions;
@@ -361,7 +359,7 @@ export default function TradeTabs2(props: propsIF) {
                 annotateMEV: false,
                 ensResolution: true,
                 n: 100,
-                period: activeChartPeriod,
+                period: candleTime.time,
                 time: filter?.time,
             })
                 .then((selectedCandleChangesJson) => {

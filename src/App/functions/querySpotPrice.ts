@@ -1,5 +1,4 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-// import { Provider } from '@ethersproject/providers';
 import { memoizeCrocEnvFn } from './memoizePromiseFn';
 
 export const querySpotPrice = async (

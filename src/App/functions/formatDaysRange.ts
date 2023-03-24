@@ -1,4 +1,5 @@
 export function formatDaysRange(days: number) {
+    // TODO (#1570): consider using Moment() here vs implementing this calculation
     if (!isFinite(days)) {
         return formatNumString(days); // Infinity
     } else if (days > 365 * 5) {
