@@ -6,7 +6,12 @@ export default async (request: Request, context: Context) => {
         return;
     }
 
-    const url = new URL('https://ambient-proven.netlify.app', request.url);
+    console.log({ request });
+
+    const url = new URL(
+        'https://ambient-proven.netlify.app' + request.url,
+        request.url,
+    );
 
     return Response.redirect(url);
 
