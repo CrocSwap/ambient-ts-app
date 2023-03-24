@@ -3,15 +3,15 @@ import { Context } from 'https://edge.netlify.com';
 export default async (request: Request, context: Context) => {
     // if user not in blocked country, show website
     if (!['KP', 'IR', 'CU'].includes(context.geo.country.code)) {
-        if (['NL'].includes(context.geo.country.code)) {
-            // const url = new URL('https://icanhazdadjoke.com/', req.url);
-            //   return Response.redirect(url);
+        // if (['NL'].includes(context.geo.country.code)) {
+        //     // const url = new URL('https://icanhazdadjoke.com/', req.url);
+        //     //   return Response.redirect(url);
 
-            return new URL('/testpage', request.url);
+        //     return new URL('/bentest', request.url);
 
-            // Response.redirect('https://ambient-proven.netlify.app/', 302);
-            // return new URL('https://ambient-proven.netlify.app/', request.url);
-        }
+        //     // Response.redirect('https://ambient-proven.netlify.app/', 302);
+        //     // return new URL('https://ambient-proven.netlify.app/', request.url);
+        // }
         return;
     }
 
