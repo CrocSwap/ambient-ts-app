@@ -109,7 +109,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             </button>
         </div>
     ) : (
-        <div className={styles.wall_buttons_container} tabIndex={0}>
+        <div className={styles.wall_buttons_container}>
             {connectors.map((connector) => (
                 <WalletButton
                     title={`${connector.name} ${
@@ -151,15 +151,13 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
 
     const walletsPage = useMemo(
         () => (
-            <div className={styles.main_container} tabIndex={0}>
-                <section>
-                    {connectorsDisplay}
-                    {/* {walletsDisplay} */}
-                    {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
+            <div className={styles.main_container}>
+                {connectorsDisplay}
+                {/* {walletsDisplay} */}
+                {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
                         <HiOutlineMail size={20} color='#EBEBFF' />
                         Connect with Email
                     </button> */}
-                </section>
 
                 {learnAboutWalletsContent}
             </div>

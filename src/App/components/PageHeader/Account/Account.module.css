@@ -36,6 +36,8 @@
 }
 
 .title_gradient {
+    outline: none;
+    border: none;
     background: var(--dark3);
     padding: 7.5px 12px 7.5px 6px;
     border-radius: 4px;

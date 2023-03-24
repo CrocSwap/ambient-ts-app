@@ -96,8 +96,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         );
     }
 
+    const ariaLabel = `Wallet menu for ${ensName ? ensName : accountAddress}`;
+
     return (
-        <div className={walletWrapperStyle}>
+        <div className={walletWrapperStyle} tabIndex={0} aria-label={ariaLabel}>
             {nameContent}
             <section className={styles.wallet_content}>
                 <TokenAmountDisplay

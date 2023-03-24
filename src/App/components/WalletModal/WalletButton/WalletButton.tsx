@@ -9,7 +9,7 @@ interface WalletButtonPropsIF {
 }
 
 export default function WalletButton(props: WalletButtonPropsIF) {
-    const ariaLabel = `connect to ${props.title} wallet`;
+    const ariaLabel = `connect to ${props.title} wallet.`;
     return (
         <button
             disabled={props.disabled}

@@ -114,35 +114,49 @@ export default function Account(props: AccountPropsIF) {
             ? '0.00'
             : parseFloat(nativeBalance).toPrecision(4);
 
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (e.key === 'Enter') {
+            console.log('yes');
+        }
+    };
+
     const walletDisplay = (
-        <section className={styles.wallet_display} ref={walletDropdownItemRef}>
-            <div
+        <section
+            className={styles.wallet_display}
+            ref={walletDropdownItemRef}
+            tabIndex={0}
+        >
+            <button
+                tabIndex={0}
                 className={`${styles.title_gradient} `}
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
+                // onKeyDown={handleKeyPress}
             >
                 <MdAccountBalanceWallet color='var(--text-grey-white)' />
                 <p className={styles.wallet_name}>
                     {ensName !== '' ? ensName : props.accountAddress}
                 </p>
-            </div>
+            </button>
 
-            <WalletDropdown
-                ensName={ensName !== '' ? ensName : ''}
-                accountAddress={props.accountAddress}
-                handleCopyAddress={handleCopyAddress}
-                connectorName={connector?.name}
-                clickLogout={clickLogout}
-                walletWrapperStyle={walletWrapperStyle}
-                ethAmount={
-                    isUserLoggedIn
-                        ? nativeBalance
-                            ? 'Ξ ' + ethQuantityInWalletAndDeposits
-                            : '...'
-                        : ''
-                }
-                ethValue={`${ethMainnetUsdValueTruncated}`}
-                accountAddressFull={props.accountAddressFull}
-            />
+            {showWalletDropdown && (
+                <WalletDropdown
+                    ensName={ensName !== '' ? ensName : ''}
+                    accountAddress={props.accountAddress}
+                    handleCopyAddress={handleCopyAddress}
+                    connectorName={connector?.name}
+                    clickLogout={clickLogout}
+                    walletWrapperStyle={walletWrapperStyle}
+                    ethAmount={
+                        isUserLoggedIn
+                            ? nativeBalance
+                                ? 'Ξ ' + ethQuantityInWalletAndDeposits
+                                : '...'
+                            : ''
+                    }
+                    ethValue={`${ethMainnetUsdValueTruncated}`}
+                    accountAddressFull={props.accountAddressFull}
+                />
+            )}
         </section>
     );
 

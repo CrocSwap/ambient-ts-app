@@ -44,6 +44,8 @@
     align-items: center;
     text-align: center;
     letter-spacing: -0.02em;
+    height: 100px;
+    justify-content: flex-end;
 
     color: #ebebff;
 }
