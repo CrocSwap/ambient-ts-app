@@ -5,9 +5,10 @@ export default async (request: Request, context: Context) => {
     console.log(context.geo.country.code);
     if (!['KP', 'IR', 'CU'].includes(context.geo.country.code)) {
         if (['NL'].includes(context.geo.country.code)) {
-            const url = new URL('https://icanhazdadjoke.com/', req.url);
+            // const url = new URL('https://icanhazdadjoke.com/', req.url);
+            //   return Response.redirect(url);
 
-            return Response.redirect(url);
+            return new URL('/testpage', request.url);
 
             // Response.redirect('https://ambient-proven.netlify.app/', 302);
             // return new URL('https://ambient-proven.netlify.app/', request.url);
