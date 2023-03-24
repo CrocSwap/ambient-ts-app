@@ -6,7 +6,7 @@ export default async (request: Request, context: Context) => {
         return;
     }
 
-    const url = new URL('https://www.example.com', req.url);
+    const url = new URL('https://www.example.com', request.url);
 
     return Response.redirect(url);
 
