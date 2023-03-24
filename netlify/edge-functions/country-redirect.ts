@@ -16,7 +16,7 @@ export default async (request: Request, context: Context) => {
     console.log({ path });
 
     const url = new URL(
-        'https://ambient-proven.netlify.app/' + path,
+        'https://ambient-proven.netlify.app' + path,
         request.url,
     );
 
