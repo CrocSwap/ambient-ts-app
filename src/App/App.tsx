@@ -1454,25 +1454,27 @@ export default function App() {
 
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
-    const candleTime = useMemo<number>(() => {
-        let period: number;
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            period = chartSettings.candleTime.range.time;
-        } else {
-            period = chartSettings.candleTime.market.time;
-        }
-        return period;
-    }, [location.pathname]);
+    let candleTimeLocal: number;
+    if (
+        location.pathname.startsWith('/trade/range') ||
+        location.pathname.startsWith('/trade/reposition')
+    ) {
+        candleTimeLocal = chartSettings.candleTime.range.time;
+    } else {
+        candleTimeLocal = chartSettings.candleTime.market.time;
+    }
 
     useEffect(() => {
         setCandleData(undefined);
         setIsCandleDataNull(false);
         setExpandTradeTable(false);
         fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTime]);
+    }, [
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        chartSettings.candleTime.market.time,
+        chartSettings.candleTime.range.time,
+    ]);
 
     const fetchCandles = () => {
         if (
@@ -1481,7 +1483,7 @@ export default function App() {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            candleTime
+            candleTimeLocal
         ) {
             console.log('fetching new candles');
             try {
@@ -1496,7 +1498,7 @@ export default function App() {
                                 base: mainnetBaseTokenAddress.toLowerCase(),
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
-                                period: candleTime.toString(),
+                                period: candleTimeLocal.toString(),
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
@@ -1533,7 +1535,7 @@ export default function App() {
                                             poolIdx: chainData.poolIndex,
                                             network: chainData.chainId,
                                         },
-                                        duration: candleTime,
+                                        duration: candleTimeLocal,
                                         candles: candles,
                                     });
                                 }
@@ -1622,7 +1624,7 @@ export default function App() {
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
-                period: candleTime.toString(),
+                period: candleTimeLocal.toString(),
                 chainId: '0x1',
                 dex: 'all',
                 poolStats: 'true',
@@ -1636,7 +1638,7 @@ export default function App() {
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
             chainData.poolIndex,
-            candleTime,
+            candleTimeLocal,
         ],
     );
 
@@ -1682,7 +1684,7 @@ export default function App() {
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTime,
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
@@ -1696,7 +1698,7 @@ export default function App() {
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
-                    period: candleTime.toString(),
+                    period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer

@@ -197,9 +197,10 @@ export default function TradeCandleStickChart(props: propsIF) {
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-    const candleTimeInSeconds = isMarketOrLimitModule
-        ? chartSettings.candleTime.market
-        : chartSettings.candleTime.range;
+
+    const candleTimeInSeconds: number = isMarketOrLimitModule
+        ? chartSettings.candleTime.market.time
+        : chartSettings.candleTime.range.time;
 
     useEffect(() => {
         setIsLoading(true);
