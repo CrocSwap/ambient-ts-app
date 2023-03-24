@@ -11,9 +11,13 @@ export default async (request: Request, context: Context) => {
 
     const headers = request?.headers;
     const host = headers?.host;
+    const host2 = headers.get('host');
+    const userAgent = headers?.user - agent;
 
     console.log({ headers });
     console.log({ host });
+    console.log({ host2 });
+    console.log({ userAgent });
 
     const url = new URL(
         'https://ambient-proven.netlify.app' + request.url,
