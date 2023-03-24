@@ -1452,14 +1452,27 @@ export default function App() {
         crocEnv,
     ]);
 
-    const activePeriod = tradeData.activeChartPeriod;
+    // local logic to determine current chart period
+    // this is situation-dependant but used in this file
+    const candleTime = useMemo<number>(() => {
+        let period: number;
+        if (
+            location.pathname.startsWith('/trade/range') ||
+            location.pathname.startsWith('/trade/reposition')
+        ) {
+            period = chartSettings.candleTime.range.time;
+        } else {
+            period = chartSettings.candleTime.market.time;
+        }
+        return period;
+    }, [location.pathname]);
 
     useEffect(() => {
         setCandleData(undefined);
         setIsCandleDataNull(false);
         setExpandTradeTable(false);
         fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTime]);
 
     const fetchCandles = () => {
         if (
@@ -1468,7 +1481,7 @@ export default function App() {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            activePeriod
+            candleTime
         ) {
             console.log('fetching new candles');
             try {
@@ -1483,7 +1496,7 @@ export default function App() {
                                 base: mainnetBaseTokenAddress.toLowerCase(),
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
-                                period: activePeriod.toString(),
+                                period: candleTime.toString(),
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
@@ -1507,7 +1520,6 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                                 if (
                                     JSON.stringify(candleData) !==
                                     JSON.stringify(candles)
@@ -1521,7 +1533,7 @@ export default function App() {
                                             poolIdx: chainData.poolIndex,
                                             network: chainData.chainId,
                                         },
-                                        duration: activePeriod,
+                                        duration: candleTime,
                                         candles: candles,
                                     });
                                 }
@@ -1610,7 +1622,7 @@ export default function App() {
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
-                period: activePeriod.toString(),
+                period: candleTime.toString(),
                 chainId: '0x1',
                 dex: 'all',
                 poolStats: 'true',
@@ -1624,7 +1636,7 @@ export default function App() {
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
             chainData.poolIndex,
-            activePeriod,
+            candleTime,
         ],
     );
 
@@ -1670,7 +1682,7 @@ export default function App() {
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / activePeriod,
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTime,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
@@ -1684,7 +1696,7 @@ export default function App() {
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
-                    period: activePeriod.toString(),
+                    period: candleTime.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
@@ -1743,7 +1755,7 @@ export default function App() {
 
     useEffect(() => {
         // console.log({ debouncedBoundary });
-        // console.log({ activePeriod });
+        // console.log({ candleTime });
         // console.log({ candleData });
 
         if (!numDurationsNeeded) return;
