@@ -12,7 +12,6 @@ body:
       label: What happened?
       description: Tell / show what went wrong, screenshots / screen recordings are helpful!
       placeholder: What happened?
-      value: " "
     validations:
       required: true
   - type: textarea
@@ -21,7 +20,6 @@ body:
       label: How?
       description: How can we replicate the issue?
       placeholder: e.x. 1. go to page XXX, 2. connect wallet, 3. ...
-      value: " "
     validations:
       required: true
   - type: textarea
@@ -30,7 +28,6 @@ body:
       label: What was Expected?
       description: What did you expect to happen?
       placeholder: What did you expect to happen?
-      value: " "
     validations:
       required: true
   - type: textarea
