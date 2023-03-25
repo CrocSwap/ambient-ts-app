@@ -2,7 +2,8 @@ import styles from './SoloTokenImport.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-
+import Button from '../../Global/Button/Button';
+import DividerDark from '../DividerDark/DividerDark';
 interface propsIF {
     customToken: TokenIF | null;
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
@@ -29,11 +30,10 @@ export default function SoloTokenImport(props: propsIF) {
     if (!customToken) return tokenNotFound;
     return (
         <div className={styles.main_container}>
-            <p>
-                A match for this token was found on chain... Inventore molestias
-                maiores ullam ipsa impedit accusantium, itaque animi vitae
-                libero dolore!
-            </p>
+            <div className={styles.match_text_container}>
+                <p>A match for this token was found on chain.</p>
+            </div>
+            <DividerDark />
 
             <div className={styles.token_display}>
                 <div>
@@ -42,16 +42,24 @@ export default function SoloTokenImport(props: propsIF) {
                 </div>
                 <h6>{customToken?.name}</h6>
             </div>
-            <p>
-                Warning message before importing. Modi sapiente molestiae
-                voluptatibus quidem blanditiis repellat magnam officiis, omnis
-                impedit nostrum?
+            <p style={{ textAlign: 'center' }}>
+                This token is not listed on Coingecko or any other major
+                reputable lists. Please be sure this is the actual token you
+                want to trade. Many fraudulent tokens will use the same name and
+                symbol as other major tokens. Always conduct your own research
+                before trading.
             </p>
-            <div className={styles.import_button}>
+            <Button
+                flat
+                title='Acknowledge'
+                action={() => chooseToken(customToken, true)}
+            />
+            {/* <div className={styles.import_button}>
+                
                 <button onClick={() => chooseToken(customToken, true)}>
                     Acknowledge
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 }

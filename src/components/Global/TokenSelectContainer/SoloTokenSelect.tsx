@@ -339,6 +339,11 @@ export const SoloTokenSelect = (props: propsIF) => {
                     type='text'
                     placeholder=' Search name or enter an Address'
                     onChange={(e) => setInput(e.target.value)}
+                    style={{
+                        color: showSoloSelectTokenButtons
+                            ? 'var(--text-grey-white)'
+                            : 'var(--text-grey-dark)',
+                    }}
                 />
                 {input?.value && (
                     <button onClick={clearInputField}>Clear</button>
