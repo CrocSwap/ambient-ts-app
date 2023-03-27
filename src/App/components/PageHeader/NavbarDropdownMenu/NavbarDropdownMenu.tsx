@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useState, useRef } from 'react';
+import { ReactNode, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -75,6 +75,17 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         const height = el.offsetHeight;
         setMenuHeight(height);
     }
+
+    const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setIsNavbarMenuOpen(false);
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleEscape, false);
+        return () => {
+            document.removeEventListener('keydown', handleEscape, false);
+        };
+    }, []);
 
     function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
         const topLevelItemStyle = props.topLevel

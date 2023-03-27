@@ -56,11 +56,10 @@ export default function NavItem(props: NavItemPropsIF) {
             className={styles.nav_item}
             ref={navItemRef}
             tabIndex={0}
-            onKeyDown={() => setOpen(true)}
+            onClick={() => setOpen(!open)}
+            // onKeyDown={() => setOpen(true)}
         >
-            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
-                {icon}
-            </div>
+            <div className={styles.icon_button}>{icon}</div>
             {open && childrenWithProps}
         </button>
     );

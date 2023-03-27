@@ -1,6 +1,7 @@
 .action_button {
     width: 100%;
     z-index: 2;
+    border-radius: var(--border-radius);
 
     max-width: 16rem;
     max-height: 3rem;
@@ -59,7 +60,7 @@
     animation-play-state: paused;
 }
 
-.action_button:hover .button_text {
+.action_button:hover .button_text, .action_button:focus-visible .button_text {
     /* color: var(--dark2) !important; */
     background: var(--dark2);
     -webkit-background-clip: text;
@@ -69,7 +70,7 @@
 }
 .action_button p {
     color: var(--text-highlight);
-    font-weight: 100;
-    font-size: 30px;
-    line-height: 38px;
+    font-weight: 100 !important;
+    font-size: 30px !important;
+    line-height: 38px !important;
 }
