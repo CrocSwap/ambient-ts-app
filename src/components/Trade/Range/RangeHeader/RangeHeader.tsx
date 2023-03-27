@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { ReactNode } from 'react';
 
-// START: Import React Functional Components
+// START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
 
@@ -17,6 +17,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
@@ -27,8 +28,7 @@ interface propsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     openGlobalModal: (content: ReactNode, title?: string) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     shareOptionsDisplay: JSX.Element;
 }
 
@@ -42,28 +42,14 @@ export default function RangeHeader(props: propsIF) {
         isTokenABase,
         openGlobalModal,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
-    const reverseDisplay = (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
-
-    const settingsModalOrNull = isModalOpen ? (
-        <Modal noHeader title='modal' onClose={closeModal}>
-            <TransactionSettings
-                module='Range Order'
-                toggleFor='range'
-                slippage={mintSlippage}
-                isPairStable={isPairStable}
-                onClose={closeModal}
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-            />
-        </Modal>
-    ) : null;
+    const reverseDisplay =
+        (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
     return (
         <ContentHeader>
@@ -74,9 +60,17 @@ export default function RangeHeader(props: propsIF) {
             >
                 <AiOutlineShareAlt />
             </div>
-            <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
-                {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
-                {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}
+            <div
+                className={styles.token_info}
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+            >
+                {reverseDisplay
+                    ? tokenPair.dataTokenA.symbol
+                    : tokenPair.dataTokenB.symbol}{' '}
+                /{' '}
+                {reverseDisplay
+                    ? tokenPair.dataTokenB.symbol
+                    : tokenPair.dataTokenA.symbol}
             </div>
             <IconWithTooltip title='Settings' placement='left'>
                 <div
@@ -88,7 +82,23 @@ export default function RangeHeader(props: propsIF) {
                     <img src={settingsIcon} alt='settings' />
                 </div>
             </IconWithTooltip>
-            {settingsModalOrNull}
+            {isModalOpen && (
+                <Modal
+                    noHeader
+                    title='modal'
+                    onClose={closeModal}
+                    centeredTitle
+                >
+                    <TransactionSettings
+                        module='Range Order'
+                        toggleFor='range'
+                        slippage={mintSlippage}
+                        isPairStable={isPairStable}
+                        onClose={closeModal}
+                        bypassConfirm={bypassConfirm.range}
+                    />
+                </Modal>
+            )}
         </ContentHeader>
     );
 }

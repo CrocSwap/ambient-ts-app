@@ -32,6 +32,7 @@ import { useRelativeModal } from '../../components/Global/RelativeModal/useRelat
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
@@ -42,6 +43,8 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
+import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -98,13 +101,11 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
-
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -149,11 +150,10 @@ export default function Swap(props: propsIF) {
         searchType,
         acknowledgeToken,
         openGlobalPopup,
-        bypassConfirm,
-        toggleBypassConfirm,
         lastBlockNumber,
         tokenPairLocal,
         dexBalancePrefs,
+        bypassConfirm,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -162,6 +162,8 @@ export default function Swap(props: propsIF) {
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
 
+    // this apparently different from the `bypassConfirm` that I am working with
+    // it should possibly be renamed something different or better documented
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
@@ -266,7 +268,10 @@ export default function Swap(props: propsIF) {
     async function initiateSwap() {
         resetConfirmation();
         setIsWaitingForWallet(true);
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
@@ -293,6 +298,10 @@ export default function Swap(props: propsIF) {
 
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx.hash)
+                dispatch(
+                    addTransactionByType({ txHash: tx.hash, txType: 'Swap' }),
+                );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -415,7 +424,7 @@ export default function Swap(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
@@ -427,11 +436,21 @@ export default function Swap(props: propsIF) {
     );
 
     const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -522,8 +541,7 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
-        bypassConfirm: bypassConfirm,
-        toggleBypassConfirm: toggleBypassConfirm,
+        bypassConfirmSwap: bypassConfirm.swap,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
@@ -532,22 +550,19 @@ export default function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
+        bypassConfirm: bypassConfirm,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={handleModalClose} title='Swap Confirmation'>
+        <Modal
+            onClose={handleModalClose}
+            title='Swap Confirmation'
+            centeredTitle
+        >
             <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
-    ) : null;
-
-    const relativeModalOrNull = isRelativeModalOpen ? (
-        <RelativeModal onClose={closeRelativeModal} title='Relative Modal'>
-            You are about to do something that will lose you a lot of money. If
-            you think you are smarter than the awesome team that programmed
-            this, press dismiss.
-        </RelativeModal>
     ) : null;
 
     // calculate price of gas for swap
@@ -676,7 +691,7 @@ export default function Swap(props: propsIF) {
         tokensBank: importedTokens,
         priceImpact: priceImpact,
         setImportedTokens: setImportedTokens,
-        chainId: chainId as string,
+        chainId: chainId,
         isLiq: false,
         poolPriceDisplay: poolPriceDisplay,
         isTokenAPrimary: isTokenAPrimary,
@@ -723,6 +738,45 @@ export default function Swap(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
+    const priceImpactNum = !priceImpact?.percentChange
+        ? undefined
+        : Math.abs(priceImpact.percentChange) * 100;
+
+    const priceImpactString = !priceImpactNum
+        ? '…'
+        : priceImpactNum >= 100
+        ? priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+          })
+        : priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const priceImpactWarningOrNull =
+        priceImpactNum && priceImpactNum > 2 ? (
+            <div className={styles.price_impact}>
+                <div className={styles.extra_row}>
+                    <div className={styles.align_center}>
+                        <div>Price Impact Warning</div>
+                        <TooltipComponent
+                            title='Difference Between Current (Spot) Price and Final Price'
+                            placement='bottom'
+                        />
+                    </div>
+                    <div
+                        className={styles.data}
+                        style={{
+                            color: '#f6385b',
+                        }}
+                    >
+                        {priceImpactString}%
+                    </div>
+                </div>
+            </div>
+        ) : null;
+
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             {props.isTutorialMode && (
@@ -747,7 +801,6 @@ export default function Swap(props: propsIF) {
                         openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
                         bypassConfirm={bypassConfirm}
-                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                     {navigationMenu}
                     <motion.div
@@ -787,18 +840,15 @@ export default function Swap(props: propsIF) {
                                     // user has hide confirmation modal off
                                     <SwapButton
                                         onClickFn={
-                                            bypassConfirm
+                                            bypassConfirm.swap.isEnabled
                                                 ? handleSwapButtonClickWithBypass
                                                 : openModal
-                                        }
-                                        isSwapConfirmationBypassEnabled={
-                                            bypassConfirm
                                         }
                                         swapAllowed={swapAllowed}
                                         swapButtonErrorMessage={
                                             swapButtonErrorMessage
                                         }
-                                        bypassConfirm={bypassConfirm}
+                                        bypassConfirmSwap={bypassConfirm.swap}
                                     />
                                 ) : (
                                     // user has hide confirmation modal on
@@ -811,9 +861,19 @@ export default function Swap(props: propsIF) {
                     ) : (
                         loginButton
                     )}
+                    {priceImpactWarningOrNull}
                 </ContentContainer>
                 {confirmSwapModalOrNull}
-                {relativeModalOrNull}
+                {isRelativeModalOpen && (
+                    <RelativeModal
+                        onClose={closeRelativeModal}
+                        title='Relative Modal'
+                    >
+                        You are about to do something that will lose you a lot
+                        of money. If you think you are smarter than the awesome
+                        team that programmed this, press dismiss.
+                    </RelativeModal>
+                )}
             </div>
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}

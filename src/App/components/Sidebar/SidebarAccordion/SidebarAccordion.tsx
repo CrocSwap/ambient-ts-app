@@ -1,16 +1,18 @@
 // START: Import React and Dongles
-import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
+import {
+    useState,
+    MouseEvent,
+    ReactNode,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
-// import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // START: Import Local Files
-// import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-// import { PositionIF } from '../../../../utils/interfaces/exports';
-// import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
-// import { AiFillBell } from 'react-icons/ai'
 
 // interface for React functional component props
 interface propsIF {
@@ -21,7 +23,9 @@ interface propsIF {
 
     openModalWallet: () => void;
     isDefaultOverridden: boolean;
-    toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
+    toggleSidebar: (
+        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
+    ) => void;
     item: {
         name: string;
         icon: string;
@@ -69,7 +73,9 @@ export default function SidebarAccordion(props: propsIF) {
         >
             <div
                 className={styles.sidebar_item_content}
-                onClick={overflowSidebarMQ ? () => setShowSidebar(false) : undefined}
+                onClick={
+                    overflowSidebarMQ ? () => setShowSidebar(false) : undefined
+                }
             >
                 {item.data}
             </div>
@@ -81,13 +87,6 @@ export default function SidebarAccordion(props: propsIF) {
 
     const sidebarIconStyle = isOpen ? styles.open_link : null;
 
-    // const notificationBell = (
-    //     <div className={notificationStyles.notification_bell}>
-    //         <div className={notificationStyles.bell_icon}><AiFillBell /></div>
-    //         <div className={notificationStyles.number}>3</div>
-    //     </div>
-    // )
-    // console.log(props.openAllDefault);
     function handleAccordionClick() {
         if (showSidebar) {
             setIsOpen(!isOpen);
@@ -109,7 +108,9 @@ export default function SidebarAccordion(props: propsIF) {
     }, [props.openAllDefault, isDefaultOverridden]);
 
     const accordionContentToShow =
-        !isConnected && !shouldDisplayContentWhenUserNotLoggedIn && showSidebar ? (
+        !isConnected &&
+        !shouldDisplayContentWhenUserNotLoggedIn &&
+        showSidebar ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
                 <button onClick={openModalWallet}>Connect Wallet</button>
@@ -123,23 +124,25 @@ export default function SidebarAccordion(props: propsIF) {
             <motion.li
                 key={idx}
                 className={styles.sidebar_item}
-                onClick={
-                    // showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar
-                    () => handleAccordionClick()
-                }
+                onClick={() => handleAccordionClick()}
             >
                 <div>
                     <div className={styles.sidebar_link}>
-                        {showSidebar && <MdPlayArrow size={12} className={sidebarIconStyle} />}
+                        {showSidebar && (
+                            <MdPlayArrow
+                                size={12}
+                                className={sidebarIconStyle}
+                            />
+                        )}
                         <img src={item.icon} alt={item.name} width='20px' />
 
                         <span className={styles.link_text}>{item.name}</span>
                     </div>
-                    {/* <CircleLoader size='10px' /> */}
-                    {/* { notificationBell} */}
                 </div>
             </motion.li>
-            <AnimatePresence>{isOpen && accordionContentToShow}</AnimatePresence>
+            <AnimatePresence>
+                {isOpen && accordionContentToShow}
+            </AnimatePresence>
         </>
     );
 }

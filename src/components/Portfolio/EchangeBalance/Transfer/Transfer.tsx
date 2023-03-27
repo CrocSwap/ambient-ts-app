@@ -6,11 +6,19 @@ import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    ReactNode,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 // import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../../utils/state/receiptDataSlice';
 import {
@@ -20,6 +28,8 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
+import { FaGasPump } from 'react-icons/fa';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -35,6 +45,8 @@ interface propsIF {
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
+    ethMainnetUsdPrice: number | undefined;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function Transfer(props: propsIF) {
@@ -53,6 +65,8 @@ export default function Transfer(props: propsIF) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -80,10 +94,13 @@ export default function Transfer(props: propsIF) {
               })
         : undefined;
 
-    const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<string | undefined>();
+    const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<
+        string | undefined
+    >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
-    const [sendToAddressDexBalance, setSendToAddressDexBalance] = useState<string>('');
+    const [sendToAddressDexBalance, setSendToAddressDexBalance] =
+        useState<string>('');
     const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
         useState<boolean>(false);
 
@@ -121,7 +138,12 @@ export default function Transfer(props: propsIF) {
     }, [resolvedAddress]);
 
     useEffect(() => {
-        if (crocEnv && selectedToken.address && resolvedAddress && isResolvedAddressValid) {
+        if (
+            crocEnv &&
+            selectedToken.address &&
+            resolvedAddress &&
+            isResolvedAddressValid
+        ) {
             crocEnv
                 .token(selectedToken.address)
                 .balance(resolvedAddress)
@@ -144,7 +166,9 @@ export default function Transfer(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!transferQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(BigNumber.from(transferQtyNonDisplay))
+                ? BigNumber.from(tokenDexBalance).gte(
+                      BigNumber.from(transferQtyNonDisplay),
+                  )
                 : false,
         [tokenDexBalance, transferQtyNonDisplay],
     );
@@ -178,28 +202,18 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
-        }
-        // else if (isApprovalPending) {
-        //     setIsButtonDisabled(true);
-        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        // }
-        else if (isTransferPending) {
+            setButtonMessage(
+                `${selectedToken.symbol} Exchange Balance Insufficient`,
+            );
+        } else if (isTransferPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
-        }
-        // else if (!isTokenAllowanceSufficient) {
-        //     setIsButtonDisabled(false);
-        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        // }
-        else if (isTransferQtyValid) {
+        } else if (isTransferQtyValid) {
             setIsButtonDisabled(false);
             setButtonMessage('Transfer');
         }
     }, [
-        // isApprovalPending,
         isTransferPending,
-        // isTokenAllowanceSufficient,
         isDexBalanceSufficient,
         isTransferQtyValid,
         selectedToken.symbol,
@@ -209,13 +223,23 @@ export default function Transfer(props: propsIF) {
     const transfer = async (transferQty: string) => {
         if (crocEnv && transferQty && resolvedAddress) {
             try {
-                const transferQtyDisplay = toDisplayQty(transferQty, selectedTokenDecimals);
+                const transferQtyDisplay = toDisplayQty(
+                    transferQty,
+                    selectedTokenDecimals,
+                );
 
                 setIsTransferPending(true);
                 const tx = await crocEnv
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
                 dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Transfer',
+                        }),
+                    );
                 let receipt;
                 try {
                     if (tx) receipt = await tx.wait();
@@ -267,7 +291,9 @@ export default function Transfer(props: propsIF) {
                     resetTransferQty();
                 }
             } catch (error) {
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
                 console.warn({ error });
@@ -325,9 +351,41 @@ export default function Transfer(props: propsIF) {
 
             // if (transferInput && tokenExchangeDepositsDisplay)
             //     transferInput.value = tokenExchangeDepositsDisplay;
-            if (tokenExchangeDepositsDisplay) setInputValue(tokenExchangeDepositsDisplay);
+            if (tokenExchangeDepositsDisplay)
+                setInputValue(tokenExchangeDepositsDisplay);
         }
     };
+
+    const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
+
+    const averageGasUnitsForEthTransfer = 45000;
+    const averageGasUnitsForErc20Transfer = 45000;
+    const gweiInWei = 1e-9;
+
+    // calculate price of gas for exchange balance transfer
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                gweiInWei *
+                ethMainnetUsdPrice *
+                (isTokenEth
+                    ? averageGasUnitsForEthTransfer
+                    : averageGasUnitsForErc20Transfer);
+
+            setTransferGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
         <div className={styles.deposit_container}>
@@ -355,7 +413,8 @@ export default function Transfer(props: propsIF) {
                         : styles.info_text_non_clickable
                 }
             >
-                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
+                Your Exchange Balance ({selectedToken.symbol}):{' '}
+                {tokenDexBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
                 Destination Exchange Balance ({selectedToken.symbol}):{' '}
@@ -371,6 +430,12 @@ export default function Transfer(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
+            <div className={styles.gas_pump}>
+                <div className={styles.svg_container}>
+                    <FaGasPump size={12} />{' '}
+                </div>
+                {transferGasPriceinDollars ? transferGasPriceinDollars : '…'}
+            </div>
         </div>
     );
 }

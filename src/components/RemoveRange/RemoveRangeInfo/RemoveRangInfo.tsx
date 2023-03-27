@@ -124,7 +124,9 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 <Row>
                     <span>{baseTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>
-                        {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
+                        {feeLiqBaseDisplay !== undefined
+                            ? feeLiqBaseDisplay
+                            : '…'}
                         <img src={baseTokenLogoURI} alt='' />
                     </div>
                 </Row>
@@ -132,7 +134,9 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 <Row>
                     <span>{quoteTokenSymbol} Fees Earned</span>
                     <div className={styles.token_price}>
-                        {feeLiqQuoteDisplay !== undefined ? feeLiqQuoteDisplay : '…'}
+                        {feeLiqQuoteDisplay !== undefined
+                            ? feeLiqQuoteDisplay
+                            : '…'}
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>
@@ -140,14 +144,18 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {baseRemovalString !== undefined ? baseRemovalString : '…'}
+                        {baseRemovalString !== undefined
+                            ? baseRemovalString
+                            : '…'}
                         <img src={baseTokenLogoURI} alt='' />
                     </div>
                 </Row>
                 <Row>
                     <span>{quoteTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {quoteRemovalString !== undefined ? quoteRemovalString : '…'}
+                        {quoteRemovalString !== undefined
+                            ? quoteRemovalString
+                            : '…'}
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>

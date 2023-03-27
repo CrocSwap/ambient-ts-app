@@ -90,7 +90,11 @@ export default function Game() {
                         card={card}
                         key={card.id}
                         handleChoice={handleChoice}
-                        flipped={card === choiceOne || card === choiceTwo || card.matched}
+                        flipped={
+                            card === choiceOne ||
+                            card === choiceTwo ||
+                            card.matched
+                        }
                         disabled={disabled}
                     />
                 ))}

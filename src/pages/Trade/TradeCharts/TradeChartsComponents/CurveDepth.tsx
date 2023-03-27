@@ -1,28 +1,36 @@
 import styles from './CurveDepth.module.css';
-import { SetStateAction, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { overlayIF } from '../../../../App/hooks/useChartSettings';
 
-interface CurveDepthPropsIF {
-    setLiqMode: (value: SetStateAction<string>) => void;
-    liqMode: string;
+interface propsIF {
+    overlayMethods: overlayIF;
 }
-export default function CurveDepth(props: CurveDepthPropsIF) {
-    const { setLiqMode, liqMode } = props;
+
+export default function CurveDepth(props: propsIF) {
+    const { overlayMethods } = props;
 
     const [showCurveDepthDropdown, setShowCurveDepthDropdown] = useState(false);
 
     const desktopView = useMediaQuery('(max-width: 968px)');
 
-    const handleLiqToggle = (mode: string) =>
-        setLiqMode(() => {
-            return mode;
-        });
-
     const curveDepthData = [
-        { name: 'Off', action: () => handleLiqToggle('Off') },
-        { name: 'Curve', action: () => handleLiqToggle('Curve') },
-        { name: 'Depth', action: () => handleLiqToggle('Depth') },
+        {
+            readable: 'Off',
+            name: 'None',
+            action: () => overlayMethods.showNone(),
+        },
+        {
+            readable: 'Curve',
+            name: 'Curve',
+            action: () => overlayMethods.showCurve(),
+        },
+        {
+            readable: 'Depth',
+            name: 'Depth',
+            action: () => overlayMethods.showDepth(),
+        },
     ];
 
     const wrapperStyle = showCurveDepthDropdown
@@ -44,18 +52,23 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
                 className={styles.curve_depth_mobile_button}
-                onClick={() => setShowCurveDepthDropdown(!showCurveDepthDropdown)}
+                onClick={() =>
+                    setShowCurveDepthDropdown(!showCurveDepthDropdown)
+                }
             >
-                {liqMode}
+                {overlayMethods.overlay}
             </button>
 
             <div className={wrapperStyle}>
                 {curveDepthData.map((button, idx) => (
                     <div className={styles.curve_depth_container} key={idx}>
                         <button
-                            onClick={() => handleCurveDepthClickMobile(button.action)}
+                            onClick={() =>
+                                handleCurveDepthClickMobile(button.action)
+                            }
                             className={
-                                button.name.toLowerCase() === liqMode.toLowerCase()
+                                button.name.toLowerCase() ===
+                                overlayMethods.overlay.toLowerCase()
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
@@ -82,12 +95,13 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
                     <button
                         onClick={button.action}
                         className={
-                            button.name.toLowerCase() === liqMode.toLowerCase()
+                            button.name.toLowerCase() ===
+                            overlayMethods.overlay.toLowerCase()
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
                     >
-                        {button.name}
+                        {button.readable}
                     </button>
                 </div>
             ))}

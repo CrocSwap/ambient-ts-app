@@ -30,8 +30,12 @@ export const useRecentPools = (
     // later this will need more logic for a Pool ID value
     useEffect(() => {
         // sort current token pair as base and quote
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addressTokenA, addressTokenB);
-        const { ackTokens } = JSON.parse(localStorage.getItem('user') as string) ?? [];
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+            addressTokenA,
+            addressTokenB,
+        );
+        const { ackTokens } =
+            JSON.parse(localStorage.getItem('user') as string) ?? [];
         const checkToken = (addr: string) => {
             const isListed = verifyToken(addr.toLowerCase(), chainId);
             const isAcknowledged = ackTokens?.some(

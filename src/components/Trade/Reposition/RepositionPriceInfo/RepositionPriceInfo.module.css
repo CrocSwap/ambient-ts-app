@@ -120,3 +120,15 @@
     /* font-weight: 400; */
     margin: 5px 0;
 }
+
+.gas_pump {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+}

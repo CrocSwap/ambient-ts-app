@@ -9,7 +9,8 @@ export const getVolumeSeries = async (
 ): Promise<VolumeSeriesByPoolTimeAndResolution | undefined> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const poolVolumeSeriesCacheEndpoint = httpGraphCacheServerDomain + '/pool_volume_series?';
+    const poolVolumeSeriesCacheEndpoint =
+        httpGraphCacheServerDomain + '/pool_volume_series?';
     return fetch(
         poolVolumeSeriesCacheEndpoint +
             new URLSearchParams({
@@ -27,6 +28,6 @@ export const getVolumeSeries = async (
             return poolLiquidity;
         })
         .catch(() => {
-            // return undefined;
+            // TODO (#1571) we should handle this exception
         });
 };

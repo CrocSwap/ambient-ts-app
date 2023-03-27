@@ -63,6 +63,7 @@ import {
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -77,6 +78,8 @@ import {
 } from '../../../utils/tutorial/Range';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { formatAmountOld } from '../../../utils/numbers';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     account: string | undefined;
@@ -138,8 +141,7 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -206,7 +208,6 @@ export default function Range(props: propsIF) {
         acknowledgeToken,
         openGlobalPopup,
         bypassConfirm,
-        toggleBypassConfirm,
         dexBalancePrefs,
         setSimpleRangeWidth,
         simpleRangeWidth,
@@ -292,11 +293,12 @@ export default function Range(props: propsIF) {
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
+            : displayPriceWithDenom < 0.00001
+            ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+            ? displayPriceWithDenom.toPrecision(3)
+            : displayPriceWithDenom >= 100000
+            ? formatAmountOld(displayPriceWithDenom, 1)
             : displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -415,6 +417,22 @@ export default function Range(props: propsIF) {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
         useState(defaultMaxPriceDifferencePercentage);
 
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
             setIsAmbient(true);
@@ -440,6 +458,8 @@ export default function Range(props: propsIF) {
                 highTick,
                 lookupChain(chainId).gridSize,
             );
+
+            setPinnedDisplayPrices(pinnedDisplayPrices);
 
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
@@ -964,7 +984,10 @@ export default function Range(props: propsIF) {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
 
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -1025,6 +1048,13 @@ export default function Range(props: propsIF) {
                   ));
             setNewRangeTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Range',
+                    }),
+                );
             setIsWaitingForWallet(false);
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -1148,7 +1178,6 @@ export default function Range(props: propsIF) {
     const denominationSwitch = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
-            {/* <DenominationSwitch /> */}
         </div>
     );
 
@@ -1156,6 +1185,7 @@ export default function Range(props: propsIF) {
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
+        pinnedDisplayPrices: pinnedDisplayPrices,
         tokenPair: tokenPair,
         spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
@@ -1280,7 +1310,6 @@ export default function Range(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         bypassConfirm: bypassConfirm,
-        toggleBypassConfirm: toggleBypassConfirm,
     };
 
     const bypassConfirmButtonProps = {
@@ -1452,6 +1481,7 @@ export default function Range(props: propsIF) {
         <Modal
             onClose={handleModalClose}
             title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
+            centeredTitle
         >
             <ConfirmRangeModal {...rangeModalProps} />
         </Modal>
@@ -1474,11 +1504,21 @@ export default function Range(props: propsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -1521,7 +1561,7 @@ export default function Range(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
@@ -1536,7 +1576,7 @@ export default function Range(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenB.symbol}`
+                    ? `Approve ${tokenPair.dataTokenB.symbol}`
                     : `${tokenPair.dataTokenB.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
@@ -1618,7 +1658,6 @@ export default function Range(props: propsIF) {
                     openGlobalModal={openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
                     bypassConfirm={bypassConfirm}
-                    toggleBypassConfirm={toggleBypassConfirm}
                 />
                 {navigationMenu}
                 <motion.div
@@ -1647,7 +1686,7 @@ export default function Range(props: propsIF) {
                     ) : (
                         <RangeButton
                             onClickFn={
-                                bypassConfirm
+                                bypassConfirm.range.isEnabled
                                     ? handleRangeButtonClickWithBypass
                                     : openModal
                             }
@@ -1657,7 +1696,7 @@ export default function Range(props: propsIF) {
                                 !isInvalidRange
                             }
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
-                            bypassConfirm={bypassConfirm}
+                            bypassConfirmRange={bypassConfirm.range}
                             isAmbient={isAmbient}
                             isAdd={isAdd}
                         />

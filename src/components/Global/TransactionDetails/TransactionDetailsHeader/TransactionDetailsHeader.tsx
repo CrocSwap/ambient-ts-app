@@ -16,7 +16,9 @@ interface TransactionDetailsHeaderPropsIF {
     tx: TransactionIF;
     handleCopyAddress(): void;
 }
-export default function TransactionDetailsHeader(props: TransactionDetailsHeaderPropsIF) {
+export default function TransactionDetailsHeader(
+    props: TransactionDetailsHeaderPropsIF,
+) {
     const {
         // tx,
         handleCopyAddress,
@@ -27,10 +29,19 @@ export default function TransactionDetailsHeader(props: TransactionDetailsHeader
     } = props;
     // eslint-disable-next-line
 
-    const phIcon = <FiCopy size={25} color='var(--text-grey-dark)' style={{ opacity: '0' }} />;
+    const phIcon = (
+        <FiCopy
+            size={25}
+            color='var(--text-grey-dark)'
+            style={{ opacity: '0' }}
+        />
+    );
 
     const copyIconWithTooltip = (
-        <IconWithTooltip title='Copy transaction hash to clipboard' placement='bottom'>
+        <IconWithTooltip
+            title='Copy transaction hash to clipboard'
+            placement='bottom'
+        >
             <div onClick={handleCopyAddress}>
                 <FiCopy size={25} color='var(--text-grey-dark)' />
             </div>

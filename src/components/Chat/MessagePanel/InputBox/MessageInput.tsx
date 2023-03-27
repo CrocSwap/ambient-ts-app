@@ -3,7 +3,6 @@ import useSocket from '../../Service/useSocket';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
-// import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -34,7 +33,6 @@ interface currentPoolInfo {
     advancedLowTick: number;
     advancedHighTick: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
 }
@@ -57,17 +55,16 @@ export default function MessageInput(
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
-    // const { roomId } = props.match.params;
 
-    const { sendMsg } = useSocket(props.room);
+    const { sendMsg } = useSocket(props.room.toUpperCase());
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
     const roomId =
         props.room === 'Current Pool'
-            ? prop.currentPool.baseToken.symbol +
-              prop.currentPool.quoteToken.symbol
+            ? prop.currentPool.baseToken.symbol.toUpperCase() +
+              prop.currentPool.quoteToken.symbol.toUpperCase()
             : props.room;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,12 +99,12 @@ export default function MessageInput(
     }, [isConnected, address]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
         setMessage('');
         dontShowEmojiPanel();
     };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
@@ -151,9 +148,7 @@ export default function MessageInput(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMsg = async (msg: string, roomId: any) => {
-        if (msg === '' || !address) {
-            // do nothing
-        } else {
+        if (msg !== '' && address) {
             sendMsg(props.currentUser, message, roomId, props.ensName, address);
         }
     };
@@ -195,6 +190,7 @@ export default function MessageInput(
                     value={message}
                     onChange={onChangeMessage}
                     autoComplete={'off'}
+                    tabIndex={-1}
                 />
 
                 <BsEmojiSmileFill
@@ -260,15 +256,6 @@ export default function MessageInput(
                             pickerStyle={{
                                 width: '100%',
                                 height: '89%',
-                                // filter: 'invert(100%)',
-                                // height: '100%',
-                                // backgroundColor: '#2e4960',
-                                // indicatorColor: '#b04c2d',
-                                // fontColor: 'lightgrey',
-                                // searchBackgroundColor: '#263d51',
-                                // tabsFontColor: '#8cdce4',
-                                // searchFontColor: 'lightgrey',
-                                // skinTonePickerBackgroundColor: '#284155',
                             }}
                             onEmojiClick={handleEmojiClick}
                             disableSkinTonePicker={true}

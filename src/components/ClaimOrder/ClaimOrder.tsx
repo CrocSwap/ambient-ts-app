@@ -1,11 +1,7 @@
 import styles from './ClaimOrder.module.css';
 import { useState, useEffect } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { CircleLoaderFailed } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import Button from '../Global/Button/Button';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
+
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 // import Toggle2 from '../Global/Toggle/Toggle2';
 // import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
@@ -16,7 +12,12 @@ import ClaimOrderInfo from './ClaimOrderInfo/ClaimOrderInfo';
 import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+import {
+    addPendingTx,
+    addReceipt,
+    addTransactionByType,
+    removePendingTx,
+} from '../../utils/state/receiptDataSlice';
 
 import {
     isTransactionFailedError,
@@ -24,6 +25,9 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import TransactionException from '../Global/TransactionException/TransactionException';
+import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 
 interface propsIF {
     account: string;
@@ -34,7 +38,7 @@ interface propsIF {
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -112,6 +116,13 @@ export default function ClaimOrder(props: propsIF) {
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Claim',
+                            }),
+                        );
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
@@ -119,13 +130,22 @@ export default function ClaimOrder(props: propsIF) {
                         .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
+                    if (tx?.hash)
+                        dispatch(
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Claim',
+                            }),
+                        );
 
                     // .burnLiq(BigNumber.from(positionLiquidity));
                 }
             } catch (error) {
                 console.log({ error });
                 setTxErrorCode(error?.code);
-                if (error.reason === 'sending a transaction requires a signer') {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
                     location.reload();
                 }
                 // setTxErrorMessage(error?.message);
@@ -201,49 +221,29 @@ export default function ClaimOrder(props: propsIF) {
     // -------------END OF CLAIM FUNCTION TO BE REFACTORED
 
     // ----------------------------CONFIRMATION JSX------------------------------
-    const claimDenied = (
-        <div className={styles.removal_pending}>
-            <CircleLoaderFailed />
-            <p>
-                Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat={true} />
-        </div>
-    );
-    const etherscanLink = chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
+
+    // const etherscanLink =
+    //     chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
 
     const claimSuccess = (
-        <div className={styles.removal_pending}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Claim Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newClaimTransactionHash}
+            content='Claim Transaction Successfully Submitted.'
+        />
     );
 
     const claimPending = (
-        <div className={styles.removal_pending}>
-            <div className={styles.loader} />
-
-            <p>Check the Metamask extension in your browser for notifications.</p>
-        </div>
+        <WaitingConfirmation content='Please Check the Metamask extension in your browser for notifications.' />
     );
 
-    const [currentConfirmationData, setCurrentConfirmationData] = useState(claimPending);
+    const [currentConfirmationData, setCurrentConfirmationData] =
+        useState(claimPending);
 
     const transactionApproved = newClaimTransactionHash !== '';
 
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
@@ -256,8 +256,14 @@ export default function ClaimOrder(props: propsIF) {
         if (transactionApproved) {
             setCurrentConfirmationData(claimSuccess);
         } else if (isTransactionDenied) {
-            setCurrentConfirmationData(claimDenied);
-        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+            setCurrentConfirmationData(
+                <TransactionDenied resetConfirmation={resetConfirmation} />,
+            );
+        } else if (
+            isTransactionException ||
+            isGasLimitException ||
+            isInsufficientFundsException
+        ) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -274,9 +280,18 @@ export default function ClaimOrder(props: propsIF) {
     ]);
 
     const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
-        </div>
+        <>
+            <ClaimOrderModalHeader
+                onClose={closeGlobalModal}
+                title={'Claim Limit Order Confirmation'}
+                onGoBack={showSettings ? () => setShowSettings(false) : null}
+            />
+            <div className={styles.confirmation_container}>
+                <div className={styles.confirmation_content}>
+                    {currentConfirmationData}
+                </div>
+            </div>
+        </>
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
@@ -333,50 +348,53 @@ export default function ClaimOrder(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <div style={{ padding: '1rem' }}>
+        <>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Claim Limit Order'}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
+                title={'Claim Limit Order '}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
+            <div style={{ padding: '1rem' }}>
+                <ClaimOrderTokenHeader
+                    isDenomBase={isDenomBase}
+                    isOrderFilled={isOrderFilled}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogo}
+                    quoteTokenLogoURI={quoteTokenLogo}
+                />
 
-            <ClaimOrderTokenHeader
-                isDenomBase={isDenomBase}
-                isOrderFilled={isOrderFilled}
-                baseTokenSymbol={baseTokenSymbol}
-                quoteTokenSymbol={quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogo}
-                quoteTokenLogoURI={quoteTokenLogo}
-            />
-
-            <ClaimOrderInfo
-                pivotTime={claimablePivotTime}
-                baseTokenSymbol={baseTokenSymbol}
-                quoteTokenSymbol={quoteTokenSymbol}
-                baseTokenLogoURI={baseTokenLogo}
-                quoteTokenLogoURI={quoteTokenLogo}
-                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                claimPercentage={claimPercentage}
-                usdValue={usdValue}
-                bidTick={bidTick}
-                askTick={askTick}
-                baseDisplayFrontend={baseDisplayFrontend}
-                quoteDisplayFrontend={quoteDisplayFrontend}
-                baseDisplay={baseDisplay}
-                quoteDisplay={quoteDisplay}
-                positionLiqTotalUSD={positionLiqTotalUSD}
-                positionLiquidity={limitOrder.positionLiq.toString()}
-                baseClaimString={'2344'}
-                quoteClaimString={'4543'}
-                truncatedDisplayPrice={truncatedDisplayPrice}
-            />
-            {/* {gaslesssTransactionControl} */}
-            {/* {tooltipExplanationDataDisplay} */}
-            <ClaimOrderButton claimFn={claimFn} disabled={false} title='Claim Limit Order' />
-        </div>
+                <ClaimOrderInfo
+                    pivotTime={claimablePivotTime}
+                    baseTokenSymbol={baseTokenSymbol}
+                    quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenLogoURI={baseTokenLogo}
+                    quoteTokenLogoURI={quoteTokenLogo}
+                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                    claimPercentage={claimPercentage}
+                    usdValue={usdValue}
+                    bidTick={bidTick}
+                    askTick={askTick}
+                    baseDisplayFrontend={baseDisplayFrontend}
+                    quoteDisplayFrontend={quoteDisplayFrontend}
+                    baseDisplay={baseDisplay}
+                    quoteDisplay={quoteDisplay}
+                    positionLiqTotalUSD={positionLiqTotalUSD}
+                    positionLiquidity={limitOrder.positionLiq.toString()}
+                    baseClaimString={'2344'}
+                    quoteClaimString={'4543'}
+                    truncatedDisplayPrice={truncatedDisplayPrice}
+                />
+                {/* {gaslesssTransactionControl} */}
+                {/* {tooltipExplanationDataDisplay} */}
+                <ClaimOrderButton
+                    claimFn={claimFn}
+                    disabled={false}
+                    title='Claim Limit Order'
+                />
+            </div>
+        </>
     );
 
     // --------------------------------------------------------------------------------------

@@ -41,6 +41,7 @@ import {
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import {
@@ -59,6 +60,7 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     account: string | undefined;
@@ -118,9 +120,7 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
-
+    bypassConfirm: allSkipConfirmMethodsIF;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
@@ -171,7 +171,6 @@ export default function Limit(props: propsIF) {
         setResetLimitTick,
         openGlobalPopup,
         bypassConfirm,
-        toggleBypassConfirm,
         dexBalancePrefs,
     } = props;
 
@@ -448,7 +447,9 @@ export default function Limit(props: propsIF) {
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         if (!limitTick) return;
 
         const testOrder = isTokenAPrimary
@@ -531,7 +532,11 @@ export default function Limit(props: propsIF) {
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
-        if (!crocEnv || limitTick === undefined) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
+        if (limitTick === undefined) return;
         // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
         //     return;
         // }
@@ -571,6 +576,13 @@ export default function Limit(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
             setIsWaitingForWallet(false);
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Limit',
+                    }),
+                );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -679,7 +691,6 @@ export default function Limit(props: propsIF) {
         middleDisplayPrice: middleDisplayPrice,
         endDisplayPrice: endDisplayPrice,
         bypassConfirm: bypassConfirm,
-        toggleBypassConfirm: toggleBypassConfirm,
         showBypassConfirmButton: showBypassConfirmButton,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
     };
@@ -694,26 +705,7 @@ export default function Limit(props: propsIF) {
         setShowBypassConfirmButton: setShowBypassConfirmButton,
         sendLimitOrder: sendLimitOrder,
         setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
-        // onClose: handleModalClose,
-        // poolPriceDisplay: poolPriceDisplay || 0,
-        // initiateLimitOrderMethod: sendLimitOrder,
-        // isTokenAPrimary: isTokenAPrimary,
-        // insideTickDisplayPrice: endDisplayPrice,
-        // txErrorMessage: txErrorMessage,
-        // showConfirmation: showConfirmation,
-        // setShowConfirmation: setShowConfirmation,
-        // startDisplayPrice: startDisplayPrice,
-        // middleDisplayPrice: middleDisplayPrice,
-        // endDisplayPrice: endDisplayPrice,
-        // bypassConfirm: bypassConfirm,
-        // toggleBypassConfirm: toggleBypassConfirm,
     };
-
-    const confirmLimitModalOrNull = isModalOpen ? (
-        <Modal onClose={handleModalClose} title='Limit Confirmation'>
-            <ConfirmLimitModal {...confirmLimitModalProps} />
-        </Modal>
-    ) : null;
 
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
@@ -729,11 +721,21 @@ export default function Limit(props: propsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Approval',
+                    }),
+                );
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -790,7 +792,7 @@ export default function Limit(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
@@ -921,7 +923,6 @@ export default function Limit(props: propsIF) {
                     openGlobalModal={props.openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
                     bypassConfirm={bypassConfirm}
-                    toggleBypassConfirm={toggleBypassConfirm}
                 />
                 {navigationMenu}
                 <motion.div
@@ -962,7 +963,7 @@ export default function Limit(props: propsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={
-                                bypassConfirm
+                                bypassConfirm.limit.isEnabled
                                     ? handleLimitButtonClickWithBypass
                                     : openModal
                             }
@@ -972,14 +973,22 @@ export default function Limit(props: propsIF) {
                                 limitAllowed
                             }
                             limitButtonErrorMessage={limitButtonErrorMessage}
-                            bypassConfirm={bypassConfirm}
+                            bypassConfirmLimit={bypassConfirm.limit}
                         />
                     )
                 ) : (
                     loginButton
                 )}
             </ContentContainer>
-            {confirmLimitModalOrNull}
+            {isModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title='Limit Confirmation'
+                    centeredTitle
+                >
+                    <ConfirmLimitModal {...confirmLimitModalProps} />
+                </Modal>
+            )}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

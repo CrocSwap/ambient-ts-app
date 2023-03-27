@@ -3,7 +3,7 @@ import { PositionIF } from '../../../../utils/interfaces/exports';
 import {
     getPositionValue,
     getRangeDisplay,
-    getSymbols
+    getSymbols,
 } from './functions/exports';
 
 interface propsIF {
@@ -13,17 +13,20 @@ interface propsIF {
 }
 
 export default function SidebarRangePositionsCard(props: propsIF) {
-    const {
-        isDenomBase,
-        position,
-        handleClick
-    } = props;
+    const { isDenomBase, position, handleClick } = props;
 
     // human-readable string showing the tokens in the pool
-    const pair = getSymbols(isDenomBase, position.baseSymbol, position.quoteSymbol);
+    const pair = getSymbols(
+        isDenomBase,
+        position.baseSymbol,
+        position.quoteSymbol,
+    );
 
     // human-readable string indicating the range display
-    const [rangeDisplay, rangeStatusStyle] = getRangeDisplay(position, isDenomBase);
+    const [rangeDisplay, rangeStatusStyle] = getRangeDisplay(
+        position,
+        isDenomBase,
+    );
 
     // human-readable string showing total value of the position
     const value = getPositionValue(position.totalValueUSD);

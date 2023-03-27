@@ -10,11 +10,6 @@ import {
     setPositionsByUser,
     setChangesByUser,
     setChangesByPool,
-    // addSwapsByUser,
-    // addSwapsByPool,
-    // CandleData,
-    // setCandles,
-    // addCandles,
     setLiquidity,
     setPoolVolumeSeries,
     setPoolTvlSeries,
@@ -30,7 +25,6 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -49,7 +43,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
-// import PageFooter from './components/PageFooter/PageFooter';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -80,7 +73,6 @@ import {
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
-    // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
@@ -94,17 +86,13 @@ import {
     candleDomain,
     setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
-import {
-    memoizeQuerySpotPrice,
-    // querySpotPrice,
-} from './functions/querySpotPrice';
+import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
-// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
@@ -161,7 +149,6 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
-import { useBypassConfirm } from './hooks/useBypassConfirm';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
@@ -178,6 +165,7 @@ import {
     useExchangePrefs,
     dexBalanceMethodsIF,
 } from './hooks/useExchangePrefs';
+import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -240,9 +228,11 @@ export default function App() {
     const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
     const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
 
-    false && dexBalPrefSwap;
-    false && dexBalPrefLimit;
-    false && dexBalPrefRange;
+    // hooks to manage user preferences to skip confirmation modals
+    const bypassConfirmSwap: skipConfirmIF = useSkipConfirm('swap');
+    const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
+    const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
+    const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -302,6 +292,8 @@ export default function App() {
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
+        // reload to avoid stale wallet connections and excessive state accumulation
+        window.location.reload();
     };
 
     const onActive = () => {
@@ -316,7 +308,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
+        timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -463,28 +455,42 @@ export default function App() {
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
+    const provider = useProvider();
+    const isInitialized = !!provider;
     const {
         data: signer,
         isError,
+        error,
+        status: signerStatus,
         //  isLoading
     } = useSigner();
 
-    const provider = useProvider();
-
-    const isInitialized = !!provider;
+    // 1535 - remove console logging
+    const setNewCrocEnv = () => {
+        console.log({ provider });
+        console.log({ signer });
+        console.log({ crocEnv });
+        console.log({ signerStatus });
+        if (isError) {
+            console.error({ error });
+            setCrocEnv(undefined);
+        } else if (!provider && !signer) {
+            console.log('setting crocEnv to undefined');
+            setCrocEnv(undefined);
+            return;
+        } else if (!signer && !!crocEnv) {
+            console.log('keeping provider');
+            return;
+        } else {
+            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+            console.log({ newCrocEnv });
+            setCrocEnv(newCrocEnv);
+        }
+    };
 
     useEffect(() => {
-        (async () => {
-            if (isError) {
-                console.log({ isError });
-            } else if (!provider && !signer) {
-                return;
-            } else {
-                console.log('setting new crocEnv');
-                setCrocEnv(new CrocEnv(signer?.provider || provider));
-            }
-        })();
-    }, [provider, signer, isError]);
+        setNewCrocEnv();
+    }, [signerStatus === 'success', crocEnv === undefined]);
 
     useEffect(() => {
         if (provider) {
@@ -549,8 +555,6 @@ export default function App() {
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
-
-    const [checkBypassConfirm, updateBypassConfirm] = useBypassConfirm();
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
@@ -1448,14 +1452,24 @@ export default function App() {
         crocEnv,
     ]);
 
-    const activePeriod = tradeData.activeChartPeriod;
+    // local logic to determine current chart period
+    // this is situation-dependant but used in this file
+    let candleTimeLocal: number;
+    if (
+        location.pathname.startsWith('/trade/range') ||
+        location.pathname.startsWith('/trade/reposition')
+    ) {
+        candleTimeLocal = chartSettings.candleTime.range.time;
+    } else {
+        candleTimeLocal = chartSettings.candleTime.market.time;
+    }
 
     useEffect(() => {
         setCandleData(undefined);
         setIsCandleDataNull(false);
         setExpandTradeTable(false);
         fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
 
     const fetchCandles = () => {
         if (
@@ -1464,7 +1478,7 @@ export default function App() {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            activePeriod
+            candleTimeLocal
         ) {
             console.log('fetching new candles');
             try {
@@ -1479,7 +1493,7 @@ export default function App() {
                                 base: mainnetBaseTokenAddress.toLowerCase(),
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
-                                period: activePeriod.toString(),
+                                period: candleTimeLocal.toString(),
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
@@ -1503,7 +1517,6 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                                 if (
                                     JSON.stringify(candleData) !==
                                     JSON.stringify(candles)
@@ -1517,7 +1530,7 @@ export default function App() {
                                             poolIdx: chainData.poolIndex,
                                             network: chainData.chainId,
                                         },
-                                        duration: activePeriod,
+                                        duration: candleTimeLocal,
                                         candles: candles,
                                     });
                                 }
@@ -1606,7 +1619,7 @@ export default function App() {
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
-                period: activePeriod.toString(),
+                period: candleTimeLocal.toString(),
                 chainId: '0x1',
                 dex: 'all',
                 poolStats: 'true',
@@ -1620,7 +1633,7 @@ export default function App() {
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
             chainData.poolIndex,
-            activePeriod,
+            candleTimeLocal,
         ],
     );
 
@@ -1666,7 +1679,7 @@ export default function App() {
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / activePeriod,
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
@@ -1680,7 +1693,7 @@ export default function App() {
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
-                    period: activePeriod.toString(),
+                    period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
@@ -1739,7 +1752,7 @@ export default function App() {
 
     useEffect(() => {
         // console.log({ debouncedBoundary });
-        // console.log({ activePeriod });
+        // console.log({ candleTime });
         // console.log({ candleData });
 
         if (!numDurationsNeeded) return;
@@ -1981,7 +1994,9 @@ export default function App() {
         baseTokenAddress: string,
         quoteTokenAddress: string,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         return await cachedQuerySpotPrice(
             crocEnv,
             baseTokenAddress,
@@ -2438,7 +2453,7 @@ export default function App() {
             toggleTradeTabBasedOnRoute();
     }, [location, isCandleSelected]);
 
-    // function to sever connection between user wallet and Moralis server
+    // function to sever connection between user wallet and the app
     const clickLogout = async () => {
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
@@ -2449,12 +2464,11 @@ export default function App() {
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
         dispatch(resetUserAddresses());
-
+        setIsShowAllEnabled(true);
         disconnect();
     };
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-    // const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
 
     useEffect(() => {
         fetch(
@@ -2467,7 +2481,6 @@ export default function App() {
                         response.result.ProposeGasPrice,
                     );
                     if (gasPriceInGwei !== newGasPrice) {
-                        // console.log('setting new gas price');
                         setGasPriceinGwei(newGasPrice);
                     }
                 }
@@ -2545,19 +2558,6 @@ export default function App() {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
     };
-
-    // const themeButtons = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'column',
-    //             justifyContent: 'center',
-    //             alignItems: 'center',
-    //         }}
-    //     >
-    //         <button onClick={switchTheme}>Switch Theme</button>
-    //     </div>
-    // );
 
     // --------------END OF THEME--------------------------
 
@@ -2711,14 +2711,18 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
-        bypassConfirm: checkBypassConfirm('swap'),
-        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
+        },
+        bypassConfirm: {
+            swap: bypassConfirmSwap,
+            limit: bypassConfirmLimit,
+            range: bypassConfirmRange,
+            repo: bypassConfirmRepo,
         },
     };
 
@@ -2766,8 +2770,6 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
-        bypassConfirm: checkBypassConfirm('swap'),
-        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
@@ -2776,10 +2778,15 @@ export default function App() {
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
         },
+        bypassConfirm: {
+            swap: bypassConfirmSwap,
+            limit: bypassConfirmLimit,
+            range: bypassConfirmRange,
+            repo: bypassConfirmRepo,
+        },
     };
 
     // props for <Limit/> React element on trade route
-
     const limitPropsTrade = {
         account: account,
         pool: pool,
@@ -2825,14 +2832,18 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
-        bypassConfirm: checkBypassConfirm('limit'),
-        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         dexBalancePrefs: {
             swap: dexBalPrefSwap,
             limit: dexBalPrefLimit,
             range: dexBalPrefRange,
+        },
+        bypassConfirm: {
+            swap: bypassConfirmSwap,
+            limit: bypassConfirmLimit,
+            range: bypassConfirmRange,
+            repo: bypassConfirmRepo,
         },
     };
 
@@ -2890,8 +2901,6 @@ export default function App() {
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
-        bypassConfirm: checkBypassConfirm('range'),
-        toggleBypassConfirm: updateBypassConfirm,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         dexBalancePrefs: {
@@ -2910,6 +2919,12 @@ export default function App() {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
+        bypassConfirm: {
+            swap: bypassConfirmSwap,
+            limit: bypassConfirmLimit,
+            range: bypassConfirmRange,
+            repo: bypassConfirmRepo,
+        },
     };
 
     function toggleSidebar() {
@@ -3114,6 +3129,8 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     chartSettings={chartSettings}
                                     tokenList={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
@@ -3208,6 +3225,11 @@ export default function App() {
                                     }}
                                     setChartTriggeredBy={setChartTriggeredBy}
                                     chartTriggeredBy={chartTriggeredBy}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
+                                    }}
                                 />
                             }
                         >
@@ -3285,12 +3307,6 @@ export default function App() {
                                         isDenomBase={tradeData.isDenomBase}
                                         repoSlippage={repoSlippage}
                                         isPairStable={isPairStable}
-                                        bypassConfirm={checkBypassConfirm(
-                                            'repo',
-                                        )}
-                                        toggleBypassConfirm={
-                                            updateBypassConfirm
-                                        }
                                         setMaxPrice={setMaxRangePrice}
                                         setMinPrice={setMinRangePrice}
                                         setRescaleRangeBoundariesWithSlider={
@@ -3301,6 +3317,12 @@ export default function App() {
                                             setRepositionRangeWidth
                                         }
                                         simpleRangeWidth={repositionRangeWidth}
+                                        bypassConfirm={{
+                                            swap: bypassConfirmSwap,
+                                            limit: bypassConfirmLimit,
+                                            range: bypassConfirmRange,
+                                            repo: bypassConfirmRepo,
+                                        }}
                                     />
                                 }
                             />
@@ -3457,7 +3479,6 @@ export default function App() {
                                 />
                             }
                         />
-
                         <Route
                             path='range2'
                             element={<Range {...rangeProps} />}
@@ -3488,6 +3509,8 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
@@ -3546,7 +3569,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    gasPriceInGwei={gasPriceInGwei}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
@@ -3560,6 +3582,11 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
+                                    }}
                                 />
                             }
                         />
@@ -3567,6 +3594,8 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
@@ -3625,7 +3654,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    gasPriceInGwei={gasPriceInGwei}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
@@ -3638,6 +3666,11 @@ export default function App() {
                                         swap: dexBalPrefSwap,
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
+                                    }}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
                                     }}
                                 />
                             }
@@ -3664,6 +3697,12 @@ export default function App() {
                                     togggggggleSidebar={togggggggleSidebar}
                                     walletToS={walletToS}
                                     chartSettings={chartSettings}
+                                    bypassConf={{
+                                        swap: bypassConfirmSwap,
+                                        limit: bypassConfirmLimit,
+                                        range: bypassConfirmRange,
+                                        repo: bypassConfirmRepo,
+                                    }}
                                 />
                             }
                         />
@@ -3671,6 +3710,8 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
@@ -3729,7 +3770,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    gasPriceInGwei={gasPriceInGwei}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
@@ -3743,6 +3783,11 @@ export default function App() {
                                         limit: dexBalPrefLimit,
                                         range: dexBalPrefRange,
                                     }}
+                                    slippage={{
+                                        swapSlippage,
+                                        mintSlippage,
+                                        repoSlippage,
+                                    }}
                                 />
                             }
                         />
@@ -3753,8 +3798,7 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
-                    currentLocation !== '/app/chat' &&
-                    currentLocation !== '/chat' && (
+                    !currentLocation.includes('/chat') && (
                         <ChatPanel
                             isChatOpen={isChatOpen}
                             onClose={() => {
@@ -3784,7 +3828,6 @@ export default function App() {
                 popupTitle={popupTitle}
                 placement={popupPlacement}
             />
-
             {isWagmiModalOpenWallet && (
                 <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
             )}

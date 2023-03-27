@@ -6,11 +6,11 @@ import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
-// import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     onClose: () => void;
@@ -20,7 +20,6 @@ interface propsIF {
     tokenAInputQty: string;
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
-    // limitRate: string;
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
@@ -31,21 +30,17 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
     const {
-        // onClose,
         tokenPair,
         poolPriceDisplay,
         initiateLimitOrderMethod,
-        // limitRate,
         insideTickDisplayPrice,
         newLimitOrderTransactionHash,
         txErrorCode,
-        // txErrorMessage,
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
@@ -53,10 +48,9 @@ export default function ConfirmLimitModal(props: propsIF) {
         middleDisplayPrice,
         endDisplayPrice,
         bypassConfirm,
-        toggleBypassConfirm,
     } = props;
-    // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
-    const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
+    const [transactionApproved, setTransactionApproved] =
+        useState<boolean>(false);
 
     useEffect(() => {
         if (newLimitOrderTransactionHash) {
@@ -70,10 +64,13 @@ export default function ConfirmLimitModal(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPoolPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPoolPriceWithDenom = isDenomBase
+        ? 1 / poolPriceDisplay
+        : poolPriceDisplay;
 
     const displayPoolPriceString =
-        displayPoolPriceWithDenom === Infinity || displayPoolPriceWithDenom === 0
+        displayPoolPriceWithDenom === Infinity ||
+        displayPoolPriceWithDenom === 0
             ? '…'
             : displayPoolPriceWithDenom < 2
             ? displayPoolPriceWithDenom.toLocaleString(undefined, {
@@ -101,12 +98,12 @@ export default function ConfirmLimitModal(props: propsIF) {
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    // const isTransactionDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
-    const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
-        ?.value;
-    const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;
+    const sellTokenQty = (
+        document.getElementById('sell-limit-quantity') as HTMLInputElement
+    )?.value;
+    const buyTokenQty = (
+        document.getElementById('buy-limit-quantity') as HTMLInputElement
+    )?.value;
 
     const sellTokenData = tokenPair.dataTokenA;
 
@@ -118,7 +115,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         >{`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}</div>
     );
 
-    // console.log(sellTokenData);
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{buyTokenQty}</h2>
@@ -127,7 +123,10 @@ export default function ConfirmLimitModal(props: propsIF) {
                 {buyTokenData.logoURI ? (
                     <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
                 ) : (
-                    <NoTokenIcon tokenInitial={buyTokenData.symbol.charAt(0)} width='35px' />
+                    <NoTokenIcon
+                        tokenInitial={buyTokenData.symbol.charAt(0)}
+                        width='35px'
+                    />
                 )}
                 <h2>{buyTokenData.symbol}</h2>
             </div>
@@ -139,9 +138,15 @@ export default function ConfirmLimitModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 {sellTokenData.logoURI ? (
-                    <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                    <img
+                        src={sellTokenData.logoURI}
+                        alt={sellTokenData.symbol}
+                    />
                 ) : (
-                    <NoTokenIcon tokenInitial={sellTokenData.symbol.charAt(0)} width='35px' />
+                    <NoTokenIcon
+                        tokenInitial={sellTokenData.symbol.charAt(0)}
+                        width='35px'
+                    />
                 )}
                 <h2>{sellTokenData.symbol}</h2>
             </div>
@@ -192,11 +197,11 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const extraInfoData = (
         <div className={styles.extra_info_container}>
-            <div className={styles.convRate}>
+            {/* <div className={styles.convRate}>
                 {isDenomBase
                     ? `${trunctatedInsideTickDisplayPrice} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                     : `${trunctatedInsideTickDisplayPrice} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-            </div>
+            </div> */}
             <div className={styles.row}>
                 <p>Current Price</p>
                 <p>
@@ -232,6 +237,12 @@ export default function ConfirmLimitModal(props: propsIF) {
         </div>
     );
 
+    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
+        bypassConfirm.limit.isEnabled,
+    );
+
+    const toggleFor = 'limit';
+
     const fullTxDetails = (
         <div className={styles.main_container}>
             <section>
@@ -242,19 +253,17 @@ export default function ConfirmLimitModal(props: propsIF) {
                 </div>
                 {buyCurrencyRow}
             </section>
-            {/* <DenominationSwitch /> */}
             {extraInfoData}
             {explanationText}
             <ConfirmationModalControl
-                bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
-                toggleFor='limit'
+                tempBypassConfirm={currentSkipConfirm}
+                setTempBypassConfirm={setCurrentSkipConfirm}
+                toggleFor={toggleFor}
             />
         </div>
     );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
-    // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
             content={` Submitting Limit Order to Swap ${sellTokenQty} ${
@@ -265,8 +274,12 @@ export default function ConfirmLimitModal(props: propsIF) {
         />
     );
 
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionDenied = (
+        <TransactionDenied resetConfirmation={resetConfirmation} />
+    );
+    const transactionException = (
+        <TransactionException resetConfirmation={resetConfirmation} />
+    );
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -275,11 +288,14 @@ export default function ConfirmLimitModal(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            limit
         />
     );
 
     const confirmationDisplay =
-        isTransactionException || isGasLimitException || isInsufficientFundsException
+        isTransactionException ||
+        isGasLimitException ||
+        isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
@@ -287,33 +303,24 @@ export default function ConfirmLimitModal(props: propsIF) {
             ? transactionSubmitted
             : confirmSendMessage;
 
-    const confirmLimitButton = (
-        <Button
-            title='Send Limit'
-            action={() => {
-                // console.log(
-                //     `Sell Token Full name: ${sellTokenData.symbol} and quantity: ${sellTokenQty}`,
-                // );
-                // console.log(
-                //     `Buy Token Full name: ${buyTokenData.symbol} and quantity: ${buyTokenQty}`,
-                // );
-                initiateLimitOrderMethod();
-                setShowConfirmation(false);
-            }}
-            flat={true}
-        />
-    );
-
-    const modal = (
+    return (
         <div className={styles.modal_container}>
             <section className={styles.modal_content}>
                 {showConfirmation ? fullTxDetails : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation ? confirmLimitButton : null}
+                {showConfirmation && (
+                    <Button
+                        title='Send Limit'
+                        action={() => {
+                            bypassConfirm.limit.setValue(currentSkipConfirm);
+                            initiateLimitOrderMethod();
+                            setShowConfirmation(false);
+                        }}
+                        flat={true}
+                    />
+                )}
             </footer>
         </div>
     );
-
-    return <>{modal}</>;
 }

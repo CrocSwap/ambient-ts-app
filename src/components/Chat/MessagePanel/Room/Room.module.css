@@ -1,7 +1,6 @@
 * {
     margin: 0;
     padding: 0;
-    /* font-family: Lexend Deca; */
 }
 
 .container {
@@ -21,12 +20,10 @@
     height: 26px;
 
     /* Dark/Tertiary */
-
     background: #242f3f;
     border-radius: 4px;
 
     /* Inside auto layout */
-
     flex: none;
     flex-grow: 0;
 }
@@ -40,19 +37,17 @@
     font-weight: 200;
     font-size: 15px;
     line-height: 12px;
-    /* identical to box height */
 
+    /* identical to box height */
     display: flex;
     align-items: center;
     text-align: center;
     letter-spacing: -0.02em;
 
     /* text/grey light */
-
     color: #7371fc;
 
     /* Inside auto layout */
-
     flex: none;
     order: 0;
     flex-grow: 1;
@@ -67,19 +62,17 @@
     font-weight: 200;
     font-size: 15px;
     line-height: 12px;
-    /* identical to box height */
 
+    /* identical to box height */
     display: flex;
     align-items: center;
     text-align: center;
     letter-spacing: -0.02em;
 
     /* text/grey light */
-
     color: rgba(235, 235, 255, 0.4);
 
     /* Inside auto layout */
-
     flex: none;
     order: 0;
     flex-grow: 1;
@@ -103,7 +96,6 @@
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
-    display: flex;
     flex-direction: row;
 }
 

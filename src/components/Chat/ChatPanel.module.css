@@ -1,18 +1,9 @@
 .main_container {
-    /* display: flex;
-    justify-content: center;
-    align-items: center; */
     width: 380px;
     padding: 0 1rem;
 
     display: none;
 }
-
-/* .full_screen_wrapper{
-    max-height: calc(100vh - 8rem);
-    width: 100vw;
-    padding: 1rem;
-} */
 
 .modal_body {
     flex-direction: column-reverse;
@@ -26,16 +17,11 @@
     position: sticky;
     aspect-ratio: 5/6;
     transition: all var(--animation-speed) ease-in-out;
-
     overflow: auto;
-
-    background: rgba(23, 29, 39, 1);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-
     border-top: 1px solid var(--text-highlight-dark);
     border-left: 1px solid var(--text-highlight-dark);
     border-right: 1px solid var(--text-highlight-dark);
-
 }
 
 .chat_body {
@@ -62,10 +48,6 @@
     text-transform: uppercase;
     color: white;
     background: var(--dark3);
-    /* border-top: 2px solid var(--text-highlight-dark);
-      border-left: 2px solid var(--text-highlight-dark);
-      border-right: 2px solid var(--text-highlight-dark); */
-    /* background: var(--text-highlight-dark); */
 }
 
 .chat_header section {
@@ -95,41 +77,13 @@
     margin-left: 9px;
 }
 
-/* .chat_wrapper_full {
-      display: flex;
-      flex-direction: column-reverse;
-      border: solid 1px transparent;
-      background-origin: border-box;
-      background-clip: content-box, border-box;
-      box-shadow: 2px 1000px 1px #171d27 inset;
-      transition: box-shadow var(--animation-speed) ease-in-out;
-      cursor: pointer;
-      height: 89%;
-      width: 83% !important;
-      border-radius: var(--border-radius);
-      color: white;
-      position: static;
-      aspect-ratio: 5/6;
-      margin-bottom: 2% !important;
-      margin-top: 0;
-      overflow: scroll;
-
-      bottom: 0;
-      width: 100%;
-      
-  }
-   */
-
 .scrollable_div {
-    overflow-y: auto;
     overflow-y: auto;
     overflow-x: hidden;
     white-space: nowrap;
     display: flex;
     flex-direction: column-reverse;
-    flex-direction: column-reverse;
     align-items: center;
-    flex: 1 9999 auto;
     flex: 1 9999 auto;
     width: 100%;
     height: 80%;
@@ -161,7 +115,6 @@
     height: 5px;
 
     /* dark/primary */
-
     background-image: linear-gradient(
         to right top,
         #7371fc,
@@ -178,11 +131,9 @@
         #7371fc
     );
     border-radius: 8px;
-    border-radius: 8px;
     transform: rotate(-90deg);
 
     /* Inside auto layout */
-
     flex: none;
     order: 0;
     flex-grow: 0;

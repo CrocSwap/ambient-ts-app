@@ -35,6 +35,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     addPendingTx,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import {
@@ -45,6 +46,7 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
+import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -53,8 +55,7 @@ interface propsIF {
     dailyVol: number | undefined;
     repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: boolean;
-    toggleBypassConfirm: (item: string, pref: boolean) => void;
+    bypassConfirm: allSkipConfirmMethodsIF;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
@@ -76,7 +77,6 @@ export default function Reposition(props: propsIF) {
         repoSlippage,
         isPairStable,
         bypassConfirm,
-        toggleBypassConfirm,
         setMinPrice,
         setMaxPrice,
         setRescaleRangeBoundariesWithSlider,
@@ -91,7 +91,6 @@ export default function Reposition(props: propsIF) {
 
     // current URL parameter string
     const { params } = useParams();
-    // console.log({ params });
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -287,6 +286,7 @@ export default function Reposition(props: propsIF) {
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
+            location.reload();
             return;
         }
         let tx;
@@ -301,6 +301,13 @@ export default function Reposition(props: propsIF) {
             tx = await repo.rebal();
             setNewRepositionTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: 'Reposition',
+                    }),
+                );
             navigate(redirectPath, { replace: true });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -609,7 +616,6 @@ export default function Reposition(props: propsIF) {
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
                 bypassConfirm={bypassConfirm}
-                toggleBypassConfirm={toggleBypassConfirm}
             />
             <div className={styles.reposition_content}>
                 <RepositionRangeWidth
@@ -619,10 +625,6 @@ export default function Reposition(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider
                     }
                 />
-                {/* <RepositionDenominationSwitch
-                    baseTokenSymbol={position.baseSymbol || 'ETH'}
-                    quoteTokenSymbol={position.quoteSymbol || 'USDC'}
-                /> */}
                 <RepositionPriceInfo
                     crocEnv={crocEnv}
                     position={position}
@@ -650,12 +652,12 @@ export default function Reposition(props: propsIF) {
                         title={
                             isPositionInRange
                                 ? 'Position Currently In Range'
-                                : bypassConfirm
+                                : bypassConfirm.repo.isEnabled
                                 ? 'Reposition'
                                 : 'Open Confirmation'
                         }
                         action={
-                            bypassConfirm
+                            bypassConfirm.repo.isEnabled
                                 ? sendRepositionTransaction
                                 : openModal
                         }
@@ -665,7 +667,11 @@ export default function Reposition(props: propsIF) {
                 </div>
             </div>
             {isModalOpen && (
-                <Modal onClose={handleModalClose} title=' Confirm Reposition'>
+                <Modal
+                    onClose={handleModalClose}
+                    title=' Confirm Reposition'
+                    centeredTitle
+                >
                     <ConfirmRepositionModal
                         isPositionInRange={isPositionInRange}
                         crocEnv={crocEnv}
@@ -714,18 +720,9 @@ export default function Reposition(props: propsIF) {
                         isTokenABase={isTokenABase}
                         poolPriceDisplayNum={poolPriceDisplay || 0}
                         bypassConfirm={bypassConfirm}
-                        toggleBypassConfirm={toggleBypassConfirm}
                     />
                 </Modal>
             )}
         </div>
     );
 }
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-// function setTxErrorCode(code: any) {
-//     throw new Error('Function not implemented.');
-// }
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-// function setTxErrorMessage(message: any) {
-//     throw new Error('Function not implemented.');
-// }

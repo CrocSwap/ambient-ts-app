@@ -19,8 +19,8 @@ export const fetchTransactionGraphData = async (
     if (isFetchEnabled) {
         try {
             if (httpGraphCacheServerDomain) {
-                // console.log('fetching candles');
-                const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
+                const candleSeriesCacheEndpoint =
+                    httpGraphCacheServerDomain + '/candle_series?';
 
                 return fetch(
                     candleSeriesCacheEndpoint +
@@ -31,22 +31,23 @@ export const fetchTransactionGraphData = async (
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
-                            // page: '0', // nonnegative integer
                             chainId: '0x1',
                             dex: 'all',
                             poolStats: 'true',
                             concise: 'true',
                             poolStatsChainIdOverride: '0x5',
-                            poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                            poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                            poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                            poolStatsBaseOverride:
+                                baseTokenAddress.toLowerCase(),
+                            poolStatsQuoteOverride:
+                                quoteTokenAddress.toLowerCase(),
+                            poolStatsPoolIdxOverride:
+                                chainData.poolIndex.toString(),
                         }),
                 )
                     .then((response) => response?.json())
                     .then((json) => {
                         const candles = json?.data;
                         if (candles) {
-                            // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                             return {
                                 duration: period,
                                 candles: candles,
@@ -75,5 +76,7 @@ export type TransactionGraphDataFn = (
 ) => Promise<any>;
 
 export function memoizeFetchTransactionGraphData(): TransactionGraphDataFn {
-    return memoizeTransactionGraphFn(fetchTransactionGraphData) as TransactionGraphDataFn;
+    return memoizeTransactionGraphFn(
+        fetchTransactionGraphData,
+    ) as TransactionGraphDataFn;
 }

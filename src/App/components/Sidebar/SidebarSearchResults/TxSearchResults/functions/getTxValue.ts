@@ -5,6 +5,7 @@ import { formatAmountOld } from '../../../../../../utils/numbers';
  *      -Emily
  */
 
+// TODO (#1531): unit test coverage for this function.
 export const getTxValue = (
     valueUSD: number,
     totalValueUSD: number,

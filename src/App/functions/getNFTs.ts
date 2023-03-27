@@ -20,11 +20,12 @@ export async function getNFTs(account: string) {
 
         const result = response?.result;
 
-        const userEthNFTs = result.filter((nft) => nft.contractType === 'ERC1155');
+        const userEthNFTs = result.filter(
+            (nft) => nft.contractType === 'ERC1155',
+        );
 
         console.log({ userEthNFTs });
         if (userEthNFTs) {
-            // console.log({ userEthNFTs });
             const imageLocalURLs: string[] = [];
             userEthNFTs.forEach((nft) => {
                 const metadata = nft.metadata;
@@ -55,12 +56,10 @@ export async function getNFTs(account: string) {
                         imageGatewayURL = imageUrl;
                     } else if (imageUrl.startsWith('ipfs://')) {
                         const imageUrlNoProtocol = imageUrl.substring(12);
-                        // const imageGatewayURL =
-                        //     'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
-                        imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
+                        imageGatewayURL =
+                            'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
                     }
                     console.log({ nftMatchingAllowList: nft });
-                    // console.log({ imageGatewayURL });
                     if (imageGatewayURL)
                         fetch(imageGatewayURL)
                             .then((response) => response.blob())
@@ -74,7 +73,6 @@ export async function getNFTs(account: string) {
                             .catch(console.log);
                 }
             });
-            // console.log({ imageLocalURLs });
             return imageLocalURLs;
         }
     } catch (e) {

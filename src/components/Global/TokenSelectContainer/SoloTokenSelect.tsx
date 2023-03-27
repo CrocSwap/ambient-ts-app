@@ -23,7 +23,11 @@ interface propsIF {
     // TODO: rewrite logic to build this Map from all lists not just active ones
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokensByName: (
+        searchName: string,
+        chn: string,
+        exact: boolean,
+    ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 
     showSoloSelectTokenButtons: boolean;
@@ -34,7 +38,10 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
+    getRecentTokens: (options?: {
+        onCurrentChain?: boolean;
+        count?: number | null;
+    }) => TokenIF[];
     isSingleToken: boolean;
     tokenAorB: string | null;
     reverseTokens?: () => void;
@@ -75,7 +82,10 @@ export const SoloTokenSelect = (props: propsIF) => {
     // add an event listener for custom functionalities on modal close
     // this needs to be coordinated with data in Modal.tsx
     // later we'll abstract and import functionality to get rid of magic numbers
-    useEffect(() => window.addEventListener('closeModalEvent', modalCloseCustom), []);
+    useEffect(
+        () => window.addEventListener('closeModalEvent', modalCloseCustom),
+        [],
+    );
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -119,12 +129,16 @@ export const SoloTokenSelect = (props: propsIF) => {
         // if not in recent tokens array, add it
         recentTokens.some(
             (recentToken: TokenIF) =>
-                recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
+                recentToken.address.toLowerCase() ===
+                    tkn.address.toLowerCase() &&
                 recentToken.chainId === tkn.chainId,
         ) || addRecentToken(tkn);
 
         if (tokenAorB === 'A' && tokenPair) {
-            if (tokenPair.dataTokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
+            if (
+                tokenPair.dataTokenB.address.toLowerCase() ===
+                tkn.address.toLowerCase()
+            ) {
                 reverseTokens && reverseTokens();
                 closeModal();
                 return;
@@ -133,13 +147,17 @@ export const SoloTokenSelect = (props: propsIF) => {
                 locationSlug,
                 '0x5',
                 tkn.address,
-                tokenPair.dataTokenB.address.toLowerCase() === tkn.address.toLowerCase()
+                tokenPair.dataTokenB.address.toLowerCase() ===
+                    tkn.address.toLowerCase()
                     ? tokenPair.dataTokenA.address
                     : tokenPair.dataTokenB.address,
             );
             // user is updating token B
         } else if (tokenAorB === 'B' && tokenPair) {
-            if (tokenPair.dataTokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+            if (
+                tokenPair.dataTokenA.address.toLowerCase() ===
+                tkn.address.toLowerCase()
+            ) {
                 reverseTokens && reverseTokens();
                 closeModal();
                 return;
@@ -147,7 +165,8 @@ export const SoloTokenSelect = (props: propsIF) => {
             goToNewUrlParams(
                 locationSlug,
                 '0x5',
-                tokenPair.dataTokenA.address.toLowerCase() === tkn.address.toLowerCase()
+                tokenPair.dataTokenA.address.toLowerCase() ===
+                    tkn.address.toLowerCase()
                     ? tokenPair.dataTokenB.address
                     : tokenPair.dataTokenA.address,
                 tkn.address,
@@ -161,7 +180,13 @@ export const SoloTokenSelect = (props: propsIF) => {
             addrTokenB: string,
         ): void {
             navigate(
-                pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB,
+                pathSlug +
+                    '/chain=' +
+                    chain +
+                    '&tokenA=' +
+                    addrTokenA +
+                    '&tokenB=' +
+                    addrTokenB,
             );
         }
 
@@ -178,19 +203,23 @@ export const SoloTokenSelect = (props: propsIF) => {
         // make sure a provider exists
         // validated input must appear to be a valid contract address
         // app must fail to find token in local data
-        if (provider && searchType === 'address' && !verifyToken(validatedInput, chainId)) {
+        if (
+            provider &&
+            searchType === 'address' &&
+            !verifyToken(validatedInput, chainId)
+        ) {
             // local instance of function to pull back token data from chain
             const cachedFetchContractDetails = memoizeFetchContractDetails();
             // promise holding query to get token metadata from on-chain
-            const promise: Promise<TokenIF | undefined> = cachedFetchContractDetails(
-                provider,
-                validatedInput,
-                chainId,
-            );
+            const promise: Promise<TokenIF | undefined> =
+                cachedFetchContractDetails(provider, validatedInput, chainId);
             // resolve the promise
             Promise.resolve(promise)
                 // if response has a `decimals` value treat it as valid
-                .then((res: TokenIF | undefined) => res?.decimals && setCustomToken(res))
+                .then(
+                    (res: TokenIF | undefined) =>
+                        res?.decimals && setCustomToken(res),
+                )
                 // error handling
                 .catch((err) => {
                     // log error to console
@@ -224,9 +253,12 @@ export const SoloTokenSelect = (props: propsIF) => {
                 // can be in `allTokenLists` or in imported tokens list
                 if (
                     verifyToken(validatedInput, chainId) ||
-                    JSON.parse(localStorage.getItem('user') as string).tokens.some(
+                    JSON.parse(
+                        localStorage.getItem('user') as string,
+                    ).tokens.some(
                         (tkn: TokenIF) =>
-                            tkn.address.toLowerCase() === validatedInput.toLowerCase(),
+                            tkn.address.toLowerCase() ===
+                            validatedInput.toLowerCase(),
                     )
                 ) {
                     output = 'token buttons';
@@ -271,7 +303,9 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // // TODO: this is a function to clear the input field on click
     // // TODO: we just need a button in the DOM to attach it
-    const input = document.getElementById('token_select_input_field') as HTMLInputElement;
+    const input = document.getElementById(
+        'token_select_input_field',
+    ) as HTMLInputElement;
     const clearInputField = () => {
         if (input) input.value = '';
 
@@ -305,8 +339,15 @@ export const SoloTokenSelect = (props: propsIF) => {
                     type='text'
                     placeholder=' Search name or enter an Address'
                     onChange={(e) => setInput(e.target.value)}
+                    style={{
+                        color: showSoloSelectTokenButtons
+                            ? 'var(--text-grey-white)'
+                            : 'var(--text-grey-dark)',
+                    }}
                 />
-                {input?.value && <button onClick={clearInputField}>Clear</button>}
+                {input?.value && (
+                    <button onClick={clearInputField}>Clear</button>
+                )}
                 {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>
             {showSoloSelectTokenButtons ? (
@@ -319,7 +360,11 @@ export const SoloTokenSelect = (props: propsIF) => {
                     />
                 ))
             ) : (
-                <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
+                <SoloTokenImport
+                    customToken={customToken}
+                    chooseToken={chooseToken}
+                    chainId={chainId}
+                />
             )}
         </section>
     );

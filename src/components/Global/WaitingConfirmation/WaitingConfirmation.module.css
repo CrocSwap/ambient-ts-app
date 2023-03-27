@@ -4,12 +4,23 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+
+    /* padding: 20px */
 }
-.waiting_detail {
+.wallet_confirm h2,
+.wallet_confirm p {
     padding: 10px 0;
 }
-.waiting_detail p {
-    opacity: 0.7;
+
+.wallet_confirm h2 {
+    color: var(--text-grey-white);
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+}
+.wallet_confirm p {
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 /* .loading_animation{
   
@@ -18,61 +29,54 @@
 
 } */
 
+.loader {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
 
+    animation: animate 2s linear infinite;
 
-.loader{
-	position: relative;
-	width: 150px;
-	height: 150px;
-	border-radius: 50%;
-    background: linear-gradient(45deg, transparent, transparent 40%, var(--text-highlight));
-
-	animation: animate 2s linear infinite;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
 }
 
-.loader img{
-	max-width: 100%;
-	z-index: 3;
-    opacity: 0;
+.loader:before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    background: var(--body-bg);
+    border-radius: 50%;
+    z-index: 2;
 }
+.loader:after {
+    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
 
-.loader:before{
-	content: '';
-	position: absolute;
-	top: 6px;
-	left: 6px;
-	right: 6px;
-	bottom: 6px;
-	background: var(--body-bg);
-	border-radius: 50%;
-	z-index: 2;
-}
-.loader:after{
-	background: linear-gradient(45deg, transparent, transparent 40%, var(--text-highlight));
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
 
-	content: '';
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	
-	border-radius: 50%;
-	z-index: 1;
-	filter: blur(40px);
+    border-radius: 50%;
+    z-index: 1;
+    filter: blur(30px);
 }
 
 @keyframes animate {
-	0% {
-		transform: rotate(0deg);
-		filter: hue-rotate(0deg)
-	}
-	100% {
-		transform: rotate(360deg);
-		filter: hue-rotate(10deg)
-	}
+    0% {
+        transform: rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+        filter: hue-rotate(10deg);
+    }
 }

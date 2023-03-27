@@ -3,12 +3,8 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { useEffect, useState } from 'react';
-import Animation from '../Global/Animation/Animation';
-import completed from '../../assets/animations/completed.json';
-import { FiExternalLink } from 'react-icons/fi';
-import { VscClose } from 'react-icons/vsc';
-import { BsArrowLeft } from 'react-icons/bs';
+import { ReactNode, useEffect, useState } from 'react';
+
 import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import {
@@ -25,6 +21,7 @@ import {
     addPendingTx,
     addPositionPendingUpdate,
     addReceipt,
+    addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
@@ -38,6 +35,10 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
+import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { checkIsStable } from '../../utils/data/stablePairs';
+import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -62,21 +63,35 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function RemoveRange(props: propsIF) {
-    const { handleModalClose, crocEnv, chainData, position, dexBalancePrefs } =
-        props;
+    const {
+        crocEnv,
+        chainData,
+        position,
+        dexBalancePrefs,
+        slippage,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainId,
+        handleModalClose,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+    } = props;
 
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData,
     ).lastBlock;
 
-    const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
     const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
         useState<number | undefined>();
@@ -101,6 +116,31 @@ export default function RemoveRange(props: propsIF) {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
+
+    const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const averageGasUnitsForRemovalTx = 94500;
+    const numGweiInWei = 1e-9;
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageGasUnitsForRemovalTx *
+                numGweiInWei *
+                ethMainnetUsdPrice;
+
+            setRemovalGasPriceinDollars(
+                '$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -168,7 +208,6 @@ export default function RemoveRange(props: propsIF) {
             position.positionType
         ) {
             (async () => {
-                // console.log('fetching details');
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
@@ -230,8 +269,6 @@ export default function RemoveRange(props: propsIF) {
         }
     }, [txErrorCode]);
 
-    const liquiditySlippageTolerance = 1;
-
     const posHash =
         position.positionType === 'ambient'
             ? ambientPosSlot(
@@ -252,6 +289,16 @@ export default function RemoveRange(props: propsIF) {
     const isPositionPendingUpdate =
         positionsPendingUpdate.indexOf(posHash as string) > -1;
 
+    const isPairStable: boolean = checkIsStable(
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainId,
+    );
+
+    const persistedSlippage: number = isPairStable
+        ? slippage.mintSlippage.stable
+        : slippage.mintSlippage.volatile;
+
     const removeFn = async () => {
         if (!crocEnv) return;
         console.log('removing');
@@ -260,8 +307,8 @@ export default function RemoveRange(props: propsIF) {
         const pool = crocEnv.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
-        const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
-        const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+        const lowLimit = spotPrice * (1 - persistedSlippage / 100);
+        const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
         dispatch(addPositionPendingUpdate(posHash as string));
 
@@ -330,6 +377,13 @@ export default function RemoveRange(props: propsIF) {
                 console.log(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Removal',
+                        }),
+                    );
             } catch (error) {
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -339,7 +393,6 @@ export default function RemoveRange(props: propsIF) {
                 console.log({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -469,25 +522,11 @@ export default function RemoveRange(props: propsIF) {
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const etherscanLink =
-        chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
     const removalSuccess = (
-        <div className={styles.removal_denied}>
-            <div className={styles.completed_animation}>
-                <Animation animData={completed} loop={false} />
-            </div>
-            <p>Removal Transaction Successfully Submitted</p>
-            <a
-                href={etherscanLink}
-                target='_blank'
-                rel='noreferrer'
-                className={styles.view_etherscan}
-            >
-                View on Etherscan
-                <FiExternalLink size={20} color='black' />
-            </a>
-        </div>
+        <TxSubmittedSimplify
+            hash={newRemovalTransactionHash}
+            content='Removal Transaction Successfully Submitted.'
+        />
     );
 
     const removalPending = (
@@ -510,7 +549,7 @@ export default function RemoveRange(props: propsIF) {
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    function handleConfirmationChange() {
+    function handleConfirmationChange(): void {
         setCurrentConfirmationData(removalPending);
 
         if (transactionApproved) {
@@ -550,7 +589,7 @@ export default function RemoveRange(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
+            {/* {showConfirmation && (
                 <header>
                     <div className={styles.button} onClick={resetConfirmation}>
                         {newRemovalTransactionHash == '' && (
@@ -563,20 +602,48 @@ export default function RemoveRange(props: propsIF) {
                         </div>
                     )}
                 </header>
-            )}
+            )} */}
+            <RemoveRangeHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Remove Position Settings'
+                        : 'Remove Position'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
             <div className={styles.confirmation_content}>
                 {currentConfirmationData}
             </div>
         </div>
     );
 
+    const [currentSlippage, setCurrentSlippage] =
+        useState<number>(persistedSlippage);
+
+    const updateSettings = (): void => {
+        setShowSettings(false);
+        isPairStable
+            ? slippage.mintSlippage.updateStable(currentSlippage)
+            : slippage.mintSlippage.updateVolatile(currentSlippage);
+    };
+
     const buttonToDisplay = (
         <div style={{ padding: '1rem' }}>
             {showSettings ? (
                 <Button
-                    title='Confirm'
-                    action={() => setShowSettings(false)}
+                    title={
+                        currentSlippage > 0
+                            ? 'Confirm'
+                            : 'Enter a Valid Slippage'
+                    }
+                    action={updateSettings}
                     flat
+                    disabled={!(currentSlippage > 0)}
                 />
             ) : isPositionPendingUpdate ? (
                 <RemoveRangeButton
@@ -602,8 +669,13 @@ export default function RemoveRange(props: propsIF) {
 
     const mainModalContent = showSettings ? (
         <RemoveRangeSettings
-            showSettings={showSettings}
-            setShowSettings={setShowSettings}
+            persistedSlippage={persistedSlippage}
+            setCurrentSlippage={setCurrentSlippage}
+            presets={
+                isPairStable
+                    ? slippage.mintSlippage.presets.stable
+                    : slippage.mintSlippage.presets.volatile
+            }
         />
     ) : (
         <>
@@ -643,29 +715,35 @@ export default function RemoveRange(props: propsIF) {
                 />
                 <ExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} />{' '}
+                {removalGasPriceinDollars ? removalGasPriceinDollars : '…'}
+            </div>
         </>
     );
 
     if (showConfirmation) return confirmationContent;
     return (
-        <div className={styles.remove_range_container}>
-            <div className={styles.main_content}>
-                <RemoveRangeHeader
-                    onClose={handleModalClose}
-                    title={
-                        showSettings
-                            ? 'Remove Position Settings'
-                            : 'Remove Position'
-                    }
-                    onBackButton={() => {
-                        resetConfirmation();
-                        setShowSettings(false);
-                    }}
-                    showBackButton={showSettings}
-                />
-                {mainModalContent}
-                {buttonToDisplay}
+        <>
+            <RemoveRangeHeader
+                onClose={handleModalClose}
+                title={
+                    showSettings
+                        ? 'Remove Position Settings'
+                        : 'Remove Position'
+                }
+                onBackButton={() => {
+                    resetConfirmation();
+                    setShowSettings(false);
+                }}
+                showBackButton={showSettings}
+            />
+            <div className={styles.remove_range_container}>
+                <div className={styles.main_content}>
+                    {mainModalContent}
+                    {buttonToDisplay}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

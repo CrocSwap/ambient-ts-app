@@ -1,11 +1,8 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-// import truncateDecimals from '../../utils/data/truncateDecimals';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-// import { ethers } from 'ethers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
 
-// import { fetchAddress } from './fetchAddress';
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export const getPositionData = async (
@@ -17,8 +14,10 @@ export const getPositionData = async (
 ): Promise<PositionIF> => {
     const newPosition = { ...position };
 
-    const baseTokenAddress = position.base.length === 40 ? '0x' + position.base : position.base;
-    const quoteTokenAddress = position.quote.length === 40 ? '0x' + position.quote : position.quote;
+    const baseTokenAddress =
+        position.base.length === 40 ? '0x' + position.base : position.base;
+    const quoteTokenAddress =
+        position.quote.length === 40 ? '0x' + position.quote : position.quote;
 
     const poolPriceNonDisplay = await cachedQuerySpotPrice(
         crocEnv,
@@ -33,7 +32,8 @@ export const getPositionData = async (
 
     const isPositionInRange =
         position.positionType === 'ambient' ||
-        (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
+        (position.bidTick <= poolPriceInTicks &&
+            poolPriceInTicks <= position.askTick);
 
     newPosition.isPositionInRange = isPositionInRange;
 
@@ -44,10 +44,20 @@ export const getPositionData = async (
     const upperPriceNonDisplay = tickToPrice(position.askTick);
 
     const lowerPriceDisplayInBase =
-        1 / toDisplayPrice(upperPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+        1 /
+        toDisplayPrice(
+            upperPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
 
     const upperPriceDisplayInBase =
-        1 / toDisplayPrice(lowerPriceNonDisplay, baseTokenDecimals, quoteTokenDecimals);
+        1 /
+        toDisplayPrice(
+            lowerPriceNonDisplay,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
 
     const lowerPriceDisplayInQuote = toDisplayPrice(
         lowerPriceNonDisplay,
@@ -61,6 +71,7 @@ export const getPositionData = async (
         quoteTokenDecimals,
     );
 
+    // TODO (#1569): we should be re-using a token formatting function here and below
     newPosition.lowRangeShortDisplayInBase =
         lowerPriceDisplayInBase < 0.0001
             ? lowerPriceDisplayInBase.toExponential(2)
@@ -106,10 +117,12 @@ export const getPositionData = async (
               });
 
     const baseTokenLogoURI = importedTokens.find(
-        (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
     const quoteTokenLogoURI = importedTokens.find(
-        (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
 
     newPosition.baseTokenLogoURI = baseTokenLogoURI ?? '';
@@ -177,8 +190,7 @@ export const getPositionData = async (
                 ? liqBaseNum.toPrecision(3)
                 : liqBaseNum >= 10000
                 ? formatAmountOld(liqBaseNum)
-                : // ? baseLiqDisplayNum.toExponential(2)
-                  liqBaseNum.toLocaleString(undefined, {
+                : liqBaseNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
@@ -197,8 +209,7 @@ export const getPositionData = async (
                 ? liqQuoteNum.toPrecision(3)
                 : liqQuoteNum >= 10000
                 ? formatAmountOld(liqQuoteNum)
-                : // ? quoteLiqDisplayNum.toExponential(2)
-                  liqQuoteNum.toLocaleString(undefined, {
+                : liqQuoteNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
@@ -208,41 +219,52 @@ export const getPositionData = async (
     return newPosition;
 };
 
-export const updatePositionStats = async (position: PositionIF): Promise<PositionIF> => {
+export const updatePositionStats = async (
+    position: PositionIF,
+): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
-
-    // console.log('fetching position apy');
+    const positionStatsCacheEndpoint =
+        httpGraphCacheServerDomain + '/position_stats?';
 
     const updatedPosition = await fetch(
         positionStatsCacheEndpoint +
             new URLSearchParams({
-                user: position.user.length === 40 ? '0x' + position.user : position.user,
+                user:
+                    position.user.length === 40
+                        ? '0x' + position.user
+                        : position.user,
                 askTick: position.askTick.toString(),
                 bidTick: position.bidTick.toString(),
-                base: position.base.length === 40 ? '0x' + position.base : position.base,
-                quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
+                base:
+                    position.base.length === 40
+                        ? '0x' + position.base
+                        : position.base,
+                quote:
+                    position.quote.length === 40
+                        ? '0x' + position.quote
+                        : position.quote,
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
-                // chainId: position.chainId,
                 positionType: position.positionType,
                 addValue: 'true',
             }),
     )
         .then((response) => response?.json())
         .then((json) => {
-            // console.log({ json });
             const apy = json?.data.apy;
             const totalValueUSD = json?.data.totalValueUSD;
             const positionLiq = json?.data.positionLiq;
             const positionLiqBase = json?.data.positionLiqBase;
-            const positionLiqBaseDecimalCorrected = json?.data.positionLiqBaseDecimalCorrected;
+            const positionLiqBaseDecimalCorrected =
+                json?.data.positionLiqBaseDecimalCorrected;
             const positionLiqQuote = json?.data.positionLiqQuote;
-            const positionLiqQuoteDecimalCorrected = json?.data.positionLiqQuoteDecimalCorrected;
+            const positionLiqQuoteDecimalCorrected =
+                json?.data.positionLiqQuoteDecimalCorrected;
 
             const liqBaseNum = positionLiqBaseDecimalCorrected;
             const liqQuoteNum = positionLiqQuoteDecimalCorrected;
 
+            // TODO (#1569): token value formatting
             const positionLiqBaseTruncated = !liqBaseNum
                 ? '0'
                 : liqBaseNum < 0.0001
@@ -251,14 +273,10 @@ export const updatePositionStats = async (position: PositionIF): Promise<Positio
                 ? liqBaseNum.toPrecision(3)
                 : liqBaseNum >= 10000
                 ? formatAmountOld(liqBaseNum)
-                : // ? baseLiqDisplayNum.toExponential(2)
-                  liqBaseNum.toLocaleString(undefined, {
+                : liqBaseNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-
-            // console.log({ positionLiqBaseTruncated });
-            // console.log({ positionLiqBaseTruncated });
 
             const positionLiqQuoteTruncated = !liqQuoteNum
                 ? '0'
@@ -268,27 +286,24 @@ export const updatePositionStats = async (position: PositionIF): Promise<Positio
                 ? liqQuoteNum.toPrecision(3)
                 : liqQuoteNum >= 10000
                 ? formatAmountOld(liqQuoteNum)
-                : // ? baseLiqDisplayNum.toExponential(2)
-                  liqQuoteNum.toLocaleString(undefined, {
+                : liqQuoteNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
 
-            // console.log({ positionLiqQuoteTruncated });
-
-            // if (apy) {
             return Object.assign({}, position, {
                 apy: apy || 0,
                 totalValueUSD: totalValueUSD,
                 positionLiq: positionLiq,
                 positionLiqBase: positionLiqBase,
                 positionLiqQuote: positionLiqQuote,
-                positionLiqBaseDecimalCorrected: positionLiqBaseDecimalCorrected,
-                positionLiqQuoteDecimalCorrected: positionLiqQuoteDecimalCorrected,
+                positionLiqBaseDecimalCorrected:
+                    positionLiqBaseDecimalCorrected,
+                positionLiqQuoteDecimalCorrected:
+                    positionLiqQuoteDecimalCorrected,
                 positionLiqBaseTruncated: positionLiqBaseTruncated,
                 positionLiqQuoteTruncated: positionLiqQuoteTruncated,
             });
-            // }
         })
 
         .catch(console.log);
@@ -298,18 +313,28 @@ export const updatePositionStats = async (position: PositionIF): Promise<Positio
 
 export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-    const positionApyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
+    const positionApyCacheEndpoint =
+        httpGraphCacheServerDomain + '/position_apy?';
 
     // console.log('fetching position apy');
 
     const updatedPosition = await fetch(
         positionApyCacheEndpoint +
             new URLSearchParams({
-                user: position.user.length === 40 ? '0x' + position.user : position.user,
+                user:
+                    position.user.length === 40
+                        ? '0x' + position.user
+                        : position.user,
                 askTick: position.askTick.toString(),
                 bidTick: position.bidTick.toString(),
-                base: position.base.length === 40 ? '0x' + position.base : position.base,
-                quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
+                base:
+                    position.base.length === 40
+                        ? '0x' + position.base
+                        : position.base,
+                quote:
+                    position.quote.length === 40
+                        ? '0x' + position.quote
+                        : position.quote,
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
                 // chainId: position.chainId,

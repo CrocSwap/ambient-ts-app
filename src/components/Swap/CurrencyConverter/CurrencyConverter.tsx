@@ -435,7 +435,9 @@ export default function CurrencyConverter(props: propsIF) {
     const handleTokenAChangeEvent = async (
         evt?: ChangeEvent<HTMLInputElement>,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         let rawTokenBQty;
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
@@ -492,7 +494,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
-            if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
+            if (!(parseFloat(tokenAQtyLocal) > 0)) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenBQtyLocal('');
@@ -531,7 +533,9 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     const handleTokenAChangeClick = async (value: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
         if (tokenAInputField) {
@@ -608,7 +612,9 @@ export default function CurrencyConverter(props: propsIF) {
     const handleTokenBChangeEvent = async (
         evt?: ChangeEvent<HTMLInputElement>,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
 
         let rawTokenAQty: number | undefined;
         if (evt) {
@@ -665,7 +671,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 return;
             }
-            if (tokenBQtyLocal === '' && tokenAQtyLocal === '') {
+            if (!(parseFloat(tokenBQtyLocal) > 0)) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
                 setTokenAQtyLocal('');

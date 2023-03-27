@@ -21,7 +21,9 @@ interface TvlData {
     setMouseMoveEventCharts: React.Dispatch<React.SetStateAction<any>>;
     setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     getNewCandleData: any;
-    setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
+    setMouseMoveChartName: React.Dispatch<
+        React.SetStateAction<string | undefined>
+    >;
     mouseMoveChartName: string | undefined;
     setTransformX: React.Dispatch<React.SetStateAction<any>>;
     transformX: any;
@@ -67,7 +69,7 @@ export default function TvlSubChart(props: TvlData) {
         period,
         tvlData,
         zoomAndYdragControl,
-        JSON.stringify(scaleData.xScale.domain()[0]),
+        JSON.stringify(scaleData?.xScale.domain()[0]),
     ]);
 
     const render = useCallback(() => {
@@ -81,15 +83,25 @@ export default function TvlSubChart(props: TvlData) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const yScale = d3.scaleLinear();
 
-                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                const xmin = new Date(
+                    Math.floor(scaleData?.xScale.domain()[0]),
+                );
+                const xmax = new Date(
+                    Math.floor(scaleData?.xScale.domain()[1]),
+                );
 
                 const filtered = tvlData?.filter(
                     (data: any) => data.time >= xmin && data.time <= xmax,
                 );
 
-                const minYBoundary = d3.min(filtered, (d: any) => d.value) as any;
-                const maxYBoundary = d3.max(filtered, (d: any) => d.value) as any;
+                const minYBoundary = d3.min(
+                    filtered,
+                    (d: any) => d.value,
+                ) as any;
+                const maxYBoundary = d3.max(
+                    filtered,
+                    (d: any) => d.value,
+                ) as any;
 
                 const domain = [0, maxYBoundary * 2];
                 yScale.domain(domain);
@@ -99,7 +111,9 @@ export default function TvlSubChart(props: TvlData) {
                     .scale(yScale)
                     .tickValues([
                         minYBoundary + (maxYBoundary - minYBoundary) / 2,
-                        maxYBoundary / minYBoundary < 2 ? '' : maxYBoundary * 1.5,
+                        maxYBoundary / minYBoundary < 2
+                            ? ''
+                            : maxYBoundary * 1.5,
                     ])
                     .tickFormat(formatDollarAmountAxis);
 
@@ -107,7 +121,8 @@ export default function TvlSubChart(props: TvlData) {
                     {
                         x: 0,
                         y:
-                            isMouseMoveForSubChart && mouseMoveChartName === 'tvl'
+                            isMouseMoveForSubChart &&
+                            mouseMoveChartName === 'tvl'
                                 ? crosshairForSubChart[0].y
                                 : -1,
                     },
@@ -115,12 +130,15 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaJoin = d3fc.dataJoin('g', 'areaJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
+                const crosshairVerticalJoin = d3fc.dataJoin(
+                    'g',
+                    'crosshairVertical',
+                );
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
                     .value((d: any) => yScale.invert(d.y))
-                    .xScale(scaleData.xScale)
+                    .xScale(scaleData?.xScale)
                     .yScale(yScale);
 
                 crosshairVertical.decorate((selection: any) => {
@@ -159,7 +177,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaSeries = d3fc
                     .seriesSvgArea()
-                    .xScale(scaleData.xScale)
+                    .xScale(scaleData?.xScale)
                     .yScale(yScale)
                     .mainValue((d: any) => d.value)
                     .crossValue((d: any) => d.time)
@@ -173,7 +191,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const lineSeries = d3fc
                     .seriesSvgLine()
-                    .xScale(scaleData.xScale)
+                    .xScale(scaleData?.xScale)
                     .yScale(yScale)
                     .mainValue((d: any) => d.value)
                     .crossValue((d: any) => d.time)
@@ -182,52 +200,65 @@ export default function TvlSubChart(props: TvlData) {
                         selection.attr('stroke-width', '2');
                     });
 
-                d3.select(d3PlotTvl.current).on('measure', function (event: any) {
-                    scaleData.xScale.range([0, event.detail.width]);
-                    yScale.range([event.detail.height, 0]);
-                });
+                d3.select(d3PlotTvl.current).on(
+                    'measure',
+                    function (event: any) {
+                        scaleData?.xScale.range([0, event.detail.width]);
+                        yScale.range([event.detail.height, 0]);
+                    },
+                );
 
-                d3.select(d3PlotTvl.current).on('measure.range', function (event: any) {
-                    let date: any | undefined = undefined;
-                    const svg = d3.select(event.target).select('svg');
-                    const zoom = d3
-                        .zoom()
-                        .scaleExtent([1, 10])
-                        .on('start', () => {
-                            if (date === undefined) {
-                                date = tvlData[tvlData.length - 1].time;
-                            }
-                        })
-                        .on('zoom', (event: any) => {
-                            const domainX = scaleData.xScale.domain();
-                            const linearX = d3
-                                .scaleTime()
-                                .domain(scaleData.xScale.range())
-                                .range([0, domainX[1] - domainX[0]]);
+                d3.select(d3PlotTvl.current).on(
+                    'measure.range',
+                    function (event: any) {
+                        let date: any | undefined = undefined;
+                        const svg = d3.select(event.target).select('svg');
+                        const zoom = d3
+                            .zoom()
+                            .scaleExtent([1, 10])
+                            .on('start', () => {
+                                if (date === undefined) {
+                                    date = tvlData[tvlData.length - 1].time;
+                                }
+                            })
+                            .on('zoom', (event: any) => {
+                                const domainX = scaleData?.xScale.domain();
+                                const linearX = d3
+                                    .scaleTime()
+                                    .domain(scaleData?.xScale.range())
+                                    .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(-event.sourceEvent.movementX);
+                                const deltaX = linearX(
+                                    -event.sourceEvent.movementX,
+                                );
 
-                            getNewCandleData(new Date(domainX[0].getTime() + deltaX), date);
+                                getNewCandleData(
+                                    new Date(domainX[0].getTime() + deltaX),
+                                    date,
+                                );
 
-                            scaleData.xScale.domain([
-                                new Date(domainX[0].getTime() + deltaX),
-                                new Date(domainX[1].getTime() + deltaX),
-                            ]);
+                                scaleData?.xScale.domain([
+                                    new Date(domainX[0].getTime() + deltaX),
+                                    new Date(domainX[1].getTime() + deltaX),
+                                ]);
 
-                            setZoomAndYdragControl(event);
-                            setIsMouseMoveForSubChart(false);
-                            setIsZoomForSubChart(true);
-                            setMouseMoveEventCharts(event);
-                        }) as any;
+                                setZoomAndYdragControl(event);
+                                setIsMouseMoveForSubChart(false);
+                                setIsZoomForSubChart(true);
+                                setMouseMoveEventCharts(event);
+                            }) as any;
 
-                    svg.call(zoom);
-                });
+                        svg.call(zoom);
+                    },
+                );
 
                 d3.select(d3PlotTvl.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
                     areaJoin(svg, [tvlData]).lower().call(areaSeries);
                     lineJoin(svg, [tvlData]).lower().call(lineSeries);
-                    crosshairVerticalJoin(svg, [crosshairDataLocal]).call(crosshairVertical);
+                    crosshairVerticalJoin(svg, [crosshairDataLocal]).call(
+                        crosshairVertical,
+                    );
                 });
 
                 d3.select(d3Yaxis.current).on('draw', function (event: any) {
@@ -237,11 +268,17 @@ export default function TvlSubChart(props: TvlData) {
                 const minimum = (tvlData: any, accessor: any) => {
                     return tvlData
                         .map(function (dataPoint: any, index: any) {
-                            return [accessor(dataPoint, index), dataPoint, index];
+                            return [
+                                accessor(dataPoint, index),
+                                dataPoint,
+                                index,
+                            ];
                         })
                         .reduce(
                             function (accumulator: any, dataPoint: any) {
-                                return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                                return accumulator[0] > dataPoint[0]
+                                    ? dataPoint
+                                    : accumulator;
                             },
                             [Number.MAX_VALUE, null, -1],
                         );
@@ -263,37 +300,40 @@ export default function TvlSubChart(props: TvlData) {
                     if (nearest) {
                         const newX = new Date(nearest.time.getTime());
                         const value = new Date(newX.setTime(newX.getTime()));
-                        return [{ x: xScale(value), y: 0, value: nearest.value }];
+                        return [
+                            { x: xScale(value), y: 0, value: nearest.value },
+                        ];
                     } else {
                         return [{ x: 0, y: 0, value: 0 }];
                     }
                 };
 
-                d3.select(d3PlotTvl.current).on('mousemove', function (event: any) {
-                    setMouseMoveChartName('tvl');
-                    d3.select(d3PlotTvl.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChildren()
-                        .style('visibility', 'visible');
-                    setIsMouseMoveForSubChart(true);
-                    setIsZoomForSubChart(false);
-                    setMouseMoveEventCharts(event);
+                d3.select(d3PlotTvl.current).on(
+                    'mousemove',
+                    function (event: any) {
+                        setMouseMoveChartName('tvl');
+                        d3.select(d3PlotTvl.current)
+                            .select('svg')
+                            .select('.crosshairVertical')
+                            .selectChildren()
+                            .style('visibility', 'visible');
+                        setIsMouseMoveForSubChart(true);
+                        setIsZoomForSubChart(false);
+                        setMouseMoveEventCharts(event);
 
-                    setsubChartValues((prevState: any) => {
-                        const newData = [...prevState];
-                        newData.filter((target: any) => target.name === 'tvl')[0].value = snap(
-                            areaSeries,
-                            tvlData,
-                            {
-                                x: scaleData.xScale(crosshairDataLocal[0].x),
+                        setsubChartValues((prevState: any) => {
+                            const newData = [...prevState];
+                            newData.filter(
+                                (target: any) => target.name === 'tvl',
+                            )[0].value = snap(areaSeries, tvlData, {
+                                x: scaleData?.xScale(crosshairDataLocal[0].x),
                                 y: crosshairDataLocal[0].y,
-                            },
-                        )[0].value;
+                            })[0].value;
 
-                        return newData;
-                    });
-                });
+                            return newData;
+                        });
+                    },
+                );
 
                 d3.select(d3PlotTvl.current).on('mouseleave', () => {
                     setMouseMoveChartName(undefined);
@@ -308,16 +348,26 @@ export default function TvlSubChart(props: TvlData) {
                 });
             }
         },
-        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0]), tvlData],
+        [
+            crosshairForSubChart,
+            JSON.stringify(scaleData?.xScale.domain()[0]),
+            tvlData,
+        ],
     );
 
     return (
         <div ref={tvlMainDiv} id='tvl_chart' data-testid={'chart'}>
-            <d3fc-svg id='d3PlotTvl' ref={d3PlotTvl} style={{ overflow: 'hidden' }}></d3fc-svg>
+            <d3fc-svg
+                id='d3PlotTvl'
+                ref={d3PlotTvl}
+                style={{ overflow: 'hidden' }}
+            ></d3fc-svg>
             <label style={{ position: 'absolute', left: '0%' }}>
                 TVL:{' '}
                 {formatDollarAmountAxis(
-                    subChartValues.filter((value: any) => value.name === 'tvl')[0].value,
+                    subChartValues.filter(
+                        (value: any) => value.name === 'tvl',
+                    )[0].value,
                 )}
             </label>
             <d3fc-svg

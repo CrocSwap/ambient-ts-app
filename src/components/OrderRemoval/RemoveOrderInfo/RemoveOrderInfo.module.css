@@ -1,7 +1,7 @@
 .remove_position_info {
     background: var(--dark3);
     border-radius: var(--border-radius);
-    padding: 1rem;
+    padding: 8px;
 
     display: flex;
     flex-direction: column;
@@ -14,7 +14,6 @@
 }
 
 .info_container {
-
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -33,7 +32,7 @@
     width: 15px;
 }
 
-.align_center{
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;

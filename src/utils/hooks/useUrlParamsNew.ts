@@ -6,13 +6,13 @@ import {
     setTokenB,
     setAdvancedLowTick,
     setAdvancedHighTick,
-    setLimitTick
+    setLimitTick,
 } from '../state/tradeDataSlice';
 import { TokenIF } from '../interfaces/exports';
 
 export const useUrlParamsNew = (
     chainId: string,
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
 ): void => {
     const { params } = useParams();
 
@@ -23,7 +23,8 @@ export const useUrlParamsNew = (
         const fixedParams = params ?? '';
         // split params string at every ampersand
         return (
-            fixedParams.split('&')
+            fixedParams
+                .split('&')
                 // remove any values missing an = symbol
                 .filter((par) => par.includes('='))
                 // split substrings at = symbols to make [key, value] tuples
@@ -37,7 +38,7 @@ export const useUrlParamsNew = (
 
     const chainToUse = useMemo<string>(() => {
         const chainParam = urlParams.find(
-            (param: string[]) => param[0] === 'chain'
+            (param: string[]) => param[0] === 'chain',
         );
         let output: string;
         if (chainParam) {
@@ -47,7 +48,7 @@ export const useUrlParamsNew = (
         }
         return output;
     }, [chainId, urlParams]);
-    
+
     const updateRTK = (key: string, val: string): void => {
         const handleToken = (tkn: string, addr: string): void => {
             const tokenData = getTokenByAddress(addr, chainToUse);
@@ -55,7 +56,7 @@ export const useUrlParamsNew = (
                 tkn === 'tokenA' && dispatch(setTokenA(tokenData));
                 tkn === 'tokenB' && dispatch(setTokenB(tokenData));
             }
-        }
+        };
         switch (key) {
             case 'tokenA':
             case 'tokenB':

@@ -6,7 +6,7 @@ import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
-import { TokenIF } from '../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import { TbTableExport } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
@@ -14,7 +14,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import FullChat from '../../App/components/Chat/FullChat/FullChat';
+import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
@@ -34,7 +34,6 @@ interface currentPoolInfo {
     advancedLowTick: number;
     advancedHighTick: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
 }
 
 interface propsIF {
@@ -47,17 +46,15 @@ interface propsIF {
     fullScreen?: boolean;
     userImageData: string[];
     appPage?: boolean;
-    username?: string | undefined | null;
+    username?: string | null;
 }
 
 export default function ChatPanel(props: propsIF) {
     const { isFullScreen, favePools, currentPool, setIsChatOpen } = props;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-    // const navigate = useNavigate();
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
+    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
@@ -75,10 +72,10 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    // console.log('running ChatPanel');
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -140,9 +137,6 @@ export default function ChatPanel(props: propsIF) {
         }
     }, [lastMessage]);
 
-    // console.log({ ens });
-    // console.log({ ensName });
-
     useEffect(() => {
         setScrollDirection('Scroll Down');
         if (address) {
@@ -174,7 +168,6 @@ export default function ChatPanel(props: propsIF) {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
                                 if (result.status === 'OK') {
-                                    console.log(result);
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     updateMessageUser(
                                         currentUser as string,
@@ -222,7 +215,6 @@ export default function ChatPanel(props: propsIF) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (result: any) => {
                             if (result.status === 'OK') {
-                                console.log(result);
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 updateMessageUser(
                                     currentUser as string,
@@ -251,7 +243,6 @@ export default function ChatPanel(props: propsIF) {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
-        console.log('scrolling to bottom');
     }, [props.isChatOpen]);
 
     function handleCloseChatPanel() {
@@ -302,11 +293,6 @@ export default function ChatPanel(props: propsIF) {
         }
     };
 
-    // const handleFullScreenRedirect = () => {
-    //     navigate('/app/chat');
-    //     props.setIsChatOpen(true);
-    // };
-
     const header = (
         <div
             className={styles.chat_header}
@@ -321,7 +307,9 @@ export default function ChatPanel(props: propsIF) {
                         size={18}
                         className={styles.open_full_button}
                         onClick={() =>
-                            window.open('/chat/' + room.replace('/', '&'))
+                            window.open(
+                                '/chat/' + room.replace('/', '&').toLowerCase(),
+                            )
                         }
                     />
                 )}
@@ -349,35 +337,29 @@ export default function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => (
-                    <div
+                    <SentMessagePanel
+                        isUserLoggedIn={isUserLoggedIn as boolean}
+                        message={item}
+                        ensName={ensName}
+                        isCurrentUser={item.sender === currentUser}
+                        currentUser={currentUser}
+                        userImageData={
+                            connectedAccountActive
+                                ? props.userImageData
+                                : secondaryImageData
+                        }
+                        resolvedAddress={resolvedAddress}
+                        connectedAccountActive={address}
+                        moderator={moderator}
+                        room={room}
+                        isMessageDeleted={isMessageDeleted}
+                        setIsMessageDeleted={setIsMessageDeleted}
+                        previousMessage={
+                            i === messages.length - 1 ? null : messages[i + 1]
+                        }
+                        nextMessage={i === 0 ? null : messages[i - 1]}
                         key={item._id}
-                        style={{ width: '90%', marginBottom: 4 }}
-                    >
-                        <SentMessagePanel
-                            isUserLoggedIn={isUserLoggedIn as boolean}
-                            message={item}
-                            ensName={ensName}
-                            isCurrentUser={item.sender === currentUser}
-                            currentUser={currentUser}
-                            userImageData={
-                                connectedAccountActive
-                                    ? props.userImageData
-                                    : secondaryImageData
-                            }
-                            resolvedAddress={resolvedAddress}
-                            connectedAccountActive={address}
-                            moderator={moderator}
-                            room={room}
-                            isMessageDeleted={isMessageDeleted}
-                            setIsMessageDeleted={setIsMessageDeleted}
-                            previousMessage={
-                                i === messages.length - 1
-                                    ? null
-                                    : messages[i + 1]
-                            }
-                            nextMessage={i === 0 ? null : messages[i - 1]}
-                        />
-                    </div>
+                    />
                 ))}
         </div>
     );
@@ -483,6 +465,8 @@ export default function ChatPanel(props: propsIF) {
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 favePools={favePools}
                 userCurrentPool={userCurrentPool}
+                favoritePoolsArray={favoritePoolsArray}
+                setFavoritePoolsArray={setFavoritePoolsArray}
             />
         );
 
@@ -514,6 +498,8 @@ export default function ChatPanel(props: propsIF) {
                         setUserCurrentPool={setUserCurrentPool}
                         currentUser={currentUser}
                         ensName={ensName}
+                        setFavoritePoolsArray={setFavoritePoolsArray}
+                        favoritePoolsArray={favoritePoolsArray}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

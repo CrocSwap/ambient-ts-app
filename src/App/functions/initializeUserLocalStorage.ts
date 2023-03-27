@@ -1,6 +1,5 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
-// import { ambientTokenList } from '../../utils/data/ambientTokenList';
 import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeUserLocalStorage() {
@@ -24,7 +23,9 @@ export default function initializeUserLocalStorage() {
 
     // retrieve the user object from local storage
     // putting it there then pulling it back is necessary to prevent overwrites
-    const user = localStorage.user ? JSON.parse(localStorage.getItem('user') as string) : {};
+    const user = localStorage.user
+        ? JSON.parse(localStorage.getItem('user') as string)
+        : {};
 
     // get the list of token lists that the app will load by default and only
     // ... build the value in local storage if there is not one already, this
@@ -47,7 +48,9 @@ export default function initializeUserLocalStorage() {
         user.activeTokenLists &&
         localStorage.allTokenLists
     ) {
-        user.tokens = JSON.parse(localStorage.getItem('allTokenLists') as string).find(
+        user.tokens = JSON.parse(
+            localStorage.getItem('allTokenLists') as string,
+        ).find(
             (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
         ).tokens;
         userUpdated = true;

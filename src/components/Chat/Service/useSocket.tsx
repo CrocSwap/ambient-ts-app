@@ -16,8 +16,6 @@ const useSocket = (room: string) => {
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
 
-    // console.log('running useSocket');
-
     useEffect(() => {
         const roomId = room;
         console.log('running chat socket connection for new room');
@@ -44,7 +42,6 @@ const useSocket = (room: string) => {
     }, [room]);
 
     async function getMsg() {
-        // console.log('running getMsg');
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });
@@ -66,7 +63,14 @@ const useSocket = (room: string) => {
         });
     }
 
-    return { messages, getMsg, sendMsg, lastMessage, messageUser, lastMessageText };
+    return {
+        messages,
+        getMsg,
+        sendMsg,
+        lastMessage,
+        messageUser,
+        lastMessageText,
+    };
 };
 
 export default useSocket;

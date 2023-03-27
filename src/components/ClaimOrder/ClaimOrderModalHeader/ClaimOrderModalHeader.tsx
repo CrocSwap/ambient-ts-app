@@ -1,7 +1,6 @@
 import styles from './ClaimOrderModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BsArrowLeft } from 'react-icons/bs';
-import { Dispatch, SetStateAction } from 'react';
 // import { RiListSettingsLine } from 'react-icons/ri';
 interface ClaimOrderModalHeaderPropsIF {
     title: string;
@@ -9,10 +8,12 @@ interface ClaimOrderModalHeaderPropsIF {
     // eslint-disable-next-line
     onGoBack?: any;
 
-    showSettings: boolean;
-    setShowSettings: Dispatch<SetStateAction<boolean>>;
+    // showSettings: boolean;
+    // setShowSettings: Dispatch<SetStateAction<boolean>>;
 }
-export default function ClaimOrderModalHeader(props: ClaimOrderModalHeaderPropsIF) {
+export default function ClaimOrderModalHeader(
+    props: ClaimOrderModalHeaderPropsIF,
+) {
     const goBackButton = (
         <div onClick={props.onGoBack}>
             <BsArrowLeft size={22} />

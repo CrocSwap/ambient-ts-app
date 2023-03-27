@@ -3,7 +3,6 @@ import { capitalConcFactor, CrocEnv, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { formatDaysRange } from '../../../../App/functions/formatDaysRange';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import {
@@ -57,7 +56,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const {
         position,
         ambientApy,
-        dailyVol,
         currentPoolPriceDisplay,
         currentPoolPriceTick,
         rangeWidthPercentage,
@@ -77,10 +75,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const isDenomBase = useAppSelector((state) => state.tradeData)?.isDenomBase;
 
-    // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
-
-    // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
-
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -97,57 +91,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
 
     const dispatch = useAppDispatch();
-
-    // -----------------------------TEMPORARY PLACE HOLDERS--------------
-
-    // const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
-    //     pinnedMinPriceDisplayTruncated || '0.00',
-    // );
-    // const [maxPriceDisplay, setMaxPriceDisplay] = useState<string>(
-    //     pinnedMaxPriceDisplayTruncated || '0.00',
-    // );
-
-    // useEffect(() => {
-    //     setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
-    //     if (pinnedMinPriceDisplayTruncated !== undefined) {
-    //         setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
-    //     }
-    // }, [pinnedMinPriceDisplayTruncated]);
-
-    // useEffect(() => {
-    //     setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
-    //     setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
-    // }, [pinnedMaxPriceDisplayTruncated]);
-    // const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    // const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('0.00');
-
-    // useEffect(() => {
-    //     if (!crocEnv) {
-    //         return;
-    //     }
-    //     const pool = crocEnv.pool(position.base, position.quote);
-
-    //     const repo = new CrocReposition(pool, {
-    //         liquidity: position.positionLiq,
-    //         burn: [position.bidTick, position.askTick],
-    //         mint: [pinnedLowTick, pinnedHighTick],
-    //     });
-
-    //     repo.postBalance().then(([base, quote]: [number, number]) => {
-    //         setNewBaseQtyDisplay(truncateString(base));
-    //         setNewQuoteQtyDisplay(truncateString(quote));
-    //     });
-    // }, [
-    //     crocEnv,
-    //     useDebounce(pinnedLowTick, 500),
-    //     useDebounce(pinnedHighTick, 500),
-    //     position.baseSymbol,
-    //     position.quoteSymbol,
-    //     currentPoolPriceTick,
-    //     position.positionLiq,
-    //     position.bidTick,
-    //     position.askTick,
-    // ]);
 
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
@@ -177,37 +120,11 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
           })}%`
         : '…';
 
-    let daysInRange = rangeWidthPercentage === 100 ? Infinity : 0;
-
-    if (dailyVol && rangeWidthPercentage !== 100) {
-        const poolPrice = tickToPrice(currentPoolPriceTick);
-        const lowPrice = tickToPrice(pinnedLowTick);
-        const highPrice = tickToPrice(pinnedHighTick);
-
-        const upperPercent = Math.log(highPrice / poolPrice);
-        const lowerPercent = Math.log(poolPrice / lowPrice);
-
-        if (upperPercent > 0 && lowerPercent > 0) {
-            const daysBelow = Math.pow(upperPercent / dailyVol, 2);
-            const daysAbove = Math.pow(lowerPercent / dailyVol, 2);
-            daysInRange = Math.min(daysBelow, daysAbove);
-        }
-    }
-
-    const daysInRangeString = daysInRange
-        ? daysInRange === Infinity
-            ? 'Est. Time in Range | ∞'
-            : `Est. Time in Range | ${formatDaysRange(daysInRange)}`
-        : '…';
-
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
     // JSX frag for estimated APR of position
 
     const apr = <span className={styles.apr}>{aprPercentageString}</span>;
-    const days = (
-        <span className={styles.time_in_range}>{daysInRangeString}</span>
-    );
 
     // JSX frag for lowest price in range
     const minimumPrice = (
@@ -219,9 +136,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             </span>
         </div>
     );
-
-    // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
-    // const currentPrice = spotPriceDisplay;
 
     // JSX frag for highest price in range
     const maximumPrice = (
@@ -239,7 +153,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             <p className={styles.collateral_title}>
                 Current {baseSymbol} Collateral
             </p>
-            <p className={styles.collateral_amount}>
+            <p
+                className={styles.collateral_amount}
+                style={{ color: 'var(--text-grey-light)' }}
+            >
                 {currentBaseQtyDisplayTruncated}
             </p>
         </div>
@@ -249,7 +166,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             <p className={styles.collateral_title}>
                 Current {quoteSymbol} Collateral
             </p>
-            <p className={styles.collateral_amount}>
+            <p
+                className={styles.collateral_amount}
+                style={{ color: 'var(--text-grey-light)' }}
+            >
                 {currentQuoteQtyDisplayTruncated}
             </p>
         </div>
@@ -274,7 +194,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     return (
         <div className={styles.price_info_container}>
             {!isConfirmModal ? apr : null}
-            {!isConfirmModal ? days : null}
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>
