@@ -112,7 +112,7 @@ export default function Account(props: AccountPropsIF) {
             ? undefined
             : parseFloat(nativeBalance) === 0
             ? '0.00'
-            : parseFloat(nativeBalance).toPrecision(4);
+            : nativeBalance;
 
     const walletDisplay = (
         <section className={styles.wallet_display} ref={walletDropdownItemRef}>
