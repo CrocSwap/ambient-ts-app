@@ -137,14 +137,7 @@ export default function Reposition(props: propsIF) {
     const [concLiq, setConcLiq] = useState<string>('');
 
     const updateConcLiq = async () => {
-        if (
-            !crocEnv ||
-            !position ||
-            !position.positionStorageSlot ||
-            !position.tx
-        )
-            return;
-        // console.log({ position });
+        if (!crocEnv || !position) return;
         const pool = crocEnv.pool(position.base, position.quote);
         const pos = new CrocPositionView(pool, position.user);
 
@@ -153,7 +146,6 @@ export default function Reposition(props: propsIF) {
         ).liq.toString();
 
         setConcLiq(liquidity);
-        // console.log({ pos });
     };
 
     useEffect(() => {
