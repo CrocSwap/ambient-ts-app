@@ -10,7 +10,7 @@ body:
     id: work-required
     attributes:
       label: What is needed?
-      description: Tell / show what work is being deferred, (link back to the codebase with TODO: if possible).
-      placeholder: What work is being deferred? (NOTE: solutioning is not needed here)
+      description: Tell / show what work is being deferred, (link back to the codebase with TODO if possible).
+      placeholder: What work is being deferred? (NOTE solutioning is not needed here)
     validations:
       required: true
