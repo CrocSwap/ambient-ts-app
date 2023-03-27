@@ -91,7 +91,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
         [
-            // 10 WBTC to , with updated pool value
+            // 10 WBTC to ETH, with updated pool value
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -102,6 +102,51 @@ describe('verify calculateSecondaryDepositQty output', () => {
             0.976255942594625,
             15.755627507023359,
             153.8152498303889,
+            15,
+        ],
+
+        [
+            // 10 WBTC to ETH with ambient range
+            157556275070.23358,
+            WBTC_DECIMALS,
+            ETH_DECIMALS,
+            '10',
+            true,
+            false,
+            true,
+            1,
+            15.755627507023359,
+            157.5562750702336,
+            15,
+        ],
+
+        [
+            // WBTC to ETH, and we're typing to modify the ETH value (token A gets updated)
+            157556275070.23358,
+            WBTC_DECIMALS,
+            ETH_DECIMALS,
+            '15.3',
+            false,
+            false,
+            false,
+            0.976255942594625,
+            15.755627507023359,
+            0.9946998114212481,
+            15,
+        ],
+
+        [
+            // ETH to WBTC, and we selected ambient range, updating the non-base token again.
+            157556275070.23358,
+            ETH_DECIMALS,
+            WBTC_DECIMALS,
+            '1',
+            true,
+            true,
+            true,
+            1,
+            15.755627507023359,
+            0.06346938575148668,
             15,
         ],
     ])(
