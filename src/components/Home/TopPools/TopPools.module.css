@@ -14,12 +14,20 @@
     color: var(--text-grey-white);
 }
 
+.title:focus-visible{
+text-decoration: underline;
+text-decoration-color:var(--text-grey-white) ;
+border: none;
+outline: none;
+}
+
 .content {
     --auto-grid-min-size: 300px;
     max-width: 1120px;
     margin: 0 auto;
     display: grid;
     grid-gap: 1rem;
+    list-style-type: none;
     /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
 }
 

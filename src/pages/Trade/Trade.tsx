@@ -445,9 +445,17 @@ export default function Trade(props: propsIF) {
         setIsCandleSelected(false);
     };
 
+    const activeCandleDuration = isMarketOrLimitModule
+        ? chartSettings.candleTime.market.time
+        : chartSettings.candleTime.range.time;
+
     useEffect(() => {
         unselectCandle();
-    }, [chartSettings.candleTime, tradeData.baseToken.name, tradeData.quoteToken.name]);
+    }, [
+        activeCandleDuration,
+        tradeData.baseToken.name,
+        tradeData.quoteToken.name,
+    ]);
 
     const initLinkPath =
         '/initpool/chain=0x5&tokenA=' +
@@ -534,8 +542,6 @@ export default function Trade(props: propsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        // activeTimeFrame: activeTimeFrame,
-        // setActiveTimeFrame: setActiveTimeFrame,
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
         setPoolPriceChangePercent: setPoolPriceChangePercent,

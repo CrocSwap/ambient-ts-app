@@ -66,10 +66,13 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>
             <div>New to Ethereum?</div>
-            <a href='#'>Learn more about Wallets</a>
+            <a  href='https://ethereum.org/en/wallets/'
+                target='_blank'
+                rel='noreferrer'>
+                Learn more about Wallets
+            </a>
         </div>
     );
-
     const connectorsDisplay = isConnected ? (
         <div key={connector?.id}>
             <div>{ensName ? `${ensName} (${address})` : address}</div>
@@ -124,10 +127,15 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         </div>
     );
 
-    const walletsPage = useMemo(
+     const walletsPage = useMemo(
         () => (
             <div className={styles.main_container}>
-                <section>{connectorsDisplay}</section>
+                {connectorsDisplay}
+                {/* {walletsDisplay} */}
+                {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
+                        <HiOutlineMail size={20} color='#EBEBFF' />
+                        Connect with Email
+                    </button> */}
 
                 {learnAboutWalletsContent}
             </div>
