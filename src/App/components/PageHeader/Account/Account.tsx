@@ -134,7 +134,7 @@ export default function Account(props: AccountPropsIF) {
         <section
             className={styles.wallet_display}
             ref={walletDropdownItemRef}
-            tabIndex={0}
+            // tabIndex={0}
             aria-label={mainAriaLabel}
         >
             <button

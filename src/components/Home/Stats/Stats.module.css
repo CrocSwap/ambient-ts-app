@@ -13,7 +13,12 @@
     letter-spacing: -0.02em;
     color: var(--text-grey-white);
 }
-
+.title:focus-visible{
+    text-decoration: underline;
+    text-decoration-color:var(--text-grey-white) ;
+    border: none;
+    outline: none;
+    }
 .content {
     max-width: 1120px;
     margin: 0 auto;

@@ -75,7 +75,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 {' '}
                 <AiOutlineLogout color='var(--text-highlight)' /> Logout
             </button>
-            <NavLink to={'/account'} aria-label='Go to the account page '>
+            <NavLink
+                to={'/account'}
+                aria-label='Go to the account page '
+                tabIndex={0}
+            >
                 <CgProfile />
                 My Account
             </NavLink>

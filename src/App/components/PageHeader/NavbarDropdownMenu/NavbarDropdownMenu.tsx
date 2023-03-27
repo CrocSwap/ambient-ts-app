@@ -255,7 +255,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             <div
                 className={styles.dropdown}
                 ref={dropdownRef}
-                tabIndex={0}
+                // tabIndex={0}
                 aria-label={ariaLabel}
             >
                 <CSSTransition
