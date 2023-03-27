@@ -8,8 +8,8 @@ import {
 } from 'react-router-dom';
 import {
     CrocEnv,
+    CrocPositionView,
     CrocReposition,
-    RangeLiqPos,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 
@@ -145,13 +145,14 @@ export default function Reposition(props: propsIF) {
         )
             return;
         // console.log({ position });
-        const pos = (await crocEnv
-            .positions()
-            .queryPos(
-                position.positionStorageSlot,
-                position.tx,
-            )) as RangeLiqPos;
-        setConcLiq(pos?.concLiq.toString());
+        const pool = crocEnv.pool(position.base, position.quote);
+        const pos = new CrocPositionView(pool, position.user);
+
+        const liquidity = (
+            await pos.queryRangePos(position.bidTick, position.askTick)
+        ).liq.toString();
+
+        setConcLiq(liquidity);
         // console.log({ pos });
     };
 
