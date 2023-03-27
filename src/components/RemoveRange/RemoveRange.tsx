@@ -6,12 +6,13 @@ import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {
     ambientPosSlot,
     ChainSpec,
     concPosSlot,
     CrocEnv,
+    CrocPositionView,
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -85,6 +86,7 @@ export default function RemoveRange(props: propsIF) {
         handleModalClose,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        isAmbient,
     } = props;
 
     const lastBlockNumber = useAppSelector(
@@ -141,6 +143,32 @@ export default function RemoveRange(props: propsIF) {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    const [liquidityToBurn, setLiquidityToBurn] = useState<
+        BigNumber | undefined
+    >();
+
+    const updateLiq = async () => {
+        if (!crocEnv || !position || !removalPercentage) return;
+
+        try {
+            const pool = crocEnv.pool(position.base, position.quote);
+            const pos = new CrocPositionView(pool, position.user);
+
+            const liqBigNum = isAmbient
+                ? (await pos.queryAmbient()).liq
+                : (await pos.queryRangePos(position.bidTick, position.askTick))
+                      .liq;
+
+            setLiquidityToBurn(liqBigNum.mul(removalPercentage).div(100));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        updateLiq();
+    }, [crocEnv, lastBlockNumber, JSON.stringify(position), removalPercentage]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -300,7 +328,7 @@ export default function RemoveRange(props: propsIF) {
         : slippage.mintSlippage.volatile;
 
     const removeFn = async () => {
-        if (!crocEnv) return;
+        if (!crocEnv || !liquidityToBurn) return;
         console.log('removing');
         setShowConfirmation(true);
 
@@ -334,12 +362,6 @@ export default function RemoveRange(props: propsIF) {
                     setTxErrorCode(error?.code);
                 }
             } else {
-                const positionLiq = position.positionLiq;
-
-                const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                    .mul(removalPercentage)
-                    .div(100);
-
                 try {
                     tx = await pool.burnAmbientLiq(liquidityToBurn, [
                         lowLimit,
@@ -360,11 +382,6 @@ export default function RemoveRange(props: propsIF) {
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            const positionLiq = position.positionLiq;
-
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
             console.log(`${removalPercentage}% to be removed.`);
 
             try {
@@ -402,12 +419,6 @@ export default function RemoveRange(props: propsIF) {
         const newLiqChangeCacheEndpoint =
             'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
-            const positionLiq = position.positionLiq;
-
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
-
             if (position.positionType === 'ambient') {
                 fetch(
                     newLiqChangeCacheEndpoint +
@@ -464,12 +475,6 @@ export default function RemoveRange(props: propsIF) {
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
-                    const positionLiq = position.positionLiq;
-
-                    const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                        .mul(removalPercentage)
-                        .div(100);
-
                     if (position.positionType === 'ambient') {
                         fetch(
                             newLiqChangeCacheEndpoint +
