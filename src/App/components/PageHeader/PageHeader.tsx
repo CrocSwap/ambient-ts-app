@@ -250,6 +250,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
                         <Link
+                            tabIndex={0}
                             className={
                                 link.destination.includes('/trade')
                                     ? location.pathname.includes(

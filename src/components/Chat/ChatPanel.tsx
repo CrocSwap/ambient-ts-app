@@ -311,6 +311,9 @@ export default function ChatPanel(props: propsIF) {
                                 '/chat/' + room.replace('/', '&').toLowerCase(),
                             )
                         }
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open chat in full screen'
                     />
                 )}
                 {isFullScreen || !props.isChatOpen ? (
@@ -320,9 +323,19 @@ export default function ChatPanel(props: propsIF) {
                         size={22}
                         className={styles.close_button}
                         onClick={() => handleCloseChatPanel()}
+                        role='button'
+                        tabIndex={0}
+                        aria-label='hide chat button'
                     />
                 )}
-                {!props.isChatOpen && <IoIosArrowUp size={22} />}
+                {!props.isChatOpen && (
+                    <IoIosArrowUp
+                        size={22}
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open chat button'
+                    />
+                )}
             </section>
         </div>
     );
@@ -384,6 +397,8 @@ export default function ChatPanel(props: propsIF) {
                                 size={27}
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
+                                tabIndex={0}
+                                aria-label='Scroll to bottom button'
                             />
                         </span>
                     </div>
@@ -399,6 +414,8 @@ export default function ChatPanel(props: propsIF) {
                                 size={27}
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
+                                tabIndex={0}
+                                aria-label='Scroll to bottom button'
                             />
                         </span>
                     </div>
@@ -413,6 +430,8 @@ export default function ChatPanel(props: propsIF) {
                             size={27}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
+                            tabIndex={0}
+                            aria-label='Scroll to bottom button'
                         />
                     </span>
                 ) : (
@@ -422,6 +441,8 @@ export default function ChatPanel(props: propsIF) {
                             size={27}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
+                            tabIndex={0}
+                            aria-label='Scroll to bottom button'
                         />
                     </span>
                 )

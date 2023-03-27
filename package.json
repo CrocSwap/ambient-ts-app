@@ -18,6 +18,7 @@
         "dom-to-image": "^2.6.0",
         "emoji-picker-react": "^3.6.2",
         "ethers": "^5.6.5",
+        "focus-trap-react": "^10.1.1",
         "framer-motion": "4.1.17",
         "i18next": "^21.8.16",
         "i18next-browser-languagedetector": "^6.1.4",

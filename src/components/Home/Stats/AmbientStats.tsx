@@ -18,12 +18,16 @@ interface StatsProps {
 
 function StatCard(props: StatCardProps) {
     const { title, value } = props;
-
+    const ariaDescription = `${title} is ${value}`;
     return (
-        <div className={styles.stat_card_container}>
+        <li
+            className={styles.stat_card_container}
+            aria-label={ariaDescription}
+            tabIndex={0}
+        >
             <div className={styles.title}>{title}</div>
             <div className={styles.value}>{value}</div>
-        </div>
+        </li>
     );
 }
 
@@ -72,12 +76,18 @@ export default function Stats(props: StatsProps) {
     ];
     return (
         <div className={styles.container}>
-            <div className={styles.title}>{t('homeStatsTitle')}</div>
-            <div className={styles.content}>
+            <div
+                className={styles.title}
+                aria-label={t('homeStatsTitle')}
+                tabIndex={0}
+            >
+                {t('homeStatsTitle')}
+            </div>
+            <ul className={styles.content}>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
-            </div>
+            </ul>
         </div>
     );
 }
