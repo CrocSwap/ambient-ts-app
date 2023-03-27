@@ -322,11 +322,8 @@ export default function Sidebar(props: propsIF) {
             <input
                 type='text'
                 id='search_input_analytics'
-                // ref={searchInputRef}
                 placeholder='Search token or pools...'
                 className={styles.search__box}
-                // onFocus={() => setSearchMode(true)}
-                // onBlur={() => setSearchMode(false)}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
             {searchInput !== undefined && (
@@ -345,11 +342,11 @@ export default function Sidebar(props: propsIF) {
         'search_input',
     ) as HTMLInputElement;
 
+    // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         setRawInput(e.target.value);
     };
-    // console.log(searchInput);
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
@@ -361,8 +358,6 @@ export default function Sidebar(props: propsIF) {
                 ref={searchInputRef}
                 placeholder='Search anything...'
                 className={styles.search__box}
-                // onFocus={() => setSearchMode(true)}
-                // onBlur={() => setSearchMode(false)}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
             />
@@ -374,7 +369,6 @@ export default function Sidebar(props: propsIF) {
         </div>
     );
 
-    // console.log(searchInput);
     const [openAllDefault, setOpenAllDefault] = useState(false);
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
 
@@ -456,7 +450,6 @@ export default function Sidebar(props: propsIF) {
     const sidebarRef = useRef<HTMLDivElement>(null);
 
     const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
-    // const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
 
     useEffect(() => {
         if (overflowSidebarMQ) {
@@ -488,7 +481,6 @@ export default function Sidebar(props: propsIF) {
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
-                    // mostRecent={['should open automatically']}
                 />
             ))}
             {favoritePools.map((item, idx) => (
@@ -517,8 +509,6 @@ export default function Sidebar(props: propsIF) {
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
-
-                    // mostRecent={mostRecentPositions}
                 />
             ))}
         </div>
@@ -538,7 +528,6 @@ export default function Sidebar(props: propsIF) {
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
-                    // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
             {recentLimitOrders.map((item, idx) => (

@@ -30,13 +30,8 @@ export const useSidebarSearch = (
     const [dbInput, setDbInput] = useState<string>('');
 
     useEffect(() => {
-        // setDbInput('');
-        // console.log({ rawInput });
-        // if (rawInput !== dbInput && rawInput.length !== 1) {
         const timer = setTimeout(() => setDbInput(rawInput), 400);
-        // console.log('timeout cleared');
         return () => clearTimeout(timer);
-        // }
     }, [rawInput]);
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
@@ -119,7 +114,6 @@ export const useSidebarSearch = (
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
         const verifyPools = (): void => {
-            // console.log({ ackTokens });
             // function to verify token either in token map or in acknowledged tokens
             const checkToken = (addr: string, chn: string): boolean => {
                 // check if token can be verified in token map
@@ -145,7 +139,6 @@ export const useSidebarSearch = (
         console.log('verifying pools');
         verifyPools();
     }, [ackTokens.length, poolList.length, shouldRecheckLocalStorage]);
-    // }, [ackTokens.length, poolList.length, validatedInput]);
 
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);

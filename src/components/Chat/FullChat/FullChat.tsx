@@ -40,9 +40,36 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     const { params } = useParams();
-    const reconstructedReadableRoom = params
-        ? params.replace('&', '/').toUpperCase()
-        : undefined;
+    const reconstructedReadableRoom =
+        params && !params.includes('global')
+            ? params.replace('&', '/').toUpperCase()
+            : params && params.includes('global')
+            ? 'Global'
+            : 'Global';
+
+    const currencies: string[] | null =
+        params && !params.includes('global') ? params.split('&') : null;
+
+    const swappedReconstructedReadableRoom: string =
+        currencies && currencies.length === 2
+            ? (() => {
+                  const [currency1, currency2] = currencies;
+                  return currency1 + '/' + currency2;
+              })()
+            : params && params.includes('global')
+            ? 'Global'
+            : 'Global';
+
+    const reSwappedReconstructedReadableRoom: string =
+        currencies && currencies.length === 2
+            ? (() => {
+                  const [currency1, currency2] = currencies;
+                  return (currency2 + '/' + currency1).toUpperCase();
+              })()
+            : swappedReconstructedReadableRoom &&
+              swappedReconstructedReadableRoom.includes('global')
+            ? 'Global'
+            : 'Global';
 
     // eslint-disable-next-line
     const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
@@ -56,7 +83,7 @@ export default function FullChat(props: FullChatPropsIF) {
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
 
     const [readableRoomName, setReadableName] = useState(
-        reconstructedReadableRoom || 'global',
+        reconstructedReadableRoom || 'Global',
     );
 
     // eslint-disable-next-line
@@ -64,9 +91,24 @@ export default function FullChat(props: FullChatPropsIF) {
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (reconstructedReadableRoom) {
+        if (topPools.some(({ name }) => name === reconstructedReadableRoom)) {
             setReadableName(reconstructedReadableRoom);
             props.setRoom(reconstructedReadableRoom);
+            setReadableName(readableRoomName);
+        } else {
+            if (
+                topPools.some(
+                    ({ name }) => name === reSwappedReconstructedReadableRoom,
+                )
+            ) {
+                setReadableName(reSwappedReconstructedReadableRoom);
+                props.setRoom(reSwappedReconstructedReadableRoom);
+                setReadableName(reSwappedReconstructedReadableRoom);
+            } else {
+                setReadableName('Global');
+                props.setRoom('Global');
+                setReadableName('Global');
+            }
         }
     }, [reconstructedReadableRoom]);
 
@@ -249,7 +291,6 @@ export default function FullChat(props: FullChatPropsIF) {
                             <path
                                 d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
                                 fill={'#6b6f7d'}
-                                // fill={isButtonFavorited ? '#EBEBFF' : 'none'}
                                 stroke='#6b6f7d'
                                 strokeLinecap='round'
                                 strokeLinejoin='round'
@@ -343,7 +384,7 @@ export default function FullChat(props: FullChatPropsIF) {
         </section>
     );
 
-    const currentRoomIsGlobal = readableRoomName === 'Global';
+    const currentRoomIsGlobal = readableRoomName.toLowerCase() === 'global';
 
     const chatChanels = (
         <section className={styles.options}>
@@ -388,7 +429,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 className={styles.active_channel_dropdown}
                 onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
             >
-                # {readableRoomName}
+                {readableRoomName}
             </button>
             {showChannelsDropdown && (
                 <div
@@ -444,46 +485,45 @@ export default function FullChat(props: FullChatPropsIF) {
               );
     }
 
-    const favButton =
-        readableRoomName !== 'Global' ? (
-            <button
-                className={styles.favorite_button}
-                onClick={handleFavButton}
-                id='trade_fav_button'
-            >
-                {
-                    <svg
-                        width={smallScrenView ? '20px' : '30px'}
-                        height={smallScrenView ? '20px' : '30px'}
-                        viewBox='0 0 15 15'
-                        fill='none'
-                        xmlns='http://www.w3.org/2000/svg'
-                    >
-                        <g clipPath='url(#clip0_1874_47746)'>
-                            <path
-                                d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
-                                fill={isButtonFavorited ? '#EBEBFF' : 'none'}
-                                stroke='#EBEBFF'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
+    const favButton = !currentRoomIsGlobal ? (
+        <button
+            className={styles.favorite_button}
+            onClick={handleFavButton}
+            id='trade_fav_button'
+        >
+            {
+                <svg
+                    width={smallScrenView ? '20px' : '30px'}
+                    height={smallScrenView ? '20px' : '30px'}
+                    viewBox='0 0 15 15'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                >
+                    <g clipPath='url(#clip0_1874_47746)'>
+                        <path
+                            d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
+                            fill={isButtonFavorited ? '#EBEBFF' : 'none'}
+                            stroke='#EBEBFF'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                        />
+                    </g>
+                    <defs>
+                        <clipPath id='clip0_1874_47746'>
+                            <rect
+                                width='14'
+                                height='14'
+                                fill='white'
+                                transform='translate(0.600098 0.599976)'
                             />
-                        </g>
-                        <defs>
-                            <clipPath id='clip0_1874_47746'>
-                                <rect
-                                    width='14'
-                                    height='14'
-                                    fill='white'
-                                    transform='translate(0.600098 0.599976)'
-                                />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                }
-            </button>
-        ) : (
-            ''
-        );
+                        </clipPath>
+                    </defs>
+                </svg>
+            }
+        </button>
+    ) : (
+        ''
+    );
 
     return (
         <div
@@ -504,7 +544,8 @@ export default function FullChat(props: FullChatPropsIF) {
 
             <section className={styles.right_container}>
                 <header className={styles.right_container_header}>
-                    {favButton}# {readableRoomName}
+                    {favButton} {currentRoomIsGlobal ? '#' : ''}{' '}
+                    {readableRoomName}
                 </header>{' '}
                 {channelsDropdown}
                 {chatContainer}

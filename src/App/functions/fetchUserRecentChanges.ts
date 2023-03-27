@@ -26,7 +26,6 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         annotateMEV,
         ensResolution,
         n,
-        // page,
     } = args;
 
     const userRecentChangesCacheEndpoint =

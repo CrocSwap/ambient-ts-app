@@ -292,6 +292,8 @@ export default function App() {
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
+        // reload to avoid stale wallet connections and excessive state accumulation
+        window.location.reload();
     };
 
     const onActive = () => {
@@ -306,7 +308,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
+        timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -453,28 +455,42 @@ export default function App() {
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
+    const provider = useProvider();
+    const isInitialized = !!provider;
     const {
         data: signer,
         isError,
+        error,
+        status: signerStatus,
         //  isLoading
     } = useSigner();
 
-    const provider = useProvider();
-
-    const isInitialized = !!provider;
+    // 1535 - remove console logging
+    const setNewCrocEnv = () => {
+        console.log({ provider });
+        console.log({ signer });
+        console.log({ crocEnv });
+        console.log({ signerStatus });
+        if (isError) {
+            console.error({ error });
+            setCrocEnv(undefined);
+        } else if (!provider && !signer) {
+            console.log('setting crocEnv to undefined');
+            setCrocEnv(undefined);
+            return;
+        } else if (!signer && !!crocEnv) {
+            console.log('keeping provider');
+            return;
+        } else {
+            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+            console.log({ newCrocEnv });
+            setCrocEnv(newCrocEnv);
+        }
+    };
 
     useEffect(() => {
-        (async () => {
-            if (isError) {
-                console.log({ isError });
-            } else if (!provider && !signer) {
-                return;
-            } else {
-                console.log('setting new crocEnv');
-                setCrocEnv(new CrocEnv(signer?.provider || provider));
-            }
-        })();
-    }, [provider, signer, isError]);
+        setNewCrocEnv();
+    }, [signerStatus === 'success', crocEnv === undefined]);
 
     useEffect(() => {
         if (provider) {
@@ -1436,14 +1452,24 @@ export default function App() {
         crocEnv,
     ]);
 
-    const activePeriod = tradeData.activeChartPeriod;
+    // local logic to determine current chart period
+    // this is situation-dependant but used in this file
+    let candleTimeLocal: number;
+    if (
+        location.pathname.startsWith('/trade/range') ||
+        location.pathname.startsWith('/trade/reposition')
+    ) {
+        candleTimeLocal = chartSettings.candleTime.range.time;
+    } else {
+        candleTimeLocal = chartSettings.candleTime.market.time;
+    }
 
     useEffect(() => {
         setCandleData(undefined);
         setIsCandleDataNull(false);
         setExpandTradeTable(false);
         fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
 
     const fetchCandles = () => {
         if (
@@ -1452,7 +1478,7 @@ export default function App() {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            activePeriod
+            candleTimeLocal
         ) {
             console.log('fetching new candles');
             try {
@@ -1467,7 +1493,7 @@ export default function App() {
                                 base: mainnetBaseTokenAddress.toLowerCase(),
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
-                                period: activePeriod.toString(),
+                                period: candleTimeLocal.toString(),
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
@@ -1491,7 +1517,6 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                                 if (
                                     JSON.stringify(candleData) !==
                                     JSON.stringify(candles)
@@ -1505,7 +1530,7 @@ export default function App() {
                                             poolIdx: chainData.poolIndex,
                                             network: chainData.chainId,
                                         },
-                                        duration: activePeriod,
+                                        duration: candleTimeLocal,
                                         candles: candles,
                                     });
                                 }
@@ -1594,7 +1619,7 @@ export default function App() {
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
-                period: activePeriod.toString(),
+                period: candleTimeLocal.toString(),
                 chainId: '0x1',
                 dex: 'all',
                 poolStats: 'true',
@@ -1608,7 +1633,7 @@ export default function App() {
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
             chainData.poolIndex,
-            activePeriod,
+            candleTimeLocal,
         ],
     );
 
@@ -1654,7 +1679,7 @@ export default function App() {
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / activePeriod,
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
@@ -1668,7 +1693,7 @@ export default function App() {
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
-                    period: activePeriod.toString(),
+                    period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
@@ -1727,7 +1752,7 @@ export default function App() {
 
     useEffect(() => {
         // console.log({ debouncedBoundary });
-        // console.log({ activePeriod });
+        // console.log({ candleTime });
         // console.log({ candleData });
 
         if (!numDurationsNeeded) return;
@@ -1969,7 +1994,9 @@ export default function App() {
         baseTokenAddress: string,
         quoteTokenAddress: string,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         return await cachedQuerySpotPrice(
             crocEnv,
             baseTokenAddress,
@@ -2442,7 +2469,6 @@ export default function App() {
     };
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-    // const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
 
     useEffect(() => {
         fetch(
@@ -2455,7 +2481,6 @@ export default function App() {
                         response.result.ProposeGasPrice,
                     );
                     if (gasPriceInGwei !== newGasPrice) {
-                        // console.log('setting new gas price');
                         setGasPriceinGwei(newGasPrice);
                     }
                 }
@@ -2533,19 +2558,6 @@ export default function App() {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
     };
-
-    // const themeButtons = (
-    //     <div
-    //         style={{
-    //             display: 'flex',
-    //             flexDirection: 'column',
-    //             justifyContent: 'center',
-    //             alignItems: 'center',
-    //         }}
-    //     >
-    //         <button onClick={switchTheme}>Switch Theme</button>
-    //     </div>
-    // );
 
     // --------------END OF THEME--------------------------
 
@@ -3467,7 +3479,6 @@ export default function App() {
                                 />
                             }
                         />
-
                         <Route
                             path='range2'
                             element={<Range {...rangeProps} />}
@@ -3787,8 +3798,7 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
-                    currentLocation !== '/app/chat' &&
-                    currentLocation !== '/chat' && (
+                    !currentLocation.includes('/chat') && (
                         <ChatPanel
                             isChatOpen={isChatOpen}
                             onClose={() => {
