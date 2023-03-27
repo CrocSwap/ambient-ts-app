@@ -107,12 +107,6 @@ export default function PortfolioBannerAccount(
             window.open(explorerUrl);
         }
     }
-    function handleOpenMainnetExplorer(address: string) {
-        if (address) {
-            const explorerUrl = `https://etherscan.io/address/${address}`;
-            window.open(explorerUrl);
-        }
-    }
 
     return (
         <motion.main
