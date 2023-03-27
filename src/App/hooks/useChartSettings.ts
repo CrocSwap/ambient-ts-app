@@ -1,6 +1,4 @@
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { setActiveChartPeriod } from '../../utils/state/tradeDataSlice';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {
@@ -53,8 +51,6 @@ export interface chartSettingsMethodsIF {
 export const useChartSettings = (): chartSettingsMethodsIF => {
     // key for data held in local storage
     const localStorageKey = 'chart_settings';
-
-    const dispatch = useAppDispatch();
 
     // fn to retrieve and parse persisted data from local storage
     // will return `null` if the key-val pair does not exist
@@ -237,7 +233,6 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             this.time = t;
             this.changeTime = (val: number) => {
                 setterFn(val);
-                dispatch(setActiveChartPeriod(val));
             };
         }
     }

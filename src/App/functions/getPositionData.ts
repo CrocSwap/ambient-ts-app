@@ -1,11 +1,8 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
-// import truncateDecimals from '../../utils/data/truncateDecimals';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-// import { ethers } from 'ethers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
 
-// import { fetchAddress } from './fetchAddress';
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export const getPositionData = async (
@@ -74,6 +71,7 @@ export const getPositionData = async (
         quoteTokenDecimals,
     );
 
+    // TODO (#1569): we should be re-using a token formatting function here and below
     newPosition.lowRangeShortDisplayInBase =
         lowerPriceDisplayInBase < 0.0001
             ? lowerPriceDisplayInBase.toExponential(2)
@@ -192,8 +190,7 @@ export const getPositionData = async (
                 ? liqBaseNum.toPrecision(3)
                 : liqBaseNum >= 10000
                 ? formatAmountOld(liqBaseNum)
-                : // ? baseLiqDisplayNum.toExponential(2)
-                  liqBaseNum.toLocaleString(undefined, {
+                : liqBaseNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
@@ -212,8 +209,7 @@ export const getPositionData = async (
                 ? liqQuoteNum.toPrecision(3)
                 : liqQuoteNum >= 10000
                 ? formatAmountOld(liqQuoteNum)
-                : // ? quoteLiqDisplayNum.toExponential(2)
-                  liqQuoteNum.toLocaleString(undefined, {
+                : liqQuoteNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
@@ -229,8 +225,6 @@ export const updatePositionStats = async (
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
     const positionStatsCacheEndpoint =
         httpGraphCacheServerDomain + '/position_stats?';
-
-    // console.log('fetching position apy');
 
     const updatedPosition = await fetch(
         positionStatsCacheEndpoint +
@@ -251,14 +245,12 @@ export const updatePositionStats = async (
                         : position.quote,
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
-                // chainId: position.chainId,
                 positionType: position.positionType,
                 addValue: 'true',
             }),
     )
         .then((response) => response?.json())
         .then((json) => {
-            // console.log({ json });
             const apy = json?.data.apy;
             const totalValueUSD = json?.data.totalValueUSD;
             const positionLiq = json?.data.positionLiq;
@@ -272,6 +264,7 @@ export const updatePositionStats = async (
             const liqBaseNum = positionLiqBaseDecimalCorrected;
             const liqQuoteNum = positionLiqQuoteDecimalCorrected;
 
+            // TODO (#1569): token value formatting
             const positionLiqBaseTruncated = !liqBaseNum
                 ? '0'
                 : liqBaseNum < 0.0001
@@ -280,14 +273,10 @@ export const updatePositionStats = async (
                 ? liqBaseNum.toPrecision(3)
                 : liqBaseNum >= 10000
                 ? formatAmountOld(liqBaseNum)
-                : // ? baseLiqDisplayNum.toExponential(2)
-                  liqBaseNum.toLocaleString(undefined, {
+                : liqBaseNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-
-            // console.log({ positionLiqBaseTruncated });
-            // console.log({ positionLiqBaseTruncated });
 
             const positionLiqQuoteTruncated = !liqQuoteNum
                 ? '0'
@@ -297,15 +286,11 @@ export const updatePositionStats = async (
                 ? liqQuoteNum.toPrecision(3)
                 : liqQuoteNum >= 10000
                 ? formatAmountOld(liqQuoteNum)
-                : // ? baseLiqDisplayNum.toExponential(2)
-                  liqQuoteNum.toLocaleString(undefined, {
+                : liqQuoteNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
 
-            // console.log({ positionLiqQuoteTruncated });
-
-            // if (apy) {
             return Object.assign({}, position, {
                 apy: apy || 0,
                 totalValueUSD: totalValueUSD,
@@ -319,7 +304,6 @@ export const updatePositionStats = async (
                 positionLiqBaseTruncated: positionLiqBaseTruncated,
                 positionLiqQuoteTruncated: positionLiqQuoteTruncated,
             });
-            // }
         })
 
         .catch(console.log);

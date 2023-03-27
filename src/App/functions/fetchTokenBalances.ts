@@ -1,8 +1,4 @@
-import {
-    CrocEnv,
-    toDisplayQty,
-    //  toDisplayQty
-} from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Moralis from 'moralis';
 import { Erc20Value } from '@moralisweb3/common-evm-utils';
@@ -12,24 +8,6 @@ import { formatAmountOld } from '../../utils/numbers';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 
-// interface IMoralisTokenBalance {
-//     // eslint-disable-next-line camelcase
-//     token_address: string;
-//     name: string;
-//     symbol: string;
-//     logo?: string | undefined;
-//     thumbnail?: string | undefined;
-//     decimals: number;
-//     balance: string;
-// }
-
-// export interface IExchangeDepositQueryResult {
-//     chainId: string;
-//     network: string;
-//     user: string;
-//     block: number;
-//     tokens: IDepositedTokenBalance[];
-// }
 export interface IDepositedTokenBalance {
     token: string;
     symbol: string;
@@ -49,8 +27,6 @@ export const fetchNativeTokenBalance = async (
     if (!crocEnv) {
         return;
     }
-
-    // const options = { address: address, chain: chain as '0x5' };
 
     const getDexBalanceNonDisplay = async (
         tokenAddress: string,
@@ -72,8 +48,6 @@ export const fetchNativeTokenBalance = async (
         return walletBalance;
     };
 
-    // const nativeBalance = await Moralis.Web3API.account.getNativeBalance(options);
-
     const nativeDexBalanceNonDisplay = await getDexBalanceNonDisplay(
         ZERO_ADDRESS,
         address,
@@ -92,7 +66,6 @@ export const fetchNativeTokenBalance = async (
         18,
     );
     const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceDisplay);
-    // const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceNonDisplay);
     const nativeWalletBalanceDisplay = toDisplayQty(
         nativeWalletBalanceNonDisplay,
         18,
@@ -104,6 +77,7 @@ export const fetchNativeTokenBalance = async (
     const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
+    // TODO (#1569): re-usable token display formatting would cut down on copypasta here and below with ...Truncated values.
     const combinedBalanceDisplayTruncated =
         combinedBalanceDisplayNum !== undefined
             ? !combinedBalanceDisplayNum
@@ -204,6 +178,7 @@ export const fetchErc20TokenBalances = async (
         const moralisErc20BalanceDisplayNum = parseFloat(
             moralisErc20BalanceDisplay,
         );
+        // TODO (#1569): re-usable token display formatting
         const moralisErc20BalanceDisplayTruncated =
             moralisErc20BalanceDisplayNum < 0.0001
                 ? moralisErc20BalanceDisplayNum.toExponential(2)
@@ -243,6 +218,7 @@ export const fetchErc20TokenBalances = async (
         const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
             ? parseFloat(erc20DexBalanceDisplay)
             : undefined;
+        // TODO (#1569): re-usable token display formatting
         const erc20DexBalanceDisplayTruncated = erc20DexBalanceDisplayNum
             ? erc20DexBalanceDisplayNum < 0.0001
                 ? erc20DexBalanceDisplayNum.toExponential(2)
@@ -260,7 +236,6 @@ export const fetchErc20TokenBalances = async (
             chainId: parseInt(chain),
             logoURI: '',
             name: '',
-            // name: tokenBalance.name,
             address: tokenBalance.token,
             symbol: tokenBalance.symbol,
             decimals: tokenBalance.decimals,
@@ -272,11 +247,6 @@ export const fetchErc20TokenBalances = async (
             combinedBalanceDisplayTruncated: erc20DexBalanceDisplayTruncated,
         };
     };
-
-    // const getDexBalance = async (tokenAddress: string, userAddress: string) => {
-    //     const dexBalance = (await crocEnv.token(tokenAddress).balance(userAddress)).toString();
-    //     return dexBalance;
-    // };
 
     const jsonResponse = erc20WalletBalancesFromMoralis.result;
 
@@ -321,6 +291,7 @@ export const fetchErc20TokenBalances = async (
                         combinedBalanceDisplay,
                     );
 
+                    // TODO (#1569): re-usable token display formatting
                     const combinedBalanceDisplayTruncated =
                         combinedBalanceDisplayNum
                             ? combinedBalanceDisplayNum < 0.0001

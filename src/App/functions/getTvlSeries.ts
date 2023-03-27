@@ -28,6 +28,6 @@ export const getTvlSeries = async (
             return poolTvl;
         })
         .catch(() => {
-            // return undefined;
+            // TODO (#1571) we should handle this exception
         });
 };

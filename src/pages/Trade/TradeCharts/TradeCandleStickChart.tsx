@@ -162,7 +162,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         chartSettings,
-        isMarketOrLimitModule
+        isMarketOrLimitModule,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -177,7 +177,6 @@ export default function TradeCandleStickChart(props: propsIF) {
     const expandTradeTable = props?.expandTradeTable;
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const activeChartPeriod = tradeData.activeChartPeriod;
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -199,12 +198,16 @@ export default function TradeCandleStickChart(props: propsIF) {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
+    const candleTimeInSeconds: number = isMarketOrLimitModule
+        ? chartSettings.candleTime.market.time
+        : chartSettings.candleTime.range.time;
+
     useEffect(() => {
         setIsLoading(true);
         setParsedChartData(() => {
             return undefined;
         });
-    }, [activeChartPeriod, denominationsInBase]);
+    }, [candleTimeInSeconds, denominationsInBase]);
 
     useEffect(() => {
         parseData();
@@ -826,8 +829,6 @@ export default function TradeCandleStickChart(props: propsIF) {
             style={{ height: '100%', width: '100%' }}
             className='animatedImg_container'
         >
-            {/* <img src={candleStikPlaceholder} className='img_shimmer' /> */}
-            {/* <PulseLoading/> */}
             <ChartSkeleton />
             <div className='fetching_text'>Fetching chart data...</div>
         </div>
