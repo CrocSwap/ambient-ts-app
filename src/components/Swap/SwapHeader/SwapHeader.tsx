@@ -2,7 +2,7 @@
 import Modal from '../../../components/Global/Modal/Modal';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
-
+import { useEffect } from 'react';
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -48,16 +48,40 @@ export default function SwapHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
+    const handleFocuseEnter = (event: KeyboardEvent) => {
+        const focusedElement = document.activeElement?.id;
+        if (event.key === 'Enter') {
+            if (focusedElement === 'swap_share_button') {
+                openGlobalModal(<ShareModal />, 'Share');
+            } else if (focusedElement === 'swap_settings_button') {
+                openModal();
+            }
+        } else return;
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleFocuseEnter, false);
+        return () => {
+            document.removeEventListener('keydown', handleFocuseEnter, false);
+        };
+    }, []);
+
     const tradeRouteHeader = (
         <ContentHeader>
-            <AiOutlineShareAlt
-                className={styles.share_button}
+            <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                id='swap_share_button'
-                role='button'
-                tabIndex={0}
-                aria-label='Share button'
-            />
+                onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
+            >
+                <AiOutlineShareAlt
+                    className={styles.share_button}
+                    id='swap_share_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Share button'
+                    onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                    onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
+                />
+            </button>
             <div
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
