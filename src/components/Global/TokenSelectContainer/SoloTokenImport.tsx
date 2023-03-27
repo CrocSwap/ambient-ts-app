@@ -4,13 +4,18 @@ import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Global/Button/Button';
 import DividerDark from '../DividerDark/DividerDark';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { Link } from 'react-router-dom';
 interface propsIF {
     customToken: TokenIF | null;
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
+    chainId: string;
 }
 export default function SoloTokenImport(props: propsIF) {
-    const { customToken, chooseToken } = props;
-    console.log({ customToken });
+    const { customToken, chooseToken, chainId } = props;
+
+    const chainData = lookupChain(chainId);
+
     const tokenLogo = customToken?.logoURI ? (
         <img src={customToken.logoURI} alt='' width='30px' />
     ) : (
@@ -44,10 +49,23 @@ export default function SoloTokenImport(props: propsIF) {
             </div>
             <p style={{ textAlign: 'center' }}>
                 This token is not listed on Coingecko or any other major
-                reputable lists. Please be sure this is the actual token you
-                want to trade. Many fraudulent tokens will use the same name and
-                symbol as other major tokens. Always conduct your own research
-                before trading.
+                reputable lists. Please be sure
+                <a
+                    href={
+                        chainData.blockExplorer + 'token/' + customToken.address
+                    }
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    style={{
+                        color: 'var(--accent-secondary)',
+                    }}
+                >
+                    {' '}
+                    this{' '}
+                </a>
+                is the actual token you want to trade. Many fraudulent tokens
+                will use the same name and symbol as other major tokens. Always
+                conduct your own research before trading.
             </p>
             <Button
                 flat

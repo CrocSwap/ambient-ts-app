@@ -363,6 +363,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 <SoloTokenImport
                     customToken={customToken}
                     chooseToken={chooseToken}
+                    chainId={chainId}
                 />
             )}
         </section>
