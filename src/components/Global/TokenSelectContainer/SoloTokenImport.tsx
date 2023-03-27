@@ -5,7 +5,6 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Global/Button/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { Link } from 'react-router-dom';
 interface propsIF {
     customToken: TokenIF | null;
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
