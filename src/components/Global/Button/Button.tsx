@@ -5,10 +5,11 @@ interface propsIF {
     title: string;
     action: () => void;
     flat?: boolean;
+    customAriaLabel?: string;
 }
 
 export default function Toggle(props: propsIF) {
-    const { disabled, action, title, flat } = props;
+    const { disabled, action, title, flat, customAriaLabel } = props;
 
     const buttonTypeStyle = flat ? styles.btn_flat : styles.btn_gradient;
     return (
@@ -18,6 +19,7 @@ export default function Toggle(props: propsIF) {
             }`}
             onClick={action}
             disabled={disabled}
+            aria-label={customAriaLabel && customAriaLabel}
         >
             {title}
         </button>

@@ -1,4 +1,4 @@
-import { MouseEventHandler } from 'react';
+import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
 import styles from './Toggle2.module.css';
 import { motion } from 'framer-motion';
 interface TogglePropsIF {
@@ -6,7 +6,11 @@ interface TogglePropsIF {
     onColor?: string;
     Width?: boolean | number;
     id: string;
-    handleToggle: MouseEventHandler<HTMLDivElement> | undefined;
+    handleToggle:
+        | MouseEventHandler<HTMLDivElement>
+        | KeyboardEventHandler<HTMLDivElement>
+        | undefined
+        | any;
     buttonColor?: string;
     disabled?: boolean;
 }
@@ -14,6 +18,19 @@ interface TogglePropsIF {
 export default function Toggle2(props: TogglePropsIF) {
     const { isOn, handleToggle, id, disabled } = props;
     const diabledStyle = disabled ? styles.disabled : '';
+
+    const enterFunction = (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+            handleToggle;
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', enterFunction, false);
+        return () => {
+            document.removeEventListener('keydown', enterFunction, false);
+        };
+    }, []);
 
     return (
         // <label className={`${styles.toggle_switch} ${diabledStyle}`}>
@@ -24,8 +41,13 @@ export default function Toggle2(props: TogglePropsIF) {
         <div
             className={`${styles.switch} ${diabledStyle}`}
             data-ison={isOn}
+            aria-checked={isOn}
             onClick={handleToggle}
+            // aria-live='polite'
+            onKeyDown={handleToggle}
             id={`${id}switch`}
+            tabIndex={0}
+            role='checkbox'
         >
             <motion.div className={styles.handle} layout transition={spring} />
         </div>

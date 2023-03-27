@@ -78,8 +78,6 @@ export default function SwapHeader(props: propsIF) {
                     role='button'
                     tabIndex={0}
                     aria-label='Share button'
-                    onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                    onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
                 />
             </button>
             <div
@@ -126,7 +124,7 @@ export default function SwapHeader(props: propsIF) {
                     id='swap_settings_button'
                     role='button'
                     tabIndex={0}
-                    aria-label='Settings button'
+                    aria-label='Open Swap Settings'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
