@@ -16,6 +16,9 @@ interface WalletDropdownPropsIF {
 
     ethAmount: string;
     ethValue: string;
+
+    setShowWalletDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+    showWalletDropdown: boolean;
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -36,6 +39,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddressFull,
         ethAmount,
         ethValue,
+        // showWalletDropdown, setShowWalletDropdown
     } = props;
 
     const nameContent = (
@@ -111,6 +115,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     }
 
     const ariaLabel = `Wallet menu for ${ensName ? ensName : accountAddress}`;
+
+    // if (!showWalletDropdown) return null
+    // console.log({showWalletDropdown})
 
     return (
         <FocusTrap>

@@ -128,7 +128,9 @@ export default function Account(props: AccountPropsIF) {
         return () => {
             document.removeEventListener('keydown', handleEscape, false);
         };
-    }, []);
+    }, [showWalletDropdown]);
+
+    console.log({ showWalletDropdown });
 
     const walletDisplay = (
         <section
@@ -148,8 +150,7 @@ export default function Account(props: AccountPropsIF) {
                     {ensName !== '' ? ensName : props.accountAddress}
                 </p>
             </button>
-
-            {showWalletDropdown && (
+            {showWalletDropdown ? (
                 <WalletDropdown
                     ensName={ensName !== '' ? ensName : ''}
                     accountAddress={props.accountAddress}
@@ -166,8 +167,10 @@ export default function Account(props: AccountPropsIF) {
                     }
                     ethValue={`${ethMainnetUsdValueTruncated}`}
                     accountAddressFull={props.accountAddressFull}
+                    showWalletDropdown={showWalletDropdown}
+                    setShowWalletDropdown={setShowWalletDropdown}
                 />
-            )}
+            ) : null}
         </section>
     );
 
