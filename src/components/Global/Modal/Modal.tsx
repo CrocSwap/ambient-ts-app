@@ -101,11 +101,7 @@ export default function Modal(props: ModalPropsIF) {
             role='dialog'
             aria-modal='true'
         >
-            <FocusTrap
-                focusTrapOptions={{
-                    initialFocus: '#close_modal_button',
-                }}
-            >
+            <FocusTrap>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}

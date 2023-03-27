@@ -70,9 +70,24 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.social_link_container:hover {
+.social_link_container:hover , .social_link_container:focus-visible{
+    color: var(--text-grey-white);
     background: var(--dark3);
 }
-.social_link_container:hover {
+
+.social_link_container:focus-visible svg{
     color: var(--text-grey-white);
+}
+
+.copy_button{
+    background: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.copy_button:hover, .copy_button:focus-visible {
+border: 1px solid var(--text-grey-white)
+
 }
