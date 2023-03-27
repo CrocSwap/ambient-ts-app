@@ -131,6 +131,7 @@ export interface TvlChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     time: any;
     value: number;
+    linearValue: number;
 }
 
 export interface VolumeChartData {
