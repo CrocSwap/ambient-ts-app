@@ -1,5 +1,7 @@
 .container {
     /* max-width: 350px; */
+    /* width: 380px; */
+    min-height: 250px;
     display: flex;
     flex-direction: column;
     padding: 1rem;

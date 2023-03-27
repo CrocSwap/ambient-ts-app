@@ -1,0 +1,32 @@
+name: Enhancement
+description: File an Enhancement
+title: "[Enhancement]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for taking the time to fill out this ticket!"
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: Tell / show the feature requirements, screenshots are helpful!
+      placeholder: e.x. A new modal needs to open when the user...
+    validations:
+      required: true
+  - type: textarea
+    id: figma
+    attributes:
+      label: Figma
+      description: Drop a Figma link if this enhancement impacts the UX.
+      placeholder: https://...
+    validations:
+      required: false
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: Assumptions
+      description: What are the underlying assumptions guiding implementation?
+      placeholder: e.x. 1. users are not able to access this modal without...
+    validations:
+      required: false

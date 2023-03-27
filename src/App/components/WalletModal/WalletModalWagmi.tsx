@@ -66,12 +66,13 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>
             <div>New to Ethereum?</div>
-            <a href='https://ethereum.org/en/wallets/'>
+            <a  href='https://ethereum.org/en/wallets/'
+                target='_blank'
+                rel='noreferrer'>
                 Learn more about Wallets
             </a>
         </div>
     );
-
     const connectorsDisplay = isConnected ? (
         <div key={connector?.id}>
             <div>{ensName ? `${ensName} (${address})` : address}</div>

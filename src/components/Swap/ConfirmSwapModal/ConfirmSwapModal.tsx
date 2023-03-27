@@ -63,9 +63,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const sellTokenData = tokenPair.dataTokenA;
 
@@ -235,16 +233,13 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay = isTransactionException
+        ? transactionException
+        : isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.modal_container}>
