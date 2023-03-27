@@ -217,6 +217,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     class CandleTime implements candleTimeIF {
         time: number;
+        // eslint-disable-next-line
         changeTime: (_val: number) => void;
         defaults = [
             { readable: '1m', seconds: 60 },
