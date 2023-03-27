@@ -3,6 +3,7 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
+import FocusTrap from 'focus-trap-react';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -15,6 +16,9 @@ interface WalletDropdownPropsIF {
 
     ethAmount: string;
     ethValue: string;
+
+    setShowWalletDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+    showWalletDropdown: boolean;
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -35,6 +39,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddressFull,
         ethAmount,
         ethValue,
+        // showWalletDropdown, setShowWalletDropdown
     } = props;
 
     const nameContent = (
@@ -48,12 +53,17 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         target='_blank'
                         rel='noreferrer'
                         href={`https://goerli.etherscan.io/address/${accountAddressFull}`}
+                        aria-label='View address on Etherscan'
                     >
                         <FiExternalLink />
                     </a>
-                    <div onClick={handleCopyAddress}>
+                    <button
+                        onClick={handleCopyAddress}
+                        className={styles.copy_button}
+                        aria-label='Copy address to clipboard'
+                    >
                         <FiCopy />
-                    </div>
+                    </button>
                 </div>
                 <div className={styles.wallet_display}>
                     <p>{connectorName}</p>
@@ -69,7 +79,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 {' '}
                 <AiOutlineLogout color='var(--text-highlight)' /> Logout
             </button>
-            <NavLink to={'/account'}>
+            <NavLink
+                to={'/account'}
+                aria-label='Go to the account page '
+                tabIndex={0}
+            >
                 <CgProfile />
                 My Account
             </NavLink>
@@ -78,10 +92,14 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF) {
         const { logo, symbol, amount, usdValue } = props;
-
+        const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${usdValue} dollars`;
         return (
             // column
-            <section className={styles.token_container}>
+            <section
+                className={styles.token_container}
+                tabIndex={0}
+                aria-label={ariaLabel}
+            >
                 {/* row */}
                 <div className={styles.logo_name}>
                     <img src={logo} alt='' />
@@ -96,18 +114,31 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         );
     }
 
+    const ariaLabel = `Wallet menu for ${ensName ? ensName : accountAddress}`;
+
+    // if (!showWalletDropdown) return null
+    // console.log({showWalletDropdown})
+
     return (
-        <div className={walletWrapperStyle}>
-            {nameContent}
-            <section className={styles.wallet_content}>
-                <TokenAmountDisplay
-                    amount={ethAmount}
-                    usdValue={ethValue}
-                    symbol={'ETH'}
-                    logo={'https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'}
-                />
-            </section>
-            {actionContent}
-        </div>
+        <FocusTrap>
+            <div
+                className={walletWrapperStyle}
+                tabIndex={0}
+                aria-label={ariaLabel}
+            >
+                {nameContent}
+                <section className={styles.wallet_content}>
+                    <TokenAmountDisplay
+                        amount={ethAmount}
+                        usdValue={ethValue}
+                        symbol={'ETH'}
+                        logo={
+                            'https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'
+                        }
+                    />
+                </section>
+                {actionContent}
+            </div>
+        </FocusTrap>
     );
 }

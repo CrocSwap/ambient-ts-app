@@ -112,37 +112,65 @@ export default function Account(props: AccountPropsIF) {
             ? undefined
             : parseFloat(nativeBalance) === 0
             ? '0.00'
-            : parseFloat(nativeBalance).toPrecision(4);
+            : nativeBalance;
+
+    const ariaLabel =
+        'You are currently on a focus mode on the account dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
+
+    const mainAriaLabel = 'account dropdown menu container';
+
+    const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setShowWalletDropdown(false);
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleEscape, false);
+        return () => {
+            document.removeEventListener('keydown', handleEscape, false);
+        };
+    }, [showWalletDropdown]);
+
+    console.log({ showWalletDropdown });
 
     const walletDisplay = (
-        <section className={styles.wallet_display} ref={walletDropdownItemRef}>
-            <div
+        <section
+            className={styles.wallet_display}
+            ref={walletDropdownItemRef}
+            // tabIndex={0}
+            aria-label={mainAriaLabel}
+        >
+            <button
+                tabIndex={0}
                 className={`${styles.title_gradient} `}
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
+                aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text-grey-white)' />
                 <p className={styles.wallet_name}>
                     {ensName !== '' ? ensName : props.accountAddress}
                 </p>
-            </div>
-
-            <WalletDropdown
-                ensName={ensName !== '' ? ensName : ''}
-                accountAddress={props.accountAddress}
-                handleCopyAddress={handleCopyAddress}
-                connectorName={connector?.name}
-                clickLogout={clickLogout}
-                walletWrapperStyle={walletWrapperStyle}
-                ethAmount={
-                    isUserLoggedIn
-                        ? nativeBalance
-                            ? 'Ξ ' + ethQuantityInWalletAndDeposits
-                            : '...'
-                        : ''
-                }
-                ethValue={`${ethMainnetUsdValueTruncated}`}
-                accountAddressFull={props.accountAddressFull}
-            />
+            </button>
+            {showWalletDropdown ? (
+                <WalletDropdown
+                    ensName={ensName !== '' ? ensName : ''}
+                    accountAddress={props.accountAddress}
+                    handleCopyAddress={handleCopyAddress}
+                    connectorName={connector?.name}
+                    clickLogout={clickLogout}
+                    walletWrapperStyle={walletWrapperStyle}
+                    ethAmount={
+                        isUserLoggedIn
+                            ? nativeBalance
+                                ? 'Ξ ' + ethQuantityInWalletAndDeposits
+                                : '...'
+                            : ''
+                    }
+                    ethValue={`${ethMainnetUsdValueTruncated}`}
+                    accountAddressFull={props.accountAddressFull}
+                    showWalletDropdown={showWalletDropdown}
+                    setShowWalletDropdown={setShowWalletDropdown}
+                />
+            ) : null}
         </section>
     );
 

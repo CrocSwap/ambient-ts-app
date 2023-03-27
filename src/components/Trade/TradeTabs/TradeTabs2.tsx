@@ -604,7 +604,7 @@ export default function TradeTabs2(props: propsIF) {
                                 sameElse: 'for ' + 'MM/DD/YYYY',
                             })}`}
                     {isCandleSelected &&
-                        candleTime.time === 86400 &&
+                        candleTime.time !== 86400 &&
                         `Showing Transactions for ${moment(
                             selectedDate,
                         ).calendar()}`}

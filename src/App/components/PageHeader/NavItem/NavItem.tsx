@@ -19,7 +19,7 @@ interface NavItemPropsIF {
 
 export default function NavItem(props: NavItemPropsIF) {
     const { children, icon } = props;
-    const navItemRef = useRef<HTMLDivElement>(null);
+    const navItemRef = useRef<HTMLButtonElement>(null);
 
     const { open, setOpen } = props;
 
@@ -37,12 +37,30 @@ export default function NavItem(props: NavItemPropsIF) {
         });
     });
 
+    // const enterFunction = (event: KeyboardEvent) => {
+    //     if (event.key === 'Enter') {
+    //         console.log('opened')
+    //     }
+
+    // }
+
+    // useEffect(() => {
+    //     document.addEventListener('keydown', enterFunction, false);
+    //     return () => {
+    //         document.removeEventListener('keydown', enterFunction, false);
+    //     };
+    // }, []);
+
     return (
-        <div className={styles.nav_item} ref={navItemRef}>
-            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
-                {icon}
-            </div>
+        <button
+            className={styles.nav_item}
+            ref={navItemRef}
+            tabIndex={0}
+            onClick={() => setOpen(!open)}
+            // onKeyDown={() => setOpen(true)}
+        >
+            <div className={styles.icon_button}>{icon}</div>
             {open && childrenWithProps}
-        </div>
+        </button>
     );
 }

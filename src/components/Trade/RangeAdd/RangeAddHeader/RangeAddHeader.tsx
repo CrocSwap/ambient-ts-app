@@ -19,9 +19,12 @@ export default function RangeAddHeader() {
                     ? trimString(positionHash, 4, 4, '…')
                     : ' 0xFD05...A3FF'}
             </div>
-            <div onClick={() => navigate(-1)}>
-                <RiCloseFill />
-            </div>
+            <RiCloseFill
+                onClick={() => navigate(-1)}
+                role='button'
+                tabIndex={0}
+                aria-label='Go back button'
+            />
         </ContentHeader>
     );
 }

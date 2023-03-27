@@ -19,23 +19,6 @@ import styles from './PortfolioBannerAccount.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 
-// const variants = {
-//     open: {
-//         width: '500px',
-//         height: 'auto',
-//         borderRadius: '20px',
-//         background: 'var(--dark3)',
-//         boxShadow: '0px 45px 20px rgba(0, 0, 0, 0.9)',
-
-//     },
-//     closed: {
-//         width: 'auto',
-//         height: '56px',
-//         borderRadius: '99px',
-//         background: '',
-
-//     },
-// };
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
 ) {
@@ -107,12 +90,10 @@ export default function PortfolioBannerAccount(
         open: {
             width: '56px',
             height: '56px',
-            // borderRadius: '12px',
         },
         closed: {
             width: '56px',
             height: '56px',
-            // borderRadius: '50%',
         },
     };
 
@@ -126,21 +107,11 @@ export default function PortfolioBannerAccount(
             window.open(explorerUrl);
         }
     }
-    function handleOpenMainnetExplorer(address: string) {
-        if (address) {
-            const explorerUrl = `https://etherscan.io/address/${address}`;
-            window.open(explorerUrl);
-        }
-    }
 
     return (
         <motion.main
-            // style={{padding: showAccountDetails ? '24px' : '8px 16px'}}
             className={styles.main_container}
             animate={showAccountDetails ? 'open' : 'closed'}
-            // variants={variants}
-
-            // style={{ background: showAccountDetails ? 'black' : '' }}
         >
             <div
                 className={styles.account_container}
@@ -160,29 +131,6 @@ export default function PortfolioBannerAccount(
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}
-                        {ensNameToDisplay ? <FiCopy size={'12px'} /> : null}
-                        {ensNameToDisplay ? (
-                            <FiExternalLink
-                                size={'12px'}
-                                onClick={(e) => {
-                                    if (
-                                        chainData.isTestNet &&
-                                        ensNameAvailable
-                                    ) {
-                                        // ENS lookup not supported on Görli etherscan
-                                        handleOpenMainnetExplorer(ensName);
-                                    } else {
-                                        handleOpenExplorer(
-                                            resolvedAddress
-                                                ? resolvedAddress
-                                                : activeAccount,
-                                        );
-                                    }
-
-                                    e.stopPropagation();
-                                }}
-                            />
-                        ) : null}
                     </span>
                     <span className={styles.hash} onClick={handleCopyAddress}>
                         {addressToDisplay}
@@ -201,14 +149,6 @@ export default function PortfolioBannerAccount(
                     </span>
                 </div>
             </div>
-            {/* {showAccountDetails && (
-                <FollowDisplay
-                    exampleFollowers={exampleFollowers}
-                    exampleFollowing={exampleFollowing}
-                    showAccountDetails={showAccountDetails}
-                    connectedAccountActive={connectedAccountActive}
-                />
-            )} */}
             {snackbarContent}
         </motion.main>
     );

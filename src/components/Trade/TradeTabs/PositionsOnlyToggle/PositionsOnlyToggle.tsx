@@ -88,8 +88,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 isOn={!isShowAllEnabled}
                 handleToggle={() => {
                     setHasUserSelectedViewAll(true);
-                    // console.log('toggle on', !isShowAllEnabled);
-                    // console.log('toggling show all');
                     setIsShowAllEnabled(!isShowAllEnabled);
                     if (!isShowAllEnabled) {
                         setIsCandleSelected(false);
@@ -125,8 +123,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 <p
                     onClick={() => {
                         unselectCandle();
-                        // setIsCandleSelected(false);
-                        // setTransactionFilter(undefined);
                     }}
                     style={
                         isCandleSelected
