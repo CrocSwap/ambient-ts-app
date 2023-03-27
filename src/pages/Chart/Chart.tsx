@@ -237,9 +237,6 @@ export default function Chart(props: ChartData) {
         ? setRepositionRangeWidth
         : setRangeSimpleRangeWidth;
 
-    // const simpleRangeWidth = rangeSimpleRangeWidth;
-    // const setSimpleRangeWidth = setRangeSimpleRangeWidth;
-
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
@@ -6026,7 +6023,7 @@ export default function Chart(props: ChartData) {
             )[1];
 
             if (nearest) {
-                return nearest.value;
+                return nearest.linearValue;
             } else {
                 return 0;
             }
