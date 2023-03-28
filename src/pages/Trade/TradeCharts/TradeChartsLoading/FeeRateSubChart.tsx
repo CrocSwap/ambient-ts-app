@@ -14,10 +14,6 @@ interface FreeRateData {
     xScale: any;
     render: any;
     zoomAndYdragControl: any;
-    isMouseMoveForSubChart: any;
-    setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
-    setMouseMoveEventCharts: React.Dispatch<React.SetStateAction<any>>;
-    setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<
         React.SetStateAction<string | undefined>
@@ -35,10 +31,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
         zoomAndYdragControl,
         setsubChartValues,
         setZoomAndYdragControl,
-        setMouseMoveEventCharts,
-        setIsMouseMoveForSubChart,
-        isMouseMoveForSubChart,
-        setIsZoomForSubChart,
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
@@ -197,7 +189,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     {
                         x: 0,
                         y:
-                            isMouseMoveForSubChart &&
                             mouseMoveChartName === 'feeRate'
                                 ? crosshairForSubChart[0].y
                                 : -1,
@@ -269,9 +260,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                                 ]);
 
                                 setZoomAndYdragControl(event);
-                                setIsMouseMoveForSubChart(false);
-                                setIsZoomForSubChart(true);
-                                setMouseMoveEventCharts(event);
                             }) as any;
 
                         svg.call(zoom);
@@ -331,9 +319,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     'mousemove',
                     function (event: any) {
                         setMouseMoveChartName('feeRate');
-                        setIsMouseMoveForSubChart(true);
-                        setIsZoomForSubChart(false);
-                        setMouseMoveEventCharts(event);
                         d3.select('#fee_rate_chart')
                             .select('svg')
                             .select('.crosshairVertical')
@@ -356,8 +341,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 d3.select(d3PlotFeeRate.current).on('mouseleave', () => {
                     setMouseMoveChartName(undefined);
-                    setIsMouseMoveForSubChart(false);
-                    setIsZoomForSubChart(false);
 
                     d3.select('#fee_rate_chart')
                         .select('svg')

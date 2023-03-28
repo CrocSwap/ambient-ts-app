@@ -10,25 +10,20 @@ interface TvlData {
     tvlData: TvlChartData[] | undefined;
     period: number | undefined;
     subChartValues: any;
-    setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     scaleData: any;
     render: any;
     zoomAndYdragControl: any;
-    isMouseMoveForSubChart: any;
-    setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
-    setMouseMoveEventCharts: React.Dispatch<React.SetStateAction<any>>;
-    setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<
         React.SetStateAction<string | undefined>
     >;
     mouseMoveChartName: string | undefined;
-    setTransformX: React.Dispatch<React.SetStateAction<any>>;
-    transformX: any;
     yAxisWidth: string;
     setTvlAreaSeries: React.Dispatch<React.SetStateAction<any>>;
+    setCrossHairLocation: any;
+    setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -39,14 +34,13 @@ export default function TvlSubChart(props: TvlData) {
         crosshairForSubChart,
         zoomAndYdragControl,
         setZoomAndYdragControl,
-        setMouseMoveEventCharts,
-        setIsMouseMoveForSubChart,
-        setIsZoomForSubChart,
         getNewCandleData,
         setMouseMoveChartName,
         subChartValues,
         yAxisWidth,
         setTvlAreaSeries,
+        setCrossHairLocation,
+        setIsCrosshairActive,
     } = props;
 
     const tvlMainDiv = useRef(null);
@@ -61,6 +55,7 @@ export default function TvlSubChart(props: TvlData) {
     const [areaSeries, setAreaSeries] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
     const [tvlGradient, setTvlGradient] = useState<any>();
+    const [tvlZoom, setTvlZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         useState<any>();
 
@@ -91,6 +86,50 @@ export default function TvlSubChart(props: TvlData) {
             return yScale;
         });
     }, [tvlData]);
+
+    useEffect(() => {
+        if (tvlData !== undefined) {
+            let date: any | undefined = undefined;
+
+            const zoom = d3
+                .zoom()
+                .on('start', () => {
+                    if (date === undefined) {
+                        date = tvlData[tvlData.length - 1].time;
+                    }
+                })
+                .on('zoom', (event: any) => {
+                    const domainX = scaleData.xScale.domain();
+                    const linearX = d3
+                        .scaleTime()
+                        .domain(scaleData.xScale.range())
+                        .range([0, domainX[1] - domainX[0]]);
+
+                    const deltaX = linearX(-event.sourceEvent.movementX);
+
+                    getNewCandleData(
+                        new Date(domainX[0].getTime() + deltaX),
+                        date,
+                    );
+
+                    scaleData.xScale.domain([
+                        new Date(domainX[0].getTime() + deltaX),
+                        new Date(domainX[1].getTime() + deltaX),
+                    ]);
+
+                    setZoomAndYdragControl(event);
+                }) as any;
+
+            setTvlZoom(() => {
+                return zoom;
+            });
+        }
+    }, [
+        tvlData,
+        scaleData,
+        JSON.stringify(scaleData.xScale.domain()[0]),
+        JSON.stringify(scaleData.xScale.domain()[1]),
+    ]);
 
     useEffect(() => {
         if (yAxis !== undefined && tvlyScale !== undefined) {
@@ -216,6 +255,12 @@ export default function TvlSubChart(props: TvlData) {
     }, [areaSeries, lineSeries, tvlyScale]);
 
     useEffect(() => {
+        if (d3CanvasCrosshair !== undefined && tvlZoom !== undefined) {
+            d3.select(d3CanvasCrosshair.current).call(tvlZoom);
+        }
+    }, [tvlZoom, d3CanvasCrosshair]);
+
+    useEffect(() => {
         const canvas = d3
             .select(d3CanvasCrosshair.current)
             .select('canvas')
@@ -260,15 +305,7 @@ export default function TvlSubChart(props: TvlData) {
 
             props.render();
         }
-    }, [
-        scaleData,
-        crosshairForSubChart,
-        period,
-        tvlData,
-        zoomAndYdragControl,
-        tvlyScale,
-        yAxis,
-    ]);
+    }, [scaleData, period, tvlData, zoomAndYdragControl, tvlyScale, yAxis]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotTvl').node() as any;
@@ -281,24 +318,6 @@ export default function TvlSubChart(props: TvlData) {
             if (tvlData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-                const crosshairVertical = d3fc
-                    .annotationSvgLine()
-                    .value((d: any) => tvlyScale.invert(d.y))
-                    .xScale(scaleData.xScale)
-                    .yScale(tvlyScale);
-
-                crosshairVertical.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.left-handle').remove();
-                    selection.enter().select('g.right-handle').remove();
-                });
-
                 d3.select(d3PlotTvl.current).on(
                     'measure',
                     function (event: any) {
@@ -307,88 +326,26 @@ export default function TvlSubChart(props: TvlData) {
                     },
                 );
 
-                d3.select(d3PlotTvl.current).on(
-                    'measure.range',
-                    function (event: any) {
-                        let date: any | undefined = undefined;
-                        const svg = d3.select(event.target).select('svg');
-                        const zoom = d3
-                            .zoom()
-                            .scaleExtent([1, 10])
-                            .on('start', () => {
-                                if (date === undefined) {
-                                    date = tvlData[tvlData.length - 1].time;
-                                }
-                            })
-                            .on('zoom', (event: any) => {
-                                const domainX = scaleData.xScale.domain();
-                                const linearX = d3
-                                    .scaleTime()
-                                    .domain(scaleData.xScale.range())
-                                    .range([0, domainX[1] - domainX[0]]);
-
-                                const deltaX = linearX(
-                                    -event.sourceEvent.movementX,
-                                );
-
-                                getNewCandleData(
-                                    new Date(domainX[0].getTime() + deltaX),
-                                    date,
-                                );
-
-                                scaleData.xScale.domain([
-                                    new Date(domainX[0].getTime() + deltaX),
-                                    new Date(domainX[1].getTime() + deltaX),
-                                ]);
-
-                                setZoomAndYdragControl(event);
-                                setIsMouseMoveForSubChart(false);
-                                setIsZoomForSubChart(true);
-                                setMouseMoveEventCharts(event);
-                            }) as any;
-
-                        svg.call(zoom);
-                    },
-                );
-
                 d3.select(d3Yaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(yAxis);
                 });
 
-                d3.select(d3PlotTvl.current).on(
+                d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
                     function (event: any) {
-                        setMouseMoveChartName('tvl');
-                        d3.select(d3PlotTvl.current)
-                            .select('svg')
-                            .select('.crosshairVertical')
-                            .selectChildren()
-                            .style('visibility', 'visible');
-                        setIsMouseMoveForSubChart(true);
-                        setIsZoomForSubChart(false);
-                        setMouseMoveEventCharts(event);
+                        setCrossHairLocation(event, false);
+                        setIsCrosshairActive('tvl');
                     },
                 );
 
-                d3.select(d3PlotTvl.current).on('mouseleave', () => {
+                d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setMouseMoveChartName(undefined);
-                    props.setIsMouseMoveForSubChart(false);
-                    props.setIsZoomForSubChart(false);
-                    d3.select(d3PlotTvl.current)
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .style('visibility', 'hidden');
-
+                    setIsCrosshairActive('none');
                     render();
                 });
             }
         },
-        [
-            crosshairForSubChart,
-            JSON.stringify(scaleData.xScale.domain()[0]),
-            JSON.stringify(scaleData.xScale.domain()[1]),
-            tvlData,
-        ],
+        [tvlData],
     );
 
     return (
