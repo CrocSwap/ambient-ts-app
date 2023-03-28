@@ -1052,7 +1052,9 @@ export default function Range(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Range ${tokenA.symbol} + ${tokenB.symbol}`,
+                        txType: isAdd
+                            ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
+                            : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                     }),
                 );
             setIsWaitingForWallet(false);
