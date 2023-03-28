@@ -232,11 +232,11 @@ describe('testing calculateSecondaryDepositQty', () => {
             15,
         ],
         [
-            'Unbalanced 1000 ETH-USDC Mint, at [+2%, +1.83%] Width (Out of Range)',
+            'Unbalanced 2134142 ETH-USDC Mint, at [+2%, +1.83%] Width (Out of Range)',
             576602240.4394826,
             18,
             6,
-            2134142.95,
+            '2134142.95',
             false,
             true,
             false,
@@ -262,9 +262,6 @@ describe('testing calculateSecondaryDepositQty', () => {
             precision,
         ) => {
             // NOTE: I wanted to do the mock once, but I was running into issues with mockImplementation and our sdk.
-            jest.mock('@crocswap-libs/sdk', () => ({
-                toDisplayPrice: () => mockToDisplayPrice,
-            }));
             const qtyTokenB =
                 calculateSecondaryDepositQty(
                     poolPriceNonDisplay,
