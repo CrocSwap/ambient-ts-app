@@ -40,10 +40,10 @@ export default function TransactionException(props: TransactionSubmittedProps) {
 
     return (
         <div className={styles.removal_pending}>
-            <h2>Transaction Exception</h2>
+            <h2>Transaction Exception.</h2>
 
             {rangeModuleActive && isEthSecondary ? (
-                <div>
+                <>
                     <p>
                         A preliminary simulation of your transaction has failed.
                         We apologize for this inconvenience.
@@ -59,9 +59,9 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                         than
                         {' ' + primaryTokenSymbol}.
                     </p>
-                </div>
+                </>
             ) : (
-                <div>
+                <>
                     <p>
                         A preliminary simulation of your transaction has failed.
                         We apologize for this inconvenience.
@@ -71,7 +71,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                         Check the Metamask extension in your browser for
                         notifications, or click &quot;Try Again&quot;.
                     </p>
-                </div>
+                </>
             )}
             <Button
                 flat

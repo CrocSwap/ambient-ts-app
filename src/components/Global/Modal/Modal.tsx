@@ -115,7 +115,12 @@ export default function Modal(props: ModalPropsIF) {
                     aria-label={`${title} modal`}
                 >
                     {headerOrNull}
-                    <section className={styles.modal_content}>
+                    <section
+                        className={styles.modal_content}
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='additions text'
+                    >
                         {children}
                     </section>
                     {footerOrNull}
