@@ -151,3 +151,15 @@
 .token_amount h6 {
     text-align: right;
 }
+
+.blockie_container{
+   
+    border-radius: 50%;
+}
+.blockie_container canvas{
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    border-radius: 50%;
+    object-fit: cover;
+}

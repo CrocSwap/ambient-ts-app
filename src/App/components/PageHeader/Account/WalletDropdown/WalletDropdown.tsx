@@ -45,7 +45,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const blockiesSeed = accountAddressFull.toLowerCase();
 
-    const myBlockie = <Blockies seed={blockiesSeed} scale={6} />;
+    const myBlockie = (
+        <div className={styles.blockie_container}>
+            <Blockies seed={blockiesSeed} scale={6} />
+        </div>
+    );
 
     const nameContent = (
         <div className={styles.name_display_container}>
