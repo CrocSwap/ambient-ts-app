@@ -290,6 +290,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 volumeChartData.push({
                     time: new Date(data.time * 1000),
                     value: data.volumeUSD,
+                    volume: data.volumeUSD,
                     color:
                         close > open
                             ? props.upVolumeColor

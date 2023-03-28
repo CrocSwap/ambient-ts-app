@@ -321,13 +321,7 @@ export default function Chart(props: ChartData) {
     const [dragControl, setDragControl] = useState(false);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
-    const [crosshairForSubChart, setCrosshairForSubChart] = useState([
-        { x: 0, y: -1 },
-    ]);
 
-    const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
-    const [mouseMoveEventCharts, setMouseMoveEventCharts] = useState<any>();
-    const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
 
@@ -351,6 +345,7 @@ export default function Chart(props: ChartData) {
 
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
+    const [isCrosshairActive, setIsCrosshairActive] = useState<string>('chart');
 
     // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     // const [indicatorLine, setIndicatorLine] = useState<any>();
@@ -390,7 +385,6 @@ export default function Chart(props: ChartData) {
     // const [popupHeight, setPopupHeight] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
-    const [transformX, setTransformX] = useState<any>(0);
     const [dragEvent, setDragEvent] = useState('zoom');
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
@@ -1294,7 +1288,6 @@ export default function Chart(props: ChartData) {
         scaleData,
         xAxis,
         JSON.stringify(d3Container.current?.offsetWidth),
-        mouseMoveEventCharts,
         activeTimeFrame,
         latest,
         rescale,
@@ -2108,15 +2101,6 @@ export default function Chart(props: ChartData) {
                             render();
                             renderCanvas();
 
-                            const nearest = snapForCandle(event.sourceEvent);
-                            setCrosshairForSubChart((prevState) => {
-                                const newData = [...prevState];
-
-                                newData[0].x = nearest?.date;
-
-                                return newData;
-                            });
-
                             setZoomAndYdragControl(event);
                         }
                     }
@@ -2531,10 +2515,8 @@ export default function Chart(props: ChartData) {
         rescale,
         location,
         candlestick,
-        isZoomForSubChart,
         JSON.stringify(scaleData?.xScale.domain()[0]),
         JSON.stringify(scaleData?.xScale?.domain()[1]),
-        transformX,
         JSON.stringify(showLatest),
         liquidityData?.liqBidData,
         simpleRangeWidth,
@@ -3608,16 +3590,13 @@ export default function Chart(props: ChartData) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : Number(
-                                          formatAmountChartData(
-                                              scaleData.yScale.invert(
-                                                  event.sourceEvent.layerY,
-                                              ),
-                                          ),
-                                      ),
+                            y: Number(
+                                formatAmountChartData(
+                                    scaleData.yScale.invert(
+                                        event.sourceEvent.layerY,
+                                    ),
+                                ),
+                            ),
                         },
                     ]);
 
@@ -5527,21 +5506,12 @@ export default function Chart(props: ChartData) {
             scaleData !== undefined &&
             zoomUtils !== undefined &&
             liqTooltip !== undefined &&
-            candlestick !== undefined &&
-            barSeries !== undefined &&
-            volumeData !== undefined &&
             liquidityScale !== undefined
         ) {
             drawChart(
                 parsedChartData.chartData,
-                parsedChartData.feeChartData,
                 scaleData,
                 zoomUtils,
-                candlestick,
-                mouseMoveEventCharts,
-                isMouseMoveForSubChart,
-                isZoomForSubChart,
-                volumeData,
                 selectedDate,
                 liquidityScale,
                 liquidityDepthScale,
@@ -5552,30 +5522,11 @@ export default function Chart(props: ChartData) {
         zoomUtils,
         denomInBase,
         liqTooltip,
-        candlestick,
-        mouseMoveEventCharts,
-        isZoomForSubChart,
         selectedDate,
-        liqMode,
         liquidityScale,
         liquidityDepthScale,
         showSidebar,
     ]);
-
-    const minimum = (data: any, accessor: any) => {
-        return data
-            .map(function (dataPoint: any, index: any) {
-                return [accessor(dataPoint, index), dataPoint, index];
-            })
-            .reduce(
-                function (accumulator: any, dataPoint: any) {
-                    return accumulator[0] > dataPoint[0]
-                        ? dataPoint
-                        : accumulator;
-                },
-                [Number.MAX_VALUE, null, -1],
-            );
-    };
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData.xScale.invert(event.offsetX + bandwidth / 2);
@@ -6030,96 +5981,132 @@ export default function Chart(props: ChartData) {
         }
     };
 
+    const minimum = (data: any, accessor: any) => {
+        return data
+            .map(function (dataPoint: any, index: any) {
+                return [accessor(dataPoint, index), dataPoint, index];
+            })
+            .reduce(
+                function (accumulator: any, dataPoint: any) {
+                    return accumulator[0] > dataPoint[0]
+                        ? dataPoint
+                        : accumulator;
+                },
+                [Number.MAX_VALUE, null, -1],
+            );
+    };
+
+    const snap = (data: any, point: any) => {
+        if (
+            point == undefined ||
+            parsedChartData === undefined ||
+            scaleData === undefined
+        )
+            return [];
+        const xScale = scaleData.xScale;
+
+        const filtered =
+            data.length > 1 ? data.filter((d: any) => d.date != null) : data;
+        const nearest = minimum(filtered, (d: any) =>
+            Math.abs(point.layerX - xScale(d.date)),
+        )[1];
+
+        if (selectedDate === undefined) {
+            props.setCurrentData(nearest);
+
+            props.setCurrentVolumeData(
+                volumeData.find(
+                    (item: any) =>
+                        item.time.getTime() === nearest?.date.getTime(),
+                )?.volume,
+            );
+        } else if (selectedDate) {
+            props.setCurrentVolumeData(
+                volumeData.find(
+                    (item: any) =>
+                        item.time.getTime() === selectedDate.getTime(),
+                )?.volume,
+            );
+        }
+
+        setsubChartValues((prevState: any) => {
+            const newData = [...prevState];
+
+            newData.filter((target: any) => target.name === 'tvl')[0].value =
+                findTvlNearest(point);
+
+            newData.filter(
+                (target: any) => target.name === 'feeRate',
+            )[0].value = parsedChartData?.feeChartData.find(
+                (item: any) => item.time.getTime() === nearest?.date.getTime(),
+            )?.value;
+
+            return newData;
+        });
+
+        const returnXdata =
+            parsedChartData?.chartData[0].date <=
+            scaleData.xScale.invert(point.offsetX)
+                ? scaleData.xScale.invert(point.offsetX)
+                : nearest?.date;
+
+        return [
+            {
+                x: returnXdata,
+                y: scaleData.yScale.invert(point.offsetY),
+            },
+        ];
+    };
+
+    const setCrossHairLocation = (event: any, showHr = true) => {
+        if (snap(parsedChartData?.chartData, event)[0] !== undefined) {
+            crosshairData[0] = snap(parsedChartData?.chartData, event)[0];
+            setIsMouseMoveCrosshair(true);
+            setCrosshairData([
+                {
+                    x: crosshairData[0].x,
+                    y: !showHr
+                        ? 0
+                        : Number(
+                              formatAmountChartData(
+                                  scaleData.yScale.invert(event.layerY),
+                              ),
+                          ),
+                },
+            ]);
+
+            render();
+        }
+    };
+
+    useEffect(() => {
+        d3.select(d3CanvasCrHorizontal.current).style(
+            'visibility',
+            isCrosshairActive !== 'none' ? 'visible' : 'hidden',
+        );
+
+        d3.select(d3CanvasCrVertical.current).style(
+            'visibility',
+            isCrosshairActive !== 'none' ? 'visible' : 'hidden',
+        );
+
+        if (isCrosshairActive === 'none') {
+            setCrosshairData([{ x: -1, y: -1 }]);
+        }
+    }, [isCrosshairActive]);
+
     // Draw Chart
     const drawChart = useCallback(
         (
             chartData: any,
-            feeChartData: any,
             scaleData: any,
             zoomUtils: any,
-            candlestick: any,
-            mouseMoveEventCharts: any,
-            isMouseMoveForSubChart: boolean,
-            isZoomForSubChart: boolean,
-            volumeData: any,
             selectedDate: any,
             liquidityScale: any,
             liquidityDepthScale: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const snap = (series: any, data: any, point: any) => {
-                    if (point == undefined) return [];
-                    const xScale = series.xScale(),
-                        xValue = series.crossValue();
-
-                    const filtered =
-                        data.length > 1
-                            ? data.filter((d: any) => xValue(d) != null)
-                            : data;
-                    const nearest = minimum(filtered, (d: any) =>
-                        Math.abs(point.layerX - xScale(xValue(d))),
-                    )[1];
-
-                    setCrosshairForSubChart((prevState) => {
-                        const newData = [...prevState];
-
-                        newData[0].x = nearest?.date;
-                        newData[0].y = point.layerY;
-
-                        return newData;
-                    });
-
-                    if (selectedDate === undefined) {
-                        props.setCurrentData(nearest);
-
-                        props.setCurrentVolumeData(
-                            volumeData.find(
-                                (item: any) =>
-                                    item.time.getTime() ===
-                                    nearest?.date.getTime(),
-                            )?.volume,
-                        );
-                    } else if (selectedDate) {
-                        props.setCurrentVolumeData(
-                            volumeData.find(
-                                (item: any) =>
-                                    item.time.getTime() ===
-                                    selectedDate.getTime(),
-                            )?.volume,
-                        );
-                    }
-
-                    setsubChartValues((prevState: any) => {
-                        const newData = [...prevState];
-
-                        newData.filter(
-                            (target: any) => target.name === 'tvl',
-                        )[0].value = findTvlNearest(point);
-
-                        newData.filter(
-                            (target: any) => target.name === 'feeRate',
-                        )[0].value = feeChartData.find(
-                            (item: any) =>
-                                item.time.getTime() === nearest?.date.getTime(),
-                        )?.value;
-
-                        return newData;
-                    });
-
-                    const returnXdata =
-                        parsedChartData?.chartData[0].date <=
-                        scaleData.xScale.invert(point.offsetX)
-                            ? scaleData.xScale.invert(point.offsetX)
-                            : nearest?.date;
-
-                    return [
-                        {
-                            x: returnXdata,
-                            y: scaleData.yScale.invert(point.offsetY),
-                        },
-                    ];
-                };
 
                 d3.select(d3PlotArea.current).on(
                     'measure',
@@ -6228,52 +6215,11 @@ export default function Chart(props: ChartData) {
                     'measure.range',
                     function (event: any) {
                         scaleData.xScaleCopy.range([0, event.detail.width]);
-                        // svg.call(zoomUtils.zoom).on('dblclick.zoom', null);
                     },
                 );
 
-                const setCrossHairLocation = (event: any) => {
-                    if (snap(candlestick, chartData, event)[0] !== undefined) {
-                        crosshairData[0] = snap(
-                            candlestick,
-                            chartData,
-                            event,
-                        )[0];
-                        setIsMouseMoveCrosshair(true);
-                        setCrosshairData([
-                            {
-                                x: crosshairData[0].x,
-                                y:
-                                    isMouseMoveForSubChart || isZoomForSubChart
-                                        ? -1
-                                        : Number(
-                                              formatAmountChartData(
-                                                  scaleData.yScale.invert(
-                                                      event.layerY,
-                                                  ),
-                                              ),
-                                          ),
-                            },
-                        ]);
-
-                        render();
-                    }
-                };
-
-                if (isMouseMoveForSubChart) {
-                    setCrossHairLocation(mouseMoveEventCharts);
-                } else if (isZoomForSubChart) {
-                    setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
-                }
-                const mousemoveEventForCrosshair = (event: any) => {
-                    isMouseMoveForSubChart = false;
-                    isZoomForSubChart = false;
-                    setCrossHairLocation(event);
-                    setMouseMoveEventCharts(event);
-                };
-
                 const mousemove = (event: any) => {
-                    mousemoveEventForCrosshair(event);
+                    setCrossHairLocation(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
                     liqDataHover(event);
@@ -6388,14 +6334,7 @@ export default function Chart(props: ChartData) {
                 render();
 
                 d3.select(d3Container.current).on('mouseleave', () => {
-                    d3.select(d3CanvasCrHorizontal.current).style(
-                        'visibility',
-                        'hidden',
-                    );
-                    d3.select(d3CanvasCrVertical.current).style(
-                        'visibility',
-                        'hidden',
-                    );
+                    setIsCrosshairActive('none');
 
                     setIsMouseMoveCrosshair(false);
 
@@ -6422,14 +6361,7 @@ export default function Chart(props: ChartData) {
                 });
 
                 const mouseLeaveCanvas = () => {
-                    d3.select(d3CanvasCrHorizontal.current).style(
-                        'visibility',
-                        'hidden',
-                    );
-                    d3.select(d3CanvasCrVertical.current).style(
-                        'visibility',
-                        'hidden',
-                    );
+                    setIsCrosshairActive('none');
 
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
@@ -6438,24 +6370,17 @@ export default function Chart(props: ChartData) {
                 };
 
                 d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
-                    mouseLeaveCanvas;
+                    mouseLeaveCanvas();
                 });
                 d3.select(d3CanvasLimitLine.current).on('mouseleave', () => {
-                    mouseLeaveCanvas;
+                    mouseLeaveCanvas();
                 });
                 d3.select(d3CanvasRangeLine.current).on('mouseleave', () => {
-                    mouseLeaveCanvas;
+                    mouseLeaveCanvas();
                 });
 
                 const mouseEnterCanvas = () => {
-                    d3.select(d3CanvasCrHorizontal.current).style(
-                        'visibility',
-                        'visible',
-                    );
-                    d3.select(d3CanvasCrVertical.current).style(
-                        'visibility',
-                        'visible',
-                    );
+                    setIsCrosshairActive('chart');
 
                     props.setShowTooltip(true);
                 };
@@ -6904,7 +6829,7 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairForSubChart={crosshairForSubChart}
+                                crosshairForSubChart={crosshairData}
                                 subChartValues={subChartValues}
                                 setsubChartValues={setsubChartValues}
                                 xScale={
@@ -6915,14 +6840,6 @@ export default function Chart(props: ChartData) {
                                 getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
-                                setIsMouseMoveForSubChart={
-                                    setIsMouseMoveForSubChart
-                                }
-                                isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventCharts={
-                                    setMouseMoveEventCharts
-                                }
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
@@ -6939,28 +6856,19 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairForSubChart={crosshairForSubChart}
-                                setsubChartValues={setsubChartValues}
+                                crosshairForSubChart={crosshairData}
                                 scaleData={scaleData}
                                 getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
-                                isMouseMoveForSubChart={isMouseMoveForSubChart}
                                 subChartValues={subChartValues}
-                                setIsMouseMoveForSubChart={
-                                    setIsMouseMoveForSubChart
-                                }
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventCharts={
-                                    setMouseMoveEventCharts
-                                }
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
-                                setTransformX={setTransformX}
-                                transformX={transformX}
                                 yAxisWidth={yAxisWidth}
                                 setTvlAreaSeries={setTvlAreaSeries}
+                                setCrossHairLocation={setCrossHairLocation}
+                                setIsCrosshairActive={setIsCrosshairActive}
                             />
                         </>
                     )}
