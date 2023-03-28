@@ -75,10 +75,10 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             )}
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
-                    ? 'Limit Transaction Successfully Submitted.'
+                    ? 'Limit Transaction Successfully Submitted'
                     : range
-                    ? 'Range Transaction Successfully Submitted.'
-                    : 'Swap Transaction Successfully Submitted.'}
+                    ? 'Range Transaction Successfully Submitted'
+                    : 'Swap Transaction Successfully Submitted'}
             </h2>
             <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}

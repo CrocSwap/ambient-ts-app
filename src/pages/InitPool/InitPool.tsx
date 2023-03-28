@@ -276,7 +276,7 @@ export default function InitPool(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Pool Initialization',
+                        txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                     }),
                 );
             let receipt;
