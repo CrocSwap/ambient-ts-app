@@ -89,7 +89,7 @@ export default function Account(props: AccountPropsIF) {
 
     const ethMainnetUsdValue =
         ethMainnetUsdPrice !== undefined && nativeBalance !== undefined
-            ? ethMainnetUsdPrice * parseFloat(nativeBalance)
+            ? ethMainnetUsdPrice * parseFloat(nativeBalance.replaceAll(',', ''))
             : undefined;
 
     const ethMainnetUsdValueTruncated =
@@ -129,8 +129,6 @@ export default function Account(props: AccountPropsIF) {
             document.removeEventListener('keydown', handleEscape, false);
         };
     }, [showWalletDropdown]);
-
-    console.log({ showWalletDropdown });
 
     const walletDisplay = (
         <section

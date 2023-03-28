@@ -4,6 +4,7 @@ import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import FocusTrap from 'focus-trap-react';
+import Blockies from 'react-blockies';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -42,9 +43,17 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         // showWalletDropdown, setShowWalletDropdown
     } = props;
 
+    const blockiesSeed = accountAddressFull.toLowerCase();
+
+    const myBlockie = (
+        <div className={styles.blockie_container}>
+            <Blockies seed={blockiesSeed} scale={6} />
+        </div>
+    );
+
     const nameContent = (
         <div className={styles.name_display_container}>
-            <div className={styles.image}></div>
+            {myBlockie}
             <div className={styles.name_display_content}>
                 <div className={styles.name_display}>
                     <h2>{ensName !== '' ? ensName : accountAddress}</h2>
@@ -120,7 +129,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     // console.log({showWalletDropdown})
 
     return (
-        <FocusTrap>
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
             <div
                 className={walletWrapperStyle}
                 tabIndex={0}

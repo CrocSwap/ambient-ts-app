@@ -38,10 +38,10 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     // This function would later on return info about the tx such as 'Swap 0.0001 ETH for 0321 DAI
     function handleTxTextDisplay(status: string) {
         if (status === 'successful') {
-            return 'completed';
+            return 'Completed';
         } else if (status === 'failed') {
-            return 'failed';
-        } else return 'submitted';
+            return 'Failed';
+        } else return '';
     }
 
     const EtherscanTx = `https://goerli.etherscan.io/tx/${hash}`;
@@ -85,8 +85,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
             <div className={styles.content}>
                 <div className={styles.info}>
                     <div className={styles.row}>
-                        {txType ? txType : 'Transaction'} {txHashTruncated}{' '}
-                        {handleTxTextDisplay(status)}
+                        {`${
+                            txType ? txType : 'Transaction'
+                        } (${txHashTruncated})`}
                         <div
                             style={{
                                 cursor: 'pointer',
@@ -102,7 +103,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     </div>
                 </div>
                 <div className={styles.row}>
-                    <p> {`  ${elapsedTimeString}`}</p>
+                    <p>
+                        {`${handleTxTextDisplay(status)}  ${elapsedTimeString}`}
+                    </p>
                     <a
                         href={EtherscanTx}
                         className={styles.action}
