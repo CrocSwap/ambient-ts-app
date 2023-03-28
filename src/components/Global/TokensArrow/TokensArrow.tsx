@@ -93,8 +93,9 @@ export default function TokensArrow() {
     // );
 
     return (
-        <div
+        <button
             className={styles.container}
+            aria-label='Reverse tokens'
             // style={{ transform: rotate, transition: 'all 0.2s linear' }}
             // onClick={handleRotate}
         >
@@ -127,6 +128,6 @@ export default function TokensArrow() {
             </svg>
 
             {/* {rotateSvgs} */}
-        </div>
+        </button>
     );
 }

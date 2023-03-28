@@ -157,11 +157,17 @@ export default function ExtraInfo(props: propsIF) {
             placement: 'bottom',
         });
     }
+
     const extraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) =>
                 item ? (
-                    <div className={styles.extra_row} key={idx}>
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
                         <div className={styles.align_center}>
                             <div>{item.title}</div>
                             <TooltipComponent
@@ -192,7 +198,12 @@ export default function ExtraInfo(props: propsIF) {
         <div className={styles.extra_details}>
             {feesAndSlippageData.map((item, idx) =>
                 item ? (
-                    <div className={styles.extra_row} key={idx}>
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
                         <div className={styles.align_center}>
                             <div>{item.title}</div>
                             <TooltipComponent
@@ -219,11 +230,7 @@ export default function ExtraInfo(props: propsIF) {
             )}
         </div>
     );
-    const dropDownOrNull = priceImpact ? (
-        <div style={{ cursor: 'pointer' }}>
-            <RiArrowDownSLine size={20} />
-        </div>
-    ) : null;
+
     const dispatch = useAppDispatch();
 
     // const updateShowExtraDetails = () => {
@@ -248,8 +255,11 @@ export default function ExtraInfo(props: propsIF) {
     // }, [priceImpact?.percentChange]);
 
     const extraDetailsDropdown = (
-        <div
-            className={styles.extra_info_content}
+        <button
+            className={`${styles.extra_info_content} ${
+                priceImpact && styles.extra_info_content_active
+            }`}
+            style={{ padding: '0 1.7rem' }}
             onClick={
                 priceImpact
                     ? () => {
@@ -257,6 +267,7 @@ export default function ExtraInfo(props: propsIF) {
                       }
                     : undefined
             }
+            tabIndex={0}
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={12} />{' '}
@@ -276,8 +287,8 @@ export default function ExtraInfo(props: propsIF) {
             </div>
             {/* <DenominationSwitch /> */}
 
-            {dropDownOrNull}
-        </div>
+            {priceImpact && <RiArrowDownSLine size={20} />}
+        </button>
     );
     // const extraDetailsNoDropdown = (
     //     <div className={styles.extra_info_content} style={{ cursor: 'default' }}>

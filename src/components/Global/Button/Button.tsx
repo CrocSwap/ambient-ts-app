@@ -20,6 +20,7 @@ export default function Toggle(props: propsIF) {
             onClick={action}
             disabled={disabled}
             aria-label={customAriaLabel && customAriaLabel}
+            tabIndex={0}
         >
             {title}
         </button>
