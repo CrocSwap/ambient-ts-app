@@ -130,8 +130,6 @@ export default function Account(props: AccountPropsIF) {
         };
     }, [showWalletDropdown]);
 
-    console.log({ showWalletDropdown });
-
     const walletDisplay = (
         <section
             className={styles.wallet_display}
