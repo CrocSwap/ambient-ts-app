@@ -4,10 +4,10 @@ const WBTC_DECIMALS = 8;
 const USDC_DECIMALS = 6;
 const ETH_DECIMALS = 18;
 
-describe('verify calculateSecondaryDepositQty output', () => {
+describe('testing calculateSecondaryDepositQty', () => {
     it.each([
         [
-            // 1 USDC yielding 0.000603 eth
+            '1 USDC to 0.000603 eth',
             580953461.6770911, // poolPriceNonDisplay: number, 'scaled' or 'wei' price of the pool
             6, // tokenADecimals: number,
             18, // tokenBDecimals: number,
@@ -21,7 +21,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             6, // precision for comparison of default vlaue.
         ],
         [
-            // 100 USDC yielding 0.0603 eth
+            '100 USDC to 0.0603 eth',
             580953461.6770911,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -35,7 +35,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
         [
-            // 0.00001 USDC yielding a small amount of ETH, with updated pool value
+            '0.00001 USDC to 5e-9 ETH',
             585685851.9804151,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -49,7 +49,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
         [
-            // 1000 USDC to ~0.5 ETH, 52% Range Width
+            '1000 USDC to ~0.5 ETH with 52% range width',
             585685851.9804151,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -63,7 +63,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
         [
-            // 1000 USDC to ~0.5 ETH, 12% Range Width
+            '1000 USDC to ~0.5 ETH with 12% range width',
             585685851.9804151,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -77,7 +77,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
         [
-            // 1 ETH to ~1600 USDC, with updated pool value
+            '1 ETH to ~1600 USDC with updated pool value',
             580949046.2755661,
             ETH_DECIMALS,
             USDC_DECIMALS,
@@ -91,7 +91,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
         [
-            // 10 WBTC to ETH, with updated pool value
+            '10 WBTC to ETH, with updated pool value',
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -106,7 +106,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
         ],
 
         [
-            // 10 WBTC to ETH with ambient range
+            '10 WBTC to ETH with ambient range',
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -121,7 +121,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
         ],
 
         [
-            // WBTC to ETH, and we're typing to modify the ETH value (token A gets updated)
+            'WBTC to ETH, updating the non-base token',
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -136,7 +136,7 @@ describe('verify calculateSecondaryDepositQty output', () => {
         ],
 
         [
-            // ETH to WBTC, and we selected ambient range, updating the non-base token again.
+            'ETH to WBTC with ambient range, updating the non-base token',
             157556275070.23358,
             ETH_DECIMALS,
             WBTC_DECIMALS,
@@ -150,8 +150,9 @@ describe('verify calculateSecondaryDepositQty output', () => {
             15,
         ],
     ])(
-        'input: %s',
+        'testing case: %s',
         (
+            _,
             poolPriceNonDisplay,
             tokenADecimals,
             tokenBDecimals,
