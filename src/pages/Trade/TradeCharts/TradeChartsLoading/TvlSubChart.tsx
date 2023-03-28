@@ -16,12 +16,7 @@ interface TvlData {
     render: any;
     zoomAndYdragControl: any;
     getNewCandleData: any;
-    setMouseMoveChartName: React.Dispatch<
-        React.SetStateAction<string | undefined>
-    >;
-    mouseMoveChartName: string | undefined;
     yAxisWidth: string;
-    setTvlAreaSeries: React.Dispatch<React.SetStateAction<any>>;
     setCrossHairLocation: any;
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -35,10 +30,8 @@ export default function TvlSubChart(props: TvlData) {
         zoomAndYdragControl,
         setZoomAndYdragControl,
         getNewCandleData,
-        setMouseMoveChartName,
         subChartValues,
         yAxisWidth,
-        setTvlAreaSeries,
         setCrossHairLocation,
         setIsCrosshairActive,
     } = props;
@@ -228,8 +221,6 @@ export default function TvlSubChart(props: TvlData) {
                 context.lineWidth = 0.5;
             });
 
-            setTvlAreaSeries(() => areaSeries);
-
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
         }
     }, [scaleData, tvlyScale, tvlGradient]);
@@ -339,7 +330,6 @@ export default function TvlSubChart(props: TvlData) {
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
-                    setMouseMoveChartName(undefined);
                     setIsCrosshairActive('none');
                     render();
                 });

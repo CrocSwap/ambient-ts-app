@@ -8,18 +8,15 @@ interface FreeRateData {
     feeData: FeeChartData[] | undefined;
     period: number | undefined;
     subChartValues: any;
-    setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     xScale: any;
     render: any;
     zoomAndYdragControl: any;
     getNewCandleData: any;
-    setMouseMoveChartName: React.Dispatch<
-        React.SetStateAction<string | undefined>
-    >;
-    mouseMoveChartName: string | undefined;
     yAxisWidth: string;
+    setCrossHairLocation: any;
+    setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function FeeRateSubChart(props: FreeRateData) {
@@ -29,23 +26,26 @@ export default function FeeRateSubChart(props: FreeRateData) {
         xScale,
         crosshairForSubChart,
         zoomAndYdragControl,
-        setsubChartValues,
         setZoomAndYdragControl,
         getNewCandleData,
-        setMouseMoveChartName,
-        mouseMoveChartName,
         subChartValues,
         yAxisWidth,
+        setCrossHairLocation,
+        setIsCrosshairActive,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
     const d3Yaxis = useRef(null);
 
     const d3CanvasArea = useRef(null);
+    const d3CanvasCrosshair = useRef(null);
 
     const [feeRateyScale, setFeeRateyScale] = useState<any>();
     const [yAxis, setyAxis] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
+    const [feeRateZoom, setFeeRateZoom] = useState<any>();
+    const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
+        useState<any>();
 
     useEffect(() => {
         const yScale = d3.scaleLinear();
@@ -78,6 +78,44 @@ export default function FeeRateSubChart(props: FreeRateData) {
     }, []);
 
     useEffect(() => {
+        if (feeData !== undefined) {
+            let date: any | undefined = undefined;
+
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('start', () => {
+                    if (date === undefined) {
+                        date = feeData[feeData.length - 1].time;
+                    }
+                })
+                .on('zoom', (event: any) => {
+                    const domainX = xScale.domain();
+                    const linearX = d3
+                        .scaleTime()
+                        .domain(xScale.range())
+                        .range([0, domainX[1] - domainX[0]]);
+
+                    const deltaX = linearX(-event.sourceEvent.movementX);
+                    getNewCandleData(
+                        new Date(domainX[0].getTime() + deltaX),
+                        date,
+                    );
+                    xScale.domain([
+                        new Date(domainX[0].getTime() + deltaX),
+                        new Date(domainX[1].getTime() + deltaX),
+                    ]);
+
+                    setZoomAndYdragControl(event);
+                }) as any;
+
+            setFeeRateZoom(() => {
+                return zoom;
+            });
+        }
+    }, [feeData]);
+
+    useEffect(() => {
         if (feeRateyScale !== undefined && xScale !== undefined) {
             const lineSeries = d3fc
                 .seriesCanvasLine()
@@ -93,6 +131,22 @@ export default function FeeRateSubChart(props: FreeRateData) {
             setLineSeries(() => {
                 return lineSeries;
             });
+
+            const crosshairVerticalCanvas = d3fc
+                .annotationCanvasLine()
+                .orient('vertical')
+                .value((d: any) => d.x)
+                .xScale(xScale)
+                .yScale(feeRateyScale)
+                .label('');
+
+            crosshairVerticalCanvas.decorate((context: any) => {
+                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
+            });
+
+            setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
         }
     }, [feeRateyScale, xScale]);
 
@@ -130,8 +184,32 @@ export default function FeeRateSubChart(props: FreeRateData) {
         }
     }, [lineSeries, feeData]);
 
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasCrosshair.current)
+            .select('canvas')
+            .node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (crosshairVerticalCanvas) {
+            d3.select(d3CanvasCrosshair.current)
+                .on('draw', () => {
+                    crosshairVerticalCanvas(crosshairForSubChart);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([0.6, 0.6]);
+                    crosshairVerticalCanvas.context(ctx);
+                });
+        }
+    }, [feeRateyScale, crosshairVerticalCanvas, crosshairForSubChart]);
+
     const renderCanvas = () => {
         if (d3CanvasArea) {
+            const container = d3.select(d3CanvasArea.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasCrosshair) {
             const container = d3.select(d3CanvasArea.current).node() as any;
             if (container) container.requestRedraw();
         }
@@ -151,7 +229,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
         }
     }, [
         xScale,
-        crosshairForSubChart,
         period,
         feeData,
         zoomAndYdragControl,
@@ -159,6 +236,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
         lineSeries,
         yAxis,
     ]);
+
+    useEffect(() => {
+        if (d3CanvasCrosshair !== undefined && feeRateZoom !== undefined) {
+            d3.select(d3CanvasCrosshair.current).call(feeRateZoom);
+        }
+    }, [feeRateZoom, d3CanvasCrosshair]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotFeeRate').node() as any;
@@ -185,39 +268,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     });
                 });
 
-                const crosshairDataLocal = [
-                    {
-                        x: 0,
-                        y:
-                            mouseMoveChartName === 'feeRate'
-                                ? crosshairForSubChart[0].y
-                                : -1,
-                    },
-                ];
-
-                const crosshairVerticalJoin = d3fc.dataJoin(
-                    'g',
-                    'crosshairVertical',
-                );
-
-                const crosshairVertical = d3fc
-                    .annotationSvgLine()
-                    .value((d: any) => feeRateyScale.invert(d.y))
-                    .xScale(xScale)
-                    .yScale(feeRateyScale);
-
-                crosshairVertical.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.left-handle').remove();
-                    selection.enter().select('g.right-handle').remove();
-                });
-
                 d3.select(d3PlotFeeRate.current).on(
                     'measure',
                     function (event: any) {
@@ -226,127 +276,20 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     },
                 );
 
-                d3.select(d3PlotFeeRate.current).on(
-                    'measure.range',
-                    function (event: any) {
-                        let date: any | undefined = undefined;
-
-                        const svg = d3.select(event.target).select('svg');
-                        const zoom = d3
-                            .zoom()
-                            .scaleExtent([1, 10])
-                            .on('start', () => {
-                                if (date === undefined) {
-                                    date = feeData[feeData.length - 1].time;
-                                }
-                            })
-                            .on('zoom', (event: any) => {
-                                const domainX = xScale.domain();
-                                const linearX = d3
-                                    .scaleTime()
-                                    .domain(xScale.range())
-                                    .range([0, domainX[1] - domainX[0]]);
-
-                                const deltaX = linearX(
-                                    -event.sourceEvent.movementX,
-                                );
-                                getNewCandleData(
-                                    new Date(domainX[0].getTime() + deltaX),
-                                    date,
-                                );
-                                xScale.domain([
-                                    new Date(domainX[0].getTime() + deltaX),
-                                    new Date(domainX[1].getTime() + deltaX),
-                                ]);
-
-                                setZoomAndYdragControl(event);
-                            }) as any;
-
-                        svg.call(zoom);
-                    },
-                );
-
-                d3.select(d3PlotFeeRate.current).on(
-                    'draw',
-                    function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-                        crosshairVerticalJoin(svg, [crosshairDataLocal]).call(
-                            crosshairVertical,
-                        );
-                    },
-                );
-
                 d3.select(d3Yaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(yAxis);
                 });
 
-                const minimum = (data: any, accessor: any) => {
-                    return data
-                        .map(function (dataPoint: any, index: any) {
-                            return [
-                                accessor(dataPoint, index),
-                                dataPoint,
-                                index,
-                            ];
-                        })
-                        .reduce(
-                            function (accumulator: any, dataPoint: any) {
-                                return accumulator[0] > dataPoint[0]
-                                    ? dataPoint
-                                    : accumulator;
-                            },
-                            [Number.MAX_VALUE, null, -1],
-                        );
-                };
-
-                const snap = (series: any, data: any, point: any) => {
-                    if (point == undefined) return [];
-                    const xScale = series.xScale(),
-                        xValue = series.crossValue();
-
-                    const filtered =
-                        data.length > 1
-                            ? data.filter((d: any) => xValue(d) != null)
-                            : data;
-                    const nearest = minimum(filtered, (d: any) =>
-                        Math.abs(point.x - xScale(xValue(d))),
-                    )[1];
-
-                    return nearest?.value;
-                };
-
-                d3.select(d3PlotFeeRate.current).on(
+                d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
                     function (event: any) {
-                        setMouseMoveChartName('feeRate');
-                        d3.select('#fee_rate_chart')
-                            .select('svg')
-                            .select('.crosshairVertical')
-                            .selectChildren()
-                            .style('visibility', 'visible');
-
-                        setsubChartValues((prevState: any) => {
-                            const newTargets = [...prevState];
-                            newTargets.filter(
-                                (target: any) => target.name === 'feeRate',
-                            )[0].value = snap(lineSeries, feeData, {
-                                x: crosshairDataLocal[0].x,
-                                y: crosshairDataLocal[0].y,
-                            });
-
-                            return newTargets;
-                        });
+                        setCrossHairLocation(event, false);
+                        setIsCrosshairActive('feeRate');
                     },
                 );
 
-                d3.select(d3PlotFeeRate.current).on('mouseleave', () => {
-                    setMouseMoveChartName(undefined);
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChildren()
-                        .style('visibility', 'hidden');
+                d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
+                    setIsCrosshairActive('none');
                     render();
                 });
             }
@@ -364,7 +307,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             <d3fc-canvas
                 ref={d3CanvasArea}
-                className='tvl-canvas'
+                className='fee-rate-canvas'
+            ></d3fc-canvas>
+
+            <d3fc-canvas
+                ref={d3CanvasCrosshair}
+                className='fee-rate-canvas'
             ></d3fc-canvas>
 
             <label style={{ position: 'absolute', left: '0%' }}>

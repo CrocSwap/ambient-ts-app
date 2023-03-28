@@ -324,10 +324,6 @@ export default function Chart(props: ChartData) {
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
-
-    const [mouseMoveChartName, setMouseMoveChartName] = useState<
-        string | undefined
-    >(undefined);
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
@@ -397,11 +393,11 @@ export default function Chart(props: ChartData) {
     const [gradientForBidLine, setGradientForBidLine] = useState();
 
     // Subcharts
-    const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
@@ -1237,10 +1233,8 @@ export default function Chart(props: ChartData) {
                 xAxis.decorate((selection: any) => {
                     const _width = 65; // magic number of pixels to blur surrounding price
 
-                    selection
-                        .select('text')
-
-                        .attr('class', (d: any) => {
+                    selection.select('text').attr('class', (d: any) => {
+                        if (d > 0) {
                             if (d === crosshairData[0].x) {
                                 return 'crossHairText';
                             }
@@ -1277,7 +1271,8 @@ export default function Chart(props: ChartData) {
                             ) {
                                 return 'startDate';
                             }
-                        });
+                        }
+                    });
                 });
             });
         }
@@ -5958,19 +5953,17 @@ export default function Chart(props: ChartData) {
 
     const findTvlNearest = (point: any) => {
         const tvlData = parsedChartData?.tvlChartData;
-        const series = tvlAreaSeries;
         if (point == undefined) return 0;
-        if (series && tvlData) {
-            const xScale = series.xScale(),
-                xValue = series.crossValue();
+        if (tvlData) {
+            const xScale = scaleData.xScale;
 
             const filtered =
                 tvlData.length > 1
-                    ? tvlData.filter((d: any) => xValue(d) != null)
+                    ? tvlData.filter((d: any) => d.time != null)
                     : tvlData;
 
             const nearest = minimum(filtered, (d: any) =>
-                Math.abs(point.layerX - xScale(xValue(d))),
+                Math.abs(point.layerX - xScale(d.time)),
             )[1];
 
             if (nearest) {
@@ -6255,7 +6248,7 @@ export default function Chart(props: ChartData) {
                         (location.pathname.includes('/limit') &&
                             canUserDragLimit) ||
                         ((location.pathname.includes('range') ||
-                            location.pathname.includes('range')) &&
+                            location.pathname.includes('reposition')) &&
                             canUserDragRange)
                     ) {
                         d3.select(event.currentTarget).style(
@@ -6410,7 +6403,6 @@ export default function Chart(props: ChartData) {
             showTvl,
             showVolume,
             showFeeRate,
-            tvlAreaSeries,
             ghostLineValues,
         ],
     );
@@ -6528,7 +6520,6 @@ export default function Chart(props: ChartData) {
                 props.changeState(true, candle);
             }
         } else {
-            // d3.select('#transactionPopup').style('visibility', 'hidden');
             props.changeState(false, undefined);
         }
     }, [selectedDate]);
@@ -6547,8 +6538,6 @@ export default function Chart(props: ChartData) {
 
             setMinPrice(low > high ? high : low);
             setMaxPrice(low > high ? low : high);
-
-            // dispatch(setTargetData(newTargetData));
 
             if (lowLineMoved) {
                 setChartTriggeredBy('low_line');
@@ -6644,8 +6633,6 @@ export default function Chart(props: ChartData) {
             : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
 
         limitNonDisplay?.then((limit) => {
-            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
-
             limit = limit !== 0 ? limit : 1;
 
             const pinnedTick: number = isTokenABase
@@ -6831,7 +6818,6 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairForSubChart={crosshairData}
                                 subChartValues={subChartValues}
-                                setsubChartValues={setsubChartValues}
                                 xScale={
                                     scaleData !== undefined
                                         ? scaleData.xScale
@@ -6841,9 +6827,9 @@ export default function Chart(props: ChartData) {
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
                                 render={render}
-                                mouseMoveChartName={mouseMoveChartName}
-                                setMouseMoveChartName={setMouseMoveChartName}
                                 yAxisWidth={yAxisWidth}
+                                setCrossHairLocation={setCrossHairLocation}
+                                setIsCrosshairActive={setIsCrosshairActive}
                             />
                         </>
                     )}
@@ -6863,10 +6849,7 @@ export default function Chart(props: ChartData) {
                                 zoomAndYdragControl={zoomAndYdragControl}
                                 subChartValues={subChartValues}
                                 render={render}
-                                mouseMoveChartName={mouseMoveChartName}
-                                setMouseMoveChartName={setMouseMoveChartName}
                                 yAxisWidth={yAxisWidth}
-                                setTvlAreaSeries={setTvlAreaSeries}
                                 setCrossHairLocation={setCrossHairLocation}
                                 setIsCrosshairActive={setIsCrosshairActive}
                             />
