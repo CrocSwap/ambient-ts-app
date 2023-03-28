@@ -1052,7 +1052,7 @@ export default function Range(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Range',
+                        txType: `Range ${tokenA.symbol} + ${tokenB.symbol}`,
                     }),
                 );
             setIsWaitingForWallet(false);
@@ -1503,7 +1503,7 @@ export default function Range(props: propsIF) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const approve = async (tokenAddress: string) => {
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
             location.reload();
             return;
@@ -1516,7 +1516,7 @@ export default function Range(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Approval',
+                        txType: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -1566,7 +1566,10 @@ export default function Range(props: propsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenA.address);
+                await approve(
+                    tokenPair.dataTokenA.address,
+                    tokenPair.dataTokenA.symbol,
+                );
             }}
             flat={true}
         />
@@ -1581,7 +1584,10 @@ export default function Range(props: propsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenB.address);
+                await approve(
+                    tokenPair.dataTokenB.address,
+                    tokenPair.dataTokenB.symbol,
+                );
             }}
             flat={true}
         />

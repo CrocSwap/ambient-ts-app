@@ -161,7 +161,7 @@ export default function OrderRemoval(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: 'Removal',
+                                txType: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
                             }),
                         );
                 } else {
@@ -176,7 +176,7 @@ export default function OrderRemoval(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: 'Removal',
+                                txType: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
                             }),
                         );
                 }

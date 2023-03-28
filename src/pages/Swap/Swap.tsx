@@ -275,13 +275,13 @@ export default function Swap(props: propsIF) {
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
-        // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-        // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
             : buyQtyString.replaceAll(',', '');
+
         const isQtySell = isTokenAPrimary;
-        // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
+
         let tx;
         try {
             const plan = isQtySell
@@ -404,7 +404,6 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
-            // setNewSwapTransactionHash('');
         }
     }
 
@@ -432,13 +431,13 @@ export default function Swap(props: propsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA.address);
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat
         />
     );
 
-    const approve = async (tokenAddress: string) => {
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
             location.reload();
             return;
@@ -451,7 +450,7 @@ export default function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Approval',
+                        txType: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
