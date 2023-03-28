@@ -10,6 +10,7 @@ interface TogglePropsIF {
         | MouseEventHandler<HTMLDivElement>
         | KeyboardEventHandler<HTMLDivElement>
         | undefined
+        // eslint-disable-next-line
         | any;
     buttonColor?: string;
     disabled?: boolean;

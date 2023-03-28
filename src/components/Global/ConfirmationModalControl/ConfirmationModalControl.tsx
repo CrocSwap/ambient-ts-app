@@ -1,4 +1,4 @@
-import { useId, Dispatch, SetStateAction, useEffect } from 'react';
+import { useId, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
 import Toggle2 from '../Toggle/Toggle2';
 import styles from './ConfirmationModalControl.module.css';
