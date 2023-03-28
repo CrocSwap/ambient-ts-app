@@ -6262,7 +6262,6 @@ export default function Chart(props: ChartData) {
 
                 if (isMouseMoveForSubChart) {
                     setCrossHairLocation(mouseMoveEventCharts);
-                    showCrosshairHorizontal();
                 } else if (isZoomForSubChart) {
                     setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
                 }
@@ -6271,7 +6270,6 @@ export default function Chart(props: ChartData) {
                     isZoomForSubChart = false;
                     setCrossHairLocation(event);
                     setMouseMoveEventCharts(event);
-                    showCrosshairHorizontal();
                 };
 
                 const mousemove = (event: any) => {
@@ -6491,34 +6489,6 @@ export default function Chart(props: ChartData) {
             ghostLineValues,
         ],
     );
-
-    function showCrosshairHorizontal() {
-        if (
-            crosshairVertical !== undefined &&
-            crosshairHorizontal !== undefined
-        ) {
-            crosshairVertical.decorate((context: any) => {
-                context.visibility = 'visible';
-            });
-            crosshairHorizontal.decorate((context: any) => {
-                context.visibility = 'visible';
-            });
-        }
-
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        props.setShowTooltip(true);
-    }
 
     useEffect(() => {
         if (scaleData && scaleData.xScale) {
