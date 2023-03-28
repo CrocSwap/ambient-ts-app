@@ -300,7 +300,10 @@ export default function Swap(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             if (tx.hash)
                 dispatch(
-                    addTransactionByType({ txHash: tx.hash, txType: 'Swap' }),
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    }),
                 );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
