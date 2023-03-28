@@ -203,6 +203,48 @@ describe('testing calculateSecondaryDepositQty', () => {
             0.016003438148510827,
             15,
         ],
+        [
+            'Unbalanced 1000 USDC-WBTC Mint, at [-38%, -113%] Width (Out of Range)',
+            0.003724870738812943,
+            6,
+            8,
+            '1000',
+            true,
+            false,
+            false,
+            0,
+            0.00003724870738812943,
+            0,
+            15,
+        ],
+        [
+            'Unbalanced 1000 ETH-WBTC Mint, at [+4%, +5%] Width (Out of Range)',
+            157556275070.23358,
+            18,
+            8,
+            '1000',
+            true,
+            true,
+            false,
+            Infinity,
+            15.755627507023359,
+            0,
+            15,
+        ],
+        [
+            'Unbalanced 1000 ETH-USDC Mint, at [+2%, +1.83%] Width (Out of Range)',
+            576602240.4394826,
+            18,
+            6,
+            2134142.95,
+            false,
+            true,
+            false,
+            0,
+            0.0005766022404394825,
+            0,
+            15,
+        ],
     ])(
         'testing case: %s',
         (
@@ -223,18 +265,19 @@ describe('testing calculateSecondaryDepositQty', () => {
             jest.mock('@crocswap-libs/sdk', () => ({
                 toDisplayPrice: () => mockToDisplayPrice,
             }));
-            const qtyTokenB = calculateSecondaryDepositQty(
-                poolPriceNonDisplay,
-                tokenADecimals,
-                tokenBDecimals,
-                primaryInputValueStr,
-                isTokenAPrimary,
-                isTokenABase,
-                isAmbientPosition,
-                depositSkew,
-            );
+            const qtyTokenB =
+                calculateSecondaryDepositQty(
+                    poolPriceNonDisplay,
+                    tokenADecimals,
+                    tokenBDecimals,
+                    primaryInputValueStr,
+                    isTokenAPrimary,
+                    isTokenABase,
+                    isAmbientPosition,
+                    depositSkew,
+                ) ?? 0;
             expect(qtyTokenB).toBeDefined();
-            expect(qtyTokenB || -1).toBeCloseTo(expected, precision);
+            expect(qtyTokenB).toBeCloseTo(expected, precision);
         },
     );
 });
