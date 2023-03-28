@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
@@ -54,6 +55,7 @@ import {
     getOneDayAxisTicks,
 } from './calcuteDateAxis';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
+import { symbolSquare, SymbolType } from 'd3';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare global {
@@ -225,6 +227,7 @@ export default function Chart(props: ChartData) {
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
+    const d3YaxisLabel = useRef(null);
     const dispatch = useAppDispatch();
 
     const location = useLocation();
@@ -1455,6 +1458,8 @@ export default function Chart(props: ChartData) {
             dragRange !== undefined
         ) {
             d3.select(d3CanvasMarketLine.current).call(zoomUtils?.zoom);
+            d3.select(d3Yaxis.current).call(zoomUtils?.yAxisZoom);
+            d3.select(d3Xaxis.current).call(zoomUtils?.xAxisZoom);
 
             if (location.pathname.includes('market')) {
                 d3.select(d3CanvasBand.current)
@@ -3592,6 +3597,8 @@ export default function Chart(props: ChartData) {
                 .on('drag', function (event) {
                     setIsLineDrag(true);
 
+                    console.log('drag', event.y);
+
                     newLimitValue = scaleData.yScale.invert(event.y);
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
@@ -3718,19 +3725,239 @@ export default function Chart(props: ChartData) {
                 return _xAxis;
             });
 
-            d3.select(d3Yaxis.current).on('draw', function (event: any) {
-                d3.select(event.target).select('svg').call(_yAxis);
+            const rectSymbol = function () {
+                const path = d3.path();
+                path.rect(-5, -5, 10, 10);
+                return path;
+            };
+
+            //   const customSymbol = d3.symbol().type(rectSymbol).size(100);
+
+            const rectangle = d3fc
+                .seriesCanvasPoint()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .crossValue((d: any, index: any) => {
+                    return scaleData.xScale.domain()[0];
+                })
+                .mainValue((d: any) => d.value)
+                .type(symbolSquare)
+                .decorate((context: any, datum: any, index: any) => {
+                    context.fillRect(datum.x - 2.5, datum.y - 2.5, 5, 5);
+                    const rotateDegree = 90;
+                    context.rotate((rotateDegree * Math.PI) / 180);
+                    context.width = 500;
+                    context.strokeStyle = 'rgba(235, 235, 255)';
+                    context.fillStyle = 'rgba(235, 235, 255)';
+                });
+
+            const d3YaxisCanvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as any;
+            const d3YaxisContext = d3YaxisCanvas.getContext('2d');
+
+            d3.select(d3Yaxis.current).on('draw', function () {
+                drawYaxis(
+                    d3YaxisContext,
+                    scaleData.yScale,
+                    d3YaxisCanvas.width / 2,
+                    scaleData.yScale.range(),
+                );
+
+                // rectangle.context(d3YaxisContext)(market)
             });
 
-            d3.select(d3Xaxis.current).on('draw', function (event: any) {
-                d3.select(event.target).select('svg').call(_xAxis);
-                d3.select(d3Xaxis.current)
-                    .select('svg')
-                    .select('.domain')
-                    .remove();
+            const rect = {
+                x: 0,
+                y: scaleData.yScale(limit[0].value) - 10,
+                width: 70,
+                heigth: 20,
+            };
+
+            let isDragging = false;
+
+            d3.select(d3Yaxis.current).on('mousedown', (event: any) => {
+                const mouseX = event.clientX - canvas.offsetLeft;
+                const mouseY = event.clientY - canvas.offsetTop;
+
+                const dx = event.offsetX;
+                const dy = event.offsetY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                console.log('ay');
+
+                if (distance < rect.width) {
+                    console.log('öf');
+
+                    isDragging = true;
+                }
+            });
+
+            d3.select(d3Yaxis.current).on('mouseup', () => {
+                isDragging = false;
+            });
+
+            let newLimitValue: any;
+
+            d3.select(d3Yaxis.current).on('mousemove', (event) => {
+                // if (isDragging) {
+                setIsLineDrag(true);
+
+                const mouseX = event.clientX - canvas.offsetLeft;
+                const mouseY = event.clientY - canvas.offsetTop;
+
+                rect.x = mouseX;
+                rect.y = mouseY;
+
+                console.log('ayyMouseMove', isLineDrag, mouseY);
+
+                newLimitValue = scaleData.yScale.invert(event.offsetY);
+
+                newLimitValue = setLimitForNoGoZone(newLimitValue);
+                setGhostLineValues(adjTicks(newLimitValue));
+
+                if (newLimitValue < 0) newLimitValue = 0;
+
+                setLimit(() => {
+                    return [{ name: 'Limit', value: newLimitValue }];
+                });
+
+                setTriangleLimitValues(newLimitValue);
+
+                // Yeniden çizim
+                drawYaxis(
+                    d3YaxisContext,
+                    scaleData.yScale,
+                    d3YaxisCanvas.width / 2,
+                    scaleData.yScale.range(),
+                );
+
+                // }
+            });
+
+            // d3.select(d3Yaxis.current).on('click', function(event:any) {
+            //     const y = event.offsetY;
+
+            //     console.log({y},scaleData.yScale(limit[0].value));
+
+            //     if (y >= (scaleData.yScale(limit[0].value) -10) && y <= scaleData.yScale(limit[0].value)+10) {
+            //         alert('Kareye tıklandı!');
+
+            //     }
+            // });
+
+            const canvas = d3
+                .select(d3Xaxis.current)
+                .select('canvas')
+                .node() as any;
+            const context = canvas.getContext('2d');
+
+            d3.select(d3Xaxis.current).on('draw', function () {
+                drawXaxis(
+                    context,
+                    scaleData.xScale,
+                    3,
+                    scaleData.xScale.range(),
+                );
             });
         }
-    }, [scaleData, activeTimeFrame]);
+    }, [scaleData, activeTimeFrame, market]);
+
+    const drawYaxis = (context: any, yScale: any, X: any, yExtent: any) => {
+        const [startY, endY] = yExtent;
+
+        const tickPadding = 3,
+            tickSize = 6,
+            yTicks = yScale.ticks(),
+            yTickFormat = yScale.tickFormat();
+
+        yTicks.push(market[0].value);
+        yTicks.push(limit[0].value);
+
+        context.strokeStyle = 'grey';
+        context.beginPath();
+        yTicks.forEach((d: any) => {
+            context.moveTo(X, yScale(d));
+            context.lineTo(X - tickSize, yScale(d));
+        });
+        context.stroke();
+        context.textAlign = 'right';
+        context.textBaseline = 'middle';
+        context.fillStyle = 'grey';
+
+        yTicks.forEach((d: number) => {
+            if (d === market[0].value) {
+                context.beginPath();
+                context.fillStyle = 'white';
+                context.fillRect(0, yScale(d) - 10, 70, 20);
+
+                context.fillStyle = 'black';
+                context.fontSize = '13';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+
+                context.fillText(
+                    yTickFormat(d),
+                    X - tickSize - tickPadding,
+                    yScale(d),
+                );
+            } else if (
+                d === limit[0].value &&
+                location.pathname.includes('/limit')
+            ) {
+                context.beginPath();
+                context.fillStyle = 'purple';
+
+                context.fillText(
+                    yTickFormat(d),
+                    X - tickSize - tickPadding,
+                    yScale(d),
+                );
+                context.fillRect(0, yScale(d) - 10, 70, 20);
+            } else {
+                context.beginPath();
+                context.fillText(
+                    yTickFormat(d),
+                    X - tickSize - tickPadding,
+                    yScale(d),
+                );
+            }
+        });
+    };
+
+    const drawXaxis = (context: any, xScale: any, Y: any, xExtent: any) => {
+        // const [startX, endX] = xExtent;
+
+        const tickSize = 6,
+            xTicks = xScale.ticks(), // You may choose tick counts. ex: xScale.ticks(20)
+            xTickFormat = xScale.tickFormat(); // you may choose the format. ex: xScale.tickFormat(tickCount, ".0s")
+
+        context.strokeStyle = 'grey';
+
+        context.beginPath();
+        xTicks.forEach((d: any) => {
+            context.moveTo(xScale(d), Y);
+            context.lineTo(xScale(d), Y + tickSize);
+        });
+        context.stroke();
+
+        // context.beginPath();
+        // context.moveTo(startX, Y + tickSize);
+        // context.lineTo(startX, Y);
+        // context.lineTo(endX, Y);
+        // context.lineTo(endX, Y + tickSize);
+        // context.stroke();
+
+        context.textAlign = 'center';
+        context.textBaseline = 'top';
+        context.fillStyle = 'grey';
+        xTicks.forEach((d: any) => {
+            context.beginPath();
+            context.fillText(xTickFormat(d), xScale(d), Y + tickSize);
+        });
+
+        context.restore();
+    };
 
     // Horizontal Lines
     useEffect(() => {
@@ -6919,7 +7146,7 @@ export default function Chart(props: ChartData) {
                             className='limit-line-canvas'
                         ></d3fc-canvas>
 
-                        <d3fc-svg
+                        <d3fc-canvas
                             className='y-axis-svg'
                             ref={d3Yaxis}
                             style={{
@@ -6927,7 +7154,7 @@ export default function Chart(props: ChartData) {
                                 gridColumn: 4,
                                 gridRow: 3,
                             }}
-                        ></d3fc-svg>
+                        ></d3fc-canvas>
                     </div>
                     {showFeeRate && (
                         <>
@@ -7000,16 +7227,16 @@ export default function Chart(props: ChartData) {
 
                     <div className='xAxis'>
                         <hr />
-                        <d3fc-svg
+                        <d3fc-canvas
                             ref={d3Xaxis}
                             className='x-axis'
                             style={{
-                                height: '1.25em',
+                                height: '2em',
                                 width: '100%',
                                 gridColumn: 3,
                                 gridRow: 4,
                             }}
-                        ></d3fc-svg>
+                        ></d3fc-canvas>
                     </div>
                 </div>
             </d3fc-group>
