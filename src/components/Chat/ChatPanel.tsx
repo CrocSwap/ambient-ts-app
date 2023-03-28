@@ -237,6 +237,7 @@ export default function ChatPanel(props: propsIF) {
     useEffect(() => {
         if (isMessageDeleted === true) {
             getMsg();
+            window.scrollTo(0, 0);
         }
     }, [isMessageDeleted]);
 
