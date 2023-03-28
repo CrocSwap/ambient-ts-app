@@ -7,7 +7,7 @@ const ETH_DECIMALS = 18;
 describe('testing calculateSecondaryDepositQty', () => {
     it.each([
         [
-            '1 USDC to 0.000603 eth',
+            'Balanced 1 ETH-USDC Mint at ±10% Width',
             580953461.6770911, // poolPriceNonDisplay: number, 'scaled' or 'wei' price of the pool
             6, // tokenADecimals: number,
             18, // tokenBDecimals: number,
@@ -21,7 +21,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             6, // precision for comparison of default vlaue.
         ],
         [
-            '100 USDC to 0.0603 eth',
+            'Balanced 100 USDC-ETH Mint at ±10% Width',
             580953461.6770911,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -35,7 +35,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             15,
         ],
         [
-            '0.00001 USDC to 5e-9 ETH',
+            'Balanced 0.00001 USDC-ETH Mint at ±10% Width',
             585685851.9804151,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -49,7 +49,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             15,
         ],
         [
-            '1000 USDC to ~0.5 ETH with 52% range width',
+            'Balanced 1000 USDC-ETH Mint at ±52% Width',
             585685851.9804151,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -63,7 +63,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             15,
         ],
         [
-            '1000 USDC to ~0.5 ETH with 12% range width',
+            'Balanced 1000 USDC-ETH Mint at ±12% Width',
             585685851.9804151,
             USDC_DECIMALS,
             ETH_DECIMALS,
@@ -77,7 +77,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             15,
         ],
         [
-            '1 ETH to ~1600 USDC with updated pool value',
+            'Balanced 1000 USDC-ETH Mint at ±10% Width',
             580949046.2755661,
             ETH_DECIMALS,
             USDC_DECIMALS,
@@ -91,7 +91,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             15,
         ],
         [
-            '10 WBTC to ETH, with updated pool value',
+            'Balanced 10 WBTC-ETH Mint at ±10% Width',
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -106,7 +106,7 @@ describe('testing calculateSecondaryDepositQty', () => {
         ],
 
         [
-            '10 WBTC to ETH with ambient range',
+            'Balanced 10 WBTC-ETH Mint at Ambient Width',
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -121,7 +121,7 @@ describe('testing calculateSecondaryDepositQty', () => {
         ],
 
         [
-            'WBTC to ETH, updating the non-base token',
+            'Balanced 15.3 WBTC-ETH Mint, non-base token',
             157556275070.23358,
             WBTC_DECIMALS,
             ETH_DECIMALS,
@@ -136,7 +136,7 @@ describe('testing calculateSecondaryDepositQty', () => {
         ],
 
         [
-            'ETH to WBTC with ambient range, updating the non-base token',
+            'Balanced 1 ETH-WBTC Mint, non-base token',
             157556275070.23358,
             ETH_DECIMALS,
             WBTC_DECIMALS,
