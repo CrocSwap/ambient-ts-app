@@ -580,7 +580,7 @@ export default function Limit(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Limit ${tradeData.tokenA.symbol}→${tradeData.tokenB.symbol}`,
+                        txType: `Add Limit ${tradeData.tokenA.symbol}→${tradeData.tokenB.symbol}`,
                     }),
                 );
         } catch (error) {

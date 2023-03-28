@@ -381,7 +381,7 @@ export default function RemoveRange(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Remove ${position.baseSymbol}+${position.quoteSymbol}`,
+                            txType: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
                         }),
                     );
             } catch (error) {
