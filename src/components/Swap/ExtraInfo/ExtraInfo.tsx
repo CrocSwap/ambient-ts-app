@@ -254,6 +254,11 @@ export default function ExtraInfo(props: propsIF) {
     //     updateShowExtraDetails();
     // }, [priceImpact?.percentChange]);
 
+    const conversionRateDisplay = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const gasCostAriaLabel = `Gas cost is ${swapGasPriceinDollars}. Conversion rate is ${conversionRateDisplay} `;
     const extraDetailsDropdown = (
         <button
             className={`${styles.extra_info_content} ${
@@ -268,6 +273,7 @@ export default function ExtraInfo(props: propsIF) {
                     : undefined
             }
             tabIndex={0}
+            aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={12} />{' '}
@@ -281,9 +287,7 @@ export default function ExtraInfo(props: propsIF) {
                     e.stopPropagation();
                 }}
             >
-                {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
 

@@ -111,6 +111,8 @@ export default function Modal(props: ModalPropsIF) {
                 ${noBackground ? styles.no_background_modal : null}
                 `}
                     onMouseDown={(e) => e.stopPropagation()}
+                    tabIndex={0}
+                    aria-label={`${title} modal`}
                 >
                     {headerOrNull}
                     <section className={styles.modal_content}>

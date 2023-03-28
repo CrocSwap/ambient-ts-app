@@ -165,7 +165,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <section>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>

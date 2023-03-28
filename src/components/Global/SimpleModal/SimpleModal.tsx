@@ -54,6 +54,8 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 `}
                     onMouseDown={(e) => e.stopPropagation()}
                     style={{ justifyContent: 'flex-start' }}
+                    tabIndex={0}
+                    aria-label={`${title} modal`}
                 >
                     <section className={styles.modal_content}>
                         {title && (

@@ -1,6 +1,10 @@
 import styles from './TokensArrow.module.css';
 // import { useState } from 'react';
-export default function TokensArrow() {
+interface TokensArrowPropsIF {
+    onlyDisplay?: boolean;
+}
+export default function TokensArrow(props: TokensArrowPropsIF) {
+    const { onlyDisplay } = props;
     // const [rotateChevron, setRotateChevron] = useState(false);
     // const handleRotate = () => setRotateChevron(!rotateChevron);
     // const rotate = rotateChevron ? 'rotate(180deg)' : 'rotate(0)';
@@ -94,6 +98,7 @@ export default function TokensArrow() {
 
     return (
         <button
+            tabIndex={onlyDisplay ? -1 : 0}
             className={styles.container}
             aria-label='Reverse tokens'
             // style={{ transform: rotate, transition: 'all 0.2s linear' }}
