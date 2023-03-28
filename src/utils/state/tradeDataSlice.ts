@@ -37,7 +37,6 @@ export interface tradeData {
     advancedHighTick: number;
     simpleRangeWidth: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
     targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -75,7 +74,6 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 10,
     slippageTolerance: 0.05,
-    activeChartPeriod: 3600,
     targetData: [
         { name: 'Min', value: undefined },
         { name: 'Max', value: undefined },
@@ -215,9 +213,6 @@ export const tradeDataSlice = createSlice({
         setSlippageTolerance: (state, action: PayloadAction<number>) => {
             state.slippageTolerance = action.payload;
         },
-        setActiveChartPeriod: (state, action: PayloadAction<number>) => {
-            state.activeChartPeriod = action.payload;
-        },
         setTargetData: (state, action: PayloadAction<targetData[]>) => {
             state.targetData = action.payload;
         },
@@ -298,7 +293,6 @@ export const {
     setAdvancedHighTick,
     setSimpleRangeWidth,
     setSlippageTolerance,
-    setActiveChartPeriod,
     resetTradeData,
     resetTokens,
     reverseTokensInRTK,

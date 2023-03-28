@@ -175,7 +175,7 @@ export default function Deposit(props: propsIF) {
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
-            setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
+            setButtonMessage(`Approve ${selectedToken.symbol}`);
         } else if (isDepositQtyValid) {
             setIsButtonDisabled(false);
             setButtonMessage('Deposit');

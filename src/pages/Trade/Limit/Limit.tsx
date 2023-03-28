@@ -792,7 +792,7 @@ export default function Limit(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
