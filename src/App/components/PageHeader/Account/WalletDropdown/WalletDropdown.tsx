@@ -129,7 +129,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     // console.log({showWalletDropdown})
 
     return (
-        <FocusTrap>
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
             <div
                 className={walletWrapperStyle}
                 tabIndex={0}
