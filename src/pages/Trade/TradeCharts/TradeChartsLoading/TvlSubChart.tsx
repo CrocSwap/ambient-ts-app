@@ -42,10 +42,8 @@ export default function TvlSubChart(props: TvlData) {
         setMouseMoveEventCharts,
         setIsMouseMoveForSubChart,
         setIsZoomForSubChart,
-        isMouseMoveForSubChart,
         getNewCandleData,
         setMouseMoveChartName,
-        mouseMoveChartName,
         subChartValues,
         yAxisWidth,
         setTvlAreaSeries,
@@ -56,12 +54,15 @@ export default function TvlSubChart(props: TvlData) {
     const d3Yaxis = useRef(null);
 
     const d3CanvasArea = useRef(null);
+    const d3CanvasCrosshair = useRef(null);
 
     const [tvlyScale, setTvlyScale] = useState<any>();
     const [yAxis, setyAxis] = useState<any>();
     const [areaSeries, setAreaSeries] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
     const [tvlGradient, setTvlGradient] = useState<any>();
+    const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
+        useState<any>();
 
     useEffect(() => {
         const yScale = d3.scaleLinear();
@@ -174,7 +175,23 @@ export default function TvlSubChart(props: TvlData) {
 
             setLineSeries(() => lineSeries);
 
+            const crosshairVerticalCanvas = d3fc
+                .annotationCanvasLine()
+                .orient('vertical')
+                .value((d: any) => d.x)
+                .xScale(scaleData.xScale)
+                .yScale(tvlyScale)
+                .label('');
+
+            crosshairVerticalCanvas.decorate((context: any) => {
+                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
+            });
+
             setTvlAreaSeries(() => areaSeries);
+
+            setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
         }
     }, [scaleData, tvlyScale, tvlGradient]);
 
@@ -198,9 +215,35 @@ export default function TvlSubChart(props: TvlData) {
         }
     }, [areaSeries, lineSeries, tvlyScale]);
 
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasCrosshair.current)
+            .select('canvas')
+            .node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (crosshairVerticalCanvas) {
+            d3.select(d3CanvasCrosshair.current)
+                .on('draw', () => {
+                    crosshairVerticalCanvas(crosshairForSubChart);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([0.6, 0.6]);
+                    crosshairVerticalCanvas.context(ctx);
+                });
+        }
+    }, [tvlyScale, crosshairVerticalCanvas, crosshairForSubChart]);
+
     const renderCanvas = () => {
         if (d3CanvasArea) {
             const container = d3.select(d3CanvasArea.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasCrosshair) {
+            const container = d3
+                .select(d3CanvasCrosshair.current)
+                .node() as any;
             if (container) container.requestRedraw();
         }
     };
@@ -237,22 +280,6 @@ export default function TvlSubChart(props: TvlData) {
         (tvlData: any, tvlyScale: any, yAxis: any) => {
             if (tvlData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-                const crosshairDataLocal = [
-                    {
-                        x: 0,
-                        y:
-                            isMouseMoveForSubChart &&
-                            mouseMoveChartName === 'tvl'
-                                ? crosshairForSubChart[0].y
-                                : -1,
-                    },
-                ];
-
-                const crosshairVerticalJoin = d3fc.dataJoin(
-                    'g',
-                    'crosshairVertical',
-                );
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
@@ -324,13 +351,6 @@ export default function TvlSubChart(props: TvlData) {
                     },
                 );
 
-                d3.select(d3PlotTvl.current).on('draw', function (event: any) {
-                    const svg = d3.select(event.target).select('svg');
-                    crosshairVerticalJoin(svg, [crosshairDataLocal]).call(
-                        crosshairVertical,
-                    );
-                });
-
                 d3.select(d3Yaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(yAxis);
                 });
@@ -381,6 +401,11 @@ export default function TvlSubChart(props: TvlData) {
 
             <d3fc-canvas
                 ref={d3CanvasArea}
+                className='tvl-canvas'
+            ></d3fc-canvas>
+
+            <d3fc-canvas
+                ref={d3CanvasCrosshair}
                 className='tvl-canvas'
             ></d3fc-canvas>
 
