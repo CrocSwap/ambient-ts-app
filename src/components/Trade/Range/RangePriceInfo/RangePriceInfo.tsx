@@ -150,9 +150,9 @@ export default function RangePriceInfo(props: propsIF) {
 
         if (isDenomBase) {
             if (isTokenABase) {
-                poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
+                poolPriceNum = spotPriceNum * tokenBMainnetPrice;
             } else {
-                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
+                poolPriceNum = spotPriceNum * tokenAMainnetPrice;
             }
         } else {
             if (isTokenABase) {
@@ -205,31 +205,25 @@ export default function RangePriceInfo(props: propsIF) {
 
         if (isDenomBase) {
             if (isTokenABase) {
-                minPriceNum =
-                    (1 / parseFloat(pinnedMaxPrice)) * tokenAMainnetPrice;
+                minPriceNum = parseFloat(pinnedMinPrice) * tokenBMainnetPrice;
 
-                maxPriceNum =
-                    (1 / parseFloat(pinnedMinPrice)) * tokenAMainnetPrice;
+                maxPriceNum = parseFloat(pinnedMaxPrice) * tokenBMainnetPrice;
             } else {
-                minPriceNum =
-                    (1 / parseFloat(pinnedMaxPrice)) * tokenBMainnetPrice;
+                minPriceNum = parseFloat(pinnedMinPrice) * tokenAMainnetPrice;
 
-                maxPriceNum =
-                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
+                maxPriceNum = parseFloat(pinnedMaxPrice) * tokenAMainnetPrice;
             }
         } else {
             if (isTokenABase) {
-                maxPriceNum =
-                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
-
                 minPriceNum =
                     (1 / parseFloat(pinnedMaxPrice)) * tokenBMainnetPrice;
-            } else {
                 maxPriceNum =
-                    (1 / parseFloat(pinnedMinPrice)) * tokenAMainnetPrice;
-
+                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
+            } else {
                 minPriceNum =
                     (1 / parseFloat(pinnedMaxPrice)) * tokenAMainnetPrice;
+                maxPriceNum =
+                    (1 / parseFloat(pinnedMinPrice)) * tokenAMainnetPrice;
             }
         }
 
@@ -283,7 +277,7 @@ export default function RangePriceInfo(props: propsIF) {
         <DefaultTooltip
             interactive
             title={`${minPriceUsdEquivalent} USD per ${
-                (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase)
+                isTokenABase
                     ? tokenPair.dataTokenA.symbol
                     : tokenPair.dataTokenB.symbol
             } `}
@@ -317,7 +311,7 @@ export default function RangePriceInfo(props: propsIF) {
         <DefaultTooltip
             interactive
             title={`${maxPriceUsdEquivalent} USD per ${
-                (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase)
+                isTokenABase
                     ? tokenPair.dataTokenA.symbol
                     : tokenPair.dataTokenB.symbol
             } `}
