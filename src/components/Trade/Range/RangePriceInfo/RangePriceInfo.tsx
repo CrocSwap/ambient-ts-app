@@ -2,7 +2,7 @@
 import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
@@ -11,6 +11,7 @@ import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { getMoneynessRank } from '../../../../utils/functions/getMoneynessRank';
 
 // interface for component props
 interface propsIF {
@@ -28,6 +29,8 @@ interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     chainId: string;
     isTokenABase: boolean;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
     pinnedDisplayPrices:
         | {
               pinnedMinPriceDisplay: string;
@@ -60,6 +63,8 @@ export default function RangePriceInfo(props: propsIF) {
         tokenPair,
         chainId,
         isTokenABase,
+        baseToken,
+        quoteToken,
     } = props;
 
     const { pathname } = useLocation();
@@ -86,6 +91,22 @@ export default function RangePriceInfo(props: propsIF) {
 
     const tokenAAddress = tokenPair?.dataTokenA?.address;
     const tokenBAddress = tokenPair?.dataTokenB?.address;
+
+    const [isBaseTokenMoreMoneylike, setIsBaseTokenMoreMoneylike] =
+        useState<boolean>(true);
+
+    useEffect(() => {
+        const baseTokenMoneynessRank = isTokenABase
+            ? getMoneynessRank(tokenAAddress.toLowerCase() + '_' + chainId)
+            : getMoneynessRank(tokenBAddress.toLowerCase() + '_' + chainId);
+        const quoteTokenMoneynessRank = isTokenABase
+            ? getMoneynessRank(tokenBAddress.toLowerCase() + '_' + chainId)
+            : getMoneynessRank(tokenAAddress.toLowerCase() + '_' + chainId);
+
+        setIsBaseTokenMoreMoneylike(
+            baseTokenMoneynessRank >= quoteTokenMoneynessRank,
+        );
+    }, [tokenAAddress + tokenBAddress + chainId + isTokenABase]);
 
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
@@ -141,24 +162,31 @@ export default function RangePriceInfo(props: propsIF) {
         ? maxPriceUsdEquivalent
         : pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas;
 
+    const isDenomTokenA =
+        (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
+
+    const isDenomMoreMoneylike =
+        (isDenomBase && isBaseTokenMoreMoneylike) ||
+        (!isDenomBase && !isBaseTokenMoreMoneylike);
+
     const updatePoolPriceUsdEquivalent = () => {
         const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
-
+        console.log({ spotPriceNum });
         if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
 
         let poolPriceNum;
 
-        if (isDenomBase) {
-            if (isTokenABase) {
+        if (!isDenomMoreMoneylike) {
+            if (isDenomTokenA) {
                 poolPriceNum = spotPriceNum * tokenBMainnetPrice;
             } else {
                 poolPriceNum = spotPriceNum * tokenAMainnetPrice;
             }
         } else {
-            if (isTokenABase) {
-                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
-            } else {
+            if (isDenomTokenA) {
                 poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
+            } else {
+                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
             }
         }
 
@@ -196,15 +224,8 @@ export default function RangePriceInfo(props: propsIF) {
 
         let minPriceNum, maxPriceNum;
 
-        // console.log({ isDenomBase });
-        // console.log({ isTokenABase });
-        // console.log({ pinnedMinPrice });
-        // console.log({ pinnedMaxPrice });
-        // console.log({ tokenAMainnetPrice });
-        // console.log({ tokenBMainnetPrice });
-
-        if (isDenomBase) {
-            if (isTokenABase) {
+        if (!isDenomMoreMoneylike) {
+            if (isDenomTokenA) {
                 minPriceNum = parseFloat(pinnedMinPrice) * tokenBMainnetPrice;
 
                 maxPriceNum = parseFloat(pinnedMaxPrice) * tokenBMainnetPrice;
@@ -214,16 +235,16 @@ export default function RangePriceInfo(props: propsIF) {
                 maxPriceNum = parseFloat(pinnedMaxPrice) * tokenAMainnetPrice;
             }
         } else {
-            if (isTokenABase) {
-                minPriceNum =
-                    (1 / parseFloat(pinnedMaxPrice)) * tokenBMainnetPrice;
-                maxPriceNum =
-                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
-            } else {
+            if (isDenomTokenA) {
                 minPriceNum =
                     (1 / parseFloat(pinnedMaxPrice)) * tokenAMainnetPrice;
                 maxPriceNum =
                     (1 / parseFloat(pinnedMinPrice)) * tokenAMainnetPrice;
+            } else {
+                minPriceNum =
+                    (1 / parseFloat(pinnedMaxPrice)) * tokenBMainnetPrice;
+                maxPriceNum =
+                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
             }
         }
 
@@ -262,8 +283,8 @@ export default function RangePriceInfo(props: propsIF) {
         pinnedMinPrice,
         pinnedMaxPrice,
         userFlippedMaxMinDisplay,
-        isDenomBase,
-        isTokenABase,
+        isDenomMoreMoneylike,
+        isDenomTokenA,
     ]);
 
     const handleMinMaxPriceClick = () => {
@@ -277,9 +298,7 @@ export default function RangePriceInfo(props: propsIF) {
         <DefaultTooltip
             interactive
             title={`${minPriceUsdEquivalent} USD per ${
-                isTokenABase
-                    ? tokenPair.dataTokenA.symbol
-                    : tokenPair.dataTokenB.symbol
+                isBaseTokenMoreMoneylike ? quoteToken.symbol : baseToken.symbol
             } `}
             // title={`Approx. USD value: ${minPriceUsdEquivalent.slice(1)}`}
             placement={'bottom'}
@@ -311,9 +330,7 @@ export default function RangePriceInfo(props: propsIF) {
         <DefaultTooltip
             interactive
             title={`${maxPriceUsdEquivalent} USD per ${
-                isTokenABase
-                    ? tokenPair.dataTokenA.symbol
-                    : tokenPair.dataTokenB.symbol
+                isBaseTokenMoreMoneylike ? quoteToken.symbol : baseToken.symbol
             } `}
             // title={`Approx. USD value: ${minPriceUsdEquivalent.slice(1)}`}
             placement={'bottom'}

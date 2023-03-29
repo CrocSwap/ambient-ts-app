@@ -1201,6 +1201,8 @@ export default function Range(props: propsIF) {
         didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,
         isDenomBase: tradeData.isDenomBase,
+        baseToken: tradeData.baseToken,
+        quoteToken: tradeData.quoteToken,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
     };
