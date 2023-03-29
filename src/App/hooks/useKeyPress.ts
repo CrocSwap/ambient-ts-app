@@ -1,19 +1,35 @@
 import { useState, useEffect } from 'react';
 
-export default function useKeyPress(targetKey: string): boolean {
-    // State for keeping track of whether key is pressed
+type KeyCombo = {
+    firstKey: string;
+    secondKey?: string;
+};
+
+// https://usehooks.com/useKeyPress/ : I took the useKeyPress function from this site and refactored it in typescript as well as to detect and accept multiple key press. -JR
+export default function useKeyPress(keyCombo: KeyCombo): boolean {
+    // State for keeping track of whether key or key combo is pressed
     const [keyPressed, setKeyPressed] = useState(false);
 
-    // If pressed key is our target key then set to true
-    function downHandler({ key }: KeyboardEvent): void {
-        if (key === targetKey) {
+    // If the first and (optionally) second keys are pressed then set to true
+    function downHandler({ key, shiftKey }: KeyboardEvent): void {
+        const { firstKey, secondKey } = keyCombo;
+
+        if (
+            key === firstKey &&
+            (!secondKey || (secondKey === 'Shift' && shiftKey))
+        ) {
             setKeyPressed(true);
         }
     }
 
-    // If released key is our target key then set to false
-    const upHandler = ({ key }: KeyboardEvent): void => {
-        if (key === targetKey) {
+    // If the first and (optionally) second keys are released then set to false
+    const upHandler = ({ key, shiftKey }: KeyboardEvent): void => {
+        const { firstKey, secondKey } = keyCombo;
+
+        if (
+            key === firstKey &&
+            (!secondKey || (secondKey === 'Shift' && shiftKey))
+        ) {
             setKeyPressed(false);
         }
     };
@@ -33,28 +49,33 @@ export default function useKeyPress(targetKey: string): boolean {
     return keyPressed;
 }
 
-// Taken from : https://usehooks.com/useKeyPress/
+// USAGE
 
-// How to Use:
-
-// The "useKeyPress" hook is a custom React hook that allows you to detect if a specific key is pressed or not.
-
-// To use the "useKeyPress" hook, you need to pass in a target key as a string to the hook. The hook returns a boolean value which is true if the target key is currently being pressed and false if it's not being pressed.
-
-// Example:
-
-// import React from 'react';
+// 1 KEY PRESS:
 // import useKeyPress from './useKeyPress';
 
-// function MyComponent() {
-//   const isKeyPressed = useKeyPress('Enter');
+// function App() {
+//   const isEnterPressed = useKeyPress('Enter');
 
 //   return (
 //     <div>
-//       {isKeyPressed ? 'Enter key is pressed' : 'Enter key is not pressed'}
+//       <h1>Press Enter</h1>
+//       {isEnterPressed && <p>You pressed Enter!</p>}
 //     </div>
 //   );
 // }
-// In this example, we're using the "useKeyPress" hook to detect if the "Enter" key is currently being pressed. The hook returns a boolean value which we're using to display a message to the user.
 
-// Note that the hook automatically adds event listeners to the window object for the "keydown" and "keyup" events. These event listeners are removed when the component unmounts.
+// 2 KEY PRESS:
+
+// import useKeyPress from './useKeyPress';
+
+// function App() {
+//   const isShiftP = useKeyPress({ firstKey: 'P', secondKey: 'Shift' });
+
+//   return (
+//     <div>
+//       <h1>Press Shift + P</h1>
+//       {isShiftP && <p>You pressed Shift + P!</p>}
+//     </div>
+//   );
+// }
