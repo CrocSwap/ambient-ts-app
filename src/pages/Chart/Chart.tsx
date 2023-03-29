@@ -3083,19 +3083,19 @@ export default function Chart(props: propsIF) {
 
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
         if (poolPriceDisplay) {
+            const shouldReverse =
+                (limitPreviousData > poolPriceDisplay &&
+                    newLimitValue < poolPriceDisplay) ||
+                (limitPreviousData < poolPriceDisplay &&
+                    newLimitValue > poolPriceDisplay);
+
             if (sellOrderStyle === 'order_sell') {
-                if (
-                    limitPreviousData > poolPriceDisplay &&
-                    newLimitValue < poolPriceDisplay
-                ) {
+                if (shouldReverse) {
                     handlePulseAnimation('limitOrder');
                     dispatch(setShouldLimitDirectionReverse(true));
                 }
             } else {
-                if (
-                    limitPreviousData < poolPriceDisplay &&
-                    newLimitValue > poolPriceDisplay
-                ) {
+                if (shouldReverse) {
                     handlePulseAnimation('limitOrder');
                     dispatch(setShouldLimitDirectionReverse(true));
                 }
