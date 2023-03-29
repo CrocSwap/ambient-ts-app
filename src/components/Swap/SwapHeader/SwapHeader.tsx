@@ -50,13 +50,14 @@ export default function SwapHeader(props: propsIF) {
 
     const tradeRouteHeader = (
         <ContentHeader>
-            <div
+            <AiOutlineShareAlt
                 className={styles.share_button}
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 id='swap_share_button'
-            >
-                <AiOutlineShareAlt />
-            </div>
+                role='button'
+                tabIndex={0}
+                aria-label='Share button'
+            />
             <div
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
@@ -71,6 +72,9 @@ export default function SwapHeader(props: propsIF) {
                     style={{ cursor: 'pointer' }}
                     className={`${styles.settings_container} ${styles.settings_icon}`}
                     id='swap_settings_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
@@ -80,13 +84,14 @@ export default function SwapHeader(props: propsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <div
+            <AiOutlineShareAlt
                 className={styles.share_button}
                 id='swap_share_button'
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-            >
-                <AiOutlineShareAlt />
-            </div>
+                role='button'
+                tabIndex={0}
+                aria-label='Share button'
+            />
             <span className={styles.title}>Swap</span>
             <IconWithTooltip title='Settings' placement='left'>
                 <div
@@ -95,6 +100,9 @@ export default function SwapHeader(props: propsIF) {
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
                     id='swap_settings_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>

@@ -319,7 +319,7 @@ export default function HarvestPosition(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: 'Harvest',
+                            txType: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
                         }),
                     );
             } catch (error) {

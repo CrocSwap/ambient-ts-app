@@ -138,7 +138,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('range') ?? 'curve',
     );
     const [candleTimeMarket, setCandleTimeMarket] = useState<number>(
-        getCandleTime('market') ?? 900,
+        getCandleTime('market') ?? 300,
     );
     const [candleTimeRange, setCandleTimeRange] = useState<number>(
         getCandleTime('range') ?? 86400,
@@ -217,6 +217,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     class CandleTime implements candleTimeIF {
         time: number;
+        // eslint-disable-next-line
         changeTime: (_val: number) => void;
         defaults = [
             { readable: '1m', seconds: 60 },

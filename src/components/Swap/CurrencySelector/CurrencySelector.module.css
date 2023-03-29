@@ -134,8 +134,15 @@
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
     font-weight: 200;
+
+    width: 53px;
+    overflow-y: scroll;
 }
 
+.token_list_text::-webkit-scrollbar {
+    display: none;
+  }
+  
 /* bottom info */
 
 .token_select_button {

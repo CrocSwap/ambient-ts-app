@@ -377,8 +377,23 @@ export default function PoolCard(props: propsIF) {
         '&tokenB=' +
         baseTokenString;
 
+    const ariaDescription = `pool for ${baseToken.symbol} and ${
+        quoteToken.symbol
+    }. 24 hour volume is ${poolVolume ? poolVolume : 'not available'}. APY is ${
+        poolApy ? poolApy + '%' : 'not available'
+    }. TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${
+        poolPriceDisplay ? poolPriceDisplay : 'not available'
+    }. `;
+
     return (
-        <Link className={styles.pool_card} to={linkpath}>
+        <Link
+            className={styles.pool_card}
+            to={linkpath}
+            tabIndex={0}
+            role='presentation'
+            aria-label={ariaDescription}
+            aria-description={ariaDescription}
+        >
             <div className={styles.main_container}>
                 <div className={styles.row}>
                     {tokenImagesDisplay}

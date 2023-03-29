@@ -3,6 +3,7 @@ import { useCallback, useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import Local Files
 import styles from './Modal.module.css';
@@ -67,10 +68,14 @@ export default function Modal(props: ModalPropsIF) {
                 {headerRightItems && headerRightItems}
                 <span />
                 <RiCloseFill
+                    id='close_modal_button'
                     size={27}
                     // color='var(--text-grey-light)'
                     className={styles.close_button}
                     onClick={onClose}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close modal button'
                 />
             </div>
         </header>
@@ -89,25 +94,35 @@ export default function Modal(props: ModalPropsIF) {
     const desktopView = useMediaQuery('(min-width: 720px)');
 
     return (
-        <div
+        <aside
             id='Modal_Global'
             className={styles.outside_modal}
             onMouseDown={desktopView ? onClose : undefined}
+            role='dialog'
+            aria-modal='true'
         >
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className={`
-                    ${styles.modal_body}
-                    ${noBackground ? styles.no_background_modal : null}
-                `}
-                onMouseDown={(e) => e.stopPropagation()}
+            <FocusTrap
+                focusTrapOptions={{
+                    initialFocus: '#close_modal_button',
+                }}
             >
-                {headerOrNull}
-                <section className={styles.modal_content}>{children}</section>
-                {footerOrNull}
-            </motion.div>
-        </div>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className={`
+                ${styles.modal_body}
+                ${noBackground ? styles.no_background_modal : null}
+                `}
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    {headerOrNull}
+                    <section className={styles.modal_content}>
+                        {children}
+                    </section>
+                    {footerOrNull}
+                </motion.div>
+            </FocusTrap>
+        </aside>
     );
 }
