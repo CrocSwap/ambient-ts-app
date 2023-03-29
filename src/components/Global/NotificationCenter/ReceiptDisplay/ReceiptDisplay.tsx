@@ -69,6 +69,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago `
             : 'Pending...';
 
+    const ariaLabel = `${status} transaction of ${txType}`;
+
     return (
         <motion.div
             layout
@@ -80,6 +82,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
             }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             className={styles.container}
+            tabIndex={0}
+            role='listitem'
+            aria-label={ariaLabel}
         >
             <div className={styles.status}>{handleStatusDisplay(status)}</div>
             <div className={styles.content}>
@@ -88,10 +93,15 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         {`${
                             txType ? txType : 'Transaction'
                         } (${txHashTruncated})`}
-                        <div
+                        <button
                             style={{
                                 cursor: 'pointer',
+                                background: 'transparent',
+                                outline: 'none',
+                                border: 'none',
                             }}
+                            tabIndex={0}
+                            aria-label='Remove from notification center'
                         >
                             <VscClose
                                 onClick={() => {
@@ -99,7 +109,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                                 }}
                                 size={20}
                             />
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <div className={styles.row}>
@@ -111,6 +121,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                         className={styles.action}
                         target='_blank'
                         rel='noreferrer'
+                        tabIndex={0}
+                        aria-label='View on Etherscan'
                     >
                         <RiExternalLinkLine size={20} color='#7371fc ' />
                     </a>
