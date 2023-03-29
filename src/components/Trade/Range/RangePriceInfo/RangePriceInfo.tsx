@@ -51,7 +51,6 @@ export default function RangePriceInfo(props: propsIF) {
         // maxPriceDisplay,
         // minPriceDisplay,
         aprPercentage,
-        didUserFlipDenom,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         pinnedDisplayPrices,
@@ -88,6 +87,8 @@ export default function RangePriceInfo(props: propsIF) {
     const tokenBAddress = tokenPair?.dataTokenB?.address;
 
     useEffect(() => {
+        setUserFlippedMaxMinDisplay(false);
+
         (async () => {
             const tokenAMainnetEquivalent = testTokenMap
                 .get(tokenAAddress.toLowerCase() + '_' + chainId)
@@ -135,108 +136,124 @@ export default function RangePriceInfo(props: propsIF) {
         ? maxPriceUsdEquivalent
         : pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas;
 
-    useEffect(() => {
+    const updatePoolPriceUsdEquivalent = () => {
         const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
-        console.log({ spotPriceNum });
 
-        if (isDenomBase && spotPriceNum && tokenAMainnetPrice) {
-            const poolPriceNum = spotPriceNum * tokenAMainnetPrice;
-            const displayUsdPriceString =
-                poolPriceNum === Infinity || poolPriceNum === 0
-                    ? '…'
-                    : poolPriceNum < 0.00001
-                    ? poolPriceNum.toExponential(2)
-                    : poolPriceNum < 2
-                    ? poolPriceNum.toPrecision(3)
-                    : poolPriceNum >= 100000
-                    ? formatAmountOld(poolPriceNum, 1)
-                    : poolPriceNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setPoolPriceUsdEquivalent(displayUsdPriceString);
-        } else if (!isDenomBase && spotPriceNum && tokenBMainnetPrice) {
-            const poolPriceNum = spotPriceNum * tokenBMainnetPrice;
-            const displayUsdPriceString =
-                poolPriceNum === Infinity || poolPriceNum === 0
-                    ? '…'
-                    : poolPriceNum < 0.00001
-                    ? poolPriceNum.toExponential(2)
-                    : poolPriceNum < 2
-                    ? poolPriceNum.toPrecision(3)
-                    : poolPriceNum >= 100000
-                    ? formatAmountOld(poolPriceNum, 1)
-                    : poolPriceNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setPoolPriceUsdEquivalent(displayUsdPriceString);
+        if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
+
+        let poolPriceNum;
+
+        if (isDenomBase) {
+            if (isTokenABase) {
+                poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
+            } else {
+                poolPriceNum = spotPriceNum * tokenAMainnetPrice;
+            }
+        } else {
+            if (isTokenABase) {
+                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
+            } else {
+                poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
+            }
         }
-    }, [spotPriceDisplay]);
+
+        const displayUsdPriceString =
+            poolPriceNum === Infinity || poolPriceNum === 0
+                ? '…'
+                : poolPriceNum < 0.00001
+                ? poolPriceNum.toExponential(2)
+                : poolPriceNum < 2
+                ? poolPriceNum.toPrecision(3)
+                : poolPriceNum >= 100000
+                ? formatAmountOld(poolPriceNum, 1)
+                : poolPriceNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        setPoolPriceUsdEquivalent(displayUsdPriceString);
+    };
 
     useEffect(() => {
-        const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
-        const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
+        updatePoolPriceUsdEquivalent();
+    }, [spotPriceDisplay, isDenomBase]);
 
-        console.log({ tokenAMainnetPrice });
-        console.log({ tokenBMainnetPrice });
-        console.log({ didUserFlipDenom });
-        console.log({ isDenomBase });
-        console.log({ isTokenABase });
-        console.log({ pinnedMinPrice });
-        console.log({ pinnedMaxPrice });
+    const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
+    const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
 
+    useEffect(() => {
         if (
-            isDenomBase &&
-            !isTokenABase &&
-            tokenBMainnetPrice &&
-            pinnedMinPrice
-        ) {
-            const minPriceNum = parseFloat(pinnedMinPrice) * tokenBMainnetPrice;
+            !pinnedMinPrice ||
+            !pinnedMaxPrice ||
+            !tokenBMainnetPrice ||
+            !tokenAMainnetPrice
+        )
+            return;
 
-            const displayUsdPriceString =
-                minPriceNum === Infinity || minPriceNum === 0
-                    ? '…'
-                    : minPriceNum < 0.00001
-                    ? minPriceNum.toExponential(2)
-                    : minPriceNum < 2
-                    ? minPriceNum.toPrecision(3)
-                    : minPriceNum >= 100000
-                    ? formatAmountOld(minPriceNum, 1)
-                    : minPriceNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setMinPriceUsdEquivalent('$' + displayUsdPriceString);
+        let minPriceNum, maxPriceNum;
+
+        if (isDenomBase) {
+            if (isTokenABase) {
+                minPriceNum = parseFloat(pinnedMinPrice) * tokenBMainnetPrice;
+
+                maxPriceNum = parseFloat(pinnedMaxPrice) * tokenBMainnetPrice;
+            } else {
+                minPriceNum = parseFloat(pinnedMinPrice) * tokenAMainnetPrice;
+
+                maxPriceNum = parseFloat(pinnedMaxPrice) * tokenAMainnetPrice;
+            }
+        } else {
+            if (isTokenABase) {
+                maxPriceNum =
+                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
+
+                minPriceNum =
+                    (1 / parseFloat(pinnedMaxPrice)) * tokenBMainnetPrice;
+            } else {
+                maxPriceNum =
+                    (1 / parseFloat(pinnedMinPrice)) * tokenAMainnetPrice;
+
+                minPriceNum =
+                    (1 / parseFloat(pinnedMaxPrice)) * tokenAMainnetPrice;
+            }
         }
 
-        if (
-            isDenomBase &&
-            !isTokenABase &&
-            tokenAMainnetPrice &&
-            pinnedMaxPrice
-        ) {
-            const maxPriceNum = parseFloat(pinnedMaxPrice) * tokenAMainnetPrice;
+        if (!minPriceNum || !maxPriceNum) return;
 
-            const displayUsdPriceString =
-                maxPriceNum === Infinity || maxPriceNum === 0
-                    ? '…'
-                    : maxPriceNum < 0.00001
-                    ? maxPriceNum.toExponential(2)
-                    : maxPriceNum < 2
-                    ? maxPriceNum.toPrecision(3)
-                    : maxPriceNum >= 100000
-                    ? formatAmountOld(maxPriceNum, 1)
-                    : maxPriceNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setMaxPriceUsdEquivalent('$' + displayUsdPriceString);
-        }
+        const minDisplayUsdPriceString =
+            minPriceNum === Infinity || minPriceNum === 0
+                ? '…'
+                : minPriceNum < 0.00001
+                ? minPriceNum.toExponential(2)
+                : minPriceNum < 2
+                ? minPriceNum.toPrecision(3)
+                : minPriceNum >= 100000
+                ? formatAmountOld(minPriceNum, 1)
+                : minPriceNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        setMinPriceUsdEquivalent('$' + minDisplayUsdPriceString);
+
+        const maxDisplayUsdPriceString =
+            maxPriceNum === Infinity || maxPriceNum === 0
+                ? '…'
+                : maxPriceNum < 0.00001
+                ? maxPriceNum.toExponential(2)
+                : maxPriceNum < 2
+                ? maxPriceNum.toPrecision(3)
+                : maxPriceNum >= 100000
+                ? formatAmountOld(maxPriceNum, 1)
+                : maxPriceNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        setMaxPriceUsdEquivalent('$' + maxDisplayUsdPriceString);
     }, [
-        JSON.stringify(pinnedDisplayPrices),
+        pinnedMinPrice,
+        pinnedMaxPrice,
         userFlippedMaxMinDisplay,
         isDenomBase,
+        isTokenABase,
     ]);
 
     const handleMinMaxPriceClick = () => {
@@ -283,6 +300,7 @@ export default function RangePriceInfo(props: propsIF) {
                         className={styles.current_price}
                         onClick={() => {
                             dispatch(toggleDidUserFlipDenom());
+                            setUserFlippedMaxMinDisplay(false);
                         }}
                     >
                         {currentPrice === 'Infinity' ? '…' : `${currentPrice}`}
