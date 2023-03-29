@@ -71,9 +71,9 @@ export default function SwapHeader(props: propsIF) {
             <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
+                className={styles.share_button}
             >
                 <AiOutlineShareAlt
-                    className={styles.share_button}
                     id='swap_share_button'
                     role='button'
                     tabIndex={0}
@@ -106,14 +106,18 @@ export default function SwapHeader(props: propsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <AiOutlineShareAlt
-                className={styles.share_button}
-                id='swap_share_button'
+            <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                role='button'
-                tabIndex={0}
-                aria-label='Share button'
-            />
+                onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
+                className={styles.share_button}
+            >
+                <AiOutlineShareAlt
+                    id='swap_share_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Share button'
+                />
+            </button>
             <span className={styles.title}>Swap</span>
             <IconWithTooltip title='Settings' placement='left'>
                 <div

@@ -2,6 +2,11 @@
     margin: 0 5px;
 }
 
+.share_button{
+    background: transparent;
+    outline: none;
+    border: none;
+}
 .settings_icon,
 .share_button {
     cursor: pointer;
