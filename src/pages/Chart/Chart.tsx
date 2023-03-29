@@ -3150,14 +3150,34 @@ export default function Chart(props: propsIF) {
             let rangeWidthPercentage: any;
 
             let dragSwitched = false;
+            let draggingLine: any = undefined;
 
             const dragRange = d3
                 .drag()
-                .on('start', () => {
+                .on('start', (event) => {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current)
                         .select('.targets')
                         .style('cursor', 'grabbing');
+
+                    const advancedValue = scaleData.yScale.invert(event.y);
+
+                    const low = ranges.filter(
+                        (target: any) => target.name === 'Min',
+                    )[0].value;
+                    const high = ranges.filter(
+                        (target: any) => target.name === 'Max',
+                    )[0].value;
+
+                    if (draggingLine === undefined) {
+                        draggingLine =
+                            event.subject.name !== undefined
+                                ? event.subject.name
+                                : Math.abs(advancedValue - low) <
+                                  Math.abs(advancedValue - high)
+                                ? 'Min'
+                                : 'Max';
+                    }
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
@@ -3352,14 +3372,6 @@ export default function Chart(props: propsIF) {
                         }
                     } else {
                         const advancedValue = scaleData.yScale.invert(event.y);
-
-                        const draggingLine =
-                            event.subject.name !== undefined
-                                ? event.subject.name
-                                : Math.abs(advancedValue - low) <
-                                  Math.abs(advancedValue - high)
-                                ? 'Min'
-                                : 'Max';
 
                         highLineMoved = draggingLine === 'Max';
                         lowLineMoved = draggingLine === 'Min';
@@ -3586,6 +3598,8 @@ export default function Chart(props: propsIF) {
                     setTriangleLimitValues(newLimitValue);
                 })
                 .on('end', (event: any) => {
+                    draggingLine = undefined;
+
                     d3.select(d3Container.current).style('cursor', 'default');
                     setGhostLineValues([]);
                     setCrosshairData([
