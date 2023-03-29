@@ -80,6 +80,7 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     account: string | undefined;
@@ -155,6 +156,7 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function Range(props: propsIF) {
@@ -218,6 +220,7 @@ export default function Range(props: propsIF) {
         maxPrice,
         setChartTriggeredBy,
         chartTriggeredBy,
+        cachedFetchTokenPrice,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -1197,6 +1200,9 @@ export default function Range(props: propsIF) {
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,
+        isDenomBase: tradeData.isDenomBase,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
+        chainId: chainId,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
