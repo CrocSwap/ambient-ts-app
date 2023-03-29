@@ -276,7 +276,7 @@ export default function Reposition(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Reposition',
+                        txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                     }),
                 );
             navigate(redirectPath, { replace: true });
