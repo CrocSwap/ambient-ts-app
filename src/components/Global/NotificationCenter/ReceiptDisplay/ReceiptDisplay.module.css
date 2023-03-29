@@ -10,7 +10,7 @@
     /* align-items: center; */
 }
 
-.container:focus-visible{
+.container:focus-visible, .row button:focus-visible, .row a:focus-visible, .info button:focus-visible, .row svg:focus-visible{
     outline: 1px solid white;
 }
 .content {

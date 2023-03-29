@@ -105,6 +105,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                             onClick={() => {
                                 dispatch(resetReceiptData());
                             }}
+                            aria-label='Clear all'
                         >
                             Clear all
                         </button>
