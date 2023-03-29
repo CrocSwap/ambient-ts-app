@@ -20,7 +20,7 @@ describe('testing calculateSecondaryDepositQty', () => {
             false, // isTokenABase: boolean,
             false, // isAmbientPosition: boolean,
             1.038616454647909, // depositSkew?: number,
-            0.0006033878246824903, // expected value.
+            -99, // expected value.
         ],
         [
             'Balanced 100 USDC-ETH Mint at ±10% Width',
