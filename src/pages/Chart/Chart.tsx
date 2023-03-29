@@ -2693,14 +2693,17 @@ export default function Chart(props: propsIF) {
         const liqDataAll = liquidityData.depthLiqBidData.concat(
             liquidityData.depthLiqAskData,
         );
-
-        const { min, max }: any = findLiqNearest(liqDataAll);
-        const visibleDomain = liqDataAll.filter(
-            (liqData: any) =>
-                liqData.liqPrices >= min && liqData.liqPrices <= max,
-        );
-        const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-        liquidityDepthScale.domain([0, maxLiq]);
+        try {
+            const { min, max }: any = findLiqNearest(liqDataAll);
+            const visibleDomain = liqDataAll.filter(
+                (liqData: any) =>
+                    liqData.liqPrices >= min && liqData.liqPrices <= max,
+            );
+            const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
+            liquidityDepthScale.domain([0, maxLiq]);
+        } catch (error) {
+            console.error({ error });
+        }
     }, [
         scaleData && scaleData.yScale.domain()[0],
         scaleData && scaleData.yScale.domain()[1],
