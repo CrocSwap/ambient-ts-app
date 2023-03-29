@@ -3160,7 +3160,9 @@ export default function Chart(props: propsIF) {
                         .select('.targets')
                         .style('cursor', 'grabbing');
 
-                    const advancedValue = scaleData.yScale.invert(event.y);
+                    const advancedValue = scaleData.yScale.invert(
+                        event.sourceEvent.offsetY,
+                    );
 
                     const low = ranges.filter(
                         (target: any) => target.name === 'Min',
@@ -3182,10 +3184,12 @@ export default function Chart(props: propsIF) {
                 .on('drag', function (event) {
                     setIsLineDrag(true);
                     let dragedValue =
-                        scaleData.yScale.invert(event.y) >=
+                        scaleData.yScale.invert(event.sourceEvent.offsetY) >=
                         liquidityData.topBoundary
                             ? liquidityData.topBoundary
-                            : scaleData.yScale.invert(event.y);
+                            : scaleData.yScale.invert(
+                                  event.sourceEvent.offsetY,
+                              );
 
                     dragedValue = dragedValue < 0 ? 0 : dragedValue;
 
@@ -3371,7 +3375,9 @@ export default function Chart(props: propsIF) {
                             }
                         }
                     } else {
-                        const advancedValue = scaleData.yScale.invert(event.y);
+                        const advancedValue = scaleData.yScale.invert(
+                            event.sourceEvent.offsetY,
+                        );
 
                         highLineMoved = draggingLine === 'Max';
                         lowLineMoved = draggingLine === 'Min';
@@ -3584,7 +3590,9 @@ export default function Chart(props: propsIF) {
                 .on('drag', function (event) {
                     setIsLineDrag(true);
 
-                    newLimitValue = scaleData.yScale.invert(event.y);
+                    newLimitValue = scaleData.yScale.invert(
+                        event.sourceEvent.offsetY,
+                    );
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
                     setGhostLineValues(adjTicks(newLimitValue));
