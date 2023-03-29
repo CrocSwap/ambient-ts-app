@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 // interface for component props
 interface propsIF {
@@ -106,6 +107,8 @@ export default function RangePriceInfo(props: propsIF) {
                 const usdPrice = tokenAMainnetEthPrice?.usdPrice;
 
                 setTokenAMainnetPrice(usdPrice);
+            } else {
+                setTokenAMainnetPrice(undefined);
             }
             if (tokenBMainnetEquivalent) {
                 const tokenBMainnetEthPrice = await cachedFetchTokenPrice(
@@ -114,6 +117,8 @@ export default function RangePriceInfo(props: propsIF) {
                 );
                 const usdPrice = tokenBMainnetEthPrice?.usdPrice;
                 setTokenBMainnetPrice(usdPrice);
+            } else {
+                setTokenBMainnetPrice(undefined);
             }
         })();
     }, [tokenAAddress + tokenBAddress]);
@@ -147,7 +152,7 @@ export default function RangePriceInfo(props: propsIF) {
             if (isTokenABase) {
                 poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
             } else {
-                poolPriceNum = spotPriceNum * tokenAMainnetPrice;
+                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
             }
         } else {
             if (isTokenABase) {
@@ -191,15 +196,26 @@ export default function RangePriceInfo(props: propsIF) {
 
         let minPriceNum, maxPriceNum;
 
+        // console.log({ isDenomBase });
+        // console.log({ isTokenABase });
+        // console.log({ pinnedMinPrice });
+        // console.log({ pinnedMaxPrice });
+        // console.log({ tokenAMainnetPrice });
+        // console.log({ tokenBMainnetPrice });
+
         if (isDenomBase) {
             if (isTokenABase) {
-                minPriceNum = parseFloat(pinnedMinPrice) * tokenBMainnetPrice;
+                minPriceNum =
+                    (1 / parseFloat(pinnedMaxPrice)) * tokenAMainnetPrice;
 
-                maxPriceNum = parseFloat(pinnedMaxPrice) * tokenBMainnetPrice;
+                maxPriceNum =
+                    (1 / parseFloat(pinnedMinPrice)) * tokenAMainnetPrice;
             } else {
-                minPriceNum = parseFloat(pinnedMinPrice) * tokenAMainnetPrice;
+                minPriceNum =
+                    (1 / parseFloat(pinnedMaxPrice)) * tokenBMainnetPrice;
 
-                maxPriceNum = parseFloat(pinnedMaxPrice) * tokenAMainnetPrice;
+                maxPriceNum =
+                    (1 / parseFloat(pinnedMinPrice)) * tokenBMainnetPrice;
             }
         } else {
             if (isTokenABase) {
@@ -262,14 +278,32 @@ export default function RangePriceInfo(props: propsIF) {
     };
 
     // JSX frag for lowest price in range
+
     const minimumPrice = (
-        <div className={styles.price_display} onClick={handleMinMaxPriceClick}>
-            <h4 className={styles.price_title}>Min Price</h4>
-            <span className={styles.min_price}>
-                {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
-                {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
-            </span>
-        </div>
+        <DefaultTooltip
+            interactive
+            title={`${minPriceUsdEquivalent} USD per ${
+                (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase)
+                    ? tokenPair.dataTokenA.symbol
+                    : tokenPair.dataTokenB.symbol
+            } `}
+            // title={`Approx. USD value: ${minPriceUsdEquivalent.slice(1)}`}
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div
+                className={styles.price_display}
+                onClick={handleMinMaxPriceClick}
+            >
+                <h4 className={styles.price_title}>Min Price</h4>
+                <span className={styles.min_price}>
+                    {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
+                    {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
+                </span>
+            </div>
+        </DefaultTooltip>
     );
 
     // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
@@ -280,13 +314,30 @@ export default function RangePriceInfo(props: propsIF) {
 
     // JSX frag for highest price in range
     const maximumPrice = (
-        <div className={styles.price_display} onClick={handleMinMaxPriceClick}>
-            <h4 className={styles.price_title}>Max Price</h4>
-            <span className={styles.max_price}>
-                {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
-                {/* {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()} */}
-            </span>
-        </div>
+        <DefaultTooltip
+            interactive
+            title={`${maxPriceUsdEquivalent} USD per ${
+                (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase)
+                    ? tokenPair.dataTokenA.symbol
+                    : tokenPair.dataTokenB.symbol
+            } `}
+            // title={`Approx. USD value: ${minPriceUsdEquivalent.slice(1)}`}
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div
+                className={styles.price_display}
+                onClick={handleMinMaxPriceClick}
+            >
+                <h4 className={styles.price_title}>Max Price</h4>
+                <span className={styles.max_price}>
+                    {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
+                    {/* {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()} */}
+                </span>
+            </div>
+        </DefaultTooltip>
     );
 
     return (
