@@ -10,6 +10,9 @@
     /* align-items: center; */
 }
 
+.container:focus-visible{
+    outline: 1px solid white;
+}
 .content {
     display: flex;
     flex-direction: column;
