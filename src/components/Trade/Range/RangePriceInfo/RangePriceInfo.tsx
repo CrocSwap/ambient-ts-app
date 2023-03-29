@@ -232,7 +232,7 @@ export default function RangePriceInfo(props: propsIF) {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        setMinPriceUsdEquivalent('$' + minDisplayUsdPriceString);
+        setMinPriceUsdEquivalent('~$' + minDisplayUsdPriceString);
 
         const maxDisplayUsdPriceString =
             maxPriceNum === Infinity || maxPriceNum === 0
@@ -247,7 +247,7 @@ export default function RangePriceInfo(props: propsIF) {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        setMaxPriceUsdEquivalent('$' + maxDisplayUsdPriceString);
+        setMaxPriceUsdEquivalent('~$' + maxDisplayUsdPriceString);
     }, [
         pinnedMinPrice,
         pinnedMaxPrice,
@@ -275,7 +275,7 @@ export default function RangePriceInfo(props: propsIF) {
     // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
 
     const currentPrice = userFlippedMaxMinDisplay
-        ? '$' + poolPriceUsdEquivalent
+        ? '~$' + poolPriceUsdEquivalent
         : poolPriceCharacter + spotPriceDisplay;
 
     // JSX frag for highest price in range
