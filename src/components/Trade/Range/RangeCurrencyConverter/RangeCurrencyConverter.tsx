@@ -813,7 +813,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
 
     return (
         <section className={styles.currency_converter}>
-            <div className={styles.title}> </div>
             <RangeCurrencySelector
                 fieldId='A'
                 updateOtherQuantity={(event) =>
