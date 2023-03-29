@@ -3861,7 +3861,12 @@ export default function Chart(props: ChartData) {
                 );
             });
         }
-    }, [scaleData, activeTimeFrame, market]);
+    }, [
+        scaleData,
+        market,
+        JSON.stringify(crosshairData),
+        isMouseMoveCrosshair,
+    ]);
 
     const drawYaxis = (context: any, yScale: any, X: any, yExtent: any) => {
         const [startY, endY] = yExtent;
@@ -3927,36 +3932,87 @@ export default function Chart(props: ChartData) {
 
     const drawXaxis = (context: any, xScale: any, Y: any, xExtent: any) => {
         // const [startX, endX] = xExtent;
+        const _width = 65; // magic number of pixels to blur surrounding price
 
-        const tickSize = 6,
-            xTicks = xScale.ticks(), // You may choose tick counts. ex: xScale.ticks(20)
-            xTickFormat = xScale.tickFormat(); // you may choose the format. ex: xScale.tickFormat(tickCount, ".0s")
+        getXAxisTick().then((res) => {
+            const _res = res.map((item: any) => item.date);
+            console.log({ res });
 
-        context.strokeStyle = 'grey';
+            console.log(
+                { isMouseMoveCrosshair },
+                crosshairData,
+                xAxis.tickValues(),
+            );
 
-        context.beginPath();
-        xTicks.forEach((d: any) => {
-            context.moveTo(xScale(d), Y);
-            context.lineTo(xScale(d), Y + tickSize);
+            xAxis.tickValues([
+                ..._res,
+                ...(isMouseMoveCrosshair ? [crosshairData[0].x] : []),
+            ]);
+
+            xAxis.tickValues().forEach((d: any) => {
+                const tickSize = 6;
+                let formatValue = undefined;
+                context.textAlign = 'center';
+                context.textBaseline = 'top';
+                context.fillStyle = '#bdbdbd';
+                context.font = '13px Arial';
+                context.filter = ' blur(0px)';
+                if (
+                    moment(d)
+                        .format('DD')
+                        .match(/^(01)$/) &&
+                    moment(d).format('HH:mm') === '00:00'
+                ) {
+                    formatValue =
+                        moment(d).format('MMM') === 'Jan'
+                            ? moment(d).format('YYYY')
+                            : moment(d).format('MMM');
+                }
+
+                if (
+                    moment(d).format('HH:mm') === '00:00' ||
+                    activeTimeFrame.match(/^(1d)$/)
+                ) {
+                    formatValue = moment(d).format('DD');
+                } else {
+                    formatValue = moment(d).format('HH:mm');
+                }
+
+                if (d === crosshairData[0].x) {
+                    context.font = 'bold 15px Arial';
+                    if (activeTimeFrame === '1d') {
+                        formatValue = moment(d)
+                            .subtract(utcDiffHours, 'hours')
+                            .format('MMM DD YYYY');
+                    } else {
+                        formatValue = moment(d).format('MMM DD HH:mm');
+                    }
+                }
+
+                if (
+                    isMouseMoveCrosshair &&
+                    xScale(d) > xScale(crosshairData[0].x) - _width &&
+                    xScale(d) < xScale(crosshairData[0].x) + _width &&
+                    d !== crosshairData[0].x
+                ) {
+                    context.filter = ' blur(7px)';
+                }
+
+                if (
+                    res.find((item: any) => item.date.getTime() === d.getTime())
+                        ?.style
+                ) {
+                    context.font = 'bold 14px Arial';
+                }
+
+                context.beginPath();
+                if (formatValue) {
+                    context.fillText(formatValue, xScale(d), Y + tickSize);
+                }
+
+                context.restore();
+            });
         });
-        context.stroke();
-
-        // context.beginPath();
-        // context.moveTo(startX, Y + tickSize);
-        // context.lineTo(startX, Y);
-        // context.lineTo(endX, Y);
-        // context.lineTo(endX, Y + tickSize);
-        // context.stroke();
-
-        context.textAlign = 'center';
-        context.textBaseline = 'top';
-        context.fillStyle = 'grey';
-        xTicks.forEach((d: any) => {
-            context.beginPath();
-            context.fillText(xTickFormat(d), xScale(d), Y + tickSize);
-        });
-
-        context.restore();
     };
 
     // Horizontal Lines
