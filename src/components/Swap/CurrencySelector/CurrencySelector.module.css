@@ -102,7 +102,7 @@
     min-height: 40px;
 
     display: grid;
-    grid-template-columns: auto 120px;
+    grid-template-columns: 1fr 120px;
     /* height: 40px; */
 }
 
@@ -134,8 +134,15 @@
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
     font-weight: 200;
+
+    width: 53px;
+    overflow-y: scroll;
 }
 
+.token_list_text::-webkit-scrollbar {
+    display: none;
+  }
+  
 /* bottom info */
 
 .token_select_button {

@@ -83,7 +83,7 @@
     min-height: 40px;
 
     display: grid;
-    grid-template-columns: auto 120px;
+    grid-template-columns: 1fr 120px;
     /* height: 40px; */
 }
 

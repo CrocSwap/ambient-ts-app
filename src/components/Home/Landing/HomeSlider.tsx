@@ -1,8 +1,8 @@
 import styles from './HomeSlider.module.css';
-import { SwiperSlide, Swiper } from 'swiper/react';
+// import { SwiperSlide, Swiper } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import 'swiper/modules/pagination/pagination.min.css';
-import { Navigation, EffectFade, Autoplay, Pagination } from 'swiper';
+// import { Navigation, EffectFade, Autoplay, Pagination } from 'swiper';
 import Landing1 from './Landing1';
 // import Landing2 from './Landing2';
 // import Landing3 from './Landing3';
@@ -12,19 +12,21 @@ import Landing1 from './Landing1';
 // import Landing from './Landing';
 // import 'swiper/css/effect-fade'
 // import 'swiper/css/navigation'
+
+// Todo: @Team : Leave this component for the moment. Although unused, it could be refactored if we decide to bring back the slides.
 export default function HomeSlider() {
     return (
         <div className={styles.container}>
-            <Swiper
+            {/* <Swiper
                 modules={[Navigation, EffectFade, Autoplay, Pagination]}
-                // touchStartPreventDefault={false}
+                touchStartPreventDefault={false}
                 noSwipingSelector={'button'}
                 navigation
                 speed={800}
-                // autoplay={{
-                //     delay: 30000,
-                //     disableOnInteraction: true,
-                // }}
+                autoplay={{
+                    delay: 30000,
+                    disableOnInteraction: true,
+                }}
                 autoplay={false}
                 slidesPerView={1}
                 loop
@@ -32,16 +34,16 @@ export default function HomeSlider() {
                 className={styles.myswiper}
                 allowTouchMove={false}
             >
-                {/* <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
+                <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
                     <Landing />
-                </SwiperSlide> */}
+                </SwiperSlide>
                 <SwiperSlide
                     className={styles.swiperslide}
                     style={{ background: 'url()' }}
                 >
                     <Landing1 />
                 </SwiperSlide>
-                {/* <SwiperSlide className={styles.swiperslide}>
+                <SwiperSlide className={styles.swiperslide}>
                     <Landing2 />
                 </SwiperSlide>
                 <SwiperSlide className={styles.swiperslide}>
@@ -55,8 +57,11 @@ export default function HomeSlider() {
                 </SwiperSlide>
                 <SwiperSlide className={styles.swiperslide}>
                     <Landing6 />
-                </SwiperSlide> */}
-            </Swiper>
+                </SwiperSlide>
+            </Swiper> */}
+            <div style={{ width: '100%', height: '480px' }}>
+                <Landing1 />
+            </div>
         </div>
     );
 }

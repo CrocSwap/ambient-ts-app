@@ -1,13 +1,8 @@
 .modal_container {
     width: 400px;
-    padding: 20px;
+    padding: 1rem;
 }
 
-.modal_footer {
-    width: 100%;
-    padding: 0 20px;
-    margin-top: 10px;
-}
 
 /* Transaction details */
 

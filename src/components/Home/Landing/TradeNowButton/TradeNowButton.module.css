@@ -1,6 +1,7 @@
 .action_button {
     width: 100%;
     z-index: 2;
+    border-radius: var(--border-radius);
 
     max-width: 16rem;
     max-height: 3rem;
@@ -52,14 +53,14 @@
     text-fill-color: transparent;
 }
 
-.action_button:hover {
+.action_button:hover, .action_button:focus-visible {
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
     /* color: black; */
     animation-play-state: paused;
 }
 
-.action_button:hover .button_text {
+.action_button:hover .button_text, .action_button:focus-visible .button_text {
     /* color: var(--dark2) !important; */
     background: var(--dark2);
     -webkit-background-clip: text;
@@ -69,7 +70,7 @@
 }
 .action_button p {
     color: var(--text-highlight);
-    font-weight: 100;
-    font-size: 30px;
-    line-height: 38px;
+    font-weight: 100 !important;
+    font-size: 30px !important;
+    line-height: 38px !important;
 }

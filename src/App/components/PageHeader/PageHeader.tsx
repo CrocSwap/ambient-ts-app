@@ -12,7 +12,7 @@ import { useUrlParams } from './useUrlParams';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
-import { useAccount, useDisconnect, useEnsName } from 'wagmi';
+import { useAccount, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
 import { TokenIF } from '../../../utils/interfaces/exports';
@@ -61,10 +61,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         getTokenByAddress,
         isTutorialMode,
         setIsTutorialMode,
+        clickLogout,
     } = props; // TODO (#1391)
 
     const { address, isConnected } = useAccount();
-    const { disconnect } = useDisconnect();
     const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
@@ -95,7 +95,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         accountAddressFull: isConnected && address ? address : '',
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
-        clickLogout: disconnect,
+        clickLogout: clickLogout,
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
@@ -250,6 +250,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
                         <Link
+                            tabIndex={0}
                             className={
                                 link.destination.includes('/trade')
                                     ? location.pathname.includes(

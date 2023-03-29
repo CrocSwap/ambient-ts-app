@@ -9,15 +9,10 @@ import {
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
-// import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // START: Import Local Files
-// import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-// import { PositionIF } from '../../../../utils/interfaces/exports';
-// import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
-// import { AiFillBell } from 'react-icons/ai'
 
 // interface for React functional component props
 interface propsIF {
@@ -92,13 +87,6 @@ export default function SidebarAccordion(props: propsIF) {
 
     const sidebarIconStyle = isOpen ? styles.open_link : null;
 
-    // const notificationBell = (
-    //     <div className={notificationStyles.notification_bell}>
-    //         <div className={notificationStyles.bell_icon}><AiFillBell /></div>
-    //         <div className={notificationStyles.number}>3</div>
-    //     </div>
-    // )
-    // console.log(props.openAllDefault);
     function handleAccordionClick() {
         if (showSidebar) {
             setIsOpen(!isOpen);
@@ -136,10 +124,7 @@ export default function SidebarAccordion(props: propsIF) {
             <motion.li
                 key={idx}
                 className={styles.sidebar_item}
-                onClick={
-                    // showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar
-                    () => handleAccordionClick()
-                }
+                onClick={() => handleAccordionClick()}
             >
                 <div>
                     <div className={styles.sidebar_link}>
@@ -153,8 +138,6 @@ export default function SidebarAccordion(props: propsIF) {
 
                         <span className={styles.link_text}>{item.name}</span>
                     </div>
-                    {/* <CircleLoader size='10px' /> */}
-                    {/* { notificationBell} */}
                 </div>
             </motion.li>
             <AnimatePresence>

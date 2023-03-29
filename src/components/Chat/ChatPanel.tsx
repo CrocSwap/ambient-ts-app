@@ -14,7 +14,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import FullChat from '../../App/components/Chat/FullChat/FullChat';
+import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 
@@ -34,7 +34,6 @@ interface currentPoolInfo {
     advancedLowTick: number;
     advancedHighTick: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
 }
 
 interface propsIF {
@@ -47,7 +46,7 @@ interface propsIF {
     fullScreen?: boolean;
     userImageData: string[];
     appPage?: boolean;
-    username?: string | undefined | null;
+    username?: string | null;
 }
 
 export default function ChatPanel(props: propsIF) {
@@ -73,9 +72,7 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(
-        room.toUpperCase(),
-    );
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
@@ -314,6 +311,9 @@ export default function ChatPanel(props: propsIF) {
                                 '/chat/' + room.replace('/', '&').toLowerCase(),
                             )
                         }
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open chat in full screen'
                     />
                 )}
                 {isFullScreen || !props.isChatOpen ? (
@@ -323,9 +323,19 @@ export default function ChatPanel(props: propsIF) {
                         size={22}
                         className={styles.close_button}
                         onClick={() => handleCloseChatPanel()}
+                        role='button'
+                        tabIndex={0}
+                        aria-label='hide chat button'
                     />
                 )}
-                {!props.isChatOpen && <IoIosArrowUp size={22} />}
+                {!props.isChatOpen && (
+                    <IoIosArrowUp
+                        size={22}
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open chat button'
+                    />
+                )}
             </section>
         </div>
     );
@@ -387,6 +397,8 @@ export default function ChatPanel(props: propsIF) {
                                 size={27}
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
+                                tabIndex={0}
+                                aria-label='Scroll to bottom button'
                             />
                         </span>
                     </div>
@@ -402,6 +414,8 @@ export default function ChatPanel(props: propsIF) {
                                 size={27}
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
+                                tabIndex={0}
+                                aria-label='Scroll to bottom button'
                             />
                         </span>
                     </div>
@@ -416,6 +430,8 @@ export default function ChatPanel(props: propsIF) {
                             size={27}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
+                            tabIndex={0}
+                            aria-label='Scroll to bottom button'
                         />
                     </span>
                 ) : (
@@ -425,6 +441,8 @@ export default function ChatPanel(props: propsIF) {
                             size={27}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
+                            tabIndex={0}
+                            aria-label='Scroll to bottom button'
                         />
                     </span>
                 )

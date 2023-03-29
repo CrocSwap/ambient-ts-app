@@ -14,16 +14,24 @@ export default function HarvestPositionHeader(
     return (
         <header className={styles.header_container}>
             {props.showBackButton ? (
-                <div onClick={() => props.onBackButton()}>
-                    <BiArrowBack size={22} />
-                </div>
+                <BiArrowBack
+                    size={22}
+                    onClick={() => props.onBackButton()}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Go back button'
+                />
             ) : (
                 <div />
             )}
             <h2>{props.title}</h2>
-            <div onClick={props.onClose}>
-                <VscClose size={22} />
-            </div>
+            <VscClose
+                size={22}
+                onClick={props.onClose}
+                role='button'
+                tabIndex={0}
+                aria-label='Close modal button'
+            />
         </header>
     );
 }

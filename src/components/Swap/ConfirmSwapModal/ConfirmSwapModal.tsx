@@ -9,7 +9,6 @@ import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied'
 import TransactionException from '../../Global/TransactionException/TransactionException';
 import Button from '../../Global/Button/Button';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
@@ -64,9 +63,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const sellTokenData = tokenPair.dataTokenA;
 
@@ -172,10 +169,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                 </div>
                 {buyCurrencyRow}
             </section>
-            <InitPoolDenom
-                setIsDenomBase={setIsDenomBaseLocal}
-                isDenomBase={isDenomBaseLocal}
-            />
             <div className={styles.extra_info_container}>
                 <div className={styles.row}>
                     <p>Expected Output</p>
@@ -185,7 +178,12 @@ export default function ConfirmSwapModal(props: propsIF) {
                 </div>
                 <div className={styles.row}>
                     <p>Effective Conversion Rate</p>
-                    <p>
+                    <p
+                        onClick={() => {
+                            setIsDenomBaseLocal(!isDenomBaseLocal);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                    >
                         {isDenomBaseLocal
                             ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                             : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
@@ -235,16 +233,13 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     // END OF REGULAR CONFIRMATION MESSAGE
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay = isTransactionException
+        ? transactionException
+        : isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.modal_container}>

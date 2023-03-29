@@ -55,11 +55,16 @@ export default function RepositionHeader(props: propsIF) {
                 <RiSettings5Line />
             </div>
             <div className={styles.title}>
-                Reposition: {trimString(positionHash, 4, 4, '…')}
+                Reposition: {trimString(positionHash, 6, 4, '…')}
             </div>
 
             {isModalOpen && (
-                <Modal noHeader title='modal' onClose={closeModal}>
+                <Modal
+                    noHeader
+                    title='modal'
+                    onClose={closeModal}
+                    centeredTitle
+                >
                     <TransactionSettings
                         module='Reposition'
                         toggleFor='repo'

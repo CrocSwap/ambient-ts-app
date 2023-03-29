@@ -24,7 +24,6 @@ interface currentPoolInfo {
     advancedLowTick: number;
     advancedHighTick: number;
     slippageTolerance: number;
-    activeChartPeriod: number;
 }
 
 interface propsIF {
@@ -178,7 +177,7 @@ export default function RoomDropdown(props: propsIF) {
                   speed: number;
                   id: number;
               }[] = [];
-        favePools.pools.map((pool: PoolIF) => {
+        favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + '/' + pool.quote.symbol,
                 base: {
@@ -303,7 +302,8 @@ export default function RoomDropdown(props: propsIF) {
                     return '';
                 }
             } else {
-                return defaultRooms.reverse().map((tab) => (
+                const reverseRooms = [...defaultRooms].reverse();
+                return reverseRooms.map((tab) => (
                     <div
                         className={styles.dropdown_item}
                         key={tab.id}
