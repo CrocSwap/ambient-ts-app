@@ -37,29 +37,17 @@ export default function NavItem(props: NavItemPropsIF) {
         });
     });
 
-    // const enterFunction = (event: KeyboardEvent) => {
-    //     if (event.key === 'Enter') {
-    //         console.log('opened')
-    //     }
-
-    // }
-
-    // useEffect(() => {
-    //     document.addEventListener('keydown', enterFunction, false);
-    //     return () => {
-    //         document.removeEventListener('keydown', enterFunction, false);
-    //     };
-    // }, []);
-
     return (
         <button
             className={styles.nav_item}
             ref={navItemRef}
             tabIndex={0}
-            onClick={() => setOpen(!open)}
-            // onKeyDown={() => setOpen(true)}
+            aria-label='Nav item'
+            onKeyDown={() => setOpen(true)}
         >
-            <div className={styles.icon_button}>{icon}</div>
+            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
+                {icon}
+            </div>
             {open && childrenWithProps}
         </button>
     );
