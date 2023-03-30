@@ -3113,6 +3113,7 @@ export default function App() {
     // KEYBOARD SHORTCUTS ROUTES
     const routeShortcuts = {
         S: '/swap',
+        T: '/trade',
         M: 'trade/market',
         R: 'trade/range',
         L: 'trade/limit',
