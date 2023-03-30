@@ -344,6 +344,10 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
+        handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+    }, [tokenAQtyLocal, buyQtyString]);
+
+    useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
 
@@ -387,6 +391,8 @@ export default function CurrencyConverter(props: propsIF) {
         } else if (tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
+        } else if (buyQtyString === '' || sellQtyString === '') {
+            setSwapButtonErrorMessage('...');
         } else {
             if (isSellTokenEth) {
                 if (isWithdrawFromDexChecked) {
