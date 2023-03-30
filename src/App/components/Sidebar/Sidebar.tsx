@@ -60,7 +60,10 @@ interface propsIF {
     showSidebar: boolean;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
     toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
+        event:
+            | MouseEvent<HTMLDivElement>
+            | MouseEvent<HTMLLIElement>
+            | MouseEvent<HTMLButtonElement>,
     ) => void;
     chainId: string;
     currentTxActiveInTransactions: string;
@@ -417,13 +420,14 @@ export default function Sidebar(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='close sidebar'
-                            onClick={toggleSidebar}
-                        />
-                    </div>
+                    <button
+                        className={styles.close_sidebar_button}
+                        tabIndex={0}
+                        onClick={toggleSidebar}
+                        aria-label={`${showSidebar ? 'Close' : 'Open'} sidebar`}
+                    >
+                        <img src={closeSidebarImage} alt='close sidebar' />
+                    </button>
                 </DefaultTooltip>
             ) : (
                 <DefaultTooltip

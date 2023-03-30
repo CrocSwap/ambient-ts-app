@@ -13,6 +13,7 @@ import { MdPlayArrow } from 'react-icons/md';
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import useKeyPress from '../../../hooks/useKeyPress';
 
 // interface for React functional component props
 interface propsIF {
@@ -61,6 +62,10 @@ export default function SidebarAccordion(props: propsIF) {
     const openStateContent = (
         <motion.div
             className={styles.accordion_container}
+            hidden={!isOpen}
+            id='sidebar_accordion_content'
+            aria-labelledby='sidebar_accordion_button'
+            role='region'
             key='content'
             initial='collapsed'
             animate='open'
@@ -111,7 +116,11 @@ export default function SidebarAccordion(props: propsIF) {
         !isConnected &&
         !shouldDisplayContentWhenUserNotLoggedIn &&
         showSidebar ? (
-            <div className={styles.connect_button}>
+            <div
+                className={styles.connect_button}
+                hidden={!isOpen}
+                id='sidebar_accordion_content'
+            >
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
                 <button onClick={openModalWallet}>Connect Wallet</button>
             </div>
@@ -119,12 +128,25 @@ export default function SidebarAccordion(props: propsIF) {
             showOpenContentOrNull
         );
 
+    const isEscapePressed = useKeyPress('Escape');
+    const isEnterPressed = useKeyPress('Enter');
+    useEffect(() => {
+        if (isEscapePressed || isEnterPressed) {
+            handleAccordionClick();
+        }
+    }, [isEscapePressed, isEnterPressed]);
+
     return (
         <>
             <motion.li
                 key={idx}
                 className={styles.sidebar_item}
                 onClick={() => handleAccordionClick()}
+                tabIndex={0}
+                role='button'
+                aria-expanded={isOpen}
+                id='sidebar_accordion_button'
+                aria-label={item.name}
             >
                 <div>
                     <div className={styles.sidebar_link}>

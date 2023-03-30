@@ -43,7 +43,7 @@ export default function NavItem(props: NavItemPropsIF) {
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
-            onKeyDown={() => setOpen(true)}
+            onClick={() => setOpen(true)}
         >
             <div className={styles.icon_button} onClick={() => setOpen(!open)}>
                 {icon}

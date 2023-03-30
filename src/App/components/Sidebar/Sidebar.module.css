@@ -158,6 +158,14 @@
     gap: 8px;
 }
 
+.close_sidebar_button{
+    outline: none;
+    border: none;
+    background: transparent;
+}
+.close_sidebar_button:focus-visible{
+    border: 1px solid var(--text-grey-white)
+}
 .connect_button p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
