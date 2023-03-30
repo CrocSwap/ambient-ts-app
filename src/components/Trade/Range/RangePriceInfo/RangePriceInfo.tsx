@@ -91,14 +91,56 @@ export default function RangePriceInfo(props: propsIF) {
         number | undefined
     >();
 
-    const tokenAAddress = tokenPair?.dataTokenA?.address;
-    const tokenBAddress = tokenPair?.dataTokenB?.address;
+    const [userFlippedMaxMinDisplay, setUserFlippedMaxMinDisplay] =
+        useState<boolean>(false);
+
+    const [poolPriceUsdEquivalent, setPoolPriceUsdEquivalent] =
+        useState<string>('');
+
+    const [minPriceUsdEquivalent, setMinPriceUsdEquivalent] =
+        useState<string>('');
+
+    const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
+        useState<string>('');
 
     const [isBaseTokenMoreMoneylike, setIsBaseTokenMoreMoneylike] =
         useState<boolean>(true);
 
     const [mainnetPriceEquivalentsExist, setMainnetPriceEquivalentsExist] =
         useState<boolean>(false);
+
+    const tokenAAddress = tokenPair?.dataTokenA?.address;
+    const tokenBAddress = tokenPair?.dataTokenB?.address;
+
+    const minPrice = userFlippedMaxMinDisplay
+        ? isAmbient
+            ? '$0'
+            : minPriceUsdEquivalent
+        : isAmbient
+        ? '0'
+        : pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+        : '...';
+
+    const maxPrice = userFlippedMaxMinDisplay
+        ? isAmbient
+            ? '$∞'
+            : maxPriceUsdEquivalent
+        : isAmbient
+        ? '∞'
+        : pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+        : '...';
+
+    const isDenomTokenA =
+        (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
+
+    const isDenomMoreMoneylike =
+        (isDenomBase && isBaseTokenMoreMoneylike) ||
+        (!isDenomBase && !isBaseTokenMoreMoneylike);
+
+    const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
+    const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
 
     useEffect(() => {
         const baseTokenMoneynessRank = isTokenABase
@@ -112,6 +154,52 @@ export default function RangePriceInfo(props: propsIF) {
             baseTokenMoneynessRank >= quoteTokenMoneynessRank,
         );
     }, [tokenAAddress + tokenBAddress + chainId + isTokenABase]);
+
+    const updatePoolPriceUsdEquivalent = () => {
+        const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
+
+        if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
+
+        let poolPriceNum;
+
+        if (!isDenomMoreMoneylike) {
+            if (isDenomTokenA) {
+                poolPriceNum = spotPriceNum * tokenBMainnetPrice;
+            } else {
+                poolPriceNum = spotPriceNum * tokenAMainnetPrice;
+            }
+        } else {
+            if (isDenomTokenA) {
+                poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
+            } else {
+                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
+            }
+        }
+
+        const displayUsdPriceString =
+            poolPriceNum === Infinity || poolPriceNum === 0
+                ? '…'
+                : poolPriceNum < 0.00001
+                ? poolPriceNum.toExponential(2)
+                : poolPriceNum < 2
+                ? poolPriceNum.toPrecision(3)
+                : poolPriceNum >= 100000
+                ? formatAmountOld(poolPriceNum, 1)
+                : poolPriceNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        setPoolPriceUsdEquivalent(displayUsdPriceString);
+    };
+
+    useEffect(() => {
+        updatePoolPriceUsdEquivalent();
+    }, [
+        spotPriceDisplay,
+        isDenomTokenA,
+        tokenAMainnetPrice,
+        tokenBMainnetPrice,
+    ]);
 
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
@@ -158,83 +246,6 @@ export default function RangePriceInfo(props: propsIF) {
             setMainnetPriceEquivalentsExist(true);
         })();
     }, [tokenAAddress + tokenBAddress]);
-
-    const [userFlippedMaxMinDisplay, setUserFlippedMaxMinDisplay] =
-        useState<boolean>(false);
-
-    const [poolPriceUsdEquivalent, setPoolPriceUsdEquivalent] =
-        useState<string>('');
-    const [minPriceUsdEquivalent, setMinPriceUsdEquivalent] =
-        useState<string>('');
-    const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
-        useState<string>('');
-
-    const minPrice = userFlippedMaxMinDisplay
-        ? minPriceUsdEquivalent
-        : isAmbient
-        ? '0'
-        : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
-        : '...';
-
-    const maxPrice = userFlippedMaxMinDisplay
-        ? maxPriceUsdEquivalent
-        : isAmbient
-        ? '∞'
-        : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
-        : '...';
-
-    const isDenomTokenA =
-        (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
-
-    const isDenomMoreMoneylike =
-        (isDenomBase && isBaseTokenMoreMoneylike) ||
-        (!isDenomBase && !isBaseTokenMoreMoneylike);
-
-    const updatePoolPriceUsdEquivalent = () => {
-        const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
-        console.log({ spotPriceNum });
-        if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
-
-        let poolPriceNum;
-
-        if (!isDenomMoreMoneylike) {
-            if (isDenomTokenA) {
-                poolPriceNum = spotPriceNum * tokenBMainnetPrice;
-            } else {
-                poolPriceNum = spotPriceNum * tokenAMainnetPrice;
-            }
-        } else {
-            if (isDenomTokenA) {
-                poolPriceNum = (1 / spotPriceNum) * tokenAMainnetPrice;
-            } else {
-                poolPriceNum = (1 / spotPriceNum) * tokenBMainnetPrice;
-            }
-        }
-
-        const displayUsdPriceString =
-            poolPriceNum === Infinity || poolPriceNum === 0
-                ? '…'
-                : poolPriceNum < 0.00001
-                ? poolPriceNum.toExponential(2)
-                : poolPriceNum < 2
-                ? poolPriceNum.toPrecision(3)
-                : poolPriceNum >= 100000
-                ? formatAmountOld(poolPriceNum, 1)
-                : poolPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setPoolPriceUsdEquivalent(displayUsdPriceString);
-    };
-
-    useEffect(() => {
-        updatePoolPriceUsdEquivalent();
-    }, [spotPriceDisplay, isDenomBase]);
-
-    const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
-    const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
 
     useEffect(() => {
         if (
@@ -306,7 +317,6 @@ export default function RangePriceInfo(props: propsIF) {
         pinnedMinPrice,
         pinnedMaxPrice,
         userFlippedMaxMinDisplay,
-        isDenomMoreMoneylike,
         isDenomTokenA,
     ]);
 
