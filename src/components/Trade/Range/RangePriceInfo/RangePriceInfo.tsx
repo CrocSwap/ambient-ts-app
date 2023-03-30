@@ -142,6 +142,10 @@ export default function RangePriceInfo(props: propsIF) {
     const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
 
+    const currentPrice = userFlippedMaxMinDisplay
+        ? poolPriceUsdEquivalent
+        : poolPriceCharacter + spotPriceDisplay;
+
     useEffect(() => {
         const baseTokenMoneynessRank = isTokenABase
             ? getMoneynessRank(tokenAAddress.toLowerCase() + '_' + chainId)
@@ -189,7 +193,7 @@ export default function RangePriceInfo(props: propsIF) {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        setPoolPriceUsdEquivalent(displayUsdPriceString);
+        setPoolPriceUsdEquivalent('~$' + displayUsdPriceString);
     };
 
     useEffect(() => {
@@ -360,12 +364,6 @@ export default function RangePriceInfo(props: propsIF) {
         </div>
     );
 
-    // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
-
-    const currentPrice = userFlippedMaxMinDisplay
-        ? '~$' + poolPriceUsdEquivalent
-        : poolPriceCharacter + spotPriceDisplay;
-
     // JSX frag for highest price in range
     const maximumPrice = mainnetPriceEquivalentsExist ? (
         <DefaultTooltip
@@ -400,23 +398,57 @@ export default function RangePriceInfo(props: propsIF) {
         </div>
     );
 
+    // JSX frag for current pool price
+    const currentPoolPrice = mainnetPriceEquivalentsExist ? (
+        <DefaultTooltip
+            interactive
+            title={`${poolPriceUsdEquivalent} USD per ${
+                isBaseTokenMoreMoneylike ? quoteToken.symbol : baseToken.symbol
+            } `}
+            // title={`Approx. USD value: ${minPriceUsdEquivalent.slice(1)}`}
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div className={styles.price_display}>
+                <h4 className={styles.price_title}>Current Price</h4>
+                <span
+                    className={styles.current_price}
+                    onClick={() => {
+                        dispatch(toggleDidUserFlipDenom());
+                        setUserFlippedMaxMinDisplay(false);
+                    }}
+                >
+                    {currentPrice === 'Infinity' || !currentPrice
+                        ? '…'
+                        : `${currentPrice}`}
+                </span>
+            </div>
+        </DefaultTooltip>
+    ) : (
+        <div className={styles.price_display}>
+            <h4 className={styles.price_title}>Current Price</h4>
+            <span
+                className={styles.current_price}
+                onClick={() => {
+                    dispatch(toggleDidUserFlipDenom());
+                    setUserFlippedMaxMinDisplay(false);
+                }}
+            >
+                {currentPrice === 'Infinity' || !currentPrice
+                    ? '…'
+                    : `${currentPrice}`}
+            </span>
+        </div>
+    );
+
     return (
         <div className={styles.price_info_container}>
             {apr}
             <div className={styles.price_info_content}>
                 {minimumPrice}
-                <div className={styles.price_display}>
-                    <h4 className={styles.price_title}>Current Price</h4>
-                    <span
-                        className={styles.current_price}
-                        onClick={() => {
-                            dispatch(toggleDidUserFlipDenom());
-                            setUserFlippedMaxMinDisplay(false);
-                        }}
-                    >
-                        {currentPrice === 'Infinity' ? '…' : `${currentPrice}`}
-                    </span>
-                </div>
+                {currentPoolPrice}
                 {maximumPrice}
             </div>
         </div>
