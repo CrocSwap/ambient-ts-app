@@ -910,10 +910,7 @@ export default function Limit(props: propsIF) {
                 >
                     <LimitCurrencyConverter {...currencyConverterProps} />
                 </motion.div>
-                <div className={styles.header_container}>
-                    {/* <DividerDark addMarginTop /> */}
-                    {/* <DenominationSwitch /> */}
-                </div>
+                <div className={styles.header_container}></div>
                 <LimitExtraInfo
                     isQtyEntered={
                         tokenAInputQty !== '' || tokenBInputQty !== ''
