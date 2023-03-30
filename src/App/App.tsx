@@ -143,7 +143,7 @@ import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
-import { useRecentPools } from './hooks/useRecentPools';
+import { recentPoolsMethodsIF, useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
@@ -427,10 +427,11 @@ export default function App() {
     false && getAllTokens;
     false && getTokensOnChain;
 
-    const { addRecentPool, getRecentPools } = useRecentPools(
+    // hook to manage recent pool data in-session
+    const recentPools: recentPoolsMethodsIF = useRecentPools(
         chainData.chainId,
-        tradeData.tokenA.address,
-        tradeData.tokenB.address,
+        tradeData.tokenA,
+        tradeData.tokenB,
         verifyToken,
     );
 
@@ -2649,7 +2650,7 @@ export default function App() {
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        addRecentPool: addRecentPool,
+        recentPools: recentPools,
         switchTheme: switchTheme,
         theme: theme,
         chainData: chainData,
@@ -2974,7 +2975,7 @@ export default function App() {
         verifyToken: verifyToken,
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
-        getRecentPools: getRecentPools,
+        recentPools: recentPools,
         isConnected: isConnected,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
