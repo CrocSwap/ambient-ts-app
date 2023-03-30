@@ -654,9 +654,8 @@ export default function Range(props: propsIF) {
     useEffect(() => {
         setNewRangeTransactionHash('');
         setShowBypassConfirmButton(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+        setPinnedDisplayPrices(undefined);
+    }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
         if (tradeData.advancedMode) {

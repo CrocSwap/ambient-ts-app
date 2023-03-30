@@ -95,6 +95,9 @@ export default function RangePriceInfo(props: propsIF) {
     const [isBaseTokenMoreMoneylike, setIsBaseTokenMoreMoneylike] =
         useState<boolean>(true);
 
+    const [mainnetPriceEquivalentsExist, setMainnetPriceEquivalentsExist] =
+        useState<boolean>(false);
+
     useEffect(() => {
         const baseTokenMoneynessRank = isTokenABase
             ? getMoneynessRank(tokenAAddress.toLowerCase() + '_' + chainId)
@@ -112,14 +115,19 @@ export default function RangePriceInfo(props: propsIF) {
         setUserFlippedMaxMinDisplay(false);
 
         (async () => {
-            const tokenAMainnetEquivalent = testTokenMap
-                .get(tokenAAddress.toLowerCase() + '_' + chainId)
-                ?.split('_')[0];
-            const tokenBMainnetEquivalent = testTokenMap
-                .get(tokenBAddress.toLowerCase() + '_' + chainId)
-                ?.split('_')[0];
+            const tokenAMainnetEquivalent =
+                chainId === '0x1'
+                    ? tokenAAddress
+                    : testTokenMap
+                          .get(tokenAAddress.toLowerCase() + '_' + chainId)
+                          ?.split('_')[0];
+            const tokenBMainnetEquivalent =
+                chainId === '0x1'
+                    ? tokenBAddress
+                    : testTokenMap
+                          .get(tokenBAddress.toLowerCase() + '_' + chainId)
+                          ?.split('_')[0];
 
-            console.log('fetching WETH price from mainnet');
             if (tokenAMainnetEquivalent) {
                 const tokenAMainnetEthPrice = await cachedFetchTokenPrice(
                     tokenAMainnetEquivalent,
@@ -130,6 +138,8 @@ export default function RangePriceInfo(props: propsIF) {
                 setTokenAMainnetPrice(usdPrice);
             } else {
                 setTokenAMainnetPrice(undefined);
+                setMainnetPriceEquivalentsExist(false);
+                return;
             }
             if (tokenBMainnetEquivalent) {
                 const tokenBMainnetEthPrice = await cachedFetchTokenPrice(
@@ -140,7 +150,10 @@ export default function RangePriceInfo(props: propsIF) {
                 setTokenBMainnetPrice(usdPrice);
             } else {
                 setTokenBMainnetPrice(undefined);
+                setMainnetPriceEquivalentsExist(false);
+                return;
             }
+            setMainnetPriceEquivalentsExist(true);
         })();
     }, [tokenAAddress + tokenBAddress]);
 
@@ -156,11 +169,15 @@ export default function RangePriceInfo(props: propsIF) {
 
     const minPrice = userFlippedMaxMinDisplay
         ? minPriceUsdEquivalent
-        : pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas;
+        : pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+        : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
         ? maxPriceUsdEquivalent
-        : pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas;
+        : pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+        : '...';
 
     const isDenomTokenA =
         (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
@@ -294,7 +311,7 @@ export default function RangePriceInfo(props: propsIF) {
 
     // JSX frag for lowest price in range
 
-    const minimumPrice = (
+    const minimumPrice = mainnetPriceEquivalentsExist ? (
         <DefaultTooltip
             interactive
             title={`${minPriceUsdEquivalent} USD per ${
@@ -317,6 +334,14 @@ export default function RangePriceInfo(props: propsIF) {
                 </span>
             </div>
         </DefaultTooltip>
+    ) : (
+        <div className={styles.price_display} style={{ cursor: 'default' }}>
+            <h4 className={styles.price_title}>Min Price</h4>
+            <span className={styles.min_price}>
+                {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
+                {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
+            </span>
+        </div>
     );
 
     // const currentPrice = makeCurrentPrice(parseFloat(spotPriceDisplay), didUserFlipDenom);
@@ -326,7 +351,7 @@ export default function RangePriceInfo(props: propsIF) {
         : poolPriceCharacter + spotPriceDisplay;
 
     // JSX frag for highest price in range
-    const maximumPrice = (
+    const maximumPrice = mainnetPriceEquivalentsExist ? (
         <DefaultTooltip
             interactive
             title={`${maxPriceUsdEquivalent} USD per ${
@@ -349,6 +374,14 @@ export default function RangePriceInfo(props: propsIF) {
                 </span>
             </div>
         </DefaultTooltip>
+    ) : (
+        <div className={styles.price_display} style={{ cursor: 'default' }}>
+            <h4 className={styles.price_title}>Max Price</h4>
+            <span className={styles.max_price}>
+                {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
+                {/* {truncateDecimals(parseFloat(maxPriceDisplay), 4).toString()} */}
+            </span>
+        </div>
     );
 
     return (
