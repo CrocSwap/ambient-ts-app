@@ -21,11 +21,12 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
     onClose: () => void;
-    bypassConfirm: skipConfirmIF;
+    bypassConfirmSwap: skipConfirmIF;
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose, bypassConfirm } = props;
+    const { module, slippage, isPairStable, onClose, bypassConfirmSwap } =
+        props;
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();
@@ -41,14 +42,14 @@ export default function TransactionSettings(props: propsIF) {
         useState<number>(persistedSlippage);
 
     const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.isEnabled,
+        bypassConfirmSwap.isEnabled,
     );
 
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
-        bypassConfirm.setValue(currentSkipConfirm);
+        bypassConfirmSwap.setValue(currentSkipConfirm);
         onClose();
     };
 

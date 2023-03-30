@@ -125,7 +125,7 @@ export default function SwapHeader(props: propsIF) {
                         slippage={swapSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.swap}
+                        bypassConfirmSwap={bypassConfirm.swap}
                     />
                 </Modal>
             )}
