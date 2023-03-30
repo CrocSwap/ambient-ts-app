@@ -47,9 +47,6 @@ export const useRecentPools = (
         }
     }, [tokenA.address, tokenB.address]);
 
-    // hook to reset recent tokens when the user switches chains
-    // useEffect(() => resetPools(), [chainId]);
-
     // fn to add a token to the recentTokens array
     function addPool(pool: SmallerPoolIF): void {
         // remove the current pool from the list, if present
@@ -59,7 +56,9 @@ export const useRecentPools = (
                 recentPool.baseToken.address.toLowerCase() !==
                     pool.baseToken.address.toLowerCase() ||
                 recentPool.quoteToken.address.toLowerCase() !==
-                    pool.quoteToken.address.toLowerCase(),
+                    pool.quoteToken.address.toLowerCase() ||
+                recentPool.baseToken.chainId !== pool.baseToken.chainId ||
+                recentPool.quoteToken.chainId !== pool.quoteToken.chainId,
         );
         // add the current pool to the front of the list
         setRecentPools([pool, ...recentPoolsWithNewRemoved]);
@@ -67,7 +66,16 @@ export const useRecentPools = (
 
     // fn to return recent pools from local state
     function getPools(count: number): SmallerPoolIF[] {
-        return recentPools.slice(0, count);
+        // active conntected chain ID as an integer
+        const currentChain: number = parseInt(chainId);
+        // return a set number of pools on the current active chain
+        return recentPools
+            .filter(
+                (pool: SmallerPoolIF) =>
+                    pool.baseToken.chainId === currentChain &&
+                    pool.quoteToken.chainId === currentChain,
+            )
+            .slice(0, count);
     }
 
     // fn to clear list of recent pools

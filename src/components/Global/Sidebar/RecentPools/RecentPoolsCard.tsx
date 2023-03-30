@@ -20,28 +20,33 @@ export default function RecentPoolsCard(props: propsIF) {
 
     const { pathname } = useLocation();
 
-    const locationSlug = useMemo(() => {
+    const locationSlug = useMemo<string>(() => {
+        let slug: string;
         if (
             pathname.startsWith('/trade/market') ||
             pathname.startsWith('/account')
         ) {
-            return '/trade/market';
+            slug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
-            return '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            return '/trade/range';
+            slug = '/trade/limit';
+        } else if (
+            pathname.startsWith('/trade/range') ||
+            pathname.startsWith('/trade/reposition')
+        ) {
+            slug = '/trade/range';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',
             );
-            return '/trade/market';
+            slug = '/trade/market';
         }
+        return slug + '/chain=';
     }, [pathname]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
-    const fetchPoolStats = () => {
+    const fetchPoolStatsAsync = () => {
         (async () => {
             const poolStatsFresh = await cachedPoolStatsFetch(
                 chainId,
@@ -50,7 +55,8 @@ export default function RecentPoolsCard(props: propsIF) {
                 pool.poolId ?? 36000,
                 Math.floor(lastBlockNumber / 4),
             );
-            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
+            // display the total volume for all time
+            const volume = poolStatsFresh?.volumeTotal;
             const volumeString = volume
                 ? '$' + formatAmountOld(volume)
                 : undefined;
@@ -62,7 +68,7 @@ export default function RecentPoolsCard(props: propsIF) {
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        fetchPoolStatsAsync();
     }, [lastBlockNumber]);
 
     const tokenAString =
@@ -80,7 +86,14 @@ export default function RecentPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={`${locationSlug}/chain=${chainId}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
+            to={
+                locationSlug +
+                chainId +
+                '&tokenA=' +
+                tokenAString +
+                '&tokenB=' +
+                tokenBString
+            }
         >
             <div>
                 {pool.baseToken.symbol} / {pool.quoteToken.symbol}
