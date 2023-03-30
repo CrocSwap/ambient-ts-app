@@ -408,6 +408,7 @@ export default function Chart(props: ChartData) {
     const [gradientForAskLine, setGradientForAskLine] = useState();
     const [gradientForBidLine, setGradientForBidLine] = useState();
 
+    const [rect, setRect] = useState<any>();
     // Subcharts
     const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
     const currentPoolPriceTick =
@@ -1458,8 +1459,9 @@ export default function Chart(props: ChartData) {
             dragRange !== undefined
         ) {
             d3.select(d3CanvasMarketLine.current).call(zoomUtils?.zoom);
-            d3.select(d3Yaxis.current).call(zoomUtils?.yAxisZoom);
-            d3.select(d3Xaxis.current).call(zoomUtils?.xAxisZoom);
+            d3.select(d3Xaxis.current)
+                .call(zoomUtils?.xAxisZoom)
+                .on('dblclick.zoom', null);
 
             if (location.pathname.includes('market')) {
                 d3.select(d3CanvasBand.current)
@@ -2424,6 +2426,17 @@ export default function Chart(props: ChartData) {
 
                     setMarketLineValue();
                     render();
+                })
+                .filter((event: any) => {
+                    let isRect = false;
+                    if (
+                        event.offsetY > rect?.y &&
+                        event.offsetY < rect?.y + rect?.height &&
+                        event.type !== 'wheel'
+                    ) {
+                        isRect = true;
+                    }
+                    return !isRect;
                 }) as any;
 
             const xAxisZoom = d3
@@ -2549,6 +2562,8 @@ export default function Chart(props: ChartData) {
         ranges,
         limit,
         dragEvent,
+        isLineDrag,
+        rect,
     ]);
 
     useEffect(() => {
@@ -3163,6 +3178,113 @@ export default function Chart(props: ChartData) {
         return newLimitValue;
     }
 
+    const limitDragStart = (event: any) => {
+        setIsLineDrag(true);
+
+        console.log('draggg', scaleData.yScale(limit[0].value) - 10);
+
+        const rect = {
+            x: 0,
+            y: scaleData.yScale(limit[0].value) - 10,
+            width: 70,
+            height: 20,
+        };
+
+        console.log(
+            event.sourceEvent.offsetY > rect.y &&
+                event.sourceEvent.offsetY < rect.y + rect.height,
+        );
+
+        if (
+            event.sourceEvent.offsetY > rect.y &&
+            event.sourceEvent.offsetY < rect.y + rect.height
+        ) {
+            const d3YaxisCanvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as any;
+            console.log('ALİ', event);
+
+            d3YaxisCanvas.dispatchEvent(new MouseEvent('dragend', event));
+            // event.preventDefault();
+        }
+
+        d3.select(d3Container.current).style('cursor', 'row-resize');
+        d3.select(d3Container.current)
+            .select('.targets')
+            .style('cursor', 'row-resize');
+    };
+
+    const limitDragging = (newLimitValue: number, eventY: number) => {
+        setIsLineDrag(true);
+
+        newLimitValue = scaleData.yScale.invert(eventY);
+
+        newLimitValue = setLimitForNoGoZone(newLimitValue);
+        setGhostLineValues(adjTicks(newLimitValue));
+
+        if (newLimitValue < 0) newLimitValue = 0;
+
+        setLimit(() => {
+            return [{ name: 'Limit', value: newLimitValue }];
+        });
+
+        setTriangleLimitValues(newLimitValue);
+    };
+
+    const limitDragEnd = (newLimitValue: number, eventY: number) => {
+        d3.select(d3Container.current).style('cursor', 'default');
+        setGhostLineValues([]);
+        setCrosshairData([
+            {
+                x: crosshairData[0].x,
+                y:
+                    isMouseMoveForSubChart || isZoomForSubChart
+                        ? -1
+                        : Number(
+                              formatAmountChartData(
+                                  scaleData.yScale.invert(eventY),
+                              ),
+                          ),
+            },
+        ]);
+
+        setIsLineDrag(false);
+
+        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+        const filtered = parsedChartData?.chartData.filter(
+            (data: any) => data.date >= xmin && data.date <= xmax,
+        );
+
+        if (filtered !== undefined) {
+            const minYBoundary = d3.min(filtered, (d) => d.low);
+            const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+            if (minYBoundary && maxYBoundary) {
+                const value = newLimitValue;
+
+                const low = minYBoundary < value ? minYBoundary : value;
+
+                const high = maxYBoundary > value ? maxYBoundary : value;
+
+                const min = scaleData.yScale.domain()[0];
+                const max = scaleData.yScale.domain()[1];
+
+                if (min > low || max < high) {
+                    const buffer = Math.abs((low - high) / 6);
+
+                    const domain = [low - buffer, high + buffer / 2];
+
+                    scaleData.yScale.domain(domain);
+                }
+            }
+        }
+
+        onBlurLimitRate(newLimitValue);
+    };
+
     // Drag Type
     useEffect(() => {
         if (scaleData) {
@@ -3585,95 +3707,14 @@ export default function Chart(props: ChartData) {
 
             const dragLimit = d3
                 .drag()
-                .on('start', () => {
-                    d3.select(d3Container.current).style(
-                        'cursor',
-                        'row-resize',
-                    );
-                    d3.select(d3Container.current)
-                        .select('.targets')
-                        .style('cursor', 'row-resize');
+                .on('start', (event) => {
+                    limitDragStart(event);
                 })
                 .on('drag', function (event) {
-                    setIsLineDrag(true);
-
-                    console.log('drag', event.y);
-
-                    newLimitValue = scaleData.yScale.invert(event.y);
-
-                    newLimitValue = setLimitForNoGoZone(newLimitValue);
-                    setGhostLineValues(adjTicks(newLimitValue));
-
-                    if (newLimitValue < 0) newLimitValue = 0;
-
-                    setLimit(() => {
-                        return [{ name: 'Limit', value: newLimitValue }];
-                    });
-
-                    setTriangleLimitValues(newLimitValue);
+                    limitDragging(newLimitValue, event.y);
                 })
                 .on('end', (event: any) => {
-                    d3.select(d3Container.current).style('cursor', 'default');
-                    setGhostLineValues([]);
-                    setCrosshairData([
-                        {
-                            x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : Number(
-                                          formatAmountChartData(
-                                              scaleData.yScale.invert(
-                                                  event.sourceEvent.layerY,
-                                              ),
-                                          ),
-                                      ),
-                        },
-                    ]);
-
-                    setIsLineDrag(false);
-
-                    const xmin = new Date(
-                        Math.floor(scaleData.xScale.domain()[0]),
-                    );
-                    const xmax = new Date(
-                        Math.floor(scaleData.xScale.domain()[1]),
-                    );
-
-                    const filtered = parsedChartData?.chartData.filter(
-                        (data: any) => data.date >= xmin && data.date <= xmax,
-                    );
-
-                    if (filtered !== undefined) {
-                        const minYBoundary = d3.min(filtered, (d) => d.low);
-                        const maxYBoundary = d3.max(filtered, (d) => d.high);
-
-                        if (minYBoundary && maxYBoundary) {
-                            const value = newLimitValue;
-
-                            const low =
-                                minYBoundary < value ? minYBoundary : value;
-
-                            const high =
-                                maxYBoundary > value ? maxYBoundary : value;
-
-                            const min = scaleData.yScale.domain()[0];
-                            const max = scaleData.yScale.domain()[1];
-
-                            if (min > low || max < high) {
-                                const buffer = Math.abs((low - high) / 6);
-
-                                const domain = [
-                                    low - buffer,
-                                    high + buffer / 2,
-                                ];
-
-                                scaleData.yScale.domain(domain);
-                            }
-                        }
-                    }
-
-                    onBlurLimitRate(newLimitValue);
+                    limitDragEnd(newLimitValue, event.sourceEvent.layerY);
                 });
 
             setDragRange(() => {
@@ -3725,32 +3766,6 @@ export default function Chart(props: ChartData) {
                 return _xAxis;
             });
 
-            const rectSymbol = function () {
-                const path = d3.path();
-                path.rect(-5, -5, 10, 10);
-                return path;
-            };
-
-            //   const customSymbol = d3.symbol().type(rectSymbol).size(100);
-
-            const rectangle = d3fc
-                .seriesCanvasPoint()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
-                .crossValue((d: any, index: any) => {
-                    return scaleData.xScale.domain()[0];
-                })
-                .mainValue((d: any) => d.value)
-                .type(symbolSquare)
-                .decorate((context: any, datum: any, index: any) => {
-                    context.fillRect(datum.x - 2.5, datum.y - 2.5, 5, 5);
-                    const rotateDegree = 90;
-                    context.rotate((rotateDegree * Math.PI) / 180);
-                    context.width = 500;
-                    context.strokeStyle = 'rgba(235, 235, 255)';
-                    context.fillStyle = 'rgba(235, 235, 255)';
-                });
-
             const d3YaxisCanvas = d3
                 .select(d3Yaxis.current)
                 .select('canvas')
@@ -3764,87 +3779,14 @@ export default function Chart(props: ChartData) {
                     d3YaxisCanvas.width / 2,
                     scaleData.yScale.range(),
                 );
-
-                // rectangle.context(d3YaxisContext)(market)
             });
 
             const rect = {
                 x: 0,
                 y: scaleData.yScale(limit[0].value) - 10,
                 width: 70,
-                heigth: 20,
+                height: 20,
             };
-
-            let isDragging = false;
-
-            d3.select(d3Yaxis.current).on('mousedown', (event: any) => {
-                const mouseX = event.clientX - canvas.offsetLeft;
-                const mouseY = event.clientY - canvas.offsetTop;
-
-                const dx = event.offsetX;
-                const dy = event.offsetY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                console.log('ay');
-
-                if (distance < rect.width) {
-                    console.log('öf');
-
-                    isDragging = true;
-                }
-            });
-
-            d3.select(d3Yaxis.current).on('mouseup', () => {
-                isDragging = false;
-            });
-
-            let newLimitValue: any;
-
-            d3.select(d3Yaxis.current).on('mousemove', (event) => {
-                // if (isDragging) {
-                setIsLineDrag(true);
-
-                const mouseX = event.clientX - canvas.offsetLeft;
-                const mouseY = event.clientY - canvas.offsetTop;
-
-                rect.x = mouseX;
-                rect.y = mouseY;
-
-                console.log('ayyMouseMove', isLineDrag, mouseY);
-
-                newLimitValue = scaleData.yScale.invert(event.offsetY);
-
-                newLimitValue = setLimitForNoGoZone(newLimitValue);
-                setGhostLineValues(adjTicks(newLimitValue));
-
-                if (newLimitValue < 0) newLimitValue = 0;
-
-                setLimit(() => {
-                    return [{ name: 'Limit', value: newLimitValue }];
-                });
-
-                setTriangleLimitValues(newLimitValue);
-
-                // Yeniden çizim
-                drawYaxis(
-                    d3YaxisContext,
-                    scaleData.yScale,
-                    d3YaxisCanvas.width / 2,
-                    scaleData.yScale.range(),
-                );
-
-                // }
-            });
-
-            // d3.select(d3Yaxis.current).on('click', function(event:any) {
-            //     const y = event.offsetY;
-
-            //     console.log({y},scaleData.yScale(limit[0].value));
-
-            //     if (y >= (scaleData.yScale(limit[0].value) -10) && y <= scaleData.yScale(limit[0].value)+10) {
-            //         alert('Kareye tıklandı!');
-
-            //     }
-            // });
 
             const canvas = d3
                 .select(d3Xaxis.current)
@@ -3853,12 +3795,14 @@ export default function Chart(props: ChartData) {
             const context = canvas.getContext('2d');
 
             d3.select(d3Xaxis.current).on('draw', function () {
-                drawXaxis(
-                    context,
-                    scaleData.xScale,
-                    3,
-                    scaleData.xScale.range(),
-                );
+                if (xAxis) {
+                    drawXaxis(
+                        context,
+                        scaleData.xScale,
+                        3,
+                        scaleData.xScale.range(),
+                    );
+                }
             });
         }
     }, [
@@ -3866,31 +3810,38 @@ export default function Chart(props: ChartData) {
         market,
         JSON.stringify(crosshairData),
         isMouseMoveCrosshair,
+        limit,
+        isLineDrag,
     ]);
+
+    useEffect(() => {
+        if (yAxis) {
+            d3.select(d3Yaxis.current)
+                .call(zoomUtils?.yAxisZoom)
+                .on('dblclick.zoom', null);
+            d3.select(d3Yaxis.current).call(dragLimit);
+
+            render();
+        }
+    }, [yAxis]);
 
     const drawYaxis = (context: any, yScale: any, X: any, yExtent: any) => {
         const [startY, endY] = yExtent;
 
         const tickPadding = 3,
             tickSize = 6,
-            yTicks = yScale.ticks(),
-            yTickFormat = yScale.tickFormat();
+            yTicks = yScale.ticks();
 
         yTicks.push(market[0].value);
-        yTicks.push(limit[0].value);
+        if (location.pathname.includes('/limit')) yTicks.push(limit[0].value);
 
-        context.strokeStyle = 'grey';
-        context.beginPath();
-        yTicks.forEach((d: any) => {
-            context.moveTo(X, yScale(d));
-            context.lineTo(X - tickSize, yScale(d));
-        });
         context.stroke();
-        context.textAlign = 'right';
-        context.textBaseline = 'middle';
-        context.fillStyle = 'grey';
-
+        context.textAlign = 'center';
+        context.textBaseline = 'top';
+        context.fillStyle = '#bdbdbd';
+        context.font = '13px Arial';
         yTicks.forEach((d: number) => {
+            const digit = d.toString().split('.')[1]?.length;
             if (d === market[0].value) {
                 context.beginPath();
                 context.fillStyle = 'white';
@@ -3900,29 +3851,40 @@ export default function Chart(props: ChartData) {
                 context.fontSize = '13';
                 context.textAlign = 'center';
                 context.textBaseline = 'middle';
-
                 context.fillText(
-                    yTickFormat(d),
+                    formatAmountChartData(d, undefined),
                     X - tickSize - tickPadding,
-                    yScale(d),
+                    yScale(d) + 1,
                 );
             } else if (
                 d === limit[0].value &&
                 location.pathname.includes('/limit')
             ) {
                 context.beginPath();
-                context.fillStyle = 'purple';
+                context.fillStyle = '#7371fc';
+                context.fillRect(0, yScale(d) - 10, 70, 20);
+                context.fillStyle = 'white';
+                context.fontSize = '14';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
 
                 context.fillText(
-                    yTickFormat(d),
+                    formatAmountChartData(d, undefined),
                     X - tickSize - tickPadding,
-                    yScale(d),
+                    yScale(d) + 1,
                 );
-                context.fillRect(0, yScale(d) - 10, 70, 20);
+                const rect = {
+                    x: 0,
+                    y: scaleData.yScale(limit[0].value) - 10,
+                    width: 70,
+                    height: 20,
+                };
+
+                setRect(rect);
             } else {
                 context.beginPath();
                 context.fillText(
-                    yTickFormat(d),
+                    formatAmountChartData(d, digit ? digit : 2),
                     X - tickSize - tickPadding,
                     yScale(d),
                 );
@@ -3936,13 +3898,6 @@ export default function Chart(props: ChartData) {
 
         getXAxisTick().then((res) => {
             const _res = res.map((item: any) => item.date);
-            console.log({ res });
-
-            console.log(
-                { isMouseMoveCrosshair },
-                crosshairData,
-                xAxis.tickValues(),
-            );
 
             xAxis.tickValues([
                 ..._res,
@@ -3997,10 +3952,10 @@ export default function Chart(props: ChartData) {
                 ) {
                     context.filter = ' blur(7px)';
                 }
-
                 if (
-                    res.find((item: any) => item.date.getTime() === d.getTime())
-                        ?.style
+                    res.find((item: any) => {
+                        return item.date.getTime() === d?.getTime();
+                    })?.style
                 ) {
                     context.font = 'bold 14px Arial';
                 }
@@ -6642,17 +6597,6 @@ export default function Chart(props: ChartData) {
                     );
                     mouseLeaveCanvas();
                 });
-
-                d3.select(d3Yaxis.current).on(
-                    'measure.range',
-                    function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        svg.call(zoomUtils.yAxisZoom)
-                            .on('dblclick.zoom', null)
-                            .on('dblclick.drag', null);
-                    },
-                );
 
                 d3.select(d3Xaxis.current).on('mouseover', (event: any) => {
                     d3.select(event.currentTarget).style(
