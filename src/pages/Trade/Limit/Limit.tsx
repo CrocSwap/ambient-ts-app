@@ -537,9 +537,6 @@ export default function Limit(props: propsIF) {
             return;
         }
         if (limitTick === undefined) return;
-        // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
-        //     return;
-        // }
         resetConfirmation();
         setIsWaitingForWallet(true);
 
@@ -666,34 +663,12 @@ export default function Limit(props: propsIF) {
         }
     };
 
-    const handleModalClose = () => {
+    const handleModalClose = (): void => {
         closeModal();
         setNewLimitOrderTransactionHash('');
         resetConfirmation();
     };
 
-    const confirmLimitModalProps = {
-        onClose: handleModalClose,
-        tokenPair: tokenPair,
-        poolPriceDisplay: poolPriceDisplay || 0,
-        initiateLimitOrderMethod: sendLimitOrder,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        isTokenAPrimary: isTokenAPrimary,
-        insideTickDisplayPrice: endDisplayPrice,
-        newLimitOrderTransactionHash: newLimitOrderTransactionHash,
-        txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
-        showConfirmation: showConfirmation,
-        setShowConfirmation: setShowConfirmation,
-        resetConfirmation: resetConfirmation,
-        startDisplayPrice: startDisplayPrice,
-        middleDisplayPrice: middleDisplayPrice,
-        endDisplayPrice: endDisplayPrice,
-        bypassConfirm: bypassConfirm,
-        showBypassConfirmButton: showBypassConfirmButton,
-        setShowBypassConfirmButton: setShowBypassConfirmButton,
-    };
     const bypassLimitProps = {
         newLimitOrderTransactionHash: newLimitOrderTransactionHash,
         txErrorCode: txErrorCode,
@@ -976,7 +951,9 @@ export default function Limit(props: propsIF) {
                                 limitAllowed
                             }
                             limitButtonErrorMessage={limitButtonErrorMessage}
-                            bypassConfirmLimit={bypassConfirm.limit}
+                            isBypassConfirmEnabled={
+                                bypassConfirm.limit.isEnabled
+                            }
                         />
                     )
                 ) : (
@@ -989,7 +966,28 @@ export default function Limit(props: propsIF) {
                     title='Limit Confirmation'
                     centeredTitle
                 >
-                    <ConfirmLimitModal {...confirmLimitModalProps} />
+                    <ConfirmLimitModal
+                        onClose={handleModalClose}
+                        tokenPair={tokenPair}
+                        poolPriceDisplay={poolPriceDisplay || 0}
+                        initiateLimitOrderMethod={sendLimitOrder}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        isTokenAPrimary={isTokenAPrimary}
+                        insideTickDisplayPrice={endDisplayPrice}
+                        newLimitOrderTransactionHash={
+                            newLimitOrderTransactionHash
+                        }
+                        txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        resetConfirmation={resetConfirmation}
+                        startDisplayPrice={startDisplayPrice}
+                        middleDisplayPrice={middleDisplayPrice}
+                        endDisplayPrice={endDisplayPrice}
+                        bypassConfirm={bypassConfirm}
+                    />
                 </Modal>
             )}
             <TutorialOverlay
