@@ -442,6 +442,51 @@ export default function Range(props: propsIF) {
         | undefined
     >();
 
+    const updatePinnedDisplayPrices = () => {
+        if (
+            Math.abs(currentPoolPriceTick) === Infinity ||
+            Math.abs(currentPoolPriceTick) === 0
+        )
+            return;
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            denominationsInBase,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lowTick,
+            highTick,
+            lookupChain(chainId).gridSize,
+        );
+
+        setPinnedDisplayPrices(pinnedDisplayPrices);
+
+        setRangeLowBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+        );
+        setRangeHighBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+        );
+
+        setPinnedMinPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+        );
+        setPinnedMaxPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+        );
+
+        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
+        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+        setMaxPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+        );
+        setMinPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+        );
+    };
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
             setIsAmbient(true);
@@ -451,57 +496,13 @@ export default function Range(props: propsIF) {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            if (
-                Math.abs(currentPoolPriceTick) === Infinity ||
-                Math.abs(currentPoolPriceTick) === 0
-            )
-                return;
-            const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-            const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                denominationsInBase,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                lowTick,
-                highTick,
-                lookupChain(chainId).gridSize,
-            );
-
-            setPinnedDisplayPrices(pinnedDisplayPrices);
-
-            setRangeLowBoundNonDisplayPrice(
-                pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-            );
-            setRangeHighBoundNonDisplayPrice(
-                pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-            );
-
-            setPinnedMinPriceDisplayTruncated(
-                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-            );
-            setPinnedMaxPriceDisplayTruncated(
-                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-            );
-
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
-
-            setMaxPrice(
-                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
-            );
-            setMinPrice(
-                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
-            );
+            updatePinnedDisplayPrices();
         }
     }, [
         rangeWidthPercentage,
         tradeData.advancedMode,
         denominationsInBase,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         currentPoolPriceTick,
-        pinnedDisplayPrices === undefined,
     ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
