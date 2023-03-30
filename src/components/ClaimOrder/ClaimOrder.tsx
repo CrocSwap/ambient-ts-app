@@ -120,7 +120,7 @@ export default function ClaimOrder(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: 'Claim',
+                                txType: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
                             }),
                         );
                 } else {
@@ -134,7 +134,7 @@ export default function ClaimOrder(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: 'Claim',
+                                txType: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
                             }),
                         );
 

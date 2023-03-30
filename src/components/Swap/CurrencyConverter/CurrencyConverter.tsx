@@ -88,6 +88,7 @@ interface propsIF {
     ) => void;
     lastBlockNumber: number;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -136,6 +137,7 @@ export default function CurrencyConverter(props: propsIF) {
         openGlobalPopup,
         lastBlockNumber,
         dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -214,6 +216,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
+
     const tokenASurplusMinusTokenAQtyNum =
         tokenASurplusMinusTokenARemainderNum >= 0
             ? tokenASurplusMinusTokenARemainderNum
@@ -230,6 +233,10 @@ export default function CurrencyConverter(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(tokenAQtyLocal || '0');
+
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
 
     const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
         ? isWithdrawFromDexChecked
