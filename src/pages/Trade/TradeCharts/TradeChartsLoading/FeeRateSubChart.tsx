@@ -18,6 +18,7 @@ interface FreeRateData {
     setCrossHairLocation: any;
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     isCrosshairActive: string;
+    setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function FeeRateSubChart(props: FreeRateData) {
@@ -326,6 +327,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         });
                         setCrossHairLocation(event, false);
                         setIsCrosshairActive('feeRate');
+                        props.setShowTooltip(true);
                     },
                 );
 

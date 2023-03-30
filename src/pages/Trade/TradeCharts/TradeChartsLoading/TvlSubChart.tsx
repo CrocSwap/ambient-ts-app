@@ -20,6 +20,7 @@ interface TvlData {
     setCrossHairLocation: any;
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     isCrosshairActive: string;
+    setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -368,6 +369,7 @@ export default function TvlSubChart(props: TvlData) {
                         });
                         setCrossHairLocation(event, false);
                         setIsCrosshairActive('tvl');
+                        props.setShowTooltip(true);
                     },
                 );
 
