@@ -57,9 +57,6 @@ import {
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 
-import { symbolSquare, SymbolType } from 'd3';
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -595,43 +592,43 @@ export default function Chart(props: propsIF) {
         firstCandle,
     ]);
 
-    function addTextMarket(scale: any) {
-        yAxis.tickValues([
-            ...scale.ticks(),
-            ...[market[0].value],
-            ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
-        ]);
+    // function addTextMarket(scale: any) {
+    //     yAxis.tickValues([
+    //         ...scale.ticks(),
+    //         ...[market[0].value],
+    //         ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
+    //     ]);
 
-        yAxis.tickFormat((d: any) =>
-            formatAmountChartData(
-                d,
-                d === market[0].value || d === crosshairData[0].y
-                    ? undefined
-                    : d.toString().split('.')[1]?.length,
-            ),
-        );
+    //     yAxis.tickFormat((d: any) =>
+    //         formatAmountChartData(
+    //             d,
+    //             d === market[0].value || d === crosshairData[0].y
+    //                 ? undefined
+    //                 : d.toString().split('.')[1]?.length,
+    //         ),
+    //     );
 
-        yAxis.decorate((selection: any) => {
-            selection
-                .attr('filter', (d: any) => {
-                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                        return 'url(#crossHairBg)';
-                    }
-                    if (d === market[0].value) {
-                        return 'url(#marketBg)';
-                    }
-                })
-                .select('text')
-                .attr('class', (d: any) => {
-                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                        return 'crossHairText';
-                    }
-                    if (d === market[0].value) {
-                        return 'market';
-                    }
-                });
-        });
-    }
+    //     yAxis.decorate((selection: any) => {
+    //         selection
+    //             .attr('filter', (d: any) => {
+    //                 if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+    //                     return 'url(#crossHairBg)';
+    //                 }
+    //                 if (d === market[0].value) {
+    //                     return 'url(#marketBg)';
+    //                 }
+    //             })
+    //             .select('text')
+    //             .attr('class', (d: any) => {
+    //                 if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+    //                     return 'crossHairText';
+    //                 }
+    //                 if (d === market[0].value) {
+    //                     return 'market';
+    //                 }
+    //             });
+    //     });
+    // }
 
     function addTextLimit(scale: any) {
         const resultData =
@@ -1322,7 +1319,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData && yAxis) {
             if (location.pathname.includes('market')) {
-                addTextMarket(scaleData.yScale);
+                // addTextMarket(scaleData.yScale);
             } else if (location.pathname.includes('/limit')) {
                 addTextLimit(scaleData.yScale);
             } else if (
@@ -3767,13 +3764,6 @@ export default function Chart(props: propsIF) {
                 );
             });
 
-            const rect = {
-                x: 0,
-                y: scaleData.yScale(limit[0].value) - 10,
-                width: 70,
-                height: 20,
-            };
-
             const canvas = d3
                 .select(d3Xaxis.current)
                 .select('canvas')
@@ -3800,6 +3790,24 @@ export default function Chart(props: propsIF) {
         isLineDrag,
     ]);
 
+    function createRect(
+        context: any,
+        y: number,
+        x: number,
+        color: string,
+        textColor: string,
+        text: string,
+    ) {
+        context.beginPath();
+        context.fillStyle = color;
+        context.fillRect(0, y - 10, 70, 20);
+        context.fillStyle = textColor;
+        context.fontSize = '13';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(text, x, y + 1);
+    }
+
     useEffect(() => {
         if (yAxis) {
             d3.select(d3Yaxis.current)
@@ -3817,9 +3825,20 @@ export default function Chart(props: propsIF) {
         const tickPadding = 3,
             tickSize = 6,
             yTicks = yScale.ticks();
-
+        const low = ranges.filter((target: any) => target.name === 'Min')[0]
+            .value;
+        const high = ranges.filter((target: any) => target.name === 'Max')[0]
+            .value;
         yTicks.push(market[0].value);
         if (location.pathname.includes('/limit')) yTicks.push(limit[0].value);
+
+        if (
+            location.pathname.includes('range') ||
+            location.pathname.includes('reposition')
+        ) {
+            yTicks.push(high);
+            yTicks.push(low);
+        }
 
         context.stroke();
         context.textAlign = 'center';
@@ -3829,35 +3848,25 @@ export default function Chart(props: propsIF) {
         yTicks.forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
             if (d === market[0].value) {
-                context.beginPath();
-                context.fillStyle = 'white';
-                context.fillRect(0, yScale(d) - 10, 70, 20);
-
-                context.fillStyle = 'black';
-                context.fontSize = '13';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.fillText(
-                    formatAmountChartData(d, undefined),
+                createRect(
+                    context,
+                    yScale(d),
                     X - tickSize - tickPadding,
-                    yScale(d) + 1,
+                    'white',
+                    'black',
+                    formatAmountChartData(d, undefined),
                 );
             } else if (
                 d === limit[0].value &&
                 location.pathname.includes('/limit')
             ) {
-                context.beginPath();
-                context.fillStyle = '#7371fc';
-                context.fillRect(0, yScale(d) - 10, 70, 20);
-                context.fillStyle = 'white';
-                context.fontSize = '14';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-
-                context.fillText(
-                    formatAmountChartData(d, undefined),
+                createRect(
+                    context,
+                    yScale(d),
                     X - tickSize - tickPadding,
-                    yScale(d) + 1,
+                    '#7371fc',
+                    'white',
+                    formatAmountChartData(d, undefined),
                 );
                 const rect = {
                     x: 0,
@@ -3867,6 +3876,19 @@ export default function Chart(props: propsIF) {
                 };
 
                 setRect(rect);
+            } else if (
+                (d === low || d === high) &&
+                (location.pathname.includes('range') ||
+                    location.pathname.includes('reposition'))
+            ) {
+                createRect(
+                    context,
+                    yScale(d),
+                    X - tickSize - tickPadding,
+                    '#7371fc',
+                    'white',
+                    formatAmountChartData(d, undefined),
+                );
             } else {
                 context.beginPath();
                 context.fillText(
