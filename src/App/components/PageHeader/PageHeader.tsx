@@ -11,7 +11,7 @@ import headerLogo from '../../../assets/images/logos/header_logo.svg';
 import { useUrlParams } from './useUrlParams';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { SmallerPoolIF } from '../../hooks/useRecentPools';
+import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import { useAccount, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
@@ -37,7 +37,7 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
     poolPriceDisplay: number | undefined;
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
-    addRecentPool: (pool: SmallerPoolIF) => void;
+    recentPools: recentPoolsMethodsIF;
     switchTheme: () => void;
     theme: string;
     chainData: ChainSpec;
@@ -54,7 +54,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
-        addRecentPool,
+        recentPools,
         theme,
         poolPriceDisplay,
         chainData,
@@ -140,7 +140,10 @@ export default function PageHeader(props: HeaderPropsIF) {
             baseAddr.toLowerCase() === baseAddressInRtk.toLowerCase() &&
             quoteAddr.toLowerCase() === quoteAddressInRtk.toLowerCase()
         ) {
-            addRecentPool({ base: baseAddr, quote: quoteAddr });
+            recentPools.addPool({
+                baseToken: tradeData.baseToken,
+                quoteToken: tradeData.quoteToken,
+            });
         }
     }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
 

@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './RecentPoolsCard.module.css';
-import { TokenIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
@@ -13,18 +12,11 @@ interface propsIF {
     pool: SmallerPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const {
-        tradeData,
-        chainId,
-        pool,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        getTokenByAddress,
-    } = props;
+    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch } =
+        props;
 
     const { pathname } = useLocation();
 
@@ -53,8 +45,8 @@ export default function RecentPoolsCard(props: propsIF) {
         (async () => {
             const poolStatsFresh = await cachedPoolStatsFetch(
                 chainId,
-                pool.base,
-                pool.quote,
+                pool.baseToken.address,
+                pool.quoteToken.address,
                 pool.poolId ?? 36000,
                 Math.floor(lastBlockNumber / 4),
             );
@@ -69,24 +61,21 @@ export default function RecentPoolsCard(props: propsIF) {
         })();
     };
 
-    // TODO:   @Emily the two functions below need to check ackTokens as well
-
-    const baseTokenData = getTokenByAddress(pool.base, chainId);
-    const quoteTokenData = getTokenByAddress(pool.quote, chainId);
-
     useEffect(() => {
         fetchPoolStats();
     }, [lastBlockNumber]);
 
     const tokenAString =
-        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
-            ? pool.base
-            : pool.quote;
+        pool.baseToken.address.toLowerCase() ===
+        tradeData.tokenA.address.toLowerCase()
+            ? pool.baseToken.address
+            : pool.baseToken.address;
 
     const tokenBString =
-        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
-            ? pool.quote
-            : pool.base;
+        pool.baseToken.address.toLowerCase() ===
+        tradeData.tokenA.address.toLowerCase()
+            ? pool.quoteToken.address
+            : pool.baseToken.address;
 
     return (
         <Link
@@ -94,7 +83,7 @@ export default function RecentPoolsCard(props: propsIF) {
             to={`${locationSlug}/chain=${chainId}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
         >
             <div>
-                {baseTokenData?.symbol} / {quoteTokenData?.symbol}
+                {pool.baseToken.symbol} / {pool.quoteToken.symbol}
             </div>
             <div>{poolVolume ?? '…'}</div>
             <div>{poolTvl ?? '…'}</div>
