@@ -154,8 +154,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const toggleFor = 'swap';
-
     // this is the starting state for the bypass confirmation toggle switch
     // if the modal is being shown, we can assume bypass is disabled
     const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(false);
@@ -197,7 +195,6 @@ export default function ConfirmSwapModal(props: propsIF) {
             <ConfirmationModalControl
                 tempBypassConfirm={tempBypassConfirm}
                 setTempBypassConfirm={setTempBypassConfirm}
-                toggleFor={toggleFor}
             />
         </div>
     );

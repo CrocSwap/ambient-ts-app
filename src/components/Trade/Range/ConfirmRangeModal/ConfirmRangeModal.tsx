@@ -72,21 +72,23 @@ export default function ConfirmRangeModal(props: propsIF) {
 
     const { dataTokenA, dataTokenB } = tokenPair;
 
-    const transactionApproved = newRangeTransactionHash !== '';
+    const txApproved = newRangeTransactionHash !== '';
 
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
+    const isTxException: boolean = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException: boolean =
+        txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException: boolean =
+        txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    const transactionDenied = (
+    const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
-    const transactionException = (
+    const txException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    const transactionSubmitted = (
+    const txSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
             tokenBSymbol={dataTokenB.symbol}
@@ -104,39 +106,12 @@ export default function ConfirmRangeModal(props: propsIF) {
         document.getElementById('B-range-quantity') as HTMLInputElement
     )?.value;
 
-    const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
-    const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
-
-    const selectedRangeOrNull = !isAmbient ? (
-        <SelectedRange
-            minPriceDisplay={minPriceDisplay}
-            maxPriceDisplay={maxPriceDisplay}
-            spotPriceDisplay={spotPriceDisplay}
-            poolPriceDisplayNum={poolPriceDisplayNum}
-            tokenPair={tokenPair}
-            denominationsInBase={denominationsInBase}
-            isTokenABase={isTokenABase}
-            isAmbient={isAmbient}
-            pinnedMinPriceDisplayTruncatedInBase={
-                pinnedMinPriceDisplayTruncatedInBase
-            }
-            pinnedMinPriceDisplayTruncatedInQuote={
-                pinnedMinPriceDisplayTruncatedInQuote
-            }
-            pinnedMaxPriceDisplayTruncatedInBase={
-                pinnedMaxPriceDisplayTruncatedInBase
-            }
-            pinnedMaxPriceDisplayTruncatedInQuote={
-                pinnedMaxPriceDisplayTruncatedInQuote
-            }
-        />
-    ) : null;
+    const tokenACharacter: string = getUnicodeCharacter(dataTokenA.symbol);
+    const tokenBCharacter: string = getUnicodeCharacter(dataTokenB.symbol);
 
     const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
         bypassConfirm.range.isEnabled,
     );
-
-    const toggleFor = 'range';
 
     const fullTxDetails = (
         <>
@@ -222,11 +197,33 @@ export default function ConfirmRangeModal(props: propsIF) {
                     </div>
                 </div>
             </section>
-            {selectedRangeOrNull}
+            {isAmbient || (
+                <SelectedRange
+                    minPriceDisplay={minPriceDisplay}
+                    maxPriceDisplay={maxPriceDisplay}
+                    spotPriceDisplay={spotPriceDisplay}
+                    poolPriceDisplayNum={poolPriceDisplayNum}
+                    tokenPair={tokenPair}
+                    denominationsInBase={denominationsInBase}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                />
+            )}
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
             />
         </>
     );
@@ -242,15 +239,13 @@ export default function ConfirmRangeModal(props: propsIF) {
         />
     );
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
+    const confirmationDisplay: JSX.Element =
+        isTxException || isGasLimitException || isInsufficientFundsException
+            ? txException
+            : isTxDenied
+            ? txDenied
+            : txApproved
+            ? txSubmitted
             : confirmSendMessage;
 
     return (
@@ -269,7 +264,15 @@ export default function ConfirmRangeModal(props: propsIF) {
                                   } Position`
                         }
                         action={() => {
-                            bypassConfirm.range.setValue(currentSkipConfirm);
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            if (currentSkipConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             sendTransaction();
                             setShowConfirmation(false);
                         }}

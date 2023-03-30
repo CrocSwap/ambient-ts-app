@@ -237,7 +237,6 @@ export default function ConfirmLimitModal(props: propsIF) {
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={'limit'}
             />
         </div>
     );
