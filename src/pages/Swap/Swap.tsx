@@ -851,7 +851,11 @@ export default function Swap(props: propsIF) {
                                                 ? handleSwapButtonClickWithBypass
                                                 : openModal
                                         }
-                                        swapAllowed={swapAllowed}
+                                        swapAllowed={
+                                            swapAllowed &&
+                                            sellQtyString !== '' &&
+                                            buyQtyString !== ''
+                                        }
                                         swapButtonErrorMessage={
                                             swapButtonErrorMessage
                                         }
