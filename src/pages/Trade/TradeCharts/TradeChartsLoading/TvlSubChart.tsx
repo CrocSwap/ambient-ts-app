@@ -19,6 +19,7 @@ interface TvlData {
     yAxisWidth: string;
     setCrossHairLocation: any;
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
+    isCrosshairActive: string;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -34,6 +35,7 @@ export default function TvlSubChart(props: TvlData) {
         yAxisWidth,
         setCrossHairLocation,
         setIsCrosshairActive,
+        isCrosshairActive,
     } = props;
 
     const tvlMainDiv = useRef(null);
@@ -51,6 +53,9 @@ export default function TvlSubChart(props: TvlData) {
     const [tvlZoom, setTvlZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         useState<any>();
+    const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
+        useState<any>();
+    const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
 
     useEffect(() => {
         const yScale = d3.scaleLinear();
@@ -222,6 +227,22 @@ export default function TvlSubChart(props: TvlData) {
             });
 
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
+
+            const crosshairHorizontalCanvas = d3fc
+                .annotationCanvasLine()
+                .value((d: any) => d.y)
+                .xScale(scaleData.xScale)
+                .yScale(tvlyScale)
+                .label('');
+
+            crosshairHorizontalCanvas.decorate((context: any) => {
+                context.visibility = 'hidden';
+                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
+            });
+
+            setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
     }, [scaleData, tvlyScale, tvlGradient]);
 
@@ -262,13 +283,31 @@ export default function TvlSubChart(props: TvlData) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     crosshairVerticalCanvas(crosshairForSubChart);
+                    if (isCrosshairActive === 'tvl') {
+                        crosshairHorizontalCanvas([
+                            {
+                                x: crosshairForSubChart[0].x,
+                                y: tvlHorizontalyValue,
+                            },
+                        ]);
+                    }
                 })
                 .on('measure', () => {
                     ctx.setLineDash([0.6, 0.6]);
                     crosshairVerticalCanvas.context(ctx);
+                    if (isCrosshairActive === 'tvl') {
+                        crosshairHorizontalCanvas.context(ctx);
+                    }
                 });
         }
-    }, [tvlyScale, crosshairVerticalCanvas, crosshairForSubChart]);
+    }, [
+        tvlyScale,
+        crosshairVerticalCanvas,
+        crosshairForSubChart,
+        crosshairHorizontalCanvas,
+        tvlHorizontalyValue,
+        isCrosshairActive,
+    ]);
 
     const renderCanvas = () => {
         if (d3CanvasArea) {
@@ -324,6 +363,9 @@ export default function TvlSubChart(props: TvlData) {
                 d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
                     function (event: any) {
+                        setTvlHorizontalyValue(() => {
+                            return tvlyScale.invert(event.layerY);
+                        });
                         setCrossHairLocation(event, false);
                         setIsCrosshairActive('tvl');
                     },

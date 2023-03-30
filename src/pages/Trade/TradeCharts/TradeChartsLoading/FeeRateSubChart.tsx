@@ -17,6 +17,7 @@ interface FreeRateData {
     yAxisWidth: string;
     setCrossHairLocation: any;
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
+    isCrosshairActive: string;
 }
 
 export default function FeeRateSubChart(props: FreeRateData) {
@@ -32,6 +33,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         yAxisWidth,
         setCrossHairLocation,
         setIsCrosshairActive,
+        isCrosshairActive,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -45,6 +47,10 @@ export default function FeeRateSubChart(props: FreeRateData) {
     const [lineSeries, setLineSeries] = useState<any>();
     const [feeRateZoom, setFeeRateZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
+        useState<any>();
+    const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
+        useState<any>();
+    const [feeRateHorizontalyValue, setFeeRateHorizontalyValue] =
         useState<any>();
 
     useEffect(() => {
@@ -147,6 +153,22 @@ export default function FeeRateSubChart(props: FreeRateData) {
             });
 
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
+
+            const crosshairHorizontalCanvas = d3fc
+                .annotationCanvasLine()
+                .value((d: any) => d.y)
+                .xScale(xScale)
+                .yScale(feeRateyScale)
+                .label('');
+
+            crosshairHorizontalCanvas.decorate((context: any) => {
+                context.visibility = 'hidden';
+                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
+            });
+
+            setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
     }, [feeRateyScale, xScale]);
 
@@ -195,13 +217,29 @@ export default function FeeRateSubChart(props: FreeRateData) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     crosshairVerticalCanvas(crosshairForSubChart);
+                    if (isCrosshairActive === 'feeRate') {
+                        crosshairHorizontalCanvas([
+                            {
+                                x: crosshairForSubChart[0].x,
+                                y: feeRateHorizontalyValue,
+                            },
+                        ]);
+                    }
                 })
                 .on('measure', () => {
                     ctx.setLineDash([0.6, 0.6]);
                     crosshairVerticalCanvas.context(ctx);
+                    if (isCrosshairActive === 'feeRate') {
+                        crosshairHorizontalCanvas.context(ctx);
+                    }
                 });
         }
-    }, [feeRateyScale, crosshairVerticalCanvas, crosshairForSubChart]);
+    }, [
+        feeRateyScale,
+        crosshairVerticalCanvas,
+        crosshairForSubChart,
+        feeRateHorizontalyValue,
+    ]);
 
     const renderCanvas = () => {
         if (d3CanvasArea) {
@@ -283,12 +321,16 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
                     function (event: any) {
+                        setFeeRateHorizontalyValue(() => {
+                            return feeRateyScale.invert(event.layerY);
+                        });
                         setCrossHairLocation(event, false);
                         setIsCrosshairActive('feeRate');
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
+                    setFeeRateHorizontalyValue(-1);
                     setIsCrosshairActive('none');
                     render();
                 });

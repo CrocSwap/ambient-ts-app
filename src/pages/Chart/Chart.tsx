@@ -6836,6 +6836,7 @@ export default function Chart(props: propsIF) {
                                 yAxisWidth={yAxisWidth}
                                 setCrossHairLocation={setCrossHairLocation}
                                 setIsCrosshairActive={setIsCrosshairActive}
+                                isCrosshairActive={isCrosshairActive}
                             />
                         </>
                     )}
@@ -6858,6 +6859,7 @@ export default function Chart(props: propsIF) {
                                 yAxisWidth={yAxisWidth}
                                 setCrossHairLocation={setCrossHairLocation}
                                 setIsCrosshairActive={setIsCrosshairActive}
+                                isCrosshairActive={isCrosshairActive}
                             />
                         </>
                     )}
