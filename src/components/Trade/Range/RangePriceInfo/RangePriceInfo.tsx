@@ -45,6 +45,7 @@ interface propsIF {
               pinnedMaxPriceNonDisplay: number;
           }
         | undefined;
+    isAmbient: boolean;
 }
 
 // central react functional component
@@ -65,6 +66,7 @@ export default function RangePriceInfo(props: propsIF) {
         isTokenABase,
         baseToken,
         quoteToken,
+        isAmbient,
     } = props;
 
     const { pathname } = useLocation();
@@ -169,12 +171,16 @@ export default function RangePriceInfo(props: propsIF) {
 
     const minPrice = userFlippedMaxMinDisplay
         ? minPriceUsdEquivalent
+        : isAmbient
+        ? '0'
         : pinnedDisplayPrices
         ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
         : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
         ? maxPriceUsdEquivalent
+        : isAmbient
+        ? '∞'
         : pinnedDisplayPrices
         ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
         : '...';
