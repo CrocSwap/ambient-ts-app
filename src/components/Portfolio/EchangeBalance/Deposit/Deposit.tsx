@@ -98,7 +98,7 @@ export default function Deposit(props: propsIF) {
 
     const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
         ? tokenWalletBalanceDisplayNum < 0.0001
-            ? tokenWalletBalanceDisplayNum.toExponential(2)
+            ? 0.0
             : tokenWalletBalanceDisplayNum < 2
             ? tokenWalletBalanceDisplayNum.toPrecision(3)
             : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
