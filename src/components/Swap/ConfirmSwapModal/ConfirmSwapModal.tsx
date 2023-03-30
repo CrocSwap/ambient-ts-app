@@ -156,9 +156,9 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const toggleFor = 'swap';
 
-    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(
-        bypassConfirm.swap.isEnabled,
-    );
+    // this is the starting state for the bypass confirmation toggle switch
+    // if the modal is being shown, we can assume bypass is disabled
+    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(false);
 
     const fullTxDetails2 = (
         <div className={styles.main_container}>
@@ -251,7 +251,15 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <Button
                         title='Send Swap'
                         action={() => {
-                            bypassConfirm.swap.setValue(tempBypassConfirm);
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            if (tempBypassConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             initiateSwapMethod();
                             setShowConfirmation(false);
                         }}
