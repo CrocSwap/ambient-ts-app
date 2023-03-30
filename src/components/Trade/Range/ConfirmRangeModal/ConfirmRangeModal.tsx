@@ -7,15 +7,15 @@ import Button from '../../../Global/Button/Button';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import SelectedRange from './SelectedRange/SelectedRange';
+import TransactionException from '../../../Global/TransactionException/TransactionException';
 
 // START: Import Local Files
 import styles from './ConfirmRangeModal.module.css';
-import SelectedRange from './SelectedRange/SelectedRange';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
-import TransactionException from '../../../Global/TransactionException/TransactionException';
 import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
@@ -109,9 +109,10 @@ export default function ConfirmRangeModal(props: propsIF) {
     const tokenACharacter: string = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter: string = getUnicodeCharacter(dataTokenB.symbol);
 
-    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.range.isEnabled,
-    );
+    // this is the starting state for the bypass confirmation toggle switch
+    // if this modal is being shown, we can assume bypass is disabled
+    const [currentSkipConfirm, setCurrentSkipConfirm] =
+        useState<boolean>(false);
 
     const fullTxDetails = (
         <>
@@ -190,9 +191,7 @@ export default function ConfirmRangeModal(props: propsIF) {
                             <span>{dataTokenB.symbol}</span>
                         </div>
                         <span>
-                            {tokenBQty !== ''
-                                ? tokenBCharacter + tokenBQty
-                                : '0'}
+                            {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
                         </span>
                     </div>
                 </div>
