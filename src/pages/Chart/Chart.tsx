@@ -4758,14 +4758,18 @@ export default function Chart(props: propsIF) {
         if (crosshairVertical) {
             d3.select(d3CanvasCrVertical.current)
                 .on('draw', () => {
-                    crosshairVertical(crosshairData);
+                    if (isCrosshairActive === 'chart') {
+                        crosshairVertical(crosshairData);
+                    }
                 })
                 .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
-                    crosshairVertical.context(ctx);
+                    if (isCrosshairActive === 'chart') {
+                        ctx.setLineDash([0.6, 0.6]);
+                        crosshairVertical.context(ctx);
+                    }
                 });
         }
-    }, [crosshairData, crosshairVertical]);
+    }, [crosshairData, crosshairVertical, isCrosshairActive]);
 
     useEffect(() => {
         const canvas = d3
@@ -6051,7 +6055,7 @@ export default function Chart(props: propsIF) {
     const setCrossHairLocation = (event: any, showHr = true) => {
         if (snap(parsedChartData?.chartData, event)[0] !== undefined) {
             crosshairData[0] = snap(parsedChartData?.chartData, event)[0];
-            setIsMouseMoveCrosshair(true);
+            setIsMouseMoveCrosshair(showHr);
             setCrosshairData([
                 {
                     x: crosshairData[0].x,

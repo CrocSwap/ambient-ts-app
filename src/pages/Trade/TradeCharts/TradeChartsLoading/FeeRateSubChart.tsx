@@ -330,7 +330,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
-                    setFeeRateHorizontalyValue(-1);
                     setIsCrosshairActive('none');
                     render();
                 });
