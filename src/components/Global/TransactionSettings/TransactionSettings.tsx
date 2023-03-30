@@ -1,14 +1,16 @@
 // START: Import React and Dongles
 import { useState } from 'react';
 
-// START: Import Local Files
-import styles from './TransactionSettings.module.css';
+// START: Import JSX Components
 import Button from '../Button/Button';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
+
+// START: Import Local Files
+import styles from './TransactionSettings.module.css';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { VscClose } from 'react-icons/vsc';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
@@ -21,20 +23,17 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
     onClose: () => void;
-    bypassConfirmSwap: skipConfirmIF;
+    bypassConfirm: skipConfirmIF;
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose, bypassConfirmSwap } =
-        props;
+    const { module, slippage, isPairStable, onClose, bypassConfirm } = props;
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();
     };
 
-    const shouldDisplaySlippageTolerance = module !== 'Limit Order';
-
-    const persistedSlippage = isPairStable
+    const persistedSlippage: number = isPairStable
         ? slippage.stable
         : slippage.volatile;
 
@@ -42,14 +41,14 @@ export default function TransactionSettings(props: propsIF) {
         useState<number>(persistedSlippage);
 
     const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirmSwap.isEnabled,
+        bypassConfirm.isEnabled,
     );
 
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
             : slippage.updateVolatile(currentSlippage);
-        bypassConfirmSwap.setValue(currentSkipConfirm);
+        bypassConfirm.setValue(currentSkipConfirm);
         onClose();
     };
 
@@ -58,7 +57,6 @@ export default function TransactionSettings(props: propsIF) {
             <div className={styles.settings_title}>
                 <div />
                 {module + ' Settings'}
-
                 <span onClick={onClose}>
                     {' '}
                     <VscClose size={22} />
@@ -66,7 +64,7 @@ export default function TransactionSettings(props: propsIF) {
             </div>
             <div className={styles.settings_container}>
                 <section>
-                    {shouldDisplaySlippageTolerance && (
+                    {module !== 'Limit Order' && (
                         <SlippageTolerance
                             persistedSlippage={persistedSlippage}
                             setCurrentSlippage={setCurrentSlippage}
@@ -78,14 +76,12 @@ export default function TransactionSettings(props: propsIF) {
                             }
                         />
                     )}
-
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}
                         displayInSettings={true}
                     />
                 </section>
-
                 <div className={styles.button_container}>
                     {module !== 'Limit Order' ? (
                         <Button
