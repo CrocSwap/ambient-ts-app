@@ -2913,21 +2913,22 @@ export default function Chart(props: propsIF) {
                 highTick,
                 lookupChain(chainId).gridSize,
             );
-
             setRanges((prevState) => {
                 const newTargets = [...prevState];
 
                 newTargets.filter(
                     (target: any) => target.name === 'Max',
                 )[0].value =
-                    parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay) ||
-                    0.0;
+                    parseFloat(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    ) || 0.0;
 
                 newTargets.filter(
                     (target: any) => target.name === 'Min',
                 )[0].value =
-                    parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay) ||
-                    0.0;
+                    parseFloat(
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    ) || 0.0;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
                 setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
@@ -2936,8 +2937,8 @@ export default function Chart(props: propsIF) {
             });
 
             setTriangleRangeValues(
-                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay),
-                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay),
+                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
             );
         }
     };
@@ -3089,16 +3090,13 @@ export default function Chart(props: propsIF) {
                 (limitPreviousData < poolPriceDisplay &&
                     newLimitValue > poolPriceDisplay);
 
-            if (sellOrderStyle === 'order_sell') {
-                if (shouldReverse) {
-                    handlePulseAnimation('limitOrder');
-                    dispatch(setShouldLimitDirectionReverse(true));
-                }
-            } else {
-                if (shouldReverse) {
-                    handlePulseAnimation('limitOrder');
-                    dispatch(setShouldLimitDirectionReverse(true));
-                }
+            if (
+                shouldReverse &&
+                (sellOrderStyle === 'order_sell' ||
+                    sellOrderStyle === 'order_buy')
+            ) {
+                handlePulseAnimation('limitOrder');
+                dispatch(setShouldLimitDirectionReverse(true));
             }
         }
     }
@@ -3329,11 +3327,11 @@ export default function Chart(props: propsIF) {
                             const rangesF = [
                                 {
                                     name: 'Min',
-                                    value: pinnedDisplayPrices.pinnedMinPriceDisplay,
+                                    value: pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                 },
                                 {
                                     name: 'Max',
-                                    value: pinnedDisplayPrices.pinnedMaxPriceDisplay,
+                                    value: pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                                 },
                             ];
 
@@ -3354,13 +3352,13 @@ export default function Chart(props: propsIF) {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Min',
                                     )[0].value = parseFloat(
-                                        pinnedDisplayPrices.pinnedMinPriceDisplay,
+                                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                     );
 
                                     newTargets.filter(
                                         (target: any) => target.name === 'Max',
                                     )[0].value = parseFloat(
-                                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
+                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                                     );
 
                                     newRangeValue = newTargets;
@@ -3369,8 +3367,8 @@ export default function Chart(props: propsIF) {
                                 });
 
                                 setTriangleRangeValues(
-                                    pinnedDisplayPrices.pinnedMaxPriceDisplay,
-                                    pinnedDisplayPrices.pinnedMinPriceDisplay,
+                                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                 );
                             }
                         }
@@ -3535,8 +3533,10 @@ export default function Chart(props: propsIF) {
                         lookupChain(chainId).gridSize,
                     );
 
-                    const min = pinnedDisplayPrices.pinnedMinPriceDisplay;
-                    const max = pinnedDisplayPrices.pinnedMaxPriceDisplay;
+                    const min =
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+                    const max =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
                     if (
                         min &&
                         min !== 'NaN' &&
@@ -4439,13 +4439,13 @@ export default function Chart(props: propsIF) {
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
                         )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplay,
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                         );
 
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
                         )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplay,
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                         );
 
                         newRangeValue = newTargets;
@@ -4460,8 +4460,8 @@ export default function Chart(props: propsIF) {
                     });
 
                     setTriangleRangeValues(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
-                        pinnedDisplayPrices.pinnedMinPriceDisplay,
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                     );
                 }
             }
