@@ -91,10 +91,16 @@ export default function TopPoolsCard(props: propsIF) {
             ? pool.quote.address
             : pool.base.address;
 
+    const ariaLabel = `Pool for ${pool.base.symbol} and ${pool.quote.symbol}. ${
+        poolVolume && ` volume is ${poolVolume}`
+    }. ${poolTvl && `tvl is ${poolTvl}`}`;
+
     return (
         <Link
             className={styles.container}
             to={`${locationSlug}/chain=${chainString}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
+            tabIndex={0}
+            aria-label={ariaLabel}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
