@@ -51,17 +51,27 @@ export default function RemoveRangeTokenHeader(props: propsIF) {
                     {props.baseTokenSymbol} /{props.quoteTokenSymbol}
                 </span>
             </div>
-            <RangeStatus
-                isInRange={props.isPositionInRange}
-                isEmpty={false}
-                isAmbient={props.isAmbient}
-            />
-            <div
-                onClick={() => setShowSettings(!showSettings)}
-                className={styles.settings_icon}
+
+            <section
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: '4px',
+                }}
             >
-                {showSettings ? null : <RiListSettingsLine size={20} />}
-            </div>
+                <RangeStatus
+                    isInRange={props.isPositionInRange}
+                    isEmpty={false}
+                    isAmbient={props.isAmbient}
+                />
+                <div
+                    onClick={() => setShowSettings(!showSettings)}
+                    className={styles.settings_icon}
+                >
+                    {showSettings ? null : <RiListSettingsLine size={20} />}
+                </div>
+            </section>
         </div>
     );
 }

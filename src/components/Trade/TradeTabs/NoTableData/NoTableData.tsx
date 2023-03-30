@@ -27,8 +27,6 @@ export default function NoTableData(props: NoTableDataPropsIF) {
     const toggleAllEnabled = () => {
         console.log('setting show all to true');
         setIsShowAllEnabled ? setIsShowAllEnabled(true) : null;
-        // setIsCandleSelected ? setIsCandleSelected(false) : null;
-        // changeState ? changeState(false, undefined) : null;
         setSelectedDate ? setSelectedDate(undefined) : null;
     };
 

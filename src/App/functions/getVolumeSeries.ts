@@ -28,6 +28,6 @@ export const getVolumeSeries = async (
             return poolLiquidity;
         })
         .catch(() => {
-            // return undefined;
+            // TODO (#1571) we should handle this exception
         });
 };

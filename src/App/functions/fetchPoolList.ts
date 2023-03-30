@@ -30,8 +30,6 @@ export const fetchPoolList = async (chainId: string, poolIdx?: number) => {
     }
 };
 
-// export { fetchPoolList, getPoolVolume, getPoolTVL, get24hChange, getPoolPriceChange };
-
 export type PoolListFn = (
     chain: string,
     poolIdx: number,

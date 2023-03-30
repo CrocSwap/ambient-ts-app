@@ -42,7 +42,7 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.btn_gradient:hover {
+.btn_gradient:hover, .btn_gradient:focus {
     color: var(--text-grey-white);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;

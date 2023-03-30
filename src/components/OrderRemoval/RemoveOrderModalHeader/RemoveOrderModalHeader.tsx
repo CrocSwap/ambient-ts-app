@@ -1,6 +1,6 @@
 import styles from './RemoveOrderModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
-import { BsArrowLeft } from 'react-icons/bs';
+import { BiArrowBack } from 'react-icons/bi';
 import { Dispatch, SetStateAction } from 'react';
 // import { RiListSettingsLine } from 'react-icons/ri';
 interface RemoveOrderModalHeaderPropsIF {
@@ -16,9 +16,13 @@ export default function RemoveOrderModalHeader(
     props: RemoveOrderModalHeaderPropsIF,
 ) {
     const goBackButton = (
-        <div onClick={props.onGoBack}>
-            <BsArrowLeft size={22} />
-        </div>
+        <BiArrowBack
+            size={22}
+            onClick={() => props.onGoBack()}
+            role='button'
+            tabIndex={0}
+            aria-label='Go back button'
+        />
     );
 
     // const settingsIcon = (
@@ -36,9 +40,13 @@ export default function RemoveOrderModalHeader(
 
             <div className={styles.align_center}>
                 {/* {settingsIcon} */}
-                <div onClick={props.onClose}>
-                    <VscClose size={22} />
-                </div>
+                <VscClose
+                    size={22}
+                    onClick={props.onClose}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close modal button'
+                />
             </div>
         </header>
     );
