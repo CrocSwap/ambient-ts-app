@@ -114,7 +114,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     if (props.onClick) props.onClick();
                 }}
                 tabIndex={0}
-                onKeyDown={props.onClick}
+                // onKeyDown={props.onClick}
                 role='button'
             >
                 {props.imageIcon && imageIcon}

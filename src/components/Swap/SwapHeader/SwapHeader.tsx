@@ -70,7 +70,7 @@ export default function SwapHeader(props: propsIF) {
         <ContentHeader>
             <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
+                // onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
                 className={styles.share_button}
             >
                 <AiOutlineShareAlt
@@ -108,7 +108,7 @@ export default function SwapHeader(props: propsIF) {
         <ContentHeader>
             <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
+                // onKeyDown={() => openGlobalModal(<ShareModal />, 'Share')}
                 className={styles.share_button}
             >
                 <AiOutlineShareAlt

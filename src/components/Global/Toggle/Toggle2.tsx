@@ -39,7 +39,7 @@ export default function Toggle2(props: TogglePropsIF) {
             data-ison={isOn}
             aria-checked={isOn}
             onClick={handleToggle}
-            onKeyDown={handleToggle}
+            // onKeyDown={handleToggle}
             id={`${id}switch`}
             tabIndex={0}
             role='checkbox'
