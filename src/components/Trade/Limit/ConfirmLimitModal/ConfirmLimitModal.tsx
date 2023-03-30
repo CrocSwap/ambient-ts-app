@@ -106,12 +106,6 @@ export default function ConfirmLimitModal(props: propsIF) {
     const sellTokenData = tokenPair.dataTokenA;
     const buyTokenData = tokenPair.dataTokenB;
 
-    const explanationText = (
-        <div
-            className={styles.confSwap_detail_note}
-        >{`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}</div>
-    );
-
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{buyTokenQty}</h2>
@@ -237,7 +231,9 @@ export default function ConfirmLimitModal(props: propsIF) {
                     </p>
                 </div>
             </div>
-            {explanationText}
+            <div className={styles.confSwap_detail_note}>
+                {`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}
+            </div>
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
