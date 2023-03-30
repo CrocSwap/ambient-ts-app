@@ -205,11 +205,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${
-                sellTokenData.symbol
-            } for ${buyQtyString} ${
-                buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.
+            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}. Please check the 'Metamask' extension in your browser for notifications.
             `}
         />
     );
