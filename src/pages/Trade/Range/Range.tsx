@@ -407,6 +407,12 @@ export default function Range(props: propsIF) {
     ]);
 
     useEffect(() => {
+        setNewRangeTransactionHash('');
+        setShowBypassConfirmButton(false);
+        setPinnedDisplayPrices(undefined);
+    }, [baseToken.address + quoteToken.address]);
+
+    useEffect(() => {
         const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
         if (isAdd) {
             setIsAdd(true);
@@ -481,13 +487,6 @@ export default function Range(props: propsIF) {
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            // dispatch(
-            //     setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
-            // );
-            // dispatch(
-            //     setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
-            // );
-
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
@@ -502,6 +501,7 @@ export default function Range(props: propsIF) {
         baseTokenDecimals,
         quoteTokenDecimals,
         currentPoolPriceTick,
+        pinnedDisplayPrices === undefined,
     ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
@@ -650,12 +650,6 @@ export default function Range(props: propsIF) {
         isWaitingForWallet,
         txErrorCode === '',
     ]);
-
-    useEffect(() => {
-        setNewRangeTransactionHash('');
-        setShowBypassConfirmButton(false);
-        setPinnedDisplayPrices(undefined);
-    }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
         if (tradeData.advancedMode) {
@@ -1204,6 +1198,7 @@ export default function Range(props: propsIF) {
         quoteToken: tradeData.quoteToken,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
+        isAmbient: isAmbient,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
