@@ -3118,23 +3118,29 @@ export default function App() {
         R: 'trade/range',
         L: 'trade/limit',
         P: '/account',
+        C: '/chat',
     };
 
     Object.entries(routeShortcuts).forEach(([key, route]) => {
         useKeyboardShortcuts({ modifierKeys: ['Shift'], key }, () => {
-            console.log(`going to ${route}`);
             navigate(route);
         });
     });
 
     // KEYBOARD SHORTCUTS STATES
-    // toggle sidebar with Space key
-    useKeyboardShortcuts({ modifierKeys: ['Shift'], key: ' ' }, () => {
-        setShowSidebar(!showSidebar);
-    });
-    useKeyboardShortcuts({ modifierKeys: ['Shift'], key: 'C' }, () => {
-        setIsChatOpen(!isChatOpen);
-    });
+    // keyboard shortcuts for states will require multiple modifier keys.
+    useKeyboardShortcuts(
+        { modifierKeys: ['Shift', 'Control'], key: ' ' },
+        () => {
+            setShowSidebar(!showSidebar);
+        },
+    );
+    useKeyboardShortcuts(
+        { modifierKeys: ['Shift', 'Control'], key: 'C' },
+        () => {
+            setIsChatOpen(!isChatOpen);
+        },
+    );
 
     return (
         <>
