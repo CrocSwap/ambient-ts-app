@@ -1,6 +1,12 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import {
+    Routes,
+    Route,
+    useLocation,
+    Navigate,
+    useNavigate,
+} from 'react-router-dom';
 
 import { useIdleTimer } from 'react-idle-timer';
 
@@ -166,6 +172,8 @@ import {
     dexBalanceMethodsIF,
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+// import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -191,6 +199,10 @@ startMoralis();
 
 /** ***** React Function *******/
 export default function App() {
+    const navigate = useNavigate();
+
+    // useKeyboardShortcuts()
+
     // console.log('rendering app');
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -3098,6 +3110,38 @@ export default function App() {
         limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
         range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };
+
+    // KEYBOARD SHORTCUTS ROUTES
+    const routeShortcuts = {
+        S: '/swap',
+        T: '/trade',
+        M: 'trade/market',
+        R: 'trade/range',
+        L: 'trade/limit',
+        P: '/account',
+        C: '/chat',
+    };
+
+    Object.entries(routeShortcuts).forEach(([key, route]) => {
+        useKeyboardShortcuts({ modifierKeys: ['Shift'], key }, () => {
+            navigate(route);
+        });
+    });
+
+    // KEYBOARD SHORTCUTS STATES
+    // keyboard shortcuts for states will require multiple modifier keys.
+    useKeyboardShortcuts(
+        { modifierKeys: ['Shift', 'Control'], key: ' ' },
+        () => {
+            setShowSidebar(!showSidebar);
+        },
+    );
+    useKeyboardShortcuts(
+        { modifierKeys: ['Shift', 'Control'], key: 'C' },
+        () => {
+            setIsChatOpen(!isChatOpen);
+        },
+    );
 
     return (
         <>
