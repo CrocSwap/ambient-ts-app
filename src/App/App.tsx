@@ -3121,24 +3121,20 @@ export default function App() {
     };
 
     Object.entries(routeShortcuts).forEach(([key, route]) => {
-        useKeyboardShortcuts({ modifierKey: 'shiftKey', key }, () => {
+        useKeyboardShortcuts({ modifierKeys: ['Shift'], key }, () => {
             console.log(`going to ${route}`);
             navigate(route);
         });
     });
 
-    // useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'M' }, () => {
-    //     console.log('going to market')
-    //  navigate('trade/market');
-    // });
-    //   useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'R' }, () => {
-    //     console.log('going to range')
-    //  navigate('trade/range');
-    // });
-    //   useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'L' }, () => {
-    //     console.log('going to limit')
-    //  navigate('trade/limit');
-    // });
+    // KEYBOARD SHORTCUTS STATES
+    // toggle sidebar with Space key
+    useKeyboardShortcuts({ modifierKeys: ['Shift'], key: ' ' }, () => {
+        setShowSidebar(!showSidebar);
+    });
+    useKeyboardShortcuts({ modifierKeys: ['Shift'], key: 'C' }, () => {
+        setIsChatOpen(!isChatOpen);
+    });
 
     return (
         <>

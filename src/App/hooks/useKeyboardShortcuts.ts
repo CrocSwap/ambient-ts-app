@@ -1,29 +1,22 @@
 import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type Shortcut = {
-    combo: string;
-    path: string;
-};
-
-const shortcuts: Shortcut[] = [
-    { combo: 'Shift+M', path: 'trade/market' },
-    { combo: 'Shift+L', path: 'trade/limit' },
-    { combo: 'Shift+R', path: 'trade/range' },
-    // add more shortcuts here as needed
-];
-
 type KeyCombo = {
-    modifierKey: 'shiftKey' | 'altKey' | 'ctrlKey' | 'metaKey';
+    modifierKeys: Array<'Shift' | 'Alt' | 'Control' | 'Meta'>;
     key: string;
 };
 
 const useKeyboardShortcuts = (keyCombo: KeyCombo, callback: () => void) => {
     const callbackRef = useCallback(callback, [callback]);
     const navigate = useNavigate();
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event[keyCombo.modifierKey] && event.key === keyCombo.key) {
+            const isModifierKeysPressed = keyCombo.modifierKeys.every(
+                (modifierKey) => event.getModifierState(modifierKey),
+            );
+
+            if (isModifierKeysPressed && event.key === keyCombo.key) {
                 callbackRef();
             }
         };
@@ -34,16 +27,6 @@ const useKeyboardShortcuts = (keyCombo: KeyCombo, callback: () => void) => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [keyCombo, callbackRef]);
-
-    // useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'M' }, () => {
-    //   navigate('trade/market');
-    //  });
-    //  useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'R' }, () => {
-    //   navigate('trade/range');
-    //  });
-    //  useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'L' }, () => {
-    //   navigate('trade/limit');
-    //  });
 };
 
 // const Market = () => {
