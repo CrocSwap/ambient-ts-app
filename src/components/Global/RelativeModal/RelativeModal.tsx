@@ -1,4 +1,4 @@
-import { useCallback, useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import styles from './RelativeModal.module.css';
 

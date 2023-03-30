@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useCallback, useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import FocusTrap from 'focus-trap-react';
 

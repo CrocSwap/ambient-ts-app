@@ -172,7 +172,6 @@ import {
     dexBalanceMethodsIF,
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
-import useKeyPress from './hooks/useKeyPress';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
