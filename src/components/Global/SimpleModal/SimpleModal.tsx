@@ -6,6 +6,7 @@ import FocusTrap from 'focus-trap-react';
 // START: Import Local Files
 import styles from './SimpleModal.module.css';
 import SimpleModalHeader from './SimpleModalHeader/SimpleModalHeader';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 // interface for React functional component
 interface SimpleModalPropsIF {
@@ -22,18 +23,12 @@ interface SimpleModalPropsIF {
 export default function SimpleModal(props: SimpleModalPropsIF) {
     const { onClose, title, children, noBackground } = props;
 
-    const escFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
             onClose();
         }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', escFunction, false);
-        return () => {
-            document.removeEventListener('keydown', escFunction, false);
-        };
-    }, []);
+    }, [isEscapePressed]);
 
     return (
         <aside
