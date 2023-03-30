@@ -1737,7 +1737,7 @@ export default function Chart(props: propsIF) {
                                     );
 
                                     const domain = [
-                                        Math.min(minYBoundary, minYBoundary) -
+                                        Math.min(minYBoundary, maxYBoundary) -
                                             buffer,
                                         Math.max(minYBoundary, maxYBoundary) +
                                             buffer / 2,
@@ -1755,11 +1755,12 @@ export default function Chart(props: propsIF) {
                                 );
 
                                 const domain = [
-                                    Math.min(minYBoundary, minYBoundary) -
+                                    Math.min(minYBoundary, maxYBoundary) -
                                         buffer,
-                                    Math.max(minYBoundary, minYBoundary) +
+                                    Math.max(minYBoundary, maxYBoundary) +
                                         buffer / 2,
                                 ];
+
                                 scaleData.yScale.domain(domain);
                             }
                         }
