@@ -427,6 +427,7 @@ export default function App() {
     false && getAllTokens;
     false && getTokensOnChain;
 
+    // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
         chainData.chainId,
         tradeData.tokenA,
