@@ -18,7 +18,6 @@ interface propsIF {
         | 'Limit Order'
         | 'Range Order'
         | 'Reposition';
-    toggleFor: string;
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
     onClose: () => void;
@@ -26,14 +25,7 @@ interface propsIF {
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const {
-        module,
-        toggleFor,
-        slippage,
-        isPairStable,
-        onClose,
-        bypassConfirm,
-    } = props;
+    const { module, slippage, isPairStable, onClose, bypassConfirm } = props;
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();
@@ -89,7 +81,6 @@ export default function TransactionSettings(props: propsIF) {
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}
-                        toggleFor={toggleFor}
                         displayInSettings={true}
                     />
                 </section>

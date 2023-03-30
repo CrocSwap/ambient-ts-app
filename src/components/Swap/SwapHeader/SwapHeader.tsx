@@ -122,7 +122,6 @@ export default function SwapHeader(props: propsIF) {
                 >
                     <TransactionSettings
                         module={isOnTradeRoute ? 'Market Order' : 'Swap'}
-                        toggleFor='swap'
                         slippage={swapSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
