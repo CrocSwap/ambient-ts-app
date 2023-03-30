@@ -1,81 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 type KeyCombo = {
-    firstKey: string;
-    secondKey?: string;
+    key: string;
+    ctrlKey?: boolean;
+    altKey?: boolean;
+    shiftKey?: boolean;
+    metaKey?: boolean;
 };
 
-// https://usehooks.com/useKeyPress/ : I took the useKeyPress function from this site and refactored it in typescript as well as to detect and accept multiple key press. -JR
-export default function useKeyPress(keyCombo: KeyCombo): boolean {
-    // State for keeping track of whether key or key combo is pressed
-    const [keyPressed, setKeyPressed] = useState(false);
+const useKeyPress = (
+    keyCombos: KeyCombo[],
+    callback: (event: KeyboardEvent) => void,
+    node: HTMLElement | null = null,
+): void => {
+    // implement the callback ref pattern
+    const callbackRef = useRef(callback);
+    useLayoutEffect(() => {
+        callbackRef.current = callback;
+    });
 
-    // If the first and (optionally) second keys are pressed then set to true
-    function downHandler({ key, shiftKey }: KeyboardEvent): void {
-        const { firstKey, secondKey } = keyCombo;
+    // handle what happens on key press
+    const handleKeyPress = useCallback(
+        (event: KeyboardEvent) => {
+            // check if the event matches any of the key combos
+            if (
+                keyCombos.some(
+                    (combo) =>
+                        combo.key === event.key &&
+                        combo.ctrlKey === event.ctrlKey &&
+                        combo.altKey === event.altKey &&
+                        combo.shiftKey === event.shiftKey &&
+                        combo.metaKey === event.metaKey,
+                )
+            ) {
+                callbackRef.current(event);
+            }
+        },
+        [keyCombos],
+    );
 
-        if (
-            key === firstKey &&
-            (!secondKey || (secondKey === 'Shift' && shiftKey))
-        ) {
-            setKeyPressed(true);
-        }
-    }
-
-    // If the first and (optionally) second keys are released then set to false
-    const upHandler = ({ key, shiftKey }: KeyboardEvent): void => {
-        const { firstKey, secondKey } = keyCombo;
-
-        if (
-            key === firstKey &&
-            (!secondKey || (secondKey === 'Shift' && shiftKey))
-        ) {
-            setKeyPressed(false);
-        }
-    };
-
-    // Add event listeners
     useEffect(() => {
-        window.addEventListener('keydown', downHandler);
-        window.addEventListener('keyup', upHandler);
+        // target is either the provided node or the document
+        const targetNode = node ?? document;
+        // attach the event listener
+        targetNode &&
+            targetNode.addEventListener(
+                'keydown',
+                handleKeyPress as EventListener,
+            );
 
-        // Remove event listeners on cleanup
-        return () => {
-            window.removeEventListener('keydown', downHandler);
-            window.removeEventListener('keyup', upHandler);
-        };
-    }, []); // Empty array ensures that effect is only run on mount and unmount
+        // remove the event listener
+        return () =>
+            targetNode &&
+            targetNode.removeEventListener(
+                'keydown',
+                handleKeyPress as EventListener,
+            );
+    }, [handleKeyPress, node]);
+};
 
-    return keyPressed;
-}
-
-// USAGE
-
-// 1 KEY PRESS:
-// import useKeyPress from './useKeyPress';
-
-// function App() {
-//   const isEnterPressed = useKeyPress('Enter');
-
-//   return (
-//     <div>
-//       <h1>Press Enter</h1>
-//       {isEnterPressed && <p>You pressed Enter!</p>}
-//     </div>
-//   );
-// }
-
-// 2 KEY PRESS:
-
-// import useKeyPress from './useKeyPress';
-
-// function App() {
-//   const isShiftP = useKeyPress({ firstKey: 'P', secondKey: 'Shift' });
-
-//   return (
-//     <div>
-//       <h1>Press Shift + P</h1>
-//       {isShiftP && <p>You pressed Shift + P!</p>}
-//     </div>
-//   );
-// }
+export default useKeyPress;

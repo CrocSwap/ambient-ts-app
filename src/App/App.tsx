@@ -1,6 +1,12 @@
 /** ***** Import React and Dongles *******/
 import { useEffect, useState, useMemo } from 'react';
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import {
+    Routes,
+    Route,
+    useLocation,
+    Navigate,
+    useNavigate,
+} from 'react-router-dom';
 
 import { useIdleTimer } from 'react-idle-timer';
 
@@ -166,6 +172,9 @@ import {
     dexBalanceMethodsIF,
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
+import useKeyPress from './hooks/useKeyPress';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+// import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -191,6 +200,10 @@ startMoralis();
 
 /** ***** React Function *******/
 export default function App() {
+    const navigate = useNavigate();
+
+    // useKeyboardShortcuts()
+
     // console.log('rendering app');
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -3097,6 +3110,35 @@ export default function App() {
         limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
         range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };
+
+    // KEYBOARD SHORTCUTS ROUTES
+    const routeShortcuts = {
+        S: '/swap',
+        M: 'trade/market',
+        R: 'trade/range',
+        L: 'trade/limit',
+        P: '/account',
+    };
+
+    Object.entries(routeShortcuts).forEach(([key, route]) => {
+        useKeyboardShortcuts({ modifierKey: 'shiftKey', key }, () => {
+            console.log(`going to ${route}`);
+            navigate(route);
+        });
+    });
+
+    // useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'M' }, () => {
+    //     console.log('going to market')
+    //  navigate('trade/market');
+    // });
+    //   useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'R' }, () => {
+    //     console.log('going to range')
+    //  navigate('trade/range');
+    // });
+    //   useKeyboardShortcuts({ modifierKey: 'shiftKey', key: 'L' }, () => {
+    //     console.log('going to limit')
+    //  navigate('trade/limit');
+    // });
 
     return (
         <>
