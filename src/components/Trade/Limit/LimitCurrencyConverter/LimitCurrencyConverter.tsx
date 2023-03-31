@@ -635,7 +635,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
-                    <TokensArrow />
+                    <TokensArrow disabled={disableReverseTokens} />
                 </IconWithTooltip>
             </div>
             <div id='limit_currency_converter'>

@@ -62,7 +62,7 @@ export default function TransactionSettings(props: propsIF) {
             <div className={styles.settings_title}>
                 <div />
                 {module + ' Settings'}
-                <button onClick={onClose}>
+                <button onClick={onClose} className={styles.close_button}>
                     {' '}
                     <VscClose size={22} />
                 </button>

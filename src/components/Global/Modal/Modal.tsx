@@ -70,12 +70,12 @@ export default function Modal(props: ModalPropsIF) {
                 <RiCloseFill
                     id='close_modal_button'
                     size={27}
-                    // color='var(--text-grey-light)'
                     className={styles.close_button}
                     onClick={onClose}
                     role='button'
                     tabIndex={-1}
                     aria-label='Close modal button'
+                    style={{ cursor: 'pointer' }}
                 />
             </div>
         </header>
