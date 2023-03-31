@@ -217,9 +217,9 @@ export default function ExtraInfo(props: propsIF) {
     );
 
     const dropDownOrNull = priceImpact ? (
-        <div style={{ cursor: 'pointer' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={20} />}
-            {showExtraDetails && <RiArrowUpSLine size={20} />}
+        <div style={{ cursor: 'pointer', marginTop: '4px' }}>
+            {!showExtraDetails && <RiArrowDownSLine size={22} />}
+            {showExtraDetails && <RiArrowUpSLine size={22} />}
         </div>
     ) : null;
     const dispatch = useAppDispatch();
