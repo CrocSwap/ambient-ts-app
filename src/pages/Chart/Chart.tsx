@@ -83,6 +83,13 @@ type chartItemStates = {
     showFeeRate: boolean;
     liqMode: string;
 };
+
+type yLabel = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
@@ -345,8 +352,6 @@ export default function Chart(props: propsIF) {
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [isCrosshairActive, setIsCrosshairActive] = useState<string>('chart');
 
-    // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
-    // const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
         useState<any>();
@@ -394,7 +399,7 @@ export default function Chart(props: propsIF) {
     const [gradientForAskLine, setGradientForAskLine] = useState();
     const [gradientForBidLine, setGradientForBidLine] = useState();
 
-    const [rect, setRect] = useState<any>();
+    const [yAxisLabels] = useState<yLabel[]>([]);
     // Subcharts
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
@@ -2402,17 +2407,19 @@ export default function Chart(props: propsIF) {
                     setMarketLineValue();
                     render();
                 })
-                .filter((event: any) => {
-                    let isRect = false;
-                    if (
-                        event.offsetY > rect?.y &&
-                        event.offsetY < rect?.y + rect?.height &&
-                        event.type !== 'wheel'
-                    ) {
-                        isRect = true;
-                    }
-                    return !isRect;
-                }) as any;
+                .filter((event) => {
+                    const isWheel = event.type === 'wheel';
+
+                    const isLabel =
+                        yAxisLabels?.find((element: yLabel) => {
+                            return (
+                                event.offsetY > element?.y &&
+                                event.offsetY < element?.y + element?.height
+                            );
+                        }) !== undefined;
+
+                    return !isLabel || isWheel;
+                });
 
             const xAxisZoom = d3
                 .zoom()
@@ -2427,7 +2434,7 @@ export default function Chart(props: propsIF) {
                         lastCandleDate = d3.min(filtered, (d) => d.date);
                     }
                 })
-                .on('zoom', async (event: any) => {
+                .on('zoom', async (event) => {
                     if (event.sourceEvent.type === 'wheel') {
                         zoomWithWhell(event, parsedChartData);
                     } else if (
@@ -2536,7 +2543,7 @@ export default function Chart(props: propsIF) {
         limit,
         dragEvent,
         isLineDrag,
-        rect,
+        JSON.stringify(yAxisLabels),
     ]);
 
     useEffect(() => {
@@ -3790,7 +3797,7 @@ export default function Chart(props: propsIF) {
         isLineDrag,
     ]);
 
-    function createRect(
+    function createRectLabel(
         context: any,
         y: number,
         x: number,
@@ -3808,18 +3815,37 @@ export default function Chart(props: propsIF) {
         context.fillText(text, x, y + 1);
     }
 
+    function addYaxisLabel(y: number) {
+        const rect = {
+            x: 0,
+            y: y - 10,
+            width: 70,
+            height: 20,
+        };
+        yAxisLabels?.push(rect);
+    }
+
     useEffect(() => {
         if (yAxis) {
             d3.select(d3Yaxis.current)
                 .call(zoomUtils?.yAxisZoom)
                 .on('dblclick.zoom', null);
-            d3.select(d3Yaxis.current).call(dragLimit);
+            if (
+                location.pathname.includes('range') ||
+                location.pathname.includes('reposition')
+            ) {
+                d3.select(d3Yaxis.current).call(dragRange);
+            }
+            if (location.pathname.includes('/limit')) {
+                d3.select(d3Yaxis.current).call(dragLimit);
+            }
 
             render();
         }
-    }, [yAxis]);
+    }, [yAxis, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any, yExtent: any) => {
+        yAxisLabels.length = 0;
         const [startY, endY] = yExtent;
 
         const tickPadding = 3,
@@ -3829,6 +3855,7 @@ export default function Chart(props: propsIF) {
             .value;
         const high = ranges.filter((target: any) => target.name === 'Max')[0]
             .value;
+
         yTicks.push(market[0].value);
         if (location.pathname.includes('/limit')) yTicks.push(limit[0].value);
 
@@ -3848,7 +3875,7 @@ export default function Chart(props: propsIF) {
         yTicks.forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
             if (d === market[0].value) {
-                createRect(
+                createRectLabel(
                     context,
                     yScale(d),
                     X - tickSize - tickPadding,
@@ -3860,7 +3887,7 @@ export default function Chart(props: propsIF) {
                 d === limit[0].value &&
                 location.pathname.includes('/limit')
             ) {
-                createRect(
+                createRectLabel(
                     context,
                     yScale(d),
                     X - tickSize - tickPadding,
@@ -3868,20 +3895,13 @@ export default function Chart(props: propsIF) {
                     'white',
                     formatAmountChartData(d, undefined),
                 );
-                const rect = {
-                    x: 0,
-                    y: scaleData.yScale(limit[0].value) - 10,
-                    width: 70,
-                    height: 20,
-                };
-
-                setRect(rect);
+                addYaxisLabel(yScale(d));
             } else if (
                 (d === low || d === high) &&
                 (location.pathname.includes('range') ||
                     location.pathname.includes('reposition'))
             ) {
-                createRect(
+                createRectLabel(
                     context,
                     yScale(d),
                     X - tickSize - tickPadding,
@@ -3889,6 +3909,7 @@ export default function Chart(props: propsIF) {
                     'white',
                     formatAmountChartData(d, undefined),
                 );
+                addYaxisLabel(yScale(d));
             } else {
                 context.beginPath();
                 context.fillText(
@@ -5248,16 +5269,16 @@ export default function Chart(props: propsIF) {
         }
     }
 
-    useEffect(() => {
-        if (
-            !location.pathname.includes('range') &&
-            !location.pathname.includes('reposition') &&
-            liquidityData !== undefined
-        ) {
-            liquidityData.lineAskSeries = [];
-            liquidityData.lineBidSeries = [];
-        }
-    }, [location]);
+    // useEffect(() => {
+    //     if (
+    //         !location.pathname.includes('range') &&
+    //         !location.pathname.includes('reposition') &&
+    //         liquidityData !== undefined
+    //     ) {
+    //         liquidityData.lineAskSeries = [];
+    //         liquidityData.lineBidSeries = [];
+    //     }
+    // }, [location]);
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
