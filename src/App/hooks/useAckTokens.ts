@@ -22,6 +22,9 @@ export const useAckTokens = (): ackTokensMethodsIF => {
             ackToken.chainId === newTkn.chainId
         ));
         setAckTokens([newTkn, ...ackTokensWithNewRemoved]);
+        localStorage.setItem(
+            localStorageKey, JSON.stringify([newTkn, ...ackTokensWithNewRemoved])
+        );
     }
 
     function checkToken(tkn: TokenIF): boolean {
