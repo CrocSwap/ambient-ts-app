@@ -416,6 +416,7 @@ export default function Swap(props: propsIF) {
         <button
             onClick={openModalWallet}
             className={styles.authenticate_button}
+            style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
             Connect Wallet
         </button>
