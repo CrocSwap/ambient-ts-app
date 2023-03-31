@@ -50,6 +50,7 @@ import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
+import FocusTrap from 'focus-trap-react';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -574,32 +575,36 @@ export default function Sidebar(props: propsIF) {
     return (
         <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
-                <ul className={styles.sidebar_nav}>
-                    {searchContainerDisplay}
-                    {isInputValid && showSidebar && searchMode ? (
-                        <SidebarSearchResults
-                            searchedPools={searchedPools}
-                            getTokenByAddress={getTokenByAddress}
-                            tokenPair={tokenPair}
-                            isDenomBase={isDenomBase}
-                            chainId={chainId}
-                            isConnected={isConnected}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            searchedPositions={searchedPositions}
-                            setOutsideControl={setOutsideControl}
-                            setSelectedOutsideTab={setSelectedOutsideTab}
-                            setCurrentPositionActive={setCurrentPositionActive}
-                            setCurrentTxActiveInTransactions={
-                                setCurrentTxActiveInTransactions
-                            }
-                            setIsShowAllEnabled={setIsShowAllEnabled}
-                            searchedTxs={searchedTxs}
-                            searchedLimitOrders={searchedLimitOrders}
-                        />
-                    ) : (
-                        regularSidebarDisplay
-                    )}
-                </ul>
+                <FocusTrap>
+                    <ul className={styles.sidebar_nav}>
+                        {searchContainerDisplay}
+                        {isInputValid && showSidebar && searchMode ? (
+                            <SidebarSearchResults
+                                searchedPools={searchedPools}
+                                getTokenByAddress={getTokenByAddress}
+                                tokenPair={tokenPair}
+                                isDenomBase={isDenomBase}
+                                chainId={chainId}
+                                isConnected={isConnected}
+                                cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                searchedPositions={searchedPositions}
+                                setOutsideControl={setOutsideControl}
+                                setSelectedOutsideTab={setSelectedOutsideTab}
+                                setCurrentPositionActive={
+                                    setCurrentPositionActive
+                                }
+                                setCurrentTxActiveInTransactions={
+                                    setCurrentTxActiveInTransactions
+                                }
+                                setIsShowAllEnabled={setIsShowAllEnabled}
+                                searchedTxs={searchedTxs}
+                                searchedLimitOrders={searchedLimitOrders}
+                            />
+                        ) : (
+                            regularSidebarDisplay
+                        )}
+                    </ul>
+                </FocusTrap>
             </nav>
         </div>
     );
