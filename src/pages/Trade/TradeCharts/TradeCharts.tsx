@@ -123,12 +123,14 @@ export interface TvlChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     time: any;
     value: number;
+    linearValue: number;
 }
 
 export interface VolumeChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     time: any;
     value: number;
+    volume: number;
     color: string;
 }
 export interface FeeChartData {
