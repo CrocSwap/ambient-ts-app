@@ -74,7 +74,7 @@ export default function Modal(props: ModalPropsIF) {
                     className={styles.close_button}
                     onClick={onClose}
                     role='button'
-                    tabIndex={0}
+                    tabIndex={-1}
                     aria-label='Close modal button'
                 />
             </div>

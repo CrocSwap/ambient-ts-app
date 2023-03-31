@@ -14,7 +14,7 @@ export default function SimpleModalHeader(props: SimpleModalHeaderPropsIF) {
                     size={22}
                     onClick={props.onClose}
                     role='button'
-                    tabIndex={0}
+                    tabIndex={-1}
                     aria-label='Close modal button'
                     id='close_simple_modal_button'
                 />
