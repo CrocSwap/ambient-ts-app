@@ -65,7 +65,11 @@ export default function SidebarRangePositions(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            tabIndex={0}
+            aria-label='Range Positions List.'
+        >
             <header className={styles.header}>
                 <div>Pool</div>
                 <div>Range</div>

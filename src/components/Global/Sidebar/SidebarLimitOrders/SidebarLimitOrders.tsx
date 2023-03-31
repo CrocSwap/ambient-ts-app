@@ -80,7 +80,7 @@ export default function SidebarLimitOrders(props: propsIF) {
         <div
             className={styles.container}
             tabIndex={0}
-            aria-label='Limit Orders List'
+            aria-label='Limit Orders List.'
         >
             <header className={styles.header}>
                 <div>Pool</div>

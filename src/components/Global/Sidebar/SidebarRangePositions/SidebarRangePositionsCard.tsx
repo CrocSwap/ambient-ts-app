@@ -31,8 +31,16 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     // human-readable string showing total value of the position
     const value = getPositionValue(position.totalValueUSD);
 
+    const ariaLabel = ` ${rangeDisplay} position for ${pair}. 
+    ${value && `position value is ${value}.`}`;
+
     return (
-        <div className={styles.container} onClick={() => handleClick(position)}>
+        <button
+            className={styles.container}
+            onClick={() => handleClick(position)}
+            tabIndex={0}
+            aria-label={ariaLabel}
+        >
             <div>{pair}</div>
             <div>
                 {rangeDisplay}
@@ -43,6 +51,6 @@ export default function SidebarRangePositionsCard(props: propsIF) {
                 </div>
             </div>
             <div className={styles.status_display}>{value}</div>
-        </div>
+        </button>
     );
 }
