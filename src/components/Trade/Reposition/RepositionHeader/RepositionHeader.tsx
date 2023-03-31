@@ -57,7 +57,6 @@ export default function RepositionHeader(props: propsIF) {
             <div className={styles.title}>
                 Reposition: {trimString(positionHash, 6, 4, '…')}
             </div>
-
             {isModalOpen && (
                 <Modal
                     noHeader
@@ -67,7 +66,6 @@ export default function RepositionHeader(props: propsIF) {
                 >
                     <TransactionSettings
                         module='Reposition'
-                        toggleFor='repo'
                         slippage={repoSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}

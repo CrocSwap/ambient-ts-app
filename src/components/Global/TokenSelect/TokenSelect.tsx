@@ -40,9 +40,12 @@ export default function TokenSelect(props: propsIF) {
 
     return (
         <>
-            <div
+            <button
                 className={styles.main_container}
                 onClick={() => chooseToken(token, false)}
+                role='button'
+                tabIndex={0}
+                aria-label={`Select ${token.symbol}`}
             >
                 <section className={styles.left_side_container}>
                     <div className={styles.modal_content}>
@@ -88,7 +91,7 @@ export default function TokenSelect(props: propsIF) {
                     </p>
                     <p className={styles.token_list_data}>{fromListsText}</p>
                 </div>
-            </div>
+            </button>
             {/* <p className={styles.token_list_data}>{fromListsText}</p> */}
         </>
     );

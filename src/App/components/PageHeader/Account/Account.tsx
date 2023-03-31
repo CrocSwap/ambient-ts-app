@@ -126,7 +126,6 @@ export default function Account(props: AccountPropsIF) {
             setShowWalletDropdown(false);
         }
     }, [isEscapePressed]);
-
     const walletDisplay = (
         <section
             className={styles.wallet_display}

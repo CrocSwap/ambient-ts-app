@@ -543,7 +543,6 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
-        bypassConfirmSwap: bypassConfirm.swap,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,

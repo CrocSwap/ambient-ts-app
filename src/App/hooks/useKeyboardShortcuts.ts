@@ -14,7 +14,16 @@ const useKeyboardShortcuts = (keyCombo: KeyCombo, callback: () => void) => {
                 (modifierKey) => event.getModifierState(modifierKey),
             );
 
-            if (isModifierKeysPressed && event.key === keyCombo.key) {
+            const focusedElementTagName = document.activeElement?.tagName;
+            const isTextInputFocused =
+                focusedElementTagName === 'INPUT' ||
+                focusedElementTagName === 'TEXTAREA';
+
+            if (
+                !isTextInputFocused &&
+                isModifierKeysPressed &&
+                event.key === keyCombo.key
+            ) {
                 callbackRef();
             }
         };

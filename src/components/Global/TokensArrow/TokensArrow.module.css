@@ -13,6 +13,10 @@
 
     height: 30px;
     width: 30px;
+
+    outline: none;
+    border: none;
+    background: transparent;
 }
 
 .container:hover {
@@ -29,7 +33,7 @@
     transform: rotate(90deg); */
 }
 
-.container:hover .token_arrow {
+.container:hover .token_arrow, .container:focus-visible .token_arrow {
     -webkit-transform: rotate(180deg);
     -moz-transform: rotate(180deg);
     -o-transform: rotate(180deg);

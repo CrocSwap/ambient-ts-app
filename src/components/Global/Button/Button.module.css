@@ -42,13 +42,13 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.btn_gradient:hover, .btn_gradient:focus {
+.btn_gradient:hover, .btn_gradient:focus-visible {
     color: var(--text-grey-white);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
 
-.btn_flat:hover {
+.btn_flat:hover, .btn_flat:focus-visible {
     color: var(--text-grey-white);
     box-shadow: 4px 4px var(--text-highlight);
     /* box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca */
