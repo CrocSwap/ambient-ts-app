@@ -83,7 +83,6 @@ export default function CurrencyQuantity(props: propsIF) {
         // String Does Not Contain Decimal
         return 0;
     };
-    console.log({ fieldId });
 
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
