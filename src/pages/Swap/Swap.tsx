@@ -583,8 +583,13 @@ export default function Swap(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(sellQtyString);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
     const swapContainerStyle = pathname.startsWith('/swap')
         ? styles.swap_page_container
@@ -730,6 +735,7 @@ export default function Swap(props: propsIF) {
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         dexBalancePrefs: dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
 
     const handleSwapButtonClickWithBypass = () => {
