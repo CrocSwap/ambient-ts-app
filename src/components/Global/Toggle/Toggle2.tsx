@@ -34,7 +34,7 @@ export default function Toggle2(props: TogglePropsIF) {
     }, []);
 
     return (
-        <div
+        <button
             className={`${styles.switch} ${diabledStyle}`}
             data-ison={isOn}
             aria-checked={isOn}
@@ -45,7 +45,7 @@ export default function Toggle2(props: TogglePropsIF) {
             role='checkbox'
         >
             <motion.div className={styles.handle} layout transition={spring} />
-        </div>
+        </button>
     );
 }
 
