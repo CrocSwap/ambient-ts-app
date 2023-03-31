@@ -39,3 +39,7 @@
     border: none;
     background: transparent;
 }
+
+.close_button{
+    cursor: pointer !important;
+}
