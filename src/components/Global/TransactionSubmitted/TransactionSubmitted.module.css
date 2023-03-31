@@ -17,7 +17,6 @@
 }
 .completed_animation {
     display: flex;
-    min-height: 150px;
     /* min-width: 400px;
     max-width: 400px; */
 
@@ -66,7 +65,8 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.view_etherscan:hover, .view_etherscan:focus-visible {
+.view_etherscan:hover,
+.view_etherscan:focus-visible {
     color: var(--text-grey-white);
     box-shadow: 4px 4px var(--text-highlight);
 }
