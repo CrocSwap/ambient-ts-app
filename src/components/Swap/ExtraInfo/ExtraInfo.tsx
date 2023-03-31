@@ -226,13 +226,14 @@ export default function ExtraInfo(props: propsIF) {
             )}
         </div>
     );
-    // eslint-disable-next-line
+
     const dropDownOrNull = priceImpact ? (
         <div style={{ cursor: 'pointer', marginTop: '4px' }}>
             {!showExtraDetails && <RiArrowDownSLine size={22} />}
             {showExtraDetails && <RiArrowUpSLine size={22} />}
         </div>
     ) : null;
+
     const dispatch = useAppDispatch();
 
     // const updateShowExtraDetails = () => {
@@ -293,7 +294,7 @@ export default function ExtraInfo(props: propsIF) {
             </div>
             {/* <DenominationSwitch /> */}
 
-            {priceImpact && <RiArrowDownSLine size={20} />}
+            {dropDownOrNull}
         </button>
     );
     // const extraDetailsNoDropdown = (
@@ -319,7 +320,6 @@ export default function ExtraInfo(props: propsIF) {
         <>
             {/* {extraDetailsNoDropDownOrNull} */}
             {extraDetailsDropdown}
-            {/* {dropDownOrNull} */}
             {extraDetailsOrNull}
         </>
     );
