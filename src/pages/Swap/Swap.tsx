@@ -244,6 +244,7 @@ export default function Swap(props: propsIF) {
             !isWaitingForWallet &&
             txErrorCode === ''
         ) {
+            setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
         }
     }, [
@@ -261,9 +262,7 @@ export default function Swap(props: propsIF) {
     useEffect(() => {
         setNewSwapTransactionHash('');
         setShowBypassConfirm(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     async function initiateSwap() {
         resetConfirmation();
