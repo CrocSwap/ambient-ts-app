@@ -274,7 +274,6 @@ export default function RangesRow(props: propsIF) {
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style}`}
-                style={{ fontFamily: 'monospace' }}
             >
                 {posHashTruncated}
             </li>
@@ -286,7 +285,7 @@ export default function RangesRow(props: propsIF) {
             onClick={openDetailsModal}
             data-label='value'
             className='base_color'
-            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            style={{ textAlign: 'right' }}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
@@ -318,7 +317,7 @@ export default function RangesRow(props: propsIF) {
             }}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            style={{ textTransform: 'lowercase' }}
         >
             {userNameToDisplay}
         </li>
@@ -413,7 +412,6 @@ export default function RangesRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                     whiteSpace: 'nowrap',
                 }}
             >
@@ -437,7 +435,6 @@ export default function RangesRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                     whiteSpace: 'nowrap',
                 }}
             >
@@ -500,9 +497,7 @@ export default function RangesRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                    {elapsedTimeString}
-                </p>
+                <p className='base_color'>{elapsedTimeString}</p>
             </li>
         </TextOnlyTooltip>
     );
@@ -573,9 +568,7 @@ export default function RangesRow(props: propsIF) {
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                     >
-                        <span style={{ fontFamily: 'monospace' }}>
-                            {'0.00'}
-                        </span>
+                        <span>{'0.00'}</span>
                     </li>
                 ) : (
                     <li
@@ -587,7 +580,7 @@ export default function RangesRow(props: propsIF) {
                         onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
                                 : ambientOrMin || '…'}
@@ -623,7 +616,7 @@ export default function RangesRow(props: propsIF) {
                         onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage
                                 ? maxRangeDenomByMoneyness || '…'
                                 : ambientOrMax || '…'}
@@ -642,7 +635,7 @@ export default function RangesRow(props: propsIF) {
                 >
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
                                 : ambientOrMin || '…'}
@@ -650,7 +643,7 @@ export default function RangesRow(props: propsIF) {
                     </p>
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage
                                 ? maxRangeDenomByMoneyness || '…'
                                 : ambientOrMax || '…'}
@@ -692,7 +685,6 @@ export default function RangesRow(props: propsIF) {
                     <div
                         className={styles.token_qty}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -703,7 +695,6 @@ export default function RangesRow(props: propsIF) {
                     <div
                         className={styles.token_qty}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -721,9 +712,7 @@ export default function RangesRow(props: propsIF) {
                 onMouseLeave={handleRowMouseOut}
             >
                 {' '}
-                <p style={{ fontFamily: 'monospace' }} className={apyClassname}>
-                    {apyString}
-                </p>
+                <p className={apyClassname}>{apyString}</p>
             </li>
             <li
                 onClick={openDetailsModal}
