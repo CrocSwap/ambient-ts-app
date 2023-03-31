@@ -25,7 +25,7 @@ export default function TopPools(props: propsIF) {
     false && poolList;
 
     return (
-        <div className={styles.container} aria-label='Top Pools List'>
+        <div className={styles.container} aria-label='Top Pools List.'>
             <header className={styles.header}>
                 <div>Pool</div>
                 <div>Volume</div>

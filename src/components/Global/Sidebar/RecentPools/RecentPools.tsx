@@ -25,7 +25,7 @@ export default function RecentPools(props: propsIF) {
     } = props;
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} aria-label='Recent Pools List.'>
             <header className={styles.header}>
                 <div>Pool</div>
                 <div>Volume</div>

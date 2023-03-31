@@ -16,3 +16,13 @@
     justify-content: center;
     align-items: center;
 }
+
+.container:hover, .container:focus-visible{
+    background: var(--dark3);
+}
+
+.container:focus-visible{
+    border-left: 1px solid var(--text-grey-white);
+    border-right: 1px solid var(--text-grey-white);
+
+}

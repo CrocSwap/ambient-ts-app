@@ -83,6 +83,12 @@ export default function RecentPoolsCard(props: propsIF) {
             ? pool.quoteToken.address
             : pool.baseToken.address;
 
+    const ariaLabel = `Pool for ${pool.baseToken.symbol} and ${
+        pool.quoteToken.symbol
+    }. ${poolVolume && ` volume is ${poolVolume}`}. ${
+        poolTvl && `tvl is ${poolTvl}`
+    }`;
+
     return (
         <Link
             className={styles.container}
@@ -94,6 +100,8 @@ export default function RecentPoolsCard(props: propsIF) {
                 '&tokenB=' +
                 tokenBString
             }
+            tabIndex={0}
+            aria-label={ariaLabel}
         >
             <div>
                 {pool.baseToken.symbol} / {pool.quoteToken.symbol}
