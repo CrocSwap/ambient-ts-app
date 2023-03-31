@@ -26,7 +26,7 @@ export default function FavoritePools(props: propsIF) {
     // TODO:   @Junior  please refactor the header <div> as a <header> element
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} aria-label='Favorite Pools List'>
             <div className={styles.header}>
                 <div>Pool</div>
                 <div>Volume</div>

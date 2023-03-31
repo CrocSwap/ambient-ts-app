@@ -37,8 +37,17 @@ export default function FavoritePoolsCard(props: propsIF) {
         '&tokenB=' +
         addrTokenB;
 
+    const ariaLabel = `Pool for ${pool.base.symbol} and ${pool.quote.symbol}. ${
+        volume && ` volume is ${volume}`
+    }. ${tvl && `tvl is ${tvl}`}`;
+
     return (
-        <Link className={styles.container} to={linkPath}>
+        <Link
+            className={styles.container}
+            to={linkPath}
+            aria-label={ariaLabel}
+            tabIndex={0}
+        >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
             </div>
