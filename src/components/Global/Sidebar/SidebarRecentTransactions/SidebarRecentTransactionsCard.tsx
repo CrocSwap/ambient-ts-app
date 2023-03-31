@@ -16,14 +16,26 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
     // human-readable form of transaction value to display in DOM
     const txValue = getTxValue(tx);
 
+    const ariaLabel = `Transactions for ${tx.baseSymbol} and ${
+        tx.quoteSymbol
+    }. ${txType && ` transaction type is ${txType}`}. ${
+        txValue && `transaction value is ${txValue}.`
+    }`;
+
     return (
-        <div className={styles.container} onClick={() => handleClick(tx)}>
+        <button
+            className={styles.container}
+            onClick={() => handleClick(tx)}
+            tabIndex={0}
+            aria-label={ariaLabel}
+            role='button'
+        >
             <div>
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </div>
             <div>{txType}</div>
             <div className={styles.status_display}>{txValue}</div>
-        </div>
+        </button>
     );
 }
 3;

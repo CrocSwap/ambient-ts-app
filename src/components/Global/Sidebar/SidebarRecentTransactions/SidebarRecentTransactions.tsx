@@ -75,7 +75,11 @@ export default function SidebarRecentTransactions(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            tabIndex={0}
+            aria-label='Recent Transactions List.'
+        >
             <header className={styles.header}>
                 <div>Pool</div>
                 <div>Type</div>
