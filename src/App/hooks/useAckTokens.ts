@@ -17,14 +17,18 @@ export const useAckTokens = (): ackTokensMethodsIF => {
     );
 
     function acknowledgeToken(newTkn: TokenIF): void {
-        setAckTokens([newTkn, ...ackTokens]);
+        const ackTokensWithNewRemoved = ackTokens.filter((ackToken: TokenIF) => (
+            ackToken.address.toLowerCase() !== newTkn.address.toLowerCase() ||
+            ackToken.chainId === newTkn.chainId
+        ));
+        setAckTokens([newTkn, ...ackTokensWithNewRemoved]);
     }
 
     function checkToken(tkn: TokenIF): boolean {
-        return ackTokens.some((ackToken: TokenIF) => {
+        return ackTokens.some((ackToken: TokenIF) => (
             ackToken.address.toLowerCase() === tkn.address.toLowerCase() &&
             ackToken.chainId === tkn.chainId
-        });
+        ));
     }
 
     return {
