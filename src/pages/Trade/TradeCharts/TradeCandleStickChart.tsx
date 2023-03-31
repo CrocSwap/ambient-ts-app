@@ -33,6 +33,7 @@ import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
+import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -52,14 +53,11 @@ declare global {
     }
 }
 
-interface ChartData {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
-    // tvlData: any[];
-    // volumeData: any[];
-    // feeData: any[];
     candleData: CandlesByPoolAndDuration | undefined;
     changeState: (
         isOpen: boolean | undefined,
@@ -96,7 +94,6 @@ interface ChartData {
     reset: boolean | undefined;
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
-    activeTimeFrame: string;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     handlePulseAnimation: (type: string) => void;
@@ -117,6 +114,8 @@ interface ChartData {
     repositionRangeWidth: number;
     setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
     chartTriggeredBy: string;
+    chartSettings: chartSettingsMethodsIF;
+    isMarketOrLimitModule: boolean;
 }
 
 export interface ChartUtils {
@@ -136,7 +135,7 @@ type chartItemStates = {
     liqMode: string;
 };
 
-export default function TradeCandleStickChart(props: ChartData) {
+export default function TradeCandleStickChart(props: propsIF) {
     const {
         isUserLoggedIn,
         pool,
@@ -146,9 +145,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        activeTimeFrame,
         handlePulseAnimation,
-        // fetchingCandle,
         setFetchingCandle,
         minPrice,
         maxPrice,
@@ -164,6 +161,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceDisplay,
         setChartTriggeredBy,
         chartTriggeredBy,
+        chartSettings,
+        isMarketOrLimitModule,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -178,7 +177,6 @@ export default function TradeCandleStickChart(props: ChartData) {
     const expandTradeTable = props?.expandTradeTable;
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const activeChartPeriod = tradeData.activeChartPeriod;
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -200,12 +198,16 @@ export default function TradeCandleStickChart(props: ChartData) {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
+    const candleTimeInSeconds: number = isMarketOrLimitModule
+        ? chartSettings.candleTime.market.time
+        : chartSettings.candleTime.range.time;
+
     useEffect(() => {
         setIsLoading(true);
         setParsedChartData(() => {
             return undefined;
         });
-    }, [activeChartPeriod, denominationsInBase]);
+    }, [candleTimeInSeconds, denominationsInBase]);
 
     useEffect(() => {
         parseData();
@@ -231,70 +233,99 @@ export default function TradeCandleStickChart(props: ChartData) {
         const volumeChartData: VolumeChartData[] = [];
         const feeChartData: FeeChartData[] = [];
 
-        props.candleData?.candles.map((data) => {
-            const close = denominationsInBase
-                ? data.invPriceCloseExclMEVDecimalCorrected
-                : data.priceCloseExclMEVDecimalCorrected;
+        if (props.candleData !== undefined) {
+            const domainLeft = Math.min(
+                ...props.candleData.candles.map((o: any) => {
+                    return o.tvlData.tvl !== undefined
+                        ? parseFloat(o.tvlData.tvl)
+                        : Infinity;
+                }),
+            );
+            const domainRight = Math.max(
+                ...props.candleData.candles.map((o: any) => {
+                    return o.tvlData.tvl !== undefined
+                        ? parseFloat(o.tvlData.tvl)
+                        : 0;
+                }),
+            );
 
-            const open = denominationsInBase
-                ? data.invPriceOpenExclMEVDecimalCorrected
-                : data.priceOpenExclMEVDecimalCorrected;
+            const tvlScale = d3
+                .scaleLog()
+                .domain([domainLeft, domainRight])
+                .range([30, 1000]);
 
-            chartData.push({
-                date: new Date(data.time * 1000),
-                open: open,
-                close: close,
-                high: denominationsInBase
-                    ? data.invMinPriceExclMEVDecimalCorrected
-                    : data.maxPriceExclMEVDecimalCorrected,
-                low: denominationsInBase
-                    ? data.invMaxPriceExclMEVDecimalCorrected
-                    : data.minPriceExclMEVDecimalCorrected,
-                time: data.time,
-                allSwaps: [],
-                color: close > open ? props.upBodyColor : props.downBodyColor,
-                stroke:
-                    close > open ? props.upBorderColor : props.downBorderColor,
+            props.candleData.candles.map((data) => {
+                const close = denominationsInBase
+                    ? data.invPriceCloseExclMEVDecimalCorrected
+                    : data.priceCloseExclMEVDecimalCorrected;
+
+                const open = denominationsInBase
+                    ? data.invPriceOpenExclMEVDecimalCorrected
+                    : data.priceOpenExclMEVDecimalCorrected;
+
+                chartData.push({
+                    date: new Date(data.time * 1000),
+                    open: open,
+                    close: close,
+                    high: denominationsInBase
+                        ? data.invMinPriceExclMEVDecimalCorrected
+                        : data.maxPriceExclMEVDecimalCorrected,
+                    low: denominationsInBase
+                        ? data.invMaxPriceExclMEVDecimalCorrected
+                        : data.minPriceExclMEVDecimalCorrected,
+                    time: data.time,
+                    allSwaps: [],
+                    color:
+                        close > open ? props.upBodyColor : props.downBodyColor,
+                    stroke:
+                        close > open
+                            ? props.upBorderColor
+                            : props.downBorderColor,
+                });
+
+                tvlChartData.push({
+                    time: new Date(data.tvlData.time * 1000),
+                    value: tvlScale(data.tvlData.tvl),
+                    linearValue: data.tvlData.tvl,
+                });
+
+                volumeChartData.push({
+                    time: new Date(data.time * 1000),
+                    value: data.volumeUSD,
+                    volume: data.volumeUSD,
+                    color:
+                        close > open
+                            ? props.upVolumeColor
+                            : props.downVolumeColor,
+                });
+
+                feeChartData.push({
+                    time: new Date(data.time * 1000),
+                    value: data.averageLiquidityFee,
+                });
             });
 
-            tvlChartData.push({
-                time: new Date(data.tvlData.time * 1000),
-                value: data.tvlData.tvl,
+            chartData.sort((a: any, b: any) => b.time - a.time);
+            tvlChartData.sort((a: any, b: any) => b.time - a.time);
+            volumeChartData.sort((a: any, b: any) => b.time - a.time);
+            feeChartData.sort((a: any, b: any) => b.time - a.time);
+
+            const chartUtils: ChartUtils = {
+                period: props.candleData?.duration,
+                bandwidth: 0,
+                chartData: chartData,
+                tvlChartData: tvlChartData,
+                volumeChartData: volumeChartData,
+                feeChartData: feeChartData,
+                poolAdressComb: props.candleData?.pool.baseAddress
+                    ? props.candleData?.pool.baseAddress
+                    : '' + props.candleData?.pool.quoteAddress,
+            };
+
+            setParsedChartData(() => {
+                return chartUtils;
             });
-
-            volumeChartData.push({
-                time: new Date(data.time * 1000),
-                value: data.volumeUSD,
-                color:
-                    close > open ? props.upVolumeColor : props.downVolumeColor,
-            });
-
-            feeChartData.push({
-                time: new Date(data.time * 1000),
-                value: data.averageLiquidityFee,
-            });
-        });
-
-        chartData.sort((a: any, b: any) => b.time - a.time);
-        tvlChartData.sort((a: any, b: any) => b.time - a.time);
-        volumeChartData.sort((a: any, b: any) => b.time - a.time);
-        feeChartData.sort((a: any, b: any) => b.time - a.time);
-
-        const chartUtils: ChartUtils = {
-            period: props.candleData?.duration,
-            bandwidth: 0,
-            chartData: chartData,
-            tvlChartData: tvlChartData,
-            volumeChartData: volumeChartData,
-            feeChartData: feeChartData,
-            poolAdressComb: props.candleData?.pool.baseAddress
-                ? props.candleData?.pool.baseAddress
-                : '' + props.candleData?.pool.quoteAddress,
-        };
-
-        setParsedChartData(() => {
-            return chartUtils;
-        });
+        }
     };
 
     // const standardDeviation = (arr: any, usePopulation = false) => {
@@ -827,8 +858,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             style={{ height: '100%', width: '100%' }}
             className='animatedImg_container'
         >
-            {/* <img src={candleStikPlaceholder} className='img_shimmer' /> */}
-            {/* <PulseLoading/> */}
             <ChartSkeleton />
             <div className='fetching_text'>Fetching chart data...</div>
         </div>
@@ -908,7 +937,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
                         setShowTooltip={props.setShowTooltip}
-                        activeTimeFrame={activeTimeFrame}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
                         handlePulseAnimation={handlePulseAnimation}
@@ -929,6 +957,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                         repositionRangeWidth={repositionRangeWidth}
                         setChartTriggeredBy={setChartTriggeredBy}
                         chartTriggeredBy={chartTriggeredBy}
+                        candleTime={
+                            isMarketOrLimitModule
+                                ? chartSettings.candleTime.market
+                                : chartSettings.candleTime.range
+                        }
                     />
                 ) : (
                     <>{loading}</>

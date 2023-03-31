@@ -14,6 +14,7 @@ import {
     Link,
     NavLink,
     useNavigate,
+    useLocation,
 } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
@@ -45,6 +46,7 @@ import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+// import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
 interface propsIF {
@@ -119,6 +121,8 @@ interface propsIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 // React functional component
@@ -183,6 +187,8 @@ export default function Trade(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const [tokenPairFromParams, limitTickFromParams] = useUrlParams(
@@ -215,6 +221,11 @@ export default function Trade(props: propsIF) {
         },
     ];
 
+    const { pathname } = useLocation();
+
+    const isMarketOrLimitModule =
+        pathname.includes('market') || pathname.includes('limit');
+
     useEffect(() => {
         if (
             isCandleDataNull &&
@@ -229,8 +240,7 @@ export default function Trade(props: propsIF) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick, advancedMode, activeChartPeriod } =
-        tradeData;
+    const { isDenomBase, limitTick, advancedMode } = tradeData;
     const baseTokenLogo = isDenomBase
         ? tradeData.baseToken.logoURI
         : tradeData.quoteToken.logoURI;
@@ -429,29 +439,23 @@ export default function Trade(props: propsIF) {
         </section>
     );
 
-    const [activeTimeFrame, setActiveTimeFrame] = useState(
-        activeChartPeriod === 60
-            ? '1m'
-            : activeChartPeriod === 300
-            ? '5m'
-            : activeChartPeriod === 900
-            ? '15m'
-            : activeChartPeriod === 3600
-            ? '1h'
-            : activeChartPeriod === 14400
-            ? '4h'
-            : '1d',
-    );
-
     const unselectCandle = () => {
         setSelectedDate(undefined);
         changeState(false, undefined);
         setIsCandleSelected(false);
     };
 
+    const activeCandleDuration = isMarketOrLimitModule
+        ? chartSettings.candleTime.market.time
+        : chartSettings.candleTime.range.time;
+
     useEffect(() => {
         unselectCandle();
-    }, [activeTimeFrame, tradeData.baseToken.name, tradeData.quoteToken.name]);
+    }, [
+        activeCandleDuration,
+        tradeData.baseToken.name,
+        tradeData.quoteToken.name,
+    ]);
 
     const initLinkPath =
         '/initpool/chain=0x5&tokenA=' +
@@ -538,8 +542,6 @@ export default function Trade(props: propsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        activeTimeFrame: activeTimeFrame,
-        setActiveTimeFrame: setActiveTimeFrame,
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
         setPoolPriceChangePercent: setPoolPriceChangePercent,
@@ -608,7 +610,6 @@ export default function Trade(props: propsIF) {
         setSelectedDate: setSelectedDate,
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
-        activeTimeFrame: activeTimeFrame,
         unselectCandle: unselectCandle,
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplayWithDenom,
@@ -622,6 +623,11 @@ export default function Trade(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
         slippage: slippage,
+        gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
+        candleTime: isMarketOrLimitModule
+            ? chartSettings.candleTime.market
+            : chartSettings.candleTime.range,
     };
 
     const mobileTrade = (

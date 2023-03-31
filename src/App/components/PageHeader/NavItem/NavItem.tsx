@@ -19,7 +19,7 @@ interface NavItemPropsIF {
 
 export default function NavItem(props: NavItemPropsIF) {
     const { children, icon } = props;
-    const navItemRef = useRef<HTMLDivElement>(null);
+    const navItemRef = useRef<HTMLButtonElement>(null);
 
     const { open, setOpen } = props;
 
@@ -38,11 +38,17 @@ export default function NavItem(props: NavItemPropsIF) {
     });
 
     return (
-        <div className={styles.nav_item} ref={navItemRef}>
+        <button
+            className={styles.nav_item}
+            ref={navItemRef}
+            tabIndex={0}
+            aria-label='Nav item'
+            onKeyDown={() => setOpen(true)}
+        >
             <div className={styles.icon_button} onClick={() => setOpen(!open)}>
                 {icon}
             </div>
             {open && childrenWithProps}
-        </div>
+        </button>
     );
 }

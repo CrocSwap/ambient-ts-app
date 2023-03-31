@@ -8,7 +8,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    outline: none;
+    border: none;
+    background: transparent
 }
+
+.nav_item:focus-visible .icon_button{
+    filter: brightness(1.2);
+    background: var(--dark3);
+}
+
+
 
 /* Icon Button */
 .icon_button {
@@ -25,7 +36,7 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.icon_button:hover {
+.icon_button:hover, .icon_button:focus-visible {
     filter: brightness(1.2);
     background: var(--dark3);
 }

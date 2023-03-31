@@ -1,3 +1,7 @@
+.row{
+    padding: 1rem;
+}
+
 .remove_position_info {
     background: var(--dark3);
     border-radius: var(--border-radius);

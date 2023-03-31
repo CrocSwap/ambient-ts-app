@@ -3,7 +3,6 @@ import styles from './TopPools.module.css';
 import { motion } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
 
 import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/exports';
@@ -50,25 +49,25 @@ export default function TopPools(props: propsIF) {
             exit={{ x: window.innerWidth, transition: { duration: 2 } }}
         >
             <div className={styles.divider} />
-            <div className={styles.title}>{t('topPools')}</div>
+            <div className={styles.title} tabIndex={0} aria-label='Top Pools'>
+                {t('topPools')}
+            </div>
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
-                    <NavLink key={idx} to='/trade/market'>
-                        <PoolCard
-                            isServerEnabled={isServerEnabled}
-                            isUserIdle={isUserIdle}
-                            crocEnv={crocEnv}
-                            tradeData={tradeData}
-                            cachedQuerySpotPrice={cachedQuerySpotPrice}
-                            name={pool.name}
-                            baseToken={pool.base}
-                            quoteToken={pool.quote}
-                            key={idx}
-                            tokenMap={tokenMap}
-                            lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
-                        />
-                    </NavLink>
+                    <PoolCard
+                        isServerEnabled={isServerEnabled}
+                        isUserIdle={isUserIdle}
+                        crocEnv={crocEnv}
+                        tradeData={tradeData}
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
+                        name={pool.name}
+                        baseToken={pool.base}
+                        quoteToken={pool.quote}
+                        key={idx}
+                        tokenMap={tokenMap}
+                        lastBlockNumber={lastBlockNumber}
+                        chainId={chainId}
+                    />
                 ))}
             </div>
         </motion.div>

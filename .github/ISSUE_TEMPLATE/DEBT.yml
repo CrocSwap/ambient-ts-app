@@ -1,0 +1,16 @@
+name: Technical Debt
+description: File technical debt
+title: "[Tech Debt]: "
+labels: ["technical debt"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for taking the time to document deferred engineering work!"
+  - type: textarea
+    id: work-required
+    attributes:
+      label: What is needed?
+      description: Tell / show what work is being deferred, (link back to the codebase with TODO if possible).
+      placeholder: What work is being deferred? (NOTE solutioning is not needed here)
+    validations:
+      required: true

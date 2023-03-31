@@ -39,6 +39,7 @@ interface propsIF {
     openTokenModal: () => void;
     selectedTokenDecimals: number;
     gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -62,6 +63,7 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         selectedTokenDecimals,
         gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -153,6 +155,7 @@ export default function ExchangeBalance(props: propsIF) {
                     openTokenModal={openTokenModal}
                     selectedTokenDecimals={selectedTokenDecimals}
                     gasPriceInGwei={gasPriceInGwei}
+                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: depositImage,
@@ -176,6 +179,7 @@ export default function ExchangeBalance(props: propsIF) {
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
                     gasPriceInGwei={gasPriceInGwei}
+                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: withdrawImage,
@@ -197,6 +201,8 @@ export default function ExchangeBalance(props: propsIF) {
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
+                    gasPriceInGwei={gasPriceInGwei}
+                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: transferImage,
@@ -247,12 +253,12 @@ export default function ExchangeBalance(props: propsIF) {
                 </div>
             </motion.div>
             {(!fullLayoutActive || columnView) && (
-                <section style={{ background: 'var(--dark1)' }}>
+                <section>
                     <div className={styles.info_text}>
                         Collateral deposited into the Ambient Finance exchange
                         can be traded at lower gas costs.
                     </div>
-                    <div className={styles.info_text}>
+                    <div className={styles.info_text2}>
                         {' '}
                         Collateral can be withdrawn at any time.
                     </div>

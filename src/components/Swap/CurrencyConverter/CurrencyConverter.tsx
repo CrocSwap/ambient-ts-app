@@ -88,6 +88,7 @@ interface propsIF {
     ) => void;
     lastBlockNumber: number;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -136,6 +137,7 @@ export default function CurrencyConverter(props: propsIF) {
         openGlobalPopup,
         lastBlockNumber,
         dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -214,6 +216,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
+
     const tokenASurplusMinusTokenAQtyNum =
         tokenASurplusMinusTokenARemainderNum >= 0
             ? tokenASurplusMinusTokenARemainderNum
@@ -230,6 +233,10 @@ export default function CurrencyConverter(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(tokenAQtyLocal || '0');
+
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
 
     const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
         ? isWithdrawFromDexChecked
@@ -435,7 +442,9 @@ export default function CurrencyConverter(props: propsIF) {
     const handleTokenAChangeEvent = async (
         evt?: ChangeEvent<HTMLInputElement>,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         let rawTokenBQty;
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
@@ -531,7 +540,9 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     const handleTokenAChangeClick = async (value: string) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
         if (tokenAInputField) {
@@ -608,7 +619,9 @@ export default function CurrencyConverter(props: propsIF) {
     const handleTokenBChangeEvent = async (
         evt?: ChangeEvent<HTMLInputElement>,
     ) => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
 
         let rawTokenAQty: number | undefined;
         if (evt) {

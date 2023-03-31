@@ -268,17 +268,20 @@ export default function Swap(props: propsIF) {
     async function initiateSwap() {
         resetConfirmation();
         setIsWaitingForWallet(true);
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
-        // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-        // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
             : buyQtyString.replaceAll(',', '');
+
         const isQtySell = isTokenAPrimary;
-        // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
+
         let tx;
         try {
             const plan = isQtySell
@@ -297,7 +300,10 @@ export default function Swap(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             if (tx.hash)
                 dispatch(
-                    addTransactionByType({ txHash: tx.hash, txType: 'Swap' }),
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    }),
                 );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
@@ -398,7 +404,6 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
-            // setNewSwapTransactionHash('');
         }
     }
 
@@ -421,19 +426,22 @@ export default function Swap(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA.address);
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat
         />
     );
 
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
@@ -442,7 +450,7 @@ export default function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Approval',
+                        txType: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -550,7 +558,11 @@ export default function Swap(props: propsIF) {
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal onClose={handleModalClose} title='Swap Confirmation'>
+        <Modal
+            onClose={handleModalClose}
+            title='Swap Confirmation'
+            centeredTitle
+        >
             <ConfirmSwapModal {...confirmSwapModalProps} />
         </Modal>
     ) : null;
@@ -571,8 +583,13 @@ export default function Swap(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(sellQtyString);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
     const swapContainerStyle = pathname.startsWith('/swap')
         ? styles.swap_page_container
@@ -718,6 +735,7 @@ export default function Swap(props: propsIF) {
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         dexBalancePrefs: dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
 
     const handleSwapButtonClickWithBypass = () => {

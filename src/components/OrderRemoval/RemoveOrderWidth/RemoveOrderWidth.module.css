@@ -1,7 +1,9 @@
 .order_width_container {
     width: 100%;
-    /* margin-bottom: 1rem; */
-    padding: 0 5px;
+    margin-bottom: 1rem;
+    /* padding: 0 5px; */
+    border-radius: 999;
+
 
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
@@ -108,7 +110,7 @@
 input[type='range'] {
     width: 100%; /* Specific width is required for Firefox. */
     height: 10px;
-    border-radius: 10px;
+    border-radius: 99999;
     outline: none;
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
 
@@ -128,7 +130,7 @@ input[type='range']:focus {
 
 input[type='range']::-ms-track {
     width: 100%;
-    border-radius: 10px;
+    border-radius: 99999;
 
     cursor: pointer;
 
@@ -150,7 +152,8 @@ input[type='range']::-webkit-slider-thumb {
     border: 1px solid #cdc1ff;
     box-sizing: border-box;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
+    border-radius: 9999;
+    outline: none;
     -webkit-appearance: none;
 }
 

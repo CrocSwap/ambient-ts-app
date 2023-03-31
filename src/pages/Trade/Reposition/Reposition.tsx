@@ -256,6 +256,7 @@ export default function Reposition(props: propsIF) {
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
+            location.reload();
             return;
         }
         let tx;
@@ -275,7 +276,7 @@ export default function Reposition(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Reposition',
+                        txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                     }),
                 );
             navigate(redirectPath, { replace: true });
@@ -634,7 +635,11 @@ export default function Reposition(props: propsIF) {
                 </div>
             </div>
             {isModalOpen && (
-                <Modal onClose={handleModalClose} title=' Confirm Reposition'>
+                <Modal
+                    onClose={handleModalClose}
+                    title=' Confirm Reposition'
+                    centeredTitle
+                >
                     <ConfirmRepositionModal
                         isPositionInRange={isPositionInRange}
                         crocEnv={crocEnv}

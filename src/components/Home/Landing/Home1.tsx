@@ -12,7 +12,7 @@ export default function Home1() {
     const firstRow = (
         <div className={styles.slide_container}>
             <div className={styles.content_container}>
-                <h1>Zero-to-One Decentralized Trading Protocol</h1>
+                <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
                 <TradeNowButton />
             </div>
         </div>
@@ -21,8 +21,8 @@ export default function Home1() {
         <div className={styles.slide_container}>
             <div className={styles.row_container}>
                 <section className={styles.faster_section}>
-                    <h2>Faster, Easier, and Cheaper</h2>
-                    <p>
+                    <h2 tabIndex={0}>Faster, Easier, and Cheaper</h2>
+                    <p tabIndex={0}>
                         Ambient runs the entire DEX inside a single smart
                         contract, allowing for low fee transactions, greater
                         liquidity rewards, and a fairer trading experience.
@@ -43,8 +43,8 @@ export default function Home1() {
                     height='420px'
                 />
                 <section className={styles.faster_section}>
-                    <h2>Deep, Diversified Liquidity</h2>
-                    <p>
+                    <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
+                    <p tabIndex={0}>
                         Ambient is built for diversified, sustainable liquidity
                         that fixes the broken LP economics of AMMs. It is also
                         the only DEX to support concentrated (‘V3’), ambient
@@ -60,12 +60,14 @@ export default function Home1() {
         <div className={styles.slide_container}>
             <div className={styles.row_container}>
                 <section className={styles.faster_section}>
-                    <h2>Bridge the Gap Between Trading and LP’ing</h2>
-                    <p>
+                    <h2 tabIndex={0}>
+                        Bridge the Gap Between Trading and LP’ing
+                    </h2>
+                    <p tabIndex={0}>
                         Make your LP position a trading position – and vice
                         versa – using our range and limit orders.
                     </p>
-                    <p>
+                    <p tabIndex={0}>
                         Ambient combines liquidity in a single pool, allowing
                         for greater rewards for liquidity providers, and less
                         impact for traders.
@@ -86,8 +88,8 @@ export default function Home1() {
             <div className={styles.row_container}>
                 <div />
                 <section className={styles.faster_section}>
-                    <h2>Better than CEX</h2>
-                    <p>
+                    <h2 tabIndex={0}>Better than CEX</h2>
+                    <p tabIndex={0}>
                         Built for traders and market makers of all kinds,
                         Ambient introduces novel DeFi-native features and an
                         array of quality-of-life improvements allowing for a

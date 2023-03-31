@@ -88,7 +88,7 @@ interface propsIF {
     handlePulseAnimation: (type: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    gasPriceInGwei: number | undefined;
+
     acknowledgeToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -99,6 +99,8 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
+    gasPriceInGwei: number | undefined;
+    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -136,7 +138,7 @@ export default function Portfolio(props: propsIF) {
         setCurrentTxActiveInTransactions,
         showSidebar,
         handlePulseAnimation,
-        gasPriceInGwei,
+
         openModalWallet,
         acknowledgeToken,
         outputTokens,
@@ -148,6 +150,8 @@ export default function Portfolio(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -347,6 +351,7 @@ export default function Portfolio(props: propsIF) {
             <ExchangeBalance
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
+                ethMainnetUsdPrice={ethMainnetUsdPrice}
                 connectedAccount={connectedAccount || ''}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 setOutsideControl={setOutsideControl}
@@ -590,6 +595,8 @@ export default function Portfolio(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
         slippage: slippage,
+        gasPriceInGwei: gasPriceInGwei,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     const soloTokenSelectProps = {

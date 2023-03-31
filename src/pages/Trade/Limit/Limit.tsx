@@ -447,7 +447,9 @@ export default function Limit(props: propsIF) {
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!crocEnv) return;
+        if (!crocEnv) {
+            return;
+        }
         if (!limitTick) return;
 
         const testOrder = isTokenAPrimary
@@ -530,7 +532,11 @@ export default function Limit(props: propsIF) {
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
-        if (!crocEnv || limitTick === undefined) return;
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
+        if (limitTick === undefined) return;
         // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
         //     return;
         // }
@@ -574,7 +580,7 @@ export default function Limit(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Limit',
+                        txType: `Add Limit ${tradeData.tokenA.symbol}→${tradeData.tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
@@ -714,8 +720,11 @@ export default function Limit(props: propsIF) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
+        if (!crocEnv) {
+            location.reload();
+            return;
+        }
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
@@ -724,7 +733,7 @@ export default function Limit(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Approval',
+                        txType: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -783,12 +792,15 @@ export default function Limit(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenA.address);
+                await approve(
+                    tokenPair.dataTokenA.address,
+                    tokenPair.dataTokenA.symbol,
+                );
             }}
             flat={true}
         />
@@ -972,7 +984,11 @@ export default function Limit(props: propsIF) {
                 )}
             </ContentContainer>
             {isModalOpen && (
-                <Modal onClose={handleModalClose} title='Limit Confirmation'>
+                <Modal
+                    onClose={handleModalClose}
+                    title='Limit Confirmation'
+                    centeredTitle
+                >
                     <ConfirmLimitModal {...confirmLimitModalProps} />
                 </Modal>
             )}

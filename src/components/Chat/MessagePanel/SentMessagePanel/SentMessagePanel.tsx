@@ -266,7 +266,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const location = useLocation();
 
     const myBlockies = (
-        <Blockies seed={props.message.walletID} scale={3} bgColor={'#171D27'} />
+        <Blockies seed={props.message.walletID.toLowerCase()} scale={3} />
     );
 
     return (
@@ -302,6 +302,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 >
                     {showAvatar && (
                         <div className={styles.nft_container}>{myBlockies}</div>
+                    )}
+                    {!showAvatar && (
+                        <div style={{ display: 'none' }}>
+                            <div className={styles.nft_container}>
+                                {myBlockies}
+                            </div>
+                        </div>
                     )}
                     <div className={styles.message_item}>
                         <div
@@ -359,9 +366,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     ) : (
                         ''
                     )}
-                    <p className={styles.message_date}>
-                        {formatAMPM(props.message.createdAt)}
-                    </p>
+                    <div>
+                        <p className={styles.message_date}>
+                            {formatAMPM(props.message.createdAt)}
+                        </p>
+                    </div>
 
                     {/* {snackbarContent} */}
                 </div>
