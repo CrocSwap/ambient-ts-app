@@ -9,14 +9,16 @@ export default function SimpleModalHeader(props: SimpleModalHeaderPropsIF) {
         <header className={styles.header_container}>
             <div></div>
             <h2>{props.title}</h2>
-            <VscClose
-                size={22}
-                onClick={props.onClose}
-                role='button'
-                tabIndex={0}
-                aria-label='Close modal button'
-                id='close_simple_modal_button'
-            />
+            <button onClick={props.onClose}>
+                <VscClose
+                    size={22}
+                    onClick={props.onClose}
+                    role='button'
+                    tabIndex={-1}
+                    aria-label='Close modal button'
+                    id='close_simple_modal_button'
+                />
+            </button>
         </header>
     );
 }

@@ -52,15 +52,20 @@ export default function TransactionSettings(props: propsIF) {
         onClose();
     };
 
+    const confirmAriaLabel = `Confirm slippage tolerance of ${currentSlippage}% and ${
+        currentSkipConfirm ? 'skip' : 'dont skip'
+    } ${module} confirmation modal`;
+
     return (
-        <>
+        // <FocusTrap>
+        <section>
             <div className={styles.settings_title}>
                 <div />
                 {module + ' Settings'}
-                <span onClick={onClose}>
+                <button onClick={onClose}>
                     {' '}
                     <VscClose size={22} />
-                </span>
+                </button>
             </div>
             <div className={styles.settings_container}>
                 <section>
@@ -93,16 +98,19 @@ export default function TransactionSettings(props: propsIF) {
                             action={updateSettings}
                             disabled={!(currentSlippage > 0)}
                             flat
+                            customAriaLabel={confirmAriaLabel}
                         />
                     ) : (
                         <Button
                             title='Confirm Settings'
                             action={updateSettings}
                             flat
+                            customAriaLabel={confirmAriaLabel}
                         />
                     )}
                 </div>
             </div>
-        </>
+        </section>
+        // </FocusTrap>
     );
 }

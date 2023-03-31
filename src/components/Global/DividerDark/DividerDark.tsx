@@ -12,6 +12,7 @@ export default function DividerDark(props: DividerDarkProps) {
     const colorStyle = props.changeColor ? styles.change_color : '';
     return (
         <div
+            tabIndex={-1}
             className={`${styles.divider_container} ${margin1Style} ${margin2Style} ${colorStyle}`}
         >
             <div className={styles.divider}></div>

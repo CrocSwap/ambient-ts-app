@@ -163,7 +163,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <section>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>
@@ -235,8 +235,16 @@ export default function ConfirmSwapModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <div className={styles.modal_container}>
-            <section className={styles.modal_content}>
+        <div
+            className={styles.modal_container}
+            aria-label='Swap Confirmation modal'
+        >
+            <section
+                className={styles.modal_content}
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='additions text'
+            >
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>

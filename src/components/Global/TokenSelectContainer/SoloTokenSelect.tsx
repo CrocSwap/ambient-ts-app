@@ -346,7 +346,13 @@ export const SoloTokenSelect = (props: propsIF) => {
                     }}
                 />
                 {input?.value && (
-                    <button onClick={clearInputField}>Clear</button>
+                    <button
+                        onClick={clearInputField}
+                        aria-label='Clear input'
+                        tabIndex={0}
+                    >
+                        Clear
+                    </button>
                 )}
                 {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>

@@ -157,11 +157,17 @@ export default function ExtraInfo(props: propsIF) {
             placement: 'bottom',
         });
     }
+
     const extraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) =>
                 item ? (
-                    <div className={styles.extra_row} key={idx}>
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
                         <div className={styles.align_center}>
                             <div>{item.title}</div>
                             <TooltipComponent
@@ -188,7 +194,12 @@ export default function ExtraInfo(props: propsIF) {
             )}
             {feesAndSlippageData.map((item, idx) =>
                 item ? (
-                    <div className={styles.extra_row} key={idx}>
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
                         <div className={styles.align_center}>
                             <div>{item.title}</div>
                             <TooltipComponent
@@ -222,6 +233,7 @@ export default function ExtraInfo(props: propsIF) {
             {showExtraDetails && <RiArrowUpSLine size={22} />}
         </div>
     ) : null;
+
     const dispatch = useAppDispatch();
 
     // const updateShowExtraDetails = () => {
@@ -245,9 +257,17 @@ export default function ExtraInfo(props: propsIF) {
     //     updateShowExtraDetails();
     // }, [priceImpact?.percentChange]);
 
+    const conversionRateDisplay = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const gasCostAriaLabel = `Gas cost is ${swapGasPriceinDollars}. Conversion rate is ${conversionRateDisplay} `;
     const extraDetailsDropdown = (
-        <div
-            className={styles.extra_info_content}
+        <button
+            className={`${styles.extra_info_content} ${
+                priceImpact && styles.extra_info_content_active
+            }`}
+            style={{ padding: '0 1.7rem' }}
             onClick={
                 priceImpact
                     ? () => {
@@ -255,6 +275,8 @@ export default function ExtraInfo(props: propsIF) {
                       }
                     : undefined
             }
+            tabIndex={0}
+            aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={12} />{' '}
@@ -268,14 +290,12 @@ export default function ExtraInfo(props: propsIF) {
                     e.stopPropagation();
                 }}
             >
-                {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
 
             {dropDownOrNull}
-        </div>
+        </button>
     );
     // const extraDetailsNoDropdown = (
     //     <div className={styles.extra_info_content} style={{ cursor: 'default' }}>
@@ -300,7 +320,6 @@ export default function ExtraInfo(props: propsIF) {
         <>
             {/* {extraDetailsNoDropDownOrNull} */}
             {extraDetailsDropdown}
-            {/* {dropDownOrNull} */}
             {extraDetailsOrNull}
         </>
     );

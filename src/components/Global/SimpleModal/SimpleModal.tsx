@@ -34,15 +34,10 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
         <aside
             className={styles.outside_modal}
             onMouseDown={onClose}
-            // tabIndex={-1}
             role='dialog'
             aria-modal='true'
         >
-            <FocusTrap
-                focusTrapOptions={{
-                    initialFocus: '#close_simple_modal_button',
-                }}
-            >
+            <FocusTrap>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -53,6 +48,8 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 `}
                     onMouseDown={(e) => e.stopPropagation()}
                     style={{ justifyContent: 'flex-start' }}
+                    tabIndex={0}
+                    aria-label={`${title} modal`}
                 >
                     <section className={styles.modal_content}>
                         {title && (

@@ -28,3 +28,14 @@
 .settings_title svg:hover{
     color: var(--text-grey-white)
 }
+
+.settings_title:focus-visible svg{
+    color: var(--text-grey-white)
+
+}
+
+.settings_title button{
+    outline: none;
+    border: none;
+    background: transparent;
+}

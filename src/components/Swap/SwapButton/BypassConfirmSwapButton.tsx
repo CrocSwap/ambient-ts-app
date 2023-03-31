@@ -201,12 +201,19 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                 </button>
 
                 {showExtraInfo && (
-                    <section className={styles.extra_info_container}>
+                    <section
+                        className={styles.extra_info_container}
+                        tabIndex={0}
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='additions text'
+                    >
                         {confirmationDisplay}
                     </section>
                 )}
                 <span className={styles.close_icon_container}>
                     <button
+                        tabIndex={0}
                         onClick={() => {
                             resetConfirmation();
                             setShowBypassConfirm(false);

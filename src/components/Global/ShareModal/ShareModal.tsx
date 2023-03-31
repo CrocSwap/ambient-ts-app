@@ -6,6 +6,8 @@ import { AiFillTwitterCircle } from 'react-icons/ai';
 import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../components/Global/SnackbarComponent/SnackbarComponent';
+import FocusTrap from 'focus-trap-react';
+
 interface SocialLinkPropsIF {
     // eslint-disable-next-line
     icon: any;
@@ -14,12 +16,17 @@ interface SocialLinkPropsIF {
 }
 function SocialLink(props: SocialLinkPropsIF) {
     const { icon, link, name } = props;
+
+    const ariaLabel = `share swap on ${name}`;
+
     return (
         <a
             target='_blank'
             rel='noreferrer'
             href={link}
             className={styles.social_link_container}
+            aria-label={ariaLabel}
+            tabIndex={0}
         >
             {icon}
             {name}
@@ -135,24 +142,32 @@ export default function ShareModal() {
             ))}
         </section>
     );
+
     return (
-        <div className={styles.option_control_container}>
-            {shareIconsContent}
+        <FocusTrap>
+            <div className={styles.option_control_container}>
+                {shareIconsContent}
 
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                <input
-                    type='text'
-                    placeholder={`${linkToShareTruncated}`}
-                    disabled={true}
-                    onChange={(e) => setLinkToShare(e?.target.value)}
-                />
+                <p className={styles.control_title}>URL:</p>
+                <p className={styles.url_link}>
+                    <input
+                        type='text'
+                        placeholder={`${linkToShareTruncated}`}
+                        disabled={true}
+                        onChange={(e) => setLinkToShare(e?.target.value)}
+                    />
 
-                <div style={{ cursor: 'pointer' }} onClick={handleCopyAddress}>
-                    <FiCopy color='#cdc1ff' size={25} />
-                </div>
-            </p>
-            {snackbarContent}
-        </div>
+                    <button
+                        onClick={handleCopyAddress}
+                        className={styles.copy_button}
+                        tabIndex={0}
+                        aria-label='Copy to clipboard'
+                    >
+                        <FiCopy color='#cdc1ff' size={25} />
+                    </button>
+                </p>
+                {snackbarContent}
+            </div>
+        </FocusTrap>
     );
 }
