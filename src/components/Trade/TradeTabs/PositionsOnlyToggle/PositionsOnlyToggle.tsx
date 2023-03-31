@@ -34,6 +34,8 @@ interface PositionsOnlyToggleProps {
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
+const LeaderboardTabName = 'Leaderboard';
+
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         isShowAllEnabled,
@@ -83,7 +85,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
     const toggleOrNull =
-        !isUserLoggedIn || isCandleSelected ? null : (
+        !isUserLoggedIn ||
+        isCandleSelected ||
+        props.currentTab == LeaderboardTabName ? null : (
             <Toggle2
                 isOn={!isShowAllEnabled}
                 handleToggle={() => {
@@ -130,7 +134,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                             : { cursor: 'default' }
                     }
                 >
-                    {isUserLoggedIn && !isCandleSelected
+                    {isUserLoggedIn &&
+                    !isCandleSelected &&
+                    props.currentTab !== LeaderboardTabName
                         ? `My ${props.currentTab}`
                         : null}
                 </p>
