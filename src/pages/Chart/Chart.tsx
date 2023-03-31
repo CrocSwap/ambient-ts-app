@@ -434,6 +434,7 @@ export default function Chart(props: propsIF) {
     const [dragEvent, setDragEvent] = useState('zoom');
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
+    const [yAxisHeight, setYaxisHeight] = useState('28rem');
     const [bandwidth, setBandwidth] = useState(5);
 
     const [gradientForAsk, setGradientForAsk] = useState();
@@ -3825,6 +3826,7 @@ export default function Chart(props: propsIF) {
                 .select(d3Yaxis.current)
                 .select('canvas')
                 .node() as any;
+
             const d3YaxisContext = d3YaxisCanvas.getContext('2d');
 
             d3.select(d3Yaxis.current).on('draw', function () {
@@ -3950,7 +3952,7 @@ export default function Chart(props: propsIF) {
         context.textAlign = 'center';
         context.textBaseline = 'top';
         context.fillStyle = '#bdbdbd';
-        context.font = '12px Arial';
+        context.font = '11.5px Arial';
 
         yAxis.tickValues().forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
@@ -5091,6 +5093,26 @@ export default function Chart(props: propsIF) {
                 });
         }
     }, [parsedChartData, candlestick]);
+
+    useEffect(() => {
+        if (d3PlotArea) {
+            const myDiv = d3.select(d3PlotArea.current) as any;
+
+            const resizeObserver = new ResizeObserver((entries) => {
+                const height = entries[0].contentRect.height;
+
+                setYaxisHeight(() => {
+                    return height - 15 + 'px';
+                });
+
+                render();
+            });
+
+            resizeObserver.observe(myDiv.node());
+
+            return () => resizeObserver.unobserve(myDiv.node());
+        }
+    }, []);
 
     useEffect(() => {
         const canvas = d3
@@ -7176,6 +7198,7 @@ export default function Chart(props: propsIF) {
                                 width: yAxisWidth,
                                 gridColumn: 4,
                                 gridRow: 3,
+                                height: yAxisHeight,
                             }}
                         ></d3fc-canvas>
                     </div>
