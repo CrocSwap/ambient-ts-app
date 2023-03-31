@@ -1181,7 +1181,7 @@ export default function Range(props: propsIF) {
 
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
-    const denominationSwitch = (
+    const advancedModeToggle = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
         </div>
@@ -1386,7 +1386,7 @@ export default function Range(props: propsIF) {
                 isAdvancedMode={false}
             />
             {/* <DividerDark addMarginTop /> */}
-            {denominationSwitch}
+            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1406,7 +1406,7 @@ export default function Range(props: propsIF) {
             />
             {/* <DividerDark addMarginTop /> */}
 
-            {denominationSwitch}
+            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
