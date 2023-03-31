@@ -173,6 +173,7 @@ import {
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { useAckTokens } from './hooks/useAckTokens';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -245,6 +246,8 @@ export default function App() {
     const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
     const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
     const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
+
+    useAckTokens();
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
