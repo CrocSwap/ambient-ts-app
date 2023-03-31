@@ -17,15 +17,24 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     // human-readable limit order value to display in the DOM
     const value = getLimitValue(order);
 
+    const orderTokens = isDenomBase
+        ? `${order?.baseSymbol}/${order?.quoteSymbol}`
+        : `${order?.quoteSymbol}/${order?.baseSymbol}`;
+
+    const ariaLabel = `Limit Order for ${orderTokens}. ${
+        price && ` order price is ${price}`
+    }. ${value && `order value is ${value}.`}`;
+
     return (
-        <div className={styles.container} onClick={() => handleClick(order)}>
-            <div>
-                {isDenomBase
-                    ? `${order?.baseSymbol}/${order?.quoteSymbol}`
-                    : `${order?.quoteSymbol}/${order?.baseSymbol}`}
-            </div>
+        <button
+            className={styles.container}
+            onClick={() => handleClick(order)}
+            aria-label={ariaLabel}
+            tabIndex={0}
+        >
+            <div>{orderTokens}</div>
             <div>{price}</div>
             <div className={styles.status_display}>{value}</div>
-        </div>
+        </button>
     );
 }
