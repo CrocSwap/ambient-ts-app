@@ -59,6 +59,7 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
 
     return (
         <AnimateSharedLayout>
+            {/* <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}> */}
             <div className={styles.container}>
                 <span ref={activityCenterRef}>
                     <ActivityIndicator
@@ -80,6 +81,7 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
                 </div>
                 <div></div>
             </div>
+            {/* </FocusTrap> */}
         </AnimateSharedLayout>
     );
 };

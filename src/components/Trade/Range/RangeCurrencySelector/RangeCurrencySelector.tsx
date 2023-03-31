@@ -530,7 +530,9 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            {sellToken && <span className={styles.direction}>Amounts</span>}
+            <span className={styles.direction}>
+                {sellToken ? 'Amounts' : ''}
+            </span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='range_sell_qty'>
                     <RangeCurrencyQuantity

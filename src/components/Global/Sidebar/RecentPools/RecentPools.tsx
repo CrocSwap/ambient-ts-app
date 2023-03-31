@@ -1,27 +1,27 @@
-import { TokenIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './RecentPools.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
-import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+import {
+    recentPoolsMethodsIF,
+    SmallerPoolIF,
+} from '../../../../App/hooks/useRecentPools';
 
-interface RecentPoolsProps {
+interface propsIF {
     tradeData: tradeData;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
-    getRecentPools: (count: number) => SmallerPoolIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    recentPools: recentPoolsMethodsIF;
 }
 
-export default function RecentPools(props: RecentPoolsProps) {
+export default function RecentPools(props: propsIF) {
     const {
         tradeData,
         chainId,
         lastBlockNumber,
         cachedPoolStatsFetch,
-        getRecentPools,
-        getTokenByAddress,
+        recentPools,
     } = props;
 
     return (
@@ -32,7 +32,7 @@ export default function RecentPools(props: RecentPoolsProps) {
                 <div>TVL</div>
             </header>
             <div className={styles.content}>
-                {getRecentPools(5).map((pool) => (
+                {recentPools.getPools(5).map((pool: SmallerPoolIF) => (
                     <RecentPoolsCard
                         tradeData={tradeData}
                         chainId={chainId}
@@ -40,7 +40,6 @@ export default function RecentPools(props: RecentPoolsProps) {
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         lastBlockNumber={lastBlockNumber}
-                        getTokenByAddress={getTokenByAddress}
                     />
                 ))}
             </div>

@@ -30,6 +30,17 @@
     border-radius: 50%;
     position: relative;
     cursor: pointer;
+
+    outline: none;
+    border: none;
+    padding: none;
+}
+
+.circle_button{
+    outline: none;
+    padding: none;
+    border: none;
+    background: transparent;
 }
 
 .ring {

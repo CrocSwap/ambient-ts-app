@@ -46,7 +46,7 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch } from './useSidebarSearch';
-import { SmallerPoolIF } from '../../hooks/useRecentPools';
+import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
@@ -85,7 +85,7 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
-    getRecentPools: (count: number) => SmallerPoolIF[];
+    recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
     positionsByUser: PositionIF[];
     txsByUser: TransactionIF[];
@@ -116,7 +116,7 @@ export default function Sidebar(props: propsIF) {
         verifyToken,
         getTokenByAddress,
         tokenPair,
-        getRecentPools,
+        recentPools,
         isConnected,
         positionsByUser,
         setOutsideControl,
@@ -131,7 +131,7 @@ export default function Sidebar(props: propsIF) {
     const mostRecentPositions = positionsByUser.slice(0, 4);
     const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
-    const recentPools = [
+    const recentPoolsData = [
         {
             name: 'Recent Pools',
             icon: recentPoolsImage,
@@ -142,8 +142,7 @@ export default function Sidebar(props: propsIF) {
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
-                    getRecentPools={getRecentPools}
-                    getTokenByAddress={getTokenByAddress}
+                    recentPools={recentPools}
                 />
             ),
         },
@@ -497,7 +496,7 @@ export default function Sidebar(props: propsIF) {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-            {recentPools.map((item, idx) => (
+            {recentPoolsData.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
