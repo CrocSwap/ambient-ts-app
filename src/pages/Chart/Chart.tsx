@@ -402,9 +402,6 @@ export default function Chart(props: ChartData) {
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
 
-    const [gradientForAskLine, setGradientForAskLine] = useState();
-    const [gradientForBidLine, setGradientForBidLine] = useState();
-
     // Subcharts
     const [tvlAreaSeries, setTvlAreaSeries] = useState<any>();
     const currentPoolPriceTick =
@@ -454,7 +451,7 @@ export default function Chart(props: ChartData) {
                 )[0].value = minPrice;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                setLiqHighlightedLinesGradient(newTargets, scaleData?.yScale);
+                // setLiqHighlightedLinesGradient(newTargets, scaleData?.yScale);
                 scaleWithButtons(minPrice, maxPrice);
 
                 return newTargets;
@@ -533,7 +530,7 @@ export default function Chart(props: ChartData) {
                 )[0].value = 0;
 
                 setLiqHighlightedLinesAndArea(newTargets);
-                setLiqHighlightedLinesGradient(newTargets, scaleData?.yScale);
+                // setLiqHighlightedLinesGradient(newTargets, scaleData?.yScale);
 
                 return newTargets;
             });
@@ -1535,7 +1532,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
-        setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
+        // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
     }, [parsedChartData?.poolAdressComb]);
 
     const snapForCandle = (point: any) => {
@@ -2097,10 +2094,10 @@ export default function Chart(props: ChartData) {
                                     }
 
                                     setLiqHighlightedLinesAndArea(ranges);
-                                    setLiqHighlightedLinesGradient(
-                                        ranges,
-                                        scaleData.yScale,
-                                    );
+                                    // setLiqHighlightedLinesGradient(
+                                    //     ranges,
+                                    //     scaleData.yScale,
+                                    // );
                                 }
                             }
 
@@ -2356,10 +2353,10 @@ export default function Chart(props: ChartData) {
                                 }
                             }
                         }
-                        setLiqHighlightedLinesGradient(
-                            ranges,
-                            scaleData.yScale,
-                        );
+                        // setLiqHighlightedLinesGradient(
+                        //     ranges,
+                        //     scaleData.yScale,
+                        // );
                     })().then(() => {
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
@@ -2406,10 +2403,10 @@ export default function Chart(props: ChartData) {
                         }
 
                         setLiqHighlightedLinesAndArea(ranges);
-                        setLiqHighlightedLinesGradient(
-                            ranges,
-                            scaleData.yScale,
-                        );
+                        // setLiqHighlightedLinesGradient(
+                        //     ranges,
+                        //     scaleData.yScale,
+                        // );
                     }
 
                     setZoomAndYdragControl(event);
@@ -2626,10 +2623,10 @@ export default function Chart(props: ChartData) {
                         }
 
                         setLiqHighlightedLinesAndArea(ranges);
-                        setLiqHighlightedLinesGradient(
-                            ranges,
-                            scaleData.yScale,
-                        );
+                        // setLiqHighlightedLinesGradient(
+                        //     ranges,
+                        //     scaleData.yScale,
+                        // );
                     } else if (location.pathname.includes('/limit')) {
                         if (
                             maxYBoundary !== undefined &&
@@ -2670,10 +2667,10 @@ export default function Chart(props: ChartData) {
                             scaleData.yScale.domain(domain);
 
                             setLiqHighlightedLinesAndArea(ranges);
-                            setLiqHighlightedLinesGradient(
-                                ranges,
-                                scaleData.yScale,
-                            );
+                            // setLiqHighlightedLinesGradient(
+                            //     ranges,
+                            //     scaleData.yScale,
+                            // );
                         }
                     }
                 }
@@ -2790,7 +2787,7 @@ export default function Chart(props: ChartData) {
                 minPrice !== undefined ? minPrice : 0;
 
             setLiqHighlightedLinesAndArea(newTargets);
-            setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+            // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
 
             return newTargets;
         });
@@ -2839,7 +2836,7 @@ export default function Chart(props: ChartData) {
                 )[0].value = parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+                // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
 
                 return newTargets;
             });
@@ -2867,7 +2864,7 @@ export default function Chart(props: ChartData) {
                     )[0].value = minPrice !== undefined ? minPrice : 0;
 
                     setLiqHighlightedLinesAndArea(newTargets);
-                    setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+                    // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
 
                     setTriangleRangeValues(maxPrice, minPrice);
 
@@ -2950,7 +2947,7 @@ export default function Chart(props: ChartData) {
                     0.0;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+                // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
 
                 return newTargets;
             });
@@ -2976,7 +2973,7 @@ export default function Chart(props: ChartData) {
                     },
                 ];
                 setLiqHighlightedLinesAndArea(chartTargets);
-                setLiqHighlightedLinesGradient(chartTargets, scaleData.yScale);
+                // setLiqHighlightedLinesGradient(chartTargets, scaleData.yScale);
 
                 return chartTargets;
             });
@@ -3072,7 +3069,7 @@ export default function Chart(props: ChartData) {
             }
 
             setLiqHighlightedLinesAndArea(ranges);
-            setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+            // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
         } else {
             setBoundaries(denomInBase);
         }
@@ -3240,10 +3237,10 @@ export default function Chart(props: ChartData) {
                                     false,
                                     rangeWidthPercentage,
                                 );
-                                setLiqHighlightedLinesGradient(
-                                    newTargets,
-                                    scaleData.yScale,
-                                );
+                                // setLiqHighlightedLinesGradient(
+                                //     newTargets,
+                                //     scaleData.yScale,
+                                // );
                                 return newTargets;
                             });
                             setTriangleRangeValues(
@@ -3338,10 +3335,10 @@ export default function Chart(props: ChartData) {
                                 false,
                                 rangeWidthPercentage,
                             );
-                            setLiqHighlightedLinesGradient(
-                                rangesF,
-                                scaleData.yScale,
-                            );
+                            // setLiqHighlightedLinesGradient(
+                            //     rangesF,
+                            //     scaleData.yScale,
+                            // );
 
                             if (pinnedDisplayPrices !== undefined) {
                                 setRanges((prevState) => {
@@ -3474,10 +3471,10 @@ export default function Chart(props: ChartData) {
                             newRangeValue = newTargets;
 
                             setLiqHighlightedLinesAndArea(newTargets);
-                            setLiqHighlightedLinesGradient(
-                                newTargets,
-                                scaleData.yScale,
-                            );
+                            // setLiqHighlightedLinesGradient(
+                            //     newTargets,
+                            //     scaleData.yScale,
+                            // );
 
                             const minPrice = newTargets.filter(
                                 (target: any) => target.name === 'Min',
@@ -3563,10 +3560,10 @@ export default function Chart(props: ChartData) {
                             true,
                             rangeWidthPercentage,
                         );
-                        setLiqHighlightedLinesGradient(
-                            rangesF,
-                            scaleData.yScale,
-                        );
+                        // setLiqHighlightedLinesGradient(
+                        //     rangesF,
+                        //     scaleData.yScale,
+                        // );
                     }
 
                     onBlurRange(
@@ -3893,8 +3890,6 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         limit,
         isUserLoggedIn,
-        gradientForBidLine,
-        gradientForAskLine,
         liqMode,
     ]);
 
@@ -4375,10 +4370,10 @@ export default function Chart(props: ChartData) {
                     newRangeValue = newTargets;
 
                     setLiqHighlightedLinesAndArea(newTargets);
-                    setLiqHighlightedLinesGradient(
-                        newTargets,
-                        scaleData.yScale,
-                    );
+                    // setLiqHighlightedLinesGradient(
+                    //     newTargets,
+                    //     scaleData.yScale,
+                    // );
 
                     return newTargets;
                 });
@@ -4462,10 +4457,10 @@ export default function Chart(props: ChartData) {
                         newRangeValue = newTargets;
 
                         setLiqHighlightedLinesAndArea(newTargets);
-                        setLiqHighlightedLinesGradient(
-                            newTargets,
-                            scaleData.yScale,
-                        );
+                        // setLiqHighlightedLinesGradient(
+                        //     newTargets,
+                        //     scaleData.yScale,
+                        // );
 
                         return newTargets;
                     });
@@ -4538,10 +4533,10 @@ export default function Chart(props: ChartData) {
                     newRangeValue = newTargets;
 
                     setLiqHighlightedLinesAndArea(newTargets);
-                    setLiqHighlightedLinesGradient(
-                        newTargets,
-                        scaleData.yScale,
-                    );
+                    // setLiqHighlightedLinesGradient(
+                    //     newTargets,
+                    //     scaleData.yScale,
+                    // );
 
                     return newTargets;
                 });
@@ -5008,122 +5003,122 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
-        setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+        // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
     }, [liqMode]);
 
-    useEffect(() => {
-        setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
-    }, [scaleData && JSON.stringify(scaleData.yScale.domain())]);
+    // useEffect(() => {
+    //     setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+    // }, [scaleData && JSON.stringify(scaleData.yScale.domain())]);
 
-    const setLiqHighlightedLinesGradient = (ranges: any, scale: any) => {
-        if (scale && lineBidSeries && lineAskSeries) {
-            const low = ranges.filter((target: any) => target.name === 'Min')[0]
-                .value;
-            const high = ranges.filter(
-                (target: any) => target.name === 'Max',
-            )[0].value;
+    // const setLiqHighlightedLinesGradient = (ranges: any, scale: any) => {
+    //     if (scale && lineBidSeries && lineAskSeries) {
+    //         const low = ranges.filter((target: any) => target.name === 'Min')[0]
+    //             .value;
+    //         const high = ranges.filter(
+    //             (target: any) => target.name === 'Max',
+    //         )[0].value;
 
-            const liqDataBid =
-                liqMode === 'Depth'
-                    ? liquidityData.depthLiqBidData
-                    : liquidityData.liqBidData;
-            const liqDataAsk =
-                liqMode === 'Depth'
-                    ? liquidityData.depthLiqAskData
-                    : liquidityData.liqAskData;
+    //         const liqDataBid =
+    //             liqMode === 'Depth'
+    //                 ? liquidityData.depthLiqBidData
+    //                 : liquidityData.liqBidData;
+    //         const liqDataAsk =
+    //             liqMode === 'Depth'
+    //                 ? liquidityData.depthLiqAskData
+    //                 : liquidityData.liqAskData;
 
-            const bidMinBoudnary = d3.min(liqDataBid, (d: any) => d.liqPrices);
-            const bidMaxBoudnary = d3.max(liqDataBid, (d: any) => d.liqPrices);
+    //         const bidMinBoudnary = d3.min(liqDataBid, (d: any) => d.liqPrices);
+    //         const bidMaxBoudnary = d3.max(liqDataBid, (d: any) => d.liqPrices);
 
-            const askMinBoudnary = d3.min(liqDataAsk, (d: any) => d.liqPrices);
-            const askMaxBoudnary = d3.max(liqDataAsk, (d: any) => d.liqPrices);
+    //         const askMinBoudnary = d3.min(liqDataAsk, (d: any) => d.liqPrices);
+    //         const askMaxBoudnary = d3.max(liqDataAsk, (d: any) => d.liqPrices);
 
-            const canvas = d3
-                .select(d3CanvasLiqBidLine.current)
-                .select('canvas')
-                .node() as any;
-            const ctx = canvas.getContext('2d');
-            if (
-                poolPriceDisplay !== undefined &&
-                bidMaxBoudnary !== undefined &&
-                bidMinBoudnary !== undefined &&
-                askMaxBoudnary !== undefined &&
-                askMinBoudnary !== undefined
-            ) {
-                if (isAdvancedModeActive) {
-                    ctx.strokeStyle = 'orange';
+    //         const canvas = d3
+    //             .select(d3CanvasLiqBidLine.current)
+    //             .select('canvas')
+    //             .node() as any;
+    //         const ctx = canvas.getContext('2d');
+    //         if (
+    //             poolPriceDisplay !== undefined &&
+    //             bidMaxBoudnary !== undefined &&
+    //             bidMinBoudnary !== undefined &&
+    //             askMaxBoudnary !== undefined &&
+    //             askMinBoudnary !== undefined
+    //         ) {
+    //             if (isAdvancedModeActive) {
+    //                 ctx.strokeStyle = 'orange';
 
-                    renderCanvas();
-                    // const data = liqDataBid.filter((item:any)=> item.liqPrices<= high && item.liqPrices >= low)
-                    // const areaPathGenerator = d3.line().context(ctx);
-                    // areaPathGenerator(data);
-                    // console.log({data});
+    //                 renderCanvas();
+    //                 // const data = liqDataBid.filter((item:any)=> item.liqPrices<= high && item.liqPrices >= low)
+    //                 // const areaPathGenerator = d3.line().context(ctx);
+    //                 // areaPathGenerator(data);
+    //                 // console.log({data});
 
-                    // if (low > poolPriceDisplay && high> poolPriceDisplay) {
+    //                 // if (low > poolPriceDisplay && high> poolPriceDisplay) {
 
-                    //     const percentageBid =
-                    //     Math.abs(high - low) /
-                    //     (parseFloat(bidMaxBoudnary) - parseFloat(bidMinBoudnary));
+    //                 //     const percentageBid =
+    //                 //     Math.abs(high - low) /
+    //                 //     (parseFloat(bidMaxBoudnary) - parseFloat(bidMinBoudnary));
 
-                    //     const gradient = ctx.createLinearGradient(
-                    //         0,
-                    //         scale(high),
-                    //         0,
-                    //         scale(low),
-                    //     );
+    //                 //     const gradient = ctx.createLinearGradient(
+    //                 //         0,
+    //                 //         scale(high),
+    //                 //         0,
+    //                 //         scale(low),
+    //                 //     );
 
-                    //     gradient.addColorStop(percentageBid, '#7371FC');
-                    //     // gradient.addColorStop(percentageBid, 'transparent');
+    //                 //     gradient.addColorStop(percentageBid, '#7371FC');
+    //                 //     // gradient.addColorStop(percentageBid, 'transparent');
 
-                    //     setGradientForBidLine(gradient);
-                    //     setGradientForAskLine(setLineGradientDefault());
-                    // }
-                } else {
-                    const percentageBid =
-                        Math.abs(high - parseFloat(bidMinBoudnary)) /
-                        (parseFloat(bidMaxBoudnary) -
-                            parseFloat(bidMinBoudnary));
+    //                 //     setGradientForBidLine(gradient);
+    //                 //     setGradientForAskLine(setLineGradientDefault());
+    //                 // }
+    //             } else {
+    //                 const percentageBid =
+    //                     Math.abs(high - parseFloat(bidMinBoudnary)) /
+    //                     (parseFloat(bidMaxBoudnary) -
+    //                         parseFloat(bidMinBoudnary));
 
-                    if (percentageBid >= 0 && percentageBid <= 1) {
-                        const gradient = ctx.createLinearGradient(
-                            0,
-                            scale(bidMaxBoudnary),
-                            0,
-                            scale(bidMinBoudnary),
-                        );
+    //                 if (percentageBid >= 0 && percentageBid <= 1) {
+    //                     const gradient = ctx.createLinearGradient(
+    //                         0,
+    //                         scale(bidMaxBoudnary),
+    //                         0,
+    //                         scale(bidMinBoudnary),
+    //                     );
 
-                        gradient.addColorStop(1 - percentageBid, 'transparent');
-                        gradient.addColorStop(1 - percentageBid, '#7371FC');
+    //                     gradient.addColorStop(1 - percentageBid, 'transparent');
+    //                     gradient.addColorStop(1 - percentageBid, '#7371FC');
 
-                        // setGradientForBidLine(gradient);
-                    }
+    //                     // setGradientForBidLine(gradient);
+    //                 }
 
-                    const percentageAsk =
-                        (parseFloat(high) - poolPriceDisplay) /
-                        (parseFloat(high) - parseFloat(low));
+    //                 const percentageAsk =
+    //                     (parseFloat(high) - poolPriceDisplay) /
+    //                     (parseFloat(high) - parseFloat(low));
 
-                    if (percentageAsk >= 0 && percentageAsk <= 1) {
-                        const gradient = ctx.createLinearGradient(
-                            0,
-                            scale(high),
-                            0,
-                            scale(low),
-                        );
+    //                 if (percentageAsk >= 0 && percentageAsk <= 1) {
+    //                     const gradient = ctx.createLinearGradient(
+    //                         0,
+    //                         scale(high),
+    //                         0,
+    //                         scale(low),
+    //                     );
 
-                        gradient.addColorStop(percentageAsk, '#7371FC');
-                        gradient.addColorStop(
-                            percentageAsk,
-                            'rgba(205, 193, 255)',
-                        );
+    //                     gradient.addColorStop(percentageAsk, '#7371FC');
+    //                     gradient.addColorStop(
+    //                         percentageAsk,
+    //                         'rgba(205, 193, 255)',
+    //                     );
 
-                        // setGradientForAskLine(gradient);
-                    }
-                }
-            }
-            render();
-            renderCanvas();
-        }
-    };
+    //                     // setGradientForAskLine(gradient);
+    //                 }
+    //             }
+    //         }
+    //         render();
+    //         renderCanvas();
+    //     }
+    // };
     // line gradient
     const setLiqHighlightedLinesAndArea = (
         ranges: any,
@@ -5217,16 +5212,6 @@ export default function Chart(props: ChartData) {
             renderCanvas();
         }
     };
-
-    function setLineGradientDefault() {
-        const ctx = (
-            d3.select(d3CanvasLiqAsk.current).select('canvas').node() as any
-        ).getContext('2d');
-
-        const gradient = ctx.createLinearGradient(0, 0, 100, 0);
-        gradient.addColorStop(1, 'transparent');
-        return gradient;
-    }
 
     function setAskGradientDefault() {
         const ctx = (
@@ -5368,14 +5353,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [
-        scaleData,
-        liquidityData,
-        location,
-        gradientForAskLine,
-        gradientForBidLine,
-        // JSON.stringify(d3Container.current?.offsetWidth),
-    ]);
+    }, [scaleData, liquidityData, location]);
 
     const addHighValuetoHighlightedLine = (
         data: any[],
