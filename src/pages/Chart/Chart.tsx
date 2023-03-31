@@ -5945,7 +5945,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         const liqDataBid =
-            liqMode === 'Curve'
+            liqMode === 'curve'
                 ? liquidityData.liqBidData
                 : isAdvancedModeActive
                 ? liquidityData.depthLiqBidData
@@ -5956,7 +5956,7 @@ export default function Chart(props: propsIF) {
         if (liquidityData && poolPriceDisplay) {
             const data = addHighValuetoHighlightedLine(
                 liqDataBid,
-                liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
+                liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
             );
             const ctx = (
                 d3
@@ -5988,13 +5988,13 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         const liqDataAsk =
-            liqMode === 'Depth'
+            liqMode === 'depth'
                 ? liquidityData.depthLiqAskData
                 : liquidityData.liqAskData;
 
         const data = addLowValuetoHighlightedLine(
             liqDataAsk,
-            liqMode === 'Curve' ? liquidityScale : liquidityDepthScale,
+            liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
         );
 
         const ctx = (
