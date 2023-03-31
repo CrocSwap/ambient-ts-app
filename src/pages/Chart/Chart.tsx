@@ -3797,6 +3797,7 @@ export default function Chart(props: propsIF) {
         color: string,
         textColor: string,
         text: string,
+        stroke: string | undefined = undefined,
     ) {
         context.beginPath();
         context.fillStyle = color;
@@ -3805,7 +3806,12 @@ export default function Chart(props: propsIF) {
         context.fontSize = '13';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
-        context.fillText(text, x, y + 1);
+        context.fillText(text, x, y + 2);
+
+        if (stroke !== undefined) {
+            context.strokeStyle = stroke;
+            context.strokeRect(1, y - 10, 70, 20);
+        }
     }
 
     useEffect(() => {
@@ -3820,10 +3826,7 @@ export default function Chart(props: propsIF) {
     }, [yAxis]);
 
     const drawYaxis = (context: any, yScale: any, X: any, yExtent: any) => {
-        const [startY, endY] = yExtent;
-
-        const tickPadding = 3,
-            tickSize = 6,
+        const tickSize = 6,
             yTicks = yScale.ticks();
         const low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
@@ -3844,18 +3847,34 @@ export default function Chart(props: propsIF) {
         context.textAlign = 'center';
         context.textBaseline = 'top';
         context.fillStyle = '#bdbdbd';
-        context.font = '13px Arial';
+        context.font = '12px Arial';
+
         yTicks.forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
             if (d === market[0].value) {
-                createRect(
-                    context,
-                    yScale(d),
-                    X - tickSize - tickPadding,
-                    'white',
-                    'black',
-                    formatAmountChartData(d, undefined),
-                );
+                if (parsedChartData !== undefined) {
+                    const latestCandleIndex = d3.maxIndex(
+                        parsedChartData?.chartData,
+                        (d) => d.date,
+                    );
+
+                    const lastCandle =
+                        parsedChartData?.chartData[latestCandleIndex];
+
+                    createRect(
+                        context,
+                        yScale(d),
+                        X - tickSize,
+                        lastCandle.close > lastCandle.open
+                            ? '#CDC1FF'
+                            : '#1d1d30',
+                        lastCandle.close > lastCandle.open ? 'black' : 'white',
+                        formatAmountChartData(d, undefined),
+                        lastCandle.close > lastCandle.open
+                            ? undefined
+                            : '#6c69fc',
+                    );
+                }
             } else if (
                 d === limit[0].value &&
                 location.pathname.includes('/limit')
@@ -3863,7 +3882,7 @@ export default function Chart(props: propsIF) {
                 createRect(
                     context,
                     yScale(d),
-                    X - tickSize - tickPadding,
+                    X - tickSize,
                     '#7371fc',
                     'white',
                     formatAmountChartData(d, undefined),
@@ -3884,7 +3903,7 @@ export default function Chart(props: propsIF) {
                 createRect(
                     context,
                     yScale(d),
-                    X - tickSize - tickPadding,
+                    X - tickSize,
                     '#7371fc',
                     'white',
                     formatAmountChartData(d, undefined),
@@ -3893,7 +3912,7 @@ export default function Chart(props: propsIF) {
                 context.beginPath();
                 context.fillText(
                     formatAmountChartData(d, digit ? digit : 2),
-                    X - tickSize - tickPadding,
+                    X - tickSize,
                     yScale(d),
                 );
             }
