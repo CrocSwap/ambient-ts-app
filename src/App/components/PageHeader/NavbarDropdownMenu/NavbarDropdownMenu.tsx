@@ -262,7 +262,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     // const mainAriaLabel = 'account dropdown menu container';
 
     return (
-        <FocusTrap>
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
             <div
                 className={styles.dropdown}
                 ref={dropdownRef}
