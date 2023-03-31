@@ -34,7 +34,6 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
         <aside
             className={styles.outside_modal}
             onMouseDown={onClose}
-            // tabIndex={-1}
             role='dialog'
             aria-modal='true'
         >
