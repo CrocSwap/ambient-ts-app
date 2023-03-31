@@ -1,3 +1,7 @@
+.close_button{
+    cursor: pointer !important;
+}
+
 .header_container {
      height: 50px; 
      background: var(--dark1);
