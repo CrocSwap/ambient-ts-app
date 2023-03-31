@@ -630,7 +630,7 @@ export default function Reposition(props: propsIF) {
                                 : openModal
                         }
                         disabled={isPositionInRange}
-                        flat={true}
+                        flat
                     />
                 </div>
             </div>

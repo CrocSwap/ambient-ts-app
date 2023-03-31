@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './ExtraInfo.module.css';
@@ -192,10 +192,6 @@ export default function ExtraInfo(props: propsIF) {
                     </div>
                 ) : null,
             )}
-        </div>
-    );
-    const feesAndSlippageDetails = (
-        <div className={styles.extra_details}>
             {feesAndSlippageData.map((item, idx) =>
                 item ? (
                     <div
@@ -230,7 +226,13 @@ export default function ExtraInfo(props: propsIF) {
             )}
         </div>
     );
-
+    // eslint-disable-next-line
+    const dropDownOrNull = priceImpact ? (
+        <div style={{ cursor: 'pointer', marginTop: '4px' }}>
+            {!showExtraDetails && <RiArrowDownSLine size={22} />}
+            {showExtraDetails && <RiArrowUpSLine size={22} />}
+        </div>
+    ) : null;
     const dispatch = useAppDispatch();
 
     // const updateShowExtraDetails = () => {
@@ -312,8 +314,6 @@ export default function ExtraInfo(props: propsIF) {
     // const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
     const extraDetailsOrNull =
         showExtraDetails && priceImpact ? extraInfoDetails : null;
-    const feesAndSlippageOrNull =
-        showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>
@@ -321,7 +321,6 @@ export default function ExtraInfo(props: propsIF) {
             {extraDetailsDropdown}
             {/* {dropDownOrNull} */}
             {extraDetailsOrNull}
-            {feesAndSlippageOrNull}
         </>
     );
 }

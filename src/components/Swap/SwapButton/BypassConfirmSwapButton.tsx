@@ -19,7 +19,7 @@ import {
 import styles from './BypassConfirmSwapButton.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -45,12 +45,9 @@ interface propsIF {
     showBypassConfirm: boolean;
     showExtraInfo: boolean;
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
-    bypassConfirmSwap: skipConfirmIF;
 }
 
 export default function BypassConfirmSwapButton(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
-
     const {
         initiateSwapMethod,
         newSwapTransactionHash,
@@ -65,15 +62,16 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         setShowExtraInfo,
     } = props;
 
+    const receiptData = useAppSelector((state) => state.receiptData);
+
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
     const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
-    const sellTokenData = tokenPair.dataTokenA;
-
-    const buyTokenData = tokenPair.dataTokenB;
+    const sellTokenData: TokenIF = tokenPair.dataTokenA;
+    const buyTokenData: TokenIF = tokenPair.dataTokenB;
 
     const confirmSendMessage = (
         <WaitingConfirmation

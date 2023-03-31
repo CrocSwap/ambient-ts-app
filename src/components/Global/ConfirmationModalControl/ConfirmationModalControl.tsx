@@ -6,7 +6,6 @@ import styles from './ConfirmationModalControl.module.css';
 interface propsIF {
     tempBypassConfirm: boolean;
     setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
-    toggleFor: string;
     displayInSettings?: boolean;
 }
 
