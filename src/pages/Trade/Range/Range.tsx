@@ -482,13 +482,6 @@ export default function Range(props: propsIF) {
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            // dispatch(
-            //     setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
-            // );
-            // dispatch(
-            //     setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
-            // );
-
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
@@ -733,20 +726,12 @@ export default function Range(props: propsIF) {
                 }
             }
 
-            // dispatch(
-            //     setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
-            // );
-            // dispatch(
-            //     setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
-            // );
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
             setMinPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
             );
-
-            // dispatch(setRangeModuleTriggered(true));
         }
     }, [
         currentPoolPriceTick,
@@ -792,13 +777,17 @@ export default function Range(props: propsIF) {
                       setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
                   );
 
-            // !denominationsInBase
-            //     ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
-            //     : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
-
             !denominationsInBase
-                ? setMinPrice(pinnedDisplayPrices.pinnedLowTick)
-                : setMaxPrice(pinnedDisplayPrices.pinnedHighTick);
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
 
             if (isLinesSwitched) {
                 denominationsInBase
@@ -839,8 +828,6 @@ export default function Range(props: propsIF) {
                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
             );
 
-            // console.log(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
-
             if (rangeLowBoundDisplayField) {
                 rangeLowBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
@@ -878,6 +865,18 @@ export default function Range(props: propsIF) {
                   )
                 : setRangeHighBoundNonDisplayPrice(
                       pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            denominationsInBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
                   );
 
             denominationsInBase
