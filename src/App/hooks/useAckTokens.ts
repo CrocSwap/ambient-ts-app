@@ -3,7 +3,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 
 export interface ackTokensMethodsIF {
     ackTokens: TokenIF[];
-    acknowledge: (newToken: TokenIF) => void;
+    acknowledge: (newTkn: TokenIF) => void;
     check: (tkn: TokenIF) => boolean;
 }
 
