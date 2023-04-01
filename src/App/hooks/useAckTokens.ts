@@ -8,8 +8,6 @@ export interface ackTokensMethodsIF {
 }
 
 export const useAckTokens = (): ackTokensMethodsIF => {
-    console.log('ran hook useAckTokens() in App.tsx file!');
-
     const localStorageKey = 'acknowledgedTokens';
 
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(
