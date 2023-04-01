@@ -17,13 +17,14 @@ export const useAckTokens = (): ackTokensMethodsIF => {
     );
 
     function acknowledgeToken(newTkn: TokenIF): void {
-        const ackTokensWithNewRemoved = ackTokens.filter((ackToken: TokenIF) => (
+        const ackTokensWithNewRemoved: TokenIF[] = ackTokens.filter((ackToken: TokenIF) => (
             ackToken.address.toLowerCase() !== newTkn.address.toLowerCase() ||
             ackToken.chainId === newTkn.chainId
         ));
-        setAckTokens([newTkn, ...ackTokensWithNewRemoved]);
+        const updatedAckTokensArray: TokenIF[] = [newTkn, ...ackTokensWithNewRemoved];
+        setAckTokens(updatedAckTokensArray);
         localStorage.setItem(
-            localStorageKey, JSON.stringify([newTkn, ...ackTokensWithNewRemoved])
+            localStorageKey, JSON.stringify(updatedAckTokensArray)
         );
     }
 
