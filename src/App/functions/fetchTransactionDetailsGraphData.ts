@@ -35,7 +35,7 @@ export const fetchTransactionGraphData = async (
                             dex: 'all',
                             poolStats: 'true',
                             concise: 'true',
-                            poolStatsChainIdOverride: '0x5',
+                            poolStatsChainIdOverride: chainData.chainId,
                             poolStatsBaseOverride:
                                 baseTokenAddress.toLowerCase(),
                             poolStatsQuoteOverride:
