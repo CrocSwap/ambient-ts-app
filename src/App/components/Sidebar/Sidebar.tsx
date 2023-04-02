@@ -28,7 +28,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     LimitOrderIF,
     PositionIF,
@@ -166,20 +165,6 @@ export default function Sidebar(props: propsIF) {
             ),
         },
     ];
-    const sidebarLimitOrderProps = {
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: setOutsideControl,
-        isShowAllEnabled: props.isShowAllEnabled,
-        setCurrentPositionActive: setCurrentPositionActive,
-        setIsShowAllEnabled: props.setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isConnected,
-
-        setShowSidebar: setShowSidebar,
-    };
 
     const rangePositions = [
         {
@@ -211,7 +196,17 @@ export default function Sidebar(props: propsIF) {
                     tokenMap={tokenMap}
                     chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
-                    {...sidebarLimitOrderProps}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    outsideControl={props.outsideControl}
+                    setOutsideControl={setOutsideControl}
+                    isShowAllEnabled={isShowAllEnabled}
+                    setCurrentPositionActive={setCurrentPositionActive}
+                    setIsShowAllEnabled={props.setIsShowAllEnabled}
+                    expandTradeTable={expandTradeTable}
+                    setExpandTradeTable={setExpandTradeTable}
+                    isUserLoggedIn={isConnected}
+                    setShowSidebar={setShowSidebar}
                 />
             ),
         },
@@ -264,9 +259,6 @@ export default function Sidebar(props: propsIF) {
         },
     ];
 
-    const userData = useAppSelector((state) => state.userData);
-    const shouldRecheckLocalStorage = userData.shouldRecheckLocalStorage;
-
     const [
         setRawInput,
         isInputValid,
@@ -280,7 +272,7 @@ export default function Sidebar(props: propsIF) {
         txsByUser,
         limitsByUser,
         verifyToken,
-        shouldRecheckLocalStorage,
+        ackTokens,
     );
 
     const [searchInput, setSearchInput] = useState<string[][]>();

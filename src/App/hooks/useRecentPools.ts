@@ -34,7 +34,7 @@ export const useRecentPools = (
         // logic to determine if a token is on a known list or acknowledged
         const checkToken = (tkn: TokenIF): boolean => {
             const isListed = verifyToken(tkn.address.toLowerCase(), chainId);
-            const isAcknowledged = ackTokens.check(tkn);
+            const isAcknowledged = ackTokens.check(tkn.address.toLowerCase(), chainId);
             return isListed || isAcknowledged;
         };
         // add the pool to the list of recent pools

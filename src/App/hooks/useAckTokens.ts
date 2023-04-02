@@ -4,7 +4,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 export interface ackTokensMethodsIF {
     tokens: TokenIF[];
     acknowledge: (newTkn: TokenIF) => void;
-    check: (tkn: TokenIF) => boolean;
+    check: (addr: string, chn: number|string) => boolean;
     lookup: (addr: string, chn: number|string) => TokenIF | undefined;
 }
 
@@ -32,10 +32,11 @@ export const useAckTokens = (): ackTokensMethodsIF => {
     }
 
     // fn to check if a token has been acknowledged
-    function checkToken(tkn: TokenIF): boolean {
+    function checkToken(addr: string, chn: number|string): boolean {
+        const chnAsNumber: number = typeof chn === 'string' ? parseInt(chn) : chn;
         return ackTokens.some((ackToken: TokenIF) => (
-            ackToken.address.toLowerCase() === tkn.address.toLowerCase() &&
-            ackToken.chainId === tkn.chainId
+            ackToken.address.toLowerCase() === addr.toLowerCase() &&
+            ackToken.chainId === chnAsNumber
         ));
     }
 
