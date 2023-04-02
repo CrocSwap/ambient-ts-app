@@ -25,6 +25,12 @@ export default function NetworkButtons() {
             icon: '',
             theme: '#36364a',
         },
+        {
+            name: 'Arbitrum Testnet',
+            id: '0x66eed',
+            icon: '',
+            theme: '#36364a',
+        },
     ];
 
     return (
