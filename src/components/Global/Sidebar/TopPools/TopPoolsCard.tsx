@@ -77,8 +77,6 @@ export default function TopPoolsCard(props: propsIF) {
         // return () => clearInterval(timerId);
     }, [lastBlockNumber]);
 
-    const chainString = '0x5';
-
     const tokenAString =
         pool.base.address.toLowerCase() ===
         tradeData.tokenA.address.toLowerCase()
