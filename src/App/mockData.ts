@@ -101,6 +101,7 @@ export const topPools = [
         id: 4,
     },
 ];
+
 export const topTokens = [
     {
         name: 'ETH',
@@ -179,28 +180,3 @@ export const topTokens = [
         id: 3,
     },
 ];
-
-// {
-//         name: 'ETH / DAI',
-//         base: {
-//             name: 'Native Ether',
-//             address: '0x0000000000000000000000000000000000000000',
-//             symbol: 'ETH',
-//             decimals: 18,
-//             chainId: 0x5,
-//             logoURI:
-//                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-//         },
-//         quote: {
-//             name: 'Dai Stablecoin',
-//             address: '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60',
-//             symbol: 'DAI',
-//             decimals: 18,
-//             chainId: 0x5,
-//             logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
-//         },
-//         chainId: '0x5',
-//         poolId: 36000,
-//         speed: -2,
-//         id: 2,
-//     },
