@@ -2997,6 +2997,7 @@ export default function App() {
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
+        ackTokens: ackTokens,
     };
 
     const analyticsProps = {

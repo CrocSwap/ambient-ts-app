@@ -5,6 +5,7 @@ export interface ackTokensMethodsIF {
     tokens: TokenIF[];
     acknowledge: (newTkn: TokenIF) => void;
     check: (tkn: TokenIF) => boolean;
+    lookup: (addr: string, chn: number|string) => TokenIF | undefined;
 }
 
 export const useAckTokens = (): ackTokensMethodsIF => {
@@ -38,9 +39,18 @@ export const useAckTokens = (): ackTokensMethodsIF => {
         ));
     }
 
+    function findToken(addr: string, chn: number|string): TokenIF | undefined {
+        const chnAsNumber: number = typeof chn === 'string' ? parseInt(chn) : chn;
+        return ackTokens.find((ackToken: TokenIF) => 
+            ackToken.chainId === chnAsNumber &&
+            ackToken.address.toLowerCase() === addr.toLowerCase(),
+        );
+    }
+
     return {
         tokens: ackTokens,
         acknowledge: acknowledgeToken,
         check: checkToken,
+        lookup: findToken,
     }
 }

@@ -50,6 +50,7 @@ import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
+import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -90,6 +91,7 @@ interface propsIF {
     positionsByUser: PositionIF[];
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function Sidebar(props: propsIF) {
@@ -123,6 +125,7 @@ export default function Sidebar(props: propsIF) {
         setSelectedOutsideTab,
         txsByUser,
         limitsByUser,
+        ackTokens,
     } = props;
 
     const location = useLocation();
@@ -591,6 +594,7 @@ export default function Sidebar(props: propsIF) {
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             searchedTxs={searchedTxs}
                             searchedLimitOrders={searchedLimitOrders}
+                            ackTokens={ackTokens}
                         />
                     ) : (
                         regularSidebarDisplay
