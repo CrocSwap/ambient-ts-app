@@ -570,8 +570,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        console.log(chainData.nodeUrl);
-        fetch(chainData.nodeUrl2, {
+        fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
