@@ -1,5 +1,6 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { validateChainId } from '../data/chains';
 import { goerliETH, goerliUSDC } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
@@ -217,7 +218,7 @@ export const tradeDataSlice = createSlice({
             state.targetData = action.payload;
         },
         resetTokens: (state, action: PayloadAction<string>) => {
-            if (action.payload === '0x5') {
+            if (validateChainId(action.payload)) {
                 state.tokenA = initialState.tokenA;
                 state.tokenB = initialState.tokenB;
             }
