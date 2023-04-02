@@ -168,10 +168,6 @@ export default function InitPool(props: propsIF) {
                 addresses: [addr],
                 chain,
             });
-            // const promise = Moralis.Web3API.token.getTokenMetadata({
-            //     chain: chain as '0x5',
-            //     addresses: [addr],
-            // });
 
             Promise.resolve(promise)
                 .then((res) => res?.result[0].token)

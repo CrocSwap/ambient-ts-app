@@ -241,7 +241,7 @@ export default function Reposition(props: propsIF) {
             position.quoteDecimals,
             lowTick,
             highTick,
-            lookupChain(position?.chainId || '0x5').gridSize,
+            lookupChain(position.chainId).gridSize,
         );
 
         setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
@@ -325,7 +325,7 @@ export default function Reposition(props: propsIF) {
         position?.quoteDecimals || 18,
         lowTick,
         highTick,
-        lookupChain(position?.chainId || '0x5').gridSize,
+        lookupChain(position.chainId).gridSize,
     );
 
     const pinnedMinPriceDisplayTruncated =
@@ -378,7 +378,7 @@ export default function Reposition(props: propsIF) {
 
     const positionStatsCacheEndpoint =
         httpGraphCacheServerDomain + '/position_stats?';
-    const poolIndex = lookupChain(position?.chainId || '0x5').poolIndex;
+    const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {
         fetch(
@@ -390,7 +390,7 @@ export default function Reposition(props: propsIF) {
                     base: position.base,
                     quote: position.quote,
                     poolIdx: poolIndex.toString(),
-                    chainId: position?.chainId || '0x5',
+                    chainId: position.chainId,
                     positionType: position.positionType,
                     addValue: 'true',
                     omitAPY: 'true',
@@ -458,7 +458,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -476,7 +476,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -494,7 +494,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -512,7 +512,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
