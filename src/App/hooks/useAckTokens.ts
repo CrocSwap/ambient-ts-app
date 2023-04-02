@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 export interface ackTokensMethodsIF {
-    ackTokens: TokenIF[];
+    tokens: TokenIF[];
     acknowledge: (newTkn: TokenIF) => void;
     check: (tkn: TokenIF) => boolean;
 }
@@ -34,7 +34,7 @@ export const useAckTokens = (): ackTokensMethodsIF => {
     }
 
     return {
-        ackTokens,
+        tokens: ackTokens,
         acknowledge: acknowledgeToken,
         check: checkToken,
     }

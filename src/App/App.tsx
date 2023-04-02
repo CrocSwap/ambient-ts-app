@@ -173,7 +173,7 @@ import {
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
-import { useAckTokens } from './hooks/useAckTokens';
+import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -246,8 +246,6 @@ export default function App() {
     const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
     const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
     const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
-
-    useAckTokens();
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -358,6 +356,16 @@ export default function App() {
     // const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
+    // custom hook to manage chain the app is using
+    // `chainData` is data on the current chain retrieved from our SDK
+    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
+    // `switchChain` is a function to switch to a different chain
+    // `'0x5'` is the chain the app should be on by default
+    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+
+    // hook to manage acknowledged tokens
+    const ackTokens: ackTokensMethodsIF = useAckTokens();
+
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -421,13 +429,6 @@ export default function App() {
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
-    // custom hook to manage chain the app is using
-    // `chainData` is data on the current chain retrieved from our SDK
-    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
-    // `switchChain` is a function to switch to a different chain
-    // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
-
     const [
         localTokens,
         verifyToken,
@@ -448,6 +449,7 @@ export default function App() {
         tradeData.tokenA,
         tradeData.tokenB,
         verifyToken,
+        ackTokens
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
