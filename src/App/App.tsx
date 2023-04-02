@@ -423,7 +423,13 @@ export default function App() {
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+    const dfltChainId = process.env.REACT_APP_DFLT_CHAIN_ID
+        ? process.env.REACT_APP_DFLT_CHAIN_ID
+        : '0x5';
+    const [chainData, isChainSupported] = useAppChain(
+        dfltChainId,
+        isUserLoggedIn,
+    );
 
     const [
         localTokens,
