@@ -15,7 +15,8 @@ interface propsIF {
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, pool, chainId, cachedPoolStatsFetch, lastBlockNumber } =
+        props;
 
     const { pathname } = useLocation();
 
@@ -92,7 +93,7 @@ export default function TopPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={`${locationSlug}/chain=${chainString}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
+            to={`${locationSlug}/chain=${chainId}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
