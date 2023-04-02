@@ -422,7 +422,6 @@ export default function App() {
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
-    // `'0x5'` is the chain the app should be on by default
     const dfltChainId = process.env.REACT_APP_DFLT_CHAIN_ID
         ? process.env.REACT_APP_DFLT_CHAIN_ID
         : '0x5';
