@@ -115,7 +115,7 @@ import {
     setRecentTokens,
     setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
-import { checkIsStable } from '../utils/data/stablePairs';
+import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
@@ -651,7 +651,7 @@ export default function App() {
 
     const isPairStable = useMemo(
         () =>
-            checkIsStable(
+            isStablePair(
                 tradeData.tokenA.address,
                 tradeData.tokenB.address,
                 chainData.chainId,
