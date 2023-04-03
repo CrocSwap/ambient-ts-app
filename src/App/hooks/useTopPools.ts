@@ -15,6 +15,7 @@ interface topPoolIF {
 export interface topPoolsMethodsIF {
     all: topPoolIF[];
     activeChain: topPoolIF[];
+    getByChain: (c: string) => topPoolIF[];
 };
 
 export const useTopPools = (chainId: string): topPoolsMethodsIF => {
@@ -37,5 +38,6 @@ export const useTopPools = (chainId: string): topPoolsMethodsIF => {
     return {
         all: topPools,
         activeChain: getPoolsByChain(chainId),
+        getByChain: (c: string) => getPoolsByChain(c),
     };
 };
