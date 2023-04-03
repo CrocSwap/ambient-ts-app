@@ -260,6 +260,8 @@ export default function Reposition(props: propsIF) {
             return;
         }
         let tx;
+        setTxErrorCode('');
+        setTxErrorMessage('');
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);

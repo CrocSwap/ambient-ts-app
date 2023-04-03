@@ -468,11 +468,8 @@ export default function HarvestPosition(props: propsIF) {
         useState(removalPending);
 
     const transactionApproved = newHarvestTransactionHash !== '';
-
-    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -483,13 +480,9 @@ export default function HarvestPosition(props: propsIF) {
 
         if (transactionApproved) {
             setCurrentConfirmationData(removalSuccess);
-        } else if (isRemovalDenied) {
+        } else if (isTransactionDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -507,7 +500,7 @@ export default function HarvestPosition(props: propsIF) {
         newHarvestTransactionHash,
         txErrorCode,
         showConfirmation,
-        isRemovalDenied,
+        isTransactionDenied,
     ]);
 
     const mainModalContent = showSettings ? (
