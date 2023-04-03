@@ -281,11 +281,8 @@ export default function OrderRemoval(props: propsIF) {
         useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
-
-    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -300,15 +297,11 @@ export default function OrderRemoval(props: propsIF) {
 
         if (transactionApproved) {
             setCurrentConfirmationData(removalSuccess);
-        } else if (isRemovalDenied) {
+        } else if (isTransactionDenied) {
             setCurrentConfirmationData(
                 <TransactionDenied resetConfirmation={resetConfirmation} />,
             );
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -317,11 +310,10 @@ export default function OrderRemoval(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-
         newRemovalTransactionHash,
         txErrorCode,
         showConfirmation,
-        isRemovalDenied,
+        isTransactionDenied,
     ]);
 
     const confirmationContent = (

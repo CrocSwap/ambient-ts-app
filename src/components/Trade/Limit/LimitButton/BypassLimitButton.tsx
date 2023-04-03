@@ -27,16 +27,6 @@ interface propsIF {
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendLimitOrder: () => Promise<void>;
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
-    // txErrorMessage: string;
-    // setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
-    // showConfirmation: boolean;
-    // slippageTolerancePercentage: number;
-    // effectivePrice: number;
-    // isSellTokenBase: boolean;
-    // bypassConfirm: boolean;
-    // toggleBypassConfirm: (item: string, pref: boolean) => void;
-    // sellQtyString: string;
-    // buyQtyString: string;
 }
 export default function BypassLimitButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -48,20 +38,14 @@ export default function BypassLimitButton(props: propsIF) {
         tokenPair,
         resetConfirmation,
         sendLimitOrder,
-        // showBypassConfirmButton,
         setShowBypassConfirmButton,
         setNewLimitOrderTransactionHash,
     } = props;
 
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
     const transactionApproved = newLimitOrderTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    // const isTransactionDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
     const sellTokenQty = (
         document.getElementById('sell-limit-quantity') as HTMLInputElement
     )?.value;
@@ -133,55 +117,43 @@ export default function BypassLimitButton(props: propsIF) {
         />
     );
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : lastReceipt && !isLastReceiptSuccess
-            ? transactionFailed
-            : confirmSendMessage;
+    const confirmationDisplay = isTransactionException
+        ? transactionException
+        : isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : lastReceipt && !isLastReceiptSuccess
+        ? transactionFailed
+        : confirmSendMessage;
 
-    const buttonColor =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? 'orange'
-            : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
-            ? 'var(--negative)'
-            : transactionApproved
-            ? 'var(--positive)'
-            : 'var(--text-highlight-dark)';
+    const buttonColor = isTransactionException
+        ? 'orange'
+        : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
+        ? 'var(--negative)'
+        : transactionApproved
+        ? 'var(--positive)'
+        : 'var(--text-highlight-dark)';
 
-    const animationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException ? (
-            <CircleLoaderFailed size='30px' />
-        ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
-            <CircleLoaderFailed size='30px' />
-        ) : transactionApproved ? (
-            <CircleLoaderCompleted size='30px' />
-        ) : (
-            <CircleLoader size='30px' />
-        );
+    const animationDisplay = isTransactionException ? (
+        <CircleLoaderFailed size='30px' />
+    ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
+        <CircleLoaderFailed size='30px' />
+    ) : transactionApproved ? (
+        <CircleLoaderCompleted size='30px' />
+    ) : (
+        <CircleLoader size='30px' />
+    );
 
-    const buttonText =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? 'Transaction Exception'
-            : isTransactionDenied
-            ? 'Transaction Denied'
-            : lastReceipt && !isLastReceiptSuccess
-            ? 'Transaction Failed'
-            : transactionApproved
-            ? 'Transaction Submitted'
-            : `Submitting Order to swap ${tokenAInputQty} ${sellTokenData.symbol} for ${tokenBInputQty} ${buyTokenData.symbol}`;
+    const buttonText = isTransactionException
+        ? 'Transaction Exception'
+        : isTransactionDenied
+        ? 'Transaction Denied'
+        : lastReceipt && !isLastReceiptSuccess
+        ? 'Transaction Failed'
+        : transactionApproved
+        ? 'Transaction Submitted'
+        : `Submitting Limit Order to Swap ${tokenAInputQty} ${sellTokenData.symbol} for ${tokenBInputQty} ${buyTokenData.symbol}`;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 

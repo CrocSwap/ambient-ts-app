@@ -239,16 +239,13 @@ export default function ClaimOrder(props: propsIF) {
     const [currentConfirmationData, setCurrentConfirmationData] =
         useState(claimPending);
 
-    const transactionApproved = newClaimTransactionHash !== '';
-
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
+    const transactionApproved = newClaimTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(claimPending);
@@ -259,11 +256,7 @@ export default function ClaimOrder(props: propsIF) {
             setCurrentConfirmationData(
                 <TransactionDenied resetConfirmation={resetConfirmation} />,
             );
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
