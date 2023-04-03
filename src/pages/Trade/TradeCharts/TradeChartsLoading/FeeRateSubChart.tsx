@@ -19,6 +19,7 @@ interface FreeRateData {
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     isCrosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function FeeRateSubChart(props: FreeRateData) {
@@ -35,6 +36,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         setCrossHairLocation,
         setIsCrosshairActive,
         isCrosshairActive,
+        setIsMouseMoveCrosshair,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -328,11 +330,13 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         setCrossHairLocation(event, false);
                         setIsCrosshairActive('feeRate');
                         props.setShowTooltip(true);
+                        setIsMouseMoveCrosshair(true);
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setIsCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
                     render();
                 });
             }
