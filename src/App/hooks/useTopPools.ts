@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { topPools as mockTopPools } from '../mockData';
 
-interface topPoolIF {
+export interface topPoolIF {
     name: string;
     base: TokenIF;
     quote: TokenIF;

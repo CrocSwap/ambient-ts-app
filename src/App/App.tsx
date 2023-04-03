@@ -3002,6 +3002,7 @@ export default function App() {
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
         ackTokens: ackTokens,
+        topPools: topPools,
     };
 
     const analyticsProps = {
@@ -3451,7 +3452,6 @@ export default function App() {
                                         setAnalyticsSearchInput={
                                             setAnalyticsSearchInput
                                         }
-                                        topPools={topPools}
                                     />
                                 }
                             />

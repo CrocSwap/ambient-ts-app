@@ -50,6 +50,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
+import { topPoolsMethodsIF } from '../../hooks/useTopPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -91,6 +92,7 @@ interface propsIF {
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
+    topPools: topPoolsMethodsIF;
 }
 
 export default function Sidebar(props: propsIF) {
@@ -125,6 +127,7 @@ export default function Sidebar(props: propsIF) {
         txsByUser,
         limitsByUser,
         ackTokens,
+        topPools
     } = props;
 
     const location = useLocation();
@@ -161,6 +164,7 @@ export default function Sidebar(props: propsIF) {
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     poolList={poolList}
+                    topPools={topPools}
                 />
             ),
         },
