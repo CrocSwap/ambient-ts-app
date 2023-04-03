@@ -148,6 +148,9 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         isRangeCopied && styles.pulse_animation
                     }`}
                     id='percentage-output'
+                    aria-live='polite'
+                    aria-atomic='true'
+                    aria-relevant='all'
                 >
                     {rangeWidthPercentage === 100
                         ? 'Ambient'
@@ -158,6 +161,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     <input
                         size={28}
                         aria-labelledby='input slider'
+                        aria-label='Input slider for range width'
                         id='input-slider-range'
                         min='1'
                         max='100'
