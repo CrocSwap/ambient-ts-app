@@ -42,7 +42,8 @@ export default function PoolLI(props: propsIF) {
             );
             // look for token data obj in acknowledged tokens list
             const tokenFromAckList: TokenIF | undefined = ackTokens.lookup(
-                addr.toLowerCase(), chn
+                addr.toLowerCase(),
+                chn,
             );
             // single variable to hold either retrieved token
             const outputToken: TokenIF | undefined =
@@ -94,7 +95,9 @@ export default function PoolLI(props: propsIF) {
             className={styles.card_container}
             onClick={() => handleClick(pool.base, pool.quote)}
         >
-            <p>{baseToken?.symbol ?? '--'} / {quoteToken?.symbol ?? '--'}</p>
+            <p>
+                {baseToken?.symbol ?? '--'} / {quoteToken?.symbol ?? '--'}
+            </p>
             <p style={{ textAlign: 'center' }}>{poolVolume ?? '--'}</p>
             <p style={{ textAlign: 'center' }}>{poolTvl ?? '--'}</p>
         </li>

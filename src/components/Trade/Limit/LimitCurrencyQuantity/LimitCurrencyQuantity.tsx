@@ -71,6 +71,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
+                autoFocus={fieldId === 'sell'}
                 required
             />
         </div>

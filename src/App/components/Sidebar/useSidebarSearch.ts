@@ -87,7 +87,8 @@ export const useSidebarSearch = (
                 const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
                 // check if token was previously acknowledged by user
                 const isAcknowledged: boolean = ackTokens.check(
-                    addr.toLowerCase(), chn
+                    addr.toLowerCase(),
+                    chn,
                 );
                 // return true if either verification passed
                 return isKnown || isAcknowledged;

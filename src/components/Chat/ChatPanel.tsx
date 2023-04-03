@@ -464,6 +464,7 @@ export default function ChatPanel(props: propsIF) {
                     : room
             }
             ensName={ensName}
+            appPage={props.appPage}
         />
     );
 

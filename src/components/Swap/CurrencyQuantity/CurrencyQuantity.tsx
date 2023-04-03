@@ -89,6 +89,7 @@ export default function CurrencyQuantity(props: propsIF) {
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
+                autoFocus={fieldId === 'sell'}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 tabIndex={0}
