@@ -175,7 +175,7 @@ import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
-import { useTopPools } from './hooks/useTopPools';
+import { topPoolsMethodsIF, useTopPools } from './hooks/useTopPools';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -365,7 +365,7 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
-    const topPools = useTopPools();
+    const topPools: topPoolsMethodsIF = useTopPools();
     false && topPools;
 
     // hook to manage acknowledged tokens
