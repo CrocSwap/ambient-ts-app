@@ -323,7 +323,7 @@ export default function HarvestPosition(props: propsIF) {
                         }),
                     );
             } catch (error) {
-                console.log('caught error');
+                console.log({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 dispatch(removePositionPendingUpdate(posHash as string));
@@ -460,7 +460,7 @@ export default function HarvestPosition(props: propsIF) {
 
     const removalPending = (
         <WaitingConfirmation
-            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+            content={`Submitting harvest rewards transaction for ${position.baseSymbol} and ${position.quoteSymbol}.`}
         />
     );
 
