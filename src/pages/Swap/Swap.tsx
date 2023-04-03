@@ -242,14 +242,17 @@ export default function Swap(props: propsIF) {
         if (
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
-            txErrorCode === ''
+            txErrorCode === '' &&
+            bypassConfirm.swap.isEnabled
         ) {
+            setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
         }
     }, [
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
+        bypassConfirm.swap.isEnabled,
     ]);
 
     const resetConfirmation = () => {
@@ -261,9 +264,7 @@ export default function Swap(props: propsIF) {
     useEffect(() => {
         setNewSwapTransactionHash('');
         setShowBypassConfirm(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     async function initiateSwap() {
         resetConfirmation();
@@ -417,6 +418,7 @@ export default function Swap(props: propsIF) {
         <button
             onClick={openModalWallet}
             className={styles.authenticate_button}
+            style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
             Connect Wallet
         </button>

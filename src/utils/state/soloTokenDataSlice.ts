@@ -2,25 +2,25 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { goerliETH } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
-export interface stuff {
+interface soloTokenData {
     token: TokenIF;
 }
 
-const initialState: stuff = {
+const initialState: soloTokenData = {
     token: goerliETH,
 };
 
-export const tempSlice = createSlice({
-    name: 'temp',
+const soloTokenDataSlice = createSlice({
+    name: 'soloTokenData',
     initialState,
     reducers: {
-        setToken: (state, action: PayloadAction<TokenIF>) => {
+        setSoloToken: (state, action: PayloadAction<TokenIF>) => {
             state.token = action.payload;
         },
     },
 });
 
 // action creators are generated for each case reducer function
-export const { setToken } = tempSlice.actions;
+export const { setSoloToken } = soloTokenDataSlice.actions;
 
-export default tempSlice.reducer;
+export default soloTokenDataSlice.reducer;

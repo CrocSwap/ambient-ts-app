@@ -36,7 +36,7 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
-import { checkIsStable } from '../../utils/data/stablePairs';
+import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
 
@@ -289,7 +289,7 @@ export default function RemoveRange(props: propsIF) {
     const isPositionPendingUpdate =
         positionsPendingUpdate.indexOf(posHash as string) > -1;
 
-    const isPairStable: boolean = checkIsStable(
+    const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
         chainId,

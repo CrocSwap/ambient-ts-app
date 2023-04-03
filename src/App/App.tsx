@@ -115,7 +115,7 @@ import {
     setRecentTokens,
     setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
-import { checkIsStable } from '../utils/data/stablePairs';
+import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
@@ -173,6 +173,7 @@ import {
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
@@ -449,7 +450,7 @@ export default function App() {
         tradeData.tokenA,
         tradeData.tokenB,
         verifyToken,
-        ackTokens
+        ackTokens,
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
@@ -575,8 +576,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        console.log(chainData.nodeUrl);
-        fetch(chainData.nodeUrl2, {
+        fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -657,7 +657,7 @@ export default function App() {
 
     const isPairStable = useMemo(
         () =>
-            checkIsStable(
+            isStablePair(
                 tradeData.tokenA.address,
                 tradeData.tokenB.address,
                 chainData.chainId,
@@ -3148,6 +3148,20 @@ export default function App() {
             setIsChatOpen(!isChatOpen);
         },
     );
+
+    // Since input field are autofocused on each route, we need. away for the user to exit that focus on their keyboard. This achieves that.
+
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
+            const focusedInput = document?.querySelector(
+                ':focus',
+            ) as HTMLInputElement;
+            if (focusedInput) {
+                focusedInput.blur();
+            }
+        }
+    }, [isEscapePressed]);
 
     return (
         <>

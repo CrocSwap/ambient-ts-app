@@ -163,7 +163,9 @@ export default function Portfolio(props: propsIF) {
 
     const isUserLoggedIn = isConnected;
 
-    const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
+    const selectedToken: TokenIF = useAppSelector(
+        (state) => state.soloTokenData.token,
+    );
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =

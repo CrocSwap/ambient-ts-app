@@ -803,12 +803,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 onClick={reverseTokens}
             >
-                {isLiq ? null : <TokensArrow />}
-                {/* {isLiq ? null : (
-                    <IconWithTooltip title='Reverse tokens' placement='left' enterDelay='1000'>
-                        <TokensArrow />
-                    </IconWithTooltip>
-                )} */}
+                {isLiq ? null : <TokensArrow disabled={disableReverseTokens} />}
             </div>
             <div id='swap_currency_converter'>
                 <CurrencySelector
