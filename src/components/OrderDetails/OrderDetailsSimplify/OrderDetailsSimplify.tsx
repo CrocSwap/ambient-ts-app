@@ -107,8 +107,6 @@ export default function OrderDetailsSimplify(
         // positionLiquidity,
     } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
-    // console.log({ limitOrder });
-
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
     const [value, copy] = useCopyToClipboard();

@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Orders.module.css';
 interface OrderHeaderPropsIF {
     header: {
@@ -25,17 +26,17 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
         if (sortable) {
             console.clear();
             if (sortBy !== slug) {
-                console.log('first click');
+                IS_LOCAL_ENV && console.debug('first click');
                 setSortBy(slug);
             } else if (!reverseSort) {
-                console.log('second click');
+                IS_LOCAL_ENV && console.debug('second click');
                 setReverseSort(true);
             } else if (sortBy === slug && reverseSort) {
-                console.log('third click');
+                IS_LOCAL_ENV && console.debug('third click');
                 setSortBy('default');
                 setReverseSort(false);
             } else {
-                console.warn(
+                console.error(
                     'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
                 );
                 setSortBy('default');

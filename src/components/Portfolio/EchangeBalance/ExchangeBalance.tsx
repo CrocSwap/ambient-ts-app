@@ -129,7 +129,7 @@ export default function ExchangeBalance(props: propsIF) {
                     } else setSecondaryEnsName(undefined);
                 } catch (error) {
                     setSecondaryEnsName(undefined);
-                    console.log({ error });
+                    console.error({ error });
                 }
             } else {
                 setSecondaryEnsName(undefined);

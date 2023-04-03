@@ -238,12 +238,8 @@ export default function RangeDetails(props: propsIF) {
                               maximumFractionDigits: 2,
                           });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-
-                    // if (positionStats.apy) {
-                    //     setUpdatedPositionApy(positionStats.apy);
-                    // }
                 })
-                .catch(console.log);
+                .catch(console.error);
 
             fetch(
                 apyCacheEndpoint +
@@ -268,7 +264,7 @@ export default function RangeDetails(props: propsIF) {
                         setUpdatedPositionApy(apr);
                     }
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
         if (
             crocEnv &&
@@ -294,14 +290,9 @@ export default function RangeDetails(props: propsIF) {
                         quoteTokenDecimals,
                     );
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        // console.log({ newDisplayPrice });
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
-                //  if (spotPrice !== poolPriceNonDisplay) {
-                //      console.log('dispatching new non-display spot price');
-                //      dispatch(setPoolPriceNonDisplay(spotPrice));
-                //  }
             })();
         }
     }, [lastBlockNumber]);

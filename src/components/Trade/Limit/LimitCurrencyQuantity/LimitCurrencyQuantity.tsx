@@ -17,11 +17,9 @@ export default function LimitCurrencyQuantity(props: propsIF) {
     const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
-        // console.log(`setting display value for ${fieldId} to: ${value}`);
         setDisplayValue(value);
     }, [value]);
 
-    // console.log({ fieldId });
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         // if (event && fieldId === 'sell') {
         //     setTokenBInputQty('');

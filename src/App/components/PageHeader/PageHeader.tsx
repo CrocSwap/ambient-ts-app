@@ -17,6 +17,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
+import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -68,16 +69,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
-    const branchName =
-        process.env.REACT_APP_BRANCH_NAME !== undefined
-            ? process.env.REACT_APP_BRANCH_NAME
-            : 'local';
-
-    const showBranchName =
-        branchName.toLowerCase() !== 'main' &&
-        branchName.toLowerCase() !== 'production';
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -305,9 +296,9 @@ export default function PageHeader(props: HeaderPropsIF) {
             <div>
                 <div className={styles.account}>
                     <p className={styles.branch_name}>
-                        {showBranchName ? (
+                        {APP_ENVIRONMENT === 'local' ? (
                             <div className={styles.branch}>
-                                {branchName} <BiGitBranch color='yellow' />
+                                {BRANCH_NAME} <BiGitBranch color='yellow' />
                             </div>
                         ) : null}
                     </p>

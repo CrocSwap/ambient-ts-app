@@ -14,6 +14,7 @@ import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     account: string;
@@ -88,14 +89,11 @@ export default function OrderDetails(props: propsIF) {
     const quoteTokenAddress = limitOrder.quote;
     const positionType = 'knockout';
 
-    // console.log({ limitOrder });
-
     const isBid = limitOrder.isBid;
 
     const limitPriceString = truncatedDisplayPrice
         ? truncatedDisplayPrice
         : '0';
-    // console.log({ limitPriceString });
 
     const parsedLimitPriceNum = parseFloat(limitPriceString.replace(/,/, ''));
     const baseDisplayFrontendNum = parseFloat(
@@ -117,8 +115,6 @@ export default function OrderDetails(props: propsIF) {
         ? baseDisplayFrontendNum * parsedLimitPriceNum
         : baseDisplayFrontendNum / parsedLimitPriceNum;
 
-    // console.log({ approximateSellQty });
-
     const approximateSellQtyTruncated =
         approximateSellQty === 0
             ? '0'
@@ -132,8 +128,6 @@ export default function OrderDetails(props: propsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-
-    // console.log({ parsedLimitPriceNum });
 
     const approximateBuyQty = isFillStarted
         ? isBid
@@ -150,8 +144,6 @@ export default function OrderDetails(props: propsIF) {
         : isDenomBase
         ? quoteDisplayFrontendNum / parsedLimitPriceNum
         : quoteDisplayFrontendNum * parsedLimitPriceNum;
-
-    // console.log({ approximateBuyQty });
 
     const approximateBuyQtyTruncated =
         approximateBuyQty === 0
@@ -194,7 +186,7 @@ export default function OrderDetails(props: propsIF) {
                 .then((response) => response?.json())
                 .then((json) => {
                     const positionStats = json?.data;
-                    console.log({ positionStats });
+                    IS_LOCAL_ENV && console.debug({ positionStats });
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
@@ -218,7 +210,6 @@ export default function OrderDetails(props: propsIF) {
                                   maximumFractionDigits: 2,
                               })
                         : undefined;
-                    // console.log({ liqBaseDisplay });
 
                     const claimableBaseDisplay = claimableBaseNum
                         ? claimableBaseNum < 2
@@ -231,7 +222,6 @@ export default function OrderDetails(props: propsIF) {
                                   maximumFractionDigits: 2,
                               })
                         : undefined;
-                    // console.log({ claimableBaseDisplay });
 
                     isOrderFilled
                         ? setBaseCollateralDisplay(
@@ -250,7 +240,6 @@ export default function OrderDetails(props: propsIF) {
                                   maximumFractionDigits: 2,
                               })
                         : undefined;
-                    // console.log({ liqQuoteDisplay });
 
                     const claimableQuoteDisplay = claimableQuoteNum
                         ? claimableQuoteNum < 2
@@ -263,7 +252,6 @@ export default function OrderDetails(props: propsIF) {
                                   maximumFractionDigits: 2,
                               })
                         : undefined;
-                    // console.log({ claimableQuoteDisplay });
 
                     isOrderFilled
                         ? setQuoteCollateralDisplay(
@@ -272,7 +260,6 @@ export default function OrderDetails(props: propsIF) {
                         : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
 
                     const usdValue = positionStats.totalValueUSD;
-                    // console.log({ usdValue });
 
                     if (usdValue) {
                         setUsdValue(
@@ -285,7 +272,7 @@ export default function OrderDetails(props: propsIF) {
                         setUsdValue('0.00');
                     }
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
     }, [lastBlock]);
 

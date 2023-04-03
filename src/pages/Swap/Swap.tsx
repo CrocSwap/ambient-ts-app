@@ -46,6 +46,7 @@ import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -311,7 +312,7 @@ export default function Swap(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
@@ -359,18 +360,18 @@ export default function Swap(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
 
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
 
                 setNewSwapTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -461,17 +462,17 @@ export default function Swap(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
                     receipt = error.receipt;
@@ -485,7 +486,7 @@ export default function Swap(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -741,7 +742,7 @@ export default function Swap(props: propsIF) {
     };
 
     const handleSwapButtonClickWithBypass = () => {
-        console.log('setting to true');
+        IS_LOCAL_ENV && console.debug('setting to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };

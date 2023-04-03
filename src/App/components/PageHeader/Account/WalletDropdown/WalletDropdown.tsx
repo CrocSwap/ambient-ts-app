@@ -124,9 +124,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const ariaLabel = `Wallet menu for ${ensName ? ensName : accountAddress}`;
 
-    // if (!showWalletDropdown) return null
-    // console.log({showWalletDropdown})
-
     return (
         <div className={walletWrapperStyle} tabIndex={0} aria-label={ariaLabel}>
             {nameContent}

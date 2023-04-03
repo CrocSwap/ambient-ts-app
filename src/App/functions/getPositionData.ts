@@ -305,8 +305,7 @@ export const updatePositionStats = async (
                 positionLiqQuoteTruncated: positionLiqQuoteTruncated,
             });
         })
-
-        .catch(console.log);
+        .catch(console.error);
 
     return updatedPosition || position;
 };
@@ -315,8 +314,6 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
     const positionApyCacheEndpoint =
         httpGraphCacheServerDomain + '/position_apy?';
-
-    // console.log('fetching position apy');
 
     const updatedPosition = await fetch(
         positionApyCacheEndpoint +
@@ -350,8 +347,7 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
                 return Object.assign({}, position, { apy: apy });
             }
         })
-
-        .catch(console.log);
+        .catch(console.error);
 
     return updatedPosition || position;
 };

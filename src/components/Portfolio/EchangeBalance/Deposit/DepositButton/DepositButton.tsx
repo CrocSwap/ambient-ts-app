@@ -20,7 +20,6 @@ export default function DepositButton(props: PortfolioDepositButtonProps) {
         >
             <Button
                 title={buttonMessage}
-                // action={() => console.log('clicked')}
                 action={onClick}
                 disabled={disabled}
                 flat={true}

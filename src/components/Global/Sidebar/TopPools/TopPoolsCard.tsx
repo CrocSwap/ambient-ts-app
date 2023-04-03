@@ -15,7 +15,8 @@ interface propsIF {
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } =
+        props;
 
     const { pathname } = useLocation();
 
@@ -30,7 +31,7 @@ export default function TopPoolsCard(props: propsIF) {
         } else if (pathname.startsWith('/trade/range')) {
             return '/trade/range';
         } else {
-            console.warn(
+            console.error(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
             return '/trade/market';
@@ -81,12 +82,12 @@ export default function TopPoolsCard(props: propsIF) {
             className={styles.container}
             to={
                 locationSlug +
-                    '/chain=' +
-                    chainId +
-                    '&tokenA=' +
-                    tokenAString +
-                    '&tokenB=' +
-                    tokenBString
+                '/chain=' +
+                chainId +
+                '&tokenA=' +
+                tokenAString +
+                '&tokenB=' +
+                tokenBString
             }
         >
             <div>

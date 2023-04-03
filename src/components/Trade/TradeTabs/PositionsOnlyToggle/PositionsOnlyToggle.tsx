@@ -74,7 +74,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     );
     // <NavLink to={`/${ownerId}`}>View Account</NavLink>
 
-    // console.log(leaderOwnerId);
     const leaderName = (
         <NavLink to={`/${leaderOwnerId}`} className={styles.leader}>
             <h3>{leader}</h3>

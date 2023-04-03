@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function useDebounce(value: any, delay: number) {
     // State and setters for debounced value
-    // console.log('before debounce');
     const [debouncedValue, setDebouncedValue] = useState(value);
     useEffect(
         () => {

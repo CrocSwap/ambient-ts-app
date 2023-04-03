@@ -23,7 +23,7 @@ import {
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -176,7 +176,7 @@ export default function Withdraw(props: propsIF) {
                 .then((bal: BigNumber) => {
                     setSendToAddressWalletBalance(bal.toString());
                 })
-                .catch(console.log);
+                .catch(console.error);
         } else {
             setSendToAddressWalletBalance('');
         }
@@ -272,17 +272,17 @@ export default function Withdraw(props: propsIF) {
                     if (tx) receipt = await tx.wait();
                 } catch (e) {
                     const error = e as TransactionError;
-                    console.log({ error });
+                    console.error({ error });
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
-                        console.log('repriced');
+                        IS_LOCAL_ENV && console.debug('repriced');
                         dispatch(removePendingTx(error.hash));
 
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
-                        console.log({ newTransactionHash });
+                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
 
                         //  if (newTransactionHash) {
@@ -307,7 +307,7 @@ export default function Withdraw(props: propsIF) {
                         //      );
                         //  }
                     } else if (isTransactionFailedError(error)) {
-                        // console.log({ error });
+                        console.error({ error });
                         receipt = error.receipt;
                     }
                 }
@@ -323,7 +323,7 @@ export default function Withdraw(props: propsIF) {
                 ) {
                     location.reload();
                 }
-                console.warn({ error });
+                console.error({ error });
             } finally {
                 setIsWithdrawPending(false);
                 setRecheckTokenBalances(true);

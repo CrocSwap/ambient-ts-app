@@ -15,7 +15,7 @@ import TransactionDetails from '../../../../Global/TransactionDetails/Transactio
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -613,10 +613,12 @@ export default function TransactionRow(props: propsIF) {
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                         onClick={() => {
-                            console.log({ isOnPortfolioPage });
-                            console.log({
-                                truncatedDisplayPriceDenomByMoneyness,
-                            });
+                            if (IS_LOCAL_ENV) {
+                                console.debug({ isOnPortfolioPage });
+                                console.debug({
+                                    truncatedDisplayPriceDenomByMoneyness,
+                                });
+                            }
                             openDetailsModal();
                         }}
                         data-label='price'

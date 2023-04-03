@@ -13,6 +13,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
@@ -144,7 +145,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                   chainId,
                   36000,
               );
-        console.log(tradeData);
+        IS_LOCAL_ENV && console.debug(tradeData);
     }
 
     const favButton = (

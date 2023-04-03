@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Ranges.module.css';
 interface RangeHeaderPropsIF {
     header: {
@@ -23,23 +24,23 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
 
     function handleClick(slug: string) {
         console.clear();
-        console.log(slug);
+        IS_LOCAL_ENV && console.debug(slug);
         // prevent action when user clicks a column which is not sortable
         if (!header.sortable) return;
         // determine which sort should be used
         // accounts for the column clicked and mutliple clicks
         if (sortBy !== slug) {
-            console.log('first click');
+            IS_LOCAL_ENV && console.debug('first click');
             setSortBy(slug);
         } else if (!reverseSort) {
-            console.log('second click');
+            IS_LOCAL_ENV && console.debug('second click');
             setReverseSort(true);
         } else if (sortBy === slug && reverseSort) {
-            console.log('third click');
+            IS_LOCAL_ENV && console.debug('third click');
             setSortBy('default');
             setReverseSort(false);
         } else {
-            console.warn(
+            console.error(
                 'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
             );
             setSortBy('default');
@@ -71,11 +72,11 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     onClick={() => handleClick(slug.toLowerCase())}
                     className={`
-                    ${activeSortStyle} 
-                    ${alignRight && styles.align_right} 
+                    ${activeSortStyle}
+                    ${alignRight && styles.align_right}
                     ${alignCenter && styles.align_center}
-                   
-                    
+
+
                     `}
                 >
                     {name} {arrow}

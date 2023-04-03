@@ -53,7 +53,7 @@ export default function ExchangeCard(props: propsIF) {
                     if (price) setTokenPrice(price);
                 }
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         })();
     }, [tokenAddress]);

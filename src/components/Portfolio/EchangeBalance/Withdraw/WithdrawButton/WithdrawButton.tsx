@@ -14,7 +14,6 @@ export default function WithdrawButton(props: PortfolioWithdrawButtonProps) {
         <div className={styles.button_container}>
             <Button
                 title={buttonMessage}
-                // action={() => console.log('clicked')}
                 action={onClick}
                 disabled={disabled}
                 flat={true}

@@ -63,6 +63,7 @@ import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface propsIF {
     account: string | undefined;
@@ -268,7 +269,7 @@ export default function Limit(props: propsIF) {
                     ? pinTickLower(initialLimitRateNonDisplay, gridSize)
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
-                console.log({ pinnedTick });
+                IS_LOCAL_ENV && console.debug({ pinnedTick });
                 dispatch(setLimitTick(pinnedTick));
 
                 const tickPrice = tickToPrice(pinnedTick);
@@ -288,7 +289,7 @@ export default function Limit(props: propsIF) {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                               });
-                    console.log({ limitRateTruncated });
+                    IS_LOCAL_ENV && console.debug({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -533,7 +534,7 @@ export default function Limit(props: propsIF) {
     ]);
 
     const sendLimitOrder = async () => {
-        console.log('Send limit');
+        IS_LOCAL_ENV && console.debug('Send limit');
         if (!crocEnv) {
             location.reload();
             return;
@@ -542,7 +543,7 @@ export default function Limit(props: propsIF) {
         resetConfirmation();
         setIsWaitingForWallet(true);
 
-        console.log({ limitTick });
+        IS_LOCAL_ENV && console.debug({ limitTick });
 
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
@@ -554,16 +555,16 @@ export default function Limit(props: propsIF) {
         const order = isTokenAPrimary
             ? crocEnv.sell(sellToken, qty)
             : crocEnv.buy(buyToken, qty);
-        // console.log({ limitTick });
+
         const ko = order.atLimit(
             isTokenAPrimary ? buyToken : sellToken,
             limitTick,
         );
-        // console.log({ ko });
         if (await ko.willMintFail()) {
-            console.log(
-                'Cannot send limit order: Knockout price inside spread',
-            );
+            IS_LOCAL_ENV &&
+                console.debug(
+                    'Cannot send limit order: Knockout price inside spread',
+                );
             setTxErrorMessage('Limit inside market price');
             return;
         }
@@ -571,7 +572,7 @@ export default function Limit(props: propsIF) {
         let tx;
         try {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            console.log(tx.hash);
+            IS_LOCAL_ENV && console.debug(tx.hash);
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
             setIsWaitingForWallet(false);
@@ -586,7 +587,7 @@ export default function Limit(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error.code);
             setTxErrorMessage(error.message);
             setIsWaitingForWallet(false);
@@ -622,16 +623,16 @@ export default function Limit(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewLimitOrderTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -654,7 +655,7 @@ export default function Limit(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
+                // console.error({ error });
                 receipt = error.receipt;
             }
         }
@@ -718,20 +719,20 @@ export default function Limit(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -743,7 +744,7 @@ export default function Limit(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);

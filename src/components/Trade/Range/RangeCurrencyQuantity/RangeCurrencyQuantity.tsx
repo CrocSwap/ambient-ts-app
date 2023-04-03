@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
+import { IS_LOCAL_ENV } from '../../../../constants';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 // import { GoCircleSlash } from 'react-icons/go';
@@ -20,7 +21,6 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         fieldId,
         isAdvancedMode,
     } = props;
-    // console.log({ disable });
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -57,7 +57,7 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         // String Does Not Contain Decimal
         return 0;
     };
-    console.log(fieldId);
+    IS_LOCAL_ENV && console.debug(fieldId);
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
