@@ -194,7 +194,12 @@ export default function LimitExtraInfo(props: propsIF) {
     const limitExtraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) => (
-                <div className={styles.extra_row} key={idx}>
+                <div
+                    className={styles.extra_row}
+                    key={idx}
+                    tabIndex={0}
+                    aria-label={`${item.title} is ${item.data}`}
+                >
                     <div className={styles.align_center}>
                         <div>{item.title}</div>
                         <TooltipComponent title={item.tooltipTitle} />
@@ -223,14 +228,22 @@ export default function LimitExtraInfo(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const conversionRateDisplay = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const gasCostAriaLabel = `Gas cost is ${orderGasPriceInDollars}. Conversion rate is ${conversionRateDisplay} `;
+
     const extraInfoSectionOrNull = (
-        <div
+        <button
             className={styles.extra_info_content}
             onClick={
                 isQtyEntered
                     ? () => setShowExtraDetails(!showExtraDetails)
                     : () => setShowExtraDetails(false)
             }
+            tabIndex={0}
+            aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} />{' '}
@@ -243,13 +256,11 @@ export default function LimitExtraInfo(props: propsIF) {
                     e.stopPropagation();
                 }}
             >
-                {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
             {dropDownOrNull}
-        </div>
+        </button>
     );
     return (
         <>

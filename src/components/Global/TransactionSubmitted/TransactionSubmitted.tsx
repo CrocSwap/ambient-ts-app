@@ -45,7 +45,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     const addToMetamaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to Metamask`}
+            title={`Add ${tokenBSymbol} to Metamask.`}
             // action={props.onClickFn}
             action={handleAddToMetamask}
             disabled={false}
@@ -59,7 +59,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             rel='noreferrer'
             className={styles.view_etherscan}
         >
-            View on Etherscan
+            View on Etherscan.
             <FiExternalLink size={20} color='var(--text-grey-white)' />
         </a>
     );
@@ -79,10 +79,10 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
 
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
-                    ? 'Limit Transaction Successfully Submitted'
+                    ? 'Limit Transaction Successfully Submitted.'
                     : range
-                    ? 'Range Transaction Successfully Submitted'
-                    : 'Swap Transaction Successfully Submitted'}
+                    ? 'Range Transaction Successfully Submitted.'
+                    : 'Swap Transaction Successfully Submitted.'}
             </h2>
             <div className={styles.action_buttons}>
                 {EthersanTx && etherscanButton}

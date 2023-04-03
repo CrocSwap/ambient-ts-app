@@ -82,6 +82,18 @@
     /* width: 35%; */
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
+
+    background: transparent;
+    outline: none;
+    border: none;
+}
+
+.token_select:hover{
+    background: var(--dark3)
+}
+
+.token_select:focus-visible{
+    border: 1px solid var(--text-grey-white)
 }
 
 .token_select img {
