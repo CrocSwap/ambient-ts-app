@@ -159,7 +159,7 @@ export default function LimitCurrencySelector(props: propsIF) {
             }`}
             onClick={openTokenModal}
             tabIndex={0}
-            aria-label='Open swap sell token modal.'
+            aria-label={`Open swap ${fieldId} token modal.`}
             id='limit_token_selector'
         >
             {thisToken.logoURI ? (
