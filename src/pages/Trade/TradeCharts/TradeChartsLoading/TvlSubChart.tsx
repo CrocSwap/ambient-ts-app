@@ -21,6 +21,7 @@ interface TvlData {
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     isCrosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -37,6 +38,7 @@ export default function TvlSubChart(props: TvlData) {
         setCrossHairLocation,
         setIsCrosshairActive,
         isCrosshairActive,
+        setIsMouseMoveCrosshair,
     } = props;
 
     const tvlMainDiv = useRef(null);
@@ -70,7 +72,7 @@ export default function TvlSubChart(props: TvlData) {
 
         if (filtered !== undefined) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
-            const domain = [0, maxYBoundary * 1.2];
+            const domain = [0, maxYBoundary * 1.6];
 
             yScale.domain(domain);
         }
@@ -143,14 +145,15 @@ export default function TvlSubChart(props: TvlData) {
                 const minYBoundary = d3.min(filtered, (d: any) => d.value);
                 const maxYBoundary = d3.max(filtered, (d: any) => d.value);
 
-                const domain = [0, maxYBoundary * 1.2];
+                const domain = [0, maxYBoundary * 1.6];
+
+                const tickInterval = (maxYBoundary - minYBoundary) / 3;
 
                 yAxis
                     .tickValues([
-                        minYBoundary + (maxYBoundary - minYBoundary) / 2,
-                        maxYBoundary / minYBoundary < 2
-                            ? ''
-                            : maxYBoundary * 1.5,
+                        minYBoundary + tickInterval,
+                        minYBoundary + tickInterval * 2,
+                        minYBoundary + tickInterval * 3,
                     ])
                     .tickFormat(formatDollarAmountAxis);
 
@@ -370,11 +373,13 @@ export default function TvlSubChart(props: TvlData) {
                         setCrossHairLocation(event, false);
                         setIsCrosshairActive('tvl');
                         props.setShowTooltip(true);
+                        setIsMouseMoveCrosshair(true);
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setIsCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
                     render();
                 });
             }
