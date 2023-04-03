@@ -69,6 +69,7 @@
     align-items: center;
     width: 30%;
     gap: 4px;
+    cursor: pointer;
 }
 
 .token_select img {
