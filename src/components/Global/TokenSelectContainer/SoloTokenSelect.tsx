@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setToken } from '../../../utils/state/temp';
-// import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
+import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -105,7 +104,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
-            dispatch(setToken(tkn));
+            dispatch(setSoloToken(tkn));
         }
         // // determine if the token is a previously imported token
         // const isTokenImported: boolean = importedTokens.some(
