@@ -87,6 +87,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const toggleOrNull =
         !isUserLoggedIn ||
         isCandleSelected ||
+        // hide toggle if current tab is leaderboard since React state takes time to update
         props.currentTab == LeaderboardTabName ? null : (
             <Toggle2
                 isOn={!isShowAllEnabled}
@@ -136,6 +137,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 >
                     {isUserLoggedIn &&
                     !isCandleSelected &&
+                    // hide toggle if current tab is leaderboard since React state takes time to update
                     props.currentTab !== LeaderboardTabName
                         ? `My ${props.currentTab}`
                         : null}
