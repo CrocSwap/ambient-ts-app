@@ -16,6 +16,7 @@ import {
     CrocEnv,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -1603,133 +1604,146 @@ export default function Range(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        <section data-testid={'range'} className={styles.scrollable_container}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
-
-            <ContentContainer isOnTradeRoute>
-                <RangeHeader
-                    chainId={chainId}
-                    tokenPair={tokenPair}
-                    mintSlippage={mintSlippage}
-                    isPairStable={isPairStable}
-                    isDenomBase={tradeData.isDenomBase}
-                    isTokenABase={isTokenABase}
-                    openGlobalModal={openGlobalModal}
-                    shareOptionsDisplay={shareOptionsDisplay}
-                    bypassConfirm={bypassConfirm}
-                />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    {tradeData.advancedMode
-                        ? advancedModeContent
-                        : baseModeContent}
-                </motion.div>
-                {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                  true ? (
-                    poolPriceNonDisplay !== 0 &&
-                    parseFloat(tokenAInputQty) > 0 &&
-                    !isTokenAAllowanceSufficient ? (
-                        tokenAApprovalButton
-                    ) : poolPriceNonDisplay !== 0 &&
-                      parseFloat(tokenBInputQty) > 0 &&
-                      !isTokenBAllowanceSufficient ? (
-                        tokenBApprovalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassConfirmRangeButton
-                            {...bypassConfirmButtonProps}
-                        />
-                    ) : (
-                        <RangeButton
-                            onClickFn={
-                                bypassConfirm.range.isEnabled
-                                    ? handleRangeButtonClickWithBypass
-                                    : openConfirmationModal
-                            }
-                            rangeAllowed={
-                                poolExists === true &&
-                                rangeAllowed &&
-                                !isInvalidRange
-                            }
-                            rangeButtonErrorMessage={rangeButtonErrorMessage}
-                            isBypassConfirmEnabled={
-                                bypassConfirm.range.isEnabled
-                            }
-                            isAmbient={isAmbient}
-                            isAdd={isAdd}
-                        />
-                    )
-                ) : (
-                    loginButton
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section
+                data-testid={'range'}
+                className={styles.scrollable_container}
+            >
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
                 )}
-            </ContentContainer>
-            {isConfirmationModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title={
-                        isAmbient
-                            ? 'Ambient Confirmation'
-                            : 'Range Confirmation'
-                    }
-                    centeredTitle
-                >
-                    <ConfirmRangeModal
+
+                <ContentContainer isOnTradeRoute>
+                    <RangeHeader
+                        chainId={chainId}
                         tokenPair={tokenPair}
-                        spotPriceDisplay={displayPriceString}
-                        poolPriceDisplayNum={poolPriceDisplayNum}
-                        denominationsInBase={denominationsInBase}
+                        mintSlippage={mintSlippage}
+                        isPairStable={isPairStable}
+                        isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isTokenABase}
-                        isAmbient={isAmbient}
-                        isAdd={isAdd}
-                        maxPriceDisplay={maxPriceDisplay}
-                        minPriceDisplay={minPriceDisplay}
-                        sendTransaction={sendTransaction}
-                        closeModal={handleModalClose}
-                        newRangeTransactionHash={newRangeTransactionHash}
-                        setNewRangeTransactionHash={setNewRangeTransactionHash}
-                        resetConfirmation={resetConfirmation}
-                        showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        isInRange={!isOutOfRange}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
+                        openGlobalModal={openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
                         bypassConfirm={bypassConfirm}
                     />
-                </Modal>
-            )}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={
-                    !tradeData.advancedMode
-                        ? rangeTutorialStepsAdvanced
-                        : rangeTutorialSteps
-                }
-            />
-        </section>
+                    {navigationMenu}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        {tradeData.advancedMode
+                            ? advancedModeContent
+                            : baseModeContent}
+                    </motion.div>
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
+                      true ? (
+                        poolPriceNonDisplay !== 0 &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        !isTokenAAllowanceSufficient ? (
+                            tokenAApprovalButton
+                        ) : poolPriceNonDisplay !== 0 &&
+                          parseFloat(tokenBInputQty) > 0 &&
+                          !isTokenBAllowanceSufficient ? (
+                            tokenBApprovalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassConfirmRangeButton
+                                {...bypassConfirmButtonProps}
+                            />
+                        ) : (
+                            <RangeButton
+                                onClickFn={
+                                    bypassConfirm.range.isEnabled
+                                        ? handleRangeButtonClickWithBypass
+                                        : openConfirmationModal
+                                }
+                                rangeAllowed={
+                                    poolExists === true &&
+                                    rangeAllowed &&
+                                    !isInvalidRange
+                                }
+                                rangeButtonErrorMessage={
+                                    rangeButtonErrorMessage
+                                }
+                                isBypassConfirmEnabled={
+                                    bypassConfirm.range.isEnabled
+                                }
+                                isAmbient={isAmbient}
+                                isAdd={isAdd}
+                            />
+                        )
+                    ) : (
+                        loginButton
+                    )}
+                </ContentContainer>
+                {isConfirmationModalOpen && (
+                    <Modal
+                        onClose={handleModalClose}
+                        title={
+                            isAmbient
+                                ? 'Ambient Confirmation'
+                                : 'Range Confirmation'
+                        }
+                        centeredTitle
+                    >
+                        <ConfirmRangeModal
+                            tokenPair={tokenPair}
+                            spotPriceDisplay={displayPriceString}
+                            poolPriceDisplayNum={poolPriceDisplayNum}
+                            denominationsInBase={denominationsInBase}
+                            isTokenABase={isTokenABase}
+                            isAmbient={isAmbient}
+                            isAdd={isAdd}
+                            maxPriceDisplay={maxPriceDisplay}
+                            minPriceDisplay={minPriceDisplay}
+                            sendTransaction={sendTransaction}
+                            closeModal={handleModalClose}
+                            newRangeTransactionHash={newRangeTransactionHash}
+                            setNewRangeTransactionHash={
+                                setNewRangeTransactionHash
+                            }
+                            resetConfirmation={resetConfirmation}
+                            showConfirmation={showConfirmation}
+                            setShowConfirmation={setShowConfirmation}
+                            txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
+                            isInRange={!isOutOfRange}
+                            pinnedMinPriceDisplayTruncatedInBase={
+                                pinnedMinPriceDisplayTruncatedInBase
+                            }
+                            pinnedMinPriceDisplayTruncatedInQuote={
+                                pinnedMinPriceDisplayTruncatedInQuote
+                            }
+                            pinnedMaxPriceDisplayTruncatedInBase={
+                                pinnedMaxPriceDisplayTruncatedInBase
+                            }
+                            pinnedMaxPriceDisplayTruncatedInQuote={
+                                pinnedMaxPriceDisplayTruncatedInQuote
+                            }
+                            bypassConfirm={bypassConfirm}
+                        />
+                    </Modal>
+                )}
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={
+                        !tradeData.advancedMode
+                            ? rangeTutorialStepsAdvanced
+                            : rangeTutorialSteps
+                    }
+                />
+            </section>
+        </FocusTrap>
     );
 }
