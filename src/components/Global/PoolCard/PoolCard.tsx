@@ -1,6 +1,5 @@
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './PoolCard.module.css';
-// import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -16,9 +15,9 @@ import {
     memoizePoolStats,
 } from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
-import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
+import { topPoolIF } from '../../../App/hooks/useTopPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -28,12 +27,10 @@ interface propsIF {
     crocEnv?: CrocEnv;
     tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
-    name: string;
     tokenMap: Map<string, TokenIF>;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
     lastBlockNumber: number;
     chainId: string;
+    pool: topPoolIF;
 }
 
 export default function PoolCard(props: propsIF) {
@@ -41,30 +38,26 @@ export default function PoolCard(props: propsIF) {
         isServerEnabled,
         isUserIdle,
         crocEnv,
-        tradeData,
         tokenMap,
-        baseToken,
-        quoteToken,
         lastBlockNumber,
         chainId,
         cachedQuerySpotPrice,
+        pool,
     } = props;
 
-    const baseTokenAddress = baseToken.address;
-    const quoteTokenAddress = quoteToken.address;
+    // fn to make a key to look up a token from the map
+    const makeTokenKey = (tkn: TokenIF) => (
+        tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString()
+    );
 
-    const baseTokenKey =
-        baseTokenAddress?.toLowerCase() + '_0x' + baseToken?.chainId.toString();
-    const quoteTokenKey =
-        quoteTokenAddress?.toLowerCase() +
-        '_0x' +
-        quoteToken?.chainId.toString();
+    const baseTokenKey: string = makeTokenKey(pool.base);
+    const quoteTokenKey: string = makeTokenKey(pool.quote);
 
     const baseTokenFromMap =
-        tokenMap && baseToken?.address ? tokenMap.get(baseTokenKey) : null;
+        tokenMap ? tokenMap.get(baseTokenKey) : null;
 
     const quoteTokenFromMap =
-        tokenMap && quoteToken?.address ? tokenMap.get(quoteTokenKey) : null;
+        tokenMap ? tokenMap.get(quoteTokenKey) : null;
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -74,12 +67,12 @@ export default function PoolCard(props: propsIF) {
     >();
 
     const baseTokenCharacter =
-        baseToken && poolPriceDisplay
-            ? getUnicodeCharacter(baseToken?.symbol)
+        poolPriceDisplay
+            ? getUnicodeCharacter(pool.base.symbol)
             : '';
     const quoteTokenCharacter =
-        quoteToken && poolPriceDisplay
-            ? getUnicodeCharacter(quoteToken?.symbol)
+        poolPriceDisplay
+            ? getUnicodeCharacter(pool.quote.symbol)
             : '';
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -87,17 +80,13 @@ export default function PoolCard(props: propsIF) {
             isServerEnabled &&
             !isUserIdle &&
             crocEnv &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            baseToken?.decimals &&
-            quoteToken?.decimals &&
             lastBlockNumber !== 0
         ) {
             (async () => {
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
-                    baseToken.address,
-                    quoteToken.address,
+                    pool.base.address,
+                    pool.quote.address,
                     chainId,
                     lastBlockNumber,
                 );
@@ -105,16 +94,16 @@ export default function PoolCard(props: propsIF) {
                 if (spotPrice) {
                     const displayPrice = toDisplayPrice(
                         spotPrice,
-                        baseToken.decimals,
-                        quoteToken.decimals,
+                        pool.base.decimals,
+                        pool.quote.decimals,
                     );
 
                     const isBaseTokenMoneynessGreaterOrEqual =
                         getMoneynessRank(
-                            baseTokenAddress.toLowerCase() + '_' + chainId,
+                            pool.base.address.toLowerCase() + '_' + chainId,
                         ) -
                             getMoneynessRank(
-                                quoteTokenAddress.toLowerCase() + '_' + chainId,
+                                pool.quote.address.toLowerCase() + '_' + chainId,
                             ) >=
                         0;
 
@@ -159,8 +148,6 @@ export default function PoolCard(props: propsIF) {
         isServerEnabled,
         isUserIdle,
         lastBlockNumber,
-        baseToken,
-        quoteToken,
         chainId,
         crocEnv,
     ]);
@@ -178,11 +165,14 @@ export default function PoolCard(props: propsIF) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
+    const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+        pool.base.address,
+        pool.quote.address,
+    );
+
     const fetchPoolStats = () => {
         (async () => {
             if (
-                baseTokenAddress &&
-                quoteTokenAddress &&
                 poolIndex &&
                 chainId &&
                 lastBlockNumber &&
@@ -190,8 +180,8 @@ export default function PoolCard(props: propsIF) {
             ) {
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
-                    baseTokenAddress,
-                    quoteTokenAddress,
+                    pool.base.address,
+                    pool.quote.address,
                     poolIndex,
                     Math.floor(lastBlockNumber / 4),
                 );
@@ -216,16 +206,11 @@ export default function PoolCard(props: propsIF) {
                     setPoolApy(apyString);
                 }
 
-                const sortedTokens = sortBaseQuoteTokens(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                );
-
                 try {
                     const priceChangeResult = await get24hChange(
                         chainId,
-                        sortedTokens[0],
-                        sortedTokens[1],
+                        baseAddr,
+                        quoteAddr,
                         poolIndex,
                         shouldInvertDisplay,
                     );
@@ -260,7 +245,6 @@ export default function PoolCard(props: propsIF) {
     };
 
     useEffect(() => {
-        // console.log({ isUserIdle });
         if (isServerEnabled && !isUserIdle) fetchPoolStats();
     }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
 
@@ -288,8 +272,8 @@ export default function PoolCard(props: propsIF) {
     const tokenNamesDisplay = (
         <div className={styles.tokens_name}>
             {shouldInvertDisplay
-                ? `${baseToken.symbol} / ${quoteToken.symbol}`
-                : `${quoteToken.symbol} / ${baseToken.symbol}`}
+                ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                : `${pool.quote.symbol} / ${pool.base.symbol}`}
         </div>
     );
 
@@ -357,28 +341,16 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
-    if (!baseToken || !quoteToken) return <PoolCardSkeleton />;
-
-    const baseTokenString =
-        baseToken.address.toLowerCase() ===
-        tradeData.quoteToken.address.toLowerCase()
-            ? quoteToken.address
-            : baseToken.address;
-
-    const quoteTokenString =
-        baseToken.address.toLowerCase() ===
-        tradeData.quoteToken.address.toLowerCase()
-            ? baseToken.address
-            : quoteToken.address;
-
     const linkpath =
-        '/trade/market/chain=0x5&tokenA=' +
-        quoteTokenString +
+        '/trade/market/chain=' +
+        chainId +
+        '&tokenA=' +
+        quoteAddr +
         '&tokenB=' +
-        baseTokenString;
+        baseAddr;
 
-    const ariaDescription = `pool for ${baseToken.symbol} and ${
-        quoteToken.symbol
+    const ariaDescription = `pool for ${pool.base.symbol} and ${
+        pool.quote.symbol
     }. 24 hour volume is ${poolVolume ? poolVolume : 'not available'}. APY is ${
         poolApy ? poolApy + '%' : 'not available'
     }. TVL is ${poolTvl}. 24 hours pool price change is ${poolPriceChangePercent}. Pool price is ${

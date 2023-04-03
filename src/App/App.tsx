@@ -3192,6 +3192,7 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     chainId={chainData.chainId}
                                     isServerEnabled={isServerEnabled}
+                                    topPools={topPools}
                                 />
                             }
                         />
