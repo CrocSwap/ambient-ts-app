@@ -11,6 +11,6 @@ export function getSupportedChainIds(): Array<string> {
     if (process.env.REACT_APP_CHAIN_IDS) {
         return JSON.parse(process.env.REACT_APP_CHAIN_IDS) as [];
     } else {
-        return ['0x5', '0x6eed'];
+        return ['0x5', '0x66eed'];
     }
 }
