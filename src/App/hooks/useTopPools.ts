@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import { defaultTopPools } from '../../utils/data/defaultTopPools';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { topPools as mockTopPools } from '../mockData';
 
 export interface topPoolIF {
     name: string;
@@ -27,8 +27,9 @@ export const useTopPools = (chainId: string): topPoolsMethodsIF => {
     const [topPools, setTopPools] = useState<topPoolIF[]>([]);
 
     // after initial render, get top pools and send to local state
+    // right now this uses a list hardcoded in the front
     useEffect(() => {
-        setTopPools(mockTopPools);
+        setTopPools(defaultTopPools);
     }, []);
 
     const getPoolsByChain = (chn: string): topPoolIF[] => (
