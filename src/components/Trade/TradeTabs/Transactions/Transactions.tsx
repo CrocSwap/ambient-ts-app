@@ -646,6 +646,7 @@ export default function Transactions(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
+            chainData={chainData}
         />
     ));
 
