@@ -50,6 +50,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
+                    aria-label='Set range width to 5%.'
                 >
                     5%
                 </button>
@@ -62,6 +63,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
+                    aria-label='Set range width to 10%.'
                 >
                     10%
                 </button>
@@ -74,6 +76,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
+                    aria-label='Set range width to 25%.'
                 >
                     25%
                 </button>
@@ -86,6 +89,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
+                    aria-label='Set range width to 50%.'
                 >
                     50%
                 </button>
@@ -96,10 +100,11 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         updateRangeWithButton(100, setRangeWidthPercentage);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
+                    aria-label='use Ambient range width.'
                 >
                     Ambient
                 </button>
-                <div
+                <button
                     onClick={() =>
                         openGlobalPopup(
                             <div>
@@ -110,9 +115,11 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                             'right',
                         )
                     }
+                    className={styles.explanation_button}
+                    aria-label='Open range width explanation popup.'
                 >
                     <AiOutlineInfoCircle color='#ffffff' />
-                </div>
+                </button>
             </div>
         </>
     );
