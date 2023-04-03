@@ -6300,7 +6300,22 @@ export default function Chart(props: propsIF) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
-        const liqMaxActiveLiq = d3.max(allData, (d: any) => d.activeLiq);
+        const { min }: any = findLiqNearest(allData);
+        let filteredAllData = allData.filter(
+            (item: any) =>
+                min <= item.liqPrices &&
+                item.liqPrices <= scaleData.yScale.domain()[1],
+        );
+
+        if (filteredAllData === undefined || filteredAllData.length === 0) {
+            filteredAllData = allData.filter(
+                (item: any) => min <= item.liqPrices,
+            );
+        }
+
+        const liqMaxActiveLiq = d3.max(filteredAllData, function (d: any) {
+            return d.activeLiq;
+        });
 
         const currentDataY = scaleData.yScale.invert(event.offsetY);
         const currentDataX =
