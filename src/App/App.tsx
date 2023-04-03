@@ -365,7 +365,7 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
-    const topPools: topPoolsMethodsIF = useTopPools();
+    const topPools: topPoolsMethodsIF = useTopPools(chainData.chainId);
     false && topPools;
 
     // hook to manage acknowledged tokens
