@@ -110,7 +110,6 @@ export default function TransactionRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
