@@ -140,6 +140,11 @@ export default function LimitRate(props: propsIF) {
                 pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
+                tabIndex={0}
+                aria-label='Limit Price.'
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='all'
                 // value={limitPrice}
             />
         </div>
@@ -147,11 +152,17 @@ export default function LimitRate(props: propsIF) {
 
     const buttonControls = (
         <div className={styles.button_controls}>
-            <button onClick={!isDenomBase ? increaseTick : decreaseTick}>
+            <button
+                onClick={!isDenomBase ? increaseTick : decreaseTick}
+                aria-label='Increase limit tick.'
+            >
                 <HiPlus />
             </button>
             <button>
-                <HiMinus onClick={!isDenomBase ? decreaseTick : increaseTick} />
+                <HiMinus
+                    onClick={!isDenomBase ? decreaseTick : increaseTick}
+                    aria-label='Decrease limit tick.'
+                />
             </button>
         </div>
     );

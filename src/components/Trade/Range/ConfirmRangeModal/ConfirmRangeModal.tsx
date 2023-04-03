@@ -73,13 +73,8 @@ export default function ConfirmRangeModal(props: propsIF) {
     const { dataTokenA, dataTokenB } = tokenPair;
 
     const txApproved = newRangeTransactionHash !== '';
-
-    const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
-    const isTxException: boolean = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException: boolean =
-        txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException: boolean =
-        txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTxDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTxException = txErrorCode !== '' && !isTxDenied;
 
     const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
@@ -238,14 +233,13 @@ export default function ConfirmRangeModal(props: propsIF) {
         />
     );
 
-    const confirmationDisplay: JSX.Element =
-        isTxException || isGasLimitException || isInsufficientFundsException
-            ? txException
-            : isTxDenied
-            ? txDenied
-            : txApproved
-            ? txSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay: JSX.Element = isTxException
+        ? txException
+        : isTxDenied
+        ? txDenied
+        : txApproved
+        ? txSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.confirm_range_modal_container}>

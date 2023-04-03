@@ -10,9 +10,13 @@ export default function TokensArrow(props: TokensArrowPropsIF) {
     return (
         <button
             tabIndex={onlyDisplay ? -1 : 0}
-            className={styles.container}
+            className={`${styles.container} ${
+                onlyDisplay && styles.display_container
+            }`}
             aria-label='Reverse tokens'
-            style={{ cursor: disabled ? 'wait' : 'pointer' }}
+            style={{
+                cursor: disabled ? 'wait' : onlyDisplay ? 'default' : 'pointer',
+            }}
             // style={{ transform: rotate, transition: 'all 0.2s linear' }}
             // onClick={handleRotate}
         >

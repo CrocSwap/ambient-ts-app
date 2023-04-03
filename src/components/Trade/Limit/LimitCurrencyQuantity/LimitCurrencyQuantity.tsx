@@ -51,6 +51,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
             <input
                 id={`${fieldId}-limit-quantity`}
                 className={styles.currency_quantity}
+                aria-label={`Enter ${fieldId} amount`}
                 placeholder='0.0'
                 onChange={(event) => {
                     const isPrecisionGreaterThanDecimals =

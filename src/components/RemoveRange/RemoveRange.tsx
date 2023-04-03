@@ -539,11 +539,8 @@ export default function RemoveRange(props: propsIF) {
         useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
-
     const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isRemovalDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -556,11 +553,7 @@ export default function RemoveRange(props: propsIF) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -589,20 +582,6 @@ export default function RemoveRange(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {/* {showConfirmation && (
-                <header>
-                    <div className={styles.button} onClick={resetConfirmation}>
-                        {newRemovalTransactionHash == '' && (
-                            <BsArrowLeft size={30} />
-                        )}
-                    </div>
-                    {newRemovalTransactionHash !== '' && (
-                        <div onClick={handleModalClose}>
-                            <VscClose size={30} />
-                        </div>
-                    )}
-                </header>
-            )} */}
             <RemoveRangeHeader
                 onClose={handleModalClose}
                 title={

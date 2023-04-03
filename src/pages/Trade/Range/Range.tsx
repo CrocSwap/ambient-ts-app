@@ -612,7 +612,6 @@ export default function Range(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-
         setTxErrorMessage('');
     };
 
