@@ -3526,6 +3526,7 @@ export default function App() {
                                     userImageData={imageData}
                                     username={ensName}
                                     appPage={true}
+                                    topPools={topPools}
                                 />
                             }
                         />
@@ -3547,6 +3548,7 @@ export default function App() {
                                     userImageData={imageData}
                                     appPage={true}
                                     username={ensName}
+                                    topPools={topPools}
                                 />
                             }
                         />
@@ -3880,6 +3882,7 @@ export default function App() {
                             setIsChatOpen={setIsChatOpen}
                             isFullScreen={false}
                             userImageData={imageData}
+                            topPools={topPools}
                         />
                     )}
             </div>
