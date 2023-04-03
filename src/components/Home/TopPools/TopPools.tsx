@@ -26,7 +26,6 @@ export default function TopPools(props: propsIF) {
         isServerEnabled,
         tradeData,
         userData,
-        tokenMap,
         lastBlockNumber,
         crocEnv,
         chainId,
@@ -61,7 +60,6 @@ export default function TopPools(props: propsIF) {
                         tradeData={tradeData}
                         cachedQuerySpotPrice={cachedQuerySpotPrice}
                         key={idx}
-                        tokenMap={tokenMap}
                         lastBlockNumber={lastBlockNumber}
                         chainId={chainId}
                         pool={pool}

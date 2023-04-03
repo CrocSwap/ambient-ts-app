@@ -1,4 +1,3 @@
-import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './PoolCard.module.css';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -27,7 +26,6 @@ interface propsIF {
     crocEnv?: CrocEnv;
     tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
     pool: topPoolIF;
@@ -38,26 +36,11 @@ export default function PoolCard(props: propsIF) {
         isServerEnabled,
         isUserIdle,
         crocEnv,
-        tokenMap,
         lastBlockNumber,
         chainId,
         cachedQuerySpotPrice,
         pool,
     } = props;
-
-    // fn to make a key to look up a token from the map
-    const makeTokenKey = (tkn: TokenIF) => (
-        tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString()
-    );
-
-    const baseTokenKey: string = makeTokenKey(pool.base);
-    const quoteTokenKey: string = makeTokenKey(pool.quote);
-
-    const baseTokenFromMap =
-        tokenMap ? tokenMap.get(baseTokenKey) : null;
-
-    const quoteTokenFromMap =
-        tokenMap ? tokenMap.get(quoteTokenKey) : null;
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -66,14 +49,12 @@ export default function PoolCard(props: propsIF) {
         boolean | undefined
     >();
 
-    const baseTokenCharacter =
-        poolPriceDisplay
-            ? getUnicodeCharacter(pool.base.symbol)
-            : '';
-    const quoteTokenCharacter =
-        poolPriceDisplay
-            ? getUnicodeCharacter(pool.quote.symbol)
-            : '';
+    const baseTokenCharacter = poolPriceDisplay
+        ? getUnicodeCharacter(pool.base.symbol)
+        : '';
+    const quoteTokenCharacter = poolPriceDisplay
+        ? getUnicodeCharacter(pool.quote.symbol)
+        : '';
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -103,7 +84,9 @@ export default function PoolCard(props: propsIF) {
                             pool.base.address.toLowerCase() + '_' + chainId,
                         ) -
                             getMoneynessRank(
-                                pool.quote.address.toLowerCase() + '_' + chainId,
+                                pool.quote.address.toLowerCase() +
+                                    '_' +
+                                    chainId,
                             ) >=
                         0;
 
@@ -144,13 +127,7 @@ export default function PoolCard(props: propsIF) {
                 }
             })();
         }
-    }, [
-        isServerEnabled,
-        isUserIdle,
-        lastBlockNumber,
-        chainId,
-        crocEnv,
-    ]);
+    }, [isServerEnabled, isUserIdle, lastBlockNumber, chainId, crocEnv]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -252,19 +229,19 @@ export default function PoolCard(props: propsIF) {
         <div className={styles.token_images}>
             <img
                 src={
-                    shouldInvertDisplay
-                        ? baseTokenFromMap?.logoURI
-                        : quoteTokenFromMap?.logoURI
+                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
                 }
-                alt=''
+                alt={`logo for token ${
+                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
+                }`}
             />
             <img
                 src={
-                    shouldInvertDisplay
-                        ? quoteTokenFromMap?.logoURI
-                        : baseTokenFromMap?.logoURI
+                    shouldInvertDisplay ? pool.quote.logoURI : pool.base.logoURI
                 }
-                alt=''
+                alt={`logo for token ${
+                    shouldInvertDisplay ? pool.quote.name : pool.base.name
+                }`}
             />
         </div>
     );
