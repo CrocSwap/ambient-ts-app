@@ -14,7 +14,7 @@ interface topPoolIF {
 
 export interface topPoolsMethodsIF {
     all: topPoolIF[];
-    activeChain: topPoolIF[];
+    onActiveChain: topPoolIF[];
     getByChain: (c: string) => topPoolIF[];
 };
 
@@ -31,13 +31,13 @@ export const useTopPools = (chainId: string): topPoolsMethodsIF => {
         setTopPools(mockTopPools);
     }, []);
 
-    const getPoolsByChain = (chn: string) => {
-        return topPools.filter((topPool: topPoolIF) => topPool.chainId === chn);
-    };
+    const getPoolsByChain = (chn: string) => (
+        topPools.filter((topPool: topPoolIF) => topPool.chainId === chn)
+    );
 
     return {
         all: topPools,
-        activeChain: getPoolsByChain(chainId),
+        onActiveChain: getPoolsByChain(chainId),
         getByChain: (c: string) => getPoolsByChain(c),
     };
 };
