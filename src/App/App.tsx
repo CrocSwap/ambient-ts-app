@@ -3451,6 +3451,7 @@ export default function App() {
                                         setAnalyticsSearchInput={
                                             setAnalyticsSearchInput
                                         }
+                                        topPools={topPools}
                                     />
                                 }
                             />
