@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import sortTokens from '../../utils/functions/sortTokens';
 import { TokenIF } from '../../utils/interfaces/exports';
+import { ackTokensMethodsIF } from './useAckTokens';
 
 export interface SmallerPoolIF {
     baseToken: TokenIF;
@@ -19,6 +20,7 @@ export const useRecentPools = (
     tokenA: TokenIF,
     tokenB: TokenIF,
     verifyToken: (addr: string, chn: string) => boolean,
+    ackTokens: ackTokensMethodsIF,
 ): recentPoolsMethodsIF => {
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
@@ -29,20 +31,15 @@ export const useRecentPools = (
     useEffect(() => {
         // sort current token pair as base and quote
         const [baseToken, quoteToken]: TokenIF[] = sortTokens(tokenA, tokenB);
-        const { ackTokens } =
-            JSON.parse(localStorage.getItem('user') as string) ?? [];
-        const checkToken = (addr: string) => {
-            const isListed = verifyToken(addr.toLowerCase(), chainId);
-            const isAcknowledged = ackTokens?.some(
-                (ackTkn: TokenIF) =>
-                    ackTkn.address.toLowerCase() === addr.toLowerCase() &&
-                    ackTkn.chainId === parseInt(chainId),
-            );
+        // logic to determine if a token is on a known list or acknowledged
+        const checkToken = (tkn: TokenIF): boolean => {
+            const isListed = verifyToken(tkn.address.toLowerCase(), chainId);
+            const isAcknowledged = ackTokens.check(tkn.address.toLowerCase(), chainId);
             return isListed || isAcknowledged;
         };
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
-        if (checkToken(baseToken.address) && checkToken(quoteToken.address)) {
+        if (checkToken(baseToken) && checkToken(quoteToken)) {
             addPool({ baseToken: baseToken, quoteToken: quoteToken });
         }
     }, [tokenA.address, tokenB.address]);

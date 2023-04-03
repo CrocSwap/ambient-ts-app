@@ -2,12 +2,10 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     LimitOrderIF,
     PositionIF,
-    TokenIF,
     TempPoolIF,
     TransactionIF,
 } from '../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
+import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
@@ -15,7 +13,7 @@ export const useSidebarSearch = (
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
     verifyToken: (addr: string, chn: string) => boolean,
-    shouldRecheckLocalStorage: boolean,
+    ackTokens: ackTokensMethodsIF,
 ): [
     Dispatch<SetStateAction<string>>,
     boolean,
@@ -79,37 +77,6 @@ export const useSidebarSearch = (
     // sub-array of pools in which both tokens have been verified
     const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
 
-    // array of custom tokens acknowledged by the user from local storage
-    // this must be initialized as `null` for fn verifyPools() to run properly
-    const [ackTokens, setAckTokens] = useState<TokenIF[]>([]);
-
-    const dispatch = useAppDispatch();
-
-    // PLEASE LEAVE COMMENTED-OUT CODE IN THE FOLLOWING useEffect() HOOK FOR FUTURE REF
-    // hook to get acknowledged tokens list from local storage
-    useEffect(() => {
-        if (shouldRecheckLocalStorage) {
-            const getAckTokens = (): void => {
-                // retrieve and parse user data from local storage
-                const userData = JSON.parse(
-                    localStorage.getItem('user') as string,
-                );
-                const ackTokens: [] = (userData && userData.ackTokens) || [];
-                // set ackTokens if user data was pulled, otherwise check recursively
-                // if (ackTokens !== null) {
-                // console.log({ ackTokens });
-                setAckTokens(ackTokens);
-                // } else if (limiter < 30) {
-                // setTimeout(() => getAckTokens(limiter + 1), 150);
-                // } else {
-                // recursiveMax('warn', 'useSidebarSearch.ts', 'getAckTokens()');
-                // }
-            };
-            getAckTokens();
-            dispatch(setShouldRecheckLocalStorage(false));
-        }
-    }, [shouldRecheckLocalStorage]);
-
     // memoized list of pools where both tokens can be verified
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
@@ -119,10 +86,8 @@ export const useSidebarSearch = (
                 // check if token can be verified in token map
                 const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
                 // check if token was previously acknowledged by user
-                const isAcknowledged: boolean = ackTokens.some(
-                    (ackTkn: TokenIF) =>
-                        ackTkn.chainId === parseInt(chn) &&
-                        ackTkn.address.toLowerCase() === addr.toLowerCase(),
+                const isAcknowledged: boolean = ackTokens.check(
+                    addr.toLowerCase(), chn
                 );
                 // return true if either verification passed
                 return isKnown || isAcknowledged;
@@ -136,9 +101,8 @@ export const useSidebarSearch = (
             // return array of pools with both verified tokens
             setVerifiedPools(checkedPools);
         };
-        console.log('verifying pools');
         verifyPools();
-    }, [ackTokens.length, poolList.length, shouldRecheckLocalStorage]);
+    }, [ackTokens, poolList.length]);
 
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
