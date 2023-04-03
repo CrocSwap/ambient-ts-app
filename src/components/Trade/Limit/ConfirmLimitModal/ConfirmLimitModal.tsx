@@ -193,7 +193,7 @@ export default function ConfirmLimitModal(props: propsIF) {
                 </div>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>
