@@ -92,6 +92,7 @@ export default function TransactionDetailsGraph(
     };
 
     const fetchEnabled = !!(
+        chainData &&
         isServerEnabled &&
         baseTokenAddress &&
         quoteTokenAddress &&
