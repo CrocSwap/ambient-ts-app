@@ -19,6 +19,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface propsIF {
     account: string;
@@ -40,6 +41,7 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    chainData: ChainSpec;
 }
 export default function TransactionRow(props: propsIF) {
     const {
@@ -60,6 +62,7 @@ export default function TransactionRow(props: propsIF) {
         openGlobalModal,
         showPair,
         setSimpleRangeWidth,
+        chainData,
     } = props;
 
     const {
@@ -156,6 +159,7 @@ export default function TransactionRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };
@@ -769,6 +773,7 @@ export default function TransactionRow(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     setSimpleRangeWidth={setSimpleRangeWidth}
+                    chainData={chainData}
                 />
             </li>
         </ul>

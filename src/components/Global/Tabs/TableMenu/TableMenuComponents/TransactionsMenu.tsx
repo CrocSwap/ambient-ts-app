@@ -28,6 +28,7 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface propsIF {
@@ -44,6 +45,7 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    chainData: ChainSpec;
 }
 
 // React functional component
@@ -63,6 +65,7 @@ export default function TransactionsMenu(props: propsIF) {
         handlePulseAnimation,
         isOnPortfolioPage,
         setSimpleRangeWidth,
+        chainData,
     } = props;
 
     // const [value, copy] = useCopyToClipboard();
@@ -256,6 +259,7 @@ export default function TransactionsMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };

@@ -8,6 +8,7 @@ import { TransactionIF } from '../../../utils/interfaces/exports';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../SnackbarComponent/SnackbarComponent';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface propsIF {
     account: string;
@@ -15,6 +16,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
+    chainData: ChainSpec;
 }
 
 export default function TransactionDetails(props: propsIF) {
@@ -23,6 +25,7 @@ export default function TransactionDetails(props: propsIF) {
         tx,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
+        chainData,
     } = props;
 
     const [showSettings, setShowSettings] = useState(false);
@@ -100,6 +103,7 @@ export default function TransactionDetails(props: propsIF) {
                             isBaseTokenMoneynessGreaterOrEqual
                         }
                         isOnPortfolioPage={isOnPortfolioPage}
+                        chainData={chainData}
                     />
                 </div>
             </div>

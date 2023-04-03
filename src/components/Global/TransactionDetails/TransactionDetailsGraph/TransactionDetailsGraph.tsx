@@ -1,15 +1,14 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAccount } from 'wagmi';
 import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchTransactionDetailsGraphData';
-import { useAppChain } from '../../../../App/hooks/useAppChain';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -18,6 +17,7 @@ interface TransactionDetailsGraphIF {
     useTx?: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
+    chainData: ChainSpec;
 }
 
 export default function TransactionDetailsGraph(
@@ -28,6 +28,7 @@ export default function TransactionDetailsGraph(
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
+        chainData,
     } = props;
 
     const isServerEnabled =
@@ -61,11 +62,6 @@ export default function TransactionDetailsGraph(
                   .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
                   ?.split('_')[0];
 
-    const { isConnected } = useAccount();
-
-    const isUserLoggedIn = isConnected;
-    const [chainData] = useAppChain('0x5', isUserLoggedIn);
-
     const fetchGraphData = memoizeFetchTransactionGraphData();
 
     const [graphData, setGraphData] = useState<any>();
@@ -96,6 +92,7 @@ export default function TransactionDetailsGraph(
     };
 
     const fetchEnabled = !!(
+        chainData &&
         isServerEnabled &&
         baseTokenAddress &&
         quoteTokenAddress &&

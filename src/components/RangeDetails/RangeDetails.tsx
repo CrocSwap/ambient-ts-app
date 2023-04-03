@@ -11,7 +11,7 @@ import { PositionIF } from '../../utils/interfaces/exports';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -48,6 +48,7 @@ interface propsIF {
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
     closeGlobalModal: () => void;
+    chainData: ChainSpec;
 }
 
 export default function RangeDetails(props: propsIF) {
@@ -78,6 +79,7 @@ export default function RangeDetails(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
+        chainData,
     } = props;
 
     const detailsRef = useRef(null);
@@ -366,6 +368,7 @@ export default function RangeDetails(props: propsIF) {
                             isBaseTokenMoneynessGreaterOrEqual
                         }
                         isOnPortfolioPage={isOnPortfolioPage}
+                        chainData={chainData}
                     />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
