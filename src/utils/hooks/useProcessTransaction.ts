@@ -4,6 +4,7 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
+import { getChainExplorer } from '../data/chains';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -11,8 +12,7 @@ export const useProcessTransaction = (
     isOnPortfolioPage = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = 'https://goerli.etherscan.io/';
-    // const blockExplorer = chainData?.blockExplorer;
+    const blockExplorer = getChainExplorer(tx.chainId);
 
     const isDenomBase = tradeData.isDenomBase;
 

@@ -41,7 +41,7 @@ interface propsIF {
 }
 
 export default function OrderRemoval(props: propsIF) {
-    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -270,6 +270,7 @@ export default function OrderRemoval(props: propsIF) {
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
             content='Removal Transaction Successfully Submitted.'
+            chainId={chainData.chainId}
         />
     );
 

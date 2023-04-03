@@ -94,6 +94,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenBAddress={dataTokenB.address}
             tokenBDecimals={dataTokenB.decimals}
             tokenBImage={dataTokenB.logoURI}
+            chainId={dataTokenB.chainId}
         />
     );
 

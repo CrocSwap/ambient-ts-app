@@ -1,4 +1,5 @@
 import { CHAIN_SPECS } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // function to validate any given value as a proper id for a supported chain
 export function validateChainId(chainIdToValidate: string): boolean {
@@ -11,6 +12,31 @@ export function getSupportedChainIds(): Array<string> {
     if (process.env.REACT_APP_CHAIN_IDS) {
         return JSON.parse(process.env.REACT_APP_CHAIN_IDS) as [];
     } else {
-        return ['0x5', '0x66eed'];
+        return DFLT_SUPPORTED_CHAINS;
     }
 }
+
+// Given a chain ID returns the relevant block explorer URL
+export function getChainExplorer(chainId: string | number): string {
+    try {
+        const explorer = lookupChain(chainId).blockExplorer;
+        if (explorer) {
+            return explorer;
+        }
+        console.warn('No block explorer defined for ', chainId);
+    } catch {
+        console.warn(
+            'Cannot return block explorer, because no chain data found for ',
+            chainId,
+        );
+    }
+
+    return PLACEHOLDER_BLOCK_EXPLORER;
+}
+
+const PLACEHOLDER_BLOCK_EXPLORER = 'https://etherscan.io/';
+
+const DFLT_SUPPORTED_CHAINS = [
+    '0x5', // Goerli
+    '0x66eed', // Arbitrum
+];

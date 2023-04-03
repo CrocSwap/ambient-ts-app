@@ -526,6 +526,7 @@ export default function RemoveRange(props: propsIF) {
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
             content='Removal Transaction Successfully Submitted.'
+            chainId={chainId}
         />
     );
 

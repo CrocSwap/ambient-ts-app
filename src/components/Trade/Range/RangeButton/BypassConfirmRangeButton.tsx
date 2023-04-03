@@ -135,6 +135,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             tokenBAddress={tokenA.address}
             tokenBDecimals={tokenA.decimals}
             tokenBImage={tokenA.logoURI}
+            chainId={tokenA.chainId}
             noAnimation
         />
     );

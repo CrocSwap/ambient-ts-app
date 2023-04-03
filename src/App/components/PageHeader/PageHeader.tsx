@@ -318,6 +318,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}
                         lastBlockNumber={lastBlockNumber}
+                        chainId={chainId}
                     />
                 </div>
             </div>
