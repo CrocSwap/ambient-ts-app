@@ -242,7 +242,8 @@ export default function Swap(props: propsIF) {
         if (
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
-            txErrorCode === ''
+            txErrorCode === '' &&
+            bypassConfirm.swap.isEnabled
         ) {
             setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
@@ -251,6 +252,7 @@ export default function Swap(props: propsIF) {
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
+        bypassConfirm.swap.isEnabled,
     ]);
 
     const resetConfirmation = () => {
@@ -416,6 +418,7 @@ export default function Swap(props: propsIF) {
         <button
             onClick={openModalWallet}
             className={styles.authenticate_button}
+            style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
             Connect Wallet
         </button>

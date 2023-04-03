@@ -34,7 +34,7 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { checkIsStable } from '../../utils/data/stablePairs';
+import { isStablePair } from '../../utils/data/stablePairs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
@@ -89,7 +89,7 @@ export default function HarvestPosition(props: propsIF) {
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
-    const isPairStable: boolean = checkIsStable(
+    const isPairStable: boolean = isStablePair(
         position.base,
         position.quote,
         chainData.chainId,

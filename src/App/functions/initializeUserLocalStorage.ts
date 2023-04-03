@@ -62,11 +62,6 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    if (!user.ackTokens) {
-        user.ackTokens = [];
-        userUpdated = true;
-    }
-
     if (!user.bypassConfirm) {
         user.bypassConfirm = false;
         userUpdated = true;

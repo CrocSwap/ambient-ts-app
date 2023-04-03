@@ -115,7 +115,7 @@ import {
     setRecentTokens,
     setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
-import { checkIsStable } from '../utils/data/stablePairs';
+import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
@@ -174,6 +174,7 @@ import {
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
+import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -356,6 +357,16 @@ export default function App() {
     // const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
+    // custom hook to manage chain the app is using
+    // `chainData` is data on the current chain retrieved from our SDK
+    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
+    // `switchChain` is a function to switch to a different chain
+    // `'0x5'` is the chain the app should be on by default
+    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+
+    // hook to manage acknowledged tokens
+    const ackTokens: ackTokensMethodsIF = useAckTokens();
+
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -419,13 +430,6 @@ export default function App() {
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
-    // custom hook to manage chain the app is using
-    // `chainData` is data on the current chain retrieved from our SDK
-    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
-    // `switchChain` is a function to switch to a different chain
-    // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
-
     const [
         localTokens,
         verifyToken,
@@ -446,6 +450,7 @@ export default function App() {
         tradeData.tokenA,
         tradeData.tokenB,
         verifyToken,
+        ackTokens,
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
@@ -571,8 +576,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        console.log(chainData.nodeUrl);
-        fetch(chainData.nodeUrl2, {
+        fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -653,7 +657,7 @@ export default function App() {
 
     const isPairStable = useMemo(
         () =>
-            checkIsStable(
+            isStablePair(
                 tradeData.tokenA.address,
                 tradeData.tokenB.address,
                 chainData.chainId,
@@ -2993,6 +2997,7 @@ export default function App() {
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
+        ackTokens: ackTokens,
     };
 
     const analyticsProps = {
