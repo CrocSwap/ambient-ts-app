@@ -649,138 +649,25 @@ export default function Chart(props: propsIF) {
         firstCandle,
     ]);
 
-    // function addTextMarket(scale: any) {
-    //     yAxis.tickValues([
-    //         ...scale.ticks(),
-    //         ...[market[0].value],
-    //         ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
-    //     ]);
-
-    //     yAxis.tickFormat((d: any) =>
-    //         formatAmountChartData(
-    //             d,
-    //             d === market[0].value || d === crosshairData[0].y
-    //                 ? undefined
-    //                 : d.toString().split('.')[1]?.length,
-    //         ),
-    //     );
-
-    //     yAxis.decorate((selection: any) => {
-    //         selection
-    //             .attr('filter', (d: any) => {
-    //                 if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-    //                     return 'url(#crossHairBg)';
-    //                 }
-    //                 if (d === market[0].value) {
-    //                     return 'url(#marketBg)';
-    //                 }
-    //             })
-    //             .select('text')
-    //             .attr('class', (d: any) => {
-    //                 if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-    //                     return 'crossHairText';
-    //                 }
-    //                 if (d === market[0].value) {
-    //                     return 'market';
-    //                 }
-    //             });
-    //     });
-    // }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function addTextLimit(scale: any) {
+    const sameLocationLimit = () => {
         const resultData =
             scaleData.yScale(limit[0].value) -
             scaleData.yScale(market[0].value);
         const resultLocationData = resultData < 0 ? -20 : 20;
         const isSameLocation = Math.abs(resultData) < 20;
-        const sameLocationData = scaleData.yScale.invert(
-            scaleData.yScale(market[0].value) + resultLocationData,
-        );
-        yAxis.tickFormat((d: number) => {
-            if (d === crosshairData[0].y) {
-                return formatAmountChartData(crosshairData[0].y);
-            } else {
-                return isSameLocation && d === sameLocationData
-                    ? formatAmountChartData(limit[0].value)
-                    : formatAmountChartData(
-                          d,
-                          d === market[0].value || d === limit[0].value
-                              ? undefined
-                              : d.toString().split('.')[1]?.length,
-                      );
-            }
-        });
+        const sameLocationData =
+            scaleData.yScale(market[0].value) + resultLocationData;
+        return {
+            isSameLocation: isSameLocation,
+            sameLocationData: sameLocationData,
+        };
+    };
 
-        yAxis.tickValues([
-            ...scale.ticks(),
-            ...[
-                isSameLocation ? sameLocationData : limit[0].value,
-                market[0].value,
-            ],
-            ...(isMouseMoveCrosshair && !isLineDrag
-                ? [crosshairData[0].y]
-                : []),
-        ]);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        yAxis.decorate((selection: any) => {
-            selection
-                .attr('filter', (d: number) => {
-                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                        return 'url(#crossHairBg)';
-                    }
-                    if (
-                        isSameLocation
-                            ? d === sameLocationData
-                            : d === limit[0].value
-                    ) {
-                        if (checkLimitOrder) {
-                            return sellOrderStyle === 'order_sell'
-                                ? 'url(#textOrderSellBg)'
-                                : 'url(#textOrderBuyBg)';
-                        }
-                        return 'url(#textBg)';
-                    }
-                    if (d === market[0].value) {
-                        return 'url(#marketBg)';
-                    }
-                })
-                .select('text')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .attr('class', (d: any) => {
-                    if (d === market[0].value) {
-                        return 'market';
-                    }
-                    if (
-                        (isSameLocation
-                            ? d === sameLocationData
-                            : d === limit[0].value) &&
-                        checkLimitOrder
-                    ) {
-                        return sellOrderStyle === 'order_sell'
-                            ? 'market'
-                            : 'y_axis';
-                    }
-                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                        return 'crossHairText';
-                    }
-                    if (
-                        isSameLocation
-                            ? d === sameLocationData
-                            : d === limit[0].value
-                    ) {
-                        return 'y_axis';
-                    }
-                });
-        });
-    }
-
-    function addTextRange(scale: any) {
+    const sameLocationRange = () => {
         let isSameLocationMin = false;
-        let sameLocationDataMin = false;
+        let sameLocationDataMin = 0;
         let isSameLocationMax = false;
-        let sameLocationDataMax = false;
+        let sameLocationDataMax = 0;
 
         const low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
@@ -810,23 +697,20 @@ export default function Chart(props: propsIF) {
                 isSameLocationMax = isSameLocationHighMarket;
                 isSameLocationMin = isSameLocationLowMarket;
                 if (isSameLocationHighMarket) {
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
                 }
 
                 if (isSameLocationLowMarket) {
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(marketValue) + differenceLowMarketData;
                 }
 
                 if (differenceHighMarketData === differenceLowMarketData) {
-                    sameLocationDataMin = scaleData.yScale.invert(
+                    sameLocationDataMin =
                         scaleData.yScale(marketValue) -
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
                 }
             } else if (low > marketValue && high > marketValue) {
                 isSameLocationMax =
@@ -834,34 +718,29 @@ export default function Chart(props: propsIF) {
                 isSameLocationMin = isSameLocationLowMarket;
 
                 if (isSameLocationLowHigh) {
-                    sameLocationDataMax = scaleData.yScale.invert(
-                        scaleData.yScale(low) - differenceLowHighData,
-                    );
+                    sameLocationDataMax =
+                        scaleData.yScale(low) - differenceLowHighData;
                 }
                 if (isSameLocationHighMarket) {
-                    sameLocationDataMax = scaleData.yScale.invert(
-                        scaleData.yScale(low) + differenceLowHighData,
-                    );
+                    sameLocationDataMax =
+                        scaleData.yScale(low) + differenceLowHighData;
                 }
 
                 if (isSameLocationLowMarket) {
                     isSameLocationMin = true;
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(marketValue) + differenceLowMarketData;
                 }
 
                 if (isSameLocationLowHigh && isSameLocationLowMarket) {
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceLowMarketData * 2,
-                    );
+                        differenceLowMarketData * 2;
 
                     if (differenceHighMarketData === differenceLowMarketData) {
-                        sameLocationDataMax = scaleData.yScale.invert(
+                        sameLocationDataMax =
                             scaleData.yScale(marketValue) +
-                                differenceHighMarketData * 2,
-                        );
+                            differenceHighMarketData * 2;
                     }
                 }
             } else if (low < marketValue && high < marketValue) {
@@ -870,55 +749,47 @@ export default function Chart(props: propsIF) {
                     isSameLocationLowHigh || isSameLocationLowMarket;
 
                 if (isSameLocationLowHigh) {
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(high) + differenceLowHighData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(high) + differenceLowHighData;
                 }
 
                 if (isSameLocationHighMarket) {
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
                 }
 
                 if (isSameLocationLowHigh && isSameLocationHighMarket) {
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
 
-                    sameLocationDataMin = scaleData.yScale.invert(
+                    sameLocationDataMin =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData +
-                            differenceLowHighData,
-                    );
+                        differenceHighMarketData +
+                        differenceLowHighData;
 
                     if (differenceHighMarket === 0) {
-                        sameLocationDataMax = scaleData.yScale.invert(
+                        sameLocationDataMax =
                             scaleData.yScale(marketValue) -
-                                differenceHighMarketData,
-                        );
-                        sameLocationDataMin = scaleData.yScale.invert(
+                            differenceHighMarketData;
+                        sameLocationDataMin =
                             scaleData.yScale(marketValue) -
-                                differenceHighMarketData * 2,
-                        );
+                            differenceHighMarketData * 2;
                     }
 
                     if (differenceHighMarket === differenceLowMarket) {
-                        sameLocationDataMax = scaleData.yScale.invert(
+                        sameLocationDataMax =
                             scaleData.yScale(marketValue) -
-                                (differenceLowMarket === 0
-                                    ? differenceHighMarketData
-                                    : -differenceHighMarketData),
-                        );
+                            (differenceLowMarket === 0
+                                ? differenceHighMarketData
+                                : -differenceHighMarketData);
 
-                        sameLocationDataMin = scaleData.yScale.invert(
+                        sameLocationDataMin =
                             scaleData.yScale(marketValue) -
-                                (differenceLowMarket === 0
-                                    ? differenceHighMarketData * 2
-                                    : -(differenceHighMarketData * 2)),
-                        );
+                            (differenceLowMarket === 0
+                                ? differenceHighMarketData * 2
+                                : -(differenceHighMarketData * 2));
                     }
                 }
             }
@@ -926,117 +797,101 @@ export default function Chart(props: propsIF) {
             if (marketValue > low && marketValue > high) {
                 if (isSameLocationLowHigh) {
                     isSameLocationMax = true;
-                    sameLocationDataMax = scaleData.yScale.invert(
-                        scaleData.yScale(low) - differenceLowHighData,
-                    );
+                    sameLocationDataMax =
+                        scaleData.yScale(low) - differenceLowHighData;
                 }
 
                 if (isSameLocationLowMarket) {
                     isSameLocationMin = true;
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(marketValue) + differenceLowMarketData;
                 }
 
                 if (isSameLocationLowMarket && isSameLocationLowHigh) {
                     isSameLocationMax = true;
                     isSameLocationMin = true;
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(marketValue) + differenceLowMarketData;
 
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceLowMarketData -
-                            differenceLowHighData,
-                    );
+                        differenceLowMarketData -
+                        differenceLowHighData;
                 }
             }
 
             if (marketValue < low && marketValue > high) {
                 if (isSameLocationLowMarket) {
                     isSameLocationMin = true;
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(marketValue) + differenceLowMarketData;
                 }
 
                 if (isSameLocationHighMarket) {
                     isSameLocationMax = true;
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
                 }
             }
 
             if (marketValue < low && marketValue < high) {
                 if (isSameLocationLowHigh) {
                     isSameLocationMin = true;
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(high) + differenceLowHighData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(high) + differenceLowHighData;
                 }
 
                 if (isSameLocationHighMarket) {
                     isSameLocationMax = true;
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
                 }
                 if (isSameLocationHighMarket && isSameLocationLowHigh) {
                     isSameLocationMax = true;
                     isSameLocationMin = true;
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
 
-                    sameLocationDataMin = scaleData.yScale.invert(
+                    sameLocationDataMin =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData +
-                            differenceLowHighData,
-                    );
+                        differenceHighMarketData +
+                        differenceLowHighData;
                 }
             }
         } else {
             if (marketValue < low && marketValue < high) {
                 isSameLocationMax = true;
-                sameLocationDataMax = scaleData.yScale.invert(
-                    scaleData.yScale(low) - differenceLowHighData,
-                );
+                sameLocationDataMax =
+                    scaleData.yScale(low) - differenceLowHighData;
 
                 if (isSameLocationHighMarket || isSameLocationLowMarket) {
                     isSameLocationMin = true;
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
+                    sameLocationDataMin =
+                        scaleData.yScale(marketValue) + differenceLowMarketData;
 
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceLowMarketData * 2,
-                    );
+                        differenceLowMarketData * 2;
                 }
             }
 
             if (marketValue > low && marketValue > high) {
                 isSameLocationMin = true;
-                sameLocationDataMin = scaleData.yScale.invert(
-                    scaleData.yScale(high) + differenceLowHighData,
-                );
+                sameLocationDataMin =
+                    scaleData.yScale(high) + differenceLowHighData;
 
                 if (isSameLocationLowMarket || differenceLowMarket < 35) {
                     isSameLocationMax = true;
-                    sameLocationDataMax = scaleData.yScale.invert(
+                    sameLocationDataMax =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData,
-                    );
+                        differenceHighMarketData;
 
-                    sameLocationDataMin = scaleData.yScale.invert(
+                    sameLocationDataMin =
                         scaleData.yScale(marketValue) +
-                            differenceHighMarketData * 2,
-                    );
+                        differenceHighMarketData * 2;
                 }
             }
 
@@ -1044,147 +899,21 @@ export default function Chart(props: propsIF) {
                 isSameLocationMin = true;
                 isSameLocationMax = true;
 
-                sameLocationDataMax = scaleData.yScale.invert(
-                    scaleData.yScale(marketValue) - differenceHighMarketData,
-                );
+                sameLocationDataMax =
+                    scaleData.yScale(marketValue) - differenceHighMarketData;
 
-                sameLocationDataMin = scaleData.yScale.invert(
-                    scaleData.yScale(marketValue) + differenceHighMarketData,
-                );
+                sameLocationDataMin =
+                    scaleData.yScale(marketValue) + differenceHighMarketData;
             }
         }
 
-        yAxis.tickValues([
-            ...scale.ticks(),
-            ...(simpleRangeWidth === 100 &&
-            (!isAdvancedModeActive || location.pathname.includes('reposition'))
-                ? [market[0].value]
-                : [
-                      isSameLocationMin ? sameLocationDataMin : low,
-                      isSameLocationMax ? sameLocationDataMax : high,
-                      market[0].value,
-                  ]),
-            ...(isMouseMoveCrosshair && !isLineDrag
-                ? [crosshairData[0].y]
-                : []),
-        ]);
-
-        yAxis.tickFormat((d: any) => {
-            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                const data =
-                    (isSameLocationMin && d === sameLocationDataMin) ||
-                    (isSameLocationMax && d === sameLocationDataMax)
-                        ? isSameLocationMin && d === sameLocationDataMin
-                            ? low
-                            : high
-                        : d;
-
-                const longerValue =
-                    formatAmountChartData(low).length >
-                    formatAmountChartData(high).length
-                        ? low
-                        : high;
-                const shorterValue =
-                    formatAmountChartData(low).length >
-                    formatAmountChartData(high).length
-                        ? high
-                        : low;
-
-                const isSameLocation =
-                    isSameLocationMin && d === sameLocationDataMin
-                        ? isSameLocationMin
-                        : isSameLocationMax;
-                const sameLocationData =
-                    isSameLocationMin && d === sameLocationDataMin
-                        ? sameLocationDataMin
-                        : sameLocationDataMax;
-
-                const digit =
-                    formatAmountChartData(low).length >=
-                    formatAmountChartData(high).length
-                        ? formatAmountChartData(low).length -
-                          formatAmountChartData(high).length +
-                          formatAmountChartData(high).toString().split('.')[1]
-                              ?.length
-                        : formatAmountChartData(high).length -
-                          formatAmountChartData(low).length +
-                          formatAmountChartData(low).toString().split('.')[1]
-                              ?.length;
-
-                return formatAmountChartData(
-                    isSameLocation && d === sameLocationData ? data : d,
-
-                    d === sameLocationDataMax ||
-                        d === sameLocationDataMin ||
-                        d === shorterValue ||
-                        d === longerValue ||
-                        d === market[0].value ||
-                        d === crosshairData[0].y
-                        ? d === longerValue ||
-                          d === market[0].value ||
-                          d === crosshairData[0].y ||
-                          d === sameLocationData
-                            ? undefined
-                            : digit
-                        : d.toString().split('.')[1]?.length,
-                );
-            } else {
-                return formatAmountChartData(
-                    d,
-                    d === market[0].value
-                        ? undefined
-                        : d.toString().split('.')[1]?.length,
-                );
-            }
-        });
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        yAxis.decorate((selection: any) => {
-            selection
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .attr('filter', (d: any) => {
-                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                        return 'url(#crossHairBg)';
-                    }
-
-                    if (
-                        (simpleRangeWidth !== 100 || isAdvancedModeActive) &&
-                        ((isSameLocationMin
-                            ? d === sameLocationDataMin
-                            : d === low) ||
-                            (isSameLocationMax
-                                ? d === sameLocationDataMax
-                                : d === high))
-                    ) {
-                        return 'url(#textBg)';
-                    }
-                    if (d === market[0].value) {
-                        return 'url(#marketBg)';
-                    }
-                })
-                .select('text')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .attr('class', (d: any) => {
-                    if (d === market[0].value) {
-                        return 'market';
-                    }
-                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                        return 'crossHairText';
-                    }
-                    if (
-                        (simpleRangeWidth !== 100 || isAdvancedModeActive) &&
-                        ((isSameLocationMin
-                            ? d === sameLocationDataMin
-                            : d === low) ||
-                            (isSameLocationMax
-                                ? d === sameLocationDataMax
-                                : d === high))
-                    ) {
-                        return 'y_axis';
-                    }
-                });
-        });
-    }
+        return {
+            isSameLocationMin: isSameLocationMin,
+            sameLocationDataMin: sameLocationDataMin,
+            isSameLocationMax: isSameLocationMax,
+            sameLocationDataMax: sameLocationDataMax,
+        };
+    };
 
     async function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
@@ -1380,34 +1109,6 @@ export default function Chart(props: propsIF) {
         }
         if (yTickValueLength <= 4) setYaxisWidth('5rem');
     }
-    useEffect(() => {
-        if (scaleData && yAxis) {
-            if (location.pathname.includes('market')) {
-                // addTextMarket(scaleData.yScale);
-            } else if (location.pathname.includes('/limit')) {
-                addTextLimit(scaleData.yScale);
-            } else if (
-                location.pathname.includes('range') ||
-                location.pathname.includes('reposition')
-            ) {
-                addTextRange(scaleData.yScale);
-            }
-            changeyAxisWidth();
-            render();
-        }
-    }, [
-        dragControl,
-        yAxis,
-        location,
-        scaleData && scaleData.yScale.domain(),
-        zoomAndYdragControl,
-        ranges,
-        limit,
-        market,
-        crosshairData,
-        isMouseMoveCrosshair,
-        scaleData,
-    ]);
 
     useEffect(() => {
         if (
@@ -3864,6 +3565,8 @@ export default function Chart(props: propsIF) {
         isMouseMoveCrosshair,
         limit,
         isLineDrag,
+        ranges,
+        simpleRangeWidth !== 100 || isAdvancedModeActive,
     ]);
 
     function createRectLabel(
@@ -3991,11 +3694,13 @@ export default function Chart(props: propsIF) {
                 d === limit[0].value &&
                 location.pathname.includes('/limit')
             ) {
+                const { isSameLocation, sameLocationData } =
+                    sameLocationLimit();
                 if (checkLimitOrder) {
                     if (sellOrderStyle === 'order_sell') {
                         createRectLabel(
                             context,
-                            yScale(d),
+                            isSameLocation ? sameLocationData : yScale(d),
                             X - tickSize,
                             '#e480ff',
                             'black',
@@ -4004,7 +3709,7 @@ export default function Chart(props: propsIF) {
                     } else {
                         createRectLabel(
                             context,
-                            yScale(d),
+                            isSameLocation ? sameLocationData : yScale(d),
                             X - tickSize,
                             '#7371fc',
                             'white',
@@ -4014,28 +3719,83 @@ export default function Chart(props: propsIF) {
                 } else {
                     createRectLabel(
                         context,
-                        yScale(d),
+                        isSameLocation ? sameLocationData : yScale(d),
                         X - tickSize,
                         '#7772FE',
                         'white',
                         formatAmountChartData(d, undefined),
                     );
                 }
-                addYaxisLabel(yScale(d));
+                addYaxisLabel(isSameLocation ? sameLocationData : yScale(d));
             } else if (
                 (d === low || d === high) &&
                 (location.pathname.includes('range') ||
                     location.pathname.includes('reposition'))
             ) {
-                createRectLabel(
-                    context,
-                    yScale(d),
-                    X - tickSize,
-                    '#7371fc',
-                    'white',
-                    formatAmountChartData(d, undefined),
-                );
-                addYaxisLabel(yScale(d));
+                const {
+                    isSameLocationMin: isSameLocationMin,
+                    sameLocationDataMin: sameLocationDataMin,
+                    isSameLocationMax: isSameLocationMax,
+                    sameLocationDataMax: sameLocationDataMax,
+                } = sameLocationRange();
+
+                // const digit =
+                //     formatAmountChartData(low).length >=
+                //     formatAmountChartData(high).length
+                //         ? formatAmountChartData(low).length -
+                //           formatAmountChartData(high).length +
+                //           formatAmountChartData(high).toString().split('.')[1]
+                //               ?.length
+                //         : formatAmountChartData(high).length -
+                //           formatAmountChartData(low).length +
+                //           formatAmountChartData(low).toString().split('.')[1]
+                //               ?.length;
+
+                // return formatAmountChartData(
+                //     isSameLocation && d === sameLocationData ? data : d,
+
+                //     d === sameLocationDataMax ||
+                //         d === sameLocationDataMin ||
+                //         d === shorterValue ||
+                //         d === longerValue ||
+                //         d === market[0].value ||
+                //         d === crosshairData[0].y
+                //         ? d === longerValue ||
+                //           d === market[0].value ||
+                //           d === crosshairData[0].y ||
+                //           d === sameLocationData
+                //             ? undefined
+                //             : digit
+                //         : d.toString().split('.')[1]?.length,
+
+                if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                    if (d === low) {
+                        createRectLabel(
+                            context,
+                            isSameLocationMin ? sameLocationDataMin : yScale(d),
+                            X - tickSize,
+                            '#7371fc',
+                            'white',
+                            formatAmountChartData(d, undefined),
+                        );
+                        addYaxisLabel(
+                            isSameLocationMin ? sameLocationDataMin : yScale(d),
+                        );
+                    }
+                    if (d === high) {
+                        createRectLabel(
+                            context,
+                            isSameLocationMax ? sameLocationDataMax : yScale(d),
+                            X - tickSize,
+                            '#7371fc',
+                            'white',
+                            formatAmountChartData(d, undefined),
+                        );
+                        addYaxisLabel(
+                            isSameLocationMax ? sameLocationDataMax : yScale(d),
+                        );
+                    }
+                }
             } else {
                 if (isMouseMoveCrosshair && d === crosshairData[0].y) {
                     createRectLabel(
@@ -4056,6 +3816,8 @@ export default function Chart(props: propsIF) {
                 }
             }
         });
+
+        changeyAxisWidth();
     };
 
     const drawXaxis = (context: any, xScale: any, Y: any) => {
@@ -4075,7 +3837,7 @@ export default function Chart(props: propsIF) {
                 context.textAlign = 'center';
                 context.textBaseline = 'top';
                 context.fillStyle = '#bdbdbd';
-                context.font = '13px Arial';
+                context.font = '50 11.5px Arial';
                 context.filter = ' blur(0px)';
 
                 if (
@@ -4100,7 +3862,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (d === crosshairData[0].x) {
-                    context.font = 'bold 15px Arial';
+                    context.font = 'bold 12.5px Arial';
                     if (parsedChartData?.period === 86400) {
                         formatValue = moment(d)
                             .subtract(utcDiffHours, 'hours')
@@ -4123,7 +3885,7 @@ export default function Chart(props: propsIF) {
                         return item.date.getTime() === d?.getTime();
                     })?.style
                 ) {
-                    context.font = 'bold 14px Arial';
+                    context.font = '900 12px Arial';
                 }
 
                 context.beginPath();
@@ -5930,7 +5692,6 @@ export default function Chart(props: propsIF) {
         if (poolPriceDisplay && high < poolPriceDisplay) {
             for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
                 if (ctx.isPointInPath(i, scaleData.yScale(high))) {
-                    console.log(i, liquidityScale(i));
                     filtered.unshift({
                         activeLiq: liquidityScale.invert(i),
                         liqPrices: high,
@@ -6829,8 +6590,6 @@ export default function Chart(props: propsIF) {
                 );
 
                 const mousemove = (event: any) => {
-                    //  console.log(event.offsetX);
-
                     setCrossHairLocation(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
