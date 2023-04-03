@@ -16,7 +16,7 @@ export interface topPoolsMethodsIF {
     all: topPoolIF[];
     onActiveChain: topPoolIF[];
     getByChain: (c: string) => topPoolIF[];
-};
+}
 
 export const useTopPools = (chainId: string): topPoolsMethodsIF => {
     // !important   this file uses a roundabout way to hold top pools in local
@@ -32,9 +32,9 @@ export const useTopPools = (chainId: string): topPoolsMethodsIF => {
         setTopPools(defaultTopPools);
     }, []);
 
-    const getPoolsByChain = (chn: string): topPoolIF[] => (
-        topPools.filter((topPool: topPoolIF) => topPool.chainId === chn)
-    );
+    // fn to return pools on a given chain (by chainId value)
+    const getPoolsByChain = (chn: string): topPoolIF[] =>
+        topPools.filter((topPool: topPoolIF) => topPool.chainId === chn);
 
     return {
         all: topPools,
