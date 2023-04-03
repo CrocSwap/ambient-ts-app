@@ -1,3 +1,9 @@
+import { topPools } from '../mockData';
+
 export const useTopPools = () => {
-    console.log('ran hook useTopPools() in App.tsx file!');
+    console.log({topPools});
+
+    return {
+        all: topPools
+    };
 };
