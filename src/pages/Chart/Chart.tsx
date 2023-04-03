@@ -5775,7 +5775,11 @@ export default function Chart(props: propsIF) {
         filtered.unshift({ activeLiq: value, liqPrices: high });
 
         const canvas = d3
-            .select(d3CanvasLiqBid.current)
+            .select(
+                liqMode === 'curve'
+                    ? d3CanvasLiqBid.current
+                    : d3CanvasLiqBidDepth.current,
+            )
             .select('canvas')
             .node() as any;
 
@@ -5849,7 +5853,11 @@ export default function Chart(props: propsIF) {
         filtered.push({ activeLiq: value, liqPrices: low });
 
         const canvas = d3
-            .select(d3CanvasLiqAsk.current)
+            .select(
+                liqMode === 'curve'
+                    ? d3CanvasLiqAsk.current
+                    : d3CanvasLiqAskDepth.current,
+            )
             .select('canvas')
             .node() as any;
 
@@ -5955,6 +5963,7 @@ export default function Chart(props: propsIF) {
         lineBidSeries,
         liqMode,
         ranges,
+        reset,
     ]);
 
     useEffect(() => {
@@ -6008,6 +6017,7 @@ export default function Chart(props: propsIF) {
         lineAskSeries,
         liqMode,
         ranges,
+        reset,
     ]);
 
     // NoGoZone
