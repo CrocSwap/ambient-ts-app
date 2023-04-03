@@ -41,9 +41,15 @@
     -o-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
     transform: rotate(180deg);
+    cursor: none;
 }
 .display_container:hover .token_arrow, .display_container:focus-visible .token_arrow {
  transform: none;
+ cursor: none;
+}
+
+.display_container{
+    cursor: none;
 }
 
 /* .clicked{
