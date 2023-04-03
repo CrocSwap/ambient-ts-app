@@ -3,12 +3,10 @@ const STABLE_TOKENS_BY_CHAIN = {
     '0x5': [
         '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60', // DAI
         '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C', // USDC
-    ].map((x) => x.toLowerCase()),
+    ],
 };
 
-// Only exist to satisfy the typescript compiler when we index, don't worry about
-// not being comprehensive
-type CHAIN_ID_TYPE = '0x5';
+type StableMapKey = '0x5';
 
 // @return true if the two tokens constitute a stable pair (USD based stables only for now)
 //
@@ -31,7 +29,7 @@ export function isStableToken(addr: string, chain: string): boolean {
         return false;
     }
 
-    return STABLE_TOKENS_BY_CHAIN[chain as CHAIN_ID_TYPE]
-        .map((x) => x.toLowerCase())
+    return STABLE_TOKENS_BY_CHAIN[chain as StableMapKey]
+        .map((x: string) => x.toLowerCase())
         .includes(addr.toLowerCase());
 }

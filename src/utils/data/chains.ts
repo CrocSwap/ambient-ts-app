@@ -16,6 +16,10 @@ export function getSupportedChainIds(): Array<string> {
     }
 }
 
+export function getDefaultChainId(): string {
+    return getSupportedChainIds()[0];
+}
+
 // Given a chain ID returns the relevant block explorer URL
 export function getChainExplorer(chainId: string | number): string {
     try {
@@ -34,9 +38,27 @@ export function getChainExplorer(chainId: string | number): string {
     return PLACEHOLDER_BLOCK_EXPLORER;
 }
 
+// Returns the chain we should use to reference market data for charting, etc.
+// Used for testnets, so we can render real-world data in the testnet application
+export function mktDataChainId(chainId: string): string {
+    if (chainId in MKT_DATA_CHAIN_MAP) {
+        return MKT_DATA_CHAIN_MAP[chainId as MapKeysType];
+    } else {
+        return chainId;
+    }
+}
+
 const PLACEHOLDER_BLOCK_EXPLORER = 'https://etherscan.io/';
 
 const DFLT_SUPPORTED_CHAINS = [
     '0x5', // Goerli
     '0x66eed', // Arbitrum
 ];
+
+// Maps testnets to the referenced production market data we should use on chart, etc.
+const MKT_DATA_CHAIN_MAP = {
+    '0x5': '0x1', // Goerli -> Mainnet
+    '0x66eed': '0x1', // Arbitrum Testnet -> Mainnet
+};
+
+type MapKeysType = '0x5' | '0x66eed';

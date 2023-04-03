@@ -64,7 +64,7 @@ export default function TransactionDetailsGraph(
     const { isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
-    const [chainData] = useAppChain('0x5', isUserLoggedIn);
+    const [chainData] = useAppChain(isUserLoggedIn);
 
     const fetchGraphData = memoizeFetchTransactionGraphData();
 

@@ -173,6 +173,7 @@ import {
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { mktDataChainId } from '../utils/data/chains';
 // import KeyboardShortcuts from './KeyboardShortcuts';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -422,13 +423,7 @@ export default function App() {
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
-    const dfltChainId = process.env.REACT_APP_DFLT_CHAIN_ID
-        ? process.env.REACT_APP_DFLT_CHAIN_ID
-        : '0x5';
-    const [chainData, isChainSupported] = useAppChain(
-        dfltChainId,
-        isUserLoggedIn,
-    );
+    const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
     const [
         localTokens,
@@ -1514,11 +1509,11 @@ export default function App() {
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
-                                chainId: '0x1',
+                                chainId: mktDataChainId(chainData.chainId),
                                 dex: 'all',
                                 poolStats: 'true',
                                 concise: 'true',
-                                poolStatsChainIdOverride: '0x5',
+                                poolStatsChainIdOverride: chainData.chainId,
                                 poolStatsBaseOverride:
                                     baseTokenAddress.toLowerCase(),
                                 poolStatsQuoteOverride:
@@ -1637,11 +1632,11 @@ export default function App() {
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
                 period: candleTimeLocal.toString(),
-                chainId: '0x1',
+                chainId: mktDataChainId(chainData.chainId),
                 dex: 'all',
                 poolStats: 'true',
                 concise: 'true',
-                poolStatsChainIdOverride: '0x5',
+                poolStatsChainIdOverride: chainData.chainId,
                 poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                 poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                 poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
@@ -1649,6 +1644,7 @@ export default function App() {
         [
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
+            chainData.chainId,
             chainData.poolIndex,
             candleTimeLocal,
         ],
@@ -1715,11 +1711,11 @@ export default function App() {
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
                     // page: '0', // nonnegative integer
-                    chainId: '0x1',
+                    chainId: mktDataChainId(chainData.chainId),
                     dex: 'all',
                     poolStats: 'true',
                     concise: 'true',
-                    poolStatsChainIdOverride: '0x5',
+                    poolStatsChainIdOverride: chainData.chainId,
                     poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                     poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
