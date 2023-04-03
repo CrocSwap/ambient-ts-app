@@ -31,7 +31,7 @@ export const useTopPools = (chainId: string): topPoolsMethodsIF => {
         setTopPools(mockTopPools);
     }, []);
 
-    const getPoolsByChain = (chn: string) => (
+    const getPoolsByChain = (chn: string): topPoolIF[] => (
         topPools.filter((topPool: topPoolIF) => topPool.chainId === chn)
     );
 
