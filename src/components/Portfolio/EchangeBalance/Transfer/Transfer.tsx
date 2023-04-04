@@ -99,6 +99,10 @@ export default function Transfer(props: propsIF) {
     >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
+        useState<boolean>(true);
+    const [isAddressFieldDisabled, setIsAddressFieldDisabled] =
+        useState<boolean>(true);
     const [sendToAddressDexBalance, setSendToAddressDexBalance] =
         useState<string>('');
     const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
@@ -188,20 +192,30 @@ export default function Transfer(props: propsIF) {
     useEffect(() => {
         if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
         } else if (!transferQtyNonDisplay) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
         } else if (isTransferPending) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
         } else if (isTransferQtyValid) {
             setIsButtonDisabled(false);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Transfer');
         }
     }, [
@@ -388,6 +402,7 @@ export default function Transfer(props: propsIF) {
                 fieldId='exchange-balance-transfer-address'
                 setTransferToAddress={setSendToAddress}
                 sendToAddress={sendToAddress}
+                disable={isAddressFieldDisabled}
             />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
@@ -396,6 +411,7 @@ export default function Transfer(props: propsIF) {
                 setTransferQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                disable={isCurrencyFieldDisabled}
             />
             <div
                 onClick={handleBalanceClick}
