@@ -68,8 +68,8 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                     </p>
                     <DividerDark />
                     <p>
-                        Check the Metamask extension in your browser for
-                        notifications, or click &quot;Try Again&quot;.
+                        Please check your wallet for notifications, or click
+                        &quot;Try Again&quot;.
                     </p>
                 </>
             )}

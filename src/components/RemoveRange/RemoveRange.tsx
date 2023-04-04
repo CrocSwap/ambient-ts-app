@@ -525,13 +525,13 @@ export default function RemoveRange(props: propsIF) {
     const removalSuccess = (
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
-            content='Removal Transaction Successfully Submitted.'
+            content='Removal Transaction Successfully Submitted'
         />
     );
 
     const removalPending = (
         <WaitingConfirmation
-            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+            content={`Submitting removal transaction for ${position.baseSymbol} and ${position.quoteSymbol}.`}
         />
     );
 

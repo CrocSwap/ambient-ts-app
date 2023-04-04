@@ -74,11 +74,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={`Swapping ${sellQtyString} ${
-                sellTokenData.symbol
-            } for ${buyQtyString} ${
-                buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.
+            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}. 
             `}
         />
     );

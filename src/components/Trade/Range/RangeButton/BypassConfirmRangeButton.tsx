@@ -56,9 +56,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             noAnimation
             content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
                 tokenA.symbol
-            } and ${tokenBQty ? tokenBQty : '0'} ${
-                tokenB.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
+            } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}.`}
         />
     );
 
