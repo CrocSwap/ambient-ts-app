@@ -495,7 +495,7 @@ export default function TransactionRow(props: propsIF) {
     // end of portfolio page li element ---------------
     return (
         <ul
-            className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
+            className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
             style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
@@ -504,6 +504,7 @@ export default function TransactionRow(props: propsIF) {
             }
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
+            tabIndex={0}
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}

@@ -15,7 +15,14 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+} from 'react';
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -649,6 +656,32 @@ export default function Transactions(props: propsIF) {
             chainData={chainData}
         />
     ));
+    const listRef = useRef<HTMLUListElement>(null);
+    const handleKeyDown = (
+        event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
+    ) => {
+        const { key } = event;
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+            const rows = document.querySelectorAll('.row_container_global');
+            const currentRow = event.target as HTMLLIElement;
+            const index = Array.from(rows).indexOf(currentRow);
+
+            if (key === 'ArrowDown') {
+                if (index < rows.length - 1) {
+                    (rows[index + 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[0] as HTMLLIElement).focus();
+                }
+            } else if (key === 'ArrowUp') {
+                if (index > 0) {
+                    (rows[index - 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[rows.length - 1] as HTMLLIElement).focus();
+                }
+            }
+        }
+    };
 
     const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
         <NoTableData
@@ -661,7 +694,9 @@ export default function Transactions(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
         />
     ) : (
-        rowItemContent
+        <div onKeyDown={handleKeyDown}>
+            <ul ref={listRef}>{rowItemContent}</ul>
+        </div>
     );
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
