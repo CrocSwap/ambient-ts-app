@@ -60,7 +60,7 @@ export default function BypassLimitButton(props: propsIF) {
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={` Submitting Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}. `}
+            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}. `}
         />
     );
 
