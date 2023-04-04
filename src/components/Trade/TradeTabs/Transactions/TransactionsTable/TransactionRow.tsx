@@ -257,6 +257,7 @@ export default function TransactionRow(props: propsIF) {
             data-label='value'
             className={sideTypeStyle}
             style={{ textAlign: 'right' }}
+            tabIndex={0}
         >
             {usdValue}
         </li>

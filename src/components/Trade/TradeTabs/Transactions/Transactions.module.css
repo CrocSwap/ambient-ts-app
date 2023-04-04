@@ -254,7 +254,7 @@
     opacity: 1;
 }
 
-.row_container:focus-visible, .row_container li:focus-visible{
+.row_container:focus-visible, .row_container li:focus-visible, .row_container div:focus-visible{
     border: 1px solid var(--text-grey-white)
 }
 
