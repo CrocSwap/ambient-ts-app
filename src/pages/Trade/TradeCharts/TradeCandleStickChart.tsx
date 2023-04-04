@@ -234,26 +234,6 @@ export default function TradeCandleStickChart(props: propsIF) {
         const feeChartData: FeeChartData[] = [];
 
         if (props.candleData !== undefined) {
-            const domainLeft = Math.min(
-                ...props.candleData.candles.map((o: any) => {
-                    return o.tvlData.tvl !== undefined
-                        ? parseFloat(o.tvlData.tvl)
-                        : Infinity;
-                }),
-            );
-            const domainRight = Math.max(
-                ...props.candleData.candles.map((o: any) => {
-                    return o.tvlData.tvl !== undefined
-                        ? parseFloat(o.tvlData.tvl)
-                        : 0;
-                }),
-            );
-
-            const tvlScale = d3
-                .scaleLog()
-                .domain([domainLeft, domainRight])
-                .range([30, 1000]);
-
             props.candleData.candles.map((data) => {
                 const close = denominationsInBase
                     ? data.invPriceCloseExclMEVDecimalCorrected
@@ -285,7 +265,7 @@ export default function TradeCandleStickChart(props: propsIF) {
 
                 tvlChartData.push({
                     time: new Date(data.tvlData.time * 1000),
-                    value: tvlScale(data.tvlData.tvl),
+                    value: data.tvlData.tvl,
                     linearValue: data.tvlData.tvl,
                 });
 
