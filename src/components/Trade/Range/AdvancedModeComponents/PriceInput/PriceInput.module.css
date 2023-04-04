@@ -9,8 +9,19 @@
 
 .sign {
     cursor: pointer;
+
+    outline: none;
+    border: none;
+    background: transparent;
 }
 
+.sign:focus-visible{
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+    0px 0px 21px rgba(205, 193, 255, 0.2),
+    0px 0px 12px rgba(205, 193, 255, 0.2),
+    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+    0px 0px 2px rgba(205, 193, 255, 0.2);
+}
 /* .overlay_container{
     width: 100%;
     height: 100%;

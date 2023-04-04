@@ -546,12 +546,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                         isAdvancedMode={isAdvancedMode}
                     />
                 </div>
-                <div
+                <button
                     className={`${styles.token_select} ${
                         isRangeCopied && styles.pulse_animation
                     }`}
                     onClick={() => openTokenModal()}
                     id='range_token_selector'
+                    tabIndex={0}
+                    aria-label={`Open range ${fieldId} token modal.`}
                 >
                     {thisToken.logoURI ? (
                         <img
@@ -570,7 +572,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         {thisToken.symbol}
                     </span>
                     <RiArrowDownSLine size={27} />
-                </div>
+                </button>
             </div>
             {swapboxBottomOrNull}
             {isTokenModalOpen && (

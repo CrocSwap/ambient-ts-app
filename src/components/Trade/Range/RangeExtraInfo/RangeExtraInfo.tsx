@@ -96,7 +96,12 @@ export default function RangeExtraInfo(props: propsIF) {
     const RangeExtraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) => (
-                <div className={styles.extra_row} key={idx}>
+                <div
+                    className={styles.extra_row}
+                    key={idx}
+                    tabIndex={0}
+                    aria-label={`${item.title} is ${item.data}`}
+                >
                     <div className={styles.align_center}>
                         <div>{item.title}</div>
                         <TooltipComponent title={item.title} />
@@ -109,14 +114,23 @@ export default function RangeExtraInfo(props: propsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
 
+    const conversionRateDisplay = reverseDisplay
+        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
+        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`;
+
+    const gasCostAriaLabel = `Gas cost is ${rangeGasPriceinDollars}. Conversion rate is ${conversionRateDisplay} `;
+
     const extraInfoSection = (
-        <div
-            className={styles.extra_info_content}
+        <button
+            className={`${styles.extra_info_content} ${
+                showExtraInfoDropdown && styles.extra_info_content_active
+            }`}
             onClick={
                 showExtraInfoDropdown
                     ? () => setShowExtraDetails(!showExtraDetails)
                     : () => setShowExtraDetails(false)
             }
+            aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} />{' '}
@@ -129,12 +143,10 @@ export default function RangeExtraInfo(props: propsIF) {
                     e.stopPropagation();
                 }}
             >
-                {reverseDisplay
-                    ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
-                    : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`}
+                {conversionRateDisplay}
             </div>
             {showExtraInfoDropdown && <RiArrowDownSLine size={27} />}
-        </div>
+        </button>
     );
 
     return (

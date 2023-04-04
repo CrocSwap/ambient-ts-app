@@ -2,6 +2,8 @@
 import { useState, useEffect, Dispatch, SetStateAction, useMemo } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
+import FocusTrap from 'focus-trap-react';
+
 import {
     tickToPrice,
     CrocEnv,
@@ -882,116 +884,124 @@ export default function Limit(props: propsIF) {
 
     // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
     return (
-        <section className={styles.scrollable_container}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section className={styles.scrollable_container}>
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
+                )}{' '}
+                <ContentContainer isOnTradeRoute>
+                    <LimitHeader
+                        chainId={chainId}
+                        mintSlippage={mintSlippage}
+                        isPairStable={isPairStable}
+                        openGlobalModal={props.openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
+                        bypassConfirm={bypassConfirm}
+                    />
+                    {navigationMenu}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
                     >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}{' '}
-            <ContentContainer isOnTradeRoute>
-                <LimitHeader
-                    chainId={chainId}
-                    mintSlippage={mintSlippage}
-                    isPairStable={isPairStable}
-                    openGlobalModal={props.openGlobalModal}
-                    shareOptionsDisplay={shareOptionsDisplay}
-                    bypassConfirm={bypassConfirm}
-                />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <LimitCurrencyConverter {...currencyConverterProps} />
-                </motion.div>
-                <div className={styles.header_container}></div>
-                <LimitExtraInfo
-                    isQtyEntered={
-                        tokenAInputQty !== '' || tokenBInputQty !== ''
-                    }
-                    tokenPair={tokenPair}
-                    orderGasPriceInDollars={orderGasPriceInDollars}
-                    poolPriceDisplay={poolPriceDisplay || 0}
-                    slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFee={tradeData.liquidityFee * 100}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                    isTokenABase={isSellTokenBase}
-                    isDenomBase={isDenomBase}
-                    limitRate={endDisplayPrice.toString()}
-                    startDisplayPrice={startDisplayPrice}
-                    middleDisplayPrice={middleDisplayPrice}
-                    endDisplayPrice={endDisplayPrice}
-                />
-                {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                  true ? (
-                    !isTokenAAllowanceSufficient &&
-                    parseFloat(tokenAInputQty) > 0 ? (
-                        approvalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassLimitButton {...bypassLimitProps} />
-                    ) : (
-                        <LimitButton
-                            onClickFn={
-                                bypassConfirm.limit.isEnabled
-                                    ? handleLimitButtonClickWithBypass
-                                    : openModal
-                            }
-                            limitAllowed={
-                                isOrderValid &&
-                                poolPriceNonDisplay !== 0 &&
-                                limitAllowed
-                            }
-                            limitButtonErrorMessage={limitButtonErrorMessage}
-                            isBypassConfirmEnabled={
-                                bypassConfirm.limit.isEnabled
-                            }
-                        />
-                    )
-                ) : (
-                    loginButton
-                )}
-            </ContentContainer>
-            {isModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title='Limit Confirmation'
-                    centeredTitle
-                >
-                    <ConfirmLimitModal
-                        onClose={handleModalClose}
-                        tokenPair={tokenPair}
-                        poolPriceDisplay={poolPriceDisplay || 0}
-                        initiateLimitOrderMethod={sendLimitOrder}
-                        tokenAInputQty={tokenAInputQty}
-                        tokenBInputQty={tokenBInputQty}
-                        isTokenAPrimary={isTokenAPrimary}
-                        insideTickDisplayPrice={endDisplayPrice}
-                        newLimitOrderTransactionHash={
-                            newLimitOrderTransactionHash
+                        <LimitCurrencyConverter {...currencyConverterProps} />
+                    </motion.div>
+                    <div className={styles.header_container}></div>
+                    <LimitExtraInfo
+                        isQtyEntered={
+                            tokenAInputQty !== '' || tokenBInputQty !== ''
                         }
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
-                        resetConfirmation={resetConfirmation}
+                        tokenPair={tokenPair}
+                        orderGasPriceInDollars={orderGasPriceInDollars}
+                        poolPriceDisplay={poolPriceDisplay || 0}
+                        slippageTolerance={slippageTolerancePercentage}
+                        liquidityProviderFee={tradeData.liquidityFee * 100}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                        isTokenABase={isSellTokenBase}
+                        isDenomBase={isDenomBase}
+                        limitRate={endDisplayPrice.toString()}
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
-                        bypassConfirm={bypassConfirm}
                     />
-                </Modal>
-            )}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={limitTutorialSteps}
-            />
-        </section>
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
+                      true ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 ? (
+                            approvalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassLimitButton {...bypassLimitProps} />
+                        ) : (
+                            <LimitButton
+                                onClickFn={
+                                    bypassConfirm.limit.isEnabled
+                                        ? handleLimitButtonClickWithBypass
+                                        : openModal
+                                }
+                                limitAllowed={
+                                    isOrderValid &&
+                                    poolPriceNonDisplay !== 0 &&
+                                    limitAllowed
+                                }
+                                limitButtonErrorMessage={
+                                    limitButtonErrorMessage
+                                }
+                                isBypassConfirmEnabled={
+                                    bypassConfirm.limit.isEnabled
+                                }
+                            />
+                        )
+                    ) : (
+                        loginButton
+                    )}
+                </ContentContainer>
+                {isModalOpen && (
+                    <Modal
+                        onClose={handleModalClose}
+                        title='Limit Confirmation'
+                        centeredTitle
+                    >
+                        <ConfirmLimitModal
+                            onClose={handleModalClose}
+                            tokenPair={tokenPair}
+                            poolPriceDisplay={poolPriceDisplay || 0}
+                            initiateLimitOrderMethod={sendLimitOrder}
+                            tokenAInputQty={tokenAInputQty}
+                            tokenBInputQty={tokenBInputQty}
+                            isTokenAPrimary={isTokenAPrimary}
+                            insideTickDisplayPrice={endDisplayPrice}
+                            newLimitOrderTransactionHash={
+                                newLimitOrderTransactionHash
+                            }
+                            txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
+                            showConfirmation={showConfirmation}
+                            setShowConfirmation={setShowConfirmation}
+                            resetConfirmation={resetConfirmation}
+                            startDisplayPrice={startDisplayPrice}
+                            middleDisplayPrice={middleDisplayPrice}
+                            endDisplayPrice={endDisplayPrice}
+                            bypassConfirm={bypassConfirm}
+                        />
+                    </Modal>
+                )}
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={limitTutorialSteps}
+                />
+            </section>
+        </FocusTrap>
     );
 }
