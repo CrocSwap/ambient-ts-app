@@ -334,7 +334,7 @@ export default function Portfolio(props: propsIF) {
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
-                    console.warn({ error });
+                    console.error({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
@@ -439,7 +439,6 @@ export default function Portfolio(props: propsIF) {
                 !connectedAccountActive
             ) {
                 try {
-                    // console.log('fetching native token balance');
                     const newNativeToken = await cachedFetchNativeTokenBalance(
                         resolvedAddress,
                         chainData.chainId,

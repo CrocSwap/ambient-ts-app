@@ -58,6 +58,7 @@ import {
 } from './calcuteDateAxis';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
+import { IS_LOCAL_ENV } from '../../constants';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -627,7 +628,7 @@ export default function Chart(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        console.log('re-rending chart');
+        IS_LOCAL_ENV && console.debug('re-rending chart');
         if (expandTradeTable) return;
 
         if (parsedChartData && parsedChartData?.chartData.length > 0) {
@@ -2334,7 +2335,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        console.log('timeframe changed');
+        IS_LOCAL_ENV && console.debug('timeframe changed');
         setShowLatest(false);
     }, [parsedChartData?.period]);
 
@@ -2795,7 +2796,7 @@ export default function Chart(props: propsIF) {
     }, [location, props.limitTick, denomInBase]);
 
     useEffect(() => {
-        console.log('setting range lines');
+        IS_LOCAL_ENV && console.debug('setting range lines');
         if (
             location.pathname.includes('range') ||
             location.pathname.includes('reposition')

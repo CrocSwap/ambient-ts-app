@@ -17,7 +17,7 @@ import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -151,7 +151,7 @@ export default function OrderRow(props: propsIF) {
             : null;
 
     const openDetailsModal = () => {
-        console.log({ limitOrder });
+        IS_LOCAL_ENV && console.debug({ limitOrder });
 
         openGlobalModal(
             <OrderDetails
@@ -171,8 +171,6 @@ export default function OrderRow(props: propsIF) {
         limitOrder.limitOrderIdentifier === currentPositionActive
             ? `order-${limitOrder.limitOrderIdentifier}`
             : '';
-
-    // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
 

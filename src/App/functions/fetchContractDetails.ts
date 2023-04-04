@@ -40,7 +40,7 @@ export const fetchContractDetails = async (
         symbol = await contract.symbol();
         name = await contract.name();
     } catch (error) {
-        console.log({ error });
+        console.error({ error });
     }
 
     return {

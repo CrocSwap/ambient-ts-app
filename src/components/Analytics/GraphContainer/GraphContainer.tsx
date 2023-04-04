@@ -16,6 +16,7 @@ import {
     seriesDatum,
 } from '../../../utils/functions/getDexSeriesData';
 import { motion } from 'framer-motion';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 const spring = {
     type: 'spring',
@@ -68,14 +69,15 @@ export default function GraphContainer() {
     const [selectedTimeFrame, setVelectedTimeFrame] =
         useState<ChartDataTimeframe>(ChartDataTimeframe.all);
 
-    useEffect(() => {
-        console.log({ tvlSeriesData });
-    }, [tvlSeriesData]);
+    if (IS_LOCAL_ENV) {
+        useEffect(() => {
+            console.debug({ tvlSeriesData });
+        }, [tvlSeriesData]);
 
-    useEffect(() => {
-        console.log({ volumeSeriesData });
-    }, [volumeSeriesData]);
-
+        useEffect(() => {
+            console.debug({ volumeSeriesData });
+        }, [volumeSeriesData]);
+    }
     useEffect(() => {
         getDexStatsFresh()
             .then((dexStats) => {
@@ -86,18 +88,18 @@ export default function GraphContainer() {
                 if (dexStats.fees)
                     setTotalFeesString('$' + formatAmount(dexStats.fees));
             })
-            .catch(console.log);
+            .catch(console.error);
         getDexTvlSeries(selectedTimeFrame.toString())
             .then((tvlSeriesData) => {
                 setTvlSeriesData(tvlSeriesData);
             })
-            .catch(console.log);
+            .catch(console.error);
 
         getDexVolumeSeries(selectedTimeFrame.toString())
             .then((volumeSeriesData) => {
                 setVolumeSeriesData(volumeSeriesData);
             })
-            .catch(console.log);
+            .catch(console.error);
     }, [selectedTimeFrame]);
 
     const formattedTvlData = useMemo(() => {

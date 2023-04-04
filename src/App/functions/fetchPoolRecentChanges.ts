@@ -1,3 +1,4 @@
+import { IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
@@ -38,7 +39,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
     const poolRecentChangesCacheEndpoint =
         'https://809821320828123.de:5000' + '/pool_recent_changes?';
 
-    console.log('fetching pool recent changes');
+    IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 
     const poolChanges = fetch(
         period && time
@@ -86,7 +87,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
             });
             return updatedTransactions;
         })
-        .catch(console.log);
+        .catch(console.error);
 
     return poolChanges;
 };

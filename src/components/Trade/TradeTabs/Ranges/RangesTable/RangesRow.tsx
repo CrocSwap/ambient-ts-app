@@ -18,7 +18,7 @@ import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -169,7 +169,7 @@ export default function RangesRow(props: propsIF) {
     };
 
     const openDetailsModal = () => {
-        console.log({ position });
+        IS_LOCAL_ENV && console.debug({ position });
         openGlobalModal(
             <RangeDetails
                 position={position}
@@ -194,8 +194,6 @@ export default function RangesRow(props: propsIF) {
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
-    // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
 

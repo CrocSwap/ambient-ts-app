@@ -222,7 +222,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 // error handling
                 .catch((err) => {
                     // log error to console
-                    console.warn(err);
+                    console.error(err);
                     // set custom token as `null`
                     setCustomToken(null);
                 });
@@ -328,7 +328,6 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // if (isLoading) return <div className={styles.loader}> <SimpleLoader /></div>
 
-    // console.log({ customToken });
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>

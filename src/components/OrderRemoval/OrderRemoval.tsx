@@ -31,6 +31,7 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     account: string;
@@ -141,7 +142,7 @@ export default function OrderRemoval(props: propsIF) {
         if (crocEnv) {
             setShowConfirmation(true);
             setShowSettings(false);
-            console.log({ limitOrder });
+            IS_LOCAL_ENV && { limitOrder };
 
             const liqToRemove = BigNumber.from(positionLiquidity)
                 .mul(removalPercentage)
@@ -181,7 +182,7 @@ export default function OrderRemoval(props: propsIF) {
                         );
                 }
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
                 setTxErrorCode(error?.code);
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -219,16 +220,16 @@ export default function OrderRemoval(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && 'repriced';
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
                     setNewRemovalTransactionHash(newTransactionHash);
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
 
                     if (newTransactionHash) {
@@ -252,7 +253,7 @@ export default function OrderRemoval(props: propsIF) {
                         );
                     }
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -342,7 +343,7 @@ export default function OrderRemoval(props: propsIF) {
 
     //         <Toggle2
     //             isOn={false}
-    //             handleToggle={() => console.log('toggled')}
+    //             handleToggle={() => console.debug('toggled')}
     //             id='gasless_transaction_toggle_remove_order'
     //             disabled={true}
     //         />

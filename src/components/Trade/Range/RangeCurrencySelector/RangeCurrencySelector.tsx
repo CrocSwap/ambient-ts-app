@@ -23,6 +23,7 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -277,8 +278,6 @@ export default function RangeCurrencySelector(props: propsIF) {
               ')'
             : '';
 
-    // console.log({ fieldId });
-    // console.log({ tokenBSurplusMinusTokenBRemainderNum });
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||
         (!isTokenASelector && isTokenBDisabled);
@@ -309,7 +308,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleChangeClick(walletBalanceNonLocaleString);
-                console.log('max button clicked');
+                IS_LOCAL_ENV && console.debug('max button clicked');
             }}
         >
             Max
@@ -329,7 +328,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleChangeClick(surplusBalanceNonLocaleString);
-                console.log('clicked');
+                IS_LOCAL_ENV && console.debug('clicked');
             }}
         >
             Max

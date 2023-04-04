@@ -4,7 +4,6 @@ import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 
 export const useUrlParams = () => {
     const { params } = useParams();
-    // console.log(params);
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
     const urlParams = useMemo(() => {

@@ -32,6 +32,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -220,7 +221,7 @@ export default function Orders(props: propsIF) {
                         }),
                     );
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
     }, [isServerEnabled, isShowAllEnabled]);
 
@@ -255,9 +256,12 @@ export default function Orders(props: propsIF) {
         {
             // share:  true,
             onOpen: () => {
-                console.log('pool limit orders subscription opened');
+                IS_LOCAL_ENV &&
+                    console.debug('pool limit orders subscription opened');
             },
-            onClose: (event: CloseEvent) => console.log({ event }),
+            onClose: (event: CloseEvent) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
@@ -269,9 +273,8 @@ export default function Orders(props: propsIF) {
             const lastMessageData = JSON.parse(
                 lastPoolLimitOrderChangeMessage.data,
             ).data;
-            // console.log({ lastMessageData });
             if (lastMessageData) {
-                console.log({ lastMessageData });
+                IS_LOCAL_ENV && console.debug({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
                         return getLimitOrderData(limitOrder, importedTokens);

@@ -46,6 +46,7 @@ import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { IS_LOCAL_ENV } from '../../constants';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -232,7 +233,7 @@ export default function Trade(props: propsIF) {
             props.candleData !== undefined &&
             props.candleData.candles?.length > 0
         ) {
-            console.log('Data arrived');
+            IS_LOCAL_ENV && console.debug('Data arrived');
             setIsCandleDataArrived(false);
         }
     }, [props.candleData]);
