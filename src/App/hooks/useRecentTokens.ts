@@ -13,7 +13,6 @@ export const useRecentTokens = (
     getRecentTokens: (options?: getRecentTokensParamsIF) => TokenIF[];
     resetRecentTokens: () => void;
 } => {
-    // console.log('ran hook useRecentTokens()');
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
 
     // hook to reset recent tokens when the user switches chains

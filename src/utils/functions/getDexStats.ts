@@ -10,5 +10,5 @@ export const getDexStatsFresh = async () => {
             const dexStats = json?.data;
             return dexStats;
         })
-        .catch(console.log);
+        .catch(console.error);
 };

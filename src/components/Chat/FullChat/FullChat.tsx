@@ -9,19 +9,18 @@ import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link, useParams } from 'react-router-dom';
-import { topPools } from '../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
+import { topPoolsMethodsIF } from '../../../App/hooks/useTopPools';
+
 interface FullChatPropsIF {
     messageList: JSX.Element;
     chatNotification: JSX.Element;
     messageInput: JSX.Element;
     room: string;
-
     setRoom: Dispatch<SetStateAction<string>>;
     setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
-
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
@@ -30,6 +29,7 @@ interface FullChatPropsIF {
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
+    topPools: topPoolsMethodsIF;
 }
 
 interface ChannelDisplayPropsIF {
@@ -39,6 +39,7 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
+    const { topPools } = props;
     const { params } = useParams();
     const reconstructedReadableRoom =
         params && !params.includes('global')
@@ -91,13 +92,17 @@ export default function FullChat(props: FullChatPropsIF) {
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (topPools.some(({ name }) => name === reconstructedReadableRoom)) {
+        if (
+            topPools.onActiveChain.some(
+                ({ name }) => name === reconstructedReadableRoom,
+            )
+        ) {
             setReadableName(reconstructedReadableRoom);
             props.setRoom(reconstructedReadableRoom);
             setReadableName(readableRoomName);
         } else {
             if (
-                topPools.some(
+                topPools.onActiveChain.some(
                     ({ name }) => name === reSwappedReconstructedReadableRoom,
                 )
             ) {
@@ -227,13 +232,19 @@ export default function FullChat(props: FullChatPropsIF) {
                 id: findId(pool),
             };
 
-            if (!topPools.some(({ name }) => name === favPool.name)) {
-                topPools.push(favPool);
+            if (
+                !topPools.onActiveChain.some(
+                    ({ name }) => name === favPool.name,
+                )
+            ) {
+                topPools.onActiveChain.push(favPool);
             }
 
-            for (let x = 0; x < topPools.length; x++) {
-                if (favPool.name === topPools[x].name) {
-                    topPools.push(topPools.splice(x, 1)[0]);
+            for (let x = 0; x < topPools.onActiveChain.length; x++) {
+                if (favPool.name === topPools.onActiveChain[x].name) {
+                    topPools.onActiveChain.push(
+                        topPools.onActiveChain.splice(x, 1)[0],
+                    );
                 } else {
                     // do nothing
                 }
@@ -411,7 +422,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 <span> Global</span>
             </div>
 
-            {topPools.map((pool, idx) => (
+            {topPools.onActiveChain.map((pool, idx) => (
                 <ChannelDisplay
                     pool={pool}
                     key={idx}
@@ -439,7 +450,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             : styles.channel_dropdown_items_containers
                     }
                 >
-                    {topPools.map((pool, idx) => (
+                    {topPools.onActiveChain.map((pool, idx) => (
                         <ChannelDisplay
                             pool={pool}
                             key={idx}
@@ -538,7 +549,6 @@ export default function FullChat(props: FullChatPropsIF) {
                     <Link to='/account'>{userName}</Link>
                     {sidebarExpandOrCollapseIcon}
                 </header>
-                {/* {chatOptions} */}
                 {chatChanels}
             </section>
 

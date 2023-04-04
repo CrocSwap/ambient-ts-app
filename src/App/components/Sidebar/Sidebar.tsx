@@ -28,7 +28,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     LimitOrderIF,
     PositionIF,
@@ -46,10 +45,12 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch } from './useSidebarSearch';
-import { SmallerPoolIF } from '../../hooks/useRecentPools';
+import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
+import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
+import { topPoolsMethodsIF } from '../../hooks/useTopPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -85,11 +86,13 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
-    getRecentPools: (count: number) => SmallerPoolIF[];
+    recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
     positionsByUser: PositionIF[];
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
+    ackTokens: ackTokensMethodsIF;
+    topPools: topPoolsMethodsIF;
 }
 
 export default function Sidebar(props: propsIF) {
@@ -116,13 +119,15 @@ export default function Sidebar(props: propsIF) {
         verifyToken,
         getTokenByAddress,
         tokenPair,
-        getRecentPools,
+        recentPools,
         isConnected,
         positionsByUser,
         setOutsideControl,
         setSelectedOutsideTab,
         txsByUser,
         limitsByUser,
+        ackTokens,
+        topPools,
     } = props;
 
     const location = useLocation();
@@ -131,7 +136,7 @@ export default function Sidebar(props: propsIF) {
     const mostRecentPositions = positionsByUser.slice(0, 4);
     const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
-    const recentPools = [
+    const recentPoolsData = [
         {
             name: 'Recent Pools',
             icon: recentPoolsImage,
@@ -142,8 +147,7 @@ export default function Sidebar(props: propsIF) {
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
-                    getRecentPools={getRecentPools}
-                    getTokenByAddress={getTokenByAddress}
+                    recentPools={recentPools}
                 />
             ),
         },
@@ -160,24 +164,11 @@ export default function Sidebar(props: propsIF) {
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     poolList={poolList}
+                    topPools={topPools}
                 />
             ),
         },
     ];
-    const sidebarLimitOrderProps = {
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: setOutsideControl,
-        isShowAllEnabled: props.isShowAllEnabled,
-        setCurrentPositionActive: setCurrentPositionActive,
-        setIsShowAllEnabled: props.setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isConnected,
-
-        setShowSidebar: setShowSidebar,
-    };
 
     const rangePositions = [
         {
@@ -209,7 +200,17 @@ export default function Sidebar(props: propsIF) {
                     tokenMap={tokenMap}
                     chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
-                    {...sidebarLimitOrderProps}
+                    selectedOutsideTab={props.selectedOutsideTab}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    outsideControl={props.outsideControl}
+                    setOutsideControl={setOutsideControl}
+                    isShowAllEnabled={isShowAllEnabled}
+                    setCurrentPositionActive={setCurrentPositionActive}
+                    setIsShowAllEnabled={props.setIsShowAllEnabled}
+                    expandTradeTable={expandTradeTable}
+                    setExpandTradeTable={setExpandTradeTable}
+                    isUserLoggedIn={isConnected}
+                    setShowSidebar={setShowSidebar}
                 />
             ),
         },
@@ -262,9 +263,6 @@ export default function Sidebar(props: propsIF) {
         },
     ];
 
-    const userData = useAppSelector((state) => state.userData);
-    const shouldRecheckLocalStorage = userData.shouldRecheckLocalStorage;
-
     const [
         setRawInput,
         isInputValid,
@@ -278,7 +276,7 @@ export default function Sidebar(props: propsIF) {
         txsByUser,
         limitsByUser,
         verifyToken,
-        shouldRecheckLocalStorage,
+        ackTokens,
     );
 
     const [searchInput, setSearchInput] = useState<string[][]>();
@@ -360,6 +358,7 @@ export default function Sidebar(props: propsIF) {
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
+                autoFocus
             />
             {inputContent?.value && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
@@ -497,7 +496,7 @@ export default function Sidebar(props: propsIF) {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-            {recentPools.map((item, idx) => (
+            {recentPoolsData.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
@@ -592,6 +591,7 @@ export default function Sidebar(props: propsIF) {
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             searchedTxs={searchedTxs}
                             searchedLimitOrders={searchedLimitOrders}
+                            ackTokens={ackTokens}
                         />
                     ) : (
                         regularSidebarDisplay

@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import styles from './RemoveOrderSettings.module.css';
 import { BsArrowLeft } from 'react-icons/bs';
 import Button from '../../Global/Button/Button';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface RemoveOrderSettingsPropsIF {
     showSettings: boolean;
@@ -12,23 +13,15 @@ interface RemoveOrderSettingsPropsIF {
 export default function RemoveOrderSettings(props: RemoveOrderSettingsPropsIF) {
     // eslint-disable-next-line
     const { showSettings, setShowSettings, onBackClick } = props;
-
-    // console.log(showSettings);
-
-    // const settingButton = (
-    //     showSettings && (
-    //         <div className={styles.close_button} onClick={() => setShowSettings(false)}>
-    //             <RiCloseLine size={25} />
-    //         </div>
-    //     )
-    // )
     const preset1 = '0.1';
     const preset2 = '0.3';
     const preset3 = '0.5';
 
     const slippageValue = 2;
 
-    const setSlippage = (val: string) => console.log(val);
+    const setSlippage = (val: string) => {
+        IS_LOCAL_ENV && console.debug(val);
+    };
 
     return (
         <div className={styles.main_container}>

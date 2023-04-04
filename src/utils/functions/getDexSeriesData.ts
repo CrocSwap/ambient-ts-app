@@ -11,7 +11,7 @@ export const getDexTvlSeries = async (day: string): Promise<ITvlSeriesData> => {
             const tvlSeries = json?.data;
             return tvlSeries;
         })
-        .catch(console.log);
+        .catch(console.error);
 };
 
 export const getDexFeeSeries = async () => {
@@ -27,7 +27,7 @@ export const getDexFeeSeries = async () => {
             const feeSeries = json?.data;
             return feeSeries;
         })
-        .catch(console.log);
+        .catch(console.error);
 };
 
 export const getDexVolumeSeries = async (
@@ -45,7 +45,7 @@ export const getDexVolumeSeries = async (
             const volumeSeries = json?.data;
             return volumeSeries;
         })
-        .catch(console.log);
+        .catch(console.error);
 };
 
 export type pool = {

@@ -34,6 +34,7 @@ import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -211,92 +212,102 @@ export default function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         parseData();
-        console.log('setting candle added to true');
+        IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
     }, [props.candleData]);
 
     useEffect(() => {
         if (parsedChartData === undefined) {
-            console.log(
-                'parsing chart data because parsedChartData === undefined',
-            );
+            IS_LOCAL_ENV &&
+                console.debug(
+                    'parsing chart data because parsedChartData === undefined',
+                );
             parseData();
         }
     }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
-        console.log('parsing candle data');
+        IS_LOCAL_ENV && console.debug('parsing candle data');
 
         const chartData: CandleChartData[] = [];
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
         const feeChartData: FeeChartData[] = [];
 
-        props.candleData?.candles.map((data) => {
-            const close = denominationsInBase
-                ? data.invPriceCloseExclMEVDecimalCorrected
-                : data.priceCloseExclMEVDecimalCorrected;
+        if (props.candleData !== undefined) {
+            props.candleData.candles.map((data) => {
+                const close = denominationsInBase
+                    ? data.invPriceCloseExclMEVDecimalCorrected
+                    : data.priceCloseExclMEVDecimalCorrected;
 
-            const open = denominationsInBase
-                ? data.invPriceOpenExclMEVDecimalCorrected
-                : data.priceOpenExclMEVDecimalCorrected;
+                const open = denominationsInBase
+                    ? data.invPriceOpenExclMEVDecimalCorrected
+                    : data.priceOpenExclMEVDecimalCorrected;
 
-            chartData.push({
-                date: new Date(data.time * 1000),
-                open: open,
-                close: close,
-                high: denominationsInBase
-                    ? data.invMinPriceExclMEVDecimalCorrected
-                    : data.maxPriceExclMEVDecimalCorrected,
-                low: denominationsInBase
-                    ? data.invMaxPriceExclMEVDecimalCorrected
-                    : data.minPriceExclMEVDecimalCorrected,
-                time: data.time,
-                allSwaps: [],
-                color: close > open ? props.upBodyColor : props.downBodyColor,
-                stroke:
-                    close > open ? props.upBorderColor : props.downBorderColor,
+                chartData.push({
+                    date: new Date(data.time * 1000),
+                    open: open,
+                    close: close,
+                    high: denominationsInBase
+                        ? data.invMinPriceExclMEVDecimalCorrected
+                        : data.maxPriceExclMEVDecimalCorrected,
+                    low: denominationsInBase
+                        ? data.invMaxPriceExclMEVDecimalCorrected
+                        : data.minPriceExclMEVDecimalCorrected,
+                    time: data.time,
+                    allSwaps: [],
+                    color:
+                        close > open ? props.upBodyColor : props.downBodyColor,
+                    stroke:
+                        close > open
+                            ? props.upBorderColor
+                            : props.downBorderColor,
+                });
+
+                tvlChartData.push({
+                    time: new Date(data.tvlData.time * 1000),
+                    value: data.tvlData.tvl,
+                    linearValue: data.tvlData.tvl,
+                });
+
+                volumeChartData.push({
+                    time: new Date(data.time * 1000),
+                    value: data.volumeUSD,
+                    volume: data.volumeUSD,
+                    color:
+                        close > open
+                            ? props.upVolumeColor
+                            : props.downVolumeColor,
+                });
+
+                feeChartData.push({
+                    time: new Date(data.time * 1000),
+                    value: data.averageLiquidityFee,
+                });
             });
 
-            tvlChartData.push({
-                time: new Date(data.tvlData.time * 1000),
-                value: data.tvlData.tvl,
+            chartData.sort((a: any, b: any) => b.time - a.time);
+            tvlChartData.sort((a: any, b: any) => b.time - a.time);
+            volumeChartData.sort((a: any, b: any) => b.time - a.time);
+            feeChartData.sort((a: any, b: any) => b.time - a.time);
+
+            const chartUtils: ChartUtils = {
+                period: props.candleData?.duration,
+                bandwidth: 0,
+                chartData: chartData,
+                tvlChartData: tvlChartData,
+                volumeChartData: volumeChartData,
+                feeChartData: feeChartData,
+                poolAdressComb: props.candleData?.pool.baseAddress
+                    ? props.candleData?.pool.baseAddress
+                    : '' + props.candleData?.pool.quoteAddress,
+            };
+
+            setParsedChartData(() => {
+                return chartUtils;
             });
-
-            volumeChartData.push({
-                time: new Date(data.time * 1000),
-                value: data.volumeUSD,
-                color:
-                    close > open ? props.upVolumeColor : props.downVolumeColor,
-            });
-
-            feeChartData.push({
-                time: new Date(data.time * 1000),
-                value: data.averageLiquidityFee,
-            });
-        });
-
-        chartData.sort((a: any, b: any) => b.time - a.time);
-        tvlChartData.sort((a: any, b: any) => b.time - a.time);
-        volumeChartData.sort((a: any, b: any) => b.time - a.time);
-        feeChartData.sort((a: any, b: any) => b.time - a.time);
-
-        const chartUtils: ChartUtils = {
-            period: props.candleData?.duration,
-            bandwidth: 0,
-            chartData: chartData,
-            tvlChartData: tvlChartData,
-            volumeChartData: volumeChartData,
-            feeChartData: feeChartData,
-            poolAdressComb: props.candleData?.pool.baseAddress
-                ? props.candleData?.pool.baseAddress
-                : '' + props.candleData?.pool.quoteAddress,
-        };
-
-        setParsedChartData(() => {
-            return chartUtils;
-        });
+        }
     };
 
     // const standardDeviation = (arr: any, usePopulation = false) => {
@@ -347,7 +358,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             poolPriceDisplay !== undefined &&
             poolPriceDisplay > 0
         ) {
-            console.log('parsing liquidity data');
+            IS_LOCAL_ENV && console.debug('parsing liquidity data');
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
             const depthLiqBidData: LiquidityDataLocal[] = [];
@@ -680,6 +691,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                 totalLiq: props.liquidityData?.totals?.totalLiq,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
+                liqBoundary: liqBoundary,
             };
         } else {
             setIsLoading(true);
@@ -691,7 +703,10 @@ export default function TradeCandleStickChart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        console.log('resetting scale for chart because timeframe changed');
+        IS_LOCAL_ENV &&
+            console.debug(
+                'resetting scale for chart because timeframe changed',
+            );
         setScaleData(() => {
             return undefined;
         });
@@ -716,7 +731,7 @@ export default function TradeCandleStickChart(props: propsIF) {
     ]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
-        console.log('parse Liq Scale');
+        IS_LOCAL_ENV && console.debug('parse Liq Scale');
 
         if (liquidityData !== undefined) {
             const liquidityScale = d3.scaleLinear();
@@ -849,7 +864,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                 liquidityData === undefined;
 
             if (isLoading !== shouldReload) {
-                console.log('setting isLoading to ' + shouldReload);
+                IS_LOCAL_ENV &&
+                    console.debug('setting isLoading to ' + shouldReload);
                 setIsLoading(shouldReload);
                 setFetchingCandle(shouldReload);
             }

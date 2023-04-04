@@ -36,8 +36,8 @@ export const useTokenMap = (
                     );
                 }
             } catch (err) {
-                // display console warning in case of error
-                console.warn(err);
+                // log to console in case of error
+                console.error(err);
             }
             // return array of tokens
             // if list was not found an empty array will return

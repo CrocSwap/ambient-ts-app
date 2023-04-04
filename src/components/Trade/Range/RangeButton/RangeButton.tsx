@@ -1,19 +1,18 @@
 import styles from './RangeButton.module.css';
 import Button from '../../../Global/Button/Button';
-import { skipConfirmIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
     onClickFn: () => void;
     rangeAllowed: boolean;
     rangeButtonErrorMessage: string;
-    bypassConfirmRange: skipConfirmIF;
+    isBypassConfirmEnabled: boolean;
     isAmbient: boolean;
     isAdd: boolean;
 }
 
 export default function RangeButton(props: propsIF) {
     const {
-        bypassConfirmRange,
+        isBypassConfirmEnabled,
         isAmbient,
         isAdd,
         rangeButtonErrorMessage,
@@ -26,7 +25,7 @@ export default function RangeButton(props: propsIF) {
             <Button
                 title={
                     rangeAllowed
-                        ? bypassConfirmRange.isEnabled
+                        ? isBypassConfirmEnabled
                             ? isAdd
                                 ? `Add to ${
                                       isAmbient ? 'Ambient' : 'Range'

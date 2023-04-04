@@ -55,6 +55,7 @@ export default function CurveDepth(props: propsIF) {
                 onClick={() =>
                     setShowCurveDepthDropdown(!showCurveDepthDropdown)
                 }
+                aria-label='Show curve depth dropdown.'
             >
                 {overlayMethods.overlay}
             </button>
@@ -72,6 +73,7 @@ export default function CurveDepth(props: propsIF) {
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
+                            aria-label={button.name}
                         >
                             {button.name}
                         </button>
@@ -100,6 +102,7 @@ export default function CurveDepth(props: propsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        aria-label={button.name}
                     >
                         {button.readable}
                     </button>

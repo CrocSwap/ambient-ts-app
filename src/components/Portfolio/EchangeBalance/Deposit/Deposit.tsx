@@ -17,7 +17,7 @@ import {
     TransactionError,
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FaGasPump } from 'react-icons/fa';
 
 interface propsIF {
@@ -57,9 +57,9 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    /* 
-        below is the magic number (60000) determined by trial and error 
-        to avoid a metamask error that the additional cost 
+    /*
+        below is the magic number (60000) determined by trial and error
+        to avoid a metamask error that the additional cost
         of gas would exceed the user's ETH balance by decreasing
         the amount of ETH being deposited by the estimated gas
          cost of the transaction.
@@ -98,7 +98,7 @@ export default function Deposit(props: propsIF) {
 
     const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
         ? tokenWalletBalanceDisplayNum < 0.0001
-            ? tokenWalletBalanceDisplayNum.toExponential(2)
+            ? 0.0
             : tokenWalletBalanceDisplayNum < 2
             ? tokenWalletBalanceDisplayNum.toPrecision(3)
             : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
@@ -131,6 +131,8 @@ export default function Deposit(props: propsIF) {
     >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
+        useState<boolean>(true);
 
     const isTokenAllowanceSufficient = useMemo(
         () =>
@@ -161,23 +163,29 @@ export default function Deposit(props: propsIF) {
     useEffect(() => {
         if (!depositQtyNonDisplay) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Deposit Amount');
         } else if (isApprovalPending) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
         } else if (isDepositPending) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
         } else if (!isWalletBalanceSufficient) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Wallet Balance Insufficient`,
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(`Approve ${selectedToken.symbol}`);
         } else if (isDepositQtyValid) {
             setIsButtonDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Deposit');
         }
     }, [
@@ -222,20 +230,20 @@ export default function Deposit(props: propsIF) {
                     if (tx) receipt = await tx.wait();
                 } catch (e) {
                     const error = e as TransactionError;
-                    console.log({ error });
+                    console.error({ error });
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
-                        console.log('repriced');
+                        IS_LOCAL_ENV && 'repriced';
                         dispatch(removePendingTx(error.hash));
 
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
-                        console.log({ newTransactionHash });
+                        IS_LOCAL_ENV && { newTransactionHash };
                         receipt = error.receipt;
                     } else if (isTransactionFailedError(error)) {
-                        // console.log({ error });
+                        console.error({ error });
                         receipt = error.receipt;
                     }
                 }
@@ -251,7 +259,7 @@ export default function Deposit(props: propsIF) {
                 ) {
                     location.reload();
                 }
-                console.warn({ error });
+                console.error({ error });
             } finally {
                 setIsDepositPending(false);
                 setRecheckTokenBalances(true);
@@ -286,20 +294,20 @@ export default function Deposit(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && 'repriced';
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -312,7 +320,7 @@ export default function Deposit(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.warn({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAllowance(true);
@@ -383,6 +391,7 @@ export default function Deposit(props: propsIF) {
             <DepositCurrencySelector
                 fieldId='exchange-balance-deposit'
                 onClick={() => openTokenModal()}
+                disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}

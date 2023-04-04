@@ -51,7 +51,6 @@ export default function TabComponent(props: TabPropsIF) {
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
     function handleSelectedTab(item: tabData) {
-        // console.log({ item });
         if (setSelectedInsideTab) {
             switch (item.label) {
                 case 'Transactions':

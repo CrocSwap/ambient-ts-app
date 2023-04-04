@@ -12,6 +12,7 @@ import { useAccount } from 'wagmi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
+import useKeyPress from '../../../hooks/useKeyPress';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -119,17 +120,12 @@ export default function Account(props: AccountPropsIF) {
 
     const mainAriaLabel = 'account dropdown menu container';
 
-    const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') setShowWalletDropdown(false);
-    };
-
+    const isEscapePressed = useKeyPress('Escape');
     useEffect(() => {
-        document.addEventListener('keydown', handleEscape, false);
-        return () => {
-            document.removeEventListener('keydown', handleEscape, false);
-        };
-    }, [showWalletDropdown]);
-
+        if (isEscapePressed) {
+            setShowWalletDropdown(false);
+        }
+    }, [isEscapePressed]);
     const walletDisplay = (
         <section
             className={styles.wallet_display}

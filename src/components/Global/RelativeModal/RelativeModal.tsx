@@ -1,4 +1,5 @@
-import { useCallback, useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 import styles from './RelativeModal.module.css';
 
 interface RelativeModalProps {
@@ -14,18 +15,12 @@ interface RelativeModalProps {
 export default function RelativeModal(props: RelativeModalProps) {
     const { onClose, noHeader, noBackground, children } = props;
 
-    const escFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
             onClose();
         }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', escFunction, false);
-        return () => {
-            document.removeEventListener('keydown', escFunction, false);
-        };
-    }, []);
+    }, [isEscapePressed]);
 
     // variables to hold both the header or footer JSX elements vs `null`
     // ... both elements are optional and either or both may be absent

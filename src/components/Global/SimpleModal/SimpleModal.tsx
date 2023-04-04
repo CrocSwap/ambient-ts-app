@@ -1,11 +1,12 @@
 // START: Import React and Dongles
-import { useCallback, useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import Local Files
 import styles from './SimpleModal.module.css';
 import SimpleModalHeader from './SimpleModalHeader/SimpleModalHeader';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 // interface for React functional component
 interface SimpleModalPropsIF {
@@ -22,32 +23,21 @@ interface SimpleModalPropsIF {
 export default function SimpleModal(props: SimpleModalPropsIF) {
     const { onClose, title, children, noBackground } = props;
 
-    const escFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
             onClose();
         }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', escFunction, false);
-        return () => {
-            document.removeEventListener('keydown', escFunction, false);
-        };
-    }, []);
+    }, [isEscapePressed]);
 
     return (
         <aside
             className={styles.outside_modal}
             onMouseDown={onClose}
-            // tabIndex={-1}
             role='dialog'
             aria-modal='true'
         >
-            <FocusTrap
-                focusTrapOptions={{
-                    initialFocus: '#close_simple_modal_button',
-                }}
-            >
+            <FocusTrap>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -58,6 +48,8 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 `}
                     onMouseDown={(e) => e.stopPropagation()}
                     style={{ justifyContent: 'flex-start' }}
+                    tabIndex={0}
+                    aria-label={`${title} modal`}
                 >
                     <section className={styles.modal_content}>
                         {title && (
