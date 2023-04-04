@@ -296,7 +296,8 @@ export default function PageHeader(props: HeaderPropsIF) {
             <div>
                 <div className={styles.account}>
                     <p className={styles.branch_name}>
-                        {APP_ENVIRONMENT === 'local' ? (
+                        {APP_ENVIRONMENT !== 'local' &&
+                        APP_ENVIRONMENT !== 'production' ? (
                             <div className={styles.branch}>
                                 {BRANCH_NAME} <BiGitBranch color='yellow' />
                             </div>
