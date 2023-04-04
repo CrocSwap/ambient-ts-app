@@ -211,9 +211,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <p className={styles.message}>
+                    <div className={styles.message}>
                         {isLink(props.message.message)}
-                    </p>
+                    </div>
                 );
             }
         } else {
@@ -240,9 +240,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <p className={styles.message_without_avatar}>
+                    <div className={styles.message_without_avatar}>
                         {isLink(props.message.message)}
-                    </p>
+                    </div>
                 );
             }
         }

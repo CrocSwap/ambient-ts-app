@@ -295,14 +295,14 @@ export default function PageHeader(props: HeaderPropsIF) {
             {routeDisplay}
             <div>
                 <div className={styles.account}>
-                    <p className={styles.branch_name}>
+                    <div className={styles.branch_name}>
                         {APP_ENVIRONMENT !== 'local' &&
                         APP_ENVIRONMENT !== 'production' ? (
                             <div className={styles.branch}>
                                 {BRANCH_NAME} <BiGitBranch color='yellow' />
                             </div>
                         ) : null}
-                    </p>
+                    </div>
                     <NetworkSelector chainId={chainId} />
                     {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
