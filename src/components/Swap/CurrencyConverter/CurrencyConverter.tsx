@@ -344,6 +344,10 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
+        handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+    }, [tokenAQtyLocal, buyQtyString]);
+
+    useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
 
@@ -387,6 +391,8 @@ export default function CurrencyConverter(props: propsIF) {
         } else if (tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
+        } else if (buyQtyString === '' || sellQtyString === '') {
+            setSwapButtonErrorMessage('...');
         } else {
             if (isSellTokenEth) {
                 if (isWithdrawFromDexChecked) {
@@ -797,12 +803,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 onClick={reverseTokens}
             >
-                {isLiq ? null : <TokensArrow />}
-                {/* {isLiq ? null : (
-                    <IconWithTooltip title='Reverse tokens' placement='left' enterDelay='1000'>
-                        <TokensArrow />
-                    </IconWithTooltip>
-                )} */}
+                {isLiq ? null : <TokensArrow disabled={disableReverseTokens} />}
             </div>
             <div id='swap_currency_converter'>
                 <CurrencySelector

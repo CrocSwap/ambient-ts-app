@@ -64,15 +64,19 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         </a>
     );
     return (
-        <div
-            className={styles.transaction_submitted}
-            style={{ height: noAnimation ? 'auto' : '300px' }}
-        >
-            {!noAnimation && (
-                <div className={styles.completed_animation}>
-                    <Animation animData={completed} loop={false} />
-                </div>
-            )}
+        <div className={styles.transaction_submitted}>
+            <div
+                style={{
+                    height: '180px',
+                }}
+            >
+                {!noAnimation && (
+                    <div className={styles.completed_animation}>
+                        <Animation animData={completed} loop={false} />
+                    </div>
+                )}
+            </div>
+
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
                     ? 'Limit Transaction Successfully Submitted'

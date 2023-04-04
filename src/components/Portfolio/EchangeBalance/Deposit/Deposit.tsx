@@ -98,7 +98,7 @@ export default function Deposit(props: propsIF) {
 
     const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
         ? tokenWalletBalanceDisplayNum < 0.0001
-            ? tokenWalletBalanceDisplayNum.toExponential(2)
+            ? 0.0
             : tokenWalletBalanceDisplayNum < 2
             ? tokenWalletBalanceDisplayNum.toPrecision(3)
             : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
@@ -131,6 +131,8 @@ export default function Deposit(props: propsIF) {
     >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
+        useState<boolean>(true);
 
     const isTokenAllowanceSufficient = useMemo(
         () =>
@@ -161,23 +163,29 @@ export default function Deposit(props: propsIF) {
     useEffect(() => {
         if (!depositQtyNonDisplay) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Deposit Amount');
         } else if (isApprovalPending) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
         } else if (isDepositPending) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
         } else if (!isWalletBalanceSufficient) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Wallet Balance Insufficient`,
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(`Approve ${selectedToken.symbol}`);
         } else if (isDepositQtyValid) {
             setIsButtonDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Deposit');
         }
     }, [
@@ -383,6 +391,7 @@ export default function Deposit(props: propsIF) {
             <DepositCurrencySelector
                 fieldId='exchange-balance-deposit'
                 onClick={() => openTokenModal()}
+                disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}

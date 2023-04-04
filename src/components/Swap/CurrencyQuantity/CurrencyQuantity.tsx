@@ -84,12 +84,16 @@ export default function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
+    const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
+                tabIndex={0}
+                aria-live={ariaLive}
+                aria-label='Enter sell amount'
                 onChange={(event) => {
                     const targetValue = event.target.value.replaceAll(',', '');
                     const isPrecisionGreaterThanDecimals =
