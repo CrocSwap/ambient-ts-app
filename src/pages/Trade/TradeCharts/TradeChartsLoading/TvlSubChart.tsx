@@ -193,8 +193,8 @@ export default function TvlSubChart(props: TvlData) {
             ).getContext('2d');
 
             const tvlGradient = ctx.createLinearGradient(100, 0, 100, 100);
-            tvlGradient.addColorStop(0.2, 'rgba(115, 113, 252, 0.7)');
-            tvlGradient.addColorStop(0.7, 'transparent');
+            tvlGradient.addColorStop(0.9, 'transparent');
+            tvlGradient.addColorStop(0.1, 'rgba(115, 113, 252, 0.7)');
 
             setTvlGradient(() => {
                 return tvlGradient;
