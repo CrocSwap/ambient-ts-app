@@ -229,6 +229,7 @@ export default function TransactionRow(props: propsIF) {
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+                        fontFamily: 'monospace',
                     }}
                 >
                     {txHash + 'ㅤ'}
