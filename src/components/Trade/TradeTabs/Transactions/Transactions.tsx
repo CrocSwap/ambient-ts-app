@@ -668,12 +668,14 @@ export default function Transactions(props: propsIF) {
             const index = Array.from(rows).indexOf(currentRow);
 
             if (key === 'ArrowDown') {
+                event.preventDefault();
                 if (index < rows.length - 1) {
                     (rows[index + 1] as HTMLLIElement).focus();
                 } else {
                     (rows[0] as HTMLLIElement).focus();
                 }
             } else if (key === 'ArrowUp') {
+                event.preventDefault();
                 if (index > 0) {
                     (rows[index - 1] as HTMLLIElement).focus();
                 } else {
