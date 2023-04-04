@@ -47,7 +47,6 @@ import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 // import { useCandleTime } from './useCandleTime';
-import FocusTrap from 'focus-trap-react';
 
 // interface for React functional component props
 interface propsIF {
@@ -282,25 +281,19 @@ export default function Trade(props: propsIF) {
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
+        <div
+            className={`${styles.right_col} ${
+                activeMobileComponent !== 'trade' ? styles.hide : ''
+            }`}
         >
-            <div
-                className={`${styles.right_col} ${
-                    activeMobileComponent !== 'trade' ? styles.hide : ''
-                }`}
-            >
-                <Outlet
-                    context={{
-                        tradeData: tradeData,
-                        navigationMenu: navigationMenu,
-                        limitTickFromParams: limitTickFromParams,
-                    }}
-                />
-            </div>
-        </FocusTrap>
+            <Outlet
+                context={{
+                    tradeData: tradeData,
+                    navigationMenu: navigationMenu,
+                    limitTickFromParams: limitTickFromParams,
+                }}
+            />
+        </div>
     );
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = fullScreenChart
