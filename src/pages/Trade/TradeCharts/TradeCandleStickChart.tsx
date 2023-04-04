@@ -689,6 +689,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                 totalLiq: props.liquidityData?.totals?.totalLiq,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
+                liqBoundary: liqBoundary,
             };
         } else {
             setIsLoading(true);

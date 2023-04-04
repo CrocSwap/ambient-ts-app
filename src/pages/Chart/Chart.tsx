@@ -439,6 +439,12 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineBidDepthSeries, setLineBidDepthSeries] = useState<any>();
 
+    // Liq Rules
+
+    const [isDrawAskLiq, setIsDrawAskLiq] = useState(false);
+    // const [isDrawLiqDepth, setIsDrawLiqDepth] = useState(false);
+    const [isDrawBidLiq, setIsDrawBidLiq] = useState(false);
+
     // Utils
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -610,10 +616,6 @@ export default function Chart(props: propsIF) {
                 .style('display', 'none');
         }
     };
-
-    useEffect(() => {
-        addDefsStyle();
-    }, []);
 
     useEffect(() => {
         setRescale(true);
@@ -4400,126 +4402,6 @@ export default function Chart(props: propsIF) {
         location.pathname,
     ]);
 
-    function addDefsStyle() {
-        const svgmain = d3.select(d3PlotArea.current).select('svg');
-        if (svgmain.select('defs').select('#crossHairBg').node() === null) {
-            const crosshairDefs = svgmain
-                .append('defs')
-                .append('filter')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('height', 1)
-                .attr('width', 1)
-                .attr('id', 'crossHairBg');
-
-            crosshairDefs
-                .append('feFlood')
-                .attr('flood-color', '#242F3F')
-                .attr('result', 'bg');
-
-            const feMergeTagCrossHair = crosshairDefs.append('feMerge');
-            feMergeTagCrossHair.append('feMergeNode').attr('in', 'bg');
-            feMergeTagCrossHair
-                .append('feMergeNode')
-                .attr('in', 'SourceGraphic');
-
-            const crosshairDefsX = svgmain
-                .append('defs')
-                .append('filter')
-                .attr('x', -0.25)
-                .attr('y', -0.1)
-                .attr('height', 10)
-                .attr('width', 1.5)
-                .attr('id', 'crossHairBgX');
-
-            crosshairDefsX
-                .append('feFlood')
-                .attr('flood-color', '#242F3F')
-                .attr('result', 'bg');
-
-            const feMergeTagCrossHairX = crosshairDefsX.append('feMerge');
-            feMergeTagCrossHairX.append('feMergeNode').attr('in', 'bg');
-            feMergeTagCrossHairX
-                .append('feMergeNode')
-                .attr('in', 'SourceGraphic');
-
-            const marketDefs = svgmain
-                .append('defs')
-                .append('filter')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('height', 1)
-                .attr('width', 1)
-                .attr('id', 'marketBg');
-
-            marketDefs
-                .append('feFlood')
-                .attr('flood-color', '#FFFFFF')
-                .attr('result', 'bg');
-            const feMergeTagMarket = marketDefs.append('feMerge');
-            feMergeTagMarket.append('feMergeNode').attr('in', 'bg');
-            feMergeTagMarket.append('feMergeNode').attr('in', 'SourceGraphic');
-
-            const yAxisText = svgmain
-                .append('defs')
-                .append('filter')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('height', 1)
-                .attr('width', 1)
-                .attr('id', 'textBg');
-
-            yAxisText
-                .append('feFlood')
-                .attr('flood-color', '#7772FE')
-                .attr('result', 'bg');
-            const feMergeTagYaxisText = yAxisText.append('feMerge');
-            feMergeTagYaxisText.append('feMergeNode').attr('in', 'bg');
-            feMergeTagYaxisText
-                .append('feMergeNode')
-                .attr('in', 'SourceGraphic');
-
-            const yAxisTextOrderSell = svgmain
-                .append('defs')
-                .append('filter')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('height', 1)
-                .attr('width', 1)
-                .attr('id', 'textOrderSellBg');
-
-            yAxisTextOrderSell
-                .append('feFlood')
-                .attr('flood-color', '#e480ff')
-                .attr('result', 'bg');
-            const feMergeTagYaxisTextSell =
-                yAxisTextOrderSell.append('feMerge');
-            feMergeTagYaxisTextSell.append('feMergeNode').attr('in', 'bg');
-            feMergeTagYaxisTextSell
-                .append('feMergeNode')
-                .attr('in', 'SourceGraphic');
-
-            const yAxisTextOrderBuy = svgmain
-                .append('defs')
-                .append('filter')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('height', 1)
-                .attr('width', 1)
-                .attr('id', 'textOrderBuyBg');
-
-            yAxisTextOrderBuy
-                .append('feFlood')
-                .attr('flood-color', '#7371FC')
-                .attr('result', 'bg');
-            const feMergeTagYaxisTextBuy = yAxisTextOrderBuy.append('feMerge');
-            feMergeTagYaxisTextBuy.append('feMergeNode').attr('in', 'bg');
-            feMergeTagYaxisTextBuy
-                .append('feMergeNode')
-                .attr('in', 'SourceGraphic');
-        }
-    }
-
     useEffect(() => {
         if (poolPriceDisplay) {
             setCheckLimitOrder(
@@ -5174,6 +5056,14 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasLiqBid.current)
                 .select('canvas')
                 .style('display', 'none');
+
+            d3.select(d3CanvasLiqAskDepth.current)
+                .select('canvas')
+                .style('display', 'none');
+            d3.select(d3CanvasLiqBidDepth.current)
+                .select('canvas')
+                .style('display', 'none');
+
             hideHighlightedLines();
         } else {
             if (liqMode === 'curve') {
@@ -5714,6 +5604,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', () => {
                     liqBidSeries.context(ctx);
+                    setIsDrawBidLiq(true);
                 });
         }
 
@@ -5731,6 +5622,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', () => {
                     liqBidDepthSeries.context(ctxDepth);
+                    setIsDrawBidLiq(true);
                 });
         }
     }, [
@@ -5812,7 +5704,9 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        if (poolPriceDisplay !== undefined && low > poolPriceDisplay) {
+        const passValue = liquidityData?.liqBoundary;
+
+        if (passValue !== undefined && low > passValue) {
             for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
                 if (ctx.isPointInPath(i, scaleData.yScale(low))) {
                     filtered.push({
@@ -5890,7 +5784,9 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        if (poolPriceDisplay && high < poolPriceDisplay) {
+        const passValue = liquidityData?.liqBoundary;
+
+        if (passValue && high < passValue) {
             for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
                 if (ctx.isPointInPath(i, scaleData.yScale(high))) {
                     filtered.unshift({
@@ -5915,7 +5811,7 @@ export default function Chart(props: propsIF) {
                       (d: any) => d.liqPrices <= liquidityData.topBoundary,
                   );
 
-        if (liquidityData && poolPriceDisplay) {
+        if (liquidityData) {
             const data = addHighValuetoHighlightedLine(
                 liqDataBid,
                 liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
@@ -5934,7 +5830,7 @@ export default function Chart(props: propsIF) {
                     .node() as any
             ).getContext('2d');
 
-            if (lineBidSeries && liquidityData.liqBidData) {
+            if (lineBidSeries && liquidityData.liqBidData && liqBidSeries) {
                 d3.select(d3CanvasLiqBidLine.current)
                     .on('draw', () => {
                         lineBidSeries(data);
@@ -5944,7 +5840,11 @@ export default function Chart(props: propsIF) {
                     });
             }
 
-            if (lineBidDepthSeries && liquidityData.liqBidData) {
+            if (
+                lineBidDepthSeries &&
+                liquidityData.liqBidData &&
+                liqBidDepthSeries
+            ) {
                 d3.select(d3CanvasLiqBidDepthLine.current)
                     .on('draw', () => {
                         lineBidDepthSeries(data);
@@ -5961,9 +5861,12 @@ export default function Chart(props: propsIF) {
         liquidityData.liqBidData,
         liquidityData.depthLiqBidData,
         lineBidSeries,
+        liqBidSeries,
+        liqBidDepthSeries,
         liqMode,
         ranges,
         reset,
+        isDrawBidLiq,
     ]);
 
     useEffect(() => {
@@ -5988,23 +5891,25 @@ export default function Chart(props: propsIF) {
                 .node() as any
         ).getContext('2d');
 
-        if (lineAskSeries && liquidityData.liqBidData) {
+        if (lineAskSeries && liqAskSeries) {
             d3.select(d3CanvasLiqAskLine.current)
                 .on('draw', () => {
                     lineAskSeries(data);
                 })
                 .on('measure', () => {
                     lineAskSeries.context(ctx);
+                    setIsDrawAskLiq(true);
                 });
         }
 
-        if (lineAskDepthSeries) {
+        if (lineAskDepthSeries && liqAskDepthSeries) {
             d3.select(d3CanvasLiqAskDepthLine.current)
                 .on('draw', () => {
                     lineAskDepthSeries(data);
                 })
                 .on('measure', () => {
                     lineAskDepthSeries.context(ctxDepth);
+                    setIsDrawAskLiq(true);
                 });
         }
 
@@ -6012,12 +5917,16 @@ export default function Chart(props: propsIF) {
         renderCanvas();
     }, [
         JSON.stringify(scaleData),
-        liquidityData.liqAskData,
-        liquidityData.depthLiqAskData,
+        liquidityData?.liqAskData,
+        liquidityData?.depthLiqAskData,
         lineAskSeries,
+        lineAskDepthSeries,
+        liqAskSeries,
+        liqAskDepthSeries,
         liqMode,
         ranges,
         reset,
+        isDrawAskLiq,
     ]);
 
     // NoGoZone
