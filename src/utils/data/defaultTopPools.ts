@@ -8,79 +8,46 @@ import {
     goerliWBTC,
     goerliDAI,
 } from './defaultTokens';
+import { topPoolIF } from '../../App/hooks/useTopPools';
+import { TokenIF } from '../interfaces/exports';
+import sortTokens from '../functions/sortTokens';
 
-export const defaultTopPools = [
-    {
-        name: 'ETH/USDC',
-        base: goerliETH,
-        quote: goerliUSDC,
-        chainId: '0x5',
-        poolId: 36000,
-        speed: 0,
-        id: 1,
-    },
-    {
-        name: 'ETH/WBTC',
-        base: goerliETH,
-        quote: goerliWBTC,
-        chainId: '0x5',
-        poolId: 36000,
-        speed: 0.5,
-        id: 3,
-    },
-    {
-        name: 'WBTC/USDC',
-        base: goerliWBTC,
-        quote: goerliUSDC,
-        chainId: '0x5',
-        poolId: 36000,
-        speed: -2,
-        id: 4,
-    },
-    {
-        name: 'USDC/DAI',
-        base: goerliUSDC,
-        quote: goerliDAI,
-        chainId: '0x5',
-        poolId: 36000,
-        speed: -2,
-        id: 4,
-    },
-    {
-        name: 'ETH/USDC',
-        base: arbGoerliETH,
-        quote: arbGoerliUSDC,
-        chainId: '0xa4b1',
-        poolId: 36000,
-        speed: 0,
-        id: 1,
-    },
+class TopPool implements topPoolIF {
+    name: string;
+    base: TokenIF;
+    quote: TokenIF;
+    chainId: string;
+    poolId: number;
+    speed: number;
+    id: number;
+    constructor(
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        poolId: number,
+        speed: number,
+        id: number,
+    ) {
+        const [baseToken, quoteToken] = sortTokens(tokenA, tokenB);
+        this.name = `${baseToken.symbol} / ${quoteToken.symbol}`;
+        this.base = baseToken;
+        this.quote = quoteToken;
+        this.chainId =
+            baseToken.chainId === quoteToken.chainId
+                ? '0x' + baseToken.chainId.toString(16)
+                : '';
+        this.poolId = poolId;
+        this.speed = speed;
+        this.id = id;
+    }
+}
 
-    {
-        name: 'ETH/WBTC',
-        base: arbGoerliETH,
-        quote: arbGoerliWBTC,
-        chainId: '0xa4b1',
-        poolId: 36000,
-        speed: 0.5,
-        id: 3,
-    },
-    {
-        name: 'WBTC/USDC',
-        base: arbGoerliWBTC,
-        quote: arbGoerliUSDC,
-        chainId: '0xa4b1',
-        poolId: 36000,
-        speed: -2,
-        id: 4,
-    },
-    {
-        name: 'USDC/DAI',
-        base: arbGoerliUSDC,
-        quote: arbGoerliDAI,
-        chainId: '0xa4b1',
-        poolId: 36000,
-        speed: -2,
-        id: 4,
-    },
+export const defaultTopPools: topPoolIF[] = [
+    new TopPool(goerliETH, goerliUSDC, 36000, 0, 1),
+    new TopPool(goerliETH, goerliWBTC, 36000, 0.5, 3),
+    new TopPool(goerliWBTC, goerliUSDC, 36000, -2, 4),
+    new TopPool(goerliUSDC, goerliDAI, 36000, -2, 4),
+    new TopPool(arbGoerliETH, arbGoerliUSDC, 36000, 0, 1),
+    new TopPool(arbGoerliETH, arbGoerliWBTC, 36000, 0.5, 3),
+    new TopPool(arbGoerliWBTC, arbGoerliUSDC, 36000, -2, 4),
+    new TopPool(arbGoerliUSDC, arbGoerliDAI, 36000, -2, 4),
 ];
