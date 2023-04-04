@@ -532,11 +532,13 @@ export default function OrderRow(props: propsIF) {
             {!isOnPortfolioPage && !showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
-                    <p className={`base_color ${styles.hover_style}`}>
+                    <p
+                        className={`base_color ${styles.hover_style} ${styles.mono_font}`}
+                    >
                         {posHashTruncated}
                     </p>{' '}
                     <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
+                        className={`${usernameStyle} ${styles.hover_style} `}
                         onClick={handleAccountClick}
                         style={{ textTransform: 'lowercase' }}
                     >

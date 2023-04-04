@@ -515,7 +515,7 @@ export default function TransactionRow(props: propsIF) {
                         onClick={() => {
                             handleOpenExplorer();
                         }}
-                        className={`base_color ${styles.hover_style}`}
+                        className={`base_color ${styles.hover_style} ${styles.mono_font}`}
                     >
                         {txHashTruncated}
                     </p>{' '}

@@ -545,7 +545,9 @@ export default function RangesRow(props: propsIF) {
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id' onClick={handleAccountClick}>
-                    <p className={`base_color ${styles.hover_style}`}>
+                    <p
+                        className={`base_color ${styles.hover_style} ${styles.mono_font}`}
+                    >
                         {posHashTruncated}
                     </p>{' '}
                     <p
