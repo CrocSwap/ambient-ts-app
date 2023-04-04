@@ -237,7 +237,7 @@ export default function RangesRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
 
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive
@@ -273,7 +273,7 @@ export default function RangesRow(props: propsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
             </li>

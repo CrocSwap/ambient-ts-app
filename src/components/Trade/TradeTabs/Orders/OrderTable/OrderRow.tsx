@@ -137,7 +137,7 @@ export default function OrderRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
     // eslint-disable-next-line
     const usernameStyleModule =
         isOwnerActiveAccount && isShowAllEnabled
@@ -230,7 +230,7 @@ export default function OrderRow(props: propsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
             </li>
@@ -241,7 +241,7 @@ export default function OrderRow(props: propsIF) {
         <li
             onClick={openDetailsModal}
             data-label='value'
-            className='base_color'
+            className={sellOrderStyle}
             style={{ textAlign: 'right' }}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
@@ -550,7 +550,7 @@ export default function OrderRow(props: propsIF) {
                 <li
                     onClick={openDetailsModal}
                     data-label='price'
-                    className={priceStyle}
+                    className={priceStyle + ' ' + sellOrderStyle}
                     style={{ textAlign: 'right' }}
                     onMouseEnter={handleRowMouseDown}
                     onMouseLeave={handleRowMouseOut}
