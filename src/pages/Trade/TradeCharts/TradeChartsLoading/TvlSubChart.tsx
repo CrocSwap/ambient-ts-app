@@ -61,7 +61,7 @@ export default function TvlSubChart(props: TvlData) {
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
 
     useEffect(() => {
-        const yScale = d3.scaleLinear();
+        const yScale = d3.scaleSymlog();
 
         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
         const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -72,7 +72,9 @@ export default function TvlSubChart(props: TvlData) {
 
         if (filtered !== undefined) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
-            const domain = [0, maxYBoundary * 1.6];
+            const minYBoundary = d3.min(filtered, (d: any) => d.value);
+
+            const domain = [minYBoundary / 2, maxYBoundary * 2];
 
             yScale.domain(domain);
         }
@@ -145,17 +147,35 @@ export default function TvlSubChart(props: TvlData) {
                 const minYBoundary = d3.min(filtered, (d: any) => d.value);
                 const maxYBoundary = d3.max(filtered, (d: any) => d.value);
 
-                const domain = [0, maxYBoundary * 1.6];
+                const domain = [minYBoundary / 2, maxYBoundary * 2];
 
-                const tickInterval = (maxYBoundary - minYBoundary) / 3;
+                const roundIndexMax = Math.pow(
+                    10,
+                    (Math.log(maxYBoundary) * Math.LOG10E + 1) | 0,
+                );
+                const roundIndexMin = Math.pow(
+                    10,
+                    (Math.log(minYBoundary) * Math.LOG10E + 1) | 0,
+                );
 
-                yAxis
-                    .tickValues([
-                        minYBoundary + tickInterval,
-                        minYBoundary + tickInterval * 2,
-                        minYBoundary + tickInterval * 3,
-                    ])
-                    .tickFormat(formatDollarAmountAxis);
+                const roundedMax =
+                    Math.round(maxYBoundary / (roundIndexMax / 10)) *
+                    (roundIndexMax / 10);
+                const roundedMin =
+                    Math.round(minYBoundary / (roundIndexMin / 10)) *
+                    (roundIndexMin / 10);
+
+                const topTick = maxYBoundary < 10 ? maxYBoundary : roundedMax;
+                const lowTick = minYBoundary < 10 ? minYBoundary : roundedMin;
+
+                const diff = Math.abs(minYBoundary / 2 - maxYBoundary * 2) / 6;
+
+                const ticks =
+                    topTick === lowTick || Math.abs(topTick - lowTick) < diff
+                        ? [topTick, topTick / 2 + topTick / 4]
+                        : [topTick, lowTick];
+
+                yAxis.tickValues(ticks).tickFormat(formatDollarAmountAxis);
 
                 tvlyScale.domain(domain);
             }
@@ -173,8 +193,8 @@ export default function TvlSubChart(props: TvlData) {
             ).getContext('2d');
 
             const tvlGradient = ctx.createLinearGradient(100, 0, 100, 100);
-            tvlGradient.addColorStop(0.1, 'rgba(125, 124, 251)');
-            tvlGradient.addColorStop(0.55, 'rgba(0, 0, 0, 0.6)');
+            tvlGradient.addColorStop(0.2, 'rgba(115, 113, 252, 0.7)');
+            tvlGradient.addColorStop(0.7, 'transparent');
 
             setTvlGradient(() => {
                 return tvlGradient;
@@ -210,7 +230,7 @@ export default function TvlSubChart(props: TvlData) {
                 .mainValue((d: any) => d.value)
                 .crossValue((d: any) => d.time)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = '#7371FC';
+                    selection.strokeStyle = 'rgba(115, 113, 252, 0.7)';
                     selection.strokeWidth = 2;
                 });
 
