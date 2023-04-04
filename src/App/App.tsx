@@ -354,7 +354,6 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
 
     const isUserLoggedIn = isConnected;
-    console.log({ isUserLoggedIn });
     const isUserIdle = userData.isUserIdle;
 
     // custom hook to manage chain the app is using
