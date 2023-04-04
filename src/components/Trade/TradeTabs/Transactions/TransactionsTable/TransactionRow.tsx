@@ -498,6 +498,16 @@ export default function TransactionRow(props: propsIF) {
             </div>
         </li>
     );
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+            console.log('Copy key pressed!');
+        }
+    };
 
     // end of portfolio page li element ---------------
     return (
@@ -512,6 +522,7 @@ export default function TransactionRow(props: propsIF) {
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
             tabIndex={0}
+            onKeyDown={handleKeyPress}
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
