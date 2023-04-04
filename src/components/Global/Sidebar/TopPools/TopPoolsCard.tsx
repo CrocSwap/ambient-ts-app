@@ -1,21 +1,21 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
-import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
+import { topPoolIF } from '../../../../App/hooks/useTopPools';
 
 interface propsIF {
     tradeData: tradeData;
-    pool: PoolIF;
+    pool: topPoolIF;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } = props;
 
     const { pathname } = useLocation();
 
@@ -62,22 +62,7 @@ export default function TopPoolsCard(props: propsIF) {
 
     useEffect(() => {
         fetchPoolStats();
-
-        // // fetch every minute
-        // const timerId = setInterval(() => {
-        //     fetchPoolStats();
-        // }, 60000);
-
-        // // after 1 hour stop
-        // setTimeout(() => {
-        //     clearInterval(timerId);
-        // }, 3600000);
-
-        // // clear interval when component unmounts
-        // return () => clearInterval(timerId);
     }, [lastBlockNumber]);
-
-    const chainString = '0x5';
 
     const tokenAString =
         pool.base.address.toLowerCase() ===
@@ -94,7 +79,15 @@ export default function TopPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={`${locationSlug}/chain=${chainString}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
+            to={
+                locationSlug +
+                    '/chain=' +
+                    chainId +
+                    '&tokenA=' +
+                    tokenAString +
+                    '&tokenB=' +
+                    tokenBString
+            }
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}

@@ -175,7 +175,7 @@ import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
-// import KeyboardShortcuts from './KeyboardShortcuts';
+import { topPoolsMethodsIF, useTopPools } from './hooks/useTopPools';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -363,6 +363,9 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+
+    // hook to manage top pools data
+    const topPools: topPoolsMethodsIF = useTopPools(chainData.chainId);
 
     // hook to manage acknowledged tokens
     const ackTokens: ackTokensMethodsIF = useAckTokens();
@@ -2998,6 +3001,7 @@ export default function App() {
         txsByUser: graphData.changesByUser.changes,
         limitsByUser: graphData.limitOrdersByUser.limitOrders,
         ackTokens: ackTokens,
+        topPools: topPools,
     };
 
     const analyticsProps = {
@@ -3187,6 +3191,7 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     chainId={chainData.chainId}
                                     isServerEnabled={isServerEnabled}
+                                    topPools={topPools}
                                 />
                             }
                         />
@@ -3520,6 +3525,7 @@ export default function App() {
                                     userImageData={imageData}
                                     username={ensName}
                                     appPage={true}
+                                    topPools={topPools}
                                 />
                             }
                         />
@@ -3541,6 +3547,7 @@ export default function App() {
                                     userImageData={imageData}
                                     appPage={true}
                                     username={ensName}
+                                    topPools={topPools}
                                 />
                             }
                         />
@@ -3874,6 +3881,7 @@ export default function App() {
                             setIsChatOpen={setIsChatOpen}
                             isFullScreen={false}
                             userImageData={imageData}
+                            topPools={topPools}
                         />
                     )}
             </div>
