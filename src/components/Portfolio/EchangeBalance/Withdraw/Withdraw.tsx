@@ -119,6 +119,8 @@ export default function Withdraw(props: propsIF) {
     >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
+        useState<boolean>(true);
 
     const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
@@ -214,20 +216,25 @@ export default function Withdraw(props: propsIF) {
     useEffect(() => {
         if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
         } else if (!withdrawQtyNonDisplay) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
         } else if (isWithdrawPending) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
         } else if (isWithdrawQtyValid) {
             setIsButtonDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Withdraw');
         }
     }, [
@@ -456,6 +463,7 @@ export default function Withdraw(props: propsIF) {
                 setIsSendToAddressChecked={setIsSendToAddressChecked}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                disable={isCurrencyFieldDisabled}
             />
             <div
                 onClick={handleBalanceClick}

@@ -11,7 +11,13 @@ export default function TransferButton(props: PortfolioTransferButtonProps) {
     const { onClick, disabled, buttonMessage } = props;
 
     const ButtonDisplay = (
-        <div className={styles.button_container}>
+        <div
+            className={
+                disabled
+                    ? styles.button_container_disabled
+                    : styles.button_container
+            }
+        >
             <Button
                 title={buttonMessage}
                 // action={() => console.log('clicked')}
