@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -787,112 +788,123 @@ export default function Swap(props: propsIF) {
         ) : null;
 
     return (
-        <section data-testid={'swap'} className={swapPageStyle}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
-            <div className={`${swapContainerStyle}`}>
-                <ContentContainer
-                    isOnTradeRoute={isOnTradeRoute}
-                    padding={isOnTradeRoute ? '0 1rem' : '1rem'}
-                >
-                    <SwapHeader
-                        swapSlippage={swapSlippage}
-                        isPairStable={isPairStable}
-                        isOnTradeRoute={isOnTradeRoute}
-                        openGlobalModal={props.openGlobalModal}
-                        shareOptionsDisplay={shareOptionsDisplay}
-                        bypassConfirm={bypassConfirm}
-                    />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        <CurrencyConverter {...currencyConverterProps} />
-                    </motion.div>
-                    <ExtraInfo
-                        account={account}
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                        priceImpact={priceImpact}
-                        isTokenABase={isSellTokenBase}
-                        displayEffectivePriceString={
-                            displayEffectivePriceString
-                        }
-                        poolPriceDisplay={poolPriceDisplay || 0}
-                        slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFee={tradeData.liquidityFee}
-                        quoteTokenIsBuy={true}
-                        swapGasPriceinDollars={swapGasPriceinDollars}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                        isDenomBase={tradeData.isDenomBase}
-                        isOnTradeRoute={isOnTradeRoute}
-                    />
-                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                      true ? (
-                        poolExists &&
-                        !isTokenAAllowanceSufficient &&
-                        parseFloat(sellQtyString) > 0 &&
-                        sellQtyString !== 'Infinity' ? (
-                            approvalButton
-                        ) : (
-                            <>
-                                {!showBypassConfirm ? (
-                                    // user has hide confirmation modal off
-                                    <SwapButton
-                                        onClickFn={
-                                            bypassConfirm.swap.isEnabled
-                                                ? handleSwapButtonClickWithBypass
-                                                : openModal
-                                        }
-                                        swapAllowed={
-                                            swapAllowed &&
-                                            sellQtyString !== '' &&
-                                            buyQtyString !== ''
-                                        }
-                                        swapButtonErrorMessage={
-                                            swapButtonErrorMessage
-                                        }
-                                        bypassConfirmSwap={bypassConfirm.swap}
-                                    />
-                                ) : (
-                                    // user has hide confirmation modal on
-                                    <BypassConfirmSwapButton
-                                        {...confirmSwapModalProps}
-                                    />
-                                )}
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                    {priceImpactWarningOrNull}
-                </ContentContainer>
-                {confirmSwapModalOrNull}
-                {isRelativeModalOpen && (
-                    <RelativeModal
-                        onClose={closeRelativeModal}
-                        title='Relative Modal'
-                    >
-                        You are about to do something that will lose you a lot
-                        of money. If you think you are smarter than the awesome
-                        team that programmed this, press dismiss.
-                    </RelativeModal>
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section data-testid={'swap'} className={swapPageStyle}>
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
                 )}
-            </div>
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={swapTutorialSteps}
-            />
-        </section>
+                <div className={`${swapContainerStyle}`}>
+                    <ContentContainer
+                        isOnTradeRoute={isOnTradeRoute}
+                        padding={isOnTradeRoute ? '0 1rem' : '1rem'}
+                    >
+                        <SwapHeader
+                            swapSlippage={swapSlippage}
+                            isPairStable={isPairStable}
+                            isOnTradeRoute={isOnTradeRoute}
+                            openGlobalModal={props.openGlobalModal}
+                            shareOptionsDisplay={shareOptionsDisplay}
+                            bypassConfirm={bypassConfirm}
+                        />
+                        {navigationMenu}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <CurrencyConverter {...currencyConverterProps} />
+                        </motion.div>
+                        <ExtraInfo
+                            account={account}
+                            tokenPair={{
+                                dataTokenA: tokenA,
+                                dataTokenB: tokenB,
+                            }}
+                            priceImpact={priceImpact}
+                            isTokenABase={isSellTokenBase}
+                            displayEffectivePriceString={
+                                displayEffectivePriceString
+                            }
+                            poolPriceDisplay={poolPriceDisplay || 0}
+                            slippageTolerance={slippageTolerancePercentage}
+                            liquidityProviderFee={tradeData.liquidityFee}
+                            quoteTokenIsBuy={true}
+                            swapGasPriceinDollars={swapGasPriceinDollars}
+                            didUserFlipDenom={tradeData.didUserFlipDenom}
+                            isDenomBase={tradeData.isDenomBase}
+                            isOnTradeRoute={isOnTradeRoute}
+                        />
+                        {isUserLoggedIn ===
+                        undefined ? null : isUserLoggedIn === true ? (
+                            poolExists &&
+                            !isTokenAAllowanceSufficient &&
+                            parseFloat(sellQtyString) > 0 &&
+                            sellQtyString !== 'Infinity' ? (
+                                approvalButton
+                            ) : (
+                                <>
+                                    {!showBypassConfirm ? (
+                                        // user has hide confirmation modal off
+                                        <SwapButton
+                                            onClickFn={
+                                                bypassConfirm.swap.isEnabled
+                                                    ? handleSwapButtonClickWithBypass
+                                                    : openModal
+                                            }
+                                            swapAllowed={
+                                                swapAllowed &&
+                                                sellQtyString !== '' &&
+                                                buyQtyString !== ''
+                                            }
+                                            swapButtonErrorMessage={
+                                                swapButtonErrorMessage
+                                            }
+                                            bypassConfirmSwap={
+                                                bypassConfirm.swap
+                                            }
+                                        />
+                                    ) : (
+                                        // user has hide confirmation modal on
+                                        <BypassConfirmSwapButton
+                                            {...confirmSwapModalProps}
+                                        />
+                                    )}
+                                </>
+                            )
+                        ) : (
+                            loginButton
+                        )}
+                        {priceImpactWarningOrNull}
+                    </ContentContainer>
+                    {confirmSwapModalOrNull}
+                    {isRelativeModalOpen && (
+                        <RelativeModal
+                            onClose={closeRelativeModal}
+                            title='Relative Modal'
+                        >
+                            You are about to do something that will lose you a
+                            lot of money. If you think you are smarter than the
+                            awesome team that programmed this, press dismiss.
+                        </RelativeModal>
+                    )}
+                </div>
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={swapTutorialSteps}
+                />
+            </section>
+        </FocusTrap>
     );
 }

@@ -113,7 +113,6 @@ export default function TransactionRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -179,7 +178,7 @@ export default function TransactionRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
 
     const txDomId =
         tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
@@ -243,7 +242,7 @@ export default function TransactionRow(props: propsIF) {
             <li
                 onClick={handleOpenExplorer}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {txHashTruncated}
             </li>
@@ -256,7 +255,7 @@ export default function TransactionRow(props: propsIF) {
             onMouseLeave={handleRowMouseOut}
             onClick={openDetailsModal}
             data-label='value'
-            className='base_color'
+            className={sideTypeStyle}
             style={{ textAlign: 'right' }}
         >
             {usdValue}
@@ -580,7 +579,7 @@ export default function TransactionRow(props: propsIF) {
                             onMouseLeave={handleRowMouseOut}
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${priceStyle}`}
+                            className={`${sideTypeStyle}`}
                         >
                             <p className={`${styles.align_right} `}>
                                 <span>
@@ -620,7 +619,7 @@ export default function TransactionRow(props: propsIF) {
                             openDetailsModal();
                         }}
                         data-label='price'
-                        className={`${styles.align_right}  ${priceStyle}`}
+                        className={`${styles.align_right}  ${sideTypeStyle}`}
                     >
                         {isOnPortfolioPage
                             ? (

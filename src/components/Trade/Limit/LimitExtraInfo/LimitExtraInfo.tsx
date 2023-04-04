@@ -236,7 +236,9 @@ export default function LimitExtraInfo(props: propsIF) {
 
     const extraInfoSectionOrNull = (
         <button
-            className={styles.extra_info_content}
+            className={`${styles.extra_info_content} ${
+                isQtyEntered && styles.extra_info_content_active
+            }`}
             onClick={
                 isQtyEntered
                     ? () => setShowExtraDetails(!showExtraDetails)
