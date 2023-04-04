@@ -27,7 +27,7 @@ class TopPool implements topPoolIF {
         speed: number,
         id: number,
     ) {
-        const [baseToken, quoteToken] = sortTokens(tokenA, tokenB);
+        const [baseToken, quoteToken]: TokenIF[] = sortTokens(tokenA, tokenB);
         this.name = `${baseToken.symbol} / ${quoteToken.symbol}`;
         this.base = baseToken;
         this.quote = quoteToken;
