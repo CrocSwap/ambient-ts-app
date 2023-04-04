@@ -57,7 +57,7 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         // String Does Not Contain Decimal
         return 0;
     };
-
+    console.log(fieldId);
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
@@ -86,6 +86,7 @@ export default function RangeCurrencyQuantity(props: propsIF) {
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
                 required
+                autoFocus={fieldId === 'A'}
             />
         </div>
     );

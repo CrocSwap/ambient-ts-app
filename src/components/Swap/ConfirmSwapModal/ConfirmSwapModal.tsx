@@ -44,7 +44,6 @@ export default function ConfirmSwapModal(props: propsIF) {
     const {
         initiateSwapMethod,
         isDenomBase,
-        poolPriceDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         newSwapTransactionHash,
@@ -96,24 +95,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const displayPriceWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : undefined;
-    // eslint-disable-next-line
-    const displayConversionRate = displayPriceWithDenom
-        ? displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '...';
-
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{buyQtyString}</h2>
@@ -154,18 +135,16 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const toggleFor = 'swap';
-
-    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(
-        bypassConfirm.swap.isEnabled,
-    );
+    // this is the starting state for the bypass confirmation toggle switch
+    // if the modal is being shown, we can assume bypass is disabled
+    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(false);
 
     const fullTxDetails2 = (
         <div className={styles.main_container}>
             <section>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>
@@ -197,7 +176,6 @@ export default function ConfirmSwapModal(props: propsIF) {
             <ConfirmationModalControl
                 tempBypassConfirm={tempBypassConfirm}
                 setTempBypassConfirm={setTempBypassConfirm}
-                toggleFor={toggleFor}
             />
         </div>
     );
@@ -205,11 +183,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${
-                sellTokenData.symbol
-            } for ${buyQtyString} ${
-                buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.
+            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}. Please check the 'Metamask' extension in your browser for notifications.
             `}
         />
     );
@@ -242,8 +216,16 @@ export default function ConfirmSwapModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <div className={styles.modal_container}>
-            <section className={styles.modal_content}>
+        <div
+            className={styles.modal_container}
+            aria-label='Swap Confirmation modal'
+        >
+            <section
+                className={styles.modal_content}
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='additions text'
+            >
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
@@ -251,7 +233,15 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <Button
                         title='Send Swap'
                         action={() => {
-                            bypassConfirm.swap.setValue(tempBypassConfirm);
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            if (tempBypassConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             initiateSwapMethod();
                             setShowConfirmation(false);
                         }}

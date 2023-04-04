@@ -36,7 +36,7 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
-import { checkIsStable } from '../../utils/data/stablePairs';
+import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
 
@@ -289,7 +289,7 @@ export default function RemoveRange(props: propsIF) {
     const isPositionPendingUpdate =
         positionsPendingUpdate.indexOf(posHash as string) > -1;
 
-    const isPairStable: boolean = checkIsStable(
+    const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
@@ -539,11 +539,8 @@ export default function RemoveRange(props: propsIF) {
         useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
-
     const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isRemovalDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -556,11 +553,7 @@ export default function RemoveRange(props: propsIF) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -589,20 +582,6 @@ export default function RemoveRange(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {/* {showConfirmation && (
-                <header>
-                    <div className={styles.button} onClick={resetConfirmation}>
-                        {newRemovalTransactionHash == '' && (
-                            <BsArrowLeft size={30} />
-                        )}
-                    </div>
-                    {newRemovalTransactionHash !== '' && (
-                        <div onClick={handleModalClose}>
-                            <VscClose size={30} />
-                        </div>
-                    )}
-                </header>
-            )} */}
             <RemoveRangeHeader
                 onClose={handleModalClose}
                 title={

@@ -223,7 +223,11 @@ export default function Range(props: propsIF) {
         cachedFetchTokenPrice,
     } = props;
 
-    const [isModalOpen, openModal, closeModal] = useModal();
+    const [
+        isConfirmationModalOpen,
+        openConfirmationModal,
+        closeConfirmationModal,
+    ] = useModal();
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -612,7 +616,6 @@ export default function Range(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-
         setTxErrorMessage('');
     };
 
@@ -1174,7 +1177,7 @@ export default function Range(props: propsIF) {
 
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
-    const denominationSwitch = (
+    const advancedModeToggle = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
         </div>
@@ -1275,7 +1278,7 @@ export default function Range(props: propsIF) {
     );
 
     const handleModalClose = () => {
-        closeModal();
+        closeConfirmationModal();
         setNewRangeTransactionHash('');
         resetConfirmation();
     };
@@ -1283,38 +1286,6 @@ export default function Range(props: propsIF) {
     const handleRangeButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
         sendTransaction();
-    };
-
-    // props for <ConfirmRangeModal/> React element
-    const rangeModalProps = {
-        tokenPair: tokenPair,
-        spotPriceDisplay: displayPriceString,
-        poolPriceDisplayNum: poolPriceDisplayNum,
-        denominationsInBase: denominationsInBase,
-        isTokenABase: isTokenABase,
-        isAmbient: isAmbient,
-        isAdd: isAdd,
-        maxPriceDisplay: maxPriceDisplay,
-        minPriceDisplay: minPriceDisplay,
-        sendTransaction: sendTransaction,
-        closeModal: handleModalClose,
-        newRangeTransactionHash: newRangeTransactionHash,
-        setNewRangeTransactionHash: setNewRangeTransactionHash,
-        resetConfirmation: resetConfirmation,
-        showConfirmation: showConfirmation,
-        setShowConfirmation: setShowConfirmation,
-        txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
-        isInRange: !isOutOfRange,
-        pinnedMinPriceDisplayTruncatedInBase:
-            pinnedMinPriceDisplayTruncatedInBase,
-        pinnedMinPriceDisplayTruncatedInQuote:
-            pinnedMinPriceDisplayTruncatedInQuote,
-        pinnedMaxPriceDisplayTruncatedInBase:
-            pinnedMaxPriceDisplayTruncatedInBase,
-        pinnedMaxPriceDisplayTruncatedInQuote:
-            pinnedMaxPriceDisplayTruncatedInQuote,
-        bypassConfirm: bypassConfirm,
     };
 
     const bypassConfirmButtonProps = {
@@ -1417,7 +1388,7 @@ export default function Range(props: propsIF) {
                 isAdvancedMode={false}
             />
             {/* <DividerDark addMarginTop /> */}
-            {denominationSwitch}
+            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1437,7 +1408,7 @@ export default function Range(props: propsIF) {
             />
             {/* <DividerDark addMarginTop /> */}
 
-            {denominationSwitch}
+            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1455,8 +1426,6 @@ export default function Range(props: propsIF) {
                     lowBoundOnBlur={lowBoundOnBlur}
                     rangeLowTick={defaultLowTick}
                     rangeHighTick={defaultHighTick}
-                    // setRangeLowTick={setRangeLowTick}
-                    // setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange || !poolExists}
                     chainId={chainId.toString()}
                     maxPrice={maxPrice}
@@ -1481,16 +1450,6 @@ export default function Range(props: propsIF) {
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
-
-    const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal
-            onClose={handleModalClose}
-            title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
-            centeredTitle
-        >
-            <ConfirmRangeModal {...rangeModalProps} />
-        </Modal>
-    ) : null;
 
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
@@ -1699,7 +1658,7 @@ export default function Range(props: propsIF) {
                             onClickFn={
                                 bypassConfirm.range.isEnabled
                                     ? handleRangeButtonClickWithBypass
-                                    : openModal
+                                    : openConfirmationModal
                             }
                             rangeAllowed={
                                 poolExists === true &&
@@ -1707,7 +1666,9 @@ export default function Range(props: propsIF) {
                                 !isInvalidRange
                             }
                             rangeButtonErrorMessage={rangeButtonErrorMessage}
-                            bypassConfirmRange={bypassConfirm.range}
+                            isBypassConfirmEnabled={
+                                bypassConfirm.range.isEnabled
+                            }
                             isAmbient={isAmbient}
                             isAdd={isAdd}
                         />
@@ -1716,7 +1677,52 @@ export default function Range(props: propsIF) {
                     loginButton
                 )}
             </ContentContainer>
-            {confirmSwapModalOrNull}
+            {isConfirmationModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title={
+                        isAmbient
+                            ? 'Ambient Confirmation'
+                            : 'Range Confirmation'
+                    }
+                    centeredTitle
+                >
+                    <ConfirmRangeModal
+                        tokenPair={tokenPair}
+                        spotPriceDisplay={displayPriceString}
+                        poolPriceDisplayNum={poolPriceDisplayNum}
+                        denominationsInBase={denominationsInBase}
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        isAdd={isAdd}
+                        maxPriceDisplay={maxPriceDisplay}
+                        minPriceDisplay={minPriceDisplay}
+                        sendTransaction={sendTransaction}
+                        closeModal={handleModalClose}
+                        newRangeTransactionHash={newRangeTransactionHash}
+                        setNewRangeTransactionHash={setNewRangeTransactionHash}
+                        resetConfirmation={resetConfirmation}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        txErrorCode={txErrorCode}
+                        txErrorMessage={txErrorMessage}
+                        isInRange={!isOutOfRange}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                        bypassConfirm={bypassConfirm}
+                    />
+                </Modal>
+            )}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

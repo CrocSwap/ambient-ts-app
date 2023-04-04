@@ -76,6 +76,7 @@ export default function RangesMenu(props: propsIF) {
         isPositionInRange,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        chainData,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -104,7 +105,11 @@ export default function RangesMenu(props: propsIF) {
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
         openGlobalModal(
-            <RangeDetails position={position} {...rangeDetailsProps} />,
+            <RangeDetails
+                position={position}
+                chainData={chainData}
+                {...rangeDetailsProps}
+            />,
         );
     };
 

@@ -78,14 +78,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
     const { dataTokenA, dataTokenB } = tokenPair;
 
-    const transactionApproved = newRepositionTransactionHash !== '';
+    const txApproved = newRepositionTransactionHash !== '';
+    const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
 
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const transactionSubmitted = (
+    const txSubmitted = (
         <TransactionSubmitted
             hash={newRepositionTransactionHash}
             tokenBSymbol={dataTokenB.symbol}
@@ -99,23 +97,20 @@ export default function ConfirmRepositionModal(props: propsIF) {
         <WaitingConfirmation content={'Repositioning'} />
     );
 
-    const transactionDenied = (
+    const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
-    const transactionException = (
+    const txException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay: JSX.Element = isTxException
+        ? txException
+        : isTxDenied
+        ? txDenied
+        : txApproved
+        ? txSubmitted
+        : confirmSendMessage;
 
     // ------------------------------------
 
@@ -197,36 +192,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
         </section>
     );
 
-    const isAmbient = false;
-    const selectedRangeOrNull = !isAmbient ? (
-        <SelectedRange
-            minPriceDisplay={minPriceDisplay}
-            maxPriceDisplay={maxPriceDisplay}
-            poolPriceDisplayNum={poolPriceDisplayNum}
-            tokenPair={tokenPair}
-            denominationsInBase={isDenomBase}
-            isTokenABase={isTokenABase}
-            isAmbient={isAmbient}
-            pinnedMinPriceDisplayTruncatedInBase={
-                pinnedMinPriceDisplayTruncatedInBase
-            }
-            pinnedMinPriceDisplayTruncatedInQuote={
-                pinnedMinPriceDisplayTruncatedInQuote
-            }
-            pinnedMaxPriceDisplayTruncatedInBase={
-                pinnedMaxPriceDisplayTruncatedInBase
-            }
-            pinnedMaxPriceDisplayTruncatedInQuote={
-                pinnedMaxPriceDisplayTruncatedInQuote
-            }
-        />
-    ) : null;
-
-    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.repo.isEnabled,
-    );
-
-    const toggleFor = 'repo';
+    // this is the starting state for the bypass confirmation toggle switch
+    // if this modal is being shown, we can assume bypass is disabled
+    const [currentSkipConfirm, setCurrentSkipConfirm] =
+        useState<boolean>(false);
 
     const fullTxDetails2 = (
         <>
@@ -267,11 +236,30 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 />
             </section>
             {tokenAmountDisplay}
-            {selectedRangeOrNull}
+            <SelectedRange
+                minPriceDisplay={minPriceDisplay}
+                maxPriceDisplay={maxPriceDisplay}
+                poolPriceDisplayNum={poolPriceDisplayNum}
+                tokenPair={tokenPair}
+                denominationsInBase={isDenomBase}
+                isTokenABase={isTokenABase}
+                isAmbient={false}
+                pinnedMinPriceDisplayTruncatedInBase={
+                    pinnedMinPriceDisplayTruncatedInBase
+                }
+                pinnedMinPriceDisplayTruncatedInQuote={
+                    pinnedMinPriceDisplayTruncatedInQuote
+                }
+                pinnedMaxPriceDisplayTruncatedInBase={
+                    pinnedMaxPriceDisplayTruncatedInBase
+                }
+                pinnedMaxPriceDisplayTruncatedInQuote={
+                    pinnedMaxPriceDisplayTruncatedInQuote
+                }
+            />
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
             />
         </>
     );
@@ -288,7 +276,15 @@ export default function ConfirmRepositionModal(props: propsIF) {
                                 : 'Send Reposition'
                         }
                         action={() => {
-                            bypassConfirm.repo.setValue(currentSkipConfirm);
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            if (currentSkipConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             setShowConfirmation(false);
                             onSend();
                         }}

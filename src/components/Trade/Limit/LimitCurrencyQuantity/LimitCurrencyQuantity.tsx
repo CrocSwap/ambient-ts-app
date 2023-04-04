@@ -51,6 +51,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
             <input
                 id={`${fieldId}-limit-quantity`}
                 className={styles.currency_quantity}
+                aria-label={`Enter ${fieldId} amount`}
                 placeholder='0.0'
                 onChange={(event) => {
                     const isPrecisionGreaterThanDecimals =
@@ -71,6 +72,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
+                autoFocus={fieldId === 'sell'}
                 required
             />
         </div>

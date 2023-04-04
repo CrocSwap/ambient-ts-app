@@ -260,6 +260,8 @@ export default function Reposition(props: propsIF) {
             return;
         }
         let tx;
+        setTxErrorCode('');
+        setTxErrorMessage('');
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
@@ -630,7 +632,7 @@ export default function Reposition(props: propsIF) {
                                 : openModal
                         }
                         disabled={isPositionInRange}
-                        flat={true}
+                        flat
                     />
                 </div>
             </div>

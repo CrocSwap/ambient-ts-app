@@ -32,12 +32,15 @@ export default function SlippageTolerance(props: propsIF) {
                             autoComplete={'off'}
                             placeholder={'e.g. 0.3'}
                             onKeyDown={handleKeyDown}
+                            aria-label='Enter Slippage Tolerance'
                         />
                     </div>
                     {presets.map((preset: number) => (
                         <button
+                            tabIndex={0}
                             key={`slippage-preset-button-${preset}`}
                             onClick={() => takeNewSlippage(preset)}
+                            aria-label={`set slippage to ${preset}% `}
                         >
                             {preset}%
                         </button>

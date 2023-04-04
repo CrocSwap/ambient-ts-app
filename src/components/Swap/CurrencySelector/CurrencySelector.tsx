@@ -552,7 +552,7 @@ export default function CurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction}> </div>
+            <div className={styles.direction} />
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity
@@ -565,11 +565,13 @@ export default function CurrencySelector(props: propsIF) {
                         setDisableReverseTokens={setDisableReverseTokens}
                     />
                 </div>
-                <div
+                <button
                     className={`${styles.token_select} ${
                         isSwapCopied && styles.pulse_animation
                     }`}
                     onClick={openTokenModal}
+                    tabIndex={0}
+                    aria-label='Open swap sell token modal.'
                     id='swap_token_selector'
                 >
                     {thisToken.logoURI ? (
@@ -587,7 +589,7 @@ export default function CurrencySelector(props: propsIF) {
                     )}
                     {tokenSymbol}
                     <RiArrowDownSLine size={27} />
-                </div>
+                </button>
             </div>
             {swapboxBottomOrNull}
 

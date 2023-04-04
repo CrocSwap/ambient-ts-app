@@ -19,6 +19,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface propsIF {
     account: string;
@@ -40,6 +41,7 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    chainData: ChainSpec;
 }
 export default function TransactionRow(props: propsIF) {
     const {
@@ -60,6 +62,7 @@ export default function TransactionRow(props: propsIF) {
         openGlobalModal,
         showPair,
         setSimpleRangeWidth,
+        chainData,
     } = props;
 
     const {
@@ -156,6 +159,7 @@ export default function TransactionRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };
@@ -240,7 +244,6 @@ export default function TransactionRow(props: propsIF) {
                 onClick={handleOpenExplorer}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style}`}
-                style={{ fontFamily: 'monospace' }}
             >
                 {txHashTruncated}
             </li>
@@ -254,7 +257,7 @@ export default function TransactionRow(props: propsIF) {
             onClick={openDetailsModal}
             data-label='value'
             className='base_color'
-            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            style={{ textAlign: 'right' }}
         >
             {usdValue}
         </li>
@@ -281,7 +284,7 @@ export default function TransactionRow(props: propsIF) {
             onClick={handleWalletClick}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            style={{ textTransform: 'lowercase' }}
         >
             {userNameToDisplay}
         </li>
@@ -440,9 +443,7 @@ export default function TransactionRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                    {elapsedTimeString}
-                </p>
+                <p className='base_color'>{elapsedTimeString}</p>
             </li>
         </TextOnlyTooltip>
     );
@@ -462,7 +463,6 @@ export default function TransactionRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                 }}
             >
                 {baseQuantityDisplayShort}
@@ -485,7 +485,6 @@ export default function TransactionRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                 }}
             >
                 {quoteQuantityDisplayShort}
@@ -570,7 +569,6 @@ export default function TransactionRow(props: propsIF) {
                             className={'gradient_text'}
                             style={{
                                 textAlign: 'right',
-                                fontFamily: 'monospace',
                                 textTransform: 'lowercase',
                             }}
                         >
@@ -590,7 +588,7 @@ export default function TransactionRow(props: propsIF) {
                                         ? priceCharacter
                                         : '…'}
                                 </span>
-                                <span style={{ fontFamily: 'monospace' }}>
+                                <span>
                                     {isOnPortfolioPage
                                         ? truncatedLowDisplayPriceDenomByMoneyness
                                         : truncatedLowDisplayPrice}
@@ -602,7 +600,7 @@ export default function TransactionRow(props: propsIF) {
                                         ? priceCharacter
                                         : '…'}
                                 </span>
-                                <span style={{ fontFamily: 'monospace' }}>
+                                <span>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
                                         : truncatedHighDisplayPrice}
@@ -623,7 +621,6 @@ export default function TransactionRow(props: propsIF) {
                         }}
                         data-label='price'
                         className={`${styles.align_right}  ${priceStyle}`}
-                        style={{ fontFamily: 'monospace' }}
                     >
                         {isOnPortfolioPage
                             ? (
@@ -633,7 +630,7 @@ export default function TransactionRow(props: propsIF) {
                                               ? priceCharacter
                                               : '…'}
                                       </span>
-                                      <span style={{ fontFamily: 'monospace' }}>
+                                      <span>
                                           {
                                               truncatedDisplayPriceDenomByMoneyness
                                           }
@@ -647,9 +644,7 @@ export default function TransactionRow(props: propsIF) {
                                               ? priceCharacter
                                               : '…'}
                                       </span>
-                                      <span style={{ fontFamily: 'monospace' }}>
-                                          {truncatedDisplayPrice}
-                                      </span>
+                                      <span>{truncatedDisplayPrice}</span>
                                   </p>
                               ) || '…'}
                     </li>
@@ -714,7 +709,6 @@ export default function TransactionRow(props: propsIF) {
                     <div
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -738,7 +732,6 @@ export default function TransactionRow(props: propsIF) {
                     <div
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -780,6 +773,7 @@ export default function TransactionRow(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     setSimpleRangeWidth={setSimpleRangeWidth}
+                    chainData={chainData}
                 />
             </li>
         </ul>

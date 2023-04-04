@@ -225,6 +225,7 @@ export default function OrdersMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
 

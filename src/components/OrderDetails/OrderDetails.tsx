@@ -13,6 +13,7 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface propsIF {
     account: string;
@@ -21,6 +22,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
+    chainData: ChainSpec;
 }
 
 export default function OrderDetails(props: propsIF) {
@@ -31,6 +33,7 @@ export default function OrderDetails(props: propsIF) {
         account,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
+        chainData,
     } = props;
 
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
@@ -358,6 +361,7 @@ export default function OrderDetails(props: propsIF) {
                             isBaseTokenMoneynessGreaterOrEqual
                         }
                         isOnPortfolioPage={isOnPortfolioPage}
+                        chainData={chainData}
                     />
                 </div>
             </div>

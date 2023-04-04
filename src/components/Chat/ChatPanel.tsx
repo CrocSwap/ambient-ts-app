@@ -17,6 +17,7 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
+import { topPoolsMethodsIF } from '../../App/hooks/useTopPools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -47,10 +48,11 @@ interface propsIF {
     userImageData: string[];
     appPage?: boolean;
     username?: string | null;
+    topPools: topPoolsMethodsIF;
 }
 
 export default function ChatPanel(props: propsIF) {
-    const { isFullScreen, favePools, currentPool, setIsChatOpen } = props;
+    const { isFullScreen, favePools, currentPool, setIsChatOpen, topPools } = props;
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
@@ -464,6 +466,7 @@ export default function ChatPanel(props: propsIF) {
                     : room
             }
             ensName={ensName}
+            appPage={props.appPage}
         />
     );
 
@@ -488,6 +491,7 @@ export default function ChatPanel(props: propsIF) {
                 userCurrentPool={userCurrentPool}
                 favoritePoolsArray={favoritePoolsArray}
                 setFavoritePoolsArray={setFavoritePoolsArray}
+                topPools={topPools}
             />
         );
 
@@ -521,6 +525,7 @@ export default function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
+                        topPools={topPools}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
