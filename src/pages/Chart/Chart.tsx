@@ -533,8 +533,8 @@ export default function Chart(props: propsIF) {
             rescaleRangeBoundariesWithSlider &&
             rescale
         ) {
-            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+            const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
             const filtered = parsedChartData?.chartData.filter(
                 (data: CandleChartData) =>
@@ -556,7 +556,7 @@ export default function Chart(props: propsIF) {
                         Math.min(min, max) - buffer,
                         Math.max(max, min) + buffer / 2,
                     ];
-                    scaleData.yScale.domain(domain);
+                    scaleData?.yScale.domain(domain);
                     setRescaleRangeBoundariesWithSlider(false);
                 }
             }
@@ -644,9 +644,9 @@ export default function Chart(props: propsIF) {
                 setFirstCandle(() => {
                     return parsedChartData?.chartData[0].time;
                 });
-                const domainLeft = scaleData.xScale.domain()[0];
-                const domainRight = scaleData.xScale.domain()[1];
-                scaleData.xScale.domain([
+                const domainLeft = scaleData?.xScale.domain()[0];
+                const domainRight = scaleData?.xScale.domain()[1];
+                scaleData?.xScale.domain([
                     new Date(new Date(domainLeft).getTime() + diff * 1000),
                     new Date(new Date(domainRight).getTime() + diff * 1000),
                 ]);
@@ -669,12 +669,12 @@ export default function Chart(props: propsIF) {
 
     const sameLocationLimit = () => {
         const resultData =
-            scaleData.yScale(limit[0].value) -
-            scaleData.yScale(market[0].value);
+            scaleData?.yScale(limit[0].value) -
+            scaleData?.yScale(market[0].value);
         const resultLocationData = resultData < 0 ? -20 : 20;
         const isSameLocation = Math.abs(resultData) < 20;
         const sameLocationData =
-            scaleData.yScale(market[0].value) + resultLocationData;
+            scaleData?.yScale(market[0].value) + resultLocationData;
         return {
             isSameLocation: isSameLocation,
             sameLocationData: sameLocationData,
@@ -694,11 +694,11 @@ export default function Chart(props: propsIF) {
         const marketValue = market[0].value;
 
         const differenceLowHigh =
-            scaleData.yScale(low) - scaleData.yScale(high);
+            scaleData?.yScale(low) - scaleData?.yScale(high);
         const differenceLowMarket =
-            scaleData.yScale(low) - scaleData.yScale(marketValue);
+            scaleData?.yScale(low) - scaleData?.yScale(marketValue);
         const differenceHighMarket =
-            scaleData.yScale(high) - scaleData.yScale(marketValue);
+            scaleData?.yScale(high) - scaleData?.yScale(marketValue);
 
         const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 30;
         const differenceLowHighData = differenceLowHigh <= 0 ? -20 : 20;
@@ -716,18 +716,19 @@ export default function Chart(props: propsIF) {
                 isSameLocationMin = isSameLocationLowMarket;
                 if (isSameLocationHighMarket) {
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
                 }
 
                 if (isSameLocationLowMarket) {
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) + differenceLowMarketData;
+                        scaleData?.yScale(marketValue) +
+                        differenceLowMarketData;
                 }
 
                 if (differenceHighMarketData === differenceLowMarketData) {
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) -
+                        scaleData?.yScale(marketValue) -
                         differenceHighMarketData;
                 }
             } else if (low > marketValue && high > marketValue) {
@@ -737,27 +738,28 @@ export default function Chart(props: propsIF) {
 
                 if (isSameLocationLowHigh) {
                     sameLocationDataMax =
-                        scaleData.yScale(low) - differenceLowHighData;
+                        scaleData?.yScale(low) - differenceLowHighData;
                 }
                 if (isSameLocationHighMarket) {
                     sameLocationDataMax =
-                        scaleData.yScale(low) + differenceLowHighData;
+                        scaleData?.yScale(low) + differenceLowHighData;
                 }
 
                 if (isSameLocationLowMarket) {
                     isSameLocationMin = true;
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) + differenceLowMarketData;
+                        scaleData?.yScale(marketValue) +
+                        differenceLowMarketData;
                 }
 
                 if (isSameLocationLowHigh && isSameLocationLowMarket) {
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceLowMarketData * 2;
 
                     if (differenceHighMarketData === differenceLowMarketData) {
                         sameLocationDataMax =
-                            scaleData.yScale(marketValue) +
+                            scaleData?.yScale(marketValue) +
                             differenceHighMarketData * 2;
                     }
                 }
@@ -768,43 +770,43 @@ export default function Chart(props: propsIF) {
 
                 if (isSameLocationLowHigh) {
                     sameLocationDataMin =
-                        scaleData.yScale(high) + differenceLowHighData;
+                        scaleData?.yScale(high) + differenceLowHighData;
                 }
 
                 if (isSameLocationHighMarket) {
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
                 }
 
                 if (isSameLocationLowHigh && isSameLocationHighMarket) {
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
 
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData +
                         differenceLowHighData;
 
                     if (differenceHighMarket === 0) {
                         sameLocationDataMax =
-                            scaleData.yScale(marketValue) -
+                            scaleData?.yScale(marketValue) -
                             differenceHighMarketData;
                         sameLocationDataMin =
-                            scaleData.yScale(marketValue) -
+                            scaleData?.yScale(marketValue) -
                             differenceHighMarketData * 2;
                     }
 
                     if (differenceHighMarket === differenceLowMarket) {
                         sameLocationDataMax =
-                            scaleData.yScale(marketValue) -
+                            scaleData?.yScale(marketValue) -
                             (differenceLowMarket === 0
                                 ? differenceHighMarketData
                                 : -differenceHighMarketData);
 
                         sameLocationDataMin =
-                            scaleData.yScale(marketValue) -
+                            scaleData?.yScale(marketValue) -
                             (differenceLowMarket === 0
                                 ? differenceHighMarketData * 2
                                 : -(differenceHighMarketData * 2));
@@ -816,23 +818,25 @@ export default function Chart(props: propsIF) {
                 if (isSameLocationLowHigh) {
                     isSameLocationMax = true;
                     sameLocationDataMax =
-                        scaleData.yScale(low) - differenceLowHighData;
+                        scaleData?.yScale(low) - differenceLowHighData;
                 }
 
                 if (isSameLocationLowMarket) {
                     isSameLocationMin = true;
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) + differenceLowMarketData;
+                        scaleData?.yScale(marketValue) +
+                        differenceLowMarketData;
                 }
 
                 if (isSameLocationLowMarket && isSameLocationLowHigh) {
                     isSameLocationMax = true;
                     isSameLocationMin = true;
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) + differenceLowMarketData;
+                        scaleData?.yScale(marketValue) +
+                        differenceLowMarketData;
 
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceLowMarketData -
                         differenceLowHighData;
                 }
@@ -842,13 +846,14 @@ export default function Chart(props: propsIF) {
                 if (isSameLocationLowMarket) {
                     isSameLocationMin = true;
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) + differenceLowMarketData;
+                        scaleData?.yScale(marketValue) +
+                        differenceLowMarketData;
                 }
 
                 if (isSameLocationHighMarket) {
                     isSameLocationMax = true;
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
                 }
             }
@@ -857,24 +862,24 @@ export default function Chart(props: propsIF) {
                 if (isSameLocationLowHigh) {
                     isSameLocationMin = true;
                     sameLocationDataMin =
-                        scaleData.yScale(high) + differenceLowHighData;
+                        scaleData?.yScale(high) + differenceLowHighData;
                 }
 
                 if (isSameLocationHighMarket) {
                     isSameLocationMax = true;
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
                 }
                 if (isSameLocationHighMarket && isSameLocationLowHigh) {
                     isSameLocationMax = true;
                     isSameLocationMin = true;
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
 
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData +
                         differenceLowHighData;
                 }
@@ -883,15 +888,16 @@ export default function Chart(props: propsIF) {
             if (marketValue < low && marketValue < high) {
                 isSameLocationMax = true;
                 sameLocationDataMax =
-                    scaleData.yScale(low) - differenceLowHighData;
+                    scaleData?.yScale(low) - differenceLowHighData;
 
                 if (isSameLocationHighMarket || isSameLocationLowMarket) {
                     isSameLocationMin = true;
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) + differenceLowMarketData;
+                        scaleData?.yScale(marketValue) +
+                        differenceLowMarketData;
 
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceLowMarketData * 2;
                 }
             }
@@ -899,16 +905,16 @@ export default function Chart(props: propsIF) {
             if (marketValue > low && marketValue > high) {
                 isSameLocationMin = true;
                 sameLocationDataMin =
-                    scaleData.yScale(high) + differenceLowHighData;
+                    scaleData?.yScale(high) + differenceLowHighData;
 
                 if (isSameLocationLowMarket || differenceLowMarket < 35) {
                     isSameLocationMax = true;
                     sameLocationDataMax =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData;
 
                     sameLocationDataMin =
-                        scaleData.yScale(marketValue) +
+                        scaleData?.yScale(marketValue) +
                         differenceHighMarketData * 2;
                 }
             }
@@ -918,10 +924,10 @@ export default function Chart(props: propsIF) {
                 isSameLocationMax = true;
 
                 sameLocationDataMax =
-                    scaleData.yScale(marketValue) - differenceHighMarketData;
+                    scaleData?.yScale(marketValue) - differenceHighMarketData;
 
                 sameLocationDataMin =
-                    scaleData.yScale(marketValue) + differenceHighMarketData;
+                    scaleData?.yScale(marketValue) + differenceHighMarketData;
             }
         }
 
@@ -934,10 +940,10 @@ export default function Chart(props: propsIF) {
     };
 
     async function getXAxisTick() {
-        const oldTickValues = scaleData.xScale.ticks();
+        const oldTickValues = scaleData?.xScale.ticks();
         let result = oldTickValues;
 
-        const domainX = scaleData.xScale.domain();
+        const domainX = scaleData?.xScale.domain();
         if (parsedChartData?.period === 3600) {
             result = await getHourAxisTicks(
                 domainX[0],
@@ -1058,11 +1064,11 @@ export default function Chart(props: propsIF) {
 
                             if (
                                 isMouseMoveCrosshair &&
-                                scaleData.xScale(d) >
-                                    scaleData.xScale(crosshairData[0].x) -
+                                scaleData?.xScale(d) >
+                                    scaleData?.xScale(crosshairData[0].x) -
                                         _width &&
-                                scaleData.xScale(d) <
-                                    scaleData.xScale(crosshairData[0].x) +
+                                scaleData?.xScale(d) <
+                                    scaleData?.xScale(crosshairData[0].x) +
                                         _width
                             ) {
                                 return 'blur';
@@ -1070,11 +1076,11 @@ export default function Chart(props: propsIF) {
 
                             if (
                                 isMouseMoveCrosshair &&
-                                scaleData.xScale(d) >
-                                    scaleData.xScale(crosshairData[0].x) -
+                                scaleData?.xScale(d) >
+                                    scaleData?.xScale(crosshairData[0].x) -
                                         _width &&
-                                scaleData.xScale(d) <
-                                    scaleData.xScale(crosshairData[0].x) +
+                                scaleData?.xScale(d) <
+                                    scaleData?.xScale(crosshairData[0].x) +
                                         _width
                             ) {
                                 return 'blur';
@@ -1107,9 +1113,9 @@ export default function Chart(props: propsIF) {
     ]);
 
     function changeyAxisWidth() {
-        let yTickValueLength = scaleData.yScale.ticks()[0]?.toString().length;
+        let yTickValueLength = scaleData?.yScale.ticks()[0]?.toString().length;
         let result = false;
-        scaleData.yScale.ticks().forEach((element: any) => {
+        scaleData?.yScale.ticks().forEach((element: any) => {
             if (element.toString().length > 4) {
                 result = true;
                 yTickValueLength =
@@ -1395,9 +1401,9 @@ export default function Chart(props: propsIF) {
             ) => {
                 const gapTop =
                     domainX[1].getTime() -
-                    scaleData.xScale.invert(offsetX).getTime();
+                    scaleData?.xScale.invert(offsetX).getTime();
                 const gapBot =
-                    scaleData.xScale.invert(offsetX).getTime() -
+                    scaleData?.xScale.invert(offsetX).getTime() -
                     domainX[0].getTime();
 
                 const minGap = Math.min(gapTop, gapBot);
@@ -1409,7 +1415,7 @@ export default function Chart(props: propsIF) {
                         new Date(domainX[0].getTime() - baseMovement),
                         lastCandleDate,
                     );
-                    scaleData.xScale.domain([
+                    scaleData?.xScale.domain([
                         new Date(domainX[0].getTime() - baseMovement),
                         new Date(
                             domainX[1].getTime() +
@@ -1443,13 +1449,17 @@ export default function Chart(props: propsIF) {
                                 parsedChartData.period * 1000,
                         );
                     }
-                    scaleData.xScale.domain([minX, maxX]);
+                    scaleData?.xScale.domain([minX, maxX]);
                 }
             };
 
             const rescaleYAxis = () => {
-                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                const xmin = new Date(
+                    Math.floor(scaleData?.xScale.domain()[0]),
+                );
+                const xmax = new Date(
+                    Math.floor(scaleData?.xScale.domain()[1]),
+                );
 
                 const filtered = parsedChartData?.chartData.filter(
                     (data: any) => data.date >= xmin && data.date <= xmax,
@@ -1499,7 +1509,7 @@ export default function Chart(props: propsIF) {
                                     ) +
                                         buffer / 2,
                                 ];
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         } else if (location.pathname.includes('/limit')) {
                             if (
@@ -1525,7 +1535,7 @@ export default function Chart(props: propsIF) {
                                         Math.min(low, high) - buffer,
                                         Math.max(low, high) + buffer / 2,
                                     ];
-                                    scaleData.yScale.domain(domain);
+                                    scaleData?.yScale.domain(domain);
                                 } else {
                                     const buffer = Math.abs(
                                         (minYBoundary - maxYBoundary) / 6,
@@ -1537,7 +1547,7 @@ export default function Chart(props: propsIF) {
                                         Math.max(minYBoundary, maxYBoundary) +
                                             buffer / 2,
                                     ];
-                                    scaleData.yScale.domain(domain);
+                                    scaleData?.yScale.domain(domain);
                                 }
                             }
                         } else {
@@ -1556,7 +1566,7 @@ export default function Chart(props: propsIF) {
                                         buffer / 2,
                                 ];
 
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         }
                     }
@@ -1568,10 +1578,10 @@ export default function Chart(props: propsIF) {
 
                 dx = Math.abs(dx) === 0 ? -event.sourceEvent.deltaX / 2 : dx;
 
-                const domainX = scaleData.xScale.domain();
+                const domainX = scaleData?.xScale.domain();
                 const linearX = d3
                     .scaleTime()
-                    .domain(scaleData.xScale.range())
+                    .domain(scaleData?.xScale.range())
                     .range([0, domainX[1] - domainX[0]]);
 
                 const deltaX = linearX(dx);
@@ -1581,7 +1591,7 @@ export default function Chart(props: propsIF) {
                         lastCandleDate,
                     );
 
-                    scaleData.xScale.domain([
+                    scaleData?.xScale.domain([
                         new Date(domainX[0].getTime() + deltaX),
                         new Date(domainX[1].getTime() + deltaX),
                     ]);
@@ -1633,13 +1643,13 @@ export default function Chart(props: propsIF) {
 
                                 getNewCandleData(leftBoudnary, lastCandleDate);
 
-                                scaleData.xScale.domain([
+                                scaleData?.xScale.domain([
                                     leftBoudnary,
                                     new Date(domainX[1].getTime() + deltaX),
                                 ]);
                             } else {
                                 getNewCandleData(newBoundary, lastCandleDate);
-                                scaleData.xScale.domain([
+                                scaleData?.xScale.domain([
                                     newBoundary,
                                     domainX[1],
                                 ]);
@@ -1714,10 +1724,10 @@ export default function Chart(props: propsIF) {
                                 event.sourceEvent.type === 'touchmove' &&
                                 event.sourceEvent.touches.length > 1
                             ) {
-                                const domainX = scaleData.xScale.domain();
+                                const domainX = scaleData?.xScale.domain();
                                 const linearX = d3
                                     .scaleTime()
-                                    .domain(scaleData.xScale.range())
+                                    .domain(scaleData?.xScale.range())
                                     .range([0, domainX[1] - domainX[0]]);
 
                                 // mobile
@@ -1749,10 +1759,10 @@ export default function Chart(props: propsIF) {
                                     touch1.clientX,
                                 );
                             } else {
-                                const domainX = scaleData.xScale.domain();
+                                const domainX = scaleData?.xScale.domain();
                                 const linearX = d3
                                     .scaleTime()
-                                    .domain(scaleData.xScale.range())
+                                    .domain(scaleData?.xScale.range())
                                     .range([0, domainX[1] - domainX[0]]);
 
                                 let deltaX;
@@ -1778,7 +1788,7 @@ export default function Chart(props: propsIF) {
                                         new Date(domainX[0].getTime() + deltaX),
                                         lastCandleDate,
                                     );
-                                    scaleData.xScale.domain([
+                                    scaleData?.xScale.domain([
                                         new Date(domainX[0].getTime() + deltaX),
                                         new Date(domainX[1].getTime() + deltaX),
                                     ]);
@@ -1795,10 +1805,10 @@ export default function Chart(props: propsIF) {
                                     (event.sourceEvent.type === 'touchmove' &&
                                         event.sourceEvent.touches.length < 2))
                             ) {
-                                const domainY = scaleData.yScale.domain();
+                                const domainY = scaleData?.yScale.domain();
                                 const linearY = d3
                                     .scaleLinear()
-                                    .domain(scaleData.yScale.range())
+                                    .domain(scaleData?.yScale.range())
                                     .range([domainY[1] - domainY[0], 0]);
                                 let deltaY;
                                 if (
@@ -1829,11 +1839,11 @@ export default function Chart(props: propsIF) {
                                             deltaY,
                                     ];
 
-                                    scaleData.yScale.domain(domain);
+                                    scaleData?.yScale.domain(domain);
 
-                                    scaleData.yScaleIndicator.range([
+                                    scaleData?.yScaleIndicator.range([
                                         event.sourceEvent.offsetY,
-                                        scaleData.yScale(poolPriceDisplay),
+                                        scaleData?.yScale(poolPriceDisplay),
                                     ]);
                                 }
 
@@ -1841,7 +1851,7 @@ export default function Chart(props: propsIF) {
                                     event.sourceEvent.y -
                                     80 -
                                     (event.sourceEvent.offsetY -
-                                        scaleData.yScale(poolPriceDisplay)) /
+                                        scaleData?.yScale(poolPriceDisplay)) /
                                         2;
 
                                 liqTooltip
@@ -1868,7 +1878,7 @@ export default function Chart(props: propsIF) {
                                         standardDeviation(liqAllBidPrices);
 
                                     while (
-                                        scaleData.yScale.domain()[1] +
+                                        scaleData?.yScale.domain()[1] +
                                             liqBidDeviation >=
                                         liquidityData?.liqBidData[0].liqPrices
                                     ) {
@@ -1900,7 +1910,7 @@ export default function Chart(props: propsIF) {
                                     setLiqHighlightedLinesAndArea(ranges);
                                     // setLiqHighlightedLinesGradient(
                                     //     ranges,
-                                    //     scaleData.yScale,
+                                    //     scaleData?.yScale,
                                     // );
                                 }
                             }
@@ -1970,14 +1980,14 @@ export default function Chart(props: propsIF) {
                     if (
                         !showLatest &&
                         latestCandle &&
-                        (scaleData.xScale.domain()[1] < latestCandle ||
-                            scaleData.xScale.domain()[0] > latestCandle)
+                        (scaleData?.xScale.domain()[1] < latestCandle ||
+                            scaleData?.xScale.domain()[0] > latestCandle)
                     ) {
                         setShowLatest(true);
                     } else if (
                         showLatest &&
-                        !(scaleData.xScale.domain()[1] < latestCandle) &&
-                        !(scaleData.xScale.domain()[0] > latestCandle)
+                        !(scaleData?.xScale.domain()[1] < latestCandle) &&
+                        !(scaleData?.xScale.domain()[0] > latestCandle)
                     ) {
                         setShowLatest(false);
                     }
@@ -1996,7 +2006,7 @@ export default function Chart(props: propsIF) {
                     // mobile
                     previousTouch = event.sourceEvent.changedTouches[0];
                     firstLocation = previousTouch.pageY;
-                    newCenter = scaleData.yScale.invert(firstLocation);
+                    newCenter = scaleData?.yScale.invert(firstLocation);
 
                     if (event.sourceEvent.touches.length > 1) {
                         previousDeltaTouchYaxis = Math.hypot(
@@ -2005,7 +2015,7 @@ export default function Chart(props: propsIF) {
                                 event.sourceEvent.touches[1].pageY,
                         );
                         firstLocation = previousDeltaTouchYaxis;
-                        newCenter = scaleData.yScale.invert(firstLocation);
+                        newCenter = scaleData?.yScale.invert(firstLocation);
                     }
                 } else {
                     firstLocation = event.sourceEvent.offsetY;
@@ -2019,7 +2029,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('zoom', async (event: any) => {
                     (async () => {
-                        const domainY = scaleData.yScale.domain();
+                        const domainY = scaleData?.yScale.domain();
                         const center =
                             domainY[1] !== domainY[0]
                                 ? (domainY[1] + domainY[0]) / 2
@@ -2036,7 +2046,7 @@ export default function Chart(props: propsIF) {
                             deltaY = _movementY;
                         } else {
                             deltaY = event.sourceEvent.movementY / 1.5;
-                            newCenter = scaleData.yScale.invert(firstLocation);
+                            newCenter = scaleData?.yScale.invert(firstLocation);
                         }
 
                         const dy = event.sourceEvent.deltaY / 3;
@@ -2064,11 +2074,11 @@ export default function Chart(props: propsIF) {
                                 newCenter > center
                                     ? Math.abs(
                                           newCenter -
-                                              scaleData.yScale.domain()[1],
+                                              scaleData?.yScale.domain()[1],
                                       )
                                     : Math.abs(
                                           newCenter -
-                                              scaleData.yScale.domain()[0],
+                                              scaleData?.yScale.domain()[0],
                                       );
                             const diffFactor = (diff - distance) / distance;
 
@@ -2080,13 +2090,13 @@ export default function Chart(props: propsIF) {
                                     newCenter - topDiff,
                                     newCenter + bottomDiff,
                                 ];
-                                await scaleData.yScale.domain(domain);
+                                await scaleData?.yScale.domain(domain);
                             } else {
                                 const domain = [
                                     newCenter - bottomDiff,
                                     newCenter + topDiff,
                                 ];
-                                await scaleData.yScale.domain(domain);
+                                await scaleData?.yScale.domain(domain);
                             }
                         } else if (event.sourceEvent.touches.length > 1) {
                             const touch1 = event.sourceEvent.touches[0];
@@ -2097,34 +2107,34 @@ export default function Chart(props: propsIF) {
                             );
 
                             const currentDelta =
-                                scaleData.yScale.invert(deltaTouch);
+                                scaleData?.yScale.invert(deltaTouch);
                             const delta =
                                 Math.abs(currentDelta - newCenter) * 0.03;
 
                             if (previousDeltaTouchYaxis > deltaTouch) {
                                 const domainMax =
-                                    scaleData.yScale.domain()[1] + delta;
+                                    scaleData?.yScale.domain()[1] + delta;
                                 const domainMin =
-                                    scaleData.yScale.domain()[0] - delta;
+                                    scaleData?.yScale.domain()[0] - delta;
 
-                                scaleData.yScale.domain([
+                                scaleData?.yScale.domain([
                                     Math.min(domainMin, domainMax),
                                     Math.max(domainMin, domainMax),
                                 ]);
                             }
                             if (previousDeltaTouchYaxis < deltaTouch) {
                                 const domainMax =
-                                    scaleData.yScale.domain()[1] - delta * 0.5;
+                                    scaleData?.yScale.domain()[1] - delta * 0.5;
                                 const domainMin =
-                                    scaleData.yScale.domain()[0] + delta * 0.5;
+                                    scaleData?.yScale.domain()[0] + delta * 0.5;
 
                                 if (domainMax === domainMin) {
-                                    scaleData.yScale.domain([
+                                    scaleData?.yScale.domain([
                                         Math.min(domainMin, domainMax) + delta,
                                         Math.max(domainMin, domainMax) - delta,
                                     ]);
                                 } else {
-                                    scaleData.yScale.domain([
+                                    scaleData?.yScale.domain([
                                         Math.min(domainMin, domainMax),
                                         Math.max(domainMin, domainMax),
                                     ]);
@@ -2133,7 +2143,7 @@ export default function Chart(props: propsIF) {
                         }
                         // setLiqHighlightedLinesGradient(
                         //     ranges,
-                        //     scaleData.yScale,
+                        //     scaleData?.yScale,
                         // );
                     })().then(() => {
                         if (event.sourceEvent.type.includes('touch')) {
@@ -2157,7 +2167,7 @@ export default function Chart(props: propsIF) {
                             standardDeviation(liqAllBidPrices);
 
                         while (
-                            scaleData.yScale.domain()[1] + liqBidDeviation >=
+                            scaleData?.yScale.domain()[1] + liqBidDeviation >=
                             liquidityData?.liqBidData[0].liqPrices
                         ) {
                             liquidityData?.liqBidData.unshift({
@@ -2183,7 +2193,7 @@ export default function Chart(props: propsIF) {
                         setLiqHighlightedLinesAndArea(ranges);
                         // setLiqHighlightedLinesGradient(
                         //     ranges,
-                        //     scaleData.yScale,
+                        //     scaleData?.yScale,
                         // );
                     }
 
@@ -2229,10 +2239,10 @@ export default function Chart(props: propsIF) {
                         event.sourceEvent.type === 'touchmove' &&
                         event.sourceEvent.touches.length > 1
                     ) {
-                        const domainX = scaleData.xScale.domain();
+                        const domainX = scaleData?.xScale.domain();
                         const linearX = d3
                             .scaleTime()
-                            .domain(scaleData.xScale.range())
+                            .domain(scaleData?.xScale.range())
                             .range([0, domainX[1] - domainX[0]]);
 
                         // mobile
@@ -2258,11 +2268,11 @@ export default function Chart(props: propsIF) {
 
                         changeCandleSize(domainX, deltaX, touch1.clientX);
                     } else {
-                        const domainX = scaleData.xScale.domain();
+                        const domainX = scaleData?.xScale.domain();
 
                         const linearX = d3
                             .scaleTime()
-                            .domain(scaleData.xScale.range())
+                            .domain(scaleData?.xScale.range())
                             .range([0, domainX[1] - domainX[0]]);
 
                         const deltaX = linearX(-event.sourceEvent.movementX);
@@ -2272,7 +2282,7 @@ export default function Chart(props: propsIF) {
                                 new Date(domainX[0].getTime() + deltaX),
                                 lastCandleDate,
                             );
-                            scaleData.xScale.domain([
+                            scaleData?.xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 domainX[1],
                             ]);
@@ -2295,14 +2305,14 @@ export default function Chart(props: propsIF) {
                     if (
                         !showLatest &&
                         latestCandle &&
-                        (scaleData.xScale.domain()[1] < latestCandle ||
-                            scaleData.xScale.domain()[0] > latestCandle)
+                        (scaleData?.xScale.domain()[1] < latestCandle ||
+                            scaleData?.xScale.domain()[0] > latestCandle)
                     ) {
                         setShowLatest(true);
                     } else if (
                         showLatest &&
-                        !(scaleData.xScale.domain()[1] < latestCandle) &&
-                        !(scaleData.xScale.domain()[0] > latestCandle)
+                        !(scaleData?.xScale.domain()[1] < latestCandle) &&
+                        !(scaleData?.xScale.domain()[0] > latestCandle)
                     ) {
                         setShowLatest(false);
                     }
@@ -2342,8 +2352,12 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
             if (rescale) {
-                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                const xmin = new Date(
+                    Math.floor(scaleData?.xScale.domain()[0]),
+                );
+                const xmax = new Date(
+                    Math.floor(scaleData?.xScale.domain()[1]),
+                );
 
                 const filtered = parsedChartData?.chartData.filter(
                     (data: any) => data.date >= xmin && data.date <= xmax,
@@ -2380,7 +2394,7 @@ export default function Chart(props: propsIF) {
                                 Math.max(high, maxYBoundary) + buffer / 2,
                             ];
 
-                            scaleData.yScale.domain(domain);
+                            scaleData?.yScale.domain(domain);
                         }
 
                         const liqAllBidPrices = liquidityData?.liqBidData.map(
@@ -2390,7 +2404,7 @@ export default function Chart(props: propsIF) {
                             standardDeviation(liqAllBidPrices);
 
                         while (
-                            scaleData.yScale.domain()[1] + liqBidDeviation >=
+                            scaleData?.yScale.domain()[1] + liqBidDeviation >=
                             liquidityData?.liqBidData[0]?.liqPrices
                         ) {
                             liquidityData?.liqBidData.unshift({
@@ -2416,7 +2430,7 @@ export default function Chart(props: propsIF) {
                         setLiqHighlightedLinesAndArea(ranges);
                         // setLiqHighlightedLinesGradient(
                         //     ranges,
-                        //     scaleData.yScale,
+                        //     scaleData?.yScale,
                         // );
                     } else if (location.pathname.includes('/limit')) {
                         if (
@@ -2438,7 +2452,7 @@ export default function Chart(props: propsIF) {
                                     Math.max(low, high) + bufferForLimit / 2,
                                 ];
 
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         }
                     } else {
@@ -2456,12 +2470,12 @@ export default function Chart(props: propsIF) {
                                     buffer / 2,
                             ];
 
-                            scaleData.yScale.domain(domain);
+                            scaleData?.yScale.domain(domain);
 
                             setLiqHighlightedLinesAndArea(ranges);
                             // setLiqHighlightedLinesGradient(
                             //     ranges,
-                            //     scaleData.yScale,
+                            //     scaleData?.yScale,
                             // );
                         }
                     }
@@ -2489,7 +2503,7 @@ export default function Chart(props: propsIF) {
 
     const findLiqNearest = (liqDataAll: any[]) => {
         if (scaleData !== undefined) {
-            const point = scaleData.yScale(scaleData.yScale.domain()[0]);
+            const point = scaleData?.yScale(scaleData?.yScale.domain()[0]);
 
             if (point == undefined) return 0;
             if (liqDataAll) {
@@ -2503,16 +2517,16 @@ export default function Chart(props: propsIF) {
 
                 const closestMin = sortLiqaData.reduce(function (prev, curr) {
                     return Math.abs(
-                        curr.liqPrices - scaleData.yScale.domain()[0],
-                    ) < Math.abs(prev.liqPrices - scaleData.yScale.domain()[0])
+                        curr.liqPrices - scaleData?.yScale.domain()[0],
+                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[0])
                         ? curr
                         : prev;
                 });
 
                 const closestMax = sortLiqaData.reduce(function (prev, curr) {
                     return Math.abs(
-                        curr.liqPrices - scaleData.yScale.domain()[1],
-                    ) < Math.abs(prev.liqPrices - scaleData.yScale.domain()[1])
+                        curr.liqPrices - scaleData?.yScale.domain()[1],
+                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[1])
                         ? curr
                         : prev;
                 });
@@ -2545,8 +2559,8 @@ export default function Chart(props: propsIF) {
             console.error({ error });
         }
     }, [
-        scaleData && scaleData.yScale.domain()[0],
-        scaleData && scaleData.yScale.domain()[1],
+        scaleData && scaleData?.yScale.domain()[0],
+        scaleData && scaleData?.yScale.domain()[1],
     ]);
 
     // set default limit tick
@@ -2586,7 +2600,7 @@ export default function Chart(props: propsIF) {
                 minPrice !== undefined ? minPrice : 0;
 
             setLiqHighlightedLinesAndArea(newTargets);
-            // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+            // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
             return newTargets;
         });
@@ -2635,7 +2649,7 @@ export default function Chart(props: propsIF) {
                 )[0].value = parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+                // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
                 return newTargets;
             });
@@ -2663,7 +2677,7 @@ export default function Chart(props: propsIF) {
                     )[0].value = minPrice !== undefined ? minPrice : 0;
 
                     setLiqHighlightedLinesAndArea(newTargets);
-                    // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+                    // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
                     setTriangleRangeValues(maxPrice, minPrice);
 
@@ -2672,10 +2686,10 @@ export default function Chart(props: propsIF) {
                         rescaleRangeBoundariesWithSlider
                     ) {
                         const xmin = new Date(
-                            Math.floor(scaleData.xScale.domain()[0]),
+                            Math.floor(scaleData?.xScale.domain()[0]),
                         );
                         const xmax = new Date(
-                            Math.floor(scaleData.xScale.domain()[1]),
+                            Math.floor(scaleData?.xScale.domain()[1]),
                         );
 
                         const filtered = parsedChartData?.chartData.filter(
@@ -2708,7 +2722,7 @@ export default function Chart(props: propsIF) {
                                     Math.max(min, max) + buffer / 2,
                                 ];
 
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
 
                                 setRescaleRangeBoundariesWithSlider(false);
                             }
@@ -2750,7 +2764,7 @@ export default function Chart(props: propsIF) {
                     ) || 0.0;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+                // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
                 return newTargets;
             });
@@ -2776,7 +2790,7 @@ export default function Chart(props: propsIF) {
                     },
                 ];
                 setLiqHighlightedLinesAndArea(chartTargets);
-                // setLiqHighlightedLinesGradient(chartTargets, scaleData.yScale);
+                // setLiqHighlightedLinesGradient(chartTargets, scaleData?.yScale);
 
                 return chartTargets;
             });
@@ -2849,7 +2863,7 @@ export default function Chart(props: propsIF) {
 
             while (
                 liquidityData?.liqBidData.length > 0 &&
-                scaleData.yScale.domain()[1] + liqBidDeviation >=
+                scaleData?.yScale.domain()[1] + liqBidDeviation >=
                     liquidityData?.liqBidData[0]?.liqPrices
             ) {
                 liquidityData?.liqBidData.unshift({
@@ -2872,7 +2886,7 @@ export default function Chart(props: propsIF) {
             }
 
             setLiqHighlightedLinesAndArea(ranges);
-            // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+            // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
         } else {
             setBoundaries(denomInBase);
         }
@@ -2884,8 +2898,8 @@ export default function Chart(props: propsIF) {
             const ghostLines = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.tickValue)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             ghostLines.decorate((selection: any) => {
                 selection.visibility = location.pathname.includes('/limit')
@@ -2991,7 +3005,7 @@ export default function Chart(props: propsIF) {
                         .select('.targets')
                         .style('cursor', 'grabbing');
 
-                    const advancedValue = scaleData.yScale.invert(
+                    const advancedValue = scaleData?.yScale.invert(
                         event.sourceEvent.clientY - rectRange.top,
                     );
 
@@ -3015,11 +3029,11 @@ export default function Chart(props: propsIF) {
                 .on('drag', function (event) {
                     setIsLineDrag(true);
                     let dragedValue =
-                        scaleData.yScale.invert(
+                        scaleData?.yScale.invert(
                             event.sourceEvent.clientY - rectRange.top,
                         ) >= liquidityData?.topBoundary
                             ? liquidityData?.topBoundary
-                            : scaleData.yScale.invert(
+                            : scaleData?.yScale.invert(
                                   event.sourceEvent.clientY - rectRange.top,
                               );
 
@@ -3078,7 +3092,7 @@ export default function Chart(props: propsIF) {
                                 );
                                 // setLiqHighlightedLinesGradient(
                                 //     newTargets,
-                                //     scaleData.yScale,
+                                //     scaleData?.yScale,
                                 // );
                                 return newTargets;
                             });
@@ -3176,7 +3190,7 @@ export default function Chart(props: propsIF) {
                             );
                             // setLiqHighlightedLinesGradient(
                             //     rangesF,
-                            //     scaleData.yScale,
+                            //     scaleData?.yScale,
                             // );
 
                             if (pinnedDisplayPrices !== undefined) {
@@ -3207,7 +3221,7 @@ export default function Chart(props: propsIF) {
                             }
                         }
                     } else {
-                        const advancedValue = scaleData.yScale.invert(
+                        const advancedValue = scaleData?.yScale.invert(
                             event.sourceEvent.clientY - rectRange.top,
                         );
                         highLineMoved = draggingLine === 'Max';
@@ -3305,7 +3319,7 @@ export default function Chart(props: propsIF) {
                             setLiqHighlightedLinesAndArea(newTargets);
                             // setLiqHighlightedLinesGradient(
                             //     newTargets,
-                            //     scaleData.yScale,
+                            //     scaleData?.yScale,
                             // );
 
                             const minPrice = newTargets.filter(
@@ -3327,7 +3341,7 @@ export default function Chart(props: propsIF) {
                             x: crosshairData[0].x,
                             y: Number(
                                 formatAmountChartData(
-                                    scaleData.yScale.invert(
+                                    scaleData?.yScale.invert(
                                         event.sourceEvent.layerY,
                                     ),
                                 ),
@@ -3396,7 +3410,7 @@ export default function Chart(props: propsIF) {
                         );
                         // setLiqHighlightedLinesGradient(
                         //     rangesF,
-                        //     scaleData.yScale,
+                        //     scaleData?.yScale,
                         // );
                     }
 
@@ -3420,7 +3434,7 @@ export default function Chart(props: propsIF) {
                 .on('drag', function (event) {
                     setIsLineDrag(true);
 
-                    newLimitValue = scaleData.yScale.invert(
+                    newLimitValue = scaleData?.yScale.invert(
                         event.sourceEvent.clientY - rectLimit.top,
                     );
 
@@ -3445,7 +3459,7 @@ export default function Chart(props: propsIF) {
                             x: crosshairData[0].x,
                             y: Number(
                                 formatAmountChartData(
-                                    scaleData.yScale.invert(
+                                    scaleData?.yScale.invert(
                                         event.sourceEvent.layerY,
                                     ),
                                 ),
@@ -3456,10 +3470,10 @@ export default function Chart(props: propsIF) {
                     setIsLineDrag(false);
 
                     const xmin = new Date(
-                        Math.floor(scaleData.xScale.domain()[0]),
+                        Math.floor(scaleData?.xScale.domain()[0]),
                     );
                     const xmax = new Date(
-                        Math.floor(scaleData.xScale.domain()[1]),
+                        Math.floor(scaleData?.xScale.domain()[1]),
                     );
 
                     const filtered = parsedChartData?.chartData.filter(
@@ -3479,8 +3493,8 @@ export default function Chart(props: propsIF) {
                             const high =
                                 maxYBoundary > value ? maxYBoundary : value;
 
-                            const min = scaleData.yScale.domain()[0];
-                            const max = scaleData.yScale.domain()[1];
+                            const min = scaleData?.yScale.domain()[0];
+                            const max = scaleData?.yScale.domain()[1];
 
                             if (min > low || max < high) {
                                 const buffer = Math.abs((low - high) / 6);
@@ -3490,7 +3504,7 @@ export default function Chart(props: propsIF) {
                                     Math.max(high, low) + buffer / 2,
                                 ];
 
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         }
                     }
@@ -3526,7 +3540,7 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             const _yAxis = d3fc
                 .axisRight()
-                .scale(scaleData.yScale)
+                .scale(scaleData?.yScale)
                 .tickFormat((d: any) => {
                     const digit = d.toString().split('.')[1]?.length;
                     return formatAmountChartData(d, digit ? digit : 2);
@@ -3538,7 +3552,7 @@ export default function Chart(props: propsIF) {
 
             const _xAxis = d3fc
                 .axisBottom()
-                .scale(scaleData.xScale)
+                .scale(scaleData?.xScale)
                 .tickFormat((d: any) => {
                     return d3.timeFormat('%d/%m/%y')(d);
                 });
@@ -3558,7 +3572,7 @@ export default function Chart(props: propsIF) {
                 if (yAxis) {
                     drawYaxis(
                         d3YaxisContext,
-                        scaleData.yScale,
+                        scaleData?.yScale,
                         d3YaxisCanvas.width / 2,
                     );
                 }
@@ -3572,7 +3586,7 @@ export default function Chart(props: propsIF) {
 
             d3.select(d3Xaxis.current).on('draw', function () {
                 if (xAxis) {
-                    drawXaxis(context, scaleData.xScale, 3);
+                    drawXaxis(context, scaleData?.xScale, 3);
                 }
             });
         }
@@ -3922,8 +3936,8 @@ export default function Chart(props: propsIF) {
             const limitLine = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.value)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             limitLine.decorate((context: any) => {
                 context.strokeStyle = 'rgba(235, 235, 255)';
@@ -3934,8 +3948,8 @@ export default function Chart(props: propsIF) {
             const marketLine = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.value)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             marketLine.decorate((context: any) => {
                 context.visibility = 'hidden';
@@ -3947,8 +3961,8 @@ export default function Chart(props: propsIF) {
             const horizontalLine = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.value)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             horizontalLine.decorate((context: any) => {
                 context.visibility = location.pathname.includes('range')
@@ -3976,8 +3990,8 @@ export default function Chart(props: propsIF) {
 
             const horizontalBand = d3fc
                 .annotationCanvasBand()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((context: any) => {
@@ -3986,12 +4000,12 @@ export default function Chart(props: propsIF) {
 
             const triangle = d3fc
                 .seriesCanvasPoint()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .crossValue((d: any, index: any) => {
                     return !(index % 2)
-                        ? scaleData.xScale.domain()[0]
-                        : scaleData.xScale.domain()[1];
+                        ? scaleData?.xScale.domain()[0]
+                        : scaleData?.xScale.domain()[1];
                 })
                 .mainValue((d: any) => d.value)
                 .size(270)
@@ -4030,7 +4044,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
-                .yScale(scaleData.yScale)
+                .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
                     selection.strokeStyle = 'rgba(205, 193, 255)';
                     selection.strokeWidth = 4;
@@ -4047,7 +4061,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
-                .yScale(scaleData.yScale)
+                .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
                     selection.strokeStyle = 'rgba(205, 193, 255)';
                     selection.strokeWidth = 4;
@@ -4064,7 +4078,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
-                .yScale(scaleData.yScale)
+                .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
                     selection.strokeStyle = '#7371FC';
                 });
@@ -4080,7 +4094,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
-                .yScale(scaleData.yScale)
+                .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
                     selection.strokeStyle = '#7371FC';
                 });
@@ -4146,10 +4160,10 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            scaleData.xScale.domain(scaleData.xScaleCopy.domain());
+            scaleData?.xScale.domain(scaleData?.xScaleCopy.domain());
 
-            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+            const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
             const filtered = parsedChartData?.chartData.filter(
                 (data: any) => data.date >= xmin && data.date <= xmax,
@@ -4191,7 +4205,7 @@ export default function Chart(props: propsIF) {
                                 buffer / 2,
                         ];
 
-                        scaleData.yScale.domain(domain);
+                        scaleData?.yScale.domain(domain);
                     }
                 } else if (location.pathname.includes('/limit')) {
                     if (
@@ -4210,7 +4224,7 @@ export default function Chart(props: propsIF) {
                                 Math.max(low, high) + buffer / 2,
                             ];
 
-                            scaleData.yScale.domain(domain);
+                            scaleData?.yScale.domain(domain);
                         } else {
                             const buffer = Math.abs(
                                 (maxYBoundary - minYBoundary) / 6,
@@ -4222,7 +4236,7 @@ export default function Chart(props: propsIF) {
                                     buffer / 2,
                             ];
 
-                            scaleData.yScale.domain(domain);
+                            scaleData?.yScale.domain(domain);
                         }
                     }
                 } else {
@@ -4240,7 +4254,7 @@ export default function Chart(props: propsIF) {
                             Math.max(minYBoundary, maxYBoundary) + buffer / 2,
                         ];
 
-                        scaleData.yScale.domain(domain);
+                        scaleData?.yScale.domain(domain);
                     }
                 }
             }
@@ -4262,8 +4276,8 @@ export default function Chart(props: propsIF) {
             );
 
             const diff =
-                scaleData.xScale.domain()[1].getTime() -
-                scaleData.xScale.domain()[0].getTime();
+                scaleData?.xScale.domain()[1].getTime() -
+                scaleData?.xScale.domain()[0].getTime();
 
             const centerX =
                 parsedChartData?.chartData[latestCandleIndex].time * 1000;
@@ -4271,10 +4285,10 @@ export default function Chart(props: propsIF) {
             if (rescale) {
                 if (poolPriceDisplay) {
                     const xmin = new Date(
-                        Math.floor(scaleData.xScaleCopy.domain()[0]),
+                        Math.floor(scaleData?.xScaleCopy.domain()[0]),
                     );
                     const xmax = new Date(
-                        Math.floor(scaleData.xScaleCopy.domain()[1]),
+                        Math.floor(scaleData?.xScaleCopy.domain()[1]),
                     );
 
                     const filtered = parsedChartData?.chartData.filter(
@@ -4319,7 +4333,7 @@ export default function Chart(props: propsIF) {
                                         buffer / 2,
                                 ];
 
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         } else if (location.pathname.includes('/limit')) {
                             if (
@@ -4339,7 +4353,7 @@ export default function Chart(props: propsIF) {
                                     Math.min(low, high) - buffer,
                                     Math.max(low, high) + buffer / 2,
                                 ];
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         } else {
                             if (
@@ -4358,19 +4372,20 @@ export default function Chart(props: propsIF) {
                                         buffer / 2,
                                 ];
 
-                                scaleData.yScale.domain(domain);
+                                scaleData?.yScale.domain(domain);
                             }
                         }
                     }
                 }
 
-                scaleData.xScale.domain([
+                scaleData?.xScale.domain([
                     new Date(centerX - diff * 0.8),
                     new Date(centerX + diff * 0.2),
                 ]);
             } else {
                 const diffY =
-                    scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
+                    scaleData?.yScale.domain()[1] -
+                    scaleData?.yScale.domain()[0];
 
                 const centerY =
                     parsedChartData?.chartData[latestCandleIndex].high -
@@ -4382,9 +4397,9 @@ export default function Chart(props: propsIF) {
 
                 const domain = [centerY - diffY / 2, centerY + diffY / 2];
 
-                scaleData.yScale.domain(domain);
+                scaleData?.yScale.domain(domain);
 
-                scaleData.xScale.domain([
+                scaleData?.xScale.domain([
                     new Date(centerX - diff * 0.8),
                     new Date(centerX + diff * 0.2),
                 ]);
@@ -4423,10 +4438,10 @@ export default function Chart(props: propsIF) {
             .value;
 
         let clickedValue =
-            scaleData.yScale.invert(d3.pointer(event)[1]) >=
+            scaleData?.yScale.invert(d3.pointer(event)[1]) >=
             liquidityData?.topBoundary
                 ? liquidityData?.topBoundary
-                : scaleData.yScale.invert(d3.pointer(event)[1]);
+                : scaleData?.yScale.invert(d3.pointer(event)[1]);
 
         clickedValue = clickedValue < 0 ? 0.01 : clickedValue;
 
@@ -4472,7 +4487,7 @@ export default function Chart(props: propsIF) {
                     setLiqHighlightedLinesAndArea(newTargets);
                     // setLiqHighlightedLinesGradient(
                     //     newTargets,
-                    //     scaleData.yScale,
+                    //     scaleData?.yScale,
                     // );
 
                     return newTargets;
@@ -4559,7 +4574,7 @@ export default function Chart(props: propsIF) {
                         setLiqHighlightedLinesAndArea(newTargets);
                         // setLiqHighlightedLinesGradient(
                         //     newTargets,
-                        //     scaleData.yScale,
+                        //     scaleData?.yScale,
                         // );
 
                         return newTargets;
@@ -4583,9 +4598,9 @@ export default function Chart(props: propsIF) {
             );
         } else {
             const value =
-                scaleData.yScale.invert(event.offsetY) < 0
+                scaleData?.yScale.invert(event.offsetY) < 0
                     ? 0.1
-                    : scaleData.yScale.invert(event.offsetY);
+                    : scaleData?.yScale.invert(event.offsetY);
             let pinnedDisplayPrices;
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
@@ -4635,7 +4650,7 @@ export default function Chart(props: propsIF) {
                     setLiqHighlightedLinesAndArea(newTargets);
                     // setLiqHighlightedLinesGradient(
                     //     newTargets,
-                    //     scaleData.yScale,
+                    //     scaleData?.yScale,
                     // );
 
                     return newTargets;
@@ -4662,8 +4677,8 @@ export default function Chart(props: propsIF) {
                 .annotationSvgLine()
                 .orient('vertical')
                 .value((d: any) => d.x)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScaleIndicator)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScaleIndicator)
                 .label('');
 
             indicatorLine.decorate((selection: any) => {
@@ -4684,8 +4699,8 @@ export default function Chart(props: propsIF) {
                 .annotationSvgLine()
                 .orient('vertical')
                 .value((d: any) => d.x)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .label('');
 
             crosshairHorizontal.decorate((selection: any) => {
@@ -4703,8 +4718,8 @@ export default function Chart(props: propsIF) {
                 .annotationCanvasLine()
                 .orient('vertical')
                 .value((d: any) => d.x)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .label('');
 
             crosshairHorizontalCanvas.decorate((context: any) => {
@@ -4725,8 +4740,8 @@ export default function Chart(props: propsIF) {
             const crosshairVertical = d3fc
                 .annotationCanvasLine()
                 .value((d: crosshair) => d.y)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             crosshairVertical.decorate((context: any) => {
                 context.visibility = 'hidden';
@@ -4760,8 +4775,8 @@ export default function Chart(props: propsIF) {
                             : d.stroke;
                     context.cursorStyle = 'pointer';
                 })
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             setCandlestick(() => canvasCandlestick);
             renderCanvas();
@@ -4938,8 +4953,8 @@ export default function Chart(props: propsIF) {
 
                     context.cursorStyle = 'pointer';
                 })
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.volumeScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.volumeScale)
                 .crossValue((d: any) => d.time)
                 .mainValue((d: any) => d.value);
 
@@ -5202,12 +5217,12 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
-        // setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
+        // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
     }, [liqMode]);
 
     // useEffect(() => {
-    //     setLiqHighlightedLinesGradient(ranges, scaleData.yScale);
-    // }, [scaleData && JSON.stringify(scaleData.yScale.domain())]);
+    //     setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
+    // }, [scaleData && JSON.stringify(scaleData?.yScale.domain())]);
 
     // const setLiqHighlightedLinesGradient = (ranges: any, scale: any) => {
     //     if (scale && lineBidSeries && lineAskSeries) {
@@ -5379,8 +5394,12 @@ export default function Chart(props: propsIF) {
             )[0].value;
 
             if (autoScale && rescale) {
-                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                const xmin = new Date(
+                    Math.floor(scaleData?.xScale.domain()[0]),
+                );
+                const xmax = new Date(
+                    Math.floor(scaleData?.xScale.domain()[1]),
+                );
 
                 const filtered = parsedChartData?.chartData.filter(
                     (data: any) => data.date >= xmin && data.date <= xmax,
@@ -5404,7 +5423,7 @@ export default function Chart(props: propsIF) {
                                 buffer / 2,
                         ];
 
-                        scaleData.yScale.domain(domain);
+                        scaleData?.yScale.domain(domain);
                     }
                 }
             }
@@ -5454,7 +5473,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
-                .yScale(scaleData.yScale);
+                .yScale(scaleData?.yScale);
 
             setLiqAskSeries(() => d3CanvasLiqAskChart);
 
@@ -5469,7 +5488,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
-                .yScale(scaleData.yScale);
+                .yScale(scaleData?.yScale);
 
             setLiqAskDepthSeries(() => d3CanvasLiqAskDepthChart);
 
@@ -5535,7 +5554,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
-                .yScale(scaleData.yScale);
+                .yScale(scaleData?.yScale);
 
             setLiqBidSeries(() => d3CanvasLiqBidChart);
 
@@ -5550,7 +5569,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
-                .yScale(scaleData.yScale);
+                .yScale(scaleData?.yScale);
 
             setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
 
@@ -5661,7 +5680,7 @@ export default function Chart(props: propsIF) {
         const minX = d3.min(data, (d) => d.activeLiq);
 
         for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
-            if (ctx.isPointInPath(i, scaleData.yScale(high))) {
+            if (ctx.isPointInPath(i, scaleData?.yScale(high))) {
                 if (
                     filtered.find((item: any) => item.liqPrices === high) ===
                     undefined
@@ -5688,7 +5707,7 @@ export default function Chart(props: propsIF) {
 
         if (passValue !== undefined && low > passValue) {
             for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
-                if (ctx.isPointInPath(i, scaleData.yScale(low))) {
+                if (ctx.isPointInPath(i, scaleData?.yScale(low))) {
                     filtered.push({
                         activeLiq: liquidityScale.invert(i),
                         liqPrices: low,
@@ -5741,7 +5760,7 @@ export default function Chart(props: propsIF) {
         const minX = d3.min(data, (d) => d.activeLiq);
 
         for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
-            if (ctx.isPointInPath(i, scaleData.yScale(low))) {
+            if (ctx.isPointInPath(i, scaleData?.yScale(low))) {
                 if (
                     filtered.find((item: any) => item.liqPrices === low) ===
                     undefined
@@ -5768,7 +5787,7 @@ export default function Chart(props: propsIF) {
 
         if (passValue && high < passValue) {
             for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
-                if (ctx.isPointInPath(i, scaleData.yScale(high))) {
+                if (ctx.isPointInPath(i, scaleData?.yScale(high))) {
                     filtered.unshift({
                         activeLiq: liquidityScale.invert(i),
                         liqPrices: high,
@@ -5914,8 +5933,8 @@ export default function Chart(props: propsIF) {
         if (scaleData !== undefined) {
             const limitNoGoZone = d3fc
                 .annotationCanvasBand()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
@@ -5976,8 +5995,8 @@ export default function Chart(props: propsIF) {
 
     function changeScale() {
         if (poolPriceDisplay && scaleData) {
-            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+            const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
             const filtered = parsedChartData?.chartData.filter(
                 (data: any) => data.date >= xmin && data.date <= xmax,
@@ -6019,7 +6038,7 @@ export default function Chart(props: propsIF) {
                             Math.max(low, high) + bufferForRange / 2,
                         ];
 
-                        scaleData.yScale.domain(domain);
+                        scaleData?.yScale.domain(domain);
                     } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
                         const low = Math.min(minYBoundary, value);
@@ -6033,7 +6052,7 @@ export default function Chart(props: propsIF) {
                                 Math.max(low, high) + bufferForLimit / 2,
                             ];
 
-                            scaleData.yScale.domain(domain);
+                            scaleData?.yScale.domain(domain);
                         }
                     } else {
                         const domain = [
@@ -6041,7 +6060,7 @@ export default function Chart(props: propsIF) {
                             Math.max(minYBoundary, maxYBoundary) + buffer / 2,
                         ];
 
-                        scaleData.yScale.domain(domain);
+                        scaleData?.yScale.domain(domain);
                     }
                 }
             }
@@ -6091,8 +6110,10 @@ export default function Chart(props: propsIF) {
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
-        const lastDate = scaleData.xScale.invert(event.offsetX + bandwidth / 2);
-        const startDate = scaleData.xScale.invert(
+        const lastDate = scaleData?.xScale.invert(
+            event.offsetX + bandwidth / 2,
+        );
+        const startDate = scaleData?.xScale.invert(
             event.offsetX - bandwidth / 2,
         );
 
@@ -6110,9 +6131,9 @@ export default function Chart(props: propsIF) {
         const dateControl =
             nearest?.date.getTime() > startDate.getTime() &&
             nearest?.date.getTime() < lastDate.getTime();
-        const yValue = scaleData.yScale.invert(event.offsetY);
+        const yValue = scaleData?.yScale.invert(event.offsetY);
 
-        const yValueVolume = scaleData.volumeScale.invert(event.offsetY);
+        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY);
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
@@ -6129,7 +6150,7 @@ export default function Chart(props: propsIF) {
 
         const diff = Math.abs(nearest.close - nearest.open);
         const scale = Math.abs(
-            scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0],
+            scaleData?.yScale.domain()[1] - scaleData?.yScale.domain()[0],
         );
 
         const topBoundary =
@@ -6195,7 +6216,7 @@ export default function Chart(props: propsIF) {
         let filteredAllData = allData.filter(
             (item: any) =>
                 min <= item.liqPrices &&
-                item.liqPrices <= scaleData.yScale.domain()[1],
+                item.liqPrices <= scaleData?.yScale.domain()[1],
         );
 
         if (filteredAllData === undefined || filteredAllData.length === 0) {
@@ -6208,7 +6229,7 @@ export default function Chart(props: propsIF) {
             return d.activeLiq;
         });
 
-        const currentDataY = scaleData.yScale.invert(event.offsetY);
+        const currentDataY = scaleData?.yScale.invert(event.offsetY);
         const currentDataX =
             liqMode === 'depth'
                 ? liquidityDepthScale.invert(event.offsetX)
@@ -6265,17 +6286,17 @@ export default function Chart(props: propsIF) {
         maxBoudnary: string,
     ) => {
         indicatorLineData[0] = {
-            x: scaleData.xScale.invert(event.offsetX),
-            y: scaleData.yScale.invert(event.offsetY),
+            x: scaleData?.xScale.invert(event.offsetX),
+            y: scaleData?.yScale.invert(event.offsetY),
         };
 
         currentPriceData[0] = {
             value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
         };
 
-        scaleData.yScaleIndicator.range([
+        scaleData?.yScaleIndicator.range([
             event.offsetY,
-            scaleData.yScale(poolPriceDisplay),
+            scaleData?.yScale(poolPriceDisplay),
         ]);
 
         const filtered =
@@ -6287,10 +6308,10 @@ export default function Chart(props: propsIF) {
 
         const nearest = filtered.reduce(function (prev: any, curr: any) {
             return Math.abs(
-                curr.liqPrices - scaleData.yScale.invert(event.offsetY),
+                curr.liqPrices - scaleData?.yScale.invert(event.offsetY),
             ) <
                 Math.abs(
-                    prev.liqPrices - scaleData.yScale.invert(event.offsetY),
+                    prev.liqPrices - scaleData?.yScale.invert(event.offsetY),
                 )
                 ? curr
                 : prev;
@@ -6303,7 +6324,7 @@ export default function Chart(props: propsIF) {
         const topPlacement =
             event.y -
             80 -
-            (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
+            (event.offsetY - scaleData?.yScale(poolPriceDisplay)) / 2;
 
         liqTooltip
             .style('visibility', 'visible')
@@ -6319,14 +6340,15 @@ export default function Chart(props: propsIF) {
         const ctx = canvas.getContext('2d');
 
         const percentageBid =
-            (scaleData.yScale.invert(event.offsetY) - parseFloat(minBoudnary)) /
+            (scaleData?.yScale.invert(event.offsetY) -
+                parseFloat(minBoudnary)) /
             (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
         const gradient = ctx.createLinearGradient(
             0,
-            scaleData.yScale(maxBoudnary),
+            scaleData?.yScale(maxBoudnary),
             0,
-            scaleData.yScale(minBoudnary),
+            scaleData?.yScale(minBoudnary),
         );
 
         gradient.addColorStop(1 - percentageBid, 'rgba(115, 113, 252, 0.3)');
@@ -6344,17 +6366,17 @@ export default function Chart(props: propsIF) {
         maxBoudnary: string,
     ) => {
         indicatorLineData[0] = {
-            x: scaleData.xScale.invert(event.offsetX),
-            y: scaleData.yScale.invert(event.offsetY),
+            x: scaleData?.xScale.invert(event.offsetX),
+            y: scaleData?.yScale.invert(event.offsetY),
         };
 
         currentPriceData[0] = {
             value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
         };
 
-        scaleData.yScaleIndicator.range([
+        scaleData?.yScaleIndicator.range([
             event.offsetY,
-            scaleData.yScale(poolPriceDisplay),
+            scaleData?.yScale(poolPriceDisplay),
         ]);
 
         const filtered =
@@ -6366,10 +6388,10 @@ export default function Chart(props: propsIF) {
 
         const nearest = filtered.reduce(function (prev: any, curr: any) {
             return Math.abs(
-                curr.liqPrices - scaleData.yScale.invert(event.offsetY),
+                curr.liqPrices - scaleData?.yScale.invert(event.offsetY),
             ) <
                 Math.abs(
-                    prev.liqPrices - scaleData.yScale.invert(event.offsetY),
+                    prev.liqPrices - scaleData?.yScale.invert(event.offsetY),
                 )
                 ? curr
                 : prev;
@@ -6382,7 +6404,7 @@ export default function Chart(props: propsIF) {
         const topPlacement =
             event.y -
             80 -
-            (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
+            (event.offsetY - scaleData?.yScale(poolPriceDisplay)) / 2;
 
         liqTooltip
             .style('visibility', 'visible')
@@ -6397,14 +6419,14 @@ export default function Chart(props: propsIF) {
         if (maxBoudnary) {
             const percentageAsk =
                 (parseFloat(maxBoudnary) -
-                    scaleData.yScale.invert(event.offsetY)) /
+                    scaleData?.yScale.invert(event.offsetY)) /
                 (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
             const gradient = ctx.createLinearGradient(
                 0,
-                scaleData.yScale(maxBoudnary),
+                scaleData?.yScale(maxBoudnary),
                 0,
-                scaleData.yScale(minBoudnary),
+                scaleData?.yScale(minBoudnary),
             );
 
             gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255, 0.6)');
@@ -6476,7 +6498,7 @@ export default function Chart(props: propsIF) {
         const tvlData = parsedChartData?.tvlChartData;
         if (point == undefined) return 0;
         if (tvlData) {
-            const xScale = scaleData.xScale;
+            const xScale = scaleData?.xScale;
 
             const filtered =
                 tvlData.length > 1
@@ -6517,7 +6539,7 @@ export default function Chart(props: propsIF) {
             scaleData === undefined
         )
             return [];
-        const xScale = scaleData.xScale;
+        const xScale = scaleData?.xScale;
 
         const filtered =
             data.length > 1 ? data.filter((d: any) => d.date != null) : data;
@@ -6560,14 +6582,14 @@ export default function Chart(props: propsIF) {
 
         const returnXdata =
             parsedChartData?.chartData[0].date <=
-            scaleData.xScale.invert(point.offsetX)
-                ? scaleData.xScale.invert(point.offsetX)
+            scaleData?.xScale.invert(point.offsetX)
+                ? scaleData?.xScale.invert(point.offsetX)
                 : nearest?.date;
 
         return [
             {
                 x: returnXdata,
-                y: scaleData.yScale.invert(point.offsetY),
+                y: scaleData?.yScale.invert(point.offsetY),
             },
         ];
     };
@@ -6583,7 +6605,7 @@ export default function Chart(props: propsIF) {
                         ? 0
                         : Number(
                               formatAmountChartData(
-                                  scaleData.yScale.invert(event.layerY),
+                                  scaleData?.yScale.invert(event.layerY),
                               ),
                           ),
                 },
@@ -6625,10 +6647,10 @@ export default function Chart(props: propsIF) {
                 d3.select(d3PlotArea.current).on(
                     'measure',
                     function (event: any) {
-                        scaleData.xScale.range([0, event.detail.width]);
-                        scaleData.yScale.range([event.detail.height, 0]);
+                        scaleData?.xScale.range([0, event.detail.width]);
+                        scaleData?.yScale.range([event.detail.height, 0]);
 
-                        scaleData.xScaleIndicator.range([
+                        scaleData?.xScaleIndicator.range([
                             (event.detail.width / 10) * 8,
                             event.detail.width,
                         ]);
@@ -6651,7 +6673,7 @@ export default function Chart(props: propsIF) {
                             ]);
                         }
 
-                        scaleData.volumeScale.range([
+                        scaleData?.volumeScale.range([
                             event.detail.height,
                             event.detail.height - event.detail.height / 10,
                         ]);
@@ -6684,7 +6706,7 @@ export default function Chart(props: propsIF) {
                         scaleData !== undefined &&
                         !isHoverCandleOrVolumeData
                     ) {
-                        let newLimitValue = scaleData.yScale.invert(
+                        let newLimitValue = scaleData?.yScale.invert(
                             event.offsetY,
                         );
 
@@ -6728,7 +6750,7 @@ export default function Chart(props: propsIF) {
                 d3.select(d3PlotArea.current).on(
                     'measure.range',
                     function (event: any) {
-                        scaleData.xScaleCopy.range([0, event.detail.width]);
+                        scaleData?.xScaleCopy.range([0, event.detail.width]);
                     },
                 );
 
@@ -6738,7 +6760,7 @@ export default function Chart(props: propsIF) {
                         candleOrVolumeDataHoverStatus(event);
                     liqDataHover(event);
 
-                    const mousePlacement = scaleData.yScale.invert(
+                    const mousePlacement = scaleData?.yScale.invert(
                         event.offsetY,
                     );
                     const limitLineValue = limit[0].value;
@@ -6751,8 +6773,8 @@ export default function Chart(props: propsIF) {
                     )[0].value;
 
                     const lineBuffer =
-                        (scaleData.yScale.domain()[1] -
-                            scaleData.yScale.domain()[0]) /
+                        (scaleData?.yScale.domain()[1] -
+                            scaleData?.yScale.domain()[0]) /
                         30;
 
                     const canUserDragLimit =
@@ -6918,9 +6940,9 @@ export default function Chart(props: propsIF) {
     );
 
     useEffect(() => {
-        if (scaleData && scaleData.xScale) {
+        if (scaleData && scaleData?.xScale) {
             const xmin = new Date(
-                Math.floor(scaleData.xScale.domain()[0]) - 3600 * 1000,
+                Math.floor(scaleData?.xScale.domain()[0]) - 3600 * 1000,
             );
 
             const filtered = volumeData?.filter(
@@ -6931,10 +6953,10 @@ export default function Chart(props: propsIF) {
             const maxYBoundary = d3.max(filtered, (d) => d.value);
             if (minYBoundary !== undefined && maxYBoundary !== undefined) {
                 const domain = [0, maxYBoundary / 1.05];
-                scaleData.volumeScale.domain(domain);
+                scaleData?.volumeScale.domain(domain);
             }
         }
-    }, [scaleData && scaleData.xScale.domain()]);
+    }, [scaleData && scaleData?.xScale.domain()]);
 
     useEffect(() => {
         if (
@@ -7072,7 +7094,7 @@ export default function Chart(props: propsIF) {
         const ctx = canvas.getContext('2d');
 
         let requestId: any = null;
-        let y = scaleData.yScale(noGoZoneMax);
+        let y = scaleData?.yScale(noGoZoneMax);
 
         function animate() {
             ctx.strokeStyle = 'rgba(235, 235, 255, 0.01)';
@@ -7081,28 +7103,28 @@ export default function Chart(props: propsIF) {
 
             ctx.strokeRect(
                 -1,
-                scaleData.yScale(noGoZoneMax),
+                scaleData?.yScale(noGoZoneMax),
                 Math.abs(
-                    scaleData.xScale(scaleData.xScale.domain()[0]) -
-                        scaleData.xScale(scaleData.xScale.domain()[1]),
+                    scaleData?.xScale(scaleData?.xScale.domain()[0]) -
+                        scaleData?.xScale(scaleData?.xScale.domain()[1]),
                 ) + 10,
                 Math.abs(
-                    scaleData.yScale(noGoZoneMax) -
-                        scaleData.yScale(noGoZoneMin),
+                    scaleData?.yScale(noGoZoneMax) -
+                        scaleData?.yScale(noGoZoneMin),
                 ),
             );
 
-            if (y > scaleData.yScale(noGoZoneMax) - 50) {
+            if (y > scaleData?.yScale(noGoZoneMax) - 50) {
                 ctx.strokeRect(
                     -1,
                     y,
                     Math.abs(
-                        scaleData.xScale(scaleData.xScale.domain()[0]) -
-                            scaleData.xScale(scaleData.xScale.domain()[1]),
+                        scaleData?.xScale(scaleData?.xScale.domain()[0]) -
+                            scaleData?.xScale(scaleData?.xScale.domain()[1]),
                     ),
                     Math.abs(
-                        scaleData.yScale(noGoZoneMax) -
-                            scaleData.yScale(noGoZoneMin),
+                        scaleData?.yScale(noGoZoneMax) -
+                            scaleData?.yScale(noGoZoneMin),
                     ) + 20,
                 );
 
@@ -7213,16 +7235,19 @@ export default function Chart(props: propsIF) {
                 const width = entries[0].contentRect.width;
                 const height = entries[0].contentRect.height;
                 if (height && width) {
-                    scaleData.xScale.range([0, width]);
-                    scaleData.yScale.range([height, 0]);
+                    scaleData?.xScale.range([0, width]);
+                    scaleData?.yScale.range([height, 0]);
 
-                    scaleData.xScaleIndicator.range([(width / 10) * 8, width]);
+                    scaleData?.xScaleIndicator.range([(width / 10) * 8, width]);
 
                     liquidityScale.range([width, (width / 10) * 9]);
 
                     liquidityDepthScale.range([width, (width / 10) * 9]);
 
-                    scaleData.volumeScale.range([height, height - height / 10]);
+                    scaleData?.volumeScale.range([
+                        height,
+                        height - height / 10,
+                    ]);
                 }
 
                 render();
@@ -7348,7 +7373,7 @@ export default function Chart(props: propsIF) {
                                 subChartValues={subChartValues}
                                 xScale={
                                     scaleData !== undefined
-                                        ? scaleData.xScale
+                                        ? scaleData?.xScale
                                         : undefined
                                 }
                                 getNewCandleData={getNewCandleData}
