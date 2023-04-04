@@ -24,7 +24,6 @@ export const defaultTopPools = [
         speed: 0,
         id: 1,
     },
-
     {
         name: 'ETH/WBTC',
         base: {
