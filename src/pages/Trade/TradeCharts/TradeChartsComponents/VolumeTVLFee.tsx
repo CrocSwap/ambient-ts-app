@@ -128,7 +128,9 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
-                        aria-label={`Show ${button.name}.`}
+                        aria-label={`${button.selected ? 'hide' : 'show'} ${
+                            button.name
+                        }.`}
                     >
                         {button.name}
                     </button>

@@ -10,6 +10,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
@@ -369,14 +370,18 @@ export default function TradeCharts(props: propsIF) {
     );
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <AiOutlineFullscreen
-                size={20}
+            <button
                 onClick={() => setFullScreenChart(!fullScreenChart)}
-                id='trade_chart_full_screen_button'
-                role='button'
-                tabIndex={0}
-                aria-label='Full screen chart button'
-            />
+                className={styles.fullscreen_button}
+            >
+                <AiOutlineFullscreen
+                    size={20}
+                    id='trade_chart_full_screen_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Full screen chart button'
+                />
+            </button>
 
             <DefaultTooltip interactive title={saveImageContent}>
                 <AiOutlineCamera
@@ -547,111 +552,120 @@ export default function TradeCharts(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        <div
-            className={styles.main_container_chart}
-            style={{
-                padding: fullScreenChart ? '1rem' : '0',
-                background: fullScreenChart ? 'var(--dark2)' : '',
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
             }}
-            ref={canvasRef}
         >
-            {mainChartSettingsContent}
-            <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
-                {props.isTutorialMode && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}
-                {tokenInfo}
-                {timeFrameContent}
+            <div
+                className={styles.main_container_chart}
+                style={{
+                    padding: fullScreenChart ? '1rem' : '0',
+                    background: fullScreenChart ? 'var(--dark2)' : '',
+                }}
+                ref={canvasRef}
+            >
+                {mainChartSettingsContent}
+                <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
+                    {props.isTutorialMode && (
+                        <div className={styles.tutorial_button_container}>
+                            <button
+                                className={styles.tutorial_button}
+                                onClick={() => setIsTutorialEnabled(true)}
+                            >
+                                Tutorial Mode
+                            </button>
+                        </div>
+                    )}
 
-                <CurrentDataInfo
-                    showTooltip={showTooltip}
-                    currentData={currentData}
-                    currentVolumeData={currentVolumeData}
-                    showLatest={showLatest}
-                    setLatest={setLatest}
-                    setReset={setReset}
-                    setRescale={setRescale}
-                    rescale={rescale}
-                    reset={reset}
-                />
-            </div>
-            {graphIsLoading ? (
-                <TradeChartsLoading />
-            ) : (
-                <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
-                    <TradeCandleStickChart
-                        isUserLoggedIn={isUserLoggedIn}
-                        pool={pool}
-                        chainData={chainData}
-                        expandTradeTable={expandTradeTable}
-                        candleData={props.candleData}
-                        changeState={props.changeState}
-                        chartItemStates={chartItemStates}
-                        limitTick={props.limitTick}
-                        liquidityData={props.liquidityData}
-                        isAdvancedModeActive={props.isAdvancedModeActive}
-                        simpleRangeWidth={props.simpleRangeWidth}
-                        poolPriceDisplay={poolPriceDisplay}
-                        truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
-                        setCurrentData={setCurrentData}
-                        setCurrentVolumeData={setCurrentVolumeData}
-                        upBodyColor={props.upBodyColor}
-                        upBorderColor={props.upBorderColor}
-                        downBodyColor={props.downBodyColor}
-                        downBorderColor={props.downBorderColor}
-                        upVolumeColor={props.upVolumeColor}
-                        downVolumeColor={props.downVolumeColor}
-                        baseTokenAddress={props.baseTokenAddress}
-                        chainId={chainId}
-                        poolPriceNonDisplay={props.poolPriceNonDisplay}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        rescale={rescale}
-                        setRescale={setRescale}
-                        latest={latest}
-                        setLatest={setLatest}
-                        reset={reset}
-                        setReset={setReset}
+                    {tokenInfo}
+                    {timeFrameContent}
+
+                    <CurrentDataInfo
+                        showTooltip={showTooltip}
+                        currentData={currentData}
+                        currentVolumeData={currentVolumeData}
                         showLatest={showLatest}
-                        setShowLatest={setShowLatest}
-                        setShowTooltip={setShowTooltip}
-                        handlePulseAnimation={handlePulseAnimation}
-                        fetchingCandle={fetchingCandle}
-                        setFetchingCandle={setFetchingCandle}
-                        minPrice={minPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
-                        rescaleRangeBoundariesWithSlider={
-                            rescaleRangeBoundariesWithSlider
-                        }
-                        setRescaleRangeBoundariesWithSlider={
-                            setRescaleRangeBoundariesWithSlider
-                        }
-                        showSidebar={showSidebar}
-                        setCandleDomains={setCandleDomains}
-                        setSimpleRangeWidth={setSimpleRangeWidth}
-                        setRepositionRangeWidth={props.setRepositionRangeWidth}
-                        repositionRangeWidth={props.repositionRangeWidth}
-                        setChartTriggeredBy={setChartTriggeredBy}
-                        chartTriggeredBy={chartTriggeredBy}
-                        chartSettings={chartSettings}
-                        isMarketOrLimitModule={isMarketOrLimitModule}
+                        setLatest={setLatest}
+                        setReset={setReset}
+                        setRescale={setRescale}
+                        rescale={rescale}
+                        reset={reset}
                     />
                 </div>
-            )}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={tradeChartTutorialSteps}
-            />
-        </div>
+                {graphIsLoading ? (
+                    <TradeChartsLoading />
+                ) : (
+                    <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
+                        <TradeCandleStickChart
+                            isUserLoggedIn={isUserLoggedIn}
+                            pool={pool}
+                            chainData={chainData}
+                            expandTradeTable={expandTradeTable}
+                            candleData={props.candleData}
+                            changeState={props.changeState}
+                            chartItemStates={chartItemStates}
+                            limitTick={props.limitTick}
+                            liquidityData={props.liquidityData}
+                            isAdvancedModeActive={props.isAdvancedModeActive}
+                            simpleRangeWidth={props.simpleRangeWidth}
+                            poolPriceDisplay={poolPriceDisplay}
+                            truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
+                            setCurrentData={setCurrentData}
+                            setCurrentVolumeData={setCurrentVolumeData}
+                            upBodyColor={props.upBodyColor}
+                            upBorderColor={props.upBorderColor}
+                            downBodyColor={props.downBodyColor}
+                            downBorderColor={props.downBorderColor}
+                            upVolumeColor={props.upVolumeColor}
+                            downVolumeColor={props.downVolumeColor}
+                            baseTokenAddress={props.baseTokenAddress}
+                            chainId={chainId}
+                            poolPriceNonDisplay={props.poolPriceNonDisplay}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
+                            rescale={rescale}
+                            setRescale={setRescale}
+                            latest={latest}
+                            setLatest={setLatest}
+                            reset={reset}
+                            setReset={setReset}
+                            showLatest={showLatest}
+                            setShowLatest={setShowLatest}
+                            setShowTooltip={setShowTooltip}
+                            handlePulseAnimation={handlePulseAnimation}
+                            fetchingCandle={fetchingCandle}
+                            setFetchingCandle={setFetchingCandle}
+                            minPrice={minPrice}
+                            maxPrice={maxPrice}
+                            setMaxPrice={setMaxPrice}
+                            setMinPrice={setMinPrice}
+                            rescaleRangeBoundariesWithSlider={
+                                rescaleRangeBoundariesWithSlider
+                            }
+                            setRescaleRangeBoundariesWithSlider={
+                                setRescaleRangeBoundariesWithSlider
+                            }
+                            showSidebar={showSidebar}
+                            setCandleDomains={setCandleDomains}
+                            setSimpleRangeWidth={setSimpleRangeWidth}
+                            setRepositionRangeWidth={
+                                props.setRepositionRangeWidth
+                            }
+                            repositionRangeWidth={props.repositionRangeWidth}
+                            setChartTriggeredBy={setChartTriggeredBy}
+                            chartTriggeredBy={chartTriggeredBy}
+                            chartSettings={chartSettings}
+                            isMarketOrLimitModule={isMarketOrLimitModule}
+                        />
+                    </div>
+                )}
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={tradeChartTutorialSteps}
+                />
+            </div>
+        </FocusTrap>
     );
 }
