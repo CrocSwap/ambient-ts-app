@@ -6047,11 +6047,13 @@ export default function Chart(props: propsIF) {
             .node() as any;
         const ctx = canvas.getContext('2d');
 
-        if (limitNoGoZone && ghostLines && ghostLineValues !== undefined) {
+        if (limitNoGoZone && ghostLines) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
                     limitNoGoZone(noGoZoneBoudnaries);
-                    ghostLines(ghostLineValues);
+                    if (ghostLineValues !== undefined) {
+                        ghostLines(ghostLineValues);
+                    }
                 })
                 .on('measure', () => {
                     limitNoGoZone.context(ctx);
