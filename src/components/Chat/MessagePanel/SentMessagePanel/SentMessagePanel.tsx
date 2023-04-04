@@ -303,6 +303,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     {showAvatar && (
                         <div className={styles.nft_container}>{myBlockies}</div>
                     )}
+                    {!showAvatar && (
+                        <div style={{ display: 'none' }}>
+                            <div className={styles.nft_container}>
+                                {myBlockies}
+                            </div>
+                        </div>
+                    )}
                     <div className={styles.message_item}>
                         <div
                             className={
