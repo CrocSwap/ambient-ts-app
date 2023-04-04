@@ -3069,17 +3069,20 @@ export default function Chart(props: propsIF) {
         }
     }
 
-    function adjTicks(linePrice: any) {
-        const result = [
-            { tickValue: 0.995 * linePrice },
-            { tickValue: 0.99 * linePrice },
-            { tickValue: 0.985 * linePrice },
-            { tickValue: 1.005 * linePrice },
-            { tickValue: 1.01 * linePrice },
-            { tickValue: 1.015 * linePrice },
-        ];
+    async function adjTicks(price: number) {
+        if (!pool) {
+            return [];
+        }
 
-        return result;
+        const N_GHOST_LINES = 3;
+        const lines = await pool.displayToNeighborTickPrices(
+            price,
+            N_GHOST_LINES,
+        );
+
+        return lines.below.concat(lines.above).map((x) => {
+            return { tickValue: x };
+        });
     }
 
     const getNoZoneData = () => {
@@ -3526,13 +3529,13 @@ export default function Chart(props: propsIF) {
                         .select('.horizontal')
                         .style('visibility', 'visible');
                 })
-                .on('drag', function (event) {
+                .on('drag', async function (event) {
                     setIsLineDrag(true);
 
                     newLimitValue = scaleData.yScale.invert(event.y);
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
-                    setGhostLineValues(adjTicks(newLimitValue));
+                    adjTicks(newLimitValue).then(setGhostLineValues);
 
                     if (newLimitValue < 0) newLimitValue = 0;
 
