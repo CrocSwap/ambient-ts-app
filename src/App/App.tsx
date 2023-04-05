@@ -3133,7 +3133,9 @@ export default function App() {
 
     return (
         <>
-            <Helmet></Helmet>
+            <Helmet>
+                <title>Wololo</title>
+            </Helmet>
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
