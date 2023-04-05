@@ -20,7 +20,7 @@ export default function TopPools(props: propsIF) {
         chainId,
         lastBlockNumber,
         cachedPoolStatsFetch,
-        topPools
+        topPools,
     } = props;
 
     return (
