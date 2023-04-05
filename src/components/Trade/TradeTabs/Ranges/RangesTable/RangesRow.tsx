@@ -296,23 +296,24 @@ export default function RangesRow(props: propsIF) {
 
     const walletWithTooltip = (
         <li
-            onClick={() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: true,
-                    }),
-                );
-                navigate(
-                    `/${
-                        isOwnerActiveAccount
-                            ? 'account'
-                            : ensName
-                            ? ensName
-                            : ownerId
-                    }`,
-                );
-            }}
+            // onClick={() => {
+            //     dispatch(
+            //         setDataLoadingStatus({
+            //             datasetName: 'lookupUserTxData',
+            //             loadingStatus: true,
+            //         }),
+            //     );
+            //     navigate(
+            //         `/${
+            //             isOwnerActiveAccount
+            //                 ? 'account'
+            //                 : ensName
+            //                 ? ensName
+            //                 : ownerId
+            //         }`,
+            //     );
+            // }}
+            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -501,7 +502,7 @@ export default function RangesRow(props: propsIF) {
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
+    // eslint-disable-next-line
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -544,7 +545,7 @@ export default function RangesRow(props: propsIF) {
             {idOrNull}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={handleAccountClick}>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className={`base_color ${styles.hover_style}`}>
                         {posHashTruncated}
                     </p>{' '}

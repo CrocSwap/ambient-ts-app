@@ -490,7 +490,7 @@ export default function OrderRow(props: propsIF) {
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
+    // eslint-disable-next-line
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -532,13 +532,12 @@ export default function OrderRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!isOnPortfolioPage && !showColumns && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className={`base_color ${styles.hover_style}`}>
                         {posHashTruncated}
                     </p>{' '}
                     <p
                         className={`${usernameStyle} ${styles.hover_style}`}
-                        onClick={handleAccountClick}
                         style={{ textTransform: 'lowercase' }}
                     >
                         {userNameToDisplay}

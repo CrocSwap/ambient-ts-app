@@ -511,13 +511,8 @@ export default function TransactionRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
-                    <p
-                        onClick={() => {
-                            handleOpenExplorer();
-                        }}
-                        className={`base_color ${styles.hover_style}`}
-                    >
+                <li data-label='id' onClick={openDetailsModal}>
+                    <p className={`base_color ${styles.hover_style}`}>
                         {txHashTruncated}
                     </p>{' '}
                     {isOnPortfolioPage ? (
@@ -531,30 +526,30 @@ export default function TransactionRow(props: propsIF) {
                             {userNameToDisplay}
                         </p>
                     ) : (
-                        <NavLink
-                            onClick={() => {
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'lookupUserTxData',
-                                        loadingStatus: true,
-                                    }),
-                                );
-                            }}
-                            to={`/${
-                                isOwnerActiveAccount
-                                    ? 'account'
-                                    : ensName
-                                    ? ensName
-                                    : ownerId
-                            }`}
+                        // <NavLink
+                        //     onClick={() => {
+                        //         dispatch(
+                        //             setDataLoadingStatus({
+                        //                 datasetName: 'lookupUserTxData',
+                        //                 loadingStatus: true,
+                        //             }),
+                        //         );
+                        //     }}
+                        //     to={`/${
+                        //         isOwnerActiveAccount
+                        //             ? 'account'
+                        //             : ensName
+                        //             ? ensName
+                        //             : ownerId
+                        //     }`}
+                        // >
+                        <p
+                            className={`${usernameStyle} ${styles.hover_style}`}
+                            style={{ textTransform: 'lowercase' }}
                         >
-                            <p
-                                className={`${usernameStyle} ${styles.hover_style}`}
-                                style={{ textTransform: 'lowercase' }}
-                            >
-                                {userNameToDisplay}
-                            </p>
-                        </NavLink>
+                            {userNameToDisplay}
+                        </p>
+                        // </NavLink>
                     )}
                 </li>
             )}
