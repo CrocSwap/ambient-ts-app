@@ -230,7 +230,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-highlight-dark);
     outline: none;
     border: none;
     /* background: var(--dark3); */
