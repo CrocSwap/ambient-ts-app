@@ -373,7 +373,13 @@ export default function App() {
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    const isChatEnabled =
+        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
             : true;
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
@@ -3478,6 +3484,7 @@ export default function App() {
                             path='chat'
                             element={
                                 <ChatPanel
+                                    isChatEnabled={isChatEnabled}
                                     isChatOpen={true}
                                     onClose={() => {
                                         console.error(
@@ -3500,6 +3507,7 @@ export default function App() {
                             path='chat/:params'
                             element={
                                 <ChatPanel
+                                    isChatEnabled={isChatEnabled}
                                     isChatOpen={true}
                                     onClose={() => {
                                         console.error(
@@ -3836,7 +3844,8 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
-                    !currentLocation.includes('/chat') && (
+                    !currentLocation.includes('/chat') &&
+                    isChatEnabled && (
                         <ChatPanel
                             isChatOpen={isChatOpen}
                             onClose={() => {
@@ -3848,6 +3857,7 @@ export default function App() {
                             isFullScreen={false}
                             userImageData={imageData}
                             topPools={topPools}
+                            isChatEnabled={isChatEnabled}
                         />
                     )}
             </div>

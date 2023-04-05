@@ -18,6 +18,7 @@ import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { topPoolsMethodsIF } from '../../App/hooks/useTopPools';
+import NotFound from '../../pages/NotFound/NotFound';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -49,11 +50,20 @@ interface propsIF {
     appPage?: boolean;
     username?: string | null;
     topPools: topPoolsMethodsIF;
+    isChatEnabled: boolean;
 }
 
 export default function ChatPanel(props: propsIF) {
-    const { isFullScreen, favePools, currentPool, setIsChatOpen, topPools } =
-        props;
+    const {
+        isChatEnabled,
+        isFullScreen,
+        favePools,
+        currentPool,
+        setIsChatOpen,
+        topPools,
+    } = props;
+
+    if (!isChatEnabled) return <NotFound />;
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
