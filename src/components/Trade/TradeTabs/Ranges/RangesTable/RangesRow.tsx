@@ -412,7 +412,7 @@ export default function RangesRow(props: propsIF) {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {position.positionLiqBaseTruncated}
+                {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
             </div>
         </li>
@@ -435,7 +435,7 @@ export default function RangesRow(props: propsIF) {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {position.positionLiqQuoteTruncated}
+                {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
         </li>

@@ -137,14 +137,14 @@ export default function TransactionRow(props: propsIF) {
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
-        baseQuantityDisplayShort === '0.00' ||
+        baseQuantityDisplayShort === '0' ||
         !valueArrows ||
         (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
         tx.source === 'manual'
             ? styles.light_grey
             : styles.positive_value;
     const negativeDisplayStyle =
-        quoteQuantityDisplayShort === '0.00' ||
+        quoteQuantityDisplayShort === '0' ||
         !valueArrows ||
         (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
             ? styles.light_grey
