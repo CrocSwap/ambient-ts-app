@@ -268,7 +268,7 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={0}
         >
             <li
-                onClick={handleOpenExplorer}
+                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
@@ -290,8 +290,6 @@ export default function TransactionRow(props: propsIF) {
         </li>
     );
 
-    // const navigate = useNavigate();
-
     const handleWalletClick = () => {
         dispatch(
             setDataLoadingStatus({
@@ -304,16 +302,12 @@ export default function TransactionRow(props: propsIF) {
             isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
         }`;
         window.open(accountUrl);
-        // navigate(
-        //     `/${
-        //         isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-        //     }`,
-        // );
     };
 
     const walletWithTooltip = (
         <li
-            onClick={handleWalletClick}
+            // onClick={handleWalletClick}
+            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
