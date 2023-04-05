@@ -147,19 +147,34 @@ export default function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
-    function isLink(url: string) {
-        const urlPattern =
-            /^(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+    const crocodileLabsLinks = [
+        'https://www.crocswap.com/',
+        'https://twitter.com/CrocSwap',
+        'https://crocswap.medium.com/',
+        'https://www.linkedin.com/company/crocodile-labs/',
+        'https://github.com/CrocSwap',
+        'https://discord.com/invite/CrocSwap',
+        'https://www.crocswap.com/whitepaper',
+    ];
+
+    function isLinkInCrocodileLabsLinks(word: string) {
+        return crocodileLabsLinks.includes(word);
+    }
+    function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
             return (
                 <>
                     {words.map((word, index) => (
                         <span
-                            onClick={() => handleOpenExplorer(word)}
+                            onClick={() =>
+                                isLinkInCrocodileLabsLinks(word)
+                                    ? handleOpenExplorer(word)
+                                    : ''
+                            }
                             key={index}
                             style={
-                                urlPattern.test(word)
+                                isLinkInCrocodileLabsLinks(word)
                                     ? { color: '#ab7de7' }
                                     : { color: 'white' }
                             }
@@ -170,7 +185,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 </>
             );
         } else {
-            if (urlPattern.test(url)) {
+            if (isLinkInCrocodileLabsLinks(url)) {
                 return (
                     <p
                         style={{ color: '#ab7de7' }}
@@ -204,7 +219,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + isLink(word)}
+                                {'' + detectLinksFromMessage(word)}
                             </span>
                         ))}
                     </p>
@@ -212,7 +227,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <div className={styles.message}>
-                        {isLink(props.message.message)}
+                        {detectLinksFromMessage(props.message.message)}
                     </div>
                 );
             }
@@ -233,7 +248,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + isLink(word)}
+                                {'' + detectLinksFromMessage(word)}
                             </span>
                         ))}
                     </p>
@@ -241,7 +256,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <div className={styles.message_without_avatar}>
-                        {isLink(props.message.message)}
+                        {detectLinksFromMessage(props.message.message)}
                     </div>
                 );
             }
