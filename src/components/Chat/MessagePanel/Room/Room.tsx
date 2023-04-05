@@ -85,7 +85,7 @@ export default function RoomDropdown(props: propsIF) {
     const rooms = topPools.onActiveChain;
 
     function findSpeed(pool: any) {
-        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
             case 'ETH/USDC':
                 return 0 as number;
             case 'ETH/WBTC':
@@ -104,7 +104,7 @@ export default function RoomDropdown(props: propsIF) {
     }
 
     function findId(pool: any) {
-        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+        switch (pool.base.symbol + '/' + pool.quote.symbol) {
             case 'ETH/USDC':
                 return 1;
             case 'ETH/WBTC':
