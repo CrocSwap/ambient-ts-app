@@ -57,7 +57,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchTheme,
         recentPools,
         theme,
-        // poolPriceDisplay,
+        poolPriceDisplay,
         chainData,
         getTokenByAddress,
         isTutorialMode,
@@ -116,9 +116,9 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    // const baseSymbol = tradeData.baseToken.symbol;
-    // const quoteSymbol = tradeData.quoteToken.symbol;
-    // const isDenomBase = tradeData.isDenomBase;
+    const baseSymbol = tradeData.baseToken.symbol;
+    const quoteSymbol = tradeData.quoteToken.symbol;
+    const isDenomBase = tradeData.isDenomBase;
     const baseAddressInRtk = tradeData.baseToken.address;
     const quoteAddressInRtk = tradeData.quoteToken.address;
 
@@ -138,64 +138,64 @@ export default function PageHeader(props: HeaderPropsIF) {
         }
     }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
 
-    // const poolPriceDisplayWithDenom = poolPriceDisplay
-    //     ? isDenomBase
-    //         ? 1 / poolPriceDisplay
-    //         : poolPriceDisplay
-    //     : undefined;
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? isDenomBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : undefined;
 
-    // const truncatedPoolPrice =
-    //     !poolPriceDisplayWithDenom ||
-    //     poolPriceDisplayWithDenom === Infinity ||
-    //     poolPriceDisplayWithDenom === 0
-    //         ? ''
-    //         : poolPriceDisplayWithDenom < 2
-    //         ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
+    const truncatedPoolPrice =
+        !poolPriceDisplayWithDenom ||
+        poolPriceDisplayWithDenom === Infinity ||
+        poolPriceDisplayWithDenom === 0
+            ? ''
+            : poolPriceDisplayWithDenom < 2
+            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
-    // useEffect(() => {
-    //     const path = location.pathname;
+    useEffect(() => {
+        const path = location.pathname;
 
-    //     const pathNoLeadingSlash = path.slice(1);
+        const pathNoLeadingSlash = path.slice(1);
 
-    //     const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
-    //     const isAddressHex =
-    //         (pathNoLeadingSlash?.startsWith('0x') &&
-    //             pathNoLeadingSlash?.length == 42) ||
-    //         (pathNoLeadingSlash?.startsWith('account/0x') &&
-    //             pathNoLeadingSlash?.length == 50);
+        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+        const isAddressHex =
+            (pathNoLeadingSlash?.startsWith('0x') &&
+                pathNoLeadingSlash?.length == 42) ||
+            (pathNoLeadingSlash?.startsWith('account/0x') &&
+                pathNoLeadingSlash?.length == 50);
 
-    //     const isPathValidAddress = path && (isAddressEns || isAddressHex);
+        const isPathValidAddress = path && (isAddressEns || isAddressHex);
 
-    //     if (pathNoLeadingSlash === 'account') {
-    //         document.title = 'My Account ~ ambient.finance';
-    //     } else if (isPathValidAddress) {
-    //         const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
-    //         const ensNameOrAddressTruncated = isAddressEns
-    //             ? pathNoPrefix.length > 15
-    //                 ? trimString(pathNoPrefix, 10, 3, '…')
-    //                 : pathNoPrefix
-    //             : trimString(pathNoPrefix, 6, 0, '…');
-    //         document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
-    //     } else if (
-    //         location.pathname.includes('swap') ||
-    //         location.pathname.includes('trade')
-    //     ) {
-    //         document.title = isDenomBase
-    //             ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
-    //             : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
-    //     } else if (location.pathname.includes('chat')) {
-    //         document.title = 'Chat ~ ambient.finance';
-    //     } else {
-    //         document.title = 'Home ~ ambient.finance';
-    //     }
-    // }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
+        if (pathNoLeadingSlash === 'account') {
+            document.title = 'My Account ~ ambient.finance';
+        } else if (isPathValidAddress) {
+            const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            const ensNameOrAddressTruncated = isAddressEns
+                ? pathNoPrefix.length > 15
+                    ? trimString(pathNoPrefix, 10, 3, '…')
+                    : pathNoPrefix
+                : trimString(pathNoPrefix, 6, 0, '…');
+            document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
+        } else if (
+            location.pathname.includes('swap') ||
+            location.pathname.includes('trade')
+        ) {
+            document.title = isDenomBase
+                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
+        } else if (location.pathname.includes('chat')) {
+            document.title = 'Chat ~ ambient.finance';
+        } else {
+            document.title = 'Home ~ ambient.finance';
+        }
+    }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'

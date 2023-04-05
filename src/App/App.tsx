@@ -32,7 +32,9 @@ import {
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
 } from '../utils/state/graphDataSlice';
+
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
+
 import useWebSocket from 'react-use-websocket';
 import {
     sortBaseQuoteTokens,
@@ -41,8 +43,8 @@ import {
     toDisplayQty,
 } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
+
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
-import { Helmet } from 'react-helmet-async';
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
@@ -3133,10 +3135,6 @@ export default function App() {
 
     return (
         <>
-            <Helmet>
-                <title>Wololo</title>
-                <meta property='og:title' content='Ambient Finance' />
-            </Helmet>
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
