@@ -8,7 +8,7 @@ import {
     TextOnlyTooltip,
 } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { FiExternalLink } from 'react-icons/fi';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
@@ -262,7 +262,7 @@ export default function TransactionRow(props: propsIF) {
         </li>
     );
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const handleWalletClick = () => {
         dispatch(
@@ -271,11 +271,16 @@ export default function TransactionRow(props: propsIF) {
                 loadingStatus: true,
             }),
         );
-        navigate(
-            `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`,
-        );
+
+        const accountUrl = `/${
+            isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+        }`;
+        window.open(accountUrl);
+        // navigate(
+        //     `/${
+        //         isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+        //     }`,
+        // );
     };
 
     const walletWithTooltip = (

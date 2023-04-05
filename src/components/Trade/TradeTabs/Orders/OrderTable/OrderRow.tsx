@@ -498,15 +498,19 @@ export default function OrderRow(props: propsIF) {
                     loadingStatus: true,
                 }),
             );
-            navigate(
-                `/${
-                    isOwnerActiveAccount
-                        ? 'account'
-                        : ensName
-                        ? ensName
-                        : ownerId
-                }`,
-            );
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
+            // navigate(
+            //     `/${
+            //         isOwnerActiveAccount
+            //             ? 'account'
+            //             : ensName
+            //             ? ensName
+            //             : ownerId
+            //     }`,
+            // );
         } else {
             openDetailsModal();
         }
