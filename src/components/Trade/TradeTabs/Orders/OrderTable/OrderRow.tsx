@@ -7,7 +7,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
@@ -246,7 +246,6 @@ export default function OrderRow(props: propsIF) {
             {'$' + usdValue}
         </li>
     );
-    const navigate = useNavigate();
 
     const walletWithTooltip = (
         <TextOnlyTooltip
@@ -290,23 +289,6 @@ export default function OrderRow(props: propsIF) {
             leaveDelay={0}
         >
             <li
-                // onClick={() => {
-                //     dispatch(
-                //         setDataLoadingStatus({
-                //             datasetName: 'lookupUserTxData',
-                //             loadingStatus: true,
-                //         }),
-                //     );
-                //     navigate(
-                //         `/${
-                //             isOwnerActiveAccount
-                //                 ? 'account'
-                //                 : ensName
-                //                 ? ensName
-                //                 : ownerId
-                //         }`,
-                //     );
-                // }}
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.hover_style}`}
@@ -502,15 +484,6 @@ export default function OrderRow(props: propsIF) {
                 isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
             }`;
             window.open(accountUrl);
-            // navigate(
-            //     `/${
-            //         isOwnerActiveAccount
-            //             ? 'account'
-            //             : ensName
-            //             ? ensName
-            //             : ownerId
-            //     }`,
-            // );
         } else {
             openDetailsModal();
         }
