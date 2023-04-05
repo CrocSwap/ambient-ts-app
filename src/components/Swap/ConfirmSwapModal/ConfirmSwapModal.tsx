@@ -44,7 +44,6 @@ export default function ConfirmSwapModal(props: propsIF) {
     const {
         initiateSwapMethod,
         isDenomBase,
-        poolPriceDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         newSwapTransactionHash,
@@ -95,24 +94,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-
-    const displayPriceWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : undefined;
-    // eslint-disable-next-line
-    const displayConversionRate = displayPriceWithDenom
-        ? displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '...';
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -202,8 +183,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}. Please check the 'Metamask' extension in your browser for notifications.
-            `}
+            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}.`}
         />
     );
 

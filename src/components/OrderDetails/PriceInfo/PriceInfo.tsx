@@ -55,16 +55,6 @@ export default function PriceInfo(props: propsIF) {
         usdValue,
         truncatedDisplayPriceDenomByMoneyness,
     } = props;
-    // const dispatch = useAppDispatch();
-
-    // console.log({ isOrderFilled });
-    // console.log({ isBid });
-    // console.log({ quoteDisplayFrontend });
-    // console.log({ baseDisplayFrontend });
-    // console.log({ approximateBuyQtyTruncated });
-    // console.log({ approximateSellQtyTruncated });
-    // console.log({ truncatedDisplayPrice });
-
     const { pathname } = useLocation();
 
     const isOnTradeRoute = pathname.includes('trade');

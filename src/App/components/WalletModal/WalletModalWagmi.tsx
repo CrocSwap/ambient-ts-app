@@ -13,6 +13,7 @@ import braveLogo from '../../../assets/images/logos/brave_lion.svg';
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
 import { checkBlacklist } from '../../../utils/data/blacklist';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -25,7 +26,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const { connect, connectors, error, isLoading, pendingConnector } =
         useConnect({
             onSettled(data, error) {
-                if (error) console.log({ error });
+                if (error) console.error({ error });
                 const connectedAddress = data?.account;
                 const isBlacklisted = connectedAddress
                     ? checkBlacklist(connectedAddress)
@@ -103,8 +104,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                     key={connector.id}
                     action={() => {
                         connect({ connector });
-                        // handleMetamaskAuthentication();
-                        console.log({ connector });
+                        IS_LOCAL_ENV && console.debug({ connector });
                         connector.name.toLowerCase() === 'metamask'
                             ? (() => {
                                   setPage('metamaskPending');
@@ -113,7 +113,6 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                             : connector.name === 'Coinbase Wallet'
                             ? setPage('coinbaseWalletPending')
                             : setPage('metamaskPending');
-                        // acceptToS();
                     }}
                     logo={
                         connector.name.toLowerCase() === 'metamask'

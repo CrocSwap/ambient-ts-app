@@ -16,6 +16,7 @@ interface MessageInputProps {
     room: string;
     currentUser: string;
     ensName: string;
+    appPage?: boolean;
 }
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -191,6 +192,7 @@ export default function MessageInput(
                     onChange={onChangeMessage}
                     autoComplete={'off'}
                     tabIndex={-1}
+                    autoFocus={props.appPage}
                 />
 
                 <BsEmojiSmileFill

@@ -13,6 +13,7 @@ import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResu
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
+import { ackTokensMethodsIF } from '../../../hooks/useAckTokens';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
@@ -30,6 +31,7 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     searchedTxs: TransactionIF[];
     searchedLimitOrders: LimitOrderIF[];
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
@@ -49,6 +51,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setIsShowAllEnabled,
         searchedTxs,
         searchedLimitOrders,
+        ackTokens,
     } = props;
 
     return (
@@ -60,6 +63,7 @@ export default function SidebarSearchResults(props: propsIF) {
                 tokenPair={tokenPair}
                 chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
+                ackTokens={ackTokens}
             />
             {isConnected && (
                 <>

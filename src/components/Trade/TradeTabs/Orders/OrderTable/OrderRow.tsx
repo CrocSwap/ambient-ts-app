@@ -17,7 +17,7 @@ import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -137,7 +137,7 @@ export default function OrderRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
     // eslint-disable-next-line
     const usernameStyleModule =
         isOwnerActiveAccount && isShowAllEnabled
@@ -151,7 +151,7 @@ export default function OrderRow(props: propsIF) {
             : null;
 
     const openDetailsModal = () => {
-        console.log({ limitOrder });
+        IS_LOCAL_ENV && console.debug({ limitOrder });
 
         openGlobalModal(
             <OrderDetails
@@ -163,6 +163,7 @@ export default function OrderRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };
@@ -170,8 +171,6 @@ export default function OrderRow(props: propsIF) {
         limitOrder.limitOrderIdentifier === currentPositionActive
             ? `order-${limitOrder.limitOrderIdentifier}`
             : '';
-
-    // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
 
@@ -229,8 +228,7 @@ export default function OrderRow(props: propsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
-                style={{ fontFamily: 'monospace' }}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
             </li>
@@ -241,8 +239,8 @@ export default function OrderRow(props: propsIF) {
         <li
             onClick={openDetailsModal}
             data-label='value'
-            className='base_color'
-            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            className={sellOrderStyle}
+            style={{ textAlign: 'right' }}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
@@ -313,7 +311,7 @@ export default function OrderRow(props: propsIF) {
                 }}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.hover_style}`}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </li>
@@ -416,7 +414,6 @@ export default function OrderRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                 }}
             >
                 {baseDisplay}
@@ -439,7 +436,6 @@ export default function OrderRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                 }}
             >
                 {quoteDisplay}
@@ -478,9 +474,7 @@ export default function OrderRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                    {elapsedTimeString}
-                </p>
+                <p className='base_color'>{elapsedTimeString}</p>
             </li>
         </TextOnlyTooltip>
     ) : (
@@ -490,9 +484,7 @@ export default function OrderRow(props: propsIF) {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
-            <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                {elapsedTimeString}
-            </p>
+            <p className='base_color'>{elapsedTimeString}</p>
         </li>
     );
 
@@ -556,7 +548,7 @@ export default function OrderRow(props: propsIF) {
                 <li
                     onClick={openDetailsModal}
                     data-label='price'
-                    className={priceStyle}
+                    className={priceStyle + ' ' + sellOrderStyle}
                     style={{ textAlign: 'right' }}
                     onMouseEnter={handleRowMouseDown}
                     onMouseLeave={handleRowMouseOut}
@@ -565,7 +557,7 @@ export default function OrderRow(props: propsIF) {
                         ? (
                               <p className={`${styles.align_right} `}>
                                   <span>{priceCharacter}</span>
-                                  <span style={{ fontFamily: 'monospace' }}>
+                                  <span>
                                       {truncatedDisplayPriceDenomByMoneyness}
                                   </span>
                               </p>
@@ -573,9 +565,7 @@ export default function OrderRow(props: propsIF) {
                         : (
                               <p className={`${styles.align_right} `}>
                                   <span>{priceCharacter}</span>
-                                  <span style={{ fontFamily: 'monospace' }}>
-                                      {truncatedDisplayPrice}
-                                  </span>
+                                  <span>{truncatedDisplayPrice}</span>
                               </p>
                           ) || '…'}
                 </li>
@@ -632,7 +622,6 @@ export default function OrderRow(props: propsIF) {
                     <div
                         className={styles.token_qty}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -643,7 +632,6 @@ export default function OrderRow(props: propsIF) {
                     <div
                         className={styles.token_qty}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >

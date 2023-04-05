@@ -27,6 +27,7 @@ import {
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -92,16 +93,17 @@ export default function OrdersMenu(props: propsIF) {
     function handleCopyOrder() {
         handlePulseAnimation ? handlePulseAnimation('limitOrder') : null;
         dispatch(setLimitTickCopied(true));
-        // console.log('limit order copy clicked');
-        console.log({ tradeData });
-        console.log({ limitOrder });
+        if (IS_LOCAL_ENV) {
+            console.debug({ tradeData });
+            console.debug({ limitOrder });
+        }
         const shouldMovePrimaryQuantity =
             tradeData.tokenA.address.toLowerCase() ===
             (limitOrder.isBid
                 ? limitOrder.quote.toLowerCase()
                 : limitOrder.base.toLowerCase());
 
-        console.log({ shouldMovePrimaryQuantity });
+        IS_LOCAL_ENV && console.debug({ shouldMovePrimaryQuantity });
         const shouldClearNonPrimaryQty =
             tradeData.limitTick !== limitOrder.askTick &&
             (tradeData.isTokenAPrimary
@@ -118,8 +120,7 @@ export default function OrdersMenu(props: propsIF) {
                 ? true
                 : false);
         if (shouldMovePrimaryQuantity) {
-            console.log('flipping primary');
-            // setTimeout(() => {
+            IS_LOCAL_ENV && console.debug('flipping primary');
             const sellQtyField = document.getElementById(
                 'sell-limit-quantity',
             ) as HTMLInputElement;
@@ -164,8 +165,7 @@ export default function OrdersMenu(props: propsIF) {
                     buyQtyField.value = '';
                 }
             }
-            console.log('resetting');
-            // dispatch(setPrimaryQuantity(''));
+            IS_LOCAL_ENV && console.debug('resetting');
         }
         setTimeout(() => {
             dispatch(
@@ -174,10 +174,6 @@ export default function OrdersMenu(props: propsIF) {
                 ),
             );
         }, 500);
-
-        // dispatch(
-        //     setIsTokenAPrimary((limitOrder.isBid && limitOrder.inBaseQty) || (!limitOrder.isBid && !limitOrder.inBaseQty)),
-        // );
 
         setShowDropdownMenu(false);
     }
@@ -225,6 +221,7 @@ export default function OrdersMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
 

@@ -85,8 +85,8 @@ export const useToken = (
                 // limit recursive calls to 100
                 setTimeout(() => checkForTokenLists(limiter + 1), 250);
             } else {
-                // console warning if max recursion depth is reached
-                console.warn('maximum recursion depth reached');
+                // log to console if max recursion depth is reached
+                console.error('maximum recursion depth reached');
             }
         };
         checkForTokenLists();

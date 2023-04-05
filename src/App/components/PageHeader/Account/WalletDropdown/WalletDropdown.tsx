@@ -3,7 +3,6 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
-import FocusTrap from 'focus-trap-react';
 import Blockies from 'react-blockies';
 
 interface WalletDropdownPropsIF {
@@ -125,33 +124,18 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const ariaLabel = `Wallet menu for ${ensName ? ensName : accountAddress}`;
 
-    // if (!showWalletDropdown) return null
-    // console.log({showWalletDropdown})
-
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
-            <div
-                className={walletWrapperStyle}
-                tabIndex={0}
-                aria-label={ariaLabel}
-            >
-                {nameContent}
-                <section className={styles.wallet_content}>
-                    <TokenAmountDisplay
-                        amount={ethAmount}
-                        usdValue={ethValue}
-                        symbol={'ETH'}
-                        logo={
-                            'https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'
-                        }
-                    />
-                </section>
-                {actionContent}
-            </div>
-        </FocusTrap>
+        <div className={walletWrapperStyle} tabIndex={0} aria-label={ariaLabel}>
+            {nameContent}
+            <section className={styles.wallet_content}>
+                <TokenAmountDisplay
+                    amount={ethAmount}
+                    usdValue={ethValue}
+                    symbol={'ETH'}
+                    logo={'https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'}
+                />
+            </section>
+            {actionContent}
+        </div>
     );
 }
