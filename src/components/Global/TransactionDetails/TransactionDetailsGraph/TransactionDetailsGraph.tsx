@@ -171,8 +171,8 @@ export default function TransactionDetailsGraph(
         if (scaleData !== undefined) {
             const lineSeries = d3fc
                 .seriesSvgLine()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .crossValue((d: any) => d.time * 1000)
                 .mainValue((d: any) =>
                     (
@@ -194,8 +194,8 @@ export default function TransactionDetailsGraph(
             const priceLine = d3fc
                 .annotationSvgLine()
                 .value((d: any) => d)
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale);
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
 
             priceLine.decorate((selection: any) => {
                 selection.enter().select('g.right-handle').remove();
@@ -209,8 +209,8 @@ export default function TransactionDetailsGraph(
 
             const crossPoint = d3fc
                 .seriesSvgPoint()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .crossValue((d: any) => d.x)
                 .mainValue((d: any) => d.y)
                 .size(400)
@@ -225,8 +225,8 @@ export default function TransactionDetailsGraph(
 
             const horizontalBand = d3fc
                 .annotationSvgBand()
-                .xScale(scaleData.xScale)
-                .yScale(scaleData.yScale)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((selection: any) => {
@@ -616,7 +616,7 @@ export default function TransactionDetailsGraph(
             if (graphData.length > 0) {
                 const xAxis = d3fc
                     .axisBottom()
-                    .scale(scaleData.xScale)
+                    .scale(scaleData?.xScale)
                     .ticks(5);
 
                 // const priceJoin = d3fc.dataJoin('g', 'priceJoin');
@@ -631,9 +631,12 @@ export default function TransactionDetailsGraph(
                 d3.select(d3PlotGraph.current).on(
                     'measure',
                     function (event: any) {
-                        scaleData.xScale.range([0, event.detail.width]);
-                        scaleData.xScaleOriginal.range([0, event.detail.width]);
-                        scaleData.yScale.range([event.detail.height, 0]);
+                        scaleData?.xScale.range([0, event.detail.width]);
+                        scaleData?.xScaleOriginal.range([
+                            0,
+                            event.detail.width,
+                        ]);
+                        scaleData?.yScale.range([event.detail.height, 0]);
                     },
                 );
 
@@ -643,18 +646,18 @@ export default function TransactionDetailsGraph(
 
                 //     const zoom = d3.zoom().on('zoom', (event: any) => {
                 //         if (event.sourceEvent.type === 'wheel') {
-                //             scaleData.xScale.domain(
-                //                 event.transform.rescaleX(scaleData.xScaleOriginal).domain(),
+                //             scaleData?.xScale.domain(
+                //                 event.transform.rescaleX(scaleData?.xScaleOriginal).domain(),
                 //             );
                 //         } else {
-                //             const domainX = scaleData.xScale.domain();
+                //             const domainX = scaleData?.xScale.domain();
                 //             const linearX = d3
                 //                 .scaleTime()
-                //                 .domain(scaleData.xScale.range())
+                //                 .domain(scaleData?.xScale.range())
                 //                 .range([0, domainX[1] - domainX[0]]);
 
                 //             const deltaX = linearX(-event.sourceEvent.movementX);
-                //             scaleData.xScale.domain([
+                //             scaleData?.xScale.domain([
                 //                 new Date(domainX[0].getTime() + deltaX),
                 //                 new Date(domainX[1].getTime() + deltaX),
                 //             ]);
@@ -763,7 +766,7 @@ export default function TransactionDetailsGraph(
 
                         d3.select(d3Yaxis.current)
                             .select('svg')
-                            .call(scaleData.yAxis);
+                            .call(scaleData?.yAxis);
                         d3.select(d3Xaxis.current).select('svg').call(xAxis);
                     },
                 );
