@@ -127,7 +127,7 @@ export default function Sidebar(props: propsIF) {
         txsByUser,
         limitsByUser,
         ackTokens,
-        topPools
+        topPools,
     } = props;
 
     const location = useLocation();

@@ -1089,7 +1089,7 @@ export default function Chart(props: propsIF) {
                             if (
                                 res.find(
                                     (item: any) =>
-                                        item.date.getTime() === d.getTime(),
+                                        item.date?.getTime() === d.getTime(),
                                 )?.style
                             ) {
                                 return 'startDate';
@@ -3914,7 +3914,7 @@ export default function Chart(props: propsIF) {
                 }
                 if (
                     res.find((item: any) => {
-                        return item.date.getTime() === d?.getTime();
+                        return item.date?.getTime() === d?.getTime();
                     })?.style
                 ) {
                     context.font = '900 12px Arial';

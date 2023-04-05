@@ -257,6 +257,7 @@ export default function App() {
         }
         if (!account) {
             setCrocEnv(undefined);
+            setIsShowAllEnabled(true);
         }
     }, [account]);
 
