@@ -357,6 +357,7 @@ export default function TransactionRow(props: propsIF) {
         tx.base !== ZERO_ADDRESS
             ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
             : [`${tx.quoteSymbol}: ${tx.quote}`];
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -373,24 +374,24 @@ export default function TransactionRow(props: propsIF) {
         tx.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(

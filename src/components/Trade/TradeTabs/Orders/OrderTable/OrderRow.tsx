@@ -6,10 +6,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
+import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -344,6 +341,7 @@ export default function OrderRow(props: propsIF) {
                   `${limitOrder.quoteSymbol}: ${limitOrder.quote}`,
               ]
             : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -356,24 +354,24 @@ export default function OrderRow(props: propsIF) {
         limitOrder.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     const positionTime =
