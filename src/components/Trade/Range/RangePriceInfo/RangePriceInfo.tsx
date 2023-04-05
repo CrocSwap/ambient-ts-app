@@ -145,6 +145,8 @@ export default function RangePriceInfo(props: propsIF) {
         [tokenBAddress, chainId],
     );
 
+    const isEitherTokenStable = isStableTokenA || isStableTokenB;
+
     const updatePoolPriceUsdEquivalent = () => {
         const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
 
@@ -291,10 +293,6 @@ export default function RangePriceInfo(props: propsIF) {
 
     // JSX frag for lowest price in range
 
-    const isNonDenomTokenStable = !isDenomTokenA
-        ? isStableTokenA
-        : isStableTokenB;
-
     const denomTokenDollarEquivalentExists = isDenomTokenA
         ? tokenAMainnetPrice !== undefined
         : tokenBMainnetPrice !== undefined;
@@ -304,7 +302,7 @@ export default function RangePriceInfo(props: propsIF) {
         : tokenBMainnetPrice !== undefined;
 
     const minimumPrice =
-        denomTokenDollarEquivalentExists && !isNonDenomTokenStable ? (
+        denomTokenDollarEquivalentExists && !isEitherTokenStable ? (
             <DefaultTooltip
                 interactive
                 title={`${minPriceUsdEquivalent} USD per ${
@@ -336,7 +334,7 @@ export default function RangePriceInfo(props: propsIF) {
 
     // JSX frag for highest price in range
     const maximumPrice =
-        nonDenomTokenDollarEquivalentExists && !isNonDenomTokenStable ? (
+        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
             <DefaultTooltip
                 interactive
                 title={`${maxPriceUsdEquivalent} USD per ${
@@ -368,7 +366,7 @@ export default function RangePriceInfo(props: propsIF) {
 
     // JSX frag for current pool price
     const currentPoolPrice =
-        nonDenomTokenDollarEquivalentExists && !isNonDenomTokenStable ? (
+        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
             <DefaultTooltip
                 interactive
                 title={`${poolPriceUsdEquivalent} USD per ${
