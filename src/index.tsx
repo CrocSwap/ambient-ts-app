@@ -53,12 +53,14 @@ const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement,
 );
 
+const helmetContext = {};
+
 root.render(
     <React.StrictMode>
         <WagmiConfig client={client}>
             <Provider store={store}>
                 <BrowserRouter>
-                    <HelmetProvider>
+                    <HelmetProvider context={helmetContext}>
                         <App />
                     </HelmetProvider>
                 </BrowserRouter>
