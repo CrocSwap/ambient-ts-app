@@ -6,11 +6,8 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
@@ -217,6 +214,7 @@ export default function OrderRow(props: propsIF) {
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+                        fontFamily: 'monospace',
                     }}
                 >
                     {posHash}
@@ -249,7 +247,6 @@ export default function OrderRow(props: propsIF) {
             {'$' + usdValue}
         </li>
     );
-    const navigate = useNavigate();
 
     const walletWithTooltip = (
         <TextOnlyTooltip
@@ -293,23 +290,7 @@ export default function OrderRow(props: propsIF) {
             leaveDelay={0}
         >
             <li
-                onClick={() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: true,
-                        }),
-                    );
-                    navigate(
-                        `/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`,
-                    );
-                }}
+                onClick={openDetailsModal}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase' }}
@@ -344,6 +325,7 @@ export default function OrderRow(props: propsIF) {
                   `${limitOrder.quoteSymbol}: ${limitOrder.quote}`,
               ]
             : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -356,24 +338,24 @@ export default function OrderRow(props: propsIF) {
         limitOrder.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     const positionTime =
@@ -490,7 +472,7 @@ export default function OrderRow(props: propsIF) {
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
+    // eslint-disable-next-line
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -503,15 +485,6 @@ export default function OrderRow(props: propsIF) {
                 isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
             }`;
             window.open(accountUrl);
-            // navigate(
-            //     `/${
-            //         isOwnerActiveAccount
-            //             ? 'account'
-            //             : ensName
-            //             ? ensName
-            //             : ownerId
-            //     }`,
-            // );
         } else {
             openDetailsModal();
         }
@@ -536,13 +509,12 @@ export default function OrderRow(props: propsIF) {
             {!showColumns && IDWithTooltip}
             {!isOnPortfolioPage && !showColumns && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className={`base_color ${styles.hover_style}`}>
                         {posHashTruncated}
                     </p>{' '}
                     <p
                         className={`${usernameStyle} ${styles.hover_style}`}
-                        onClick={handleAccountClick}
                         style={{ textTransform: 'lowercase' }}
                     >
                         {userNameToDisplay}
