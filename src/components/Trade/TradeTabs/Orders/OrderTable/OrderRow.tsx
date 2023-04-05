@@ -671,6 +671,7 @@ export default function OrderRow(props: propsIF) {
                         aria-label='View wallet.'
                     >
                         View Wallet
+                        <FiExternalLink />
                     </button>
                 </li>
             )}

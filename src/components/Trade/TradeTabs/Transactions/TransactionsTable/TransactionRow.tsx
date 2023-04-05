@@ -770,6 +770,7 @@ export default function TransactionRow(props: propsIF) {
                         aria-label='View wallet.'
                     >
                         View Wallet
+                        <FiExternalLink />
                     </button>
                 </li>
             )}

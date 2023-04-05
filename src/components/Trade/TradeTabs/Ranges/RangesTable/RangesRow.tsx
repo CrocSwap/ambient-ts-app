@@ -24,6 +24,7 @@ import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -738,6 +739,7 @@ export default function RangesRow(props: propsIF) {
                         aria-label='View wallet.'
                     >
                         View Wallet
+                        <FiExternalLink />
                     </button>
                 </li>
             )}

@@ -235,11 +235,17 @@
     cursor: pointer;
     font-size: 10px;
     color: var(--text-grey-light);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
 }
-.view_wallet_link:hover{
+.view_wallet_link:hover, .view_wallet_link:hover .view_wallet_link svg{
     color: var(--text-grey-white);
 
 }
+
 
 @media only screen and (max-width: 768px) {
     .header li {
