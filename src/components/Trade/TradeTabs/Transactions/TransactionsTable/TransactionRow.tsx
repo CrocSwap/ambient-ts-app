@@ -240,7 +240,7 @@ export default function TransactionRow(props: propsIF) {
             leaveDelay={0}
         >
             <li
-                onClick={handleOpenExplorer}
+                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
@@ -263,7 +263,7 @@ export default function TransactionRow(props: propsIF) {
     );
 
     const navigate = useNavigate();
-
+    // eslint-disable-next-line
     const handleWalletClick = () => {
         dispatch(
             setDataLoadingStatus({
@@ -280,7 +280,8 @@ export default function TransactionRow(props: propsIF) {
 
     const walletWithTooltip = (
         <li
-            onClick={handleWalletClick}
+            // onClick={handleWalletClick}
+            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
