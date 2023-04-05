@@ -184,7 +184,7 @@ export default function RangePriceInfo(props: propsIF) {
         tokenAAddress + tokenBAddress,
     ]);
 
-    const updateMainnetPricesASYNC = async () => {
+    const updateMainnetPricesAsync = async () => {
         const tokenAMainnetEquivalent =
             chainId === '0x1'
                 ? tokenAAddress
@@ -225,7 +225,7 @@ export default function RangePriceInfo(props: propsIF) {
     useEffect(() => {
         setUserFlippedMaxMinDisplay(false);
 
-        updateMainnetPricesASYNC();
+        updateMainnetPricesAsync();
     }, [tokenAAddress + tokenBAddress, isDenomTokenA]);
 
     useEffect(() => {
@@ -291,84 +291,110 @@ export default function RangePriceInfo(props: propsIF) {
 
     // JSX frag for lowest price in range
 
-    const denomTokenEquivalentExists = isDenomTokenA
-        ? tokenAMainnetPrice !== undefined && !isStableTokenA
-        : tokenBMainnetPrice !== undefined && !isStableTokenB;
+    const isNonDenomTokenStable = !isDenomTokenA
+        ? isStableTokenA
+        : isStableTokenB;
 
-    const minimumPrice = denomTokenEquivalentExists ? (
-        <DefaultTooltip
-            interactive
-            title={`${minPriceUsdEquivalent} USD per ${
-                isDenomBase ? baseToken.symbol : quoteToken.symbol
-            } `}
-            // title={`Approx. USD value: ${minPriceUsdEquivalent.slice(1)}`}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            <div
-                className={styles.price_display}
-                onClick={handleMinMaxPriceClick}
+    const denomTokenDollarEquivalentExists = isDenomTokenA
+        ? tokenAMainnetPrice !== undefined
+        : tokenBMainnetPrice !== undefined;
+
+    const nonDenomTokenDollarEquivalentExists = !isDenomTokenA
+        ? tokenAMainnetPrice !== undefined
+        : tokenBMainnetPrice !== undefined;
+
+    const minimumPrice =
+        denomTokenDollarEquivalentExists && !isNonDenomTokenStable ? (
+            <DefaultTooltip
+                interactive
+                title={`${minPriceUsdEquivalent} USD per ${
+                    isDenomBase ? baseToken.symbol : quoteToken.symbol
+                } `}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
             >
+                <div
+                    className={styles.price_display}
+                    onClick={handleMinMaxPriceClick}
+                >
+                    <h4 className={styles.price_title}>Min Price</h4>
+                    <span className={styles.min_price}>
+                        {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
+                    </span>
+                </div>
+            </DefaultTooltip>
+        ) : (
+            <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Min Price</h4>
                 <span className={styles.min_price}>
                     {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
                 </span>
             </div>
-        </DefaultTooltip>
-    ) : (
-        <div className={styles.price_display} style={{ cursor: 'default' }}>
-            <h4 className={styles.price_title}>Min Price</h4>
-            <span className={styles.min_price}>
-                {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
-            </span>
-        </div>
-    );
+        );
 
     // JSX frag for highest price in range
-    const maximumPrice = denomTokenEquivalentExists ? (
-        <DefaultTooltip
-            interactive
-            title={`${maxPriceUsdEquivalent} USD per ${
-                isDenomBase ? baseToken.symbol : quoteToken.symbol
-            } `}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            <div
-                className={styles.price_display}
-                onClick={handleMinMaxPriceClick}
+    const maximumPrice =
+        nonDenomTokenDollarEquivalentExists && !isNonDenomTokenStable ? (
+            <DefaultTooltip
+                interactive
+                title={`${maxPriceUsdEquivalent} USD per ${
+                    isDenomBase ? baseToken.symbol : quoteToken.symbol
+                } `}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
             >
+                <div
+                    className={styles.price_display}
+                    onClick={handleMinMaxPriceClick}
+                >
+                    <h4 className={styles.price_title}>Max Price</h4>
+                    <span className={styles.max_price}>
+                        {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
+                    </span>
+                </div>
+            </DefaultTooltip>
+        ) : (
+            <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Max Price</h4>
                 <span className={styles.max_price}>
                     {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
                 </span>
             </div>
-        </DefaultTooltip>
-    ) : (
-        <div className={styles.price_display} style={{ cursor: 'default' }}>
-            <h4 className={styles.price_title}>Max Price</h4>
-            <span className={styles.max_price}>
-                {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
-            </span>
-        </div>
-    );
+        );
 
     // JSX frag for current pool price
-    const currentPoolPrice = denomTokenEquivalentExists ? (
-        <DefaultTooltip
-            interactive
-            title={`${poolPriceUsdEquivalent} USD per ${
-                isDenomBase ? baseToken.symbol : quoteToken.symbol
-            } `}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
+    const currentPoolPrice =
+        nonDenomTokenDollarEquivalentExists && !isNonDenomTokenStable ? (
+            <DefaultTooltip
+                interactive
+                title={`${poolPriceUsdEquivalent} USD per ${
+                    isDenomBase ? baseToken.symbol : quoteToken.symbol
+                } `}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div className={styles.price_display}>
+                    <h4 className={styles.price_title}>Current Price</h4>
+                    <span
+                        className={styles.current_price}
+                        onClick={() => {
+                            dispatch(toggleDidUserFlipDenom());
+                            setUserFlippedMaxMinDisplay(false);
+                        }}
+                    >
+                        {currentPrice === 'Infinity' || !currentPrice
+                            ? '…'
+                            : `${currentPrice}`}
+                    </span>
+                </div>
+            </DefaultTooltip>
+        ) : (
             <div className={styles.price_display}>
                 <h4 className={styles.price_title}>Current Price</h4>
                 <span
@@ -383,23 +409,7 @@ export default function RangePriceInfo(props: propsIF) {
                         : `${currentPrice}`}
                 </span>
             </div>
-        </DefaultTooltip>
-    ) : (
-        <div className={styles.price_display}>
-            <h4 className={styles.price_title}>Current Price</h4>
-            <span
-                className={styles.current_price}
-                onClick={() => {
-                    dispatch(toggleDidUserFlipDenom());
-                    setUserFlippedMaxMinDisplay(false);
-                }}
-            >
-                {currentPrice === 'Infinity' || !currentPrice
-                    ? '…'
-                    : `${currentPrice}`}
-            </span>
-        </div>
-    );
+        );
 
     return (
         <div className={styles.price_info_container}>
