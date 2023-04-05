@@ -245,9 +245,20 @@
     color: var(--text-grey-white);
 
 }
-
-
+.view_wallet_link p{
+    display: flex;
+}
+.view_wallet_link svg:first-of-type{
+    display: none;
+}
 @media only screen and (max-width: 768px) {
+
+    .view_wallet_link p{
+        display: none;
+    }
+    .view_wallet_link svg:first-of-type{
+        display: flex;
+    }
     .header li {
         font-weight: 300;
         font-size: 8px;

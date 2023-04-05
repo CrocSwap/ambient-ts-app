@@ -21,6 +21,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { BiWalletAlt } from 'react-icons/bi';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -670,7 +671,8 @@ export default function OrderRow(props: propsIF) {
                         tabIndex={0}
                         aria-label='View wallet.'
                     >
-                        View Wallet
+                        <p>View Wallet</p>
+                        <BiWalletAlt color='#cdc1ff' />
                         <FiExternalLink />
                     </button>
                 </li>

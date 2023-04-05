@@ -20,7 +20,7 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { ChainSpec } from '@crocswap-libs/sdk';
-
+import { BiWalletAlt } from 'react-icons/bi';
 interface propsIF {
     account: string;
     tx: TransactionIF;
@@ -769,7 +769,8 @@ export default function TransactionRow(props: propsIF) {
                         tabIndex={0}
                         aria-label='View wallet.'
                     >
-                        View Wallet
+                        <p>View Wallet</p>
+                        <BiWalletAlt color='#cdc1ff' />
                         <FiExternalLink />
                     </button>
                 </li>
