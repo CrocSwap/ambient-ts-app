@@ -3,7 +3,6 @@ import styles from './BypassConfirmRangeButton.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 import { useState, Dispatch, SetStateAction } from 'react';
-// import { CrocImpact } from '@crocswap-libs/sdk';
 
 import {
     CircleLoader,
@@ -17,7 +16,6 @@ import TransactionException from '../../../Global/TransactionException/Transacti
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
-// import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
 
 interface propsIF {
     newRangeTransactionHash: string;
@@ -25,25 +23,7 @@ interface propsIF {
     tokenPair: TokenPairIF;
     resetConfirmation: () => void;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
-    // initiateSwapMethod: () => void;
     sendTransaction: () => Promise<void>;
-    // poolPriceDisplay: number | undefined;
-    // isDenomBase: boolean;
-    // baseTokenSymbol: string;
-    // quoteTokenSymbol: string;
-    // priceImpact: CrocImpact | undefined;
-    // onClose: () => void;
-    // txErrorMessage: string;
-    // showConfirmation: boolean;
-    // slippageTolerancePercentage: number;
-    // effectivePrice: number;
-    // isSellTokenBase: boolean;
-    // bypassConfirm: boolean;
-    // toggleBypassConfirm: (item: string, pref: boolean) => void;
-    // sellQtyString: string;
-    // buyQtyString: string;
-    // setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
-    // showBypassConfirm: boolean;
 }
 export default function BypassConfirmRangeButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -51,8 +31,6 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     const {
         newRangeTransactionHash,
         txErrorCode,
-        // sellQtyString,
-        // buyQtyString,
         tokenPair,
         resetConfirmation,
         setShowBypassConfirmButton,
@@ -60,15 +38,9 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     } = props;
 
     const transactionApproved = newRangeTransactionHash !== '';
-    // console.log({ txErrorCode });
-    // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    // const dataTokenA = tokenPair.dataTokenA;
-    // const dataTokenB = tokenPair.dataTokenB;
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
 
@@ -84,9 +56,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             noAnimation
             content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
                 tokenA.symbol
-            } and ${tokenBQty ? tokenBQty : '0'} ${
-                tokenB.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
+            } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}.`}
         />
     );
 
@@ -138,57 +108,45 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             noAnimation
         />
     );
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : lastReceipt && !isLastReceiptSuccess
-            ? transactionFailed
-            : confirmSendMessage;
+    const confirmationDisplay = isTransactionException
+        ? transactionException
+        : isTransactionDenied
+        ? transactionDenied
+        : transactionApproved
+        ? transactionSubmitted
+        : lastReceipt && !isLastReceiptSuccess
+        ? transactionFailed
+        : confirmSendMessage;
 
-    const buttonColor =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? 'orange'
-            : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
-            ? 'var(--negative)'
-            : transactionApproved
-            ? 'var(--positive)'
-            : 'var(--text-highlight-dark)';
+    const buttonColor = isTransactionException
+        ? 'orange'
+        : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
+        ? 'var(--negative)'
+        : transactionApproved
+        ? 'var(--positive)'
+        : 'var(--text-highlight-dark)';
 
-    const animationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException ? (
-            <CircleLoaderFailed size='30px' />
-        ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
-            <CircleLoaderFailed size='30px' />
-        ) : transactionApproved ? (
-            <CircleLoaderCompleted size='30px' />
-        ) : (
-            <CircleLoader size='30px' />
-        );
+    const animationDisplay = isTransactionException ? (
+        <CircleLoaderFailed size='30px' />
+    ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
+        <CircleLoaderFailed size='30px' />
+    ) : transactionApproved ? (
+        <CircleLoaderCompleted size='30px' />
+    ) : (
+        <CircleLoader size='30px' />
+    );
 
-    const buttonText =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? 'Transaction Exception'
-            : isTransactionDenied
-            ? 'Transaction Denied'
-            : lastReceipt && !isLastReceiptSuccess
-            ? 'Transaction Failed'
-            : transactionApproved
-            ? 'Transaction Submitted'
-            : `Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
-                  tokenA.symbol
-              } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`;
+    const buttonText = isTransactionException
+        ? 'Transaction Exception'
+        : isTransactionDenied
+        ? 'Transaction Denied'
+        : lastReceipt && !isLastReceiptSuccess
+        ? 'Transaction Failed'
+        : transactionApproved
+        ? 'Transaction Submitted'
+        : `Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
+              tokenA.symbol
+          } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 

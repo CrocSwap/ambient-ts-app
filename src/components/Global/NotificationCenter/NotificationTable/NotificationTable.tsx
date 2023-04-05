@@ -8,6 +8,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -35,7 +36,8 @@ const NotificationTable = (props: NotificationTableProps) => {
     );
 
     useEffect(() => {
-        if (parsedReceipts.length) console.log({ parsedReceipts });
+        if (parsedReceipts.length && IS_LOCAL_ENV)
+            console.debug({ parsedReceipts });
     }, [JSON.stringify(parsedReceipts)]);
 
     const successfulTransactions = parsedReceipts.filter(

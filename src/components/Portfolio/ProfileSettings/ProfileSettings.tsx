@@ -8,6 +8,7 @@ import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
 import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 const pageVariant3D = {
     initial: {
@@ -157,10 +158,10 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
 
         const data = await response.json();
         if (data.status === 'OK') {
-            console.log('aaaa', data);
+            IS_LOCAL_ENV && console.debug('aaaa', data);
             setOpenSnackbar(true);
         } else {
-            console.log('bbb', data.status);
+            IS_LOCAL_ENV && console.debug('bbb', data.status);
         }
     }
 

@@ -36,7 +36,7 @@ export const useAppChain = (
 
     // change the network in Moralis after user changes in the app
     // useEffect(() => {
-    //     console.log('change chain in Moralis!');
+    //     console.debug('change chain in Moralis!');
     //     if (isWeb3Enabled && chainId !== currentChain) switchNetwork(currentChain);
     // }, [currentChain, isWeb3Enabled]);
 
@@ -45,7 +45,6 @@ export const useAppChain = (
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
-        // console.log({ chainId });
         // if Moralis has a chain ID which does not match the in-app chain ID
         //      Moralis chain ID is supported => switch app to that ID
         //      Moralis chain Id is NOT supported => switch app to default chain
@@ -56,7 +55,7 @@ export const useAppChain = (
                 } else if (!validateChainId(chainId)) {
                     setIsChainSupported(false);
                 } else {
-                    console.warn(
+                    console.error(
                         `Issue validating network. Received value <<${chainId}>> from Moralis. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`,
                     );
                 }
@@ -81,7 +80,7 @@ export const useAppChain = (
         try {
             chn = lookupChain(currentChain);
         } catch (err) {
-            console.warn(err);
+            console.error(err);
             setCurrentChain(defaultChain);
             chn = lookupChain(defaultChain);
         }

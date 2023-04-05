@@ -24,6 +24,6 @@ export default async function addTokenToWallet(
             },
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }

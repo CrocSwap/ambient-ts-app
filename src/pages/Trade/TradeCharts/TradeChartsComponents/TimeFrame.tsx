@@ -31,6 +31,8 @@ export default function TimeFrame(props: propsIF) {
             <button
                 className={styles.time_frame_mobile_button}
                 onClick={() => setShowTimeFrameDropdown(!showTimeFrameDropdown)}
+                tabIndex={0}
+                aria-label='Open time frame dropdown.'
             >
                 {candleTime.readableTime}
             </button>
@@ -48,6 +50,8 @@ export default function TimeFrame(props: propsIF) {
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
+                            tabIndex={0}
+                            aria-label={`Set time frame to ${option.readable}.`}
                         >
                             {option.readable}
                         </button>
@@ -70,6 +74,8 @@ export default function TimeFrame(props: propsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        tabIndex={0}
+                        aria-label={`Set time frame to ${option.readable}.`}
                     >
                         {option.readable}
                     </button>

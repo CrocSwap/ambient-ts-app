@@ -28,6 +28,8 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { ChainSpec } from '@crocswap-libs/sdk';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -44,6 +46,7 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    chainData: ChainSpec;
 }
 
 // React functional component
@@ -63,6 +66,7 @@ export default function TransactionsMenu(props: propsIF) {
         handlePulseAnimation,
         isOnPortfolioPage,
         setSimpleRangeWidth,
+        chainData,
     } = props;
 
     // const [value, copy] = useCopyToClipboard();
@@ -97,7 +101,6 @@ export default function TransactionsMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const handleCopyClick = () => {
-        // console.log('copy clicked');
         if (handlePulseAnimation) {
             if (tx.entityType === 'swap') {
                 handlePulseAnimation('swap');
@@ -125,14 +128,15 @@ export default function TransactionsMenu(props: propsIF) {
             );
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
-            // console.log('limit order copy clicked');
-            console.log({ tradeData });
-            console.log({ tx });
+            if (IS_LOCAL_ENV) {
+                console.debug({ tradeData });
+                console.debug({ tx });
+            }
             const shouldMovePrimaryQuantity =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase());
 
-            console.log({ shouldMovePrimaryQuantity });
+            IS_LOCAL_ENV && console.debug({ shouldMovePrimaryQuantity });
             const shouldClearNonPrimaryQty =
                 tradeData.limitTick !== tx.askTick &&
                 (tradeData.isTokenAPrimary
@@ -149,8 +153,7 @@ export default function TransactionsMenu(props: propsIF) {
                     ? true
                     : false);
             if (shouldMovePrimaryQuantity) {
-                console.log('flipping primary');
-                // setTimeout(() => {
+                IS_LOCAL_ENV && console.debug('flipping primary');
                 const sellQtyField = document.getElementById(
                     'sell-limit-quantity',
                 ) as HTMLInputElement;
@@ -185,7 +188,6 @@ export default function TransactionsMenu(props: propsIF) {
                     ) as HTMLInputElement;
                     if (sellQtyField) {
                         sellQtyField.value = '';
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                     }
                 } else {
                     const buyQtyField = document.getElementById(
@@ -195,16 +197,11 @@ export default function TransactionsMenu(props: propsIF) {
                         buyQtyField.value = '';
                     }
                 }
-                console.log('resetting');
-                // dispatch(setPrimaryQuantity(''));
+                IS_LOCAL_ENV && console.debug('resetting');
             }
             setTimeout(() => {
                 dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
             }, 500);
-
-            // dispatch(
-            //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
-            // );
         }
         setShowDropdownMenu(false);
 
@@ -256,6 +253,7 @@ export default function TransactionsMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };

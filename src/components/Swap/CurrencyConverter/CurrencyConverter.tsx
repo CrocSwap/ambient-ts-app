@@ -24,7 +24,7 @@ import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 // import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import { ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 
@@ -344,6 +344,10 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
+        handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+    }, [tokenAQtyLocal, buyQtyString]);
+
+    useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
 
@@ -387,6 +391,8 @@ export default function CurrencyConverter(props: propsIF) {
         } else if (tokenAAmount <= 0) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
+        } else if (buyQtyString === '' || sellQtyString === '') {
+            setSwapButtonErrorMessage('...');
         } else {
             if (isSellTokenEth) {
                 if (isWithdrawFromDexChecked) {
@@ -486,11 +492,14 @@ export default function CurrencyConverter(props: propsIF) {
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
                 setSwapAllowed(false);
             }
         } else {
-            console.log('token a change event triggered - no keyboard event');
+            IS_LOCAL_ENV &&
+                console.debug(
+                    'token a change event triggered - no keyboard event',
+                );
             if (!poolExists) {
                 setSwapAllowed(false);
 
@@ -526,7 +535,7 @@ export default function CurrencyConverter(props: propsIF) {
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
             }
         }
         const truncatedTokenBQty = rawTokenBQty
@@ -575,7 +584,7 @@ export default function CurrencyConverter(props: propsIF) {
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
             }
         } else {
             if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
@@ -601,7 +610,7 @@ export default function CurrencyConverter(props: propsIF) {
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
             }
         }
         const truncatedTokenBQty = rawTokenBQty
@@ -662,12 +671,15 @@ export default function CurrencyConverter(props: propsIF) {
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
                 setSwapAllowed(false);
             }
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
         } else {
-            console.log('token B change event triggered - no keyboard event');
+            IS_LOCAL_ENV &&
+                console.debug(
+                    'token B change event triggered - no keyboard event',
+                );
             if (!poolExists) {
                 setSwapAllowed(false);
 
@@ -703,7 +715,7 @@ export default function CurrencyConverter(props: propsIF) {
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
             }
 
             handleSwapButtonMessage(rawTokenAQty ?? 0);
@@ -797,12 +809,7 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 onClick={reverseTokens}
             >
-                {isLiq ? null : <TokensArrow />}
-                {/* {isLiq ? null : (
-                    <IconWithTooltip title='Reverse tokens' placement='left' enterDelay='1000'>
-                        <TokensArrow />
-                    </IconWithTooltip>
-                )} */}
+                {isLiq ? null : <TokensArrow disabled={disableReverseTokens} />}
             </div>
             <div id='swap_currency_converter'>
                 <CurrencySelector

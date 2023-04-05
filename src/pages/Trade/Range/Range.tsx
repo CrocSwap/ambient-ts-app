@@ -16,6 +16,7 @@ import {
     CrocEnv,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -80,6 +81,7 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface propsIF {
     account: string | undefined;
@@ -220,7 +222,11 @@ export default function Range(props: propsIF) {
         chartTriggeredBy,
     } = props;
 
-    const [isModalOpen, openModal, closeModal] = useModal();
+    const [
+        isConfirmationModalOpen,
+        openConfirmationModal,
+        closeConfirmationModal,
+    ] = useModal();
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -601,7 +607,6 @@ export default function Range(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-
         setTxErrorMessage('');
     };
 
@@ -658,7 +663,7 @@ export default function Range(props: propsIF) {
                 defaultHighTick,
                 lookupChain(chainId).gridSize,
             );
-            console.log({ pinnedDisplayPrices });
+            IS_LOCAL_ENV && console.debug({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );
@@ -828,7 +833,7 @@ export default function Range(props: propsIF) {
                 rangeLowBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
             } else {
-                console.log('low bound field not found');
+                IS_LOCAL_ENV && console.debug('low bound field not found');
             }
 
             setRangeLowBoundFieldBlurred(false);
@@ -925,7 +930,7 @@ export default function Range(props: propsIF) {
                 rangeHighBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
             } else {
-                console.log('high bound field not found');
+                IS_LOCAL_ENV && console.debug('high bound field not found');
             }
 
             setRangeHighBoundFieldBlurred(false);
@@ -1061,7 +1066,7 @@ export default function Range(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
@@ -1114,16 +1119,16 @@ export default function Range(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRangeTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (tx?.hash) {
@@ -1176,7 +1181,7 @@ export default function Range(props: propsIF) {
 
     // TODO:  @Emily refactor this fragment to use the same denomination switch
     // TODO:  ... component used in the Market and Limit modules
-    const denominationSwitch = (
+    const advancedModeToggle = (
         <div className={styles.denomination_switch_container}>
             <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
         </div>
@@ -1271,7 +1276,7 @@ export default function Range(props: propsIF) {
     );
 
     const handleModalClose = () => {
-        closeModal();
+        closeConfirmationModal();
         setNewRangeTransactionHash('');
         resetConfirmation();
     };
@@ -1279,38 +1284,6 @@ export default function Range(props: propsIF) {
     const handleRangeButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
         sendTransaction();
-    };
-
-    // props for <ConfirmRangeModal/> React element
-    const rangeModalProps = {
-        tokenPair: tokenPair,
-        spotPriceDisplay: displayPriceString,
-        poolPriceDisplayNum: poolPriceDisplayNum,
-        denominationsInBase: denominationsInBase,
-        isTokenABase: isTokenABase,
-        isAmbient: isAmbient,
-        isAdd: isAdd,
-        maxPriceDisplay: maxPriceDisplay,
-        minPriceDisplay: minPriceDisplay,
-        sendTransaction: sendTransaction,
-        closeModal: handleModalClose,
-        newRangeTransactionHash: newRangeTransactionHash,
-        setNewRangeTransactionHash: setNewRangeTransactionHash,
-        resetConfirmation: resetConfirmation,
-        showConfirmation: showConfirmation,
-        setShowConfirmation: setShowConfirmation,
-        txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
-        isInRange: !isOutOfRange,
-        pinnedMinPriceDisplayTruncatedInBase:
-            pinnedMinPriceDisplayTruncatedInBase,
-        pinnedMinPriceDisplayTruncatedInQuote:
-            pinnedMinPriceDisplayTruncatedInQuote,
-        pinnedMaxPriceDisplayTruncatedInBase:
-            pinnedMaxPriceDisplayTruncatedInBase,
-        pinnedMaxPriceDisplayTruncatedInQuote:
-            pinnedMaxPriceDisplayTruncatedInQuote,
-        bypassConfirm: bypassConfirm,
     };
 
     const bypassConfirmButtonProps = {
@@ -1413,7 +1386,7 @@ export default function Range(props: propsIF) {
                 isAdvancedMode={false}
             />
             {/* <DividerDark addMarginTop /> */}
-            {denominationSwitch}
+            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1433,7 +1406,7 @@ export default function Range(props: propsIF) {
             />
             {/* <DividerDark addMarginTop /> */}
 
-            {denominationSwitch}
+            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1451,8 +1424,6 @@ export default function Range(props: propsIF) {
                     lowBoundOnBlur={lowBoundOnBlur}
                     rangeLowTick={defaultLowTick}
                     rangeHighTick={defaultHighTick}
-                    // setRangeLowTick={setRangeLowTick}
-                    // setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange || !poolExists}
                     chainId={chainId.toString()}
                     maxPrice={maxPrice}
@@ -1477,16 +1448,6 @@ export default function Range(props: propsIF) {
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
-
-    const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal
-            onClose={handleModalClose}
-            title={isAmbient ? 'Ambient Confirmation' : 'Range Confirmation'}
-            centeredTitle
-        >
-            <ConfirmRangeModal {...rangeModalProps} />
-        </Modal>
-    ) : null;
 
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
@@ -1525,17 +1486,17 @@ export default function Range(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
                     // console.log({ error });
@@ -1550,7 +1511,7 @@ export default function Range(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -1642,86 +1603,146 @@ export default function Range(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        <section data-testid={'range'} className={styles.scrollable_container}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section
+                data-testid={'range'}
+                className={styles.scrollable_container}
+            >
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
+                )}
 
-            <ContentContainer isOnTradeRoute>
-                <RangeHeader
-                    chainId={chainId}
-                    tokenPair={tokenPair}
-                    mintSlippage={mintSlippage}
-                    isPairStable={isPairStable}
-                    isDenomBase={tradeData.isDenomBase}
-                    isTokenABase={isTokenABase}
-                    openGlobalModal={openGlobalModal}
-                    shareOptionsDisplay={shareOptionsDisplay}
-                    bypassConfirm={bypassConfirm}
-                />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    {tradeData.advancedMode
-                        ? advancedModeContent
-                        : baseModeContent}
-                </motion.div>
-                {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                  true ? (
-                    poolPriceNonDisplay !== 0 &&
-                    parseFloat(tokenAInputQty) > 0 &&
-                    !isTokenAAllowanceSufficient ? (
-                        tokenAApprovalButton
-                    ) : poolPriceNonDisplay !== 0 &&
-                      parseFloat(tokenBInputQty) > 0 &&
-                      !isTokenBAllowanceSufficient ? (
-                        tokenBApprovalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassConfirmRangeButton
-                            {...bypassConfirmButtonProps}
-                        />
+                <ContentContainer isOnTradeRoute>
+                    <RangeHeader
+                        chainId={chainId}
+                        tokenPair={tokenPair}
+                        mintSlippage={mintSlippage}
+                        isPairStable={isPairStable}
+                        isDenomBase={tradeData.isDenomBase}
+                        isTokenABase={isTokenABase}
+                        openGlobalModal={openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
+                        bypassConfirm={bypassConfirm}
+                    />
+                    {navigationMenu}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        {tradeData.advancedMode
+                            ? advancedModeContent
+                            : baseModeContent}
+                    </motion.div>
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
+                      true ? (
+                        poolPriceNonDisplay !== 0 &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        !isTokenAAllowanceSufficient ? (
+                            tokenAApprovalButton
+                        ) : poolPriceNonDisplay !== 0 &&
+                          parseFloat(tokenBInputQty) > 0 &&
+                          !isTokenBAllowanceSufficient ? (
+                            tokenBApprovalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassConfirmRangeButton
+                                {...bypassConfirmButtonProps}
+                            />
+                        ) : (
+                            <RangeButton
+                                onClickFn={
+                                    bypassConfirm.range.isEnabled
+                                        ? handleRangeButtonClickWithBypass
+                                        : openConfirmationModal
+                                }
+                                rangeAllowed={
+                                    poolExists === true &&
+                                    rangeAllowed &&
+                                    !isInvalidRange
+                                }
+                                rangeButtonErrorMessage={
+                                    rangeButtonErrorMessage
+                                }
+                                isBypassConfirmEnabled={
+                                    bypassConfirm.range.isEnabled
+                                }
+                                isAmbient={isAmbient}
+                                isAdd={isAdd}
+                            />
+                        )
                     ) : (
-                        <RangeButton
-                            onClickFn={
-                                bypassConfirm.range.isEnabled
-                                    ? handleRangeButtonClickWithBypass
-                                    : openModal
-                            }
-                            rangeAllowed={
-                                poolExists === true &&
-                                rangeAllowed &&
-                                !isInvalidRange
-                            }
-                            rangeButtonErrorMessage={rangeButtonErrorMessage}
-                            bypassConfirmRange={bypassConfirm.range}
+                        loginButton
+                    )}
+                </ContentContainer>
+                {isConfirmationModalOpen && (
+                    <Modal
+                        onClose={handleModalClose}
+                        title={
+                            isAmbient
+                                ? 'Ambient Confirmation'
+                                : 'Range Confirmation'
+                        }
+                        centeredTitle
+                    >
+                        <ConfirmRangeModal
+                            tokenPair={tokenPair}
+                            spotPriceDisplay={displayPriceString}
+                            poolPriceDisplayNum={poolPriceDisplayNum}
+                            denominationsInBase={denominationsInBase}
+                            isTokenABase={isTokenABase}
                             isAmbient={isAmbient}
                             isAdd={isAdd}
+                            maxPriceDisplay={maxPriceDisplay}
+                            minPriceDisplay={minPriceDisplay}
+                            sendTransaction={sendTransaction}
+                            closeModal={handleModalClose}
+                            newRangeTransactionHash={newRangeTransactionHash}
+                            setNewRangeTransactionHash={
+                                setNewRangeTransactionHash
+                            }
+                            resetConfirmation={resetConfirmation}
+                            showConfirmation={showConfirmation}
+                            setShowConfirmation={setShowConfirmation}
+                            txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
+                            isInRange={!isOutOfRange}
+                            pinnedMinPriceDisplayTruncatedInBase={
+                                pinnedMinPriceDisplayTruncatedInBase
+                            }
+                            pinnedMinPriceDisplayTruncatedInQuote={
+                                pinnedMinPriceDisplayTruncatedInQuote
+                            }
+                            pinnedMaxPriceDisplayTruncatedInBase={
+                                pinnedMaxPriceDisplayTruncatedInBase
+                            }
+                            pinnedMaxPriceDisplayTruncatedInQuote={
+                                pinnedMaxPriceDisplayTruncatedInQuote
+                            }
+                            bypassConfirm={bypassConfirm}
                         />
-                    )
-                ) : (
-                    loginButton
+                    </Modal>
                 )}
-            </ContentContainer>
-            {confirmSwapModalOrNull}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={
-                    !tradeData.advancedMode
-                        ? rangeTutorialStepsAdvanced
-                        : rangeTutorialSteps
-                }
-            />
-        </section>
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={
+                        !tradeData.advancedMode
+                            ? rangeTutorialStepsAdvanced
+                            : rangeTutorialSteps
+                    }
+                />
+            </section>
+        </FocusTrap>
     );
 }
