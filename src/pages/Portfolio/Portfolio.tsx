@@ -163,7 +163,9 @@ export default function Portfolio(props: propsIF) {
 
     const isUserLoggedIn = isConnected;
 
-    const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
+    const selectedToken: TokenIF = useAppSelector(
+        (state) => state.soloTokenData.token,
+    );
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -332,7 +334,7 @@ export default function Portfolio(props: propsIF) {
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
-                    console.warn({ error });
+                    console.error({ error });
                 }
             } else if (addressFromParams && isAddressEns) {
                 setSecondaryEnsName(addressFromParams);
@@ -437,7 +439,6 @@ export default function Portfolio(props: propsIF) {
                 !connectedAccountActive
             ) {
                 try {
-                    // console.log('fetching native token balance');
                     const newNativeToken = await cachedFetchNativeTokenBalance(
                         resolvedAddress,
                         chainData.chainId,

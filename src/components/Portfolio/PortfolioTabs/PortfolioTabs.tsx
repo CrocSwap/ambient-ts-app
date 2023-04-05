@@ -46,6 +46,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -185,7 +186,7 @@ export default function PortfolioTabs(props: propsIF) {
                         setLookupAccountPositionData(updatedPositions);
                     });
                 }
-                console.log('dispatch');
+                IS_LOCAL_ENV && console.debug('dispatch');
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserRangeData',
@@ -278,9 +279,10 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            console.log(
-                'querying user tx/order/positions because address changed',
-            );
+            IS_LOCAL_ENV &&
+                console.debug(
+                    'querying user tx/order/positions because address changed',
+                );
             if (!connectedAccountActive) {
                 if (resolvedAddress) {
                     dispatch(resetLookupUserDataLoadingStatus());

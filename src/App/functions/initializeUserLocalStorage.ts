@@ -62,30 +62,6 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    if (!user.ackTokens) {
-        user.ackTokens = [];
-        userUpdated = true;
-    }
-
-    if (!user.bypassConfirm) {
-        user.bypassConfirm = false;
-        userUpdated = true;
-    }
-
-    if (!user.bypassConfirm) {
-        const initialMap = new Map();
-        const initialPairs = [
-            ['global', false],
-            ['swap', false],
-            ['limit', false],
-            ['range', false],
-            ['repo', false],
-        ];
-        initialPairs.forEach((pair) => initialMap.set(pair[0], pair[1]));
-        user.bypassConfirm = JSON.stringify(Array.from(initialMap.entries()));
-        userUpdated = true;
-    }
-
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }

@@ -12,7 +12,6 @@ export default function SidebarFooter() {
     const location = useLocation();
 
     const currentLocation = location.pathname;
-    // console.log({ currentLocation });
 
     const sidebarPositionStyle =
         currentLocation === '/'

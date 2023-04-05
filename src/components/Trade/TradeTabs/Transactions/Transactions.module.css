@@ -114,16 +114,7 @@
 
     /* I commented this out to make the header align center with arrow */
     width: 100%;
-
-    padding: 0.2em 0.5em;
-}
-
-.main_list_container ul > li {
-    display: table-cell;
-
-    /* I commented this out to make the header align center with arrow */
-    width: 100%;
-
+    vertical-align: middle;
     padding: 0.2em 0.5em;
 }
 .base_color {
@@ -216,7 +207,7 @@
 }
 
 .mono_font {
-    font-family: var(--mono);
+    font-family: monospace;
 }
 
 .tooltip_style {

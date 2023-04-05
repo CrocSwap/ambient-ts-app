@@ -105,12 +105,15 @@
 
     /* I commented this out to make the header align center with arrow */
     width: 100%;
-
+    
     padding: 0.2em 0.5em;
     vertical-align: middle;
 }
 .base_color {
     color: var(--text-grey-light);
+}
+.mono_font {
+    font-family: monospace;
 }
 .gradient_text {
     background: var(--title-gradient);

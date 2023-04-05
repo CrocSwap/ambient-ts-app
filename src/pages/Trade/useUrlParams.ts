@@ -12,6 +12,7 @@ import {
     setAdvancedHighTick,
 } from '../../utils/state/tradeDataSlice';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
+import { IS_LOCAL_ENV } from '../../constants';
 
 export const useUrlParams = (
     // module: string,
@@ -20,7 +21,6 @@ export const useUrlParams = (
 ): [string[], Array<number | null>, number | null] => {
     // get URL parameters, empty string if undefined
     const { params } = useParams() ?? '';
-    // console.log({params});
 
     const dispatch = useAppDispatch();
 
@@ -73,10 +73,12 @@ export const useUrlParams = (
         const advHighTick = getTick('high') ?? 0;
         advLowTick && dispatch(setAdvancedLowTick(advLowTick));
         advHighTick && dispatch(setAdvancedHighTick(advHighTick));
-        console.log({ advHighTick });
-        console.log({ advLowTick });
+        if (IS_LOCAL_ENV) {
+            console.debug({ advHighTick });
+            console.debug({ advLowTick });
+        }
         if (![advLowTick, advHighTick].includes(0)) {
-            console.log('doing it!!');
+            IS_LOCAL_ENV && console.debug('doing it!!');
             dispatch(setAdvancedMode(true));
         }
         return [advLowTick, advHighTick];
@@ -128,10 +130,8 @@ export const useUrlParams = (
         function check() {
             const tokenListsFromStorage = localStorage.getItem('allTokenLists');
             if (tokenListsFromStorage !== null) {
-                // console.log('found');
                 setTokenList(tokenListsFromStorage);
             } else {
-                // console.log('not found');
                 setTimeout(check, 100);
             }
         }
@@ -150,7 +150,7 @@ export const useUrlParams = (
 
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
-                console.log('looking for token!!');
+                IS_LOCAL_ENV && console.debug('looking for token!!');
                 const allTokenLists = tokenList
                     ? JSON.parse(tokenList as string)
                     : undefined;
@@ -209,7 +209,6 @@ export const useUrlParams = (
             return Promise.resolve(promise)
                 .then((res) => res?.result[0].token)
                 .then((token) => {
-                    // console.log({ token });
                     return {
                         name: token.name,
                         chainId: token.chain.decimal,

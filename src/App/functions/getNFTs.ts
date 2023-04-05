@@ -1,5 +1,6 @@
 import Moralis from 'moralis';
 import { EvmChain } from '@moralisweb3/common-evm-utils';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface metadata {
     name: string;
@@ -24,7 +25,7 @@ export async function getNFTs(account: string) {
             (nft) => nft.contractType === 'ERC1155',
         );
 
-        console.log({ userEthNFTs });
+        IS_LOCAL_ENV && console.debug({ userEthNFTs });
         if (userEthNFTs) {
             const imageLocalURLs: string[] = [];
             userEthNFTs.forEach((nft) => {
@@ -59,7 +60,8 @@ export async function getNFTs(account: string) {
                         imageGatewayURL =
                             'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
                     }
-                    console.log({ nftMatchingAllowList: nft });
+                    IS_LOCAL_ENV &&
+                        console.debug({ nftMatchingAllowList: nft });
                     if (imageGatewayURL)
                         fetch(imageGatewayURL)
                             .then((response) => response.blob())
@@ -70,7 +72,7 @@ export async function getNFTs(account: string) {
                                     imageLocalURLs.push(localUrl);
                                 }
                             })
-                            .catch(console.log);
+                            .catch(console.error);
                 }
             });
             return imageLocalURLs;

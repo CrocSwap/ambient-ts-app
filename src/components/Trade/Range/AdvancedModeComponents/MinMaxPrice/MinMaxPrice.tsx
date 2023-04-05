@@ -8,6 +8,7 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
 } from '../../../../../utils/state/tradeDataSlice';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -84,7 +85,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                 handleSetMinTarget(targetValue);
             }
         } else {
-            console.log('no event');
+            IS_LOCAL_ENV && console.debug('no event');
         }
     };
 
@@ -97,7 +98,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                 handleSetMaxTarget(targetValue);
             }
         } else {
-            console.log('no event');
+            IS_LOCAL_ENV && console.debug('no event');
         }
     };
 

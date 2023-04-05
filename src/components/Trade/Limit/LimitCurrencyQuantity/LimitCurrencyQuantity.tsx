@@ -17,11 +17,9 @@ export default function LimitCurrencyQuantity(props: propsIF) {
     const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
-        // console.log(`setting display value for ${fieldId} to: ${value}`);
         setDisplayValue(value);
     }, [value]);
 
-    // console.log({ fieldId });
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         // if (event && fieldId === 'sell') {
         //     setTokenBInputQty('');
@@ -51,6 +49,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
             <input
                 id={`${fieldId}-limit-quantity`}
                 className={styles.currency_quantity}
+                aria-label={`Enter ${fieldId} amount`}
                 placeholder='0.0'
                 onChange={(event) => {
                     const isPrecisionGreaterThanDecimals =
@@ -71,6 +70,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
+                autoFocus={fieldId === 'sell'}
                 required
             />
         </div>

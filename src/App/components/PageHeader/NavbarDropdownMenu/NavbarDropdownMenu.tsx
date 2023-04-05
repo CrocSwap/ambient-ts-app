@@ -23,6 +23,7 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
+import useKeyPress from '../../../hooks/useKeyPress';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -76,16 +77,13 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         setMenuHeight(height);
     }
 
-    const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') setIsNavbarMenuOpen(false);
-    };
+    const isEscapePressed = useKeyPress('Escape');
 
     useEffect(() => {
-        document.addEventListener('keydown', handleEscape, false);
-        return () => {
-            document.removeEventListener('keydown', handleEscape, false);
-        };
-    }, []);
+        if (isEscapePressed) {
+            setIsNavbarMenuOpen(false);
+        }
+    }, [isEscapePressed]);
 
     function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
         const topLevelItemStyle = props.topLevel
@@ -114,7 +112,6 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     if (props.onClick) props.onClick();
                 }}
                 tabIndex={0}
-                onKeyDown={props.onClick}
                 role='button'
             >
                 {props.imageIcon && imageIcon}

@@ -80,6 +80,7 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                                 setLatest(true);
                             }}
                             className={styles.non_active_selected_button}
+                            aria-label='Show latest.'
                         >
                             Latest
                         </button>
@@ -97,6 +98,7 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        aria-label='Reset.'
                     >
                         Reset
                     </button>
@@ -114,6 +116,7 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        aria-label='Auto rescale.'
                     >
                         Auto
                     </button>

@@ -6,11 +6,11 @@ import { motion } from 'framer-motion';
 import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
 import AnalyticsPoolRows from '../AnalyticsPoolRows/AnalyticsPoolRows';
 import { Dispatch, SetStateAction } from 'react';
-interface TrendingPoolsPropsIF {
+interface propsIF {
     analyticsSearchInput: string;
     setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
 }
-export default function TopPools(props: TrendingPoolsPropsIF) {
+export default function TopPools(props: propsIF) {
     const { analyticsSearchInput } = props;
     const container = (
         <div className={styles.item_container}>

@@ -2,6 +2,7 @@ import styles from './NoTableData.module.css';
 // import { AiFillFolderOpen } from 'react-icons/ai';
 import { Dispatch, SetStateAction } from 'react';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface NoTableDataPropsIF {
     isShowAllEnabled: boolean;
@@ -25,7 +26,7 @@ export default function NoTableData(props: NoTableDataPropsIF) {
     } = props;
 
     const toggleAllEnabled = () => {
-        console.log('setting show all to true');
+        IS_LOCAL_ENV && console.debug('setting show all to true');
         setIsShowAllEnabled ? setIsShowAllEnabled(true) : null;
         setSelectedDate ? setSelectedDate(undefined) : null;
     };
