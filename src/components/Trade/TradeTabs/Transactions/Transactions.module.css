@@ -93,6 +93,7 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
@@ -114,16 +115,7 @@
 
     /* I commented this out to make the header align center with arrow */
     width: 100%;
-
-    padding: 0.2em 0.5em;
-}
-
-.main_list_container ul > li {
-    display: table-cell;
-
-    /* I commented this out to make the header align center with arrow */
-    width: 100%;
-
+    vertical-align: middle;
     padding: 0.2em 0.5em;
 }
 .base_color {
@@ -216,7 +208,7 @@
 }
 
 .mono_font {
-    font-family: var(--mono);
+    font-family: monospace;
 }
 
 .tooltip_style {
@@ -260,6 +252,10 @@
 
 .row_container:hover .menu {
     opacity: 1;
+}
+
+.row_container:focus-visible, .row_container li:focus-visible, .row_container div:focus-visible{
+    border: 1px solid var(--text-grey-white)
 }
 
 @media only screen and (max-width: 768px) {

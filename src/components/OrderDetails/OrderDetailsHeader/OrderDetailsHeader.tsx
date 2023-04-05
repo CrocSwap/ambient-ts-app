@@ -1,7 +1,7 @@
 import styles from './OrderDetailsHeader.module.css';
 import { Dispatch, SetStateAction, useState } from 'react';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy, FiDownload } from 'react-icons/fi';
+import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
@@ -20,7 +20,7 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     const {
         handleCopyPositionId,
         onClose,
-        downloadAsImage,
+        // downloadAsImage,
         showShareComponent,
         setShowShareComponent,
     } = props;
@@ -47,13 +47,13 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         </IconWithTooltip>
     );
 
-    const downloadIconWithTooltip = (
-        <IconWithTooltip title='Download shareable image' placement='bottom'>
-            <div onClick={downloadAsImage}>
-                <FiDownload size={25} color='var(--text-grey-dark)' />
-            </div>
-        </IconWithTooltip>
-    );
+    // const downloadIconWithTooltip = (
+    //     <IconWithTooltip title='Download shareable image' placement='bottom'>
+    //         <div onClick={downloadAsImage}>
+    //             <FiDownload size={25} color='var(--text-grey-dark)' />
+    //         </div>
+    //     </IconWithTooltip>
+    // );
 
     // const snackbarContent = (
     //     <SnackbarComponent
@@ -82,7 +82,7 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
 
                 {showShareComponent ? copyIconWithTooltip : phIcon}
 
-                {showShareComponent ? downloadIconWithTooltip : phIcon}
+                {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text-grey-dark)' />

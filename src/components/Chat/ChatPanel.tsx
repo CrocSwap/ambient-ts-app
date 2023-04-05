@@ -52,7 +52,8 @@ interface propsIF {
 }
 
 export default function ChatPanel(props: propsIF) {
-    const { isFullScreen, favePools, currentPool, setIsChatOpen, topPools } = props;
+    const { isFullScreen, favePools, currentPool, setIsChatOpen, topPools } =
+        props;
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
@@ -238,6 +239,7 @@ export default function ChatPanel(props: propsIF) {
     useEffect(() => {
         if (isMessageDeleted === true) {
             getMsg();
+            window.scrollTo(0, 0);
         }
     }, [isMessageDeleted]);
 

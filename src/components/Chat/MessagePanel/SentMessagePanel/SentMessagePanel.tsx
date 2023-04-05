@@ -211,9 +211,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <p className={styles.message}>
+                    <div className={styles.message}>
                         {isLink(props.message.message)}
-                    </p>
+                    </div>
                 );
             }
         } else {
@@ -240,9 +240,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <p className={styles.message_without_avatar}>
+                    <div className={styles.message_without_avatar}>
                         {isLink(props.message.message)}
-                    </p>
+                    </div>
                 );
             }
         }
@@ -302,6 +302,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 >
                     {showAvatar && (
                         <div className={styles.nft_container}>{myBlockies}</div>
+                    )}
+                    {!showAvatar && (
+                        <div style={{ display: 'none' }}>
+                            <div className={styles.nft_container}>
+                                {myBlockies}
+                            </div>
+                        </div>
                     )}
                     <div className={styles.message_item}>
                         <div

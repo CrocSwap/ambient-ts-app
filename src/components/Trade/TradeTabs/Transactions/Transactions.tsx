@@ -15,7 +15,14 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+} from 'react';
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -30,6 +37,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { getTransactionData } from '../../../../App/functions/getTransactionData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
+import { IS_LOCAL_ENV } from '../../../../constants';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface propsIF {
@@ -195,13 +203,11 @@ export default function Transactions(props: propsIF) {
         );
 
     function handleUserSelected() {
-        // console.log({ changesByUserMatchingSelectedTokens });
         setTransactionData(changesByUserMatchingSelectedTokens);
         // setDataToDisplay(changesByUserMatchingSelectedTokens?.length > 0);
     }
     function handlePoolSelected() {
         if (!isOnPortfolioPage) {
-            // console.log({ changesByPoolWithoutFills });
             setTransactionData(changesByPoolWithoutFills);
             // setDataToDisplay(changesByPoolWithoutFills?.length > 0);
         }
@@ -339,7 +345,7 @@ export default function Transactions(props: propsIF) {
                         }),
                     );
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
     }, [isServerEnabled, isShowAllEnabled]);
 
@@ -377,7 +383,8 @@ export default function Transactions(props: propsIF) {
         {
             // share:  true,
             onOpen: () => {
-                console.log('pool recent changes subscription opened');
+                IS_LOCAL_ENV &&
+                    console.debug('pool recent changes subscription opened');
 
                 // repeat fetch with the interval of 30 seconds
                 // const timerId = setInterval(() => {
@@ -400,7 +407,7 @@ export default function Transactions(props: propsIF) {
                 //                 dispatch(addChangesByPool(poolChangesJsonData));
                 //             }
                 //         })
-                //         .catch(console.log);
+                //         .catch(console.error);
                 // }, 30000);
 
                 // // after 90 seconds stop
@@ -408,8 +415,10 @@ export default function Transactions(props: propsIF) {
                 //     clearInterval(timerId);
                 // }, 90000);
             },
-            onClose: (event: CloseEvent) => console.log({ event }),
-            // onClose: () => console.log('allPositions websocket connection closed'),
+            onClose: (event: CloseEvent) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
+            // onClose: () => console.debug('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -420,7 +429,6 @@ export default function Transactions(props: propsIF) {
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            // console.log({ lastMessageData });
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
@@ -428,10 +436,9 @@ export default function Transactions(props: propsIF) {
                     }),
                 )
                     .then((updatedTransactions) => {
-                        // console.log({ updatedTransactions });
                         dispatch(addChangesByPool(updatedTransactions));
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         }
     }, [lastPoolChangeMessage]);
@@ -649,6 +656,34 @@ export default function Transactions(props: propsIF) {
             chainData={chainData}
         />
     ));
+    const listRef = useRef<HTMLUListElement>(null);
+    const handleKeyDown = (
+        event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
+    ) => {
+        const { key } = event;
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+            const rows = document.querySelectorAll('.row_container_global');
+            const currentRow = event.target as HTMLLIElement;
+            const index = Array.from(rows).indexOf(currentRow);
+
+            if (key === 'ArrowDown') {
+                event.preventDefault();
+                if (index < rows.length - 1) {
+                    (rows[index + 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[0] as HTMLLIElement).focus();
+                }
+            } else if (key === 'ArrowUp') {
+                event.preventDefault();
+                if (index > 0) {
+                    (rows[index - 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[rows.length - 1] as HTMLLIElement).focus();
+                }
+            }
+        }
+    };
 
     const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
         <NoTableData
@@ -661,7 +696,9 @@ export default function Transactions(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
         />
     ) : (
-        rowItemContent
+        <div onKeyDown={handleKeyDown}>
+            <ul ref={listRef}>{rowItemContent}</ul>
+        </div>
     );
 
     const mobileView = useMediaQuery('(max-width: 1200px)');

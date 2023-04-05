@@ -34,7 +34,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 // import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
@@ -226,7 +226,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     useEffect(() => {
-        console.log({ disableReverseTokens });
+        IS_LOCAL_ENV && console.debug({ disableReverseTokens });
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
@@ -243,8 +243,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         } else {
             setDisableReverseTokens(true);
             // dispatch(reverseTokensInRTK());
-            // console.log('reversing');
-            console.log({ isTokenAPrimaryLocal });
+            IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             navigate(
                 '/trade/limit/chain=0x5&tokenA=' +
                     tokenPair.dataTokenB.address +
@@ -252,11 +251,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     tokenPair.dataTokenA.address,
             );
             if (!isTokenAPrimaryLocal) {
-                // console.log('setting a to' + tradeData.primaryQuantity);
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
             } else {
-                // console.log('setting b to' + tradeData.primaryQuantity);
                 // setTokenBQtyLocal(tradeData.primaryQuantity);
                 setTokenBInputQty(tradeData.primaryQuantity);
             }
@@ -355,7 +352,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty: number;
-        // console.log({ isSellTokenBase });
 
         if (evt) {
             // const tokenAInputField = document.getElementById('sell-limit-quantity');
@@ -373,8 +369,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 setLimitButtonErrorMessage('Enter an Amount');
                 if (input !== '') return;
             }
-
-            // console.log({ input });
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -417,8 +411,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        // console.log({ isSellTokenBase });
-        // console.log({ truncatedTokenBQty });
         // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
         // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
@@ -460,7 +452,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
         handleLimitButtonMessage(parseFloat(input));
-        // console.log({ truncatedTokenBQty });
 
         // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
@@ -475,7 +466,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
-        // console.log({ evt });
         if (evt) {
             // const tokenBInputField = document.getElementById('buy-limit-quantity');
 
@@ -492,7 +482,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 setLimitButtonErrorMessage('Enter an Amount');
                 if (input !== '') return;
             }
-            // console.log({ input });
             // setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);

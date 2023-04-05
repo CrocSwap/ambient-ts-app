@@ -105,12 +105,15 @@
 
     /* I commented this out to make the header align center with arrow */
     width: 100%;
-
+    
     padding: 0.2em 0.5em;
     vertical-align: middle;
 }
 .base_color {
     color: var(--text-grey-light);
+}
+.mono_font {
+    font-family: monospace;
 }
 .gradient_text {
     background: var(--title-gradient);
@@ -179,6 +182,10 @@
     height: 25px;
     border-radius: 50%;
     margin: 0 2px;
+}
+
+.row_container:focus-visible, .row_container li:focus-visible{
+    border: 1px solid var(--text-grey-white)
 }
 
 /* .trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7), .trade_header li:nth-of-type(8){

@@ -138,7 +138,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('range') ?? 'curve',
     );
     const [candleTimeMarket, setCandleTimeMarket] = useState<number>(
-        getCandleTime('market') ?? 300,
+        getCandleTime('market') ?? 900,
     );
     const [candleTimeRange, setCandleTimeRange] = useState<number>(
         getCandleTime('range') ?? 86400,

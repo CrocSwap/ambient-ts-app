@@ -118,7 +118,7 @@ import {
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
-import { ZERO_ADDRESS } from '../constants';
+import { APP_ENVIRONMENT, IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 import { getVolumeSeries } from './functions/getVolumeSeries';
@@ -205,7 +205,6 @@ export default function App() {
 
     // useKeyboardShortcuts()
 
-    // console.log('rendering app');
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
@@ -258,6 +257,10 @@ export default function App() {
         if (account && checkBlacklist(account)) {
             disconnect();
         }
+        if (!account) {
+            setCrocEnv(undefined);
+            setIsShowAllEnabled(true);
+        }
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -304,16 +307,14 @@ export default function App() {
     }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
 
     const onIdle = () => {
-        console.log('user is idle');
+        IS_LOCAL_ENV && console.debug('user is idle');
         dispatch(setIsUserIdle(true));
         // reload to avoid stale wallet connections and excessive state accumulation
         window.location.reload();
     };
 
     const onActive = () => {
-        // const onActive = (event: Event | undefined) => {
-        // console.log({ event });
-        console.log('user is active');
+        IS_LOCAL_ENV && console.debug('user is active');
         dispatch(setIsUserIdle(false));
     };
 
@@ -354,7 +355,6 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
 
     const isUserLoggedIn = isConnected;
-    // const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
     // custom hook to manage chain the app is using
@@ -379,7 +379,7 @@ export default function App() {
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
     useEffect(() => {
-        console.log('setting login check delay');
+        IS_LOCAL_ENV && console.debug('setting login check delay');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
             dispatch(setShouldRecheckLocalStorage(true));
@@ -390,12 +390,11 @@ export default function App() {
     useEffect(() => {
         if (isConnected || (isConnected === false && loginCheckDelayElapsed)) {
             if (isConnected && userData.isLoggedIn !== isConnected && account) {
-                console.log('settting to logged in');
+                IS_LOCAL_ENV && console.debug('settting to logged in');
                 dispatch(setIsLoggedIn(true));
                 dispatch(setAddressAtLogin(account));
             } else if (!isConnected && userData.isLoggedIn !== false) {
-                console.log('settting to logged out');
-
+                IS_LOCAL_ENV && console.debug('setting to logged out');
                 dispatch(setIsLoggedIn(false));
                 dispatch(resetUserAddresses());
             }
@@ -489,23 +488,26 @@ export default function App() {
 
     // 1535 - remove console logging
     const setNewCrocEnv = () => {
-        console.log({ provider });
-        console.log({ signer });
-        console.log({ crocEnv });
-        console.log({ signerStatus });
+        if (APP_ENVIRONMENT === 'local') {
+            console.debug({ provider });
+            console.debug({ signer });
+            console.debug({ crocEnv });
+            console.debug({ signerStatus });
+        }
         if (isError) {
             console.error({ error });
             setCrocEnv(undefined);
         } else if (!provider && !signer) {
-            console.log('setting crocEnv to undefined');
+            APP_ENVIRONMENT === 'local' &&
+                console.debug('setting crocEnv to undefined');
             setCrocEnv(undefined);
             return;
         } else if (!signer && !!crocEnv) {
-            console.log('keeping provider');
+            APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
         } else {
             const newCrocEnv = new CrocEnv(signer?.provider || provider);
-            console.log({ newCrocEnv });
+            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
             setCrocEnv(newCrocEnv);
         }
     };
@@ -517,7 +519,8 @@ export default function App() {
     useEffect(() => {
         if (provider) {
             (async () => {
-                console.log('fetching WETH price from mainnet');
+                IS_LOCAL_ENV &&
+                    console.debug('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                     '0x1',
@@ -529,7 +532,8 @@ export default function App() {
     }, [provider]);
 
     useEffect(() => {
-        console.log('resetting token data because chainId changed');
+        IS_LOCAL_ENV &&
+            console.debug('resetting token data because chainId changed');
         dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
     }, [chainData.chainId]);
@@ -537,9 +541,10 @@ export default function App() {
     const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
     useEffect(() => {
-        console.log(
-            'resetting user token data and address because connected account changed',
-        );
+        IS_LOCAL_ENV &&
+            console.debug(
+                'resetting user token data and address because connected account changed',
+            );
         dispatch(resetTokenData());
         if (account) {
             dispatch(setAddressCurrent(account));
@@ -567,13 +572,13 @@ export default function App() {
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
     if (needTokenLists) {
-        console.log('fetching token lists');
+        IS_LOCAL_ENV && console.debug('fetching token lists');
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
 
     useEffect(() => {
-        console.log('initializing local storage');
+        IS_LOCAL_ENV && console.debug('initializing local storage');
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
@@ -600,21 +605,23 @@ export default function App() {
                     dispatch(setLastBlock(parseInt(json?.result)));
                 }
             })
-            .catch(console.log);
+            .catch(console.error);
     }, []);
 
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         chainData.wsUrl || '',
         {
             onOpen: () => {
-                // console.log('infura newHeads subscription opened');
                 send(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
                 );
             },
             onClose: (event: CloseEvent) => {
-                false && console.log('infura newHeads subscription closed');
-                false && console.log({ event });
+                if (IS_LOCAL_ENV) {
+                    false &&
+                        console.debug('infura newHeads subscription closed');
+                    false && console.debug({ event });
+                }
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -632,7 +639,7 @@ export default function App() {
         const mainnetProvider = new ethers.providers.JsonRpcProvider(
             'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
         );
-        console.log({ mainnetProvider });
+        IS_LOCAL_ENV && console.debug({ mainnetProvider });
         setMainnetProvider(mainnetProvider);
     }, []);
 
@@ -646,7 +653,6 @@ export default function App() {
                     if (lastBlockNumberHex) {
                         const newBlockNum = parseInt(lastBlockNumberHex);
                         if (lastBlockNumber !== newBlockNum) {
-                            // console.log('setting new block number');
                             setLastBlockNumber(parseInt(lastBlockNumberHex));
                             dispatch(
                                 setLastBlock(parseInt(lastBlockNumberHex)),
@@ -670,7 +676,7 @@ export default function App() {
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
-        console.log('setting searchable tokens');
+        IS_LOCAL_ENV && console.debug('setting searchable tokens');
         // pull activeTokenLists from local storage and parse
         // do we need to add gatekeeping in case there is not a valid value?
         const { activeTokenLists } = JSON.parse(
@@ -746,33 +752,18 @@ export default function App() {
 
     useEffect(() => {
         if (lastReceipt) {
-            console.log('new receipt to display');
+            IS_LOCAL_ENV && console.debug('new receipt to display');
             setOpenSnackbar(true);
         }
     }, [JSON.stringify(lastReceipt)]);
 
-    // useEffect(() => {
-    //     (async () => {
-    //         if (window.ethereum) {
-    //             // console.log('requesting eth_accounts');
-    //             const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-    //             if (metamaskAccounts?.length > 0) {
-    //                 setMetamaskLocked(false);
-    //             } else {
-    //                 setMetamaskLocked(true);
-    //             }
-    //         }
-    //     })();
-    // }, [window.ethereum, account]);
-
-    // const [ensName, setEnsName] = useState('');
     const ensName = userData.ensNameCurrent || '';
 
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
             if (isUserLoggedIn && account && provider) {
-                console.log('checking for ens name');
+                IS_LOCAL_ENV && console.debug('checking for ens name');
                 try {
                     const ensName = await cachedFetchAddress(
                         provider,
@@ -841,7 +832,7 @@ export default function App() {
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
             })
-            .catch(console.log);
+            .catch(console.error);
     };
 
     useEffect(() => {
@@ -867,10 +858,10 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            console.log('fetching native token and erc20 token balances');
+            IS_LOCAL_ENV &&
+                console.debug('fetching native token and erc20 token balances');
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
                 try {
-                    // console.log('fetching native token balance');
                     const newNativeToken: TokenIF =
                         await cachedFetchNativeTokenBalance(
                             account,
@@ -881,7 +872,7 @@ export default function App() {
 
                     dispatch(setNativeToken(newNativeToken));
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
                 try {
                     const erc20Results: TokenIF[] =
@@ -897,7 +888,7 @@ export default function App() {
 
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
-                    console.log({ error });
+                    console.error({ error });
                 }
             }
         })();
@@ -955,7 +946,7 @@ export default function App() {
     useEffect(() => {
         if (crocEnv && baseTokenAddress && quoteTokenAddress) {
             // setPoolExists(undefined);
-            console.log('checking if pool exists');
+            IS_LOCAL_ENV && console.debug('checking if pool exists');
             if (
                 baseTokenAddress.toLowerCase() ===
                 quoteTokenAddress.toLowerCase()
@@ -982,21 +973,18 @@ export default function App() {
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
         if (resetLimitTick) {
-            console.log('resetting limit tick');
+            IS_LOCAL_ENV && console.debug('resetting limit tick');
             dispatch(setPoolPriceNonDisplay(0));
 
             dispatch(setLimitTick(undefined));
         }
-        // }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
     }, [resetLimitTick]);
 
     useEffect(() => {
-        // console.log('resetting limit');
         if (!location.pathname.includes('limitTick')) {
             dispatch(setLimitTick(undefined));
         }
         dispatch(setPrimaryQuantityRange(''));
-        // dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
@@ -1023,7 +1011,7 @@ export default function App() {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
-                        console.log(json.data);
+                        IS_LOCAL_ENV && console.debug(json.data);
                         const ambientApy = json?.data?.apy;
                         setAmbientApy(ambientApy);
 
@@ -1043,7 +1031,7 @@ export default function App() {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
             dispatch(setAdvancedMode(false));
-            console.log('resetting to 10');
+            IS_LOCAL_ENV && console.debug('resetting to 10');
             setSimpleRangeWidth(10);
             const sliderInput = document.getElementById(
                 'input-slider-range',
@@ -1054,22 +1042,8 @@ export default function App() {
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams && crocEnv) {
-            // if (provider) {
-            //     (async () => {
-            //         const contractDetails = await cachedFetchContractDetails(
-            //             provider,
-            //             tradeData.tokenB.address,
-            //             chainData.chainId,
-            //         );
-            //         console.log({ contractDetails });
-            //     })();
-            // }
-
-            // console.log(tradeData.tokenA.address);
-            // console.log(tradeData.tokenB.address);
-
             // reset rtk values for user specified range in ticks
-            console.log('resetting advanced ticks');
+            IS_LOCAL_ENV && console.debug('resetting advanced ticks');
 
             // reset advanced ticks if token pair change not the result of a 'copy trade'
             resetAdvancedTicksIfNotCopy();
@@ -1150,7 +1124,7 @@ export default function App() {
                             if (liquidityFeeNum)
                                 dispatch(setLiquidityFee(liquidityFeeNum));
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve pool TVL series
                     getTvlSeries(
@@ -1186,7 +1160,7 @@ export default function App() {
                                     }),
                                 );
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve pool volume series
                     getVolumeSeries(
@@ -1223,7 +1197,7 @@ export default function App() {
                                     }),
                                 );
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve pool liquidity
 
@@ -1240,11 +1214,9 @@ export default function App() {
                         .then((jsonData) => {
                             dispatch(setLiquidity(jsonData));
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve pool_positions
-
-                    // console.log('fetching pool positions');
                     const allPositionsCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_positions?';
                     fetch(
@@ -1272,7 +1244,6 @@ export default function App() {
                             );
 
                             if (poolPositions && crocEnv) {
-                                // console.log({ poolPositions });
                                 Promise.all(
                                     poolPositions.map(
                                         (position: PositionIF) => {
@@ -1287,7 +1258,6 @@ export default function App() {
                                     ),
                                 )
                                     .then((updatedPositions) => {
-                                        // console.log({ updatedPositions });
                                         if (
                                             JSON.stringify(
                                                 graphData.positionsByUser
@@ -1303,13 +1273,12 @@ export default function App() {
                                             );
                                         }
                                     })
-                                    .catch(console.log);
+                                    .catch(console.error);
                             }
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve positions for leaderboard
-                    // console.log('fetching leaderboard positions');
                     const poolPositionsCacheEndpoint =
                         httpGraphCacheServerDomain +
                         '/annotated_pool_positions?';
@@ -1361,9 +1330,6 @@ export default function App() {
                                                 },
                                             )
                                             .slice(0, 10);
-
-                                        // console.log({ top10Positions });
-
                                         if (
                                             JSON.stringify(
                                                 graphData.leaderboardByPool
@@ -1378,10 +1344,10 @@ export default function App() {
                                             );
                                         }
                                     })
-                                    .catch(console.log);
+                                    .catch(console.error);
                             }
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
@@ -1407,7 +1373,7 @@ export default function App() {
                                 );
                             }
                         })
-                        .catch(console.log);
+                        .catch(console.error);
 
                     // retrieve pool limit order states
 
@@ -1460,7 +1426,7 @@ export default function App() {
                                 });
                             }
                         })
-                        .catch(console.log);
+                        .catch(console.error);
                 }
             }
         }
@@ -1501,10 +1467,9 @@ export default function App() {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
-            console.log('fetching new candles');
+            IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
-                    // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
                     setFetchingCandle(true);
@@ -1557,10 +1522,10 @@ export default function App() {
                                 }
                             }
                         })
-                        .catch(console.log);
+                        .catch(console.error);
                 }
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
             }
         } else {
             setIsCandleDataNull(true);
@@ -1596,10 +1561,10 @@ export default function App() {
         poolLiqChangesCacheSubscriptionEndpoint,
         {
             // share:  true,
-            // onOpen: () => console.log('pool liqChange subscription opened'),
+            // onOpen: () => console.debug('pool liqChange subscription opened'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // onClose: (event: any) => console.log({ event }),
-            // onClose: () => console.log('allPositions websocket connection closed'),
+            // onClose: (event: any) => console.debug({ event }),
+            // onClose: () => console.debug('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -1609,11 +1574,11 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolLiqChangeMessage !== null) {
-            console.log('new pool liq change message received');
+            IS_LOCAL_ENV &&
+                console.debug('new pool liq change message received');
             const lastMessageData = JSON.parse(
                 lastPoolLiqChangeMessage.data,
             ).data;
-            // console.log({ lastMessageData });
             if (lastMessageData && crocEnv) {
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
@@ -1661,11 +1626,9 @@ export default function App() {
     const { lastMessage: candlesMessage } = useWebSocket(
         candleSubscriptionEndpoint,
         {
-            onOpen: () => {
-                // console.log({ candleSubscriptionEndpoint });
-                // fetchCandles();
+            onClose: (event) => {
+                IS_LOCAL_ENV && console.debug({ event });
             },
-            onClose: (event) => console.log({ event }),
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
@@ -1691,7 +1654,7 @@ export default function App() {
     const minTimeMemo = useMemo(() => {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
-        console.log({ candleDataLength });
+        IS_LOCAL_ENV && console.debug({ candleDataLength });
         return candleData.candles.reduce((prev, curr) =>
             prev.time < curr.time ? prev : curr,
         )?.time;
@@ -1732,7 +1695,6 @@ export default function App() {
             .then((response) => response?.json())
             .then((json) => {
                 const fetchedCandles = json?.data;
-                // console.log({ fetchedCandles });
                 if (fetchedCandles && candleData) {
                     const newCandles: CandleData[] = [];
                     const updatedCandles: CandleData[] = candleData.candles;
@@ -1760,7 +1722,6 @@ export default function App() {
                                 messageCandle;
                         }
                     }
-                    // console.log({ newCandles });
                     const newCandleData: CandlesByPoolAndDuration = {
                         pool: candleData.pool,
                         duration: candleData.duration,
@@ -1769,22 +1730,13 @@ export default function App() {
                     setCandleData(newCandleData);
                 }
             })
-            .catch(console.log);
+            .catch(console.error);
 
     useEffect(() => {
-        // console.log({ debouncedBoundary });
-        // console.log({ candleTime });
-        // console.log({ candleData });
-
         if (!numDurationsNeeded) return;
-
-        // console.log('domain boundary changes');
-
-        // console.log({ minTimeMemo });
-        // console.log({ numDurationsNeeded });
-
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
-            console.log(`fetching ${numDurationsNeeded} new candles`);
+            IS_LOCAL_ENV &&
+                console.debug(`fetching ${numDurationsNeeded} new candles`);
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
@@ -1792,7 +1744,6 @@ export default function App() {
     useEffect(() => {
         if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
-            // console.log({ lastMessageData });
             if (lastMessageData && candleData) {
                 const newCandles: CandleData[] = [];
                 const updatedCandles: CandleData[] = candleData.candles;
@@ -1805,7 +1756,8 @@ export default function App() {
                     );
 
                     if (indexOfExistingCandle === -1) {
-                        console.log('pushing new candle from message');
+                        IS_LOCAL_ENV &&
+                            console.debug('pushing new candle from message');
                         newCandles.push(messageCandle);
                     } else if (
                         JSON.stringify(
@@ -1815,7 +1767,6 @@ export default function App() {
                         updatedCandles[indexOfExistingCandle] = messageCandle;
                     }
                 }
-                // console.log({ newCandles });
                 const newCandleData: CandlesByPoolAndDuration = {
                     pool: candleData.pool,
                     duration: candleData.duration,
@@ -1851,9 +1802,14 @@ export default function App() {
         userLiqChangesCacheSubscriptionEndpoint,
         {
             // share: true,
-            onOpen: () => console.log('user liqChange subscription opened'),
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug('user liqChange subscription opened');
+            },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            onClose: (event: any) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -1867,8 +1823,8 @@ export default function App() {
                 lastUserPositionsMessage.data,
             ).data;
             if (lastMessageData && crocEnv) {
-                console.log('new user position message received');
-                // console.log({ lastMessageData });
+                IS_LOCAL_ENV &&
+                    console.debug('new user position message received');
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1880,7 +1836,6 @@ export default function App() {
                         );
                     }),
                 ).then((updatedPositions) => {
-                    // console.log({ updatedPositions });
                     dispatch(addPositionsByUser(updatedPositions));
                 });
             }
@@ -1905,10 +1860,14 @@ export default function App() {
         userRecentChangesCacheSubscriptionEndpoint,
         {
             // share: true,
-            onOpen: () =>
-                console.log('user recent changes subscription opened'),
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug('user recent changes subscription opened');
+            },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            onClose: (event: any) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -1918,7 +1877,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
-            console.log('received new user recent change');
+            IS_LOCAL_ENV && console.debug('received new user recent change');
             const lastMessageData = JSON.parse(
                 lastUserRecentChangesMessage.data,
             ).data;
@@ -1930,10 +1889,9 @@ export default function App() {
                     }),
                 )
                     .then((updatedTransactions) => {
-                        // console.log({ updatedTransactions });
                         dispatch(addChangesByUser(updatedTransactions));
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         }
     }, [lastUserRecentChangesMessage]);
@@ -1955,10 +1913,16 @@ export default function App() {
         userLimitOrderChangesCacheSubscriptionEndpoint,
         {
             // share: true,
-            onOpen: () =>
-                console.log('user limit order changes subscription opened'),
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'user limit order changes subscription opened',
+                    );
+            },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            onClose: (event: any) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -1973,7 +1937,8 @@ export default function App() {
             ).data;
 
             if (lastMessageData) {
-                console.log('received new user limit order change');
+                IS_LOCAL_ENV &&
+                    console.debug('received new user limit order change');
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
                         return getLimitOrderData(limitOrder, searchableTokens);
@@ -2002,7 +1967,8 @@ export default function App() {
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
-        console.log('resetting pool price because base/quote changed');
+        IS_LOCAL_ENV &&
+            console.debug('resetting pool price because base/quote changed');
         setPoolPriceDisplay(0);
         // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
@@ -2050,17 +2016,18 @@ export default function App() {
                 // );
                 if (spotPrice) {
                     const newDisplayPrice = getDisplayPrice(spotPrice);
-                    // console.log({ newDisplayPrice });
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        console.log(
-                            'setting new display pool price to: ' +
-                                newDisplayPrice,
-                        );
+                        IS_LOCAL_ENV &&
+                            console.debug(
+                                'setting new display pool price to: ' +
+                                    newDisplayPrice,
+                            );
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
                 if (spotPrice && spotPrice !== poolPriceNonDisplay) {
-                    console.log('dispatching new non-display spot price');
+                    IS_LOCAL_ENV &&
+                        console.debug('dispatching new non-display spot price');
                     dispatch(setPoolPriceNonDisplay(spotPrice));
                 }
             })();
@@ -2068,9 +2035,10 @@ export default function App() {
     }, [
         isUserIdle,
         lastBlockNumber,
-        JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress }),
+        baseTokenAddress + quoteTokenAddress,
         crocEnv,
         poolPriceNonDisplay === 0,
+        isUserLoggedIn,
     ]);
 
     // useEffect to update selected token balances
@@ -2088,43 +2056,49 @@ export default function App() {
                     .walletDisplay(account)
                     .then((bal: string) => {
                         if (bal !== baseTokenBalance) {
-                            console.log('setting base token wallet balance');
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting base token wallet balance',
+                                );
                             setBaseTokenBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .balanceDisplay(account)
                     .then((bal: string) => {
                         if (bal !== baseTokenDexBalance) {
-                            console.log('setting base token dex balance');
+                            IS_LOCAL_ENV &&
+                                console.debug('setting base token dex balance');
                             setBaseTokenDexBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .walletDisplay(account)
                     .then((bal: string) => {
                         if (bal !== quoteTokenBalance) {
-                            console.log('setting quote token balance');
-
+                            IS_LOCAL_ENV &&
+                                console.debug('setting quote token balance');
                             setQuoteTokenBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .balanceDisplay(account)
                     .then((bal: string) => {
                         if (bal !== quoteTokenDexBalance) {
-                            console.log('setting quote token dex balance');
-
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting quote token dex balance',
+                                );
                             setQuoteTokenDexBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         })();
     }, [
@@ -2153,7 +2127,6 @@ export default function App() {
         (async () => {
             if (crocEnv && account && tokenAAddress) {
                 try {
-                    // console.log('checking token a allowance');
                     const allowance = await crocEnv
                         .token(tokenAAddress)
                         .allowance(account);
@@ -2161,13 +2134,13 @@ export default function App() {
                         allowance,
                         tokenADecimals,
                     );
-                    // console.log({ newTokenAllowance });
                     if (tokenAAllowance !== newTokenAllowance) {
-                        console.log('setting new token a allowance');
+                        IS_LOCAL_ENV &&
+                            console.debug('setting new token a allowance');
                         setTokenAAllowance(newTokenAllowance);
                     }
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
                 if (recheckTokenAApproval) setRecheckTokenAApproval(false);
             }
@@ -2185,7 +2158,6 @@ export default function App() {
         (async () => {
             if (crocEnv && tokenBAddress && tokenBDecimals && account) {
                 try {
-                    // console.log('checking token b allowance');
                     const allowance = await crocEnv
                         .token(tokenBAddress)
                         .allowance(account);
@@ -2194,11 +2166,12 @@ export default function App() {
                         tokenBDecimals,
                     );
                     if (tokenBAllowance !== newTokenAllowance) {
-                        console.log('new token b allowance set');
+                        IS_LOCAL_ENV &&
+                            console.debug('new token b allowance set');
                         setTokenBAllowance(newTokenAllowance);
                     }
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
                 if (recheckTokenBApproval) setRecheckTokenBApproval(false);
             }
@@ -2220,7 +2193,7 @@ export default function App() {
         if (isServerEnabled && isUserLoggedIn && account && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
-            console.log('fetching user positions');
+            IS_LOCAL_ENV && console.debug('fetching user positions');
 
             const userPositionsCacheEndpoint =
                 httpGraphCacheServerDomain + '/user_positions?';
@@ -2276,12 +2249,12 @@ export default function App() {
                             });
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             } catch (error) {
-                console.log;
+                console.error;
             }
 
-            console.log('fetching user limit orders ');
+            IS_LOCAL_ENV && console.debug('fetching user limit orders ');
 
             fetch(
                 userLimitOrderStatesCacheEndpoint +
@@ -2321,7 +2294,7 @@ export default function App() {
                         });
                     }
                 })
-                .catch(console.log);
+                .catch(console.error);
 
             try {
                 fetchUserRecentChanges({
@@ -2404,9 +2377,9 @@ export default function App() {
                         // const transactedTokensMinusAmbientTokens = result.filter((token) => )
                         dispatch(setRecentTokens(result));
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             } catch (error) {
-                console.log;
+                console.error;
             }
         }
     }, [
@@ -2450,7 +2423,6 @@ export default function App() {
 
     function toggleTradeTabBasedOnRoute() {
         setOutsideControl(true);
-        // console.log({ currentLocation });
         if (currentLocation.includes('/market')) {
             setSelectedOutsideTab(0);
         } else if (currentLocation.includes('/limit')) {
@@ -2476,6 +2448,7 @@ export default function App() {
 
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
+        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -2506,7 +2479,7 @@ export default function App() {
                     }
                 }
             })
-            .catch(console.log);
+            .catch(console.error);
     }, [lastBlockNumber]);
 
     const shouldDisplayAccountTab = isUserLoggedIn && account !== undefined;
@@ -2654,7 +2627,6 @@ export default function App() {
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        // metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
@@ -3012,7 +2984,6 @@ export default function App() {
     };
 
     function updateDenomIsInBase() {
-        // console.log('------------');
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
         // ergo we need to know if the cheaper token is base or quote
@@ -3044,14 +3015,12 @@ export default function App() {
     useEffect(() => {
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
-            // if (isDenomBase !== undefined && !tradeData.didUserFlipDenom) {
             if (tradeData.isDenomBase !== isDenomBase) {
-                console.log('denomination changed');
+                IS_LOCAL_ENV && console.debug('denomination changed');
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
-    // }, [tradeData.didUserFlipDenom, JSON.stringify(tokenPair)]);
 
     const [imageData, setImageData] = useState<string[]>([]);
 
@@ -3062,16 +3031,13 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (account) {
-                // console.log('fetching NFTs belonging to connected user');
                 const imageLocalURLs = await getNFTs(account);
                 if (imageLocalURLs) setImageData(imageLocalURLs);
             }
         })();
     }, [account]);
 
-    // const mainLayoutStyle = showSidebar ? 'main-layout-2' : 'main-layout';
-    // take away margin from left if we are on homepage or swap
-
+    // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
         ? 'swap-body'
         : null;

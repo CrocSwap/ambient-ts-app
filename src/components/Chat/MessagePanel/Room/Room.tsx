@@ -57,7 +57,7 @@ export default function RoomDropdown(props: propsIF) {
         setShowCurrentPoolButton,
         favoritePoolsArray,
         setFavoritePoolsArray,
-        topPools
+        topPools,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/ban-types

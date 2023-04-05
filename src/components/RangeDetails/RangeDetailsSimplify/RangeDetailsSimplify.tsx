@@ -54,7 +54,6 @@ export default function RangeDetailsSimplify(
         quoteDisplayFrontend,
     } = useProcessRange(position, account);
 
-    // console.log({ isAmbient });
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
     const [value, copy] = useCopyToClipboard();

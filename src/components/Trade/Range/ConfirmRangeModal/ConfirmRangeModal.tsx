@@ -227,9 +227,7 @@ export default function ConfirmRangeModal(props: propsIF) {
         <WaitingConfirmation
             content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
                 dataTokenA.symbol
-            } and ${tokenBQty ? tokenBQty : '0'} ${dataTokenB.symbol}. 
-            
-                Please check the ${'Metamask'} extension in your browser for notifications.`}
+            } and ${tokenBQty ? tokenBQty : '0'} ${dataTokenB.symbol}. `}
         />
     );
 

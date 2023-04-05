@@ -8,17 +8,14 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
+import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -169,7 +166,7 @@ export default function RangesRow(props: propsIF) {
     };
 
     const openDetailsModal = () => {
-        console.log({ position });
+        IS_LOCAL_ENV && console.debug({ position });
         openGlobalModal(
             <RangeDetails
                 position={position}
@@ -194,8 +191,6 @@ export default function RangesRow(props: propsIF) {
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
-    // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
 
@@ -237,7 +232,7 @@ export default function RangesRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
 
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive
@@ -261,6 +256,7 @@ export default function RangesRow(props: propsIF) {
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+                        fontFamily: 'monospace',
                     }}
                 >
                     {posHash.toString()}
@@ -273,7 +269,7 @@ export default function RangesRow(props: propsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
             </li>
@@ -298,23 +294,24 @@ export default function RangesRow(props: propsIF) {
 
     const walletWithTooltip = (
         <li
-            onClick={() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: true,
-                    }),
-                );
-                navigate(
-                    `/${
-                        isOwnerActiveAccount
-                            ? 'account'
-                            : ensName
-                            ? ensName
-                            : ownerId
-                    }`,
-                );
-            }}
+            // onClick={() => {
+            //     dispatch(
+            //         setDataLoadingStatus({
+            //             datasetName: 'lookupUserTxData',
+            //             loadingStatus: true,
+            //         }),
+            //     );
+            //     navigate(
+            //         `/${
+            //             isOwnerActiveAccount
+            //                 ? 'account'
+            //                 : ensName
+            //                 ? ensName
+            //                 : ownerId
+            //         }`,
+            //     );
+            // }}
+            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -350,7 +347,7 @@ export default function RangesRow(props: propsIF) {
                   `${position.quoteSymbol}: ${position.quote}`,
               ]
             : [`${position.quoteSymbol}: ${position.quote}`];
-
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -362,26 +359,26 @@ export default function RangesRow(props: propsIF) {
         position.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    <p>
-                        {baseTokenSymbol} / {quoteTokenSymbol}
-                    </p>
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                <p>
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     // end of portfolio page li element ---------------
@@ -503,7 +500,7 @@ export default function RangesRow(props: propsIF) {
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
+    // eslint-disable-next-line
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -546,7 +543,7 @@ export default function RangesRow(props: propsIF) {
             {idOrNull}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={handleAccountClick}>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className={`base_color ${styles.hover_style}`}>
                         {posHashTruncated}
                     </p>{' '}

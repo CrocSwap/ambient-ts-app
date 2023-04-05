@@ -18,7 +18,6 @@ const useSocket = (room: string) => {
 
     useEffect(() => {
         const roomId = room;
-        console.log('running chat socket connection for new room');
         socketRef.current = io(host, { query: { roomId } });
         socketRef.current.on('connection');
 

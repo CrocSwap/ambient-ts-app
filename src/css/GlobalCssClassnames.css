@@ -15,6 +15,12 @@
 .base_color {
     color: var(--text-grey-light);
 }
+
+.username_base_color {
+    color: var(--text-grey-light);
+    font-family: monospace;
+}
+
 .order_sell {
     color: var(--accent-secondary);
 }
@@ -35,7 +41,7 @@
     color: #5fa2ff;
 }
 .buy_style {
-    color: var(--text-highlight);
+    color: var(--text-highlight-dark);
 }
 .sell_style {
     color: var(--accent-secondary);

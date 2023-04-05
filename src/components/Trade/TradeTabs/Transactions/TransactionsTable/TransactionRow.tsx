@@ -7,7 +7,7 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { FiExternalLink } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
@@ -15,11 +15,13 @@ import TransactionDetails from '../../../../Global/TransactionDetails/Transactio
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
     account: string;
@@ -113,7 +115,6 @@ export default function TransactionRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -179,7 +180,7 @@ export default function TransactionRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
 
     const txDomId =
         tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
@@ -212,6 +213,26 @@ export default function TransactionRow(props: propsIF) {
         }
     }
 
+    const [value, copy] = useCopyToClipboard();
+
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
+
+    function handleCopyTxHash() {
+        copy(txHash);
+
+        setOpenSnackbar(true);
+    }
+
     const [highlightRow, setHighlightRow] = useState(false);
     const highlightStyle = highlightRow ? 'var(--dark2)' : '';
     const handleRowMouseDown = () => setHighlightRow(true);
@@ -222,7 +243,6 @@ export default function TransactionRow(props: propsIF) {
             interactive
             title={
                 <div
-                    onClick={handleOpenExplorer}
                     style={{
                         marginLeft: '-40px',
                         background: 'var(--dark3)',
@@ -230,20 +250,28 @@ export default function TransactionRow(props: propsIF) {
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        width: '450px',
                     }}
                 >
                     {txHash + 'ㅤ'}
-                    <FiExternalLink size={'12px'} />
+                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+                    <FiExternalLink
+                        size={'12px'}
+                        onClick={handleOpenExplorer}
+                    />
                 </div>
             } // invisible space character added
-            placement={'right'}
+            placement={'left'}
             enterDelay={750}
             leaveDelay={0}
         >
             <li
-                onClick={handleOpenExplorer}
+                onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+                tabIndex={0}
             >
                 {txHashTruncated}
             </li>
@@ -256,15 +284,16 @@ export default function TransactionRow(props: propsIF) {
             onMouseLeave={handleRowMouseOut}
             onClick={openDetailsModal}
             data-label='value'
-            className='base_color'
+            className={sideTypeStyle}
             style={{ textAlign: 'right' }}
+            tabIndex={0}
         >
             {usdValue}
         </li>
     );
 
     const navigate = useNavigate();
-
+    // eslint-disable-next-line
     const handleWalletClick = () => {
         dispatch(
             setDataLoadingStatus({
@@ -281,10 +310,12 @@ export default function TransactionRow(props: propsIF) {
 
     const walletWithTooltip = (
         <li
-            onClick={handleWalletClick}
+            // onClick={handleWalletClick}
+            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
+            tabIndex={0}
         >
             {userNameToDisplay}
         </li>
@@ -357,6 +388,7 @@ export default function TransactionRow(props: propsIF) {
         tx.base !== ZERO_ADDRESS
             ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
             : [`${tx.quoteSymbol}: ${tx.quote}`];
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -373,24 +405,24 @@ export default function TransactionRow(props: propsIF) {
         tx.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
@@ -442,6 +474,7 @@ export default function TransactionRow(props: propsIF) {
                 style={{ textTransform: 'lowercase' }}
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
+                tabIndex={0}
             >
                 <p className='base_color'>{elapsedTimeString}</p>
             </li>
@@ -455,6 +488,7 @@ export default function TransactionRow(props: propsIF) {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            tabIndex={0}
         >
             <div
                 style={{
@@ -477,6 +511,7 @@ export default function TransactionRow(props: propsIF) {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            tabIndex={0}
         >
             <div
                 style={{
@@ -492,11 +527,99 @@ export default function TransactionRow(props: propsIF) {
             </div>
         </li>
     );
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+            console.log('Copy key pressed!');
+        }
+    };
+
+    const txIdColumnComponent = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        width: '450px',
+                    }}
+                >
+                    {txHash + 'ㅤ'}
+                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+                    <FiExternalLink
+                        size={'12px'}
+                        onClick={handleOpenExplorer}
+                    />
+                </div>
+            } // invisible space character added
+            placement={'left'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <li data-label='id'>
+                <p
+                    onClick={() => {
+                        handleOpenExplorer();
+                    }}
+                    className={`base_color ${styles.hover_style} ${styles.mono_font}`}
+                >
+                    {txHashTruncated}
+                </p>{' '}
+                {isOnPortfolioPage ? (
+                    <p
+                        className={`${usernameStyle}`}
+                        style={{
+                            textTransform: 'lowercase',
+                            cursor: 'default',
+                        }}
+                    >
+                        {userNameToDisplay}
+                    </p>
+                ) : (
+                    <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
+                    >
+                        <p
+                            className={`${usernameStyle} ${styles.hover_style}`}
+                            style={{ textTransform: 'lowercase' }}
+                        >
+                            {userNameToDisplay}
+                        </p>
+                    </NavLink>
+                )}
+            </li>
+        </TextOnlyTooltip>
+    );
 
     // end of portfolio page li element ---------------
     return (
         <ul
-            className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
+            className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
             style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
@@ -505,59 +628,14 @@ export default function TransactionRow(props: propsIF) {
             }
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
+            tabIndex={0}
+            onKeyDown={handleKeyPress}
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
-            {showColumns && (
-                <li data-label='id'>
-                    <p
-                        onClick={() => {
-                            handleOpenExplorer();
-                        }}
-                        className={`base_color ${styles.hover_style}`}
-                    >
-                        {txHashTruncated}
-                    </p>{' '}
-                    {isOnPortfolioPage ? (
-                        <p
-                            className={`${usernameStyle}`}
-                            style={{
-                                textTransform: 'lowercase',
-                                cursor: 'default',
-                            }}
-                        >
-                            {userNameToDisplay}
-                        </p>
-                    ) : (
-                        <NavLink
-                            onClick={() => {
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'lookupUserTxData',
-                                        loadingStatus: true,
-                                    }),
-                                );
-                            }}
-                            to={`/${
-                                isOwnerActiveAccount
-                                    ? 'account'
-                                    : ensName
-                                    ? ensName
-                                    : ownerId
-                            }`}
-                        >
-                            <p
-                                className={`${usernameStyle} ${styles.hover_style}`}
-                                style={{ textTransform: 'lowercase' }}
-                            >
-                                {userNameToDisplay}
-                            </p>
-                        </NavLink>
-                    )}
-                </li>
-            )}
+            {showColumns && txIdColumnComponent}
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
                     tx.positionType === 'ambient' ? (
@@ -571,6 +649,7 @@ export default function TransactionRow(props: propsIF) {
                                 textAlign: 'right',
                                 textTransform: 'lowercase',
                             }}
+                            tabIndex={0}
                         >
                             ambient
                         </li>
@@ -580,7 +659,8 @@ export default function TransactionRow(props: propsIF) {
                             onMouseLeave={handleRowMouseOut}
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${priceStyle}`}
+                            className={`${sideTypeStyle}`}
+                            tabIndex={0}
                         >
                             <p className={`${styles.align_right} `}>
                                 <span>
@@ -613,14 +693,17 @@ export default function TransactionRow(props: propsIF) {
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                         onClick={() => {
-                            console.log({ isOnPortfolioPage });
-                            console.log({
-                                truncatedDisplayPriceDenomByMoneyness,
-                            });
+                            if (IS_LOCAL_ENV) {
+                                console.debug({ isOnPortfolioPage });
+                                console.debug({
+                                    truncatedDisplayPriceDenomByMoneyness,
+                                });
+                            }
                             openDetailsModal();
                         }}
                         data-label='price'
-                        className={`${styles.align_right}  ${priceStyle}`}
+                        className={`${styles.align_right}  ${sideTypeStyle}`}
+                        tabIndex={0}
                     >
                         {isOnPortfolioPage
                             ? (
@@ -657,6 +740,7 @@ export default function TransactionRow(props: propsIF) {
                     data-label='side'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
+                    tabIndex={0}
                 >
                     {tx.entityType === 'liqchange' ||
                     tx.entityType === 'limitOrder'
@@ -672,6 +756,7 @@ export default function TransactionRow(props: propsIF) {
                     data-label='type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
+                    tabIndex={0}
                 >
                     {type}
                 </li>
@@ -776,6 +861,7 @@ export default function TransactionRow(props: propsIF) {
                     chainData={chainData}
                 />
             </li>
+            {snackbarContent}
         </ul>
     );
 }

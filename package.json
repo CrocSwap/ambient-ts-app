@@ -3,7 +3,7 @@
     "version": "0.1.2",
     "private": true,
     "dependencies": {
-        "@crocswap-libs/sdk": "^0.2.55",
+        "@crocswap-libs/sdk": "^0.2.57",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -41,7 +41,7 @@
         "react-use-websocket": "^4.2.0",
         "socket.io-client": "^4.5.1",
         "swiper": "^8.4.2",
-        "wagmi": "^0.11.4",
+        "wagmi": "^0.12.9",
         "web-vitals": "^2.1.0"
     },
     "scripts": {

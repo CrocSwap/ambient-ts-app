@@ -92,7 +92,11 @@ export default function FullChat(props: FullChatPropsIF) {
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (topPools.onActiveChain.some(({ name }) => name === reconstructedReadableRoom)) {
+        if (
+            topPools.onActiveChain.some(
+                ({ name }) => name === reconstructedReadableRoom,
+            )
+        ) {
             setReadableName(reconstructedReadableRoom);
             props.setRoom(reconstructedReadableRoom);
             setReadableName(readableRoomName);
@@ -228,13 +232,19 @@ export default function FullChat(props: FullChatPropsIF) {
                 id: findId(pool),
             };
 
-            if (!topPools.onActiveChain.some(({ name }) => name === favPool.name)) {
+            if (
+                !topPools.onActiveChain.some(
+                    ({ name }) => name === favPool.name,
+                )
+            ) {
                 topPools.onActiveChain.push(favPool);
             }
 
             for (let x = 0; x < topPools.onActiveChain.length; x++) {
                 if (favPool.name === topPools.onActiveChain[x].name) {
-                    topPools.onActiveChain.push(topPools.onActiveChain.splice(x, 1)[0]);
+                    topPools.onActiveChain.push(
+                        topPools.onActiveChain.splice(x, 1)[0],
+                    );
                 } else {
                     // do nothing
                 }
