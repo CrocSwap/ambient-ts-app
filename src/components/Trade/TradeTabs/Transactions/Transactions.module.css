@@ -257,7 +257,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid #242f3f; */
     box-shadow: 2px 1000px 1px var(--dark3) inset;
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
@@ -267,13 +266,13 @@
     border-radius: 6.25rem;
     cursor: pointer;
     font-size: 10px;
-    /* line-height: var(--body-lh); */
     color: var(--text-grey-light);
 }
 .view_wallet_link:hover{
     color: var(--text-grey-white);
 
 }
+
 
 .row_container:hover .menu {
     opacity: 1;
