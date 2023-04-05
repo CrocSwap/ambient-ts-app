@@ -292,23 +292,24 @@ export default function OrderRow(props: propsIF) {
             leaveDelay={0}
         >
             <li
-                onClick={() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: true,
-                        }),
-                    );
-                    navigate(
-                        `/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`,
-                    );
-                }}
+                // onClick={() => {
+                //     dispatch(
+                //         setDataLoadingStatus({
+                //             datasetName: 'lookupUserTxData',
+                //             loadingStatus: true,
+                //         }),
+                //     );
+                //     navigate(
+                //         `/${
+                //             isOwnerActiveAccount
+                //                 ? 'account'
+                //                 : ensName
+                //                 ? ensName
+                //                 : ownerId
+                //         }`,
+                //     );
+                // }}
+                onClick={openDetailsModal}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.hover_style}`}
                 style={{ textTransform: 'lowercase' }}
