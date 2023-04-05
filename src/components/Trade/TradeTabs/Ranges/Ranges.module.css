@@ -216,7 +216,9 @@
   .row_container:hover .menu{
     opacity: 1;
   } */
-
+  .row_container:focus-visible, .row_container li:focus-visible{
+    border: 1px solid var(--text-grey-white)
+}
 @media only screen and (max-width: 768px) {
     .header li {
         font-weight: 300;

@@ -184,6 +184,10 @@
     margin: 0 2px;
 }
 
+.row_container:focus-visible, .row_container li:focus-visible{
+    border: 1px solid var(--text-grey-white)
+}
+
 /* .trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7), .trade_header li:nth-of-type(8){
 
   text-align: right;

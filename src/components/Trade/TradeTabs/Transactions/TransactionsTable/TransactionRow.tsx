@@ -271,6 +271,7 @@ export default function TransactionRow(props: propsIF) {
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+                tabIndex={0}
             >
                 {txHashTruncated}
             </li>
@@ -285,6 +286,7 @@ export default function TransactionRow(props: propsIF) {
             data-label='value'
             className={sideTypeStyle}
             style={{ textAlign: 'right' }}
+            tabIndex={0}
         >
             {usdValue}
         </li>
@@ -313,6 +315,7 @@ export default function TransactionRow(props: propsIF) {
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
+            tabIndex={0}
         >
             {userNameToDisplay}
         </li>
@@ -471,6 +474,7 @@ export default function TransactionRow(props: propsIF) {
                 style={{ textTransform: 'lowercase' }}
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
+                tabIndex={0}
             >
                 <p className='base_color'>{elapsedTimeString}</p>
             </li>
@@ -484,6 +488,7 @@ export default function TransactionRow(props: propsIF) {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            tabIndex={0}
         >
             <div
                 style={{
@@ -506,6 +511,7 @@ export default function TransactionRow(props: propsIF) {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            tabIndex={0}
         >
             <div
                 style={{
@@ -521,6 +527,16 @@ export default function TransactionRow(props: propsIF) {
             </div>
         </li>
     );
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+            console.log('Copy key pressed!');
+        }
+    };
 
     const txIdColumnComponent = (
         <TextOnlyTooltip
@@ -603,7 +619,7 @@ export default function TransactionRow(props: propsIF) {
     // end of portfolio page li element ---------------
     return (
         <ul
-            className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
+            className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
             style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
@@ -612,6 +628,8 @@ export default function TransactionRow(props: propsIF) {
             }
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
+            tabIndex={0}
+            onKeyDown={handleKeyPress}
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
@@ -631,6 +649,7 @@ export default function TransactionRow(props: propsIF) {
                                 textAlign: 'right',
                                 textTransform: 'lowercase',
                             }}
+                            tabIndex={0}
                         >
                             ambient
                         </li>
@@ -641,6 +660,7 @@ export default function TransactionRow(props: propsIF) {
                             onClick={openDetailsModal}
                             data-label='price'
                             className={`${sideTypeStyle}`}
+                            tabIndex={0}
                         >
                             <p className={`${styles.align_right} `}>
                                 <span>
@@ -683,6 +703,7 @@ export default function TransactionRow(props: propsIF) {
                         }}
                         data-label='price'
                         className={`${styles.align_right}  ${sideTypeStyle}`}
+                        tabIndex={0}
                     >
                         {isOnPortfolioPage
                             ? (
@@ -719,6 +740,7 @@ export default function TransactionRow(props: propsIF) {
                     data-label='side'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
+                    tabIndex={0}
                 >
                     {tx.entityType === 'liqchange' ||
                     tx.entityType === 'limitOrder'
@@ -734,6 +756,7 @@ export default function TransactionRow(props: propsIF) {
                     data-label='type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
+                    tabIndex={0}
                 >
                     {type}
                 </li>

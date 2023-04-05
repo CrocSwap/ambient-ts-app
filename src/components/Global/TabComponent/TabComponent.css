@@ -68,11 +68,14 @@
 
 .tab_ul li.selected,
 .menu_content li.selected,
-.tab_ul_left li.selected {
+.tab_ul_left li.selected, .item_label.selected {
     background: #171d27;
     color: #7371fc;
 }
 
+.selected{
+    color: #7371fc;
+}
 .underline {
     position: absolute;
     bottom: -1px;

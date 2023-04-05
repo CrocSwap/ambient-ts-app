@@ -303,6 +303,8 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
                 Copy Trade
             </button>
@@ -326,6 +328,8 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
                 Copy Trade
             </button>
@@ -344,13 +348,20 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
                 Copy Trade
             </button>
         );
 
     const explorerButton = (
-        <button className={styles.option_button} onClick={handleOpenExplorer}>
+        <button
+            className={styles.option_button}
+            onClick={handleOpenExplorer}
+            tabIndex={0}
+            aria-label='Open explorer.'
+        >
             Explorer
             <FiExternalLink
                 size={15}
@@ -363,6 +374,8 @@ export default function TransactionsMenu(props: propsIF) {
         <button
             className={styles.option_button}
             onClick={() => openDetailsModal()}
+            tabIndex={0}
+            aria-label='Open details modal.'
         >
             Details
         </button>
@@ -440,9 +453,12 @@ export default function TransactionsMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
+            <button
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                className={styles.dropdown_button}
+            >
                 <FiMoreHorizontal />
-            </div>
+            </button>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
