@@ -456,6 +456,7 @@ export default function Chart(props: propsIF) {
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
     const [bandwidth, setBandwidth] = useState(5);
+    const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
 
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
@@ -512,7 +513,6 @@ export default function Chart(props: propsIF) {
                 )[0].value = minPrice;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                // setLiqHighlightedLinesGradient(newTargets, scaleData?.yScale);
                 scaleWithButtons(minPrice, maxPrice);
 
                 return newTargets;
@@ -599,7 +599,6 @@ export default function Chart(props: propsIF) {
                 )[0].value = 0;
 
                 setLiqHighlightedLinesAndArea(newTargets);
-                // setLiqHighlightedLinesGradient(newTargets, scaleData?.yScale);
 
                 return newTargets;
             });
@@ -1120,11 +1119,36 @@ export default function Chart(props: propsIF) {
             }
         });
         if (result) {
-            if (yTickValueLength > 4 && yTickValueLength < 8)
+            if (yTickValueLength > 4 && yTickValueLength < 8) {
                 setYaxisWidth('6rem');
-            if (yTickValueLength >= 8) setYaxisWidth('7rem');
-            if (yTickValueLength >= 15) setYaxisWidth('10rem');
-            if (yTickValueLength >= 20) setYaxisWidth('11rem');
+                setYaxisCanvasWidth(70);
+            }
+            if (yTickValueLength >= 8) {
+                setYaxisWidth('7rem');
+                setYaxisCanvasWidth(85);
+            }
+            if (yTickValueLength >= 10) {
+                setYaxisWidth('8rem');
+                setYaxisCanvasWidth(100);
+            }
+            if (yTickValueLength >= 13) {
+                setYaxisWidth('9rem');
+                setYaxisCanvasWidth(117);
+            }
+            if (yTickValueLength >= 15) {
+                setYaxisWidth('10rem');
+                setYaxisCanvasWidth(134);
+            }
+            if (yTickValueLength >= 16) {
+                setYaxisCanvasWidth(142);
+            }
+            if (yTickValueLength >= 17) {
+                setYaxisCanvasWidth(147);
+            }
+            if (yTickValueLength >= 20) {
+                setYaxisWidth('11rem');
+                setYaxisCanvasWidth(152);
+            }
         }
         if (yTickValueLength <= 4) setYaxisWidth('5rem');
     }
@@ -1259,19 +1283,6 @@ export default function Chart(props: propsIF) {
                             : 'none',
                     );
 
-                d3.select(d3CanvasRangeLine.current)
-                    .select('canvas')
-                    .style(
-                        'display',
-                        (location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')) &&
-                            (isAdvancedModeActive ||
-                                (rangeSimpleRangeWidth !== 100 &&
-                                    repositionRangeWidth !== 100))
-                            ? 'inline'
-                            : 'none',
-                    );
-
                 d3.select(d3CanvasLimitLine.current)
                     .select('canvas')
                     .style(
@@ -1315,7 +1326,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
-        // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
     }, [parsedChartData?.poolAdressComb]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1903,10 +1913,6 @@ export default function Chart(props: propsIF) {
                                     }
 
                                     setLiqHighlightedLinesAndArea(ranges);
-                                    // setLiqHighlightedLinesGradient(
-                                    //     ranges,
-                                    //     scaleData?.yScale,
-                                    // );
                                 }
                             }
 
@@ -2136,10 +2142,6 @@ export default function Chart(props: propsIF) {
                                 }
                             }
                         }
-                        // setLiqHighlightedLinesGradient(
-                        //     ranges,
-                        //     scaleData?.yScale,
-                        // );
                     })().then(() => {
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
@@ -2186,10 +2188,6 @@ export default function Chart(props: propsIF) {
                         }
 
                         setLiqHighlightedLinesAndArea(ranges);
-                        // setLiqHighlightedLinesGradient(
-                        //     ranges,
-                        //     scaleData?.yScale,
-                        // );
                     }
 
                     setZoomAndYdragControl(event);
@@ -2423,10 +2421,6 @@ export default function Chart(props: propsIF) {
                         }
 
                         setLiqHighlightedLinesAndArea(ranges);
-                        // setLiqHighlightedLinesGradient(
-                        //     ranges,
-                        //     scaleData?.yScale,
-                        // );
                     } else if (location.pathname.includes('/limit')) {
                         if (
                             maxYBoundary !== undefined &&
@@ -2468,10 +2462,6 @@ export default function Chart(props: propsIF) {
                             scaleData?.yScale.domain(domain);
 
                             setLiqHighlightedLinesAndArea(ranges);
-                            // setLiqHighlightedLinesGradient(
-                            //     ranges,
-                            //     scaleData?.yScale,
-                            // );
                         }
                     }
                 }
@@ -2595,7 +2585,6 @@ export default function Chart(props: propsIF) {
                 minPrice !== undefined ? minPrice : 0;
 
             setLiqHighlightedLinesAndArea(newTargets);
-            // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
             return newTargets;
         });
@@ -2647,7 +2636,6 @@ export default function Chart(props: propsIF) {
                         parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
-                    // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
                     return newTargets;
                 });
@@ -2675,13 +2663,13 @@ export default function Chart(props: propsIF) {
                         )[0].value = minPrice !== undefined ? minPrice : 0;
 
                         setLiqHighlightedLinesAndArea(newTargets);
-                        // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
                         setTriangleRangeValues(maxPrice, minPrice);
 
                         if (
                             poolPriceDisplay !== undefined &&
-                            rescaleRangeBoundariesWithSlider
+                            rescaleRangeBoundariesWithSlider &&
+                            rescale
                         ) {
                             const xmin = new Date(
                                 Math.floor(scaleData?.xScale.domain()[0]),
@@ -2767,7 +2755,6 @@ export default function Chart(props: propsIF) {
                         ) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
-                    // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
 
                     return newTargets;
                 });
@@ -2798,7 +2785,6 @@ export default function Chart(props: propsIF) {
                     },
                 ];
                 setLiqHighlightedLinesAndArea(chartTargets);
-                // setLiqHighlightedLinesGradient(chartTargets, scaleData?.yScale);
 
                 return chartTargets;
             });
@@ -2894,7 +2880,6 @@ export default function Chart(props: propsIF) {
             }
 
             setLiqHighlightedLinesAndArea(ranges);
-            // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
         } else {
             setBoundaries(denomInBase);
         }
@@ -3098,10 +3083,7 @@ export default function Chart(props: propsIF) {
                                     false,
                                     rangeWidthPercentage,
                                 );
-                                // setLiqHighlightedLinesGradient(
-                                //     newTargets,
-                                //     scaleData?.yScale,
-                                // );
+
                                 return newTargets;
                             });
                             setTriangleRangeValues(
@@ -3196,10 +3178,6 @@ export default function Chart(props: propsIF) {
                                 false,
                                 rangeWidthPercentage,
                             );
-                            // setLiqHighlightedLinesGradient(
-                            //     rangesF,
-                            //     scaleData?.yScale,
-                            // );
 
                             if (pinnedDisplayPrices !== undefined) {
                                 setRanges((prevState) => {
@@ -3325,10 +3303,6 @@ export default function Chart(props: propsIF) {
                             newRangeValue = newTargets;
 
                             setLiqHighlightedLinesAndArea(newTargets);
-                            // setLiqHighlightedLinesGradient(
-                            //     newTargets,
-                            //     scaleData?.yScale,
-                            // );
 
                             const minPrice = newTargets.filter(
                                 (target: any) => target.name === 'Min',
@@ -3416,10 +3390,6 @@ export default function Chart(props: propsIF) {
                             true,
                             rangeWidthPercentage,
                         );
-                        // setLiqHighlightedLinesGradient(
-                        //     rangesF,
-                        //     scaleData?.yScale,
-                        // );
                     }
 
                     onBlurRange(
@@ -3477,42 +3447,48 @@ export default function Chart(props: propsIF) {
 
                     setIsLineDrag(false);
 
-                    const xmin = new Date(
-                        Math.floor(scaleData?.xScale.domain()[0]),
-                    );
-                    const xmax = new Date(
-                        Math.floor(scaleData?.xScale.domain()[1]),
-                    );
+                    if (rescale) {
+                        const xmin = new Date(
+                            Math.floor(scaleData?.xScale.domain()[0]),
+                        );
+                        const xmax = new Date(
+                            Math.floor(scaleData?.xScale.domain()[1]),
+                        );
 
-                    const filtered = parsedChartData?.chartData.filter(
-                        (data: any) => data.date >= xmin && data.date <= xmax,
-                    );
+                        const filtered = parsedChartData?.chartData.filter(
+                            (data: any) =>
+                                data.date >= xmin && data.date <= xmax,
+                        );
 
-                    if (filtered !== undefined) {
-                        const minYBoundary = d3.min(filtered, (d) => d.low);
-                        const maxYBoundary = d3.max(filtered, (d) => d.high);
+                        if (filtered !== undefined) {
+                            const minYBoundary = d3.min(filtered, (d) => d.low);
+                            const maxYBoundary = d3.max(
+                                filtered,
+                                (d) => d.high,
+                            );
 
-                        if (minYBoundary && maxYBoundary) {
-                            const value = newLimitValue;
+                            if (minYBoundary && maxYBoundary) {
+                                const value = newLimitValue;
 
-                            const low =
-                                minYBoundary < value ? minYBoundary : value;
+                                const low =
+                                    minYBoundary < value ? minYBoundary : value;
 
-                            const high =
-                                maxYBoundary > value ? maxYBoundary : value;
+                                const high =
+                                    maxYBoundary > value ? maxYBoundary : value;
 
-                            const min = scaleData?.yScale.domain()[0];
-                            const max = scaleData?.yScale.domain()[1];
+                                const min = scaleData?.yScale.domain()[0];
+                                const max = scaleData?.yScale.domain()[1];
 
-                            if (min > low || max < high) {
-                                const buffer = Math.abs((low - high) / 6);
+                                if (min > low || max < high) {
+                                    const buffer = Math.abs((low - high) / 6);
 
-                                const domain = [
-                                    Math.min(low, high) - buffer,
-                                    Math.max(high, low) + buffer / 2,
-                                ];
+                                    const domain = [
+                                        Math.min(low, high) - buffer,
+                                        Math.max(high, low) + buffer / 2,
+                                    ];
 
-                                scaleData?.yScale.domain(domain);
+                                    scaleData?.yScale.domain(domain);
+                                }
                             }
                         }
                     }
@@ -3607,6 +3583,7 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         ranges,
         simpleRangeWidth !== 100 || isAdvancedModeActive,
+        yAxisCanvasWidth,
     ]);
 
     function createRectLabel(
@@ -3617,10 +3594,11 @@ export default function Chart(props: propsIF) {
         textColor: string,
         text: string,
         stroke: string | undefined = undefined,
+        yAxisWidth: any = 70,
     ) {
         context.beginPath();
         context.fillStyle = color;
-        context.fillRect(0, y - 10, 70, 20);
+        context.fillRect(0, y - 10, yAxisWidth, 20);
         context.fillStyle = textColor;
         context.fontSize = '13';
         context.textAlign = 'center';
@@ -3629,7 +3607,7 @@ export default function Chart(props: propsIF) {
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, 70, 20);
+            context.strokeRect(1, y - 10, yAxisWidth, 20);
         }
     }
 
@@ -3728,6 +3706,7 @@ export default function Chart(props: propsIF) {
                         lastCandle.close > lastCandle.open
                             ? undefined
                             : '#6c69fc',
+                        yAxisCanvasWidth,
                     );
                 }
             } else if (
@@ -3745,6 +3724,8 @@ export default function Chart(props: propsIF) {
                             '#e480ff',
                             'black',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                     } else {
                         createRectLabel(
@@ -3754,6 +3735,8 @@ export default function Chart(props: propsIF) {
                             '#7371fc',
                             'white',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                     }
                 } else {
@@ -3764,6 +3747,8 @@ export default function Chart(props: propsIF) {
                         '#7772FE',
                         'white',
                         formatAmountChartData(d, undefined),
+                        undefined,
+                        yAxisCanvasWidth,
                     );
                 }
                 addYaxisLabel(isSameLocation ? sameLocationData : yScale(d));
@@ -3817,6 +3802,8 @@ export default function Chart(props: propsIF) {
                             '#7371fc',
                             'white',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                         addYaxisLabel(
                             isSameLocationMin ? sameLocationDataMin : yScale(d),
@@ -3830,6 +3817,8 @@ export default function Chart(props: propsIF) {
                             '#7371fc',
                             'white',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                         addYaxisLabel(
                             isSameLocationMax ? sameLocationDataMax : yScale(d),
@@ -3845,6 +3834,8 @@ export default function Chart(props: propsIF) {
                         '#242F3F',
                         'white',
                         formatAmountChartData(d, undefined),
+                        undefined,
+                        yAxisCanvasWidth,
                     );
                 } else {
                     context.beginPath();
@@ -4493,11 +4484,6 @@ export default function Chart(props: propsIF) {
                     newRangeValue = newTargets;
 
                     setLiqHighlightedLinesAndArea(newTargets);
-                    // setLiqHighlightedLinesGradient(
-                    //     newTargets,
-                    //     scaleData?.yScale,
-                    // );
-
                     return newTargets;
                 });
 
@@ -4580,11 +4566,6 @@ export default function Chart(props: propsIF) {
                         newRangeValue = newTargets;
 
                         setLiqHighlightedLinesAndArea(newTargets);
-                        // setLiqHighlightedLinesGradient(
-                        //     newTargets,
-                        //     scaleData?.yScale,
-                        // );
-
                         return newTargets;
                     });
 
@@ -4656,10 +4637,6 @@ export default function Chart(props: propsIF) {
                     newRangeValue = newTargets;
 
                     setLiqHighlightedLinesAndArea(newTargets);
-                    // setLiqHighlightedLinesGradient(
-                    //     newTargets,
-                    //     scaleData?.yScale,
-                    // );
 
                     return newTargets;
                 });
@@ -5214,7 +5191,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
-        // setLiqHighlightedLinesGradient(ranges, scaleData?.yScale);
     }, [liqMode]);
 
     // line gradient
@@ -5229,36 +5205,42 @@ export default function Chart(props: propsIF) {
                 location.pathname.includes('reposition')) &&
             poolPriceDisplay
         ) {
+            const low = ranges.filter((target: any) => target.name === 'Min')[0]
+                .value;
+            const high = ranges.filter(
+                (target: any) => target.name === 'Max',
+            )[0].value;
+
             setHorizontalBandData([
                 [
                     simpleRangeWidthGra === 100 &&
+                    (low === 0 || high === 0) &&
                     (!isAdvancedModeActive ||
                         location.pathname.includes('reposition'))
                         ? 0
-                        : ranges.filter((item: any) => item.name === 'Min')[0]
-                              .value,
+                        : low,
                     simpleRangeWidthGra === 100 &&
+                    (low === 0 || high === 0) &&
                     (!isAdvancedModeActive ||
                         location.pathname.includes('reposition'))
                         ? 0
-                        : ranges.filter((item: any) => item.name === 'Max')[0]
-                              .value,
+                        : high,
                 ],
             ]);
 
             horizontalBandData[0] = [
                 simpleRangeWidthGra === 100 &&
+                (low === 0 || high === 0) &&
                 (!isAdvancedModeActive ||
                     location.pathname.includes('reposition'))
                     ? 0
-                    : ranges.filter((item: any) => item.name === 'Min')[0]
-                          .value,
+                    : low,
                 simpleRangeWidthGra === 100 &&
+                (low === 0 || high === 0) &&
                 (!isAdvancedModeActive ||
                     location.pathname.includes('reposition'))
                     ? 0
-                    : ranges.filter((item: any) => item.name === 'Max')[0]
-                          .value,
+                    : high,
             ];
 
             d3.select(d3CanvasRangeLine.current)
@@ -5267,15 +5249,10 @@ export default function Chart(props: propsIF) {
                     'display',
                     (location.pathname.includes('reposition') ||
                         location.pathname.includes('range')) &&
-                        (isAdvancedModeActive || simpleRangeWidthGra !== 100)
+                        (isAdvancedModeActive || rangeSimpleRangeWidth !== 100)
                         ? 'inline'
                         : 'none',
                 );
-            const low = ranges.filter((target: any) => target.name === 'Min')[0]
-                .value;
-            const high = ranges.filter(
-                (target: any) => target.name === 'Max',
-            )[0].value;
 
             if (autoScale && rescale) {
                 const xmin = new Date(
@@ -7036,13 +7013,8 @@ export default function Chart(props: propsIF) {
         }
 
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
-        let isNoGoneZoneMin: boolean | undefined = undefined;
-        if (newLimitValue === noGoZoneMin) {
-            isNoGoneZoneMin = true;
-        }
-        if (newLimitValue === noGoZoneMax) {
-            isNoGoneZoneMin = false;
-        }
+        const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
+        const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
 
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
@@ -7051,17 +7023,21 @@ export default function Chart(props: propsIF) {
         limitNonDisplay?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
 
-            const pinnedTick: number = isTokenABase
+            let pinnedTick: number = isTokenABase
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
-            if (isNoGoneZoneMin !== undefined && isNoGoneZoneMin) {
-                setLimitTick(pinnedTick - chainData.gridSize);
-            } else if (isNoGoneZoneMin !== undefined && !isNoGoneZoneMin) {
-                setLimitTick(pinnedTick + chainData.gridSize);
-            } else {
-                dispatch(setLimitTick(pinnedTick));
+            if (isNoGoneZoneMin) {
+                pinnedTick = denomInBase
+                    ? pinTickUpper(limit, chainData.gridSize)
+                    : pinTickLower(limit, chainData.gridSize);
             }
+            if (isNoGoneZoneMax) {
+                pinnedTick = denomInBase
+                    ? pinTickLower(limit, chainData.gridSize)
+                    : pinTickUpper(limit, chainData.gridSize);
+            }
+            dispatch(setLimitTick(pinnedTick));
 
             const tickPrice = tickToPrice(pinnedTick);
 
