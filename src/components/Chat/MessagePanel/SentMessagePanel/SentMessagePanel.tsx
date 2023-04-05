@@ -39,6 +39,22 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
 
+    const crocodileLabsLinks = [
+        'https://www.crocswap.com/',
+        'https://twitter.com/CrocSwap',
+        'https://crocswap.medium.com/',
+        'https://www.linkedin.com/company/crocodile-labs/',
+        'https://github.com/CrocSwap',
+        'https://discord.com/invite/CrocSwap',
+        'https://www.crocswap.com/whitepaper',
+    ];
+
+    const { deleteMessage } = useChatApi();
+
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
@@ -85,8 +101,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }, [props.message]);
-
-    const { deleteMessage } = useChatApi();
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -147,19 +161,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
-    const crocodileLabsLinks = [
-        'https://www.crocswap.com/',
-        'https://twitter.com/CrocSwap',
-        'https://crocswap.medium.com/',
-        'https://www.linkedin.com/company/crocodile-labs/',
-        'https://github.com/CrocSwap',
-        'https://discord.com/invite/CrocSwap',
-        'https://www.crocswap.com/whitepaper',
-    ];
-
     function isLinkInCrocodileLabsLinks(word: string) {
         return crocodileLabsLinks.includes(word);
     }
+
     function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
@@ -276,9 +281,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
             }
         });
     }
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const myBlockies = (
         <Blockies seed={props.message.walletID.toLowerCase()} scale={3} />

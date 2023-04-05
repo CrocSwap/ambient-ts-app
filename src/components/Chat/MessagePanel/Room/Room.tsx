@@ -85,7 +85,7 @@ export default function RoomDropdown(props: propsIF) {
     const rooms = topPools.onActiveChain;
 
     function findSpeed(pool: any) {
-        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
             case 'ETH/USDC':
                 return 0 as number;
             case 'ETH/WBTC':
@@ -104,7 +104,7 @@ export default function RoomDropdown(props: propsIF) {
     }
 
     function findId(pool: any) {
-        switch (pool.base.symbol + '/' + pool.quote.symbol) {
+        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
             case 'ETH/USDC':
                 return 1;
             case 'ETH/WBTC':
@@ -124,7 +124,9 @@ export default function RoomDropdown(props: propsIF) {
 
     useEffect(() => {
         props.setUserCurrentPool(
-            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            currentPool.baseToken.symbol +
+                ' / ' +
+                currentPool.quoteToken.symbol,
         );
         updateUser(
             props.currentUser as string,
@@ -182,7 +184,7 @@ export default function RoomDropdown(props: propsIF) {
               }[] = [];
         favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
-                name: pool.base.symbol + '/' + pool.quote.symbol,
+                name: pool.base.symbol + ' / ' + pool.quote.symbol,
                 base: {
                     name: pool.base.name,
                     address: pool.base.address,
@@ -263,7 +265,9 @@ export default function RoomDropdown(props: propsIF) {
 
     function handleRoomClickCurrentPool() {
         props.setRoom(
-            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            currentPool.baseToken.symbol +
+                ' / ' +
+                currentPool.quoteToken.symbol,
         );
         setShowCurrentPoolButton(false);
         setIsActive(false);
@@ -380,7 +384,7 @@ export default function RoomDropdown(props: propsIF) {
                                     handleRoomClick(
                                         event,
                                         pool.quote.symbol +
-                                            '/' +
+                                            ' / ' +
                                             pool.base.symbol,
                                     )
                                 }

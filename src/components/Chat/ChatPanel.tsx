@@ -62,7 +62,7 @@ export default function ChatPanel(props: propsIF) {
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-    const [userCurrentPool, setUserCurrentPool] = useState('ETH/USDC');
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -210,6 +210,7 @@ export default function ChatPanel(props: propsIF) {
                 setUserCurrentPool(result.userData.userCurrentPool);
                 if (result.userData.ensName !== ensName) {
                     // eslint-disable-next-line
+
                     updateUser(
                         currentUser as string,
                         ensName,
@@ -297,6 +298,17 @@ export default function ChatPanel(props: propsIF) {
         }
     };
 
+    const convertCurreny = (currencyPair: string) => {
+        if (currencyPair === 'Global') {
+            return 'global';
+        } else {
+            const [currencyA, currencyB] = currencyPair.split('/');
+            const lowercaseA = currencyA.trim().toLowerCase();
+            const lowercaseB = currencyB.trim().toLowerCase();
+            return `${lowercaseA}&${lowercaseB}`;
+        }
+    };
+
     const header = (
         <div
             className={styles.chat_header}
@@ -311,9 +323,7 @@ export default function ChatPanel(props: propsIF) {
                         size={18}
                         className={styles.open_full_button}
                         onClick={() =>
-                            window.open(
-                                '/chat/' + room.replace('/', '&').toLowerCase(),
-                            )
+                            window.open('/chat/' + convertCurreny(room))
                         }
                         role='button'
                         tabIndex={0}
@@ -463,7 +473,7 @@ export default function ChatPanel(props: propsIF) {
             room={
                 room === 'Current Pool'
                     ? currentPool.baseToken.symbol +
-                      '/' +
+                      ' / ' +
                       currentPool.quoteToken.symbol
                     : room
             }
