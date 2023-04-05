@@ -147,19 +147,37 @@ export default function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
+    const crocodileLabsLinks = [
+        'https://www.crocswap.com/',
+        'https://twitter.com/CrocSwap',
+        'https://crocswap.medium.com/',
+        'https://www.linkedin.com/company/crocodile-labs/',
+        'https://github.com/CrocSwap',
+        'https://discord.com/invite/CrocSwap',
+        'https://www.crocswap.com/whitepaper',
+    ];
+
+    function isLinkInArray(word: string) {
+        return crocodileLabsLinks.includes(word);
+    }
     function isLink(url: string) {
         const urlPattern =
             /^(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
             return (
                 <>
                     {words.map((word, index) => (
                         <span
-                            onClick={() => handleOpenExplorer(word)}
+                            onClick={() =>
+                                isLinkInArray(word)
+                                    ? handleOpenExplorer(word)
+                                    : ''
+                            }
                             key={index}
                             style={
-                                urlPattern.test(word)
+                                isLinkInArray(word)
                                     ? { color: '#ab7de7' }
                                     : { color: 'white' }
                             }
