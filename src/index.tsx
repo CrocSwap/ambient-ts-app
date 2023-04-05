@@ -13,6 +13,7 @@ import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
+import { HelmetProvider } from 'react-helmet-async';
 
 const { chains, provider, webSocketProvider } = configureChains(
     [goerli, avalanche, avalancheFuji],
@@ -57,7 +58,9 @@ root.render(
         <WagmiConfig client={client}>
             <Provider store={store}>
                 <BrowserRouter>
-                    <App />
+                    <HelmetProvider>
+                        <App />
+                    </HelmetProvider>
                 </BrowserRouter>
             </Provider>
         </WagmiConfig>
