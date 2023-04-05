@@ -3135,6 +3135,7 @@ export default function App() {
         <>
             <Helmet>
                 <title>Wololo</title>
+                <meta property='og:title' content='Ambient Finance' />
             </Helmet>
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
