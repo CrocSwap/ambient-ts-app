@@ -214,7 +214,6 @@ export default function Limit(props: propsIF) {
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitTick = tradeData.limitTick;
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
 
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -926,7 +925,6 @@ export default function Limit(props: propsIF) {
                         tokenPair={tokenPair}
                         orderGasPriceInDollars={orderGasPriceInDollars}
                         poolPriceDisplay={poolPriceDisplay || 0}
-                        slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={tradeData.liquidityFee * 100}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isTokenABase={isSellTokenBase}

@@ -257,6 +257,10 @@ export default function App() {
         if (account && checkBlacklist(account)) {
             disconnect();
         }
+        if (!account) {
+            setCrocEnv(undefined);
+            setIsShowAllEnabled(true);
+        }
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -351,7 +355,6 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
 
     const isUserLoggedIn = isConnected;
-    // const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
     // custom hook to manage chain the app is using
@@ -2032,9 +2035,10 @@ export default function App() {
     }, [
         isUserIdle,
         lastBlockNumber,
-        JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress }),
+        baseTokenAddress + quoteTokenAddress,
         crocEnv,
         poolPriceNonDisplay === 0,
+        isUserLoggedIn,
     ]);
 
     // useEffect to update selected token balances
@@ -2444,6 +2448,7 @@ export default function App() {
 
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
+        setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -2622,7 +2627,6 @@ export default function App() {
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        // metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
