@@ -1133,21 +1133,21 @@ export default function Chart(props: propsIF) {
             }
             if (yTickValueLength >= 13) {
                 setYaxisWidth('9rem');
-                setYaxisCanvasWidth(115);
+                setYaxisCanvasWidth(117);
             }
             if (yTickValueLength >= 15) {
                 setYaxisWidth('10rem');
-                setYaxisCanvasWidth(132);
+                setYaxisCanvasWidth(134);
             }
             if (yTickValueLength >= 16) {
-                setYaxisCanvasWidth(140);
+                setYaxisCanvasWidth(142);
             }
             if (yTickValueLength >= 17) {
-                setYaxisCanvasWidth(145);
+                setYaxisCanvasWidth(147);
             }
             if (yTickValueLength >= 20) {
                 setYaxisWidth('11rem');
-                setYaxisCanvasWidth(150);
+                setYaxisCanvasWidth(152);
             }
         }
         if (yTickValueLength <= 4) setYaxisWidth('5rem');
@@ -3636,6 +3636,7 @@ export default function Chart(props: propsIF) {
             context.strokeStyle = stroke;
             context.strokeRect(1, y - 10, yAxisWidth, 20);
         }
+        console.log(yAxisWidth);
     }
 
     function addYaxisLabel(y: number) {
