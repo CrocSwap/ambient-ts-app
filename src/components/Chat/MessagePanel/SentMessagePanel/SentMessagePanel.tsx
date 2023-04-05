@@ -157,13 +157,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
         'https://www.crocswap.com/whitepaper',
     ];
 
-    function isLinkInArray(word: string) {
+    function isLinkInCrocodileLabsLinks(word: string) {
         return crocodileLabsLinks.includes(word);
     }
-    function isLink(url: string) {
-        const urlPattern =
-            /^(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
-
+    function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
             return (
@@ -171,13 +168,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     {words.map((word, index) => (
                         <span
                             onClick={() =>
-                                isLinkInArray(word)
+                                isLinkInCrocodileLabsLinks(word)
                                     ? handleOpenExplorer(word)
                                     : ''
                             }
                             key={index}
                             style={
-                                isLinkInArray(word)
+                                isLinkInCrocodileLabsLinks(word)
                                     ? { color: '#ab7de7' }
                                     : { color: 'white' }
                             }
@@ -188,7 +185,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 </>
             );
         } else {
-            if (urlPattern.test(url)) {
+            if (isLinkInCrocodileLabsLinks(url)) {
                 return (
                     <p
                         style={{ color: '#ab7de7' }}
@@ -222,7 +219,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + isLink(word)}
+                                {'' + detectLinksFromMessage(word)}
                             </span>
                         ))}
                     </p>
@@ -230,7 +227,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <div className={styles.message}>
-                        {isLink(props.message.message)}
+                        {detectLinksFromMessage(props.message.message)}
                     </div>
                 );
             }
@@ -251,7 +248,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + isLink(word)}
+                                {'' + detectLinksFromMessage(word)}
                             </span>
                         ))}
                     </p>
@@ -259,7 +256,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <div className={styles.message_without_avatar}>
-                        {isLink(props.message.message)}
+                        {detectLinksFromMessage(props.message.message)}
                     </div>
                 );
             }
