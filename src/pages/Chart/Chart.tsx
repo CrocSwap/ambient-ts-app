@@ -3636,7 +3636,6 @@ export default function Chart(props: propsIF) {
             context.strokeStyle = stroke;
             context.strokeRect(1, y - 10, yAxisWidth, 20);
         }
-        console.log(yAxisWidth);
     }
 
     function addYaxisLabel(y: number) {
