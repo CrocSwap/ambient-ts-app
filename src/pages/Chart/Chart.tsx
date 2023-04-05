@@ -456,6 +456,7 @@ export default function Chart(props: propsIF) {
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
     const [bandwidth, setBandwidth] = useState(5);
+    const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
 
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
@@ -1118,11 +1119,36 @@ export default function Chart(props: propsIF) {
             }
         });
         if (result) {
-            if (yTickValueLength > 4 && yTickValueLength < 8)
+            if (yTickValueLength > 4 && yTickValueLength < 8) {
                 setYaxisWidth('6rem');
-            if (yTickValueLength >= 8) setYaxisWidth('7rem');
-            if (yTickValueLength >= 15) setYaxisWidth('10rem');
-            if (yTickValueLength >= 20) setYaxisWidth('11rem');
+                setYaxisCanvasWidth(70);
+            }
+            if (yTickValueLength >= 8) {
+                setYaxisWidth('7rem');
+                setYaxisCanvasWidth(85);
+            }
+            if (yTickValueLength >= 10) {
+                setYaxisWidth('8rem');
+                setYaxisCanvasWidth(100);
+            }
+            if (yTickValueLength >= 13) {
+                setYaxisWidth('9rem');
+                setYaxisCanvasWidth(117);
+            }
+            if (yTickValueLength >= 15) {
+                setYaxisWidth('10rem');
+                setYaxisCanvasWidth(134);
+            }
+            if (yTickValueLength >= 16) {
+                setYaxisCanvasWidth(142);
+            }
+            if (yTickValueLength >= 17) {
+                setYaxisCanvasWidth(147);
+            }
+            if (yTickValueLength >= 20) {
+                setYaxisWidth('11rem');
+                setYaxisCanvasWidth(152);
+            }
         }
         if (yTickValueLength <= 4) setYaxisWidth('5rem');
     }
@@ -3557,6 +3583,7 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         ranges,
         simpleRangeWidth !== 100 || isAdvancedModeActive,
+        yAxisCanvasWidth,
     ]);
 
     function createRectLabel(
@@ -3567,10 +3594,11 @@ export default function Chart(props: propsIF) {
         textColor: string,
         text: string,
         stroke: string | undefined = undefined,
+        yAxisWidth: any = 70,
     ) {
         context.beginPath();
         context.fillStyle = color;
-        context.fillRect(0, y - 10, 70, 20);
+        context.fillRect(0, y - 10, yAxisWidth, 20);
         context.fillStyle = textColor;
         context.fontSize = '13';
         context.textAlign = 'center';
@@ -3579,7 +3607,7 @@ export default function Chart(props: propsIF) {
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, 70, 20);
+            context.strokeRect(1, y - 10, yAxisWidth, 20);
         }
     }
 
@@ -3678,6 +3706,7 @@ export default function Chart(props: propsIF) {
                         lastCandle.close > lastCandle.open
                             ? undefined
                             : '#6c69fc',
+                        yAxisCanvasWidth,
                     );
                 }
             } else if (
@@ -3695,6 +3724,8 @@ export default function Chart(props: propsIF) {
                             '#e480ff',
                             'black',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                     } else {
                         createRectLabel(
@@ -3704,6 +3735,8 @@ export default function Chart(props: propsIF) {
                             '#7371fc',
                             'white',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                     }
                 } else {
@@ -3714,6 +3747,8 @@ export default function Chart(props: propsIF) {
                         '#7772FE',
                         'white',
                         formatAmountChartData(d, undefined),
+                        undefined,
+                        yAxisCanvasWidth,
                     );
                 }
                 addYaxisLabel(isSameLocation ? sameLocationData : yScale(d));
@@ -3767,6 +3802,8 @@ export default function Chart(props: propsIF) {
                             '#7371fc',
                             'white',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                         addYaxisLabel(
                             isSameLocationMin ? sameLocationDataMin : yScale(d),
@@ -3780,6 +3817,8 @@ export default function Chart(props: propsIF) {
                             '#7371fc',
                             'white',
                             formatAmountChartData(d, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
                         );
                         addYaxisLabel(
                             isSameLocationMax ? sameLocationDataMax : yScale(d),
@@ -3795,6 +3834,8 @@ export default function Chart(props: propsIF) {
                         '#242F3F',
                         'white',
                         formatAmountChartData(d, undefined),
+                        undefined,
+                        yAxisCanvasWidth,
                     );
                 } else {
                     context.beginPath();
