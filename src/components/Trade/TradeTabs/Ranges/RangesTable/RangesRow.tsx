@@ -8,10 +8,7 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
+import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -259,6 +256,7 @@ export default function RangesRow(props: propsIF) {
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+                        fontFamily: 'monospace',
                     }}
                 >
                     {posHash.toString()}
@@ -348,7 +346,7 @@ export default function RangesRow(props: propsIF) {
                   `${position.quoteSymbol}: ${position.quote}`,
               ]
             : [`${position.quoteSymbol}: ${position.quote}`];
-
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -360,26 +358,26 @@ export default function RangesRow(props: propsIF) {
         position.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    <p>
-                        {baseTokenSymbol} / {quoteTokenSymbol}
-                    </p>
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                <p>
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     // end of portfolio page li element ---------------
@@ -545,7 +543,9 @@ export default function RangesRow(props: propsIF) {
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id' onClick={handleAccountClick}>
-                    <p className={`base_color ${styles.hover_style}`}>
+                    <p
+                        className={`base_color ${styles.hover_style} ${styles.mono_font}`}
+                    >
                         {posHashTruncated}
                     </p>{' '}
                     <p
