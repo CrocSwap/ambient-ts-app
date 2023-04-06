@@ -129,6 +129,7 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+    console.log({ position });
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -210,6 +211,10 @@ export default function Reposition(props: propsIF) {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
         dispatch(setAdvancedMode(false));
     }, []);
+
+    useEffect(() => {
+        setSimpleRangeWidth(10);
+    }, [position]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
@@ -616,6 +621,12 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
+                    repoSlippage={repoSlippage}
+                    isPairStable={isPairStable}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isDenomBase={isDenomBase}
+                    currentMinPrice={position?.lowRangeDisplayInBase}
+                    currentMaxPrice={position?.highRangeDisplayInBase}
                 />
                 <div className={styles.button_container}>
                     <Button

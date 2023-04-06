@@ -33,11 +33,27 @@ interface SentMessageProps {
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
-    const [hasSeparator, sethasSeparator] = useState(false);
+    const [hasSeparator, setHasSeparator] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
+
+    const crocodileLabsLinks = [
+        'https://www.crocswap.com/',
+        'https://twitter.com/CrocSwap',
+        'https://crocswap.medium.com/',
+        'https://www.linkedin.com/company/crocodile-labs/',
+        'https://github.com/CrocSwap',
+        'https://discord.com/invite/CrocSwap',
+        'https://www.crocswap.com/whitepaper',
+    ];
+
+    const { deleteMessage } = useChatApi();
+
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
@@ -63,14 +79,23 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     nextCurrentDiffInMs < 10 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
                 ) {
-                    sethasSeparator(false);
+                    setHasSeparator(false);
                 } else {
-                    sethasSeparator(true);
+                    setHasSeparator(true);
                 }
             } else {
-                setShowAvatar(true);
-                setShowName(true);
-                sethasSeparator(true);
+                if (
+                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    props.message?.sender === props.nextMessage?.sender
+                ) {
+                    setShowAvatar(true);
+                    setShowName(true);
+                    setHasSeparator(false);
+                } else {
+                    setShowAvatar(true);
+                    setShowName(true);
+                    setHasSeparator(true);
+                }
             }
         } else {
             setShowAvatar(true);
@@ -79,14 +104,12 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 nextCurrentDiffInMs < 10 * 60 * 1000 &&
                 props.nextMessage?.sender === props.message?.sender
             ) {
-                sethasSeparator(false);
+                setHasSeparator(false);
             } else {
-                sethasSeparator(true);
+                setHasSeparator(true);
             }
         }
     }, [props.message]);
-
-    const { deleteMessage } = useChatApi();
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -147,19 +170,25 @@ export default function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
-    function isLink(url: string) {
-        const urlPattern =
-            /^(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+    function isLinkInCrocodileLabsLinks(word: string) {
+        return crocodileLabsLinks.includes(word);
+    }
+
+    function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
             return (
                 <>
                     {words.map((word, index) => (
                         <span
-                            onClick={() => handleOpenExplorer(word)}
+                            onClick={() =>
+                                isLinkInCrocodileLabsLinks(word)
+                                    ? handleOpenExplorer(word)
+                                    : ''
+                            }
                             key={index}
                             style={
-                                urlPattern.test(word)
+                                isLinkInCrocodileLabsLinks(word)
                                     ? { color: '#ab7de7' }
                                     : { color: 'white' }
                             }
@@ -170,7 +199,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 </>
             );
         } else {
-            if (urlPattern.test(url)) {
+            if (isLinkInCrocodileLabsLinks(url)) {
                 return (
                     <p
                         style={{ color: '#ab7de7' }}
@@ -204,7 +233,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + isLink(word)}
+                                {'' + detectLinksFromMessage(word)}
                             </span>
                         ))}
                     </p>
@@ -212,7 +241,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <div className={styles.message}>
-                        {isLink(props.message.message)}
+                        {detectLinksFromMessage(props.message.message)}
                     </div>
                 );
             }
@@ -233,7 +262,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                         : styles.message
                                 }`}
                             >
-                                {'' + isLink(word)}
+                                {'' + detectLinksFromMessage(word)}
                             </span>
                         ))}
                     </p>
@@ -241,7 +270,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             } else {
                 return (
                     <div className={styles.message_without_avatar}>
-                        {isLink(props.message.message)}
+                        {detectLinksFromMessage(props.message.message)}
                     </div>
                 );
             }
@@ -261,9 +290,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
             }
         });
     }
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const myBlockies = (
         <Blockies seed={props.message.walletID.toLowerCase()} scale={3} />
