@@ -458,10 +458,9 @@ export default function OrderRow(props: propsIF) {
                         cursor: 'pointer',
                     }}
                 >
-                    {'First Minted: ' +
-                        moment(limitOrder.timeFirstMint * 1000).format(
-                            'MM/DD/YYYY HH:mm',
-                        )}
+                    {moment(limitOrder.latestUpdateTime * 1000).format(
+                        'MM/DD/YYYY HH:mm',
+                    )}
                 </p>
             }
             placement={'right'}

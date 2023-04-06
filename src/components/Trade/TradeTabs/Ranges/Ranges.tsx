@@ -342,7 +342,7 @@ export default function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: showPair,
             slug: 'time',
             sortable: true,
         },

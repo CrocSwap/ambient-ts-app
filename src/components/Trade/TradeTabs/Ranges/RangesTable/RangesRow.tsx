@@ -478,10 +478,9 @@ export default function RangesRow(props: propsIF) {
                         cursor: 'pointer',
                     }}
                 >
-                    {'First Minted: ' +
-                        moment(position.timeFirstMint * 1000).format(
-                            'MM/DD/YYYY HH:mm',
-                        )}
+                    {moment(position.latestUpdateTime * 1000).format(
+                        'MM/DD/YYYY HH:mm',
+                    )}
                 </p>
             }
             placement={'right'}
@@ -538,7 +537,7 @@ export default function RangesRow(props: propsIF) {
             style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
         >
             {rankingOrNull}
-            {!showColumns && RangeTimeWithTooltip}
+            {showPair && RangeTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
