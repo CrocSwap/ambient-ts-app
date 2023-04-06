@@ -7,7 +7,7 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
@@ -46,7 +46,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 export default function TransactionRow(props: propsIF) {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const {
         account,
         showColumns,
