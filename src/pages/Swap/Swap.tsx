@@ -802,13 +802,24 @@ export default function Swap(props: propsIF) {
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
+        // !Important   any changes to verbiage in this code block must be approved
+        // !Important   ... by Doug, get in writing by email or request specific
+        // !Important   ... review for a pull request on GitHub
         let text: string;
         if (needConfirmTokenA && needConfirmTokenB) {
-            text = `The tokens "${tokenPair.dataTokenA.name}" and "${tokenPair.dataTokenA.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+            text = `The tokens ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } and ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } are not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenA) {
-            text = `The token "${tokenPair.dataTokenA.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+            text = `The token ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenB) {
-            text = `The token "${tokenPair.dataTokenB.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+            text = `The token ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else {
             text = '';
         }
