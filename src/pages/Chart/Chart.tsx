@@ -3869,9 +3869,11 @@ export default function Chart(props: propsIF) {
                 .yScale(scaleData?.yScale);
 
             horizontalLine.decorate((context: any) => {
-                context.visibility = location.pathname.includes('range')
-                    ? 'visible'
-                    : 'hidden';
+                context.visibility =
+                    location.pathname.includes('range') ||
+                    location.pathname.includes('reposition')
+                        ? 'visible'
+                        : 'hidden';
                 context.strokeStyle = 'var(--accent-secondary)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 3;
@@ -4057,12 +4059,15 @@ export default function Chart(props: propsIF) {
             renderCanvas();
         } else if (
             horizontalLine !== undefined &&
-            location.pathname.includes('range')
+            (location.pathname.includes('range') ||
+                location.pathname.includes('reposition'))
         ) {
             horizontalLine.decorate((context: any, datum: any) => {
-                context.visibility = location.pathname.includes('range')
-                    ? 'visible'
-                    : 'hidden';
+                context.visibility =
+                    location.pathname.includes('range') ||
+                    location.pathname.includes('reposition')
+                        ? 'visible'
+                        : 'hidden';
                 context.strokeStyle =
                     datum.value > liquidityData.liqBoundary
                         ? '#7371fc'
@@ -5183,7 +5188,7 @@ export default function Chart(props: propsIF) {
                     'display',
                     (location.pathname.includes('reposition') ||
                         location.pathname.includes('range')) &&
-                        (isAdvancedModeActive || rangeSimpleRangeWidth !== 100)
+                        (isAdvancedModeActive || simpleRangeWidth !== 100)
                         ? 'inline'
                         : 'none',
                 );
