@@ -1,6 +1,6 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -39,6 +39,7 @@ interface propsIF {
     buyQtyString: string;
     bypassConfirm: allSkipConfirmMethodsIF;
     lastBlockNumber: number;
+    pool: CrocPoolView | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -60,6 +61,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         buyQtyString,
         bypassConfirm,
         lastBlockNumber,
+        pool,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -74,7 +76,62 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [blockNumberWhenModalOpened] = useState<number>(lastBlockNumber);
 
-    console.log({ blockNumberWhenModalOpened });
+    const [poolPriceWhenModalOpened, setPoolPriceWhenModalOpened] = useState<
+        number | undefined
+    >();
+
+    const [currentPoolPrice, setCurrentPoolPrice] = useState<
+        number | undefined
+    >();
+
+    const setInitialPriceAsync = async () => {
+        if (!pool) return;
+        const intialPrice = await pool.displayPrice(blockNumberWhenModalOpened);
+        console.log({ intialPrice });
+        setPoolPriceWhenModalOpened(intialPrice);
+    };
+
+    const setCurrentPriceAsync = async () => {
+        if (!pool) return;
+        const currentPrice = await pool.displayPrice(lastBlockNumber);
+        console.log({ currentPrice });
+        setCurrentPoolPrice(currentPrice);
+    };
+
+    const poolPriceChangePercentage = useMemo(() => {
+        if (!currentPoolPrice || !poolPriceWhenModalOpened) return;
+
+        const changePercentage =
+            ((currentPoolPrice - poolPriceWhenModalOpened) /
+                poolPriceWhenModalOpened) *
+            100;
+
+        const changePercentageString =
+            changePercentage === undefined
+                ? '…'
+                : changePercentage.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        return changePercentageString;
+    }, [currentPoolPrice, poolPriceWhenModalOpened]);
+
+    useEffect(() => {
+        setInitialPriceAsync();
+    }, []);
+
+    useEffect(() => {
+        setCurrentPriceAsync();
+    }, [lastBlockNumber]);
+
+    useEffect(() => {
+        console.log({ poolPriceChangePercentage });
+    }, [poolPriceChangePercentage]);
+
+    useEffect(() => {
+        console.log({ blockNumberWhenModalOpened });
+        console.log({ poolPriceWhenModalOpened });
+    }, [poolPriceWhenModalOpened]);
 
     const isPriceInverted =
         (isDenomBaseLocal && !isSellTokenBase) ||
@@ -177,6 +234,10 @@ export default function ConfirmSwapModal(props: propsIF) {
                 <div className={styles.row}>
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
+                </div>
+                <div className={styles.row}>
+                    <p>Change in pool price since modal opened</p>
+                    <p>{poolPriceChangePercentage + '%'}</p>
                 </div>
             </div>
             <ConfirmationModalControl

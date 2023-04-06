@@ -3,7 +3,7 @@ import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import { CrocEnv, CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -108,10 +108,12 @@ interface propsIF {
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
     bypassConfirm: allSkipConfirmMethodsIF;
+    pool: CrocPoolView | undefined;
 }
 
 export default function Swap(props: propsIF) {
     const {
+        pool,
         crocEnv,
         isUserLoggedIn,
         account,
@@ -530,6 +532,7 @@ export default function Swap(props: propsIF) {
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
     const confirmSwapModalProps = {
+        pool: pool,
         poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
