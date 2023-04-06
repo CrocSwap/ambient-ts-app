@@ -311,7 +311,6 @@ export default function LimitCurrencySelector(props: propsIF) {
                                 (isSellTokenSelector &&
                                     !isWithdrawFromDexChecked) ||
                                 (isSellTokenSelector &&
-                                    isSellTokenEth === false &&
                                     isWithdrawFromDexChecked &&
                                     tokenASurplusMinusTokenARemainderNum &&
                                     tokenASurplusMinusTokenARemainderNum < 0)
