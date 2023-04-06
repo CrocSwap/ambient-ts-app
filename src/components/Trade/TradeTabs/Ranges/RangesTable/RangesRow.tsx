@@ -21,6 +21,7 @@ import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -289,8 +290,67 @@ export default function RangesRow(props: propsIF) {
             {'$' + usdValue}
         </li>
     );
+    const actualWalletWithTooltip = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
 
-    const walletWithTooltip = (
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+
+                        gap: '4px',
+                        // width: '450px',
+                    }}
+                >
+                    <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
+                    >
+                        {ensName ? ensName : ownerId}
+
+                        <FiExternalLink size={'12px'} />
+                    </NavLink>
+                </div>
+            }
+            placement={'right'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <li
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </TextOnlyTooltip>
+    );
+
+    const walletWithoutTooltip = (
         <li
             onClick={openDetailsModal}
             data-label='wallet'
@@ -300,6 +360,9 @@ export default function RangesRow(props: propsIF) {
             {userNameToDisplay}
         </li>
     );
+    const walletWithTooltip = isOwnerActiveAccount
+        ? walletWithoutTooltip
+        : actualWalletWithTooltip;
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (

@@ -7,7 +7,7 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
@@ -46,6 +46,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 export default function TransactionRow(props: propsIF) {
+    const navigate = useNavigate();
     const {
         account,
         showColumns,
@@ -305,8 +306,69 @@ export default function TransactionRow(props: propsIF) {
         }`;
         window.open(accountUrl);
     };
+    const actualWalletWithTooltip = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
 
-    const walletWithTooltip = (
+                        // width: '450px',
+                    }}
+                >
+                    <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
+                        style={{
+                            fontFamily: 'monospace',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            whiteSpace: 'nowrap',
+
+                            gap: '4px',
+                        }}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
+                    >
+                        {ensName ? ensName : ownerId}
+
+                        <FiExternalLink size={'12px'} />
+                    </NavLink>
+                </div>
+            }
+            placement={'right'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <li
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </TextOnlyTooltip>
+    );
+
+    const walletWithoutTooltip = (
         <li
             // onClick={handleWalletClick}
             onClick={openDetailsModal}
@@ -318,6 +380,10 @@ export default function TransactionRow(props: propsIF) {
             {userNameToDisplay}
         </li>
     );
+
+    const walletWithTooltip = isOwnerActiveAccount
+        ? walletWithoutTooltip
+        : actualWalletWithTooltip;
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
