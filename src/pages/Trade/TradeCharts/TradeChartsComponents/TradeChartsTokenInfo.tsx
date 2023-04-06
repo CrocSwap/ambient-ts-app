@@ -2,6 +2,7 @@ import styles from './TradeChartsTokenInfo.module.css';
 import {
     DefaultTooltip,
     NoColorTooltip,
+    TextOnlyTooltip,
 } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import {
     useAppSelector,
@@ -255,7 +256,11 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             className={styles.denom_toggle_button}
             aria-label='flip denomination.'
         >
-            <DefaultTooltip interactive title={tokenSymbols} placement={'top'}>
+            <TextOnlyTooltip
+                interactive
+                title={tokenSymbols}
+                placement={'bottom'}
+            >
                 <div className={styles.tokens_images} id='trade_token_pair'>
                     {topTokenLogo ? (
                         <img src={topTokenLogo} alt={topTokenSymbol} />
@@ -274,8 +279,12 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         />
                     )}
                 </div>
-            </DefaultTooltip>
-            <DefaultTooltip interactive title={tokenSymbols} placement={'top'}>
+            </TextOnlyTooltip>
+            <TextOnlyTooltip
+                interactive
+                title={tokenSymbols}
+                placement={'bottom'}
+            >
                 <div
                     className={styles.tokens_name}
                     aria-live='polite'
@@ -285,7 +294,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 >
                     {topTokenSymbol} / {bottomTokenSymbol}
                 </div>
-            </DefaultTooltip>
+            </TextOnlyTooltip>
         </button>
     );
 
