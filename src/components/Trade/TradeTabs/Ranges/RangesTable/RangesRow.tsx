@@ -270,13 +270,13 @@ export default function RangesRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
@@ -345,18 +345,18 @@ export default function RangesRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
     const walletWithoutTooltip = (
-        <li
+        <p
             // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
@@ -365,7 +365,7 @@ export default function RangesRow(props: propsIF) {
             tabIndex={0}
         >
             {userNameToDisplay}
-        </li>
+        </p>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
@@ -436,7 +436,8 @@ export default function RangesRow(props: propsIF) {
 
     // Leaderboard content--------------------------------
 
-    const idOrNull = !isLeaderboard && !showColumns ? IDWithTooltip : null;
+    const idOrNull =
+        !isLeaderboard && !showColumns ? <li> {IDWithTooltip}</li> : null;
 
     const rankingOrNull =
         isLeaderboard && !showColumns ? (
@@ -577,6 +578,13 @@ export default function RangesRow(props: propsIF) {
         }
     };
 
+    const txIdColumnComponent = (
+        <li>
+            {IDWithTooltip}
+            {walletWithTooltip}
+        </li>
+    );
+
     return (
         <ul
             onMouseEnter={() => setShowHighlightedButton(true)}
@@ -595,20 +603,10 @@ export default function RangesRow(props: propsIF) {
             {showPair && RangeTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
-            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
-            {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
-                    <p className={`base_color ${styles.hover_style}`}>
-                        {posHashTruncated}
-                    </p>{' '}
-                    <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
-                        style={{ textTransform: 'lowercase' }}
-                    >
-                        {userNameToDisplay}
-                    </p>
-                </li>
-            )}
+            {!showColumns && !isOnPortfolioPage && (
+                <li>{walletWithTooltip}</li>
+            )}{' '}
+            {showColumns && txIdColumnComponent}
             {!showColumns ? (
                 isAmbient ? (
                     <li
@@ -754,7 +752,6 @@ export default function RangesRow(props: propsIF) {
                     </div>
                 </li>
             )}
-
             <li
                 onClick={openDetailsModal}
                 data-label='value'
@@ -779,7 +776,6 @@ export default function RangesRow(props: propsIF) {
                     justSymbol
                 />
             </li>
-
             <li data-label='menu' className={styles.menu}>
                 <RangesMenu
                     {...rangeMenuProps}

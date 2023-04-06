@@ -268,14 +268,14 @@ export default function TransactionRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
                 tabIndex={0}
             >
                 {txHashTruncated}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
@@ -358,18 +358,18 @@ export default function TransactionRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
     const walletWithoutTooltip = (
-        <li
+        <p
             // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
@@ -378,12 +378,19 @@ export default function TransactionRow(props: propsIF) {
             tabIndex={0}
         >
             {userNameToDisplay}
-        </li>
+        </p>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
+
+    const txIdColumnComponent = (
+        <li>
+            {IDWithTooltip}
+            {walletWithTooltip}
+        </li>
+    );
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
@@ -602,84 +609,6 @@ export default function TransactionRow(props: propsIF) {
         }
     };
 
-    const txIdColumnComponent = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: '-40px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontFamily: 'monospace',
-                        whiteSpace: 'nowrap',
-                        width: '450px',
-                    }}
-                >
-                    {txHash + 'ㅤ'}
-                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
-                    <FiExternalLink
-                        size={'12px'}
-                        onClick={handleOpenExplorer}
-                    />
-                </div>
-            } // invisible space character added
-            placement={'left'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li data-label='id'>
-                <p
-                    onClick={() => {
-                        handleOpenExplorer();
-                    }}
-                    className={`base_color ${styles.hover_style} ${styles.mono_font}`}
-                >
-                    {txHashTruncated}
-                </p>{' '}
-                {isOnPortfolioPage ? (
-                    <p
-                        className={`${usernameStyle}`}
-                        style={{
-                            textTransform: 'lowercase',
-                            cursor: 'default',
-                        }}
-                    >
-                        {userNameToDisplay}
-                    </p>
-                ) : (
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
-                    >
-                        <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
-                            style={{ textTransform: 'lowercase' }}
-                        >
-                            {userNameToDisplay}
-                        </p>
-                    </NavLink>
-                )}
-            </li>
-        </TextOnlyTooltip>
-    );
-
     // end of portfolio page li element ---------------
     return (
         <ul
@@ -697,8 +626,8 @@ export default function TransactionRow(props: propsIF) {
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
-            {!showColumns && IDWithTooltip}
-            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
+            {!showColumns && <li>{IDWithTooltip}</li>}
+            {!showColumns && !isOnPortfolioPage && <li>{walletWithTooltip}</li>}
             {showColumns && txIdColumnComponent}
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (

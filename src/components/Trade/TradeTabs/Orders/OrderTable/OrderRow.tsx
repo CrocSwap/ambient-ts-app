@@ -226,13 +226,13 @@ export default function OrderRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
@@ -302,18 +302,18 @@ export default function OrderRow(props: propsIF) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
     const walletWithoutTooltip = (
-        <li
+        <p
             // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
@@ -322,7 +322,7 @@ export default function OrderRow(props: propsIF) {
             tabIndex={0}
         >
             {userNameToDisplay}
-        </li>
+        </p>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
@@ -498,6 +498,12 @@ export default function OrderRow(props: propsIF) {
             <p className='base_color'>{elapsedTimeString}</p>
         </li>
     );
+    const txIdColumnComponent = (
+        <li>
+            {IDWithTooltip}
+            {walletWithTooltip}
+        </li>
+    );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
@@ -534,21 +540,9 @@ export default function OrderRow(props: propsIF) {
         >
             {!showColumns && OrderTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
-            {!showColumns && IDWithTooltip}
-            {!isOnPortfolioPage && !showColumns && walletWithTooltip}
-            {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
-                    <p className={`base_color ${styles.hover_style}`}>
-                        {posHashTruncated}
-                    </p>{' '}
-                    <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
-                        style={{ textTransform: 'lowercase' }}
-                    >
-                        {userNameToDisplay}
-                    </p>
-                </li>
-            )}
+            {!showColumns && <li>{IDWithTooltip}</li>}
+            {!showColumns && !isOnPortfolioPage && <li>{walletWithTooltip}</li>}
+            {showColumns && txIdColumnComponent}
             {!ipadView && (
                 <li
                     onClick={openDetailsModal}
