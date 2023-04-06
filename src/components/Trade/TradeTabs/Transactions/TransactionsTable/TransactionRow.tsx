@@ -213,7 +213,7 @@ export default function TransactionRow(props: propsIF) {
             window.open(explorerUrl);
         }
     }
-
+    // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [valueToCopy, setValueToCopy] = useState('');
 
@@ -225,7 +225,7 @@ export default function TransactionRow(props: propsIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {txHash} copied
+            {valueToCopy} copied
         </SnackbarComponent>
     );
 

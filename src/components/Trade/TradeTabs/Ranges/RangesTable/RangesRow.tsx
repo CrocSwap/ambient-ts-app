@@ -218,7 +218,7 @@ export default function RangesRow(props: propsIF) {
             inline: 'nearest',
         });
     }
-
+    // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [valueToCopy, setValueToCopy] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);

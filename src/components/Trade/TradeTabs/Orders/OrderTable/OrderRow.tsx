@@ -202,7 +202,7 @@ export default function OrderRow(props: propsIF) {
     const highlightStyle = highlightRow ? 'var(--dark2)' : '';
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
-
+    // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [valueToCopy, setValueToCopy] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
