@@ -361,7 +361,6 @@ export default function App() {
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
-    // `switchChain` is a function to switch to a different chain
     const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
     // hook to manage top pools data
@@ -3089,10 +3088,10 @@ export default function App() {
         : 'content-container';
 
     const defaultUrlParams = {
-        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
-        market: `/trade/market/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        swap: `/swap/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
+        market: `/trade/market/${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        range: `/trade/range/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        limit: `/trade/limit/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };
 
     // KEYBOARD SHORTCUTS ROUTES
