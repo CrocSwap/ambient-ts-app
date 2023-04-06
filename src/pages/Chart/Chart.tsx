@@ -3581,17 +3581,6 @@ export default function Chart(props: propsIF) {
             ]);
         }
 
-        if (
-            location.pathname.includes('range') ||
-            location.pathname.includes('reposition')
-        ) {
-            yAxis.tickValues([
-                ...yScale.ticks(),
-                ...[market[0].value],
-                ...[high, low],
-            ]);
-        }
-
         context.stroke();
         context.textAlign = 'center';
         context.textBaseline = 'top';
@@ -3667,66 +3656,6 @@ export default function Chart(props: propsIF) {
                     addYaxisLabel(
                         isSameLocation ? sameLocationData : yScale(d),
                     );
-                } else if (
-                    (d === low || d === high) &&
-                    (location.pathname.includes('range') ||
-                        location.pathname.includes('reposition'))
-                ) {
-                    const {
-                        isSameLocationMin: isSameLocationMin,
-                        sameLocationDataMin: sameLocationDataMin,
-                        isSameLocationMax: isSameLocationMax,
-                        sameLocationDataMax: sameLocationDataMax,
-                    } = sameLocationRange();
-
-                    if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                        if (d === low) {
-                            createRectLabel(
-                                context,
-                                isSameLocationMin
-                                    ? sameLocationDataMin
-                                    : yScale(d),
-                                X - tickSize,
-                                low > liquidityData.liqBoundary
-                                    ? '#7371fc'
-                                    : 'rgba(205, 193, 255)',
-                                low > liquidityData.liqBoundary
-                                    ? 'white'
-                                    : 'black',
-                                formatAmountChartData(d, undefined),
-                                undefined,
-                                yAxisCanvasWidth,
-                            );
-                            addYaxisLabel(
-                                isSameLocationMin
-                                    ? sameLocationDataMin
-                                    : yScale(d),
-                            );
-                        }
-                        if (d === high) {
-                            createRectLabel(
-                                context,
-                                isSameLocationMax
-                                    ? sameLocationDataMax
-                                    : yScale(d),
-                                X - tickSize,
-                                high > liquidityData.liqBoundary
-                                    ? '#7371fc'
-                                    : 'rgba(205, 193, 255)',
-                                high > liquidityData.liqBoundary
-                                    ? 'white'
-                                    : 'black',
-                                formatAmountChartData(d, undefined),
-                                undefined,
-                                yAxisCanvasWidth,
-                            );
-                            addYaxisLabel(
-                                isSameLocationMax
-                                    ? sameLocationDataMax
-                                    : yScale(d),
-                            );
-                        }
-                    }
                 } else {
                     context.beginPath();
                     context.fillText(
@@ -3738,7 +3667,53 @@ export default function Chart(props: propsIF) {
             }
         });
 
-        if (isMouseMoveCrosshair) {
+        if (
+            location.pathname.includes('range') ||
+            location.pathname.includes('reposition')
+        ) {
+            const {
+                isSameLocationMin: isSameLocationMin,
+                sameLocationDataMin: sameLocationDataMin,
+                isSameLocationMax: isSameLocationMax,
+                sameLocationDataMax: sameLocationDataMax,
+            } = sameLocationRange();
+
+            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                createRectLabel(
+                    context,
+                    isSameLocationMin ? sameLocationDataMin : yScale(low),
+                    X - tickSize,
+                    low > liquidityData.liqBoundary
+                        ? '#7371fc'
+                        : 'rgba(205, 193, 255)',
+                    low > liquidityData.liqBoundary ? 'white' : 'black',
+                    formatAmountChartData(low, undefined),
+                    undefined,
+                    yAxisCanvasWidth,
+                );
+                addYaxisLabel(
+                    isSameLocationMin ? sameLocationDataMin : yScale(low),
+                );
+
+                createRectLabel(
+                    context,
+                    isSameLocationMax ? sameLocationDataMax : yScale(high),
+                    X - tickSize,
+                    high > liquidityData.liqBoundary
+                        ? '#7371fc'
+                        : 'rgba(205, 193, 255)',
+                    high > liquidityData.liqBoundary ? 'white' : 'black',
+                    formatAmountChartData(high, undefined),
+                    undefined,
+                    yAxisCanvasWidth,
+                );
+                addYaxisLabel(
+                    isSameLocationMax ? sameLocationDataMax : yScale(high),
+                );
+            }
+        }
+
+        if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
             createRectLabel(
                 context,
                 yScale(crosshairData[0].y),
@@ -6425,10 +6400,6 @@ export default function Chart(props: propsIF) {
             'visibility',
             isCrosshairActive !== 'none' ? 'visible' : 'hidden',
         );
-
-        if (isCrosshairActive === 'none') {
-            setCrosshairData([{ x: -1, y: -1 }]);
-        }
     }, [isCrosshairActive]);
 
     // Draw Chart
@@ -6642,7 +6613,7 @@ export default function Chart(props: propsIF) {
                         'cursor',
                         'col-resize',
                     );
-                    crosshairData[0].x = -1;
+                    setIsCrosshairActive('none');
                 });
 
                 d3.select(d3Xaxis.current).on(
