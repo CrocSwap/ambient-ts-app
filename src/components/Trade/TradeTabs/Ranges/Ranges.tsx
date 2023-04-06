@@ -342,7 +342,7 @@ export default function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: showPair,
             slug: 'time',
             sortable: true,
         },
@@ -443,6 +443,15 @@ export default function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
+        },
+        {
+            name: '',
+
+            show: !isOnPortfolioPage && isShowAllEnabled,
+
+            slug: 'walletLink',
+            sortable: false,
+            alignRight: true,
         },
         {
             name: '',

@@ -13,17 +13,17 @@ export default function BarSeries(
             .align('right')
             .mainValue((d: any) => d.activeLiq)
             .crossValue((d: any) => d.liqPrices)
-            .xScale(scaleData.liquidityScale)
-            .yScale(scaleData.yScale)
+            .xScale(scaleData?.liquidityScale)
+            .yScale(scaleData?.yScale)
             .bandwidth(function (value: any) {
-                return scaleData.yScale(value.width) / 165;
+                return scaleData?.yScale(value.width) / 165;
             })
             .decorate((selection: any) => {
                 selection
                     .enter()
                     .select('.bar > path')
                     .style('fill', (d: any) => {
-                        return d.liqPrices > scaleData.barThreshold
+                        return d.liqPrices > scaleData?.barThreshold
                             ? 'rgba(115, 113, 252, 0.3)'
                             : 'rgba(205, 193, 255, 0.3)';
                     });

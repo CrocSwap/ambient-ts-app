@@ -86,7 +86,9 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <div>
                     <p>{`Pooled ${baseTokenSymbol}`}</p>
                     <p>
-                        {baseCollateralDisplay || '…'}
+                        {baseCollateralDisplay === undefined
+                            ? '…'
+                            : baseCollateralDisplay}
                         {baseTokenLogoDisplay}
                     </p>
                 </div>
@@ -94,7 +96,9 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <div>
                     <p>{`Pooled ${quoteTokenSymbol}`}</p>
                     <p>
-                        {quoteCollateralDisplay || '…'}
+                        {quoteCollateralDisplay === undefined
+                            ? '…'
+                            : quoteCollateralDisplay}
                         {quoteTokenLogoDisplay}
                     </p>
                 </div>
@@ -105,7 +109,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <div>
                     <p>{`Earned ${baseTokenSymbol}`}</p>
                     <p>
-                        {baseFeesDisplay || '…'}
+                        {baseFeesDisplay === undefined ? '…' : baseFeesDisplay}
                         {baseTokenLogoDisplay}
                     </p>
                 </div>
@@ -113,7 +117,9 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <div>
                     <p>{`Earned ${quoteTokenSymbol}`}</p>
                     <p>
-                        {quoteFeesDisplay || '…'}
+                        {quoteFeesDisplay === undefined
+                            ? '…'
+                            : quoteFeesDisplay}
                         {quoteTokenLogoDisplay}
                     </p>
                 </div>

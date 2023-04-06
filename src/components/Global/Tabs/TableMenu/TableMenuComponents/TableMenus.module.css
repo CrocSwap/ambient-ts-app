@@ -104,6 +104,16 @@
 .example_menu {
     position: relative;
 }
+
+.dropdown_button{
+    background: transparent;
+    outline: none;
+    border: none;
+
+}
+.dropdown_button:focus-visible, .option_button:focus-visible{
+    border: 1px solid var(--text-grey-white)
+}
 .dropdown_wrapper,
 .dropdown_wrapper_active {
     padding: 8px;
