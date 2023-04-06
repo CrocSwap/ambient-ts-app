@@ -129,6 +129,7 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+    console.log({ position });
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -616,6 +617,12 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
+                    repoSlippage={repoSlippage}
+                    isPairStable={isPairStable}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isDenomBase={isDenomBase}
+                    currentMinPrice={position?.lowRangeDisplayInBase}
+                    currentMaxPrice={position?.highRangeDisplayInBase}
                 />
                 <div className={styles.button_container}>
                     <Button
