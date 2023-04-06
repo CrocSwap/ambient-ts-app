@@ -448,6 +448,9 @@ export default function Chart(props: propsIF) {
     const [isDrawBidLiq, setIsDrawBidLiq] = useState(false);
 
     // Utils
+    const utcDiff = moment().utcOffset();
+    const utcDiffHours = Math.floor(utcDiff / 60);
+    const defaultCandleBandwith = 5;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [zoomUtils, setZoomUtils] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -939,13 +942,15 @@ export default function Chart(props: propsIF) {
         const oldTickValues = scaleData?.xScale.ticks();
         let result = oldTickValues;
 
+        const _bandwidth = reset ? defaultCandleBandwith : bandwidth;
+
         const domainX = scaleData?.xScale.domain();
         if (parsedChartData?.period === 3600) {
             result = await getHourAxisTicks(
                 domainX[0],
                 domainX[1],
                 oldTickValues,
-                bandwidth,
+                _bandwidth,
                 1,
             );
         }
@@ -955,7 +960,7 @@ export default function Chart(props: propsIF) {
                 domainX[0],
                 domainX[1],
                 oldTickValues,
-                bandwidth,
+                _bandwidth,
             );
         }
 
@@ -964,7 +969,7 @@ export default function Chart(props: propsIF) {
                 domainX[0],
                 domainX[1],
                 oldTickValues,
-                bandwidth,
+                _bandwidth,
                 4,
             );
         }
@@ -974,7 +979,7 @@ export default function Chart(props: propsIF) {
                 domainX[0],
                 domainX[1],
                 oldTickValues,
-                bandwidth,
+                _bandwidth,
             );
         }
 
@@ -983,7 +988,7 @@ export default function Chart(props: propsIF) {
                 domainX[0],
                 domainX[1],
                 oldTickValues,
-                bandwidth,
+                _bandwidth,
             );
         }
 
@@ -992,121 +997,12 @@ export default function Chart(props: propsIF) {
                 domainX[0],
                 domainX[1],
                 oldTickValues,
-                bandwidth,
+                _bandwidth,
             );
         }
 
         return result;
     }
-
-    const utcDiff = moment().utcOffset();
-    const utcDiffHours = Math.floor(utcDiff / 60);
-
-    useEffect(() => {
-        setBandwidth(5);
-    }, [reset]);
-
-    // x axis text
-    useEffect(() => {
-        if (scaleData && xAxis) {
-            getXAxisTick().then((res) => {
-                const _res = res.map((item: xAxisLabel) => item.date);
-                xAxis
-                    .tickValues([
-                        ..._res,
-                        ...(isMouseMoveCrosshair ? [crosshairData[0].x] : []),
-                    ])
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .tickFormat((d: any) => {
-                        if (d === crosshairData[0].x) {
-                            if (parsedChartData?.period === 86400) {
-                                return moment(d)
-                                    .subtract(utcDiffHours, 'hours')
-                                    .format('MMM DD YYYY');
-                            } else {
-                                return moment(d).format('MMM DD HH:mm');
-                            }
-                        }
-
-                        if (
-                            moment(d)
-                                .format('DD')
-                                .match(/^(01)$/) &&
-                            moment(d).format('HH:mm') === '00:00'
-                        ) {
-                            return moment(d).format('MMM') === 'Jan'
-                                ? moment(d).format('YYYY')
-                                : moment(d).format('MMM');
-                        }
-
-                        if (
-                            moment(d).format('HH:mm') === '00:00' ||
-                            parsedChartData?.period === 86400
-                        ) {
-                            return moment(d).format('DD');
-                        } else {
-                            return moment(d).format('HH:mm');
-                        }
-                    });
-
-                xAxis.decorate((selection: any) => {
-                    const _width = 65; // magic number of pixels to blur surrounding price
-
-                    selection.select('text').attr('class', (d: any) => {
-                        if (d > 0) {
-                            if (d === crosshairData[0].x) {
-                                return 'crossHairText';
-                            }
-
-                            if (
-                                isMouseMoveCrosshair &&
-                                scaleData?.xScale(d) >
-                                    scaleData?.xScale(crosshairData[0].x) -
-                                        _width &&
-                                scaleData?.xScale(d) <
-                                    scaleData?.xScale(crosshairData[0].x) +
-                                        _width
-                            ) {
-                                return 'blur';
-                            }
-
-                            if (
-                                isMouseMoveCrosshair &&
-                                scaleData?.xScale(d) >
-                                    scaleData?.xScale(crosshairData[0].x) -
-                                        _width &&
-                                scaleData?.xScale(d) <
-                                    scaleData?.xScale(crosshairData[0].x) +
-                                        _width
-                            ) {
-                                return 'blur';
-                            }
-
-                            if (
-                                res.find(
-                                    (item: any) =>
-                                        item.date?.getTime() === d.getTime(),
-                                )?.style
-                            ) {
-                                return 'startDate';
-                            }
-                        }
-                    });
-                });
-            });
-        }
-    }, [
-        crosshairData,
-        isMouseMoveCrosshair,
-        zoomAndYdragControl,
-        scaleData,
-        xAxis,
-        JSON.stringify(d3Container.current?.offsetWidth),
-        parsedChartData?.period,
-        latest,
-        rescale,
-        bandwidth,
-    ]);
 
     function changeyAxisWidth() {
         let yTickValueLength = scaleData?.yScale.ticks()[0]?.toString().length;
@@ -2287,10 +2183,31 @@ export default function Chart(props: propsIF) {
                                 new Date(domainX[0].getTime() + deltaX),
                                 lastCandleDate,
                             );
-                            scaleData?.xScale.domain([
-                                new Date(domainX[0].getTime() + deltaX),
-                                domainX[1],
-                            ]);
+
+                            const filterCandle =
+                                parsedChartData?.chartData.filter(
+                                    (item: CandleChartData) =>
+                                        item.date <= domainX[1].getTime() &&
+                                        item.date >= domainX[0].getTime(),
+                                );
+                            if (
+                                (deltaX > 0 ||
+                                    Math.abs(
+                                        domainX[1].getTime() -
+                                            domainX[0].getTime(),
+                                    ) <=
+                                        parsedChartData.period * 1000 * 300) &&
+                                (deltaX < 0 ||
+                                    !(
+                                        filterCandle.length <= 2 &&
+                                        filterCandle[0].date !== lastCandleDate
+                                    ))
+                            ) {
+                                scaleData?.xScale.domain([
+                                    new Date(domainX[0].getTime() + deltaX),
+                                    domainX[1],
+                                ]);
+                            }
                         }
                     }
                     rescaleYAxis();
@@ -3551,6 +3468,10 @@ export default function Chart(props: propsIF) {
         setDragControl(false);
     }, [parsedChartData]);
 
+    useEffect(() => {
+        setBandwidth(defaultCandleBandwith);
+    }, [reset]);
+
     // Axis's
     useEffect(() => {
         if (scaleData) {
@@ -3616,6 +3537,8 @@ export default function Chart(props: propsIF) {
         ranges,
         simpleRangeWidth !== 100 || isAdvancedModeActive,
         yAxisCanvasWidth,
+        bandwidth,
+        reset,
     ]);
 
     function createRectLabel(
