@@ -15,6 +15,7 @@ interface TransactionSubmittedProps {
     noAnimation?: boolean;
     limit?: boolean;
     range?: boolean;
+    reposition?: boolean;
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
@@ -27,6 +28,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         noAnimation,
         limit,
         range,
+        reposition,
     } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
@@ -86,6 +88,8 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                     ? 'Limit Transaction Successfully Submitted.'
                     : range
                     ? 'Range Transaction Successfully Submitted.'
+                    : reposition
+                    ? 'Respotion Successfully Submitted.'
                     : 'Swap Transaction Successfully Submitted.'}
             </h2>
             <div

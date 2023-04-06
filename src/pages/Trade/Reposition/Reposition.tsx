@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     useLocation,
-    useNavigate,
+    // useNavigate,
     useParams,
     Navigate,
 } from 'react-router-dom';
@@ -105,7 +105,7 @@ export default function Reposition(props: propsIF) {
     const locationHook = useLocation();
 
     // fn to conditionally navigate the user
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
 
@@ -681,6 +681,12 @@ export default function Reposition(props: propsIF) {
         setNewRepositionTransactionHash,
     };
 
+    const handleRepoButtonClickWithBypass = () => {
+        IS_LOCAL_ENV && console.debug('setting to true');
+        setShowBypassConfirmButton(true);
+        sendRepositionTransaction();
+    };
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -728,25 +734,28 @@ export default function Reposition(props: propsIF) {
                     currentMaxPrice={position?.highRangeDisplayInBase}
                 />
                 <div className={styles.button_container}>
-                    <Button
-                        title={
-                            isPositionInRange
-                                ? 'Position Currently In Range'
-                                : bypassConfirm.repo.isEnabled
-                                ? 'Reposition'
-                                : 'Open Confirmation'
-                        }
-                        action={
-                            bypassConfirm.repo.isEnabled
-                                ? sendRepositionTransaction
-                                : openModal
-                        }
-                        disabled={isPositionInRange}
-                        flat
-                    />
-                    <BypassConfirmRepositionButton
-                        {...bypassConfirmRepositionButtonProps}
-                    />
+                    {!showBypassConfirmButton ? (
+                        <Button
+                            title={
+                                isPositionInRange
+                                    ? 'Position Currently In Range'
+                                    : bypassConfirm.repo.isEnabled
+                                    ? 'Reposition'
+                                    : 'Open Confirmation'
+                            }
+                            action={
+                                bypassConfirm.repo.isEnabled
+                                    ? handleRepoButtonClickWithBypass
+                                    : openModal
+                            }
+                            disabled={isPositionInRange}
+                            flat
+                        />
+                    ) : (
+                        <BypassConfirmRepositionButton
+                            {...bypassConfirmRepositionButtonProps}
+                        />
+                    )}
                 </div>
             </div>
             {isModalOpen && (

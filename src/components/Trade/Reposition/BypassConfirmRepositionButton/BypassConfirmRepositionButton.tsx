@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
+// import { CrocImpact } from '@crocswap-libs/sdk';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import JSX Components
@@ -77,8 +77,8 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
         setShowExtraInfo,
 
         // showBypassConfirm,
-        setShowBypassConfirm,
-        setNewRepositionTransactionHash,
+        // setShowBypassConfirm,
+        // setNewRepositionTransactionHash,
     } = props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -98,6 +98,7 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
             noAnimation
+            reposition
         />
     );
 
@@ -213,7 +214,7 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
                         {confirmationDisplay}
                     </section>
                 )}
-                <span className={styles.close_icon_container}>
+                {/* <span className={styles.close_icon_container}>
                     <button
                         tabIndex={0}
                         onClick={() => {
@@ -224,7 +225,7 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
                     >
                         Submit another transaction
                     </button>
-                </span>
+                </span> */}
             </div>
         </section>
     );

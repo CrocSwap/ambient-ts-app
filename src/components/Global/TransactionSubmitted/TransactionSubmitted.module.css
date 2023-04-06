@@ -10,8 +10,7 @@
     line-height: var(--header2-lh);
 }
 .noAnimation_submitted h2{
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
+  color: var(--text-grey-white)
 }
 .transaction_submitted p a {
     cursor: pointer;
