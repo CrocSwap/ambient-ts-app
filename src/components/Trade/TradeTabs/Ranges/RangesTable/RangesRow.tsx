@@ -258,6 +258,9 @@ export default function RangesRow(props: propsIF) {
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontFamily: 'monospace',
+
+                        whiteSpace: 'nowrap',
+                        width: '450px',
                     }}
                 >
                     {posHash.toString()}
@@ -296,20 +299,13 @@ export default function RangesRow(props: propsIF) {
             title={
                 <div
                     style={{
-                        marginLeft: '-40px',
+                        marginLeft: '-20px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
-                        fontFamily: 'monospace',
-                        whiteSpace: 'nowrap',
 
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-
-                        gap: '4px',
                         // width: '450px',
                     }}
                 >
@@ -321,6 +317,15 @@ export default function RangesRow(props: propsIF) {
                                     loadingStatus: true,
                                 }),
                             );
+                        }}
+                        style={{
+                            fontFamily: 'monospace',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            whiteSpace: 'nowrap',
+
+                            gap: '4px',
                         }}
                         to={`/${
                             isOwnerActiveAccount
@@ -352,18 +357,20 @@ export default function RangesRow(props: propsIF) {
 
     const walletWithoutTooltip = (
         <li
+            // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
+            tabIndex={0}
         >
             {userNameToDisplay}
         </li>
     );
+
     const walletWithTooltip = isOwnerActiveAccount
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
-
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
             <img src={baseTokenLogo} alt='base token' width={logoSizes} />

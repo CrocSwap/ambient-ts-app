@@ -264,7 +264,7 @@ export default function TransactionRow(props: propsIF) {
                     />
                 </div>
             } // invisible space character added
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >

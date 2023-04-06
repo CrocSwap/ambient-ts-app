@@ -214,6 +214,9 @@ export default function OrderRow(props: propsIF) {
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontFamily: 'monospace',
+
+                        whiteSpace: 'nowrap',
+                        width: '450px',
                     }}
                 >
                     {posHash}
@@ -247,21 +250,22 @@ export default function OrderRow(props: propsIF) {
         </li>
     );
 
-    const walletWithTooltip = (
+    const actualWalletWithTooltip = (
         <TextOnlyTooltip
             interactive
             title={
                 <div
                     style={{
-                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        marginLeft: '-20px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+
+                        // width: '450px',
                     }}
                 >
-                    <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
                             dispatch(
@@ -271,6 +275,15 @@ export default function OrderRow(props: propsIF) {
                                 }),
                             );
                         }}
+                        style={{
+                            fontFamily: 'monospace',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            whiteSpace: 'nowrap',
+
+                            gap: '4px',
+                        }}
                         to={`/${
                             isOwnerActiveAccount
                                 ? 'account'
@@ -279,7 +292,8 @@ export default function OrderRow(props: propsIF) {
                                 : ownerId
                         }`}
                     >
-                        {'View Account' + 'ㅤ'}
+                        {ensName ? ensName : ownerId}
+
                         <FiExternalLink size={'12px'} />
                     </NavLink>
                 </div>
@@ -289,15 +303,31 @@ export default function OrderRow(props: propsIF) {
             leaveDelay={0}
         >
             <li
-                onClick={openDetailsModal}
                 data-label='wallet'
-                className={`${usernameStyle} ${styles.hover_style}`}
-                style={{ textTransform: 'lowercase' }}
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
         </TextOnlyTooltip>
     );
+
+    const walletWithoutTooltip = (
+        <li
+            // onClick={handleWalletClick}
+            onClick={openDetailsModal}
+            data-label='wallet'
+            className={`${usernameStyle} ${styles.hover_style}`}
+            style={{ textTransform: 'lowercase' }}
+            tabIndex={0}
+        >
+            {userNameToDisplay}
+        </li>
+    );
+
+    const walletWithTooltip = isOwnerActiveAccount
+        ? walletWithoutTooltip
+        : actualWalletWithTooltip;
 
     const baseTokenLogoComponent = baseTokenLogo ? (
         <img src={baseTokenLogo} alt='base token' width={logoSizes} />
