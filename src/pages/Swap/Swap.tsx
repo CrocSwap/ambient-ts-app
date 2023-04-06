@@ -789,15 +789,18 @@ export default function Swap(props: propsIF) {
             </div>
         ) : null;
 
+    // logic to determine if a given token is acknowledged or on a list
     const isTokenUnknown = (tkn: TokenIF): boolean => {
         const isAckd: boolean = ackTokens.check(tkn.address, chainId);
         const isListed: boolean = verifyToken(tkn.address, chainId);
         return !isAckd && !isListed;
     };
 
+    // values if either token needs to be confirmed before transacting
     const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
     const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
 
+    // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         let text: string;
         if (needConfirmTokenA && needConfirmTokenB) {
@@ -812,11 +815,13 @@ export default function Swap(props: propsIF) {
         return text;
     }, [needConfirmTokenA, needConfirmTokenB]);
 
+    // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
     console.log({ areBothAckd });
     console.log({ swapAllowed });
 
+    // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
         console.clear();
         console.log('fired fn ackAsNeeded');
