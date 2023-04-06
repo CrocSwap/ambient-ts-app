@@ -1396,8 +1396,14 @@ export default function Chart(props: propsIF) {
                                 minYBoundary !== undefined
                             ) {
                                 const buffer = Math.abs(
-                                    (Math.min(low, minYBoundary) -
-                                        Math.max(high, maxYBoundary)) /
+                                    (Math.min(
+                                        Math.min(low, high),
+                                        minYBoundary,
+                                    ) -
+                                        Math.max(
+                                            Math.max(low, high),
+                                            maxYBoundary,
+                                        )) /
                                         6,
                                 );
 
@@ -2306,14 +2312,19 @@ export default function Chart(props: propsIF) {
                             minYBoundary !== undefined
                         ) {
                             const buffer = Math.abs(
-                                (Math.max(high, maxYBoundary) -
-                                    Math.min(low, minYBoundary)) /
+                                (Math.max(Math.max(low, high), maxYBoundary) -
+                                    Math.min(
+                                        Math.min(low, high),
+                                        minYBoundary,
+                                    )) /
                                     6,
                             );
 
                             const domain = [
-                                Math.min(low, minYBoundary) - buffer,
-                                Math.max(high, maxYBoundary) + buffer / 2,
+                                Math.min(Math.min(low, high), minYBoundary) -
+                                    buffer,
+                                Math.max(Math.max(low, high), maxYBoundary) +
+                                    buffer / 2,
                             ];
 
                             scaleData?.yScale.domain(domain);
@@ -2703,7 +2714,7 @@ export default function Chart(props: propsIF) {
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
             setRanges(() => {
-                const chartTargets = [
+                const newTargets = [
                     {
                         name: 'Min',
                         value: minPrice,
@@ -2713,9 +2724,10 @@ export default function Chart(props: propsIF) {
                         value: maxPrice,
                     },
                 ];
-                setLiqHighlightedLinesAndArea(chartTargets);
 
-                return chartTargets;
+                setLiqHighlightedLinesAndArea(newTargets);
+
+                return newTargets;
             });
 
             setTriangleRangeValues(maxPrice, minPrice);
@@ -3275,50 +3287,6 @@ export default function Chart(props: propsIF) {
                                     ? 100
                                     : rangeWidthPercentage,
                             ),
-                        );
-                    }
-
-                    const offset = rangeWidthPercentage * 100;
-
-                    const lowTick = currentPoolPriceTick - offset;
-                    const highTick = currentPoolPriceTick + offset;
-
-                    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                        denomInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        lowTick,
-                        highTick,
-                        lookupChain(chainId).gridSize,
-                    );
-
-                    const min =
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-                    const max =
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
-                    if (
-                        min &&
-                        min !== 'NaN' &&
-                        !isNaN(parseFloat(min)) &&
-                        max &&
-                        max !== 'NaN' &&
-                        !isNaN(parseFloat(max))
-                    ) {
-                        const rangesF = [
-                            {
-                                name: 'Min',
-                                value: min,
-                            },
-                            {
-                                name: 'Max',
-                                value: max,
-                            },
-                        ];
-
-                        setLiqHighlightedLinesAndArea(
-                            rangesF,
-                            true,
-                            rangeWidthPercentage,
                         );
                     }
 
@@ -4158,8 +4126,8 @@ export default function Chart(props: propsIF) {
                         minYBoundary !== undefined
                     ) {
                         const buffer = Math.abs(
-                            (Math.max(high, maxYBoundary) -
-                                Math.min(low, minYBoundary)) /
+                            (Math.max(Math.max(low, high), maxYBoundary) -
+                                Math.min(Math.min(low, high), minYBoundary)) /
                                 6,
                         );
 
@@ -4281,8 +4249,14 @@ export default function Chart(props: propsIF) {
                                 minYBoundary !== undefined
                             ) {
                                 const buffer = Math.abs(
-                                    (Math.max(high, maxYBoundary) -
-                                        Math.min(low, minYBoundary)) /
+                                    (Math.max(
+                                        Math.max(low, high),
+                                        maxYBoundary,
+                                    ) -
+                                        Math.min(
+                                            Math.min(low, high),
+                                            minYBoundary,
+                                        )) /
                                         6,
                                 );
 
@@ -5238,8 +5212,8 @@ export default function Chart(props: propsIF) {
 
                     if (maxYBoundary && minYBoundary) {
                         const buffer = Math.abs(
-                            (Math.min(low, minYBoundary) -
-                                Math.max(high, maxYBoundary)) /
+                            (Math.min(Math.min(low, high), minYBoundary) -
+                                Math.max(Math.max(low, high), maxYBoundary)) /
                                 6,
                         );
 
