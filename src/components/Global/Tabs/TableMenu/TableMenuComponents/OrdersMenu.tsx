@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, ReactNode, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 // import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
@@ -48,6 +48,7 @@ interface propsIF {
     showHighlightedButton: boolean;
     isOnPortfolioPage: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
+    handleAccountClick: () => void;
 }
 
 // React functional component
@@ -258,6 +259,21 @@ export default function OrdersMenu(props: propsIF) {
         openDetailsModal();
     };
 
+    const walletButton = (
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleAccountClick}
+        >
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </button>
+    );
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
             <button
@@ -334,6 +350,7 @@ export default function OrdersMenu(props: propsIF) {
             {/* {!view1 && copyButton} */}
             {/* {!(view1 && !isOrderFilled) && copyButton} */}
             {!minView && removeButton}
+            {walletButton}
         </div>
     );
 
