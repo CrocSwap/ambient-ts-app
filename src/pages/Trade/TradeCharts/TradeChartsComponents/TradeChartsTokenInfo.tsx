@@ -213,11 +213,15 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 >
                     <DefaultTooltip
                         interactive
-                        title={`${tradeData.baseToken.symbol + ':'} ${
-                            tradeData.baseToken.address
-                        } ${tradeData.quoteToken.symbol}: ${
-                            tradeData.quoteToken.address
-                        }`}
+                        title={
+                            <p className={styles.mono_space}>
+                                {`${tradeData.baseToken.symbol + ':'} ${
+                                    tradeData.baseToken.address
+                                } ${tradeData.quoteToken.symbol}: ${
+                                    tradeData.quoteToken.address
+                                }`}
+                            </p>
+                        }
                         placement={'top'}
                     >
                         <div className={styles.tokens_images}>
@@ -244,14 +248,16 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     </DefaultTooltip>
                     <DefaultTooltip
                         interactive
-                        title={`${tradeData.baseToken.symbol + ':'} ${
-                            tradeData.baseToken.address
-                        } ${tradeData.quoteToken.symbol}: ${
-                            tradeData.quoteToken.address
-                        }`}
+                        title={
+                            <p className={styles.mono_space}>{`${
+                                tradeData.baseToken.symbol + ':'
+                            } ${tradeData.baseToken.address} ${
+                                tradeData.quoteToken.symbol
+                            }: ${tradeData.quoteToken.address}`}</p>
+                        }
                         placement={'top'}
                     >
-                        <div
+                        <p
                             className={styles.tokens_name}
                             aria-live='polite'
                             aria-atomic='true'
@@ -260,7 +266,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                             {topTokenSymbol} / {bottomTokenSymbol}
                             {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
                             {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
-                        </div>
+                        </p>
                     </DefaultTooltip>
                 </button>
                 {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
@@ -282,11 +288,15 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             >
                 <DefaultTooltip
                     interactive
-                    title={`${tradeData.baseToken.symbol + ':'} ${
-                        tradeData.baseToken.address
-                    } ${tradeData.quoteToken.symbol}: ${
-                        tradeData.quoteToken.address
-                    }`}
+                    title={
+                        <p className={styles.mono_space}>
+                            {`${tradeData.baseToken.symbol + ':'} ${
+                                tradeData.baseToken.address
+                            } ${tradeData.quoteToken.symbol}: ${
+                                tradeData.quoteToken.address
+                            }`}
+                        </p>
+                    }
                     placement={'top'}
                 >
                     <div className={styles.tokens_images} id='trade_token_pair'>
@@ -313,11 +323,15 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 </DefaultTooltip>
                 <DefaultTooltip
                     interactive
-                    title={`${tradeData.baseToken.symbol + ':'} ${
-                        tradeData.baseToken.address
-                    } ${tradeData.quoteToken.symbol}: ${
-                        tradeData.quoteToken.address
-                    }`}
+                    title={
+                        <p className={styles.mono_space}>
+                            {`${tradeData.baseToken.symbol + ':'} ${
+                                tradeData.baseToken.address
+                            } ${tradeData.quoteToken.symbol}: ${
+                                tradeData.quoteToken.address
+                            }`}
+                        </p>
+                    }
                     placement={'top'}
                 >
                     <div

@@ -82,6 +82,15 @@
     font-weight: 400;
     color: var(--text-grey-light);
     cursor: pointer;
+
+
+}
+
+.mono_space{
+    font-family: monospace !important;
+    white-space: nowrap;
+
+ 
 }
 .tokens_images,
 .tokens_name,
