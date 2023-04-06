@@ -1,6 +1,5 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
-// import { ambientTokenList } from '../../utils/data/ambientTokenList';
 import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeUserLocalStorage() {
@@ -60,30 +59,6 @@ export default function initializeUserLocalStorage() {
     // create a value to track whether the sidebar is open or closed
     if (!user.sidebar) {
         user.sidebar = 'open';
-        userUpdated = true;
-    }
-
-    if (!user.ackTokens) {
-        user.ackTokens = [];
-        userUpdated = true;
-    }
-
-    if (!user.bypassConfirm) {
-        user.bypassConfirm = false;
-        userUpdated = true;
-    }
-
-    if (!user.bypassConfirm) {
-        const initialMap = new Map();
-        const initialPairs = [
-            ['global', false],
-            ['swap', false],
-            ['limit', false],
-            ['range', false],
-            ['repo', false],
-        ];
-        initialPairs.forEach((pair) => initialMap.set(pair[0], pair[1]));
-        user.bypassConfirm = JSON.stringify(Array.from(initialMap.entries()));
         userUpdated = true;
     }
 

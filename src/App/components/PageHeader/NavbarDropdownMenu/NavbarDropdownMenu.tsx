@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useState, useRef } from 'react';
+import { ReactNode, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -11,6 +11,8 @@ import { FiSettings } from 'react-icons/fi';
 import { FaDiscord, FaGithub, FaDotCircle } from 'react-icons/fa';
 import { GoRequestChanges } from 'react-icons/go';
 import { HiOutlineDocumentText, HiDocumentDuplicate } from 'react-icons/hi';
+import FocusTrap from 'focus-trap-react';
+
 import {
     MdHelp,
     MdArrowForwardIos,
@@ -21,6 +23,7 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
+import useKeyPress from '../../../hooks/useKeyPress';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -74,6 +77,14 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         setMenuHeight(height);
     }
 
+    const isEscapePressed = useKeyPress('Escape');
+
+    useEffect(() => {
+        if (isEscapePressed) {
+            setIsNavbarMenuOpen(false);
+        }
+    }, [isEscapePressed]);
+
     function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
         const topLevelItemStyle = props.topLevel
             ? styles.topLevelContainer
@@ -94,18 +105,21 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         );
 
         return (
-            <div
+            <button
                 className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
                 onClick={() => {
                     props.goToMenu && setActiveMenu(props.goToMenu);
                     if (props.onClick) props.onClick();
                 }}
+                tabIndex={0}
+                role='button'
             >
                 {props.imageIcon && imageIcon}
                 {props.leftIcon && itemIcon}
                 {props.children}
+
                 <span className={styles.icon_right}>{props.rightIcon}</span>
-            </div>
+            </button>
         );
     }
 
@@ -239,101 +253,118 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         },
     ];
 
-    return (
-        <div className={styles.dropdown} ref={dropdownRef}>
-            <CSSTransition
-                in={activeMenu === 'main'}
-                unmountOnExit
-                timeout={500}
-                classNames='menu-primary'
-                onEnter={calcHeight}
-            >
-                {/* Menu with each drop down item */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className={styles.menu}
-                >
-                    {NavbardropdownItemData.map((item) => (
-                        <NavbarDropdownItem
-                            key={item.title}
-                            leftIcon={item.leftIcon ? item.leftIcon : ''}
-                            rightIcon={<MdArrowForwardIos />}
-                            goToMenu={item.title}
-                            topLevel
-                        >
-                            {item.title}
-                        </NavbarDropdownItem>
-                    ))}
-                    <NavbarDropdownItem leftIcon={<BsBook size={18} />}>
-                        Docs
-                    </NavbarDropdownItem>
-                </motion.div>
-            </CSSTransition>
+    const ariaLabel =
+        'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
-            {NavbardropdownItemData.map((item) => (
+    // const mainAriaLabel = 'account dropdown menu container';
+
+    return (
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <div
+                className={styles.dropdown}
+                ref={dropdownRef}
+                // tabIndex={0}
+                aria-label={ariaLabel}
+            >
                 <CSSTransition
-                    in={activeMenu === item.title}
-                    unmountOnExit
-                    key={item.title}
-                    timeout={500}
-                    classNames='menu-secondary'
-                    onEnter={calcHeight}
-                >
-                    <div className={styles.menu}>
-                        <NavbarDropdownItem
-                            goToMenu='main'
-                            leftIcon={<BiArrowBack />}
-                            goBackItem
-                        >
-                            <h3>{item.title}</h3>
-                        </NavbarDropdownItem>
-                        {item.data}
-                    </div>
-                </CSSTransition>
-            ))}
-            <div>
-                <CSSTransition
-                    in={activeMenu === 'languages'}
+                    in={activeMenu === 'main'}
                     unmountOnExit
                     timeout={500}
-                    classNames='menu-secondary'
+                    classNames='menu-primary'
                     onEnter={calcHeight}
                 >
-                    <div className={styles.menu}>
-                        <NavbarDropdownItem
-                            goToMenu='Settings & Privacy'
-                            leftIcon={<BiArrowBack />}
-                            goBackItem
-                        >
-                            <h3>{'Languages'}</h3>
+                    {/* Menu with each drop down item */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className={styles.menu}
+                        tabIndex={0}
+                    >
+                        {NavbardropdownItemData.map((item) => (
+                            <NavbarDropdownItem
+                                key={item.title}
+                                leftIcon={item.leftIcon ? item.leftIcon : ''}
+                                rightIcon={<MdArrowForwardIos />}
+                                goToMenu={item.title}
+                                topLevel
+                            >
+                                {item.title}
+                            </NavbarDropdownItem>
+                        ))}
+                        <NavbarDropdownItem leftIcon={<BsBook size={18} />}>
+                            Docs
                         </NavbarDropdownItem>
-                        {languagesItems}
-                    </div>
+                    </motion.div>
                 </CSSTransition>
+
+                {NavbardropdownItemData.map((item) => (
+                    <CSSTransition
+                        in={activeMenu === item.title}
+                        unmountOnExit
+                        key={item.title}
+                        timeout={500}
+                        classNames='menu-secondary'
+                        onEnter={calcHeight}
+                    >
+                        <div className={styles.menu}>
+                            <NavbarDropdownItem
+                                goToMenu='main'
+                                leftIcon={<BiArrowBack />}
+                                goBackItem
+                            >
+                                <h3>{item.title}</h3>
+                            </NavbarDropdownItem>
+                            {item.data}
+                        </div>
+                    </CSSTransition>
+                ))}
+                <div>
+                    <CSSTransition
+                        in={activeMenu === 'languages'}
+                        unmountOnExit
+                        timeout={500}
+                        classNames='menu-secondary'
+                        onEnter={calcHeight}
+                    >
+                        <div className={styles.menu}>
+                            <NavbarDropdownItem
+                                goToMenu='Settings & Privacy'
+                                leftIcon={<BiArrowBack />}
+                                goBackItem
+                            >
+                                <h3>{'Languages'}</h3>
+                            </NavbarDropdownItem>
+                            {languagesItems}
+                        </div>
+                    </CSSTransition>
+                </div>
+                {/* warnings */}
+                <div>
+                    <CSSTransition
+                        in={activeMenu === 'warnings'}
+                        unmountOnExit
+                        timeout={500}
+                        classNames='menu-secondary'
+                        onEnter={calcHeight}
+                    >
+                        <div className={styles.menu}>
+                            <NavbarDropdownItem
+                                goToMenu='Settings & Privacy'
+                                leftIcon={<BiArrowBack />}
+                                goBackItem
+                            >
+                                <h3>{'Warnings'}</h3>
+                            </NavbarDropdownItem>
+                            {warningItems}
+                        </div>
+                    </CSSTransition>
+                </div>
             </div>
-            {/* warnings */}
-            <div>
-                <CSSTransition
-                    in={activeMenu === 'warnings'}
-                    unmountOnExit
-                    timeout={500}
-                    classNames='menu-secondary'
-                    onEnter={calcHeight}
-                >
-                    <div className={styles.menu}>
-                        <NavbarDropdownItem
-                            goToMenu='Settings & Privacy'
-                            leftIcon={<BiArrowBack />}
-                            goBackItem
-                        >
-                            <h3>{'Warnings'}</h3>
-                        </NavbarDropdownItem>
-                        {warningItems}
-                    </div>
-                </CSSTransition>
-            </div>
-        </div>
+        </FocusTrap>
     );
 }

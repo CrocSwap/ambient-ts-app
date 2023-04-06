@@ -1,3 +1,4 @@
+import { IS_LOCAL_ENV } from '../../constants';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const poolLiquidityCacheEndpoint =
@@ -9,7 +10,7 @@ const getPoolLiquidity = async (
     quote: string,
     poolIdx: number,
 ) => {
-    console.log('fetching pool liquidity ');
+    IS_LOCAL_ENV && console.debug('fetching pool liquidity ');
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({

@@ -1,4 +1,5 @@
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { IS_LOCAL_ENV } from '../../constants';
 import { memoizeTransactionGraphFn } from './memoizePromiseFn';
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -14,12 +15,11 @@ export const fetchTransactionGraphData = async (
     time: string,
     candleNeeded: string,
 ) => {
-    console.log('fetching transaction details graph data ');
+    IS_LOCAL_ENV && console.debug('fetching transaction details graph data ');
 
     if (isFetchEnabled) {
         try {
             if (httpGraphCacheServerDomain) {
-                // console.log('fetching candles');
                 const candleSeriesCacheEndpoint =
                     httpGraphCacheServerDomain + '/candle_series?';
 
@@ -32,7 +32,6 @@ export const fetchTransactionGraphData = async (
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
-                            // page: '0', // nonnegative integer
                             chainId: '0x1',
                             dex: 'all',
                             poolStats: 'true',
@@ -50,17 +49,16 @@ export const fetchTransactionGraphData = async (
                     .then((json) => {
                         const candles = json?.data;
                         if (candles) {
-                            // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
                             return {
                                 duration: period,
                                 candles: candles,
                             };
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         } catch (error) {
-            console.log({ error });
+            console.error({ error });
         }
     }
 };

@@ -23,7 +23,7 @@ import {
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -119,6 +119,8 @@ export default function Withdraw(props: propsIF) {
     >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
+        useState<boolean>(true);
 
     const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
@@ -176,7 +178,7 @@ export default function Withdraw(props: propsIF) {
                 .then((bal: BigNumber) => {
                     setSendToAddressWalletBalance(bal.toString());
                 })
-                .catch(console.log);
+                .catch(console.error);
         } else {
             setSendToAddressWalletBalance('');
         }
@@ -205,71 +207,44 @@ export default function Withdraw(props: propsIF) {
         [withdrawQtyNonDisplay],
     );
 
-    // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
     useEffect(() => {
         setIsWithdrawPending(false);
     }, [JSON.stringify(selectedToken)]);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeGlobalModal();
-    // };
-
     useEffect(() => {
-        // console.log({ isDepositQtyValid });
         if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
         } else if (!withdrawQtyNonDisplay) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        }
-        // else if (isApprovalPending) {
-        //     setIsButtonDisabled(true);
-        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        // }
-        else if (isWithdrawPending) {
+        } else if (isWithdrawPending) {
             setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
-        }
-        // else if (!isTokenAllowanceSufficient) {
-        //     setIsButtonDisabled(false);
-        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        // }
-        else if (isWithdrawQtyValid) {
+        } else if (isWithdrawQtyValid) {
             setIsButtonDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Withdraw');
         }
     }, [
-        // isApprovalPending,
         isWithdrawPending,
-        // isTokenAllowanceSufficient,
         isDexBalanceSufficient,
         isWithdrawQtyValid,
         selectedToken.symbol,
         isResolvedAddressValid,
         isSendToAddressChecked,
     ]);
-
-    // const chooseTokenDiv = (
-    //     <div>
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))}
-    //     </div>
-    // );
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {
         if (crocEnv && withdrawQtyNonDisplay) {
@@ -295,7 +270,7 @@ export default function Withdraw(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: 'Withdrawal',
+                            txType: `Withdrawal of ${selectedToken.symbol}`,
                         }),
                     );
 
@@ -304,17 +279,17 @@ export default function Withdraw(props: propsIF) {
                     if (tx) receipt = await tx.wait();
                 } catch (e) {
                     const error = e as TransactionError;
-                    console.log({ error });
+                    console.error({ error });
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
-                        console.log('repriced');
+                        IS_LOCAL_ENV && console.debug('repriced');
                         dispatch(removePendingTx(error.hash));
 
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
-                        console.log({ newTransactionHash });
+                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
 
                         //  if (newTransactionHash) {
@@ -339,7 +314,7 @@ export default function Withdraw(props: propsIF) {
                         //      );
                         //  }
                     } else if (isTransactionFailedError(error)) {
-                        // console.log({ error });
+                        console.error({ error });
                         receipt = error.receipt;
                     }
                 }
@@ -355,7 +330,7 @@ export default function Withdraw(props: propsIF) {
                 ) {
                     location.reload();
                 }
-                console.warn({ error });
+                console.error({ error });
             } finally {
                 setIsWithdrawPending(false);
                 setRecheckTokenBalances(true);
@@ -488,6 +463,7 @@ export default function Withdraw(props: propsIF) {
                 setIsSendToAddressChecked={setIsSendToAddressChecked}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                disable={isCurrencyFieldDisabled}
             />
             <div
                 onClick={handleBalanceClick}

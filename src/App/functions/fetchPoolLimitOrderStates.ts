@@ -1,3 +1,5 @@
+import { IS_LOCAL_ENV } from '../../constants';
+
 interface IFetchPoolLimitOrderStatesProps {
     chainId: string;
     base: string;
@@ -14,7 +16,7 @@ export const fetchPoolLimitOrderStates = (
     const poolLimitOrderStatesCacheEndpoint =
         'https://809821320828123.de:5000' + '/pool_limit_order_states?';
 
-    console.log('fetching pool recent changes');
+    IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 
     const poolLimitOrderStates = fetch(
         poolLimitOrderStatesCacheEndpoint +
@@ -32,7 +34,7 @@ export const fetchPoolLimitOrderStates = (
             const poolLimitOrderJsonData = json?.data;
             return poolLimitOrderJsonData;
         })
-        .catch(console.log);
+        .catch(console.error);
 
     return poolLimitOrderStates;
 };

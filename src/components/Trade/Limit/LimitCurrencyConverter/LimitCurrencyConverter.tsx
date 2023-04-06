@@ -34,7 +34,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 // import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
@@ -198,17 +198,14 @@ export default function LimitCurrencyConverter(props: propsIF) {
         tokenASurplusMinusTokenARemainderNum >= 0
             ? tokenASurplusMinusTokenARemainderNum
             : 0;
-    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
-        ? isWithdrawFromDexChecked
+    const tokenAWalletMinusTokenAQtyNum =
+        isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+            ? parseFloat(tokenABalance || '0') +
+              tokenASurplusMinusTokenARemainderNum
+            : isWithdrawFromDexChecked
             ? parseFloat(tokenABalance || '0')
             : parseFloat(tokenABalance || '0') -
-              parseFloat(tokenAQtyLocal || '0')
-        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-        ? parseFloat(tokenABalance || '0') +
-          tokenASurplusMinusTokenARemainderNum
-        : isWithdrawFromDexChecked
-        ? parseFloat(tokenABalance || '0')
-        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+              parseFloat(tokenAQtyLocal || '0');
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
 
@@ -226,7 +223,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     useEffect(() => {
-        console.log({ disableReverseTokens });
+        IS_LOCAL_ENV && console.debug({ disableReverseTokens });
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
@@ -243,8 +240,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         } else {
             setDisableReverseTokens(true);
             // dispatch(reverseTokensInRTK());
-            // console.log('reversing');
-            console.log({ isTokenAPrimaryLocal });
+            IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             navigate(
                 '/trade/limit/chain=0x5&tokenA=' +
                     tokenPair.dataTokenB.address +
@@ -252,11 +248,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     tokenPair.dataTokenA.address,
             );
             if (!isTokenAPrimaryLocal) {
-                // console.log('setting a to' + tradeData.primaryQuantity);
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
             } else {
-                // console.log('setting b to' + tradeData.primaryQuantity);
                 // setTokenBQtyLocal(tradeData.primaryQuantity);
                 setTokenBInputQty(tradeData.primaryQuantity);
             }
@@ -302,52 +296,26 @@ export default function LimitCurrencyConverter(props: propsIF) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
         } else {
-            if (isSellTokenEth) {
-                if (isWithdrawFromDexChecked) {
-                    const roundedTokenADexBalance =
-                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenADexBalance) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+            if (isWithdrawFromDexChecked) {
+                if (
+                    tokenAAmount >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                    );
                 } else {
-                    const roundedTokenAWalletBalance =
-                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenAWalletBalance) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                    setLimitAllowed(true);
                 }
             } else {
-                if (isWithdrawFromDexChecked) {
-                    if (
-                        tokenAAmount >
-                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    ) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                if (tokenAAmount > parseFloat(tokenABalance)) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
                 } else {
-                    if (tokenAAmount > parseFloat(tokenABalance)) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                    setLimitAllowed(true);
                 }
             }
         }
@@ -355,7 +323,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty: number;
-        // console.log({ isSellTokenBase });
 
         if (evt) {
             // const tokenAInputField = document.getElementById('sell-limit-quantity');
@@ -373,8 +340,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 setLimitButtonErrorMessage('Enter an Amount');
                 if (input !== '') return;
             }
-
-            // console.log({ input });
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -417,8 +382,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        // console.log({ isSellTokenBase });
-        // console.log({ truncatedTokenBQty });
         // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
         // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
@@ -460,7 +423,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
         handleLimitButtonMessage(parseFloat(input));
-        // console.log({ truncatedTokenBQty });
 
         // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
@@ -475,7 +437,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
-        // console.log({ evt });
         if (evt) {
             // const tokenBInputField = document.getElementById('buy-limit-quantity');
 
@@ -492,7 +453,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 setLimitButtonErrorMessage('Enter an Amount');
                 if (input !== '') return;
             }
-            // console.log({ input });
             // setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
@@ -635,7 +595,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
-                    <TokensArrow />
+                    <TokensArrow disabled={disableReverseTokens} />
                 </IconWithTooltip>
             </div>
             <div id='limit_currency_converter'>

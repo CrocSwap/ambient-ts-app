@@ -1,5 +1,6 @@
 import Moralis from 'moralis';
 import { EvmChain } from '@moralisweb3/common-evm-utils';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface metadata {
     name: string;
@@ -24,9 +25,8 @@ export async function getNFTs(account: string) {
             (nft) => nft.contractType === 'ERC1155',
         );
 
-        console.log({ userEthNFTs });
+        IS_LOCAL_ENV && console.debug({ userEthNFTs });
         if (userEthNFTs) {
-            // console.log({ userEthNFTs });
             const imageLocalURLs: string[] = [];
             userEthNFTs.forEach((nft) => {
                 const metadata = nft.metadata;
@@ -57,13 +57,11 @@ export async function getNFTs(account: string) {
                         imageGatewayURL = imageUrl;
                     } else if (imageUrl.startsWith('ipfs://')) {
                         const imageUrlNoProtocol = imageUrl.substring(12);
-                        // const imageGatewayURL =
-                        //     'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
                         imageGatewayURL =
                             'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
                     }
-                    console.log({ nftMatchingAllowList: nft });
-                    // console.log({ imageGatewayURL });
+                    IS_LOCAL_ENV &&
+                        console.debug({ nftMatchingAllowList: nft });
                     if (imageGatewayURL)
                         fetch(imageGatewayURL)
                             .then((response) => response.blob())
@@ -74,10 +72,9 @@ export async function getNFTs(account: string) {
                                     imageLocalURLs.push(localUrl);
                                 }
                             })
-                            .catch(console.log);
+                            .catch(console.error);
                 }
             });
-            // console.log({ imageLocalURLs });
             return imageLocalURLs;
         }
     } catch (e) {

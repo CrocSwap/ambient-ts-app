@@ -34,6 +34,8 @@ interface PositionsOnlyToggleProps {
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
+const LeaderboardTabName = 'Leaderboard';
+
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         isShowAllEnabled,
@@ -72,7 +74,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     );
     // <NavLink to={`/${ownerId}`}>View Account</NavLink>
 
-    // console.log(leaderOwnerId);
     const leaderName = (
         <NavLink to={`/${leaderOwnerId}`} className={styles.leader}>
             <h3>{leader}</h3>
@@ -83,13 +84,14 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
     const toggleOrNull =
-        !isUserLoggedIn || isCandleSelected ? null : (
+        !isUserLoggedIn ||
+        isCandleSelected ||
+        // hide toggle if current tab is leaderboard since React state takes time to update
+        props.currentTab == LeaderboardTabName ? null : (
             <Toggle2
                 isOn={!isShowAllEnabled}
                 handleToggle={() => {
                     setHasUserSelectedViewAll(true);
-                    // console.log('toggle on', !isShowAllEnabled);
-                    // console.log('toggling show all');
                     setIsShowAllEnabled(!isShowAllEnabled);
                     if (!isShowAllEnabled) {
                         setIsCandleSelected(false);
@@ -125,8 +127,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 <p
                     onClick={() => {
                         unselectCandle();
-                        // setIsCandleSelected(false);
-                        // setTransactionFilter(undefined);
                     }}
                     style={
                         isCandleSelected
@@ -134,7 +134,10 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                             : { cursor: 'default' }
                     }
                 >
-                    {isUserLoggedIn && !isCandleSelected
+                    {isUserLoggedIn &&
+                    !isCandleSelected &&
+                    // hide toggle if current tab is leaderboard since React state takes time to update
+                    props.currentTab !== LeaderboardTabName
                         ? `My ${props.currentTab}`
                         : null}
                 </p>

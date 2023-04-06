@@ -30,14 +30,18 @@ export default function AdvancedPriceInfo(props: propsIF) {
     const reverseDisplay =
         (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
+    const currentPriceValue = reverseDisplay
+        ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+        : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`;
+
     const currentPrice = (
-        <div className={styles.price_info_row}>
+        <div
+            className={styles.price_info_row}
+            tabIndex={0}
+            aria-label={`Current price is ${currentPriceValue}. `}
+        >
             <div>Current Price: </div>
-            <div className={styles.current_price}>
-                {reverseDisplay
-                    ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                    : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`}
-            </div>
+            <div className={styles.current_price}>{currentPriceValue}</div>
         </div>
     );
 
@@ -53,7 +57,11 @@ export default function AdvancedPriceInfo(props: propsIF) {
             <div>Est. APR | 0%</div>
         </div>
     ) : (
-        <div className={styles.apr_display_in_range}>
+        <div
+            className={styles.apr_display_in_range}
+            tabIndex={aprPercentage ? 0 : -1}
+            aria-label={`Estimated APR is ${aprPercentageString} percent.`}
+        >
             <div>{aprPercentageString}</div>
         </div>
     );

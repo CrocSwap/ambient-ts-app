@@ -89,10 +89,8 @@ export const useUrlParams = (
         function check() {
             const tokenListsFromStorage = localStorage.getItem('allTokenLists');
             if (tokenListsFromStorage !== null) {
-                // console.log('found');
                 setTokenList(tokenListsFromStorage);
             } else {
-                // console.log('not found');
                 setTimeout(check, 100);
             }
         }
@@ -169,7 +167,6 @@ export const useUrlParams = (
             return Promise.resolve(promise)
                 .then((res) => res?.result[0].token)
                 .then((token) => {
-                    // console.log({ token });
                     return {
                         name: token.name,
                         chainId: token.chain.decimal,

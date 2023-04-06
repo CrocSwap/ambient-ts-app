@@ -6,7 +6,6 @@ import styles from './ConfirmationModalControl.module.css';
 interface propsIF {
     tempBypassConfirm: boolean;
     setTempBypassConfirm: Dispatch<SetStateAction<boolean>>;
-    toggleFor: string;
     displayInSettings?: boolean;
 }
 
@@ -17,10 +16,6 @@ export default function ConfirmationModalControl(props: propsIF) {
     const { pathname } = useLocation();
 
     const compKey = useId();
-
-    // TODO:   @Junior  unless the `id` field is being used for DOM manipulation
-    // TODO:   @Junior  ... or for CSS targeting, just take it out and use the
-    // TODO:   @Junior  ... `compKey` value instead (also delete this TODO note)
 
     const moduleName = pathname.includes('swap')
         ? 'Swaps'
@@ -34,12 +29,18 @@ export default function ConfirmationModalControl(props: propsIF) {
         ? 'Repositions'
         : 'unhandled';
 
+    const toggleAriaLabel = `${
+        tempBypassConfirm ? 'disable skip' : 'skip'
+    } the Confirmation Step for ${moduleName}`;
+
     return (
         <div className={styles.main_container}>
             {displayInSettings ? (
-                <p>{`Skip the Confirmation Step for ${moduleName}`}</p>
+                <p
+                    tabIndex={0}
+                >{`Skip the Confirmation Step for ${moduleName}`}</p>
             ) : (
-                <p>Skip this confirmation step in the future</p>
+                <p tabIndex={0}>Skip this confirmation step in the future.</p>
             )}
             <Toggle2
                 key={compKey}
@@ -47,6 +48,7 @@ export default function ConfirmationModalControl(props: propsIF) {
                 disabled={false}
                 handleToggle={() => setTempBypassConfirm(!tempBypassConfirm)}
                 id='disabled_confirmation_modal_toggle'
+                aria-label={toggleAriaLabel}
             />
         </div>
     );

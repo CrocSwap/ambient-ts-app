@@ -163,6 +163,11 @@ div.tooltip {
     transition: 0.8s all ease-in-out;
 }
 
+d3fc-canvas>canvas, d3fc-svg>svg {
+    height: inherit;
+    width: inherit;
+}
+
 @keyframes hideAnimation {
     to {
         visibility: hidden;
@@ -302,6 +307,13 @@ label {
 @media (max-width: 1700px) and (min-width: 1500px) {
     .xAxis {
         height: 10% !important;
+    }
+}
+
+@media (max-width: 1267px) and (min-width: 1200px) {
+
+    .chart_grid {
+        height: 50%;
     }
 }
 

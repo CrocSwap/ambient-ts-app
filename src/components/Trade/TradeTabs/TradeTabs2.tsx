@@ -40,6 +40,7 @@ import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -170,8 +171,6 @@ export default function TradeTabs2(props: propsIF) {
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
-
-    const activeChartPeriod = tradeData.activeChartPeriod;
 
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
@@ -336,9 +335,9 @@ export default function TradeTabs2(props: propsIF) {
                             );
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             } catch (error) {
-                console.log;
+                console.error;
             }
         }
     }, [isServerEnabled, account, isShowAllEnabled]);
@@ -361,11 +360,12 @@ export default function TradeTabs2(props: propsIF) {
                 annotateMEV: false,
                 ensResolution: true,
                 n: 100,
-                period: activeChartPeriod,
+                period: candleTime.time,
                 time: filter?.time,
             })
                 .then((selectedCandleChangesJson) => {
-                    console.log({ selectedCandleChangesJson });
+                    IS_LOCAL_ENV &&
+                        console.debug({ selectedCandleChangesJson });
                     if (selectedCandleChangesJson) {
                         const selectedCandleChangesWithoutFills =
                             selectedCandleChangesJson.filter((tx) => {
@@ -382,7 +382,7 @@ export default function TradeTabs2(props: propsIF) {
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
     }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
 
@@ -606,7 +606,7 @@ export default function TradeTabs2(props: propsIF) {
                                 sameElse: 'for ' + 'MM/DD/YYYY',
                             })}`}
                     {isCandleSelected &&
-                        candleTime.time === 86400 &&
+                        candleTime.time !== 86400 &&
                         `Showing Transactions for ${moment(
                             selectedDate,
                         ).calendar()}`}

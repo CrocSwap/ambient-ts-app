@@ -12,17 +12,13 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-// import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-// import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
 interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
-    slippageTolerance: number;
     liquidityProviderFee: number;
-    // quoteTokenIsBuy?: boolean;
     orderGasPriceInDollars: string | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
@@ -37,16 +33,9 @@ interface propsIF {
 // central react functional component
 export default function LimitExtraInfo(props: propsIF) {
     const {
-        // tokenPair,
         orderGasPriceInDollars,
-        // quoteTokenIsBuy,
         poolPriceDisplay,
-        // slippageTolerance,
         liquidityProviderFee,
-        // didUserFlipDenom,
-        // isTokenABase,
-        // isDenomBase,
-        // limitRate,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
@@ -54,29 +43,11 @@ export default function LimitExtraInfo(props: propsIF) {
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
-    // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
-
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
-
-    // let reverseSlippage: boolean;
-
-    // if (isDenomBase) {
-    //     if (isTokenABase) {
-    //         reverseSlippage = false;
-    //     } else {
-    //         reverseSlippage = true;
-    //     }
-    // } else {
-    //     if (isTokenABase) {
-    //         reverseSlippage = true;
-    //     } else {
-    //         reverseSlippage = false;
-    //     }
-    // }
 
     const displayPriceWithDenom = isDenomBase
         ? 1 / poolPriceDisplay
@@ -179,22 +150,17 @@ export default function LimitExtraInfo(props: propsIF) {
                 'The current provider fee for market orders. Provider fees are effectively rebated for limit orders.',
             data: `${liquidityProviderFee}%`,
         },
-        // {
-        //     title: 'Slippage Tolerance',
-        //     tooltipTitle: 'slippage tolerance explanation',
-        //     data: `${slippageTolerance}%`,
-        // },
-        // {
-        //     title: 'Liquidity Provider Fee',
-        //     tooltipTitle: 'liquidity provider fee explanation',
-        //     data: `${liquidityProviderFee}%`,
-        // },
     ];
 
     const limitExtraInfoDetails = (
         <div className={styles.extra_details}>
             {extraInfoData.map((item, idx) => (
-                <div className={styles.extra_row} key={idx}>
+                <div
+                    className={styles.extra_row}
+                    key={idx}
+                    tabIndex={0}
+                    aria-label={`${item.title} is ${item.data}`}
+                >
                     <div className={styles.align_center}>
                         <div>{item.title}</div>
                         <TooltipComponent title={item.tooltipTitle} />
@@ -207,14 +173,6 @@ export default function LimitExtraInfo(props: propsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
-    // const priceDisplay = makePriceDisplay(
-    //     tokenPair.dataTokenA,
-    //     tokenPair.dataTokenB,
-    //     isTokenABase,
-    //     poolPriceDisplay,
-    //     didUserFlipDenom,
-    // );
-
     const dropDownOrNull = isQtyEntered ? (
         <div style={{ cursor: 'pointer' }}>
             <RiArrowDownSLine size={20} />
@@ -223,14 +181,24 @@ export default function LimitExtraInfo(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const conversionRateDisplay = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const gasCostAriaLabel = `Gas cost is ${orderGasPriceInDollars}. Conversion rate is ${conversionRateDisplay} `;
+
     const extraInfoSectionOrNull = (
-        <div
-            className={styles.extra_info_content}
+        <button
+            className={`${styles.extra_info_content} ${
+                isQtyEntered && styles.extra_info_content_active
+            }`}
             onClick={
                 isQtyEntered
                     ? () => setShowExtraDetails(!showExtraDetails)
                     : () => setShowExtraDetails(false)
             }
+            tabIndex={0}
+            aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} />{' '}
@@ -243,13 +211,11 @@ export default function LimitExtraInfo(props: propsIF) {
                     e.stopPropagation();
                 }}
             >
-                {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
             {dropDownOrNull}
-        </div>
+        </button>
     );
     return (
         <>

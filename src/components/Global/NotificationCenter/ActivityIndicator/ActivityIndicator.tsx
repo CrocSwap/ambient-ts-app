@@ -34,28 +34,31 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     }, [controls, value]);
 
     const toggleNotificationCenter: React.MouseEventHandler<
-        HTMLDivElement
+        HTMLButtonElement
     > = () => {
         setShowNotificationTable(!showNotificationTable);
     };
 
     const pendingCircle = (
-        <div className={styles.circle} onClick={toggleNotificationCenter}>
+        <button className={styles.circle} onClick={toggleNotificationCenter}>
             <div className={styles.ring} />
-        </div>
+        </button>
     );
 
     if (pending) return pendingCircle;
     return (
         <AnimatePresence>
             {value > 0 && (
-                <motion.div
+                <motion.button
                     initial={false}
                     exit='hidden'
                     animate='visible'
                     variants={animStates}
                     style={{ cursor: 'pointer' }}
                     onClick={toggleNotificationCenter}
+                    className={styles.circle_button}
+                    tabIndex={0}
+                    aria-label='Notification center'
                 >
                     <motion.div
                         className={styles.activity_indicator}
@@ -64,9 +67,15 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                         whileTap='pressed'
                         variants={animStates}
                     >
-                        <span>{value}</span>
+                        <span
+                            aria-live='polite'
+                            aria-atomic='true'
+                            aria-relevant='text'
+                        >
+                            {value}
+                        </span>
                     </motion.div>
-                </motion.div>
+                </motion.button>
             )}
         </AnimatePresence>
     );

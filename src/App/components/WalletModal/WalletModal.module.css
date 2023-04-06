@@ -1,6 +1,11 @@
 .main_container {
     justify-content: space-between;
-    padding-bottom: 1rem;
+    padding: 1rem 0;
+}
+
+.main_container a:hover, .main_container a:focus-visible{
+   text-decoration: underline;
+   text-decoration-color: var(--text-grey-white);
 }
 
 .main_container,
@@ -44,6 +49,8 @@
     align-items: center;
     text-align: center;
     letter-spacing: -0.02em;
+    height: 100px;
+    justify-content: flex-end;
 
     color: #ebebff;
 }

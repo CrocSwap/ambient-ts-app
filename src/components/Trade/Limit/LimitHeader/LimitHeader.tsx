@@ -45,13 +45,15 @@ export default function LimitHeader(props: propsIF) {
 
     return (
         <ContentHeader>
-            <div
+            <AiOutlineShareAlt
                 className={styles.share_button}
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 id='limit_share_button'
-            >
-                <AiOutlineShareAlt />
-            </div>
+                role='button'
+                tabIndex={0}
+                aria-label='Share button'
+            />
+
             <div
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
@@ -65,6 +67,9 @@ export default function LimitHeader(props: propsIF) {
                     style={{ cursor: 'pointer' }}
                     className={styles.settings_icon}
                     id='limit_settings_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
@@ -78,7 +83,6 @@ export default function LimitHeader(props: propsIF) {
                 >
                     <TransactionSettings
                         module='Limit Order'
-                        toggleFor='limit'
                         slippage={mintSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}

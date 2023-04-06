@@ -15,7 +15,5 @@ export const calcImpact = async (
         : env.buy(buyTokenAddress, qty).with(sellTokenAddress, {
               slippage: slippageTolerancePercentage,
           }).impact);
-
-    // console.log({ impact });
     return impact;
 };

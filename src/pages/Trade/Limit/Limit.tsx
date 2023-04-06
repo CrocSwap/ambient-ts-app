@@ -2,6 +2,8 @@
 import { useState, useEffect, Dispatch, SetStateAction, useMemo } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
+import FocusTrap from 'focus-trap-react';
+
 import {
     tickToPrice,
     CrocEnv,
@@ -61,6 +63,7 @@ import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface propsIF {
     account: string | undefined;
@@ -211,7 +214,6 @@ export default function Limit(props: propsIF) {
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitTick = tradeData.limitTick;
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-    const slippageTolerancePercentage = tradeData.slippageTolerance;
 
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -266,7 +268,7 @@ export default function Limit(props: propsIF) {
                     ? pinTickLower(initialLimitRateNonDisplay, gridSize)
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
-                console.log({ pinnedTick });
+                IS_LOCAL_ENV && console.debug({ pinnedTick });
                 dispatch(setLimitTick(pinnedTick));
 
                 const tickPrice = tickToPrice(pinnedTick);
@@ -286,7 +288,7 @@ export default function Limit(props: propsIF) {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                               });
-                    console.log({ limitRateTruncated });
+                    IS_LOCAL_ENV && console.debug({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -531,19 +533,16 @@ export default function Limit(props: propsIF) {
     ]);
 
     const sendLimitOrder = async () => {
-        console.log('Send limit');
+        IS_LOCAL_ENV && console.debug('Send limit');
         if (!crocEnv) {
             location.reload();
             return;
         }
         if (limitTick === undefined) return;
-        // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
-        //     return;
-        // }
         resetConfirmation();
         setIsWaitingForWallet(true);
 
-        console.log({ limitTick });
+        IS_LOCAL_ENV && console.debug({ limitTick });
 
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
@@ -555,16 +554,16 @@ export default function Limit(props: propsIF) {
         const order = isTokenAPrimary
             ? crocEnv.sell(sellToken, qty)
             : crocEnv.buy(buyToken, qty);
-        // console.log({ limitTick });
+
         const ko = order.atLimit(
             isTokenAPrimary ? buyToken : sellToken,
             limitTick,
         );
-        // console.log({ ko });
         if (await ko.willMintFail()) {
-            console.log(
-                'Cannot send limit order: Knockout price inside spread',
-            );
+            IS_LOCAL_ENV &&
+                console.debug(
+                    'Cannot send limit order: Knockout price inside spread',
+                );
             setTxErrorMessage('Limit inside market price');
             return;
         }
@@ -572,7 +571,7 @@ export default function Limit(props: propsIF) {
         let tx;
         try {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            console.log(tx.hash);
+            IS_LOCAL_ENV && console.debug(tx.hash);
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
             setIsWaitingForWallet(false);
@@ -580,14 +579,14 @@ export default function Limit(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Limit',
+                        txType: `Add Limit ${tradeData.tokenA.symbol}→${tradeData.tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error.code);
             setTxErrorMessage(error.message);
             setIsWaitingForWallet(false);
@@ -623,16 +622,16 @@ export default function Limit(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewLimitOrderTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -655,7 +654,7 @@ export default function Limit(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
+                // console.error({ error });
                 receipt = error.receipt;
             }
         }
@@ -666,34 +665,12 @@ export default function Limit(props: propsIF) {
         }
     };
 
-    const handleModalClose = () => {
+    const handleModalClose = (): void => {
         closeModal();
         setNewLimitOrderTransactionHash('');
         resetConfirmation();
     };
 
-    const confirmLimitModalProps = {
-        onClose: handleModalClose,
-        tokenPair: tokenPair,
-        poolPriceDisplay: poolPriceDisplay || 0,
-        initiateLimitOrderMethod: sendLimitOrder,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        isTokenAPrimary: isTokenAPrimary,
-        insideTickDisplayPrice: endDisplayPrice,
-        newLimitOrderTransactionHash: newLimitOrderTransactionHash,
-        txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
-        showConfirmation: showConfirmation,
-        setShowConfirmation: setShowConfirmation,
-        resetConfirmation: resetConfirmation,
-        startDisplayPrice: startDisplayPrice,
-        middleDisplayPrice: middleDisplayPrice,
-        endDisplayPrice: endDisplayPrice,
-        bypassConfirm: bypassConfirm,
-        showBypassConfirmButton: showBypassConfirmButton,
-        setShowBypassConfirmButton: setShowBypassConfirmButton,
-    };
     const bypassLimitProps = {
         newLimitOrderTransactionHash: newLimitOrderTransactionHash,
         txErrorCode: txErrorCode,
@@ -720,7 +697,7 @@ export default function Limit(props: propsIF) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const approve = async (tokenAddress: string) => {
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
             location.reload();
             return;
@@ -733,7 +710,7 @@ export default function Limit(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Approval',
+                        txType: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -741,20 +718,20 @@ export default function Limit(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -766,7 +743,7 @@ export default function Limit(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -792,12 +769,15 @@ export default function Limit(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    ? `Approve ${tokenPair.dataTokenA.symbol}`
                     : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenA.address);
+                await approve(
+                    tokenPair.dataTokenA.address,
+                    tokenPair.dataTokenA.symbol,
+                );
             }}
             flat={true}
         />
@@ -904,96 +884,123 @@ export default function Limit(props: propsIF) {
 
     // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
     return (
-        <section className={styles.scrollable_container}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section className={styles.scrollable_container}>
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
+                )}{' '}
+                <ContentContainer isOnTradeRoute>
+                    <LimitHeader
+                        chainId={chainId}
+                        mintSlippage={mintSlippage}
+                        isPairStable={isPairStable}
+                        openGlobalModal={props.openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
+                        bypassConfirm={bypassConfirm}
+                    />
+                    {navigationMenu}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
                     >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}{' '}
-            <ContentContainer isOnTradeRoute>
-                <LimitHeader
-                    chainId={chainId}
-                    mintSlippage={mintSlippage}
-                    isPairStable={isPairStable}
-                    openGlobalModal={props.openGlobalModal}
-                    shareOptionsDisplay={shareOptionsDisplay}
-                    bypassConfirm={bypassConfirm}
-                />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <LimitCurrencyConverter {...currencyConverterProps} />
-                </motion.div>
-                <div className={styles.header_container}>
-                    {/* <DividerDark addMarginTop /> */}
-                    {/* <DenominationSwitch /> */}
-                </div>
-                <LimitExtraInfo
-                    isQtyEntered={
-                        tokenAInputQty !== '' || tokenBInputQty !== ''
-                    }
-                    tokenPair={tokenPair}
-                    orderGasPriceInDollars={orderGasPriceInDollars}
-                    poolPriceDisplay={poolPriceDisplay || 0}
-                    slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFee={tradeData.liquidityFee * 100}
-                    didUserFlipDenom={tradeData.didUserFlipDenom}
-                    isTokenABase={isSellTokenBase}
-                    isDenomBase={isDenomBase}
-                    limitRate={endDisplayPrice.toString()}
-                    startDisplayPrice={startDisplayPrice}
-                    middleDisplayPrice={middleDisplayPrice}
-                    endDisplayPrice={endDisplayPrice}
-                />
-                {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                  true ? (
-                    !isTokenAAllowanceSufficient &&
-                    parseFloat(tokenAInputQty) > 0 ? (
-                        approvalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassLimitButton {...bypassLimitProps} />
+                        <LimitCurrencyConverter {...currencyConverterProps} />
+                    </motion.div>
+                    <div className={styles.header_container}></div>
+                    <LimitExtraInfo
+                        isQtyEntered={
+                            tokenAInputQty !== '' || tokenBInputQty !== ''
+                        }
+                        tokenPair={tokenPair}
+                        orderGasPriceInDollars={orderGasPriceInDollars}
+                        poolPriceDisplay={poolPriceDisplay || 0}
+                        liquidityProviderFee={tradeData.liquidityFee * 100}
+                        didUserFlipDenom={tradeData.didUserFlipDenom}
+                        isTokenABase={isSellTokenBase}
+                        isDenomBase={isDenomBase}
+                        limitRate={endDisplayPrice.toString()}
+                        startDisplayPrice={startDisplayPrice}
+                        middleDisplayPrice={middleDisplayPrice}
+                        endDisplayPrice={endDisplayPrice}
+                    />
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
+                      true ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 ? (
+                            approvalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassLimitButton {...bypassLimitProps} />
+                        ) : (
+                            <LimitButton
+                                onClickFn={
+                                    bypassConfirm.limit.isEnabled
+                                        ? handleLimitButtonClickWithBypass
+                                        : openModal
+                                }
+                                limitAllowed={
+                                    isOrderValid &&
+                                    poolPriceNonDisplay !== 0 &&
+                                    limitAllowed
+                                }
+                                limitButtonErrorMessage={
+                                    limitButtonErrorMessage
+                                }
+                                isBypassConfirmEnabled={
+                                    bypassConfirm.limit.isEnabled
+                                }
+                            />
+                        )
                     ) : (
-                        <LimitButton
-                            onClickFn={
-                                bypassConfirm.limit.isEnabled
-                                    ? handleLimitButtonClickWithBypass
-                                    : openModal
+                        loginButton
+                    )}
+                </ContentContainer>
+                {isModalOpen && (
+                    <Modal
+                        onClose={handleModalClose}
+                        title='Limit Confirmation'
+                        centeredTitle
+                    >
+                        <ConfirmLimitModal
+                            onClose={handleModalClose}
+                            tokenPair={tokenPair}
+                            poolPriceDisplay={poolPriceDisplay || 0}
+                            initiateLimitOrderMethod={sendLimitOrder}
+                            tokenAInputQty={tokenAInputQty}
+                            tokenBInputQty={tokenBInputQty}
+                            isTokenAPrimary={isTokenAPrimary}
+                            insideTickDisplayPrice={endDisplayPrice}
+                            newLimitOrderTransactionHash={
+                                newLimitOrderTransactionHash
                             }
-                            limitAllowed={
-                                isOrderValid &&
-                                poolPriceNonDisplay !== 0 &&
-                                limitAllowed
-                            }
-                            limitButtonErrorMessage={limitButtonErrorMessage}
-                            bypassConfirmLimit={bypassConfirm.limit}
+                            txErrorCode={txErrorCode}
+                            txErrorMessage={txErrorMessage}
+                            showConfirmation={showConfirmation}
+                            setShowConfirmation={setShowConfirmation}
+                            resetConfirmation={resetConfirmation}
+                            startDisplayPrice={startDisplayPrice}
+                            middleDisplayPrice={middleDisplayPrice}
+                            endDisplayPrice={endDisplayPrice}
+                            bypassConfirm={bypassConfirm}
                         />
-                    )
-                ) : (
-                    loginButton
+                    </Modal>
                 )}
-            </ContentContainer>
-            {isModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title='Limit Confirmation'
-                    centeredTitle
-                >
-                    <ConfirmLimitModal {...confirmLimitModalProps} />
-                </Modal>
-            )}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={limitTutorialSteps}
-            />
-        </section>
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={limitTutorialSteps}
+                />
+            </section>
+        </FocusTrap>
     );
 }

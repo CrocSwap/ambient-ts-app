@@ -222,7 +222,6 @@ export default function Ranges(props: propsIF) {
                                         account.toLowerCase(),
                                 );
                             if (updatedPositionsMatchingUser.length)
-                                // console.log({ updatedPositionsMatchingUser });
                                 dispatch(
                                     addPositionsByUser(
                                         updatedPositionsMatchingUser,
@@ -230,15 +229,13 @@ export default function Ranges(props: propsIF) {
                                 );
                         }
                     } else {
-                        // console.log({ updatedPositions });
-                        // console.log({ sortedPositions });
                         const newArray = updatedPositions.concat(
                             sortedPositions.slice(3),
                         );
                         setRangeData(newArray);
                     }
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
     }, [
         JSON.stringify({
@@ -345,7 +342,7 @@ export default function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: showPair,
             slug: 'time',
             sortable: true,
         },
@@ -446,6 +443,15 @@ export default function Ranges(props: propsIF) {
             show: true,
             slug: 'status',
             sortable: true,
+        },
+        {
+            name: '',
+
+            show: !isOnPortfolioPage && isShowAllEnabled,
+
+            slug: 'walletLink',
+            sortable: false,
+            alignRight: true,
         },
         {
             name: '',

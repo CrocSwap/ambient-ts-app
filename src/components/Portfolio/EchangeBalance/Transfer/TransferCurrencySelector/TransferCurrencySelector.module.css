@@ -70,6 +70,7 @@
     justify-content: space-between;
     align-items: center;
     width: 30%;
+    cursor: pointer;
 }
 
 .token_select img {

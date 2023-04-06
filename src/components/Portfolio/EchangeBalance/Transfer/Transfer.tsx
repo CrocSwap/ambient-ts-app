@@ -29,7 +29,7 @@ import {
 import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -99,6 +99,10 @@ export default function Transfer(props: propsIF) {
     >();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
+        useState<boolean>(true);
+    const [isAddressFieldDisabled, setIsAddressFieldDisabled] =
+        useState<boolean>(true);
     const [sendToAddressDexBalance, setSendToAddressDexBalance] =
         useState<string>('');
     const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
@@ -150,7 +154,7 @@ export default function Transfer(props: propsIF) {
                 .then((bal: BigNumber) => {
                     setSendToAddressDexBalance(bal.toString());
                 })
-                .catch(console.log);
+                .catch(console.error);
         } else {
             setSendToAddressDexBalance('');
         }
@@ -185,47 +189,37 @@ export default function Transfer(props: propsIF) {
         setIsTransferPending(false);
     }, [JSON.stringify(selectedToken)]);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeGlobalModal();
-    // };
-
     useEffect(() => {
-        // console.log({ isDepositQtyValid });
-        // console.log({ isTokenAllowanceSufficient });
         if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
         } else if (!transferQtyNonDisplay) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        }
-        // else if (isApprovalPending) {
-        //     setIsButtonDisabled(true);
-        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        // }
-        else if (isTransferPending) {
+        } else if (isTransferPending) {
             setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(true);
+            setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
-        }
-        // else if (!isTokenAllowanceSufficient) {
-        //     setIsButtonDisabled(false);
-        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        // }
-        else if (isTransferQtyValid) {
+        } else if (isTransferQtyValid) {
             setIsButtonDisabled(false);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
             setButtonMessage('Transfer');
         }
     }, [
-        // isApprovalPending,
         isTransferPending,
-        // isTokenAllowanceSufficient,
         isDexBalanceSufficient,
         isTransferQtyValid,
         selectedToken.symbol,
@@ -249,7 +243,7 @@ export default function Transfer(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: 'Transfer',
+                            txType: `Transfer ${selectedToken.symbol}`,
                         }),
                     );
                 let receipt;
@@ -257,17 +251,17 @@ export default function Transfer(props: propsIF) {
                     if (tx) receipt = await tx.wait();
                 } catch (e) {
                     const error = e as TransactionError;
-                    console.log({ error });
+                    console.error({ error });
                     // The user used "speed up" or something similar
                     // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
-                        console.log('repriced');
+                        IS_LOCAL_ENV && console.debug('repriced');
                         dispatch(removePendingTx(error.hash));
 
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
-                        console.log({ newTransactionHash });
+                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
 
                         //  if (newTransactionHash) {
@@ -292,7 +286,7 @@ export default function Transfer(props: propsIF) {
                         //      );
                         //  }
                     } else if (isTransactionFailedError(error)) {
-                        // console.log({ error });
+                        console.error({ error });
                         receipt = error.receipt;
                     }
                 }
@@ -308,7 +302,7 @@ export default function Transfer(props: propsIF) {
                 ) {
                     location.reload();
                 }
-                console.warn({ error });
+                console.error({ error });
             } finally {
                 setIsTransferPending(false);
                 setRecheckTokenBalances(true);
@@ -408,6 +402,7 @@ export default function Transfer(props: propsIF) {
                 fieldId='exchange-balance-transfer-address'
                 setTransferToAddress={setSendToAddress}
                 sendToAddress={sendToAddress}
+                disable={isAddressFieldDisabled}
             />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
@@ -416,6 +411,7 @@ export default function Transfer(props: propsIF) {
                 setTransferQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                disable={isCurrencyFieldDisabled}
             />
             <div
                 onClick={handleBalanceClick}
@@ -436,7 +432,6 @@ export default function Transfer(props: propsIF) {
             {secondaryEnsOrNull}
             <TransferButton
                 onClick={() => {
-                    // console.log('clicked');
                     transferFn();
                 }}
                 disabled={isButtonDisabled}

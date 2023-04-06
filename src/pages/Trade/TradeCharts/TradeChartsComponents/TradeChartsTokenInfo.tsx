@@ -13,6 +13,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
@@ -76,17 +77,24 @@ export default function TradeChartsTokenInfo(props: propsIF) {
 
     const logoSizes = smallScrenView ? '18px' : '25px';
 
+    const poolPrice =
+        poolPriceDisplay === Infinity || poolPriceDisplay === 0
+            ? '…'
+            : `${currencyCharacter}${truncatedPoolPrice}`;
+
     const currentAmountDisplay = (
         <span
             onClick={() => dispatch(toggleDidUserFlipDenom())}
             className={styles.amount}
             style={{ marginTop: '2.5px', cursor: 'pointer' }}
+            aria-label={poolPrice}
         >
-            {poolPriceDisplay === Infinity || poolPriceDisplay === 0
-                ? '…'
-                : `${currencyCharacter}${truncatedPoolPrice}`}
+            {poolPrice}
         </span>
     );
+
+    const poolPriceNumber =
+        poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
     const poolPriceChange = (
         <NoColorTooltip
@@ -107,10 +115,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                           }
                         : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
                 }
+                aria-label={`Pool price change is ${poolPriceNumber}`}
             >
-                {poolPriceChangePercent === undefined
-                    ? '…'
-                    : poolPriceChangePercent}
+                {poolPriceNumber}
             </span>
         </NoColorTooltip>
     );
@@ -144,7 +151,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                   chainId,
                   36000,
               );
-        console.log(tradeData);
+        IS_LOCAL_ENV && console.debug(tradeData);
     }
 
     const favButton = (
@@ -152,6 +159,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             className={styles.favorite_button}
             onClick={handleFavButton}
             id='trade_fav_button'
+            role='button'
+            tabIndex={0}
+            aria-label={
+                isButtonFavorited
+                    ? ' Remove pool from favorites'
+                    : 'Add pool from favorites'
+            }
         >
             {
                 <svg
@@ -191,7 +205,12 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         <div className={styles.tokens_info_simplify}>
             <div className={styles.tokens_info_simplify_content}>
                 {favButton}
-                <section>
+                <button
+                    className={styles.denom_toggle_button}
+                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                    tabIndex={0}
+                    aria-label='Flip denomination.'
+                >
                     <DefaultTooltip
                         interactive
                         title={`${tradeData.baseToken.symbol + ':'} ${
@@ -201,10 +220,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         }`}
                         placement={'top'}
                     >
-                        <div
-                            className={styles.tokens_images}
-                            onClick={() => dispatch(toggleDidUserFlipDenom())}
-                        >
+                        <div className={styles.tokens_images}>
                             {topTokenLogo ? (
                                 <img src={topTokenLogo} alt={topTokenSymbol} />
                             ) : (
@@ -237,14 +253,16 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     >
                         <div
                             className={styles.tokens_name}
-                            onClick={() => dispatch(toggleDidUserFlipDenom())}
+                            aria-live='polite'
+                            aria-atomic='true'
+                            aria-relevant='additions text'
                         >
                             {topTokenSymbol} / {bottomTokenSymbol}
                             {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
                             {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
                         </div>
                     </DefaultTooltip>
-                </section>
+                </button>
                 {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
                 {currentAmountDisplay}
                 {poolPriceChange}
@@ -257,56 +275,63 @@ export default function TradeChartsTokenInfo(props: propsIF) {
     return (
         <div className={styles.tokens_info}>
             {favButton}
-            <DefaultTooltip
-                interactive
-                title={`${tradeData.baseToken.symbol + ':'} ${
-                    tradeData.baseToken.address
-                } ${tradeData.quoteToken.symbol}: ${
-                    tradeData.quoteToken.address
-                }`}
-                placement={'top'}
+            <button
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
+                className={styles.denom_toggle_button}
+                aria-label='flip denomination.'
             >
-                <div
-                    className={styles.tokens_images}
-                    id='trade_token_pair'
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                <DefaultTooltip
+                    interactive
+                    title={`${tradeData.baseToken.symbol + ':'} ${
+                        tradeData.baseToken.address
+                    } ${tradeData.quoteToken.symbol}: ${
+                        tradeData.quoteToken.address
+                    }`}
+                    placement={'top'}
                 >
-                    {topTokenLogo ? (
-                        <img src={topTokenLogo} alt={topTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={topTokenSymbol.charAt(0)}
-                            width={logoSizes}
-                        />
-                    )}
-                    {bottomTokenLogo ? (
-                        <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={bottomTokenSymbol.charAt(0)}
-                            width={logoSizes}
-                        />
-                    )}
-                </div>
-            </DefaultTooltip>
-            <DefaultTooltip
-                interactive
-                title={`${tradeData.baseToken.symbol + ':'} ${
-                    tradeData.baseToken.address
-                } ${tradeData.quoteToken.symbol}: ${
-                    tradeData.quoteToken.address
-                }`}
-                placement={'top'}
-            >
-                <div
-                    className={styles.tokens_name}
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                    <div className={styles.tokens_images} id='trade_token_pair'>
+                        {topTokenLogo ? (
+                            <img src={topTokenLogo} alt={topTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon
+                                tokenInitial={topTokenSymbol.charAt(0)}
+                                width={logoSizes}
+                            />
+                        )}
+                        {bottomTokenLogo ? (
+                            <img
+                                src={bottomTokenLogo}
+                                alt={bottomTokenSymbol}
+                            />
+                        ) : (
+                            <NoTokenIcon
+                                tokenInitial={bottomTokenSymbol.charAt(0)}
+                                width={logoSizes}
+                            />
+                        )}
+                    </div>
+                </DefaultTooltip>
+                <DefaultTooltip
+                    interactive
+                    title={`${tradeData.baseToken.symbol + ':'} ${
+                        tradeData.baseToken.address
+                    } ${tradeData.quoteToken.symbol}: ${
+                        tradeData.quoteToken.address
+                    }`}
+                    placement={'top'}
                 >
-                    {topTokenSymbol} / {bottomTokenSymbol}
-                    {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
-                    {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
-                </div>
-            </DefaultTooltip>
+                    <div
+                        className={styles.tokens_name}
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='all'
+                    >
+                        {topTokenSymbol} / {bottomTokenSymbol}
+                        {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
+                        {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
+                    </div>
+                </DefaultTooltip>
+            </button>
             {currentAmountDisplay}
             {poolPriceChange}
             {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}

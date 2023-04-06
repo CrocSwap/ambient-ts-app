@@ -123,11 +123,22 @@
     padding: 1%;
 }
 
-.price {
+.buy_price {
     flex-grow: 4;
     font-weight: lighter;
     text-align: -webkit-right;
+    color: #7371FC;
 }
+
+.sell_price {
+    flex-grow: 4;
+    font-weight: lighter;
+    text-align: -webkit-right;
+    color:#E480FF;
+}
+
+
+
 .range_price {
     flex-grow: 2;
     font-weight: lighter;

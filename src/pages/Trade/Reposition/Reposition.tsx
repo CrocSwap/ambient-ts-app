@@ -42,6 +42,7 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -128,6 +129,7 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+    console.log({ position });
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -206,9 +208,13 @@ export default function Reposition(props: propsIF) {
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
 
     useEffect(() => {
-        console.log('set Advanced Mode to false');
+        IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
         dispatch(setAdvancedMode(false));
     }, []);
+
+    useEffect(() => {
+        setSimpleRangeWidth(10);
+    }, [position]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
@@ -260,6 +266,8 @@ export default function Reposition(props: propsIF) {
             return;
         }
         let tx;
+        setTxErrorCode('');
+        setTxErrorMessage('');
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
@@ -276,7 +284,7 @@ export default function Reposition(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Reposition',
+                        txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                     }),
                 );
             navigate(redirectPath, { replace: true });
@@ -284,7 +292,7 @@ export default function Reposition(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
         }
@@ -294,19 +302,18 @@ export default function Reposition(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRepositionTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -431,7 +438,7 @@ export default function Reposition(props: propsIF) {
                 // console.log({ liqQuoteDisplay });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
-            .catch(console.log);
+            .catch(console.error);
     };
 
     useEffect(() => {
@@ -614,6 +621,12 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
+                    repoSlippage={repoSlippage}
+                    isPairStable={isPairStable}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isDenomBase={isDenomBase}
+                    currentMinPrice={position?.lowRangeDisplayInBase}
+                    currentMaxPrice={position?.highRangeDisplayInBase}
                 />
                 <div className={styles.button_container}>
                     <Button
@@ -630,7 +643,7 @@ export default function Reposition(props: propsIF) {
                                 : openModal
                         }
                         disabled={isPositionInRange}
-                        flat={true}
+                        flat
                     />
                 </div>
             </div>

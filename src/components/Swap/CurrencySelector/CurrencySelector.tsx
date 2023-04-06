@@ -306,7 +306,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -316,6 +315,7 @@ export default function CurrencySelector(props: propsIF) {
     const walletBalanceMaxButton =
         isSellTokenSelector &&
         !isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         walletBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
@@ -339,7 +339,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -422,6 +421,7 @@ export default function CurrencySelector(props: propsIF) {
     const surplusMaxButton =
         isSellTokenSelector &&
         isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         surplusBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
@@ -535,9 +535,24 @@ export default function CurrencySelector(props: propsIF) {
         soloTokenSelectInput.value = '';
     };
 
+    const tokenSymbol =
+        thisToken?.symbol?.length > 4 ? (
+            <DefaultTooltip
+                title={thisToken.symbol}
+                placement={'top'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div className={styles.token_list_text}>{thisToken.symbol}</div>
+            </DefaultTooltip>
+        ) : (
+            <div className={styles.token_list_text}>{thisToken.symbol}</div>
+        );
+
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction}> </div>
+            <div className={styles.direction} />
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity
@@ -550,11 +565,13 @@ export default function CurrencySelector(props: propsIF) {
                         setDisableReverseTokens={setDisableReverseTokens}
                     />
                 </div>
-                <div
+                <button
                     className={`${styles.token_select} ${
                         isSwapCopied && styles.pulse_animation
                     }`}
                     onClick={openTokenModal}
+                    tabIndex={0}
+                    aria-label='Open swap sell token modal.'
                     id='swap_token_selector'
                 >
                     {thisToken.logoURI ? (
@@ -570,11 +587,9 @@ export default function CurrencySelector(props: propsIF) {
                             width='30px'
                         />
                     )}
-                    <div className={styles.token_list_text}>
-                        {thisToken.symbol}
-                    </div>
+                    {tokenSymbol}
                     <RiArrowDownSLine size={27} />
-                </div>
+                </button>
             </div>
             {swapboxBottomOrNull}
 

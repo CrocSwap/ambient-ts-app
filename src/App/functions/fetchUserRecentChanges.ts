@@ -1,3 +1,4 @@
+import { IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
@@ -26,13 +27,12 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         annotateMEV,
         ensResolution,
         n,
-        // page,
     } = args;
 
     const userRecentChangesCacheEndpoint =
         'https://809821320828123.de:5000' + '/user_recent_changes?';
 
-    console.log('fetching user recent changes');
+    IS_LOCAL_ENV && console.debug('fetching user recent changes');
 
     const poolChanges = fetch(
         userRecentChangesCacheEndpoint +
@@ -61,7 +61,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
             });
             return updatedTransactions;
         })
-        .catch(console.log);
+        .catch(console.error);
 
     return poolChanges;
 };
