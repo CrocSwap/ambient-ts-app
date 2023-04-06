@@ -5418,10 +5418,13 @@ export default function Chart(props: propsIF) {
         data: any[],
         liquidityScale: any,
     ) => {
-        const low = ranges.filter((target: any) => target.name === 'Min')[0]
+        const _low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
-        const high = ranges.filter((target: any) => target.name === 'Max')[0]
+        const _high = ranges.filter((target: any) => target.name === 'Max')[0]
             .value;
+
+        const low = _low > _high ? _high : _low;
+        const high = _low > _high ? _low : _high;
 
         const filtered = data.filter(
             (item: any) => item.liqPrices >= low && item.liqPrices <= high,
@@ -5496,10 +5499,14 @@ export default function Chart(props: propsIF) {
     };
 
     const addLowValuetoHighlightedLine = (data: any[], liquidityScale: any) => {
-        const low = ranges.filter((target: any) => target.name === 'Min')[0]
+        const _low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
-        const high = ranges.filter((target: any) => target.name === 'Max')[0]
+        const _high = ranges.filter((target: any) => target.name === 'Max')[0]
             .value;
+
+        const low = _low > _high ? _high : _low;
+        const high = _low > _high ? _low : _high;
+
         const filtered = data.filter(
             (item: any) => item.liqPrices >= low && item.liqPrices <= high,
         );
