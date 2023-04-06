@@ -811,7 +811,7 @@ export default function Swap(props: propsIF) {
                 tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
             } and ${
                 tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
-            } are not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenA) {
             text = `The token ${
                 tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
