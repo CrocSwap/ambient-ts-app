@@ -1,6 +1,5 @@
 import styles from './TradeChartsTokenInfo.module.css';
 import {
-    DefaultTooltip,
     NoColorTooltip,
     TextOnlyTooltip,
 } from '../../../../components/Global/StyledTooltip/StyledTooltip';
