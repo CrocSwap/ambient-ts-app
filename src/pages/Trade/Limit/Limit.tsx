@@ -64,6 +64,7 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     account: string | undefined;
@@ -78,7 +79,6 @@ interface propsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    // nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -87,7 +87,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
-    // poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
@@ -115,9 +114,7 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -127,6 +124,7 @@ interface propsIF {
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -170,11 +168,11 @@ export default function Limit(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
         bypassConfirm,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
@@ -875,10 +873,10 @@ export default function Limit(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         setResetLimitTick: setResetLimitTick,
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
+        ackTokens: ackTokens,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

@@ -82,6 +82,7 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     account: string | undefined;
@@ -137,7 +138,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -157,6 +157,7 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function Range(props: propsIF) {
@@ -207,7 +208,6 @@ export default function Range(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         bypassConfirm,
         dexBalancePrefs,
@@ -220,6 +220,7 @@ export default function Range(props: propsIF) {
         maxPrice,
         setChartTriggeredBy,
         chartTriggeredBy,
+        ackTokens,
     } = props;
 
     const [
@@ -1347,9 +1348,9 @@ export default function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
+        ackTokens: ackTokens,
     };
 
     // props for <RangeWidth/> React element
@@ -1385,7 +1386,6 @@ export default function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode={false}
             />
-            {/* <DividerDark addMarginTop /> */}
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}

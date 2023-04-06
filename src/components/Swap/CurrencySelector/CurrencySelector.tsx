@@ -23,6 +23,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -81,7 +82,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -89,6 +89,7 @@ interface propsIF {
     ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -101,10 +102,8 @@ export default function CurrencySelector(props: propsIF) {
         setBuyQtyString,
         isUserLoggedIn,
         tokenPair,
-        // tokensBank,
         setImportedTokens,
         chainId,
-        // direction,
         fieldId,
         tokenAorB,
         handleChangeEvent,
@@ -123,11 +122,7 @@ export default function CurrencySelector(props: propsIF) {
         tokenAQtyCoveredBySurplusBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenASurplusMinusTokenARemainderNum,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenASurplusMinusTokenAQtyNum,
         reverseTokens,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         gasPriceInGwei,
         verifyToken,
         getTokensByName,
@@ -139,12 +134,10 @@ export default function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
-
-    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector
@@ -165,32 +158,6 @@ export default function CurrencySelector(props: propsIF) {
     useEffect(() => {
         handleDexBalanceChange();
     }, [tokenADexBalance]);
-
-    // const WithdrawTokensContent = (
-    //     <div className={styles.surplus_toggle}>
-    //         {isSellTokenSelector ? (
-    //             <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-    //                 <Toggle2
-    //                     isOn={isWithdrawFromDexChecked}
-    //                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-    //                     id='sell_token_withdrawal'
-    //                     disabled={false}
-    //                     // disabled={isWithdrawFromDexDisabled}
-    //                 />
-    //             </IconWithTooltip>
-    //         ) : (
-    //             <IconWithTooltip title='Save to Exchange Balance' placement='bottom'>
-    //                 <Toggle2
-    //                     isOn={isSaveAsDexSurplusChecked}
-    //                     handleToggle={() =>
-    //                         setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)
-    //                     }
-    //                     id='buy_token_withdrawal'
-    //                 />
-    //             </IconWithTooltip>
-    //         )}
-    //     </div>
-    // );
 
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
@@ -626,7 +593,7 @@ export default function CurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

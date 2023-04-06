@@ -47,6 +47,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../constants';
+import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -102,12 +103,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
     bypassConfirm: allSkipConfirmMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -150,12 +151,12 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
         tokenPairLocal,
         dexBalancePrefs,
         bypassConfirm,
+        ackTokens,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -734,11 +735,11 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         dexBalancePrefs: dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        ackTokens: ackTokens,
     };
 
     const handleSwapButtonClickWithBypass = () => {

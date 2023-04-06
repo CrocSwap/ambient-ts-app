@@ -21,6 +21,7 @@ import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBa
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 // interface for component props
 interface propsIF {
@@ -76,13 +77,13 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 // central react functional component
@@ -121,9 +122,9 @@ export default function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const thisToken =
@@ -484,7 +485,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}
