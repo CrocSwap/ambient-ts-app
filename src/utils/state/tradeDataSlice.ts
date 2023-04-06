@@ -121,11 +121,13 @@ export const tradeDataSlice = createSlice({
     initialState,
     reducers: {
         setChainId: (state, action: PayloadAction<string>) => {
-            state.chainId = action.payload;
-            const pair = getDefaultPairForChain(state.chainId);
-            state.tokenA = pair[0];
-            state.tokenB = pair[1];
-            sortTokens(state);
+            if (validateChainId(action.payload)) {
+                state.chainId = action.payload;
+                const pair = getDefaultPairForChain(state.chainId);
+                state.tokenA = pair[0];
+                state.tokenB = pair[1];
+                sortTokens(state);
+            }
         },
         setTokenA: (state, action: PayloadAction<TokenIF>) => {
             state.tokenA = action.payload;
