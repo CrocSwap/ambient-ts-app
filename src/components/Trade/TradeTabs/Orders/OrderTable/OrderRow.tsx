@@ -207,7 +207,7 @@ export default function OrderRow(props: propsIF) {
             title={
                 <p
                     style={{
-                        marginLeft: '-40px',
+                        marginLeft: '-60px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
@@ -222,7 +222,7 @@ export default function OrderRow(props: propsIF) {
                     {posHash}
                 </p>
             }
-            placement={'right'}
+            placement={'left'}
             enterDelay={750}
             leaveDelay={0}
         >
@@ -256,7 +256,7 @@ export default function OrderRow(props: propsIF) {
             title={
                 <div
                     style={{
-                        marginLeft: '-20px',
+                        marginRight: '-80px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
@@ -298,7 +298,7 @@ export default function OrderRow(props: propsIF) {
                     </NavLink>
                 </div>
             }
-            placement={'right'}
+            placement={'left'}
             enterDelay={750}
             leaveDelay={0}
         >

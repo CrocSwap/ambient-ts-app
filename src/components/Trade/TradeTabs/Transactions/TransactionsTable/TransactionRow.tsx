@@ -245,7 +245,7 @@ export default function TransactionRow(props: propsIF) {
             title={
                 <div
                     style={{
-                        marginLeft: '-40px',
+                        marginLeft: '-60px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
@@ -264,7 +264,7 @@ export default function TransactionRow(props: propsIF) {
                     />
                 </div>
             } // invisible space character added
-            placement={'right'}
+            placement={'left'}
             enterDelay={750}
             leaveDelay={0}
         >
@@ -312,14 +312,16 @@ export default function TransactionRow(props: propsIF) {
             title={
                 <div
                     style={{
-                        marginLeft: '-40px',
+                        // marginLeft: '80px',
+                        marginRight: '-80px',
+
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
 
-                        // width: '450px',
+                        // width: '300px',
                     }}
                 >
                     <NavLink
@@ -354,7 +356,7 @@ export default function TransactionRow(props: propsIF) {
                     </NavLink>
                 </div>
             }
-            placement={'right'}
+            placement={'left'}
             enterDelay={750}
             leaveDelay={0}
         >

@@ -86,11 +86,14 @@
 
 }
 
-.mono_space{
+.mono_space p{
     font-family: monospace !important;
     white-space: nowrap;
 
  
+}
+.mono_space svg{
+    cursor: pointer;
 }
 .tokens_images,
 .tokens_name,
