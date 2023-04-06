@@ -223,9 +223,9 @@ export default function PageHeader(props: HeaderPropsIF) {
             shouldDisplay: false,
         },
         {
-            title: t('common:orderTitle'),
+            title: t('common:poolTitle'),
             destination: '/trade/range' + paramsSlug,
-            shouldDisplay: isConnected,
+            shouldDisplay: true,
         },
         {
             title: t('common:accountTitle'),
