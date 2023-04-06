@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
@@ -29,7 +29,6 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-
 // interface for React functional component props
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -56,6 +55,10 @@ interface propsIF {
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+
+    handleAccountClick: () => void;
+
+    isShowAllEnabled: boolean;
 }
 
 // React functional component
@@ -255,8 +258,23 @@ export default function RangesMenu(props: propsIF) {
         </div>
     );
 
+    const walletButton = props.isShowAllEnabled ? (
+        // <li  role='presentation'>
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleAccountClick}
+        >
+            <p> Wallet</p>
+            <FiExternalLink />
+        </button>
+    ) : // </li>
+    null;
+
     const menuContent = (
         <div className={styles.menu_column}>
+            {walletButton}
             {!view3 && !isEmpty && harvestButton}
             {!view2 && !isEmpty && removeButton}
             {detailsButton}

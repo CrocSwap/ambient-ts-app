@@ -20,7 +20,6 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { BiWalletAlt } from 'react-icons/bi';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 
@@ -840,19 +839,19 @@ export default function TransactionRow(props: propsIF) {
                     </div>
                 </li>
             )}
-            {!isOnPortfolioPage && isShowAllEnabled && (
+            {/* {!isOnPortfolioPage && isShowAllEnabled && (
                 <li onClick={handleWalletClick} role='presentation'>
                     <button
                         className={styles.view_wallet_link}
                         tabIndex={0}
                         aria-label='View wallet.'
                     >
-                        <p>View Wallet</p>
+                        <p> Wallet</p>
                         <BiWalletAlt color='#cdc1ff' />
                         <FiExternalLink />
                     </button>
                 </li>
-            )}
+            )} */}
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
                     account={account}
@@ -871,6 +870,8 @@ export default function TransactionRow(props: propsIF) {
                     }
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     chainData={chainData}
+                    handleWalletClick={handleWalletClick}
+                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
             {snackbarContent}

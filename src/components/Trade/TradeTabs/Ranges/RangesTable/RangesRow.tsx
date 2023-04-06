@@ -21,8 +21,6 @@ import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
-import { FiExternalLink } from 'react-icons/fi';
-import { BiWalletAlt } from 'react-icons/bi';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -712,19 +710,19 @@ export default function RangesRow(props: propsIF) {
                     justSymbol
                 />
             </li>
-            {!isOnPortfolioPage && isShowAllEnabled && (
+            {/* {!isOnPortfolioPage && isShowAllEnabled && (
                 <li onClick={handleAccountClick} role='presentation'>
                     <button
                         className={styles.view_wallet_link}
                         tabIndex={0}
                         aria-label='View wallet.'
                     >
-                        <p>View Wallet</p>
+                        <p> Wallet</p>
                         <BiWalletAlt color='#cdc1ff' />
                         <FiExternalLink />
                     </button>
                 </li>
-            )}
+            )} */}
             <li data-label='menu' className={styles.menu}>
                 <RangesMenu
                     {...rangeMenuProps}
@@ -734,6 +732,8 @@ export default function RangesRow(props: propsIF) {
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     dexBalancePrefs={dexBalancePrefs}
                     slippage={slippage}
+                    handleAccountClick={handleAccountClick}
+                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
         </ul>

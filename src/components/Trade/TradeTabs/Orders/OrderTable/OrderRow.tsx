@@ -18,7 +18,6 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { BiWalletAlt } from 'react-icons/bi';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -636,19 +635,19 @@ export default function OrderRow(props: propsIF) {
                     </div>
                 </li>
             )}
-            {!isOnPortfolioPage && isShowAllEnabled && (
+            {/* {!isOnPortfolioPage && isShowAllEnabled && (
                 <li onClick={handleAccountClick} role='presentation'>
                     <button
                         className={styles.view_wallet_link}
                         tabIndex={0}
                         aria-label='View wallet.'
                     >
-                        <p>View Wallet</p>
+                        <p>Wallet</p>
                         <BiWalletAlt color='#cdc1ff' />
                         <FiExternalLink />
                     </button>
                 </li>
-            )}
+            )} */}
             <li data-label='menu'>
                 <OrdersMenu
                     account={account}
@@ -665,6 +664,7 @@ export default function OrderRow(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     isOnPortfolioPage={isOnPortfolioPage}
+                    handleAccountClick={handleAccountClick}
                 />
             </li>
         </ul>

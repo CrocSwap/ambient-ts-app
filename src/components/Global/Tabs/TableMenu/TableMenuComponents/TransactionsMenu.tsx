@@ -47,6 +47,10 @@ interface propsIF {
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
+
+    isShowAllEnabled: boolean;
+
+    handleWalletClick: () => void;
 }
 
 // React functional component
@@ -283,6 +287,20 @@ export default function TransactionsMenu(props: propsIF) {
 
     const navigate = useNavigate();
 
+    const walletButton = props.isShowAllEnabled ? (
+        // <li  role='presentation'>
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleWalletClick}
+        >
+            <p> Wallet</p>
+            <FiExternalLink />
+        </button>
+    ) : // </li>
+    null;
+
     const copyButton =
         tx.entityType === 'liqchange' ? (
             <button
@@ -423,6 +441,7 @@ export default function TransactionsMenu(props: propsIF) {
             {/* {removeButton} */}
             {/* {harvestButton} */}
             {detailsButton}
+            {walletButton}
             {explorerButton}
             {!desktopView && copyButton}
         </div>

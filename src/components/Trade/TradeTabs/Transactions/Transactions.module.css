@@ -262,7 +262,8 @@
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
     height: 23px;
-    padding: 5px ;
+    margin: 0 2px;
+    /* padding: 5px ; */
     text-decoration: none;
     border-radius: 6.25rem;
     cursor: pointer;
