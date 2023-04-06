@@ -215,6 +215,7 @@ export default function TransactionRow(props: propsIF) {
     }
 
     const [value, copy] = useCopyToClipboard();
+    const [valueToCopy, setValueToCopy] = useState('');
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -224,11 +225,12 @@ export default function TransactionRow(props: propsIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {txHash} copied
         </SnackbarComponent>
     );
 
     function handleCopyTxHash() {
+        setValueToCopy(txHash);
         copy(txHash);
 
         setOpenSnackbar(true);
@@ -293,6 +295,13 @@ export default function TransactionRow(props: propsIF) {
         </li>
     );
 
+    function handleWalletCopy() {
+        setValueToCopy(ownerId);
+        copy(ownerId);
+
+        setOpenSnackbar(true);
+    }
+
     const handleWalletClick = () => {
         dispatch(
             setDataLoadingStatus({
@@ -312,27 +321,17 @@ export default function TransactionRow(props: propsIF) {
             title={
                 <div
                     style={{
-                        // marginLeft: '80px',
                         marginRight: '-80px',
-
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
 
-                        // width: '300px',
+                        // width: '450px',
                     }}
                 >
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
+                    <p
                         style={{
                             fontFamily: 'monospace',
                             display: 'flex',
@@ -342,18 +341,18 @@ export default function TransactionRow(props: propsIF) {
 
                             gap: '4px',
                         }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
                     >
                         {ownerId}
+                        <FiCopy
+                            size={'12px'}
+                            onClick={() => handleWalletCopy()}
+                        />
 
-                        <FiExternalLink size={'12px'} />
-                    </NavLink>
+                        <FiExternalLink
+                            size={'12px'}
+                            onClick={handleWalletClick}
+                        />
+                    </p>
                 </div>
             }
             placement={'left'}

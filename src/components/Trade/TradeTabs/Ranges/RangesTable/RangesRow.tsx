@@ -220,6 +220,7 @@ export default function RangesRow(props: propsIF) {
     }
 
     const [value, copy] = useCopyToClipboard();
+    const [valueToCopy, setValueToCopy] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const snackbarContent = (
         <SnackbarComponent
@@ -227,12 +228,20 @@ export default function RangesRow(props: propsIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {valueToCopy} copied
         </SnackbarComponent>
     );
 
     function handleWalletCopy() {
+        setValueToCopy(ownerId);
         copy(ownerId);
+
+        setOpenSnackbar(true);
+    }
+
+    function handleCopyPosHash() {
+        setValueToCopy(posHash.toString());
+        copy(posHash.toString());
 
         setOpenSnackbar(true);
     }
@@ -282,9 +291,14 @@ export default function RangesRow(props: propsIF) {
 
                         whiteSpace: 'nowrap',
                         width: '450px',
+
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
                     }}
                 >
                     {posHash.toString()}
+                    <FiCopy onClick={handleCopyPosHash} />
                 </p>
             }
             placement={'left'}
