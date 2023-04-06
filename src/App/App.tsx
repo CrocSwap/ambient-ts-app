@@ -2924,6 +2924,7 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     function toggleSidebar() {
