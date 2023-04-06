@@ -23,6 +23,7 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -277,8 +278,6 @@ export default function RangeCurrencySelector(props: propsIF) {
               ')'
             : '';
 
-    // console.log({ fieldId });
-    // console.log({ tokenBSurplusMinusTokenBRemainderNum });
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||
         (!isTokenASelector && isTokenBDisabled);
@@ -300,8 +299,10 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const displayWalletMaxButton = isTokenASelector
         ? !isWithdrawTokenAFromDexChecked &&
+          !isTokenAEth &&
           walletBalanceNonLocaleString !== '0.0'
         : !isWithdrawTokenBFromDexChecked &&
+          !isTokenBEth &&
           walletBalanceNonLocaleString !== '0.0';
 
     const walletBalanceMaxButton = displayWalletMaxButton ? (
@@ -309,7 +310,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleChangeClick(walletBalanceNonLocaleString);
-                console.log('max button clicked');
+                IS_LOCAL_ENV && console.debug('max button clicked');
             }}
         >
             Max
@@ -320,8 +321,10 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const displaySurplusMaxButton = isTokenASelector
         ? isWithdrawTokenAFromDexChecked &&
+          !isTokenAEth &&
           surplusBalanceNonLocaleString !== '0.0'
         : isWithdrawTokenBFromDexChecked &&
+          !isTokenBEth &&
           surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton = displaySurplusMaxButton ? (
@@ -329,7 +332,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleChangeClick(surplusBalanceNonLocaleString);
-                console.log('clicked');
+                IS_LOCAL_ENV && console.debug('clicked');
             }}
         >
             Max
@@ -546,12 +549,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                         isAdvancedMode={isAdvancedMode}
                     />
                 </div>
-                <div
+                <button
                     className={`${styles.token_select} ${
                         isRangeCopied && styles.pulse_animation
                     }`}
                     onClick={() => openTokenModal()}
                     id='range_token_selector'
+                    tabIndex={0}
+                    aria-label={`Open range ${fieldId} token modal.`}
                 >
                     {thisToken.logoURI ? (
                         <img
@@ -570,7 +575,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         {thisToken.symbol}
                     </span>
                     <RiArrowDownSLine size={27} />
-                </div>
+                </button>
             </div>
             {swapboxBottomOrNull}
             {isTokenModalOpen && (

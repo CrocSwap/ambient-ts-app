@@ -14,7 +14,11 @@ export default function AdvancedModeToggle(props: advancedModePropsIF) {
     const handleToggle = () => dispatch(toggleAdvancedMode());
 
     return (
-        <div className={styles.advanced_toggle} id='range_advance_mode_toggle'>
+        <div
+            className={styles.advanced_toggle}
+            id='range_advance_mode_toggle'
+            aria-label='Advanced mode toggle'
+        >
             <Toggle2
                 isOn={!advancedMode}
                 handleToggle={handleToggle}

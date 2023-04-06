@@ -11,6 +11,7 @@ import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 type ItemIF = {
     slug: string;
@@ -121,7 +122,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </motion.div>
     );
 
-    console.log({ tx });
+    IS_LOCAL_ENV && console.debug({ tx });
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -400,14 +401,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             )}
         </div>
     );
-    // console.log(controlItems);
 
     return (
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
-                {/* {fillTimeContent} */}
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}

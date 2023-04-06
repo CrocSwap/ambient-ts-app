@@ -8,17 +8,14 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -169,7 +166,7 @@ export default function RangesRow(props: propsIF) {
     };
 
     const openDetailsModal = () => {
-        console.log({ position });
+        IS_LOCAL_ENV && console.debug({ position });
         openGlobalModal(
             <RangeDetails
                 position={position}
@@ -194,8 +191,6 @@ export default function RangesRow(props: propsIF) {
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
-    // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
 
@@ -237,7 +232,7 @@ export default function RangesRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
 
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive
@@ -261,6 +256,7 @@ export default function RangesRow(props: propsIF) {
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
+                        fontFamily: 'monospace',
                     }}
                 >
                     {posHash.toString()}
@@ -273,8 +269,7 @@ export default function RangesRow(props: propsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
-                style={{ fontFamily: 'monospace' }}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
             </li>
@@ -286,7 +281,7 @@ export default function RangesRow(props: propsIF) {
             onClick={openDetailsModal}
             data-label='value'
             className='base_color'
-            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            style={{ textAlign: 'right' }}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
@@ -295,30 +290,12 @@ export default function RangesRow(props: propsIF) {
         </li>
     );
 
-    const navigate = useNavigate();
-
     const walletWithTooltip = (
         <li
-            onClick={() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: true,
-                    }),
-                );
-                navigate(
-                    `/${
-                        isOwnerActiveAccount
-                            ? 'account'
-                            : ensName
-                            ? ensName
-                            : ownerId
-                    }`,
-                );
-            }}
+            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            style={{ textTransform: 'lowercase' }}
         >
             {userNameToDisplay}
         </li>
@@ -351,7 +328,7 @@ export default function RangesRow(props: propsIF) {
                   `${position.quoteSymbol}: ${position.quote}`,
               ]
             : [`${position.quoteSymbol}: ${position.quote}`];
-
+    // eslint-disable-next-line
     const tip = pair.join('\n');
 
     const tradeLinkPath =
@@ -363,26 +340,26 @@ export default function RangesRow(props: propsIF) {
         position.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        // <DefaultTooltip
+        //     interactive
+        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+        //     placement={'left'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={0}
+        // >
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    <p>
-                        {baseTokenSymbol} / {quoteTokenSymbol}
-                    </p>
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                <p>
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </NavLink>
+        </li>
+        // </DefaultTooltip>
     );
 
     // end of portfolio page li element ---------------
@@ -413,11 +390,10 @@ export default function RangesRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                     whiteSpace: 'nowrap',
                 }}
             >
-                {position.positionLiqBaseTruncated}
+                {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
             </div>
         </li>
@@ -437,11 +413,10 @@ export default function RangesRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                     whiteSpace: 'nowrap',
                 }}
             >
-                {position.positionLiqQuoteTruncated}
+                {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -484,10 +459,9 @@ export default function RangesRow(props: propsIF) {
                         cursor: 'pointer',
                     }}
                 >
-                    {'First Minted: ' +
-                        moment(position.timeFirstMint * 1000).format(
-                            'MM/DD/YYYY HH:mm',
-                        )}
+                    {moment(position.latestUpdateTime * 1000).format(
+                        'MM/DD/YYYY HH:mm',
+                    )}
                 </p>
             }
             placement={'right'}
@@ -500,15 +474,13 @@ export default function RangesRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                    {elapsedTimeString}
-                </p>
+                <p className='base_color'>{elapsedTimeString}</p>
             </li>
         </TextOnlyTooltip>
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
+    // eslint-disable-next-line
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -517,15 +489,19 @@ export default function RangesRow(props: propsIF) {
                     loadingStatus: true,
                 }),
             );
-            navigate(
-                `/${
-                    isOwnerActiveAccount
-                        ? 'account'
-                        : ensName
-                        ? ensName
-                        : ownerId
-                }`,
-            );
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
+            // navigate(
+            //     `/${
+            //         isOwnerActiveAccount
+            //             ? 'account'
+            //             : ensName
+            //             ? ensName
+            //             : ownerId
+            //     }`,
+            // );
         } else {
             openDetailsModal();
         }
@@ -546,12 +522,12 @@ export default function RangesRow(props: propsIF) {
             style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
         >
             {rankingOrNull}
-            {!showColumns && RangeTimeWithTooltip}
+            {showPair && RangeTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
             {idOrNull}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id' onClick={handleAccountClick}>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className={`base_color ${styles.hover_style}`}>
                         {posHashTruncated}
                     </p>{' '}
@@ -573,9 +549,7 @@ export default function RangesRow(props: propsIF) {
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                     >
-                        <span style={{ fontFamily: 'monospace' }}>
-                            {'0.00'}
-                        </span>
+                        <span>{'0.00'}</span>
                     </li>
                 ) : (
                     <li
@@ -587,7 +561,7 @@ export default function RangesRow(props: propsIF) {
                         onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
                                 : ambientOrMin || '…'}
@@ -623,7 +597,7 @@ export default function RangesRow(props: propsIF) {
                         onMouseLeave={handleRowMouseOut}
                     >
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage
                                 ? maxRangeDenomByMoneyness || '…'
                                 : ambientOrMax || '…'}
@@ -642,7 +616,7 @@ export default function RangesRow(props: propsIF) {
                 >
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage && !isAmbient
                                 ? minRangeDenomByMoneyness || '…'
                                 : ambientOrMin || '…'}
@@ -650,7 +624,7 @@ export default function RangesRow(props: propsIF) {
                     </p>
                     <p>
                         <span>{sideCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>
+                        <span>
                             {isOnPortfolioPage
                                 ? maxRangeDenomByMoneyness || '…'
                                 : ambientOrMax || '…'}
@@ -692,7 +666,6 @@ export default function RangesRow(props: propsIF) {
                     <div
                         className={styles.token_qty}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -703,7 +676,6 @@ export default function RangesRow(props: propsIF) {
                     <div
                         className={styles.token_qty}
                         style={{
-                            fontFamily: 'monospace',
                             whiteSpace: 'nowrap',
                         }}
                     >
@@ -721,9 +693,7 @@ export default function RangesRow(props: propsIF) {
                 onMouseLeave={handleRowMouseOut}
             >
                 {' '}
-                <p style={{ fontFamily: 'monospace' }} className={apyClassname}>
-                    {apyString}
-                </p>
+                <p className={apyClassname}>{apyString}</p>
             </li>
             <li
                 onClick={openDetailsModal}
@@ -739,6 +709,7 @@ export default function RangesRow(props: propsIF) {
                     justSymbol
                 />
             </li>
+
             <li data-label='menu' className={styles.menu}>
                 <RangesMenu
                     {...rangeMenuProps}
@@ -748,6 +719,8 @@ export default function RangesRow(props: propsIF) {
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     dexBalancePrefs={dexBalancePrefs}
                     slippage={slippage}
+                    handleAccountClick={handleAccountClick}
+                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
         </ul>

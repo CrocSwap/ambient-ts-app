@@ -1,5 +1,5 @@
 import styles from './ConfirmLimitModal.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
@@ -50,12 +50,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         bypassConfirm,
     } = props;
 
-    const [txApproved, setTxApproved] = useState<boolean>(false);
-
-    useEffect(() => {
-        newLimitOrderTransactionHash && setTxApproved(true);
-    }, [newLimitOrderTransactionHash]);
-
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
@@ -91,10 +85,9 @@ export default function ConfirmLimitModal(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
+    const txApproved = newLimitOrderTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTxException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTxException = txErrorCode !== '' && !isTxDenied;
 
     const sellTokenQty = (
         document.getElementById('sell-limit-quantity') as HTMLInputElement
@@ -193,7 +186,7 @@ export default function ConfirmLimitModal(props: propsIF) {
                 </div>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>
@@ -244,11 +237,7 @@ export default function ConfirmLimitModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Submitting Limit Order to Swap ${sellTokenQty} ${
-                sellTokenData.symbol
-            } for ${buyTokenQty} ${
-                buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
+            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}.`}
         />
     );
 
@@ -271,14 +260,13 @@ export default function ConfirmLimitModal(props: propsIF) {
         />
     );
 
-    const confirmationDisplay: JSX.Element =
-        isTxException || isGasLimitException || isInsufficientFundsException
-            ? txException
-            : isTxDenied
-            ? txDenied
-            : txApproved
-            ? txSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay: JSX.Element = isTxException
+        ? txException
+        : isTxDenied
+        ? txDenied
+        : txApproved
+        ? txSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.modal_container}>

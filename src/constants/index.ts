@@ -12,3 +12,16 @@ export const POOL_HIDE = [
     '0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248',
     '0xa850478adaace4c08fc61de44d8cf3b64f359bec',
 ];
+
+// allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
+// NOTE: we use 'main' for staging (testnet) and 'production' for mainnet app. All other names are treated as 'local'
+export type AppEnvironment = 'local' | 'main' | 'production';
+export const BRANCH_NAME =
+    process.env.REACT_APP_BRANCH_NAME !== undefined
+        ? process.env.REACT_APP_BRANCH_NAME.toLowerCase()
+        : 'local';
+
+export const APP_ENVIRONMENT: AppEnvironment =
+    (BRANCH_NAME as AppEnvironment) || 'local';
+
+export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';

@@ -35,7 +35,7 @@ export default function RecentPoolsCard(props: propsIF) {
         ) {
             slug = '/trade/range';
         } else {
-            console.warn(
+            console.error(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',
             );
             slug = '/trade/market';

@@ -375,7 +375,7 @@ export const get15MinutesAxisTicks = (
         });
     }
 
-    if (bandwidth <= 10) {
+    if (bandwidth <= 10 && bandwidth >= 3) {
         data.forEach((element: any) => {
             for (let i = 0; i < 24; i += 4) {
                 element.setHours(i);
@@ -387,6 +387,18 @@ export const get15MinutesAxisTicks = (
                 ) {
                     tempArray.push({ date: new Date(element), style: false });
                 }
+            }
+        });
+    }
+    if (bandwidth < 3) {
+        data.forEach((element: any) => {
+            element.setHours(0);
+            if (
+                tempArray.find(
+                    (item: any) => item.date.getTime() === element.getTime(),
+                ) === undefined
+            ) {
+                tempArray.push({ date: new Date(element), style: false });
             }
         });
     }
@@ -470,7 +482,23 @@ export const get5MinutesAxisTicks = (
         });
     }
 
-    if (bandwidth <= 10) {
+    if (bandwidth <= 10 && bandwidth >= 5) {
+        data.forEach((element: any) => {
+            for (let i = 0; i < 60; i += 60) {
+                const _res = new Date(element.getTime());
+                _res.setMinutes(i);
+                if (
+                    tempArray.find(
+                        (item: any) => item.date.getTime() === _res.getTime(),
+                    ) === undefined
+                ) {
+                    tempArray.push({ date: new Date(_res), style: false });
+                }
+            }
+        });
+    }
+
+    if (bandwidth < 5) {
         data.forEach((element: any) => {
             for (let i = 0; i < 60; i += 60) {
                 const _res = new Date(element.getTime());
@@ -551,7 +579,7 @@ export const get1MinuteAxisTicks = (
         });
     }
 
-    if (bandwidth <= 10 && bandwidth > 5) {
+    if (bandwidth <= 10 && bandwidth >= 5) {
         data.forEach((element: any) => {
             for (let i = 0; i < 60; i += 10) {
                 const _res = new Date(element.getTime());
@@ -567,12 +595,10 @@ export const get1MinuteAxisTicks = (
             }
         });
     }
-
-    if (bandwidth <= 5) {
+    if (bandwidth < 5) {
         data.forEach((element: any) => {
-            for (let i = 0; i < 60; i += 15) {
+            for (let i = 0; i < 60; i += 60) {
                 const _res = new Date(element.getTime());
-                _res.setSeconds(0);
                 _res.setMinutes(i);
                 if (
                     tempArray.find(

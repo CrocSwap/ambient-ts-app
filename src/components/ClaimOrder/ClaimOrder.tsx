@@ -28,6 +28,7 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     account: string;
@@ -63,10 +64,11 @@ export default function ClaimOrder(props: propsIF) {
         truncatedDisplayPrice,
     } = useProcessOrder(limitOrder, account);
 
-    useEffect(() => {
-        console.log({ limitOrder });
-    }, [JSON.stringify(limitOrder)]);
-
+    if (IS_LOCAL_ENV) {
+        useEffect(() => {
+            console.debug({ limitOrder });
+        }, [JSON.stringify(limitOrder)]);
+    }
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -103,10 +105,12 @@ export default function ClaimOrder(props: propsIF) {
 
     const claimFn = async () => {
         if (crocEnv && claimablePivotTime) {
-            console.log({ claimablePivotTime });
             setShowConfirmation(true);
             setShowSettings(false);
-            console.log({ limitOrder });
+            if (IS_LOCAL_ENV) {
+                console.debug({ claimablePivotTime });
+                console.debug({ limitOrder });
+            }
             let tx;
             try {
                 if (limitOrder.isBid) {
@@ -141,7 +145,7 @@ export default function ClaimOrder(props: propsIF) {
                     // .burnLiq(BigNumber.from(positionLiquidity));
                 }
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
                 setTxErrorCode(error?.code);
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -175,16 +179,16 @@ export default function ClaimOrder(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
                     setNewClaimTransactionHash(newTransactionHash);
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
 
                     //  if (newTransactionHash) {
@@ -206,7 +210,7 @@ export default function ClaimOrder(props: propsIF) {
                     //      );
                     //  }
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -234,22 +238,19 @@ export default function ClaimOrder(props: propsIF) {
     );
 
     const claimPending = (
-        <WaitingConfirmation content='Please Check the Metamask extension in your browser for notifications.' />
+        <WaitingConfirmation content='Please check your wallet for notifications.' />
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
         useState(claimPending);
 
-    const transactionApproved = newClaimTransactionHash !== '';
-
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
+    const transactionApproved = newClaimTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(claimPending);
@@ -260,11 +261,7 @@ export default function ClaimOrder(props: propsIF) {
             setCurrentConfirmationData(
                 <TransactionDenied resetConfirmation={resetConfirmation} />,
             );
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -304,7 +301,7 @@ export default function ClaimOrder(props: propsIF) {
 
     //         <Toggle2
     //             isOn={false}
-    //             handleToggle={() => console.log('toggled')}
+    //             handleToggle={() => console.debug('toggled')}
     //             id='gasless_transaction_toggle_claim_order'
     //             disabled={true}
     //         />

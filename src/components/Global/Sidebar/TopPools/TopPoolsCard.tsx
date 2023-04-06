@@ -1,21 +1,21 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
-import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
+import { topPoolIF } from '../../../../App/hooks/useTopPools';
 
 interface propsIF {
     tradeData: tradeData;
-    pool: PoolIF;
+    pool: topPoolIF;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, chainId, cachedPoolStatsFetch, lastBlockNumber } =
+    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } =
         props;
 
     const { pathname } = useLocation();
@@ -31,7 +31,7 @@ export default function TopPoolsCard(props: propsIF) {
         } else if (pathname.startsWith('/trade/range')) {
             return '/trade/range';
         } else {
-            console.warn(
+            console.error(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
             return '/trade/market';
@@ -63,19 +63,6 @@ export default function TopPoolsCard(props: propsIF) {
 
     useEffect(() => {
         fetchPoolStats();
-
-        // // fetch every minute
-        // const timerId = setInterval(() => {
-        //     fetchPoolStats();
-        // }, 60000);
-
-        // // after 1 hour stop
-        // setTimeout(() => {
-        //     clearInterval(timerId);
-        // }, 3600000);
-
-        // // clear interval when component unmounts
-        // return () => clearInterval(timerId);
     }, [lastBlockNumber]);
 
     const tokenAString =
@@ -93,7 +80,15 @@ export default function TopPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={`${locationSlug}/chain=${chainId}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
+            to={
+                locationSlug +
+                '/chain=' +
+                chainId +
+                '&tokenA=' +
+                tokenAString +
+                '&tokenB=' +
+                tokenBString
+            }
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}

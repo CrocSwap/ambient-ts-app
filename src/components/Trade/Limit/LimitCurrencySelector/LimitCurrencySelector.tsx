@@ -153,11 +153,13 @@ export default function LimitCurrencySelector(props: propsIF) {
     };
 
     const tokenSelect = (
-        <div
+        <button
             className={`${styles.token_select} ${
                 isOrderCopied && styles.pulse_animation
             }`}
             onClick={openTokenModal}
+            tabIndex={0}
+            aria-label={`Open swap ${fieldId} token modal.`}
             id='limit_token_selector'
         >
             {thisToken.logoURI ? (
@@ -175,7 +177,7 @@ export default function LimitCurrencySelector(props: propsIF) {
             )}
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
-        </div>
+        </button>
     );
 
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
@@ -238,6 +240,7 @@ export default function LimitCurrencySelector(props: propsIF) {
     const walletBalanceMaxButton =
         isSellTokenSelector &&
         !isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         walletBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
@@ -261,6 +264,7 @@ export default function LimitCurrencySelector(props: propsIF) {
     const surplusMaxButton =
         isSellTokenSelector &&
         isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         surplusBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}

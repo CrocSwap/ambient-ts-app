@@ -124,7 +124,7 @@ export default function Leaderboard(props: propsIF) {
                         dispatch(updateLeaderboard(updatedPositions));
                     }
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
     }, [
         JSON.stringify({

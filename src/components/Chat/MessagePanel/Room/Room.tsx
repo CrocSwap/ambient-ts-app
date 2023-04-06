@@ -4,9 +4,9 @@ import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { topPools } from '../../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import useChatApi from '../../Service/ChatApi';
+import { topPoolsMethodsIF } from '../../../../App/hooks/useTopPools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -43,6 +43,7 @@ interface propsIF {
     currentUser: any;
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
+    topPools: topPoolsMethodsIF;
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -56,7 +57,9 @@ export default function RoomDropdown(props: propsIF) {
         setShowCurrentPoolButton,
         favoritePoolsArray,
         setFavoritePoolsArray,
+        topPools,
     } = props;
+
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);
     const [isHovering, setIsHovering] = useState(false);
@@ -79,7 +82,7 @@ export default function RoomDropdown(props: propsIF) {
         },
     ];
 
-    const rooms = topPools;
+    const rooms = topPools.onActiveChain;
 
     function findSpeed(pool: any) {
         switch (pool.base.symbol + '/' + pool.quote.symbol) {
@@ -121,7 +124,9 @@ export default function RoomDropdown(props: propsIF) {
 
     useEffect(() => {
         props.setUserCurrentPool(
-            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            currentPool.baseToken.symbol +
+                ' / ' +
+                currentPool.quoteToken.symbol,
         );
         updateUser(
             props.currentUser as string,
@@ -179,7 +184,7 @@ export default function RoomDropdown(props: propsIF) {
               }[] = [];
         favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
-                name: pool.base.symbol + '/' + pool.quote.symbol,
+                name: pool.base.symbol + ' / ' + pool.quote.symbol,
                 base: {
                     name: pool.base.name,
                     address: pool.base.address,
@@ -260,7 +265,9 @@ export default function RoomDropdown(props: propsIF) {
 
     function handleRoomClickCurrentPool() {
         props.setRoom(
-            currentPool.baseToken.symbol + '/' + currentPool.quoteToken.symbol,
+            currentPool.baseToken.symbol +
+                ' / ' +
+                currentPool.quoteToken.symbol,
         );
         setShowCurrentPoolButton(false);
         setIsActive(false);
@@ -377,7 +384,7 @@ export default function RoomDropdown(props: propsIF) {
                                     handleRoomClick(
                                         event,
                                         pool.quote.symbol +
-                                            '/' +
+                                            ' / ' +
                                             pool.base.symbol,
                                     )
                                 }

@@ -78,14 +78,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
     const { dataTokenA, dataTokenB } = tokenPair;
 
-    const txApproved: boolean = newRepositionTransactionHash !== '';
-
+    const txApproved = newRepositionTransactionHash !== '';
     const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
-    const isTxException: boolean = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException: boolean =
-        txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException: boolean =
-        txErrorCode === 'INSUFFICIENT_FUNDS';
+
+    const isTxException = txErrorCode !== '' && !isTxDenied;
 
     const txSubmitted = (
         <TransactionSubmitted
@@ -109,14 +105,13 @@ export default function ConfirmRepositionModal(props: propsIF) {
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    const confirmationDisplay: JSX.Element =
-        isTxException || isGasLimitException || isInsufficientFundsException
-            ? txException
-            : isTxDenied
-            ? txDenied
-            : txApproved
-            ? txSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay: JSX.Element = isTxException
+        ? txException
+        : isTxDenied
+        ? txDenied
+        : txApproved
+        ? txSubmitted
+        : confirmSendMessage;
 
     // ------------------------------------
 

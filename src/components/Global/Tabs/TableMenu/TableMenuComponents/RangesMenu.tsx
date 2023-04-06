@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
@@ -28,7 +28,7 @@ import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePref
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
-
+import { IS_LOCAL_ENV } from '../../../../../constants';
 // interface for React functional component props
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -55,6 +55,10 @@ interface propsIF {
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+
+    handleAccountClick: () => void;
+
+    isShowAllEnabled: boolean;
 }
 
 // React functional component
@@ -76,6 +80,7 @@ export default function RangesMenu(props: propsIF) {
         isPositionInRange,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        chainData,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -95,7 +100,7 @@ export default function RangesMenu(props: propsIF) {
         useModal();
 
     const handleModalClose = () => {
-        console.log('CLOSING THE MODAL!!!!');
+        IS_LOCAL_ENV && console.debug('CLOSING THE MODAL!!!!');
         closeHarvestModal();
         closeRemoveRangeModal();
         setShowDropdownMenu(false);
@@ -104,7 +109,11 @@ export default function RangesMenu(props: propsIF) {
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
         openGlobalModal(
-            <RangeDetails position={position} {...rangeDetailsProps} />,
+            <RangeDetails
+                position={position}
+                chainData={chainData}
+                {...rangeDetailsProps}
+            />,
         );
     };
 
@@ -122,7 +131,7 @@ export default function RangesMenu(props: propsIF) {
             setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
         } else {
-            console.log({ position });
+            IS_LOCAL_ENV && console.debug({ position });
             dispatch(setAdvancedLowTick(position.bidTick));
             dispatch(setAdvancedHighTick(position.askTick));
             dispatch(setAdvancedMode(true));
@@ -249,12 +258,31 @@ export default function RangesMenu(props: propsIF) {
         </div>
     );
 
+    const walletButton = (
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleAccountClick}
+        >
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </button>
+    );
+
+    null;
+
     const menuContent = (
         <div className={styles.menu_column}>
             {!view3 && !isEmpty && harvestButton}
             {!view2 && !isEmpty && removeButton}
             {detailsButton}
             {userMatchesConnectedAccount && copyButton}
+            {walletButton}
         </div>
     );
 

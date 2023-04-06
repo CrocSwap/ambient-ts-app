@@ -31,6 +31,7 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     account: string;
@@ -141,7 +142,7 @@ export default function OrderRemoval(props: propsIF) {
         if (crocEnv) {
             setShowConfirmation(true);
             setShowSettings(false);
-            console.log({ limitOrder });
+            IS_LOCAL_ENV && { limitOrder };
 
             const liqToRemove = BigNumber.from(positionLiquidity)
                 .mul(removalPercentage)
@@ -181,7 +182,7 @@ export default function OrderRemoval(props: propsIF) {
                         );
                 }
             } catch (error) {
-                console.log({ error });
+                console.error({ error });
                 setTxErrorCode(error?.code);
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -219,16 +220,16 @@ export default function OrderRemoval(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && 'repriced';
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
                     setNewRemovalTransactionHash(newTransactionHash);
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
 
                     if (newTransactionHash) {
@@ -252,7 +253,7 @@ export default function OrderRemoval(props: propsIF) {
                         );
                     }
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -275,18 +276,15 @@ export default function OrderRemoval(props: propsIF) {
     );
 
     const removalPending = (
-        <WaitingConfirmation content='Please Check the Metamask extension in your browser for notifications.' />
+        <WaitingConfirmation content='Please check your wallet for notifications.' />
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
         useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
-
-    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -301,15 +299,11 @@ export default function OrderRemoval(props: propsIF) {
 
         if (transactionApproved) {
             setCurrentConfirmationData(removalSuccess);
-        } else if (isRemovalDenied) {
+        } else if (isTransactionDenied) {
             setCurrentConfirmationData(
                 <TransactionDenied resetConfirmation={resetConfirmation} />,
             );
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -318,11 +312,10 @@ export default function OrderRemoval(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-
         newRemovalTransactionHash,
         txErrorCode,
         showConfirmation,
-        isRemovalDenied,
+        isTransactionDenied,
     ]);
 
     const confirmationContent = (
@@ -351,7 +344,7 @@ export default function OrderRemoval(props: propsIF) {
 
     //         <Toggle2
     //             isOn={false}
-    //             handleToggle={() => console.log('toggled')}
+    //             handleToggle={() => console.debug('toggled')}
     //             id='gasless_transaction_toggle_remove_order'
     //             disabled={true}
     //         />

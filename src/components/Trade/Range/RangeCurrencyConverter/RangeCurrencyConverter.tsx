@@ -26,7 +26,7 @@ import {
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
@@ -254,9 +254,10 @@ export default function RangeCurrencyConverter(props: propsIF) {
             if (tradeData.isTokenAPrimaryRange) {
                 setTokenAInputQty(tradeData.primaryQuantityRange);
             } else {
-                console.log(
-                    `setting tokenbinputqty to ${tradeData.primaryQuantityRange}`,
-                );
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        `setting tokenbinputqty to ${tradeData.primaryQuantityRange}`,
+                    );
                 setTokenBInputQty(tradeData.primaryQuantityRange);
             }
         }
@@ -311,20 +312,20 @@ export default function RangeCurrencyConverter(props: propsIF) {
             }
             dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(parseFloat(truncatedTokenBQty));
-            console.log(`setting tokenBqty to ${truncatedTokenBQty}`);
+            IS_LOCAL_ENV &&
+                console.debug(`setting tokenBqty to ${truncatedTokenBQty}`);
             setTokenBInputQty(truncatedTokenBQty);
         } else {
             // tokenBQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(true));
 
             setTokenBQtyLocal(0);
-            console.log('setting tokenBinputqty to blank');
+            IS_LOCAL_ENV && console.debug('setting tokenBinputqty to blank');
             setTokenBInputQty('');
         }
     };
 
     const setTokenBQtyValue = (value: number) => {
-        // console.log({ value });
         const precision = precisionOfInput(value.toString());
         setTokenBQtyLocal(
             parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)),
@@ -373,7 +374,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         } else {
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
-            console.log('setting a to blank');
+            IS_LOCAL_ENV && console.debug('setting a to blank');
             setTokenAInputQty('');
         }
     };

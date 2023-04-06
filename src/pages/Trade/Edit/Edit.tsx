@@ -35,23 +35,13 @@ export default function Edit() {
     // Redirect if we don't have a position in state(just url)
     const state = location.state as PositionState;
     if (!state) {
-        console.warn(
-            'Dev Readonly: No position data to be displayed. Url does not contain state without active click from the position',
-        );
-        console.log(
+        console.error(
             'Dev Readonly: No position data to be displayed. Url does not contain state without active click from the position',
         );
         return <Navigate replace to='/trade/range' />;
     }
 
     const { position } = state;
-
-    // useEffect(() => {
-    //     console.log({ position });
-    // }, [position]);
-
-    // const minPricePercentage = -15;
-    // const maxPricePercentage = 15;
 
     const [rangeLowTick, setRangeLowTick] = useState(position.bidTick);
     const [rangeHighTick, setRangeHighTick] = useState(position.askTick);

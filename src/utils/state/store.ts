@@ -3,7 +3,7 @@ import tradeDataReducer from './tradeDataSlice';
 import graphDataReducer from './graphDataSlice';
 import receiptDataReducer from './receiptDataSlice';
 import userDataReducer from './userDataSlice';
-import tempReducer from './temp';
+import soloTokenReducer from './soloTokenDataSlice';
 
 export const store = configureStore({
     reducer: {
@@ -11,7 +11,7 @@ export const store = configureStore({
         graphData: graphDataReducer,
         receiptData: receiptDataReducer,
         userData: userDataReducer,
-        temp: tempReducer,
+        soloTokenData: soloTokenReducer,
     },
 });
 
