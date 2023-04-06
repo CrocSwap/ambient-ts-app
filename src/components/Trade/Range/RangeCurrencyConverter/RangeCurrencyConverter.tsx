@@ -211,29 +211,23 @@ export default function RangeCurrencyConverter(props: propsIF) {
             ? tokenBSurplusMinusTokenBRemainderNum
             : 0;
 
-    const tokenAWalletMinusTokenAQtyNum = isTokenAEth
-        ? isWithdrawTokenAFromDexChecked
+    const tokenAWalletMinusTokenAQtyNum =
+        isWithdrawTokenAFromDexChecked &&
+        tokenASurplusMinusTokenARemainderNum < 0
+            ? parseFloat(tokenABalance || '0') +
+              tokenASurplusMinusTokenARemainderNum
+            : isWithdrawTokenAFromDexChecked
             ? parseFloat(tokenABalance || '0')
-            : parseFloat(tokenABalance || '0') - (tokenAQtyLocal || 0)
-        : isWithdrawTokenAFromDexChecked &&
-          tokenASurplusMinusTokenARemainderNum < 0
-        ? parseFloat(tokenABalance || '0') +
-          tokenASurplusMinusTokenARemainderNum
-        : isWithdrawTokenAFromDexChecked
-        ? parseFloat(tokenABalance || '0')
-        : parseFloat(tokenABalance || '0') - (tokenAQtyLocal || 0);
+            : parseFloat(tokenABalance || '0') - (tokenAQtyLocal || 0);
 
-    const tokenBWalletMinusTokenAQtyNum = isTokenAEth
-        ? isWithdrawTokenBFromDexChecked
+    const tokenBWalletMinusTokenAQtyNum =
+        isWithdrawTokenBFromDexChecked &&
+        tokenBSurplusMinusTokenBRemainderNum < 0
+            ? parseFloat(tokenBBalance || '0') +
+              tokenBSurplusMinusTokenBRemainderNum
+            : isWithdrawTokenBFromDexChecked
             ? parseFloat(tokenBBalance || '0')
-            : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0)
-        : isWithdrawTokenBFromDexChecked &&
-          tokenBSurplusMinusTokenBRemainderNum < 0
-        ? parseFloat(tokenBBalance || '0') +
-          tokenBSurplusMinusTokenBRemainderNum
-        : isWithdrawTokenBFromDexChecked
-        ? parseFloat(tokenBBalance || '0')
-        : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0);
+            : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0);
 
     useEffect(() => {
         if (tradeData.isTokenAPrimaryRange !== isTokenAPrimaryLocal) {
@@ -402,52 +396,26 @@ export default function RangeCurrencyConverter(props: propsIF) {
                 setRangeButtonErrorMessage('Enter an Amount');
             }
         } else {
-            if (isTokenAEth) {
-                if (isWithdrawTokenAFromDexChecked) {
-                    const roundedTokenADexBalance =
-                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenADexBalance) {
-                        setTokenAAllowed(false);
-                        setRangeButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setTokenAAllowed(true);
-                    }
+            if (isWithdrawTokenAFromDexChecked) {
+                if (
+                    tokenAAmount >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setTokenAAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                    );
                 } else {
-                    const roundedTokenAWalletBalance =
-                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenAWalletBalance) {
-                        setTokenAAllowed(false);
-                        setRangeButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
-                        );
-                    } else {
-                        setTokenAAllowed(true);
-                    }
+                    setTokenAAllowed(true);
                 }
             } else {
-                if (isWithdrawTokenAFromDexChecked) {
-                    if (
-                        tokenAAmount >
-                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    ) {
-                        setTokenAAllowed(false);
-                        setRangeButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setTokenAAllowed(true);
-                    }
+                if (tokenAAmount > parseFloat(tokenABalance)) {
+                    setTokenAAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
                 } else {
-                    if (tokenAAmount > parseFloat(tokenABalance)) {
-                        setTokenAAllowed(false);
-                        setRangeButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-                        );
-                    } else {
-                        setTokenAAllowed(true);
-                    }
+                    setTokenAAllowed(true);
                 }
             }
         }
