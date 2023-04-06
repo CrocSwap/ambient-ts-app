@@ -165,30 +165,36 @@ export default function RangeDetails(props: propsIF) {
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
-                    const liqBaseDisplay = liqBaseNum
-                        ? liqBaseNum < 2
-                            ? liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqBaseDisplay =
+                        liqBaseNum !== undefined
+                            ? liqBaseNum === 0
+                                ? '0'
+                                : liqBaseNum < 2
+                                ? liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                  })
+                                : liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
                     setBaseCollateralDisplay(liqBaseDisplay);
 
-                    const liqQuoteDisplay = liqQuoteNum
-                        ? liqQuoteNum < 2
-                            ? liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqQuoteDisplay =
+                        liqQuoteNum !== undefined
+                            ? liqQuoteNum === 0
+                                ? '0'
+                                : liqQuoteNum < 2
+                                ? liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                  })
+                                : liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
                     const usdValue = position.totalValueUSD;
@@ -210,7 +216,7 @@ export default function RangeDetails(props: propsIF) {
                         positionStats.feesLiqQuoteDecimalCorrected;
 
                     const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                        ? '0.00'
+                        ? '0'
                         : baseFeeDisplayNum < 0.0001
                         ? baseFeeDisplayNum.toExponential(2)
                         : baseFeeDisplayNum < 2
@@ -225,7 +231,7 @@ export default function RangeDetails(props: propsIF) {
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
                     const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                        ? '0.00'
+                        ? '0'
                         : quoteFeeDisplayNum < 0.0001
                         ? quoteFeeDisplayNum.toExponential(2)
                         : quoteFeeDisplayNum < 2

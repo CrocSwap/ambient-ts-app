@@ -81,6 +81,7 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { IS_LOCAL_ENV } from '../../../constants';
 
 interface propsIF {
@@ -157,6 +158,7 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function Range(props: propsIF) {
@@ -220,6 +222,7 @@ export default function Range(props: propsIF) {
         maxPrice,
         setChartTriggeredBy,
         chartTriggeredBy,
+        cachedFetchTokenPrice,
     } = props;
 
     const [
@@ -410,6 +413,12 @@ export default function Range(props: propsIF) {
     ]);
 
     useEffect(() => {
+        setNewRangeTransactionHash('');
+        setShowBypassConfirmButton(false);
+        setPinnedDisplayPrices(undefined);
+    }, [baseToken.address + quoteToken.address]);
+
+    useEffect(() => {
         const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
         if (isAdd) {
             setIsAdd(true);
@@ -439,6 +448,51 @@ export default function Range(props: propsIF) {
         | undefined
     >();
 
+    const updatePinnedDisplayPrices = () => {
+        if (
+            Math.abs(currentPoolPriceTick) === Infinity ||
+            Math.abs(currentPoolPriceTick) === 0
+        )
+            return;
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            denominationsInBase,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lowTick,
+            highTick,
+            lookupChain(chainId).gridSize,
+        );
+
+        setPinnedDisplayPrices(pinnedDisplayPrices);
+
+        setRangeLowBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+        );
+        setRangeHighBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+        );
+
+        setPinnedMinPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+        );
+        setPinnedMaxPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+        );
+
+        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
+        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+        setMaxPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+        );
+        setMinPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+        );
+    };
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
             setIsAmbient(true);
@@ -448,6 +502,7 @@ export default function Range(props: propsIF) {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
+            updatePinnedDisplayPrices();
             if (
                 Math.abs(currentPoolPriceTick) === Infinity ||
                 Math.abs(currentPoolPriceTick) === 0
@@ -495,8 +550,6 @@ export default function Range(props: propsIF) {
         rangeWidthPercentage,
         tradeData.advancedMode,
         denominationsInBase,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         currentPoolPriceTick,
     ]);
 
@@ -644,13 +697,6 @@ export default function Range(props: propsIF) {
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
-    ]);
-
-    useEffect(() => {
-        setNewRangeTransactionHash('');
-        setShowBypassConfirmButton(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
     ]);
 
     useEffect(() => {
@@ -1201,6 +1247,12 @@ export default function Range(props: propsIF) {
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,
+        isDenomBase: tradeData.isDenomBase,
+        baseToken: tradeData.baseToken,
+        quoteToken: tradeData.quoteToken,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
+        chainId: chainId,
+        isAmbient: isAmbient,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
