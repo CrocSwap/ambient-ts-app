@@ -590,6 +590,15 @@ export default function Transactions(props: propsIF) {
             sortable: false,
             alignRight: true,
         },
+        // {
+        //     name: '',
+
+        //     show: !isOnPortfolioPage && isShowAllEnabled,
+
+        //     slug: 'walletLink',
+        //     sortable: false,
+        //     alignRight: true,
+        // },
 
         {
             name: '',

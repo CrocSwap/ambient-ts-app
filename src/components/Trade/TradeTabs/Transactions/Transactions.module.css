@@ -250,6 +250,44 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
+.view_wallet_link{
+    background: var(--dark3);
+    width: 100%;
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: all var(--animation-speed) ease-in-out;
+    white-space: nowrap;
+    height: 23px;
+    margin: 0 2px;
+    /* padding: 5px ; */
+    text-decoration: none;
+    border-radius: 6.25rem;
+    cursor: pointer;
+    font-size: 10px;
+    color: var(--text-grey-light);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+.view_wallet_link:hover, .view_wallet_link:hover .view_wallet_link svg{
+    color: var(--text-grey-white);
+
+}
+
+.view_wallet_link p{
+    display: flex;
+}
+
+
+.view_wallet_link svg:first-of-type{
+    display: none;
+}
 .row_container:hover .menu {
     opacity: 1;
 }
@@ -259,6 +297,14 @@
 }
 
 @media only screen and (max-width: 768px) {
+
+    .view_wallet_link p{
+        display: none;
+    }
+    .view_wallet_link svg:first-of-type{
+        display: flex;
+    }
+
     .header li {
         font-weight: 300;
         font-size: 8px;

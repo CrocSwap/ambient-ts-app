@@ -9,7 +9,7 @@ import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
@@ -290,27 +290,8 @@ export default function RangesRow(props: propsIF) {
         </li>
     );
 
-    const navigate = useNavigate();
-
     const walletWithTooltip = (
         <li
-            // onClick={() => {
-            //     dispatch(
-            //         setDataLoadingStatus({
-            //             datasetName: 'lookupUserTxData',
-            //             loadingStatus: true,
-            //         }),
-            //     );
-            //     navigate(
-            //         `/${
-            //             isOwnerActiveAccount
-            //                 ? 'account'
-            //                 : ensName
-            //                 ? ensName
-            //                 : ownerId
-            //         }`,
-            //     );
-            // }}
             onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
@@ -508,15 +489,19 @@ export default function RangesRow(props: propsIF) {
                     loadingStatus: true,
                 }),
             );
-            navigate(
-                `/${
-                    isOwnerActiveAccount
-                        ? 'account'
-                        : ensName
-                        ? ensName
-                        : ownerId
-                }`,
-            );
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
+            // navigate(
+            //     `/${
+            //         isOwnerActiveAccount
+            //             ? 'account'
+            //             : ensName
+            //             ? ensName
+            //             : ownerId
+            //     }`,
+            // );
         } else {
             openDetailsModal();
         }
@@ -724,6 +709,7 @@ export default function RangesRow(props: propsIF) {
                     justSymbol
                 />
             </li>
+
             <li data-label='menu' className={styles.menu}>
                 <RangesMenu
                     {...rangeMenuProps}
@@ -733,6 +719,8 @@ export default function RangesRow(props: propsIF) {
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     dexBalancePrefs={dexBalancePrefs}
                     slippage={slippage}
+                    handleAccountClick={handleAccountClick}
+                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
         </ul>

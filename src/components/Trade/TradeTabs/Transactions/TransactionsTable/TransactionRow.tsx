@@ -7,8 +7,8 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { NavLink, useNavigate } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
@@ -292,8 +292,6 @@ export default function TransactionRow(props: propsIF) {
         </li>
     );
 
-    const navigate = useNavigate();
-    // eslint-disable-next-line
     const handleWalletClick = () => {
         dispatch(
             setDataLoadingStatus({
@@ -301,11 +299,11 @@ export default function TransactionRow(props: propsIF) {
                 loadingStatus: true,
             }),
         );
-        navigate(
-            `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`,
-        );
+
+        const accountUrl = `/${
+            isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+        }`;
+        window.open(accountUrl);
     };
 
     const walletWithTooltip = (
@@ -841,6 +839,7 @@ export default function TransactionRow(props: propsIF) {
                     </div>
                 </li>
             )}
+
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
                     account={account}
@@ -859,6 +858,8 @@ export default function TransactionRow(props: propsIF) {
                     }
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     chainData={chainData}
+                    handleWalletClick={handleWalletClick}
+                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
             {snackbarContent}

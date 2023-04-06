@@ -446,6 +446,15 @@ export default function Ranges(props: propsIF) {
         },
         {
             name: '',
+
+            show: !isOnPortfolioPage && isShowAllEnabled,
+
+            slug: 'walletLink',
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: '',
             className: '',
             show: true,
             slug: 'menu',

@@ -47,6 +47,10 @@ interface propsIF {
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
+
+    isShowAllEnabled: boolean;
+
+    handleWalletClick: () => void;
 }
 
 // React functional component
@@ -258,30 +262,25 @@ export default function TransactionsMenu(props: propsIF) {
         );
     };
 
-    // const mainModal = (
-    //     <Modal onClose={closeModal} title={modalTitle}>
-    //         {modalContent}
-    //     </Modal>
-    // );
-
-    // const modalOrNull = isModalOpen ? mainModal : null;
-
-    // const removeButton = userPosition ? (
-    //     <button className={styles.option_button} onClick={openRemoveModal}>
-    //         Remove
-    //     </button>
-    // ) : null;
-
-    // const copyButton = (
-    //     <button className={styles.option_button} onClick={handleCopyClick}>
-    //         Copy
-    //     </button>
-    // );
-
     const isTxCopiable = tx.source !== 'manual';
-    // tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
 
     const navigate = useNavigate();
+
+    const walletButton = (
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleWalletClick}
+        >
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </button>
+    );
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
@@ -425,6 +424,7 @@ export default function TransactionsMenu(props: propsIF) {
             {detailsButton}
             {explorerButton}
             {!desktopView && copyButton}
+            {walletButton}
         </div>
     );
 
