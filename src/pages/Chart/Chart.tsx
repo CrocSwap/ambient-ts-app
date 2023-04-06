@@ -3571,18 +3571,13 @@ export default function Chart(props: propsIF) {
         const high = ranges.filter((target: any) => target.name === 'Max')[0]
             .value;
 
-        yAxis.tickValues([
-            ...yScale.ticks(),
-            ...[market[0].value],
-            ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
-        ]);
+        yAxis.tickValues([...yScale.ticks(), ...[market[0].value]]);
 
         if (location.pathname.includes('/limit')) {
             yAxis.tickValues([
                 ...yScale.ticks(),
                 ...[market[0].value],
                 ...[limit[0].value],
-                ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
             ]);
         }
 
@@ -3594,7 +3589,6 @@ export default function Chart(props: propsIF) {
                 ...yScale.ticks(),
                 ...[market[0].value],
                 ...[high, low],
-                ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
             ]);
         }
 
@@ -3687,35 +3681,6 @@ export default function Chart(props: propsIF) {
                     sameLocationDataMax: sameLocationDataMax,
                 } = sameLocationRange();
 
-                // const digit =
-                //     formatAmountChartData(low).length >=
-                //     formatAmountChartData(high).length
-                //         ? formatAmountChartData(low).length -
-                //           formatAmountChartData(high).length +
-                //           formatAmountChartData(high).toString().split('.')[1]
-                //               ?.length
-                //         : formatAmountChartData(high).length -
-                //           formatAmountChartData(low).length +
-                //           formatAmountChartData(low).toString().split('.')[1]
-                //               ?.length;
-
-                // return formatAmountChartData(
-                //     isSameLocation && d === sameLocationData ? data : d,
-
-                //     d === sameLocationDataMax ||
-                //         d === sameLocationDataMin ||
-                //         d === shorterValue ||
-                //         d === longerValue ||
-                //         d === market[0].value ||
-                //         d === crosshairData[0].y
-                //         ? d === longerValue ||
-                //           d === market[0].value ||
-                //           d === crosshairData[0].y ||
-                //           d === sameLocationData
-                //             ? undefined
-                //             : digit
-                //         : d.toString().split('.')[1]?.length,
-
                 if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
                     if (d === low) {
                         createRectLabel(
@@ -3749,27 +3714,30 @@ export default function Chart(props: propsIF) {
                     }
                 }
             } else {
-                if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                    createRectLabel(
-                        context,
-                        yScale(d),
-                        X - tickSize,
-                        '#242F3F',
-                        'white',
-                        formatAmountChartData(d, undefined),
-                        undefined,
-                        yAxisCanvasWidth,
-                    );
-                } else {
-                    context.beginPath();
-                    context.fillText(
-                        formatAmountChartData(d, digit ? digit : 2),
-                        X - tickSize,
-                        yScale(d),
-                    );
-                }
+                context.beginPath();
+                context.fillStyle = '#bdbdbd';
+                context.font = '11.5px Arial';
+                context.fillText(
+                    formatAmountChartData(d, digit ? digit : 2),
+                    X - tickSize,
+                    yScale(d),
+                );
+                context.restore();
             }
         });
+
+        if (isMouseMoveCrosshair) {
+            createRectLabel(
+                context,
+                yScale(crosshairData[0].y),
+                X - tickSize,
+                '#242F3F',
+                'white',
+                formatAmountChartData(crosshairData[0].y, undefined),
+                undefined,
+                yAxisCanvasWidth,
+            );
+        }
 
         changeyAxisWidth();
     };
