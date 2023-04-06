@@ -292,7 +292,7 @@ export default function OrderRow(props: propsIF) {
                                 : ownerId
                         }`}
                     >
-                        {ensName ? ensName : ownerId}
+                        {ownerId}
 
                         <FiExternalLink size={'12px'} />
                     </NavLink>

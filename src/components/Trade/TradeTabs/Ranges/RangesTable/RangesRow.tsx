@@ -336,7 +336,7 @@ export default function RangesRow(props: propsIF) {
                                 : ownerId
                         }`}
                     >
-                        {ensName ? ensName : ownerId}
+                        {ownerId}
 
                         <FiExternalLink size={'12px'} />
                     </NavLink>
