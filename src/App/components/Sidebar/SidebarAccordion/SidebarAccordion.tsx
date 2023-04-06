@@ -13,6 +13,7 @@ import { MdPlayArrow } from 'react-icons/md';
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -53,7 +54,7 @@ export default function SidebarAccordion(props: propsIF) {
 
     useEffect(() => {
         if (isTopPools) {
-            console.log({ isOpen });
+            IS_LOCAL_ENV && console.debug({ isOpen });
         }
     }, [isTopPools, isOpen]);
     const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
@@ -94,7 +95,7 @@ export default function SidebarAccordion(props: propsIF) {
             setIsOpen(true);
             setShowSidebar(true);
         }
-        console.log('clicked');
+        IS_LOCAL_ENV && console.debug('clicked');
     }
 
     useEffect(() => {

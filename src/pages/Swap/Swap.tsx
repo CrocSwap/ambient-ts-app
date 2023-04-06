@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -45,6 +46,7 @@ import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -242,14 +244,17 @@ export default function Swap(props: propsIF) {
         if (
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
-            txErrorCode === ''
+            txErrorCode === '' &&
+            bypassConfirm.swap.isEnabled
         ) {
+            setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
         }
     }, [
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
+        bypassConfirm.swap.isEnabled,
     ]);
 
     const resetConfirmation = () => {
@@ -261,9 +266,7 @@ export default function Swap(props: propsIF) {
     useEffect(() => {
         setNewSwapTransactionHash('');
         setShowBypassConfirm(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     async function initiateSwap() {
         resetConfirmation();
@@ -309,7 +312,7 @@ export default function Swap(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
@@ -357,18 +360,18 @@ export default function Swap(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
 
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
 
                 setNewSwapTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -417,6 +420,7 @@ export default function Swap(props: propsIF) {
         <button
             onClick={openModalWallet}
             className={styles.authenticate_button}
+            style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
             Connect Wallet
         </button>
@@ -458,17 +462,17 @@ export default function Swap(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
                     receipt = error.receipt;
@@ -482,7 +486,7 @@ export default function Swap(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -543,7 +547,6 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
-        bypassConfirmSwap: bypassConfirm.swap,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
@@ -583,8 +586,13 @@ export default function Swap(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(sellQtyString);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
     const swapContainerStyle = pathname.startsWith('/swap')
         ? styles.swap_page_container
@@ -730,10 +738,11 @@ export default function Swap(props: propsIF) {
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         dexBalancePrefs: dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
 
     const handleSwapButtonClickWithBypass = () => {
-        console.log('setting to true');
+        IS_LOCAL_ENV && console.debug('setting to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
@@ -780,108 +789,123 @@ export default function Swap(props: propsIF) {
         ) : null;
 
     return (
-        <section data-testid={'swap'} className={swapPageStyle}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
-            <div className={`${swapContainerStyle}`}>
-                <ContentContainer
-                    isOnTradeRoute={isOnTradeRoute}
-                    padding={isOnTradeRoute ? '0 1rem' : '1rem'}
-                >
-                    <SwapHeader
-                        swapSlippage={swapSlippage}
-                        isPairStable={isPairStable}
-                        isOnTradeRoute={isOnTradeRoute}
-                        openGlobalModal={props.openGlobalModal}
-                        shareOptionsDisplay={shareOptionsDisplay}
-                        bypassConfirm={bypassConfirm}
-                    />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        <CurrencyConverter {...currencyConverterProps} />
-                    </motion.div>
-                    <ExtraInfo
-                        account={account}
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                        priceImpact={priceImpact}
-                        isTokenABase={isSellTokenBase}
-                        displayEffectivePriceString={
-                            displayEffectivePriceString
-                        }
-                        poolPriceDisplay={poolPriceDisplay || 0}
-                        slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFee={tradeData.liquidityFee}
-                        quoteTokenIsBuy={true}
-                        swapGasPriceinDollars={swapGasPriceinDollars}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                        isDenomBase={tradeData.isDenomBase}
-                        isOnTradeRoute={isOnTradeRoute}
-                    />
-                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                      true ? (
-                        poolExists &&
-                        !isTokenAAllowanceSufficient &&
-                        parseFloat(sellQtyString) > 0 &&
-                        sellQtyString !== 'Infinity' ? (
-                            approvalButton
-                        ) : (
-                            <>
-                                {!showBypassConfirm ? (
-                                    // user has hide confirmation modal off
-                                    <SwapButton
-                                        onClickFn={
-                                            bypassConfirm.swap.isEnabled
-                                                ? handleSwapButtonClickWithBypass
-                                                : openModal
-                                        }
-                                        swapAllowed={swapAllowed}
-                                        swapButtonErrorMessage={
-                                            swapButtonErrorMessage
-                                        }
-                                        bypassConfirmSwap={bypassConfirm.swap}
-                                    />
-                                ) : (
-                                    // user has hide confirmation modal on
-                                    <BypassConfirmSwapButton
-                                        {...confirmSwapModalProps}
-                                    />
-                                )}
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                    {priceImpactWarningOrNull}
-                </ContentContainer>
-                {confirmSwapModalOrNull}
-                {isRelativeModalOpen && (
-                    <RelativeModal
-                        onClose={closeRelativeModal}
-                        title='Relative Modal'
-                    >
-                        You are about to do something that will lose you a lot
-                        of money. If you think you are smarter than the awesome
-                        team that programmed this, press dismiss.
-                    </RelativeModal>
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section data-testid={'swap'} className={swapPageStyle}>
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
                 )}
-            </div>
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={swapTutorialSteps}
-            />
-        </section>
+                <div className={`${swapContainerStyle}`}>
+                    <ContentContainer
+                        isOnTradeRoute={isOnTradeRoute}
+                        padding={isOnTradeRoute ? '0 1rem' : '1rem'}
+                    >
+                        <SwapHeader
+                            swapSlippage={swapSlippage}
+                            isPairStable={isPairStable}
+                            isOnTradeRoute={isOnTradeRoute}
+                            openGlobalModal={props.openGlobalModal}
+                            shareOptionsDisplay={shareOptionsDisplay}
+                            bypassConfirm={bypassConfirm}
+                        />
+                        {navigationMenu}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <CurrencyConverter {...currencyConverterProps} />
+                        </motion.div>
+                        <ExtraInfo
+                            account={account}
+                            tokenPair={{
+                                dataTokenA: tokenA,
+                                dataTokenB: tokenB,
+                            }}
+                            priceImpact={priceImpact}
+                            isTokenABase={isSellTokenBase}
+                            displayEffectivePriceString={
+                                displayEffectivePriceString
+                            }
+                            poolPriceDisplay={poolPriceDisplay || 0}
+                            slippageTolerance={slippageTolerancePercentage}
+                            liquidityProviderFee={tradeData.liquidityFee}
+                            quoteTokenIsBuy={true}
+                            swapGasPriceinDollars={swapGasPriceinDollars}
+                            didUserFlipDenom={tradeData.didUserFlipDenom}
+                            isDenomBase={tradeData.isDenomBase}
+                            isOnTradeRoute={isOnTradeRoute}
+                        />
+                        {isUserLoggedIn ===
+                        undefined ? null : isUserLoggedIn === true ? (
+                            poolExists &&
+                            !isTokenAAllowanceSufficient &&
+                            parseFloat(sellQtyString) > 0 &&
+                            sellQtyString !== 'Infinity' ? (
+                                approvalButton
+                            ) : (
+                                <>
+                                    {!showBypassConfirm ? (
+                                        // user has hide confirmation modal off
+                                        <SwapButton
+                                            onClickFn={
+                                                bypassConfirm.swap.isEnabled
+                                                    ? handleSwapButtonClickWithBypass
+                                                    : openModal
+                                            }
+                                            swapAllowed={
+                                                swapAllowed &&
+                                                sellQtyString !== '' &&
+                                                buyQtyString !== ''
+                                            }
+                                            swapButtonErrorMessage={
+                                                swapButtonErrorMessage
+                                            }
+                                            bypassConfirmSwap={
+                                                bypassConfirm.swap
+                                            }
+                                        />
+                                    ) : (
+                                        // user has hide confirmation modal on
+                                        <BypassConfirmSwapButton
+                                            {...confirmSwapModalProps}
+                                        />
+                                    )}
+                                </>
+                            )
+                        ) : (
+                            loginButton
+                        )}
+                        {priceImpactWarningOrNull}
+                    </ContentContainer>
+                    {confirmSwapModalOrNull}
+                    {isRelativeModalOpen && (
+                        <RelativeModal
+                            onClose={closeRelativeModal}
+                            title='Relative Modal'
+                        >
+                            You are about to do something that will lose you a
+                            lot of money. If you think you are smarter than the
+                            awesome team that programmed this, press dismiss.
+                        </RelativeModal>
+                    )}
+                </div>
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={swapTutorialSteps}
+                />
+            </section>
+        </FocusTrap>
     );
 }

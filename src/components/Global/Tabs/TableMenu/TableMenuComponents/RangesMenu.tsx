@@ -28,6 +28,7 @@ import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePref
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -76,6 +77,7 @@ export default function RangesMenu(props: propsIF) {
         isPositionInRange,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        chainData,
     } = props;
 
     const { openGlobalModal } = rangeDetailsProps;
@@ -95,7 +97,7 @@ export default function RangesMenu(props: propsIF) {
         useModal();
 
     const handleModalClose = () => {
-        console.log('CLOSING THE MODAL!!!!');
+        IS_LOCAL_ENV && console.debug('CLOSING THE MODAL!!!!');
         closeHarvestModal();
         closeRemoveRangeModal();
         setShowDropdownMenu(false);
@@ -104,7 +106,11 @@ export default function RangesMenu(props: propsIF) {
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
         openGlobalModal(
-            <RangeDetails position={position} {...rangeDetailsProps} />,
+            <RangeDetails
+                position={position}
+                chainData={chainData}
+                {...rangeDetailsProps}
+            />,
         );
     };
 
@@ -122,7 +128,7 @@ export default function RangesMenu(props: propsIF) {
             setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
         } else {
-            console.log({ position });
+            IS_LOCAL_ENV && console.debug({ position });
             dispatch(setAdvancedLowTick(position.bidTick));
             dispatch(setAdvancedHighTick(position.askTick));
             dispatch(setAdvancedMode(true));

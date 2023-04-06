@@ -1,11 +1,14 @@
 import styles from './NotificationTable.module.css';
 import { Dispatch, RefObject, SetStateAction, useEffect } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
+import FocusTrap from 'focus-trap-react';
+
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -33,7 +36,8 @@ const NotificationTable = (props: NotificationTableProps) => {
     );
 
     useEffect(() => {
-        if (parsedReceipts.length) console.log({ parsedReceipts });
+        if (parsedReceipts.length && IS_LOCAL_ENV)
+            console.debug({ parsedReceipts });
     }, [JSON.stringify(parsedReceipts)]);
 
     const successfulTransactions = parsedReceipts.filter(
@@ -85,27 +89,32 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     if (!showNotificationTable) return null;
     return (
-        <div className={styles.main_container}>
-            <div ref={notificationItemRef} className={styles.container}>
-                <section className={styles.header}>Recent Transactions</section>
+        <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
+            <div className={styles.main_container}>
+                <div ref={notificationItemRef} className={styles.container}>
+                    <section className={styles.header}>
+                        Recent Transactions
+                    </section>
 
-                <section className={styles.content}>
-                    {pendingTransactionsDisplay}
-                    {failedTransactionsDisplay}
-                    {successfulTransactionsDisplay}
-                </section>
+                    <section className={styles.content}>
+                        {pendingTransactionsDisplay}
+                        {failedTransactionsDisplay}
+                        {successfulTransactionsDisplay}
+                    </section>
 
-                <section className={styles.footer}>
-                    <button
-                        onClick={() => {
-                            dispatch(resetReceiptData());
-                        }}
-                    >
-                        Clear all
-                    </button>
-                </section>
+                    <section className={styles.footer}>
+                        <button
+                            onClick={() => {
+                                dispatch(resetReceiptData());
+                            }}
+                            aria-label='Clear all'
+                        >
+                            Clear all
+                        </button>
+                    </section>
+                </div>
             </div>
-        </div>
+        </FocusTrap>
     );
 };
 

@@ -3,6 +3,7 @@ import styles from './AnalyticsTokenRows.module.css';
 import { uniswapTokens } from '../fakedata/uniswapTokens';
 import { useLocation } from 'react-router-dom';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 interface AnalyticsTokenRowsPropsIF {
     searchInput?: string;
@@ -33,9 +34,8 @@ export default function AnalyticsTokenRows(props: AnalyticsTokenRowsPropsIF) {
     const location = useLocation();
     const currentLocation = location.pathname;
     const tokenData = uniswapTokens[0].tokens;
-
-    console.log(tokenData);
     const itemsToMap = searchInput == '' ? 10 : 2;
+    IS_LOCAL_ENV && console.debug(tokenData);
 
     if (currentLocation.includes('overview')) return null;
     return (

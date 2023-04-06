@@ -1,4 +1,5 @@
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { IS_LOCAL_ENV } from '../../constants';
 import { memoizeTransactionGraphFn } from './memoizePromiseFn';
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -14,7 +15,7 @@ export const fetchTransactionGraphData = async (
     time: string,
     candleNeeded: string,
 ) => {
-    console.log('fetching transaction details graph data ');
+    IS_LOCAL_ENV && console.debug('fetching transaction details graph data ');
 
     if (isFetchEnabled) {
         try {
@@ -54,10 +55,10 @@ export const fetchTransactionGraphData = async (
                             };
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         } catch (error) {
-            console.log({ error });
+            console.error({ error });
         }
     }
 };

@@ -1,5 +1,5 @@
 import styles from './ConfirmLimitModal.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
@@ -49,14 +49,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         endDisplayPrice,
         bypassConfirm,
     } = props;
-    const [transactionApproved, setTransactionApproved] =
-        useState<boolean>(false);
-
-    useEffect(() => {
-        if (newLimitOrderTransactionHash) {
-            setTransactionApproved(true);
-        }
-    }, [newLimitOrderTransactionHash]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -93,10 +85,9 @@ export default function ConfirmLimitModal(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const txApproved = newLimitOrderTransactionHash !== '';
+    const isTxDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTxException = txErrorCode !== '' && !isTxDenied;
 
     const sellTokenQty = (
         document.getElementById('sell-limit-quantity') as HTMLInputElement
@@ -106,14 +97,7 @@ export default function ConfirmLimitModal(props: propsIF) {
     )?.value;
 
     const sellTokenData = tokenPair.dataTokenA;
-
     const buyTokenData = tokenPair.dataTokenB;
-
-    const explanationText = (
-        <div
-            className={styles.confSwap_detail_note}
-        >{`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}</div>
-    );
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -153,12 +137,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         </div>
     );
 
-    const limitRateRow = (
-        <div className={styles.limit_row_container}>
-            <h2>@ {trunctatedInsideTickDisplayPrice}</h2>
-        </div>
-    );
-
     const startPriceString = !startDisplayPrice
         ? '…'
         : startDisplayPrice < 2
@@ -195,70 +173,63 @@ export default function ConfirmLimitModal(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
-    const extraInfoData = (
-        <div className={styles.extra_info_container}>
-            {/* <div className={styles.convRate}>
-                {isDenomBase
-                    ? `${trunctatedInsideTickDisplayPrice} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                    : `${trunctatedInsideTickDisplayPrice} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-            </div> */}
-            <div className={styles.row}>
-                <p>Current Price</p>
-                <p>
-                    {isDenomBase
-                        ? `${displayPoolPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${displayPoolPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Fill Start</p>
-                <p>
-                    {isDenomBase
-                        ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Fill Middle</p>
-                <p>
-                    {isDenomBase
-                        ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Fill End</p>
-                <p>
-                    {isDenomBase
-                        ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-        </div>
-    );
-
-    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.limit.isEnabled,
-    );
-
-    const toggleFor = 'limit';
+    // this is the starting state for the bypass confirmation toggle switch
+    // if this modal is being shown, we can assume bypass is disabled
+    const [currentSkipConfirm, setCurrentSkipConfirm] =
+        useState<boolean>(false);
 
     const fullTxDetails = (
         <div className={styles.main_container}>
             <section>
-                {limitRateRow}
+                <div className={styles.limit_row_container}>
+                    <h2>@ {trunctatedInsideTickDisplayPrice}</h2>
+                </div>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>
-            {extraInfoData}
-            {explanationText}
+            <div className={styles.extra_info_container}>
+                <div className={styles.row}>
+                    <p>Current Price</p>
+                    <p>
+                        {isDenomBase
+                            ? `${displayPoolPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${displayPoolPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                    </p>
+                </div>
+                <div className={styles.row}>
+                    <p>Fill Start</p>
+                    <p>
+                        {isDenomBase
+                            ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                    </p>
+                </div>
+                <div className={styles.row}>
+                    <p>Fill Middle</p>
+                    <p>
+                        {isDenomBase
+                            ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                    </p>
+                </div>
+                <div className={styles.row}>
+                    <p>Fill End</p>
+                    <p>
+                        {isDenomBase
+                            ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                    </p>
+                </div>
+            </div>
+            <div className={styles.confSwap_detail_note}>
+                {`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}
+            </div>
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
             />
         </div>
     );
@@ -266,22 +237,18 @@ export default function ConfirmLimitModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Submitting Limit Order to Swap ${sellTokenQty} ${
-                sellTokenData.symbol
-            } for ${buyTokenQty} ${
-                buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
+            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}.`}
         />
     );
 
-    const transactionDenied = (
+    const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
-    const transactionException = (
+    const txException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    const transactionSubmitted = (
+    const txSubmitted = (
         <TransactionSubmitted
             hash={newLimitOrderTransactionHash}
             tokenBSymbol={buyTokenData.symbol}
@@ -292,16 +259,13 @@ export default function ConfirmLimitModal(props: propsIF) {
         />
     );
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay: JSX.Element = isTxException
+        ? txException
+        : isTxDenied
+        ? txDenied
+        : txApproved
+        ? txSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.modal_container}>
@@ -312,12 +276,20 @@ export default function ConfirmLimitModal(props: propsIF) {
                 {showConfirmation && (
                     <Button
                         title='Send Limit'
+                        // if this modal is launched we can infer user wants confirmation
+                        // if user enables bypass, update all settings in parallel
+                        // otherwise do not not make any change to persisted preferences
                         action={() => {
-                            bypassConfirm.limit.setValue(currentSkipConfirm);
+                            if (currentSkipConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             initiateLimitOrderMethod();
                             setShowConfirmation(false);
                         }}
-                        flat={true}
+                        flat
                     />
                 )}
             </footer>

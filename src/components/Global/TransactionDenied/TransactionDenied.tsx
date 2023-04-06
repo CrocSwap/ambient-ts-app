@@ -31,8 +31,8 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
                 <h2>Transaction Denied in Wallet</h2>
             </div>
             <p>
-                Check the Metamask extension in your browser for notifications,
-                or click &quot;Try Again&quot;.
+                Please check your wallet for notifications, or click &quot;Try
+                Again&quot;.
             </p>
             <Button
                 title='Try Again'

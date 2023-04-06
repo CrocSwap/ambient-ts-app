@@ -7,15 +7,15 @@ import Button from '../../../Global/Button/Button';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
+import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import SelectedRange from './SelectedRange/SelectedRange';
+import TransactionException from '../../../Global/TransactionException/TransactionException';
 
 // START: Import Local Files
 import styles from './ConfirmRangeModal.module.css';
-import SelectedRange from './SelectedRange/SelectedRange';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
-import TransactionException from '../../../Global/TransactionException/TransactionException';
 import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
 
 interface propsIF {
@@ -72,21 +72,18 @@ export default function ConfirmRangeModal(props: propsIF) {
 
     const { dataTokenA, dataTokenB } = tokenPair;
 
-    const transactionApproved = newRangeTransactionHash !== '';
+    const txApproved = newRangeTransactionHash !== '';
+    const isTxDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
-
-    const transactionDenied = (
+    const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
-    const transactionException = (
+    const txException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    const transactionSubmitted = (
+    const txSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
             tokenBSymbol={dataTokenB.symbol}
@@ -104,39 +101,13 @@ export default function ConfirmRangeModal(props: propsIF) {
         document.getElementById('B-range-quantity') as HTMLInputElement
     )?.value;
 
-    const tokenACharacter = getUnicodeCharacter(dataTokenA.symbol);
-    const tokenBCharacter = getUnicodeCharacter(dataTokenB.symbol);
+    const tokenACharacter: string = getUnicodeCharacter(dataTokenA.symbol);
+    const tokenBCharacter: string = getUnicodeCharacter(dataTokenB.symbol);
 
-    const selectedRangeOrNull = !isAmbient ? (
-        <SelectedRange
-            minPriceDisplay={minPriceDisplay}
-            maxPriceDisplay={maxPriceDisplay}
-            spotPriceDisplay={spotPriceDisplay}
-            poolPriceDisplayNum={poolPriceDisplayNum}
-            tokenPair={tokenPair}
-            denominationsInBase={denominationsInBase}
-            isTokenABase={isTokenABase}
-            isAmbient={isAmbient}
-            pinnedMinPriceDisplayTruncatedInBase={
-                pinnedMinPriceDisplayTruncatedInBase
-            }
-            pinnedMinPriceDisplayTruncatedInQuote={
-                pinnedMinPriceDisplayTruncatedInQuote
-            }
-            pinnedMaxPriceDisplayTruncatedInBase={
-                pinnedMaxPriceDisplayTruncatedInBase
-            }
-            pinnedMaxPriceDisplayTruncatedInQuote={
-                pinnedMaxPriceDisplayTruncatedInQuote
-            }
-        />
-    ) : null;
-
-    const [currentSkipConfirm, setCurrentSkipConfirm] = useState<boolean>(
-        bypassConfirm.range.isEnabled,
-    );
-
-    const toggleFor = 'range';
+    // this is the starting state for the bypass confirmation toggle switch
+    // if this modal is being shown, we can assume bypass is disabled
+    const [currentSkipConfirm, setCurrentSkipConfirm] =
+        useState<boolean>(false);
 
     const fullTxDetails = (
         <>
@@ -215,18 +186,38 @@ export default function ConfirmRangeModal(props: propsIF) {
                             <span>{dataTokenB.symbol}</span>
                         </div>
                         <span>
-                            {tokenBQty !== ''
-                                ? tokenBCharacter + tokenBQty
-                                : '0'}
+                            {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
                         </span>
                     </div>
                 </div>
             </section>
-            {selectedRangeOrNull}
+            {isAmbient || (
+                <SelectedRange
+                    minPriceDisplay={minPriceDisplay}
+                    maxPriceDisplay={maxPriceDisplay}
+                    spotPriceDisplay={spotPriceDisplay}
+                    poolPriceDisplayNum={poolPriceDisplayNum}
+                    tokenPair={tokenPair}
+                    denominationsInBase={denominationsInBase}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                />
+            )}
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
-                toggleFor={toggleFor}
             />
         </>
     );
@@ -236,22 +227,17 @@ export default function ConfirmRangeModal(props: propsIF) {
         <WaitingConfirmation
             content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
                 dataTokenA.symbol
-            } and ${tokenBQty ? tokenBQty : '0'} ${dataTokenB.symbol}. 
-            
-                Please check the ${'Metamask'} extension in your browser for notifications.`}
+            } and ${tokenBQty ? tokenBQty : '0'} ${dataTokenB.symbol}. `}
         />
     );
 
-    const confirmationDisplay =
-        isTransactionException ||
-        isGasLimitException ||
-        isInsufficientFundsException
-            ? transactionException
-            : isTransactionDenied
-            ? transactionDenied
-            : transactionApproved
-            ? transactionSubmitted
-            : confirmSendMessage;
+    const confirmationDisplay: JSX.Element = isTxException
+        ? txException
+        : isTxDenied
+        ? txDenied
+        : txApproved
+        ? txSubmitted
+        : confirmSendMessage;
 
     return (
         <div className={styles.confirm_range_modal_container}>
@@ -269,7 +255,15 @@ export default function ConfirmRangeModal(props: propsIF) {
                                   } Position`
                         }
                         action={() => {
-                            bypassConfirm.range.setValue(currentSkipConfirm);
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            if (currentSkipConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             sendTransaction();
                             setShowConfirmation(false);
                         }}

@@ -33,6 +33,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
+import { IS_LOCAL_ENV } from '../../constants';
 
 // interface for props
 interface propsIF {
@@ -101,11 +102,9 @@ export default function InitPool(props: propsIF) {
     const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(
         null,
     );
-    // useEffect(() => console.log(tokenALocal), [tokenALocal]);
     const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(
         null,
     );
-    // useEffect(() => console.log(tokenBLocal), [tokenBLocal]);
     useEffect(() => {
         tokenALocal && dispatch(setTokenA(tokenALocal));
         tokenBLocal && dispatch(setTokenB(tokenBLocal));
@@ -121,7 +120,6 @@ export default function InitPool(props: propsIF) {
                     (list: TokenListIF) => list.name === 'Ambient Token List',
                 );
                 const tokens = ambientList.tokens;
-                // console.log(tokens);
                 setTokenList(tokens);
             } else {
                 setTimeout(check, 100);
@@ -131,20 +129,15 @@ export default function InitPool(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        // console.log(tokenList, baseAddr, quoteAddr);
         if (tokenList && baseAddr && quoteAddr) {
-            // console.log('running!');
             const findToken = (addr: string) =>
                 tokenList.find(
                     (tkn: TokenIF) =>
                         tkn.address.toLowerCase() === addr.toLowerCase(),
                 );
 
-            // console.log(tokenList);
-            // console.log(baseAddr, quoteAddr);
             const dataTokenA = findToken(baseAddr);
             const dataTokenB = findToken(quoteAddr);
-            // console.log(dataTokenA, dataTokenB);
             setTokenALocal(dataTokenA);
             setTokenBLocal(dataTokenB);
         }
@@ -176,7 +169,6 @@ export default function InitPool(props: propsIF) {
             Promise.resolve(promise)
                 .then((res) => res?.result[0].token)
                 .then((token) => {
-                    // console.log({ token });
                     return {
                         name: token.name,
                         chainId: token.chain.decimal,
@@ -284,20 +276,20 @@ export default function InitPool(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -309,7 +301,7 @@ export default function InitPool(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -318,7 +310,8 @@ export default function InitPool(props: propsIF) {
     };
 
     const sendInit = () => {
-        console.log(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at 
+        IS_LOCAL_ENV &&
+            console.debug(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at
         an initial price of ${initialPriceInBaseDenom}`);
         if (initialPriceInBaseDenom) {
             (async () => {
@@ -345,18 +338,19 @@ export default function InitPool(props: propsIF) {
                         if (tx) receipt = await tx.wait();
                     } catch (e) {
                         const error = e as TransactionError;
-                        console.log({ error });
+                        console.error({ error });
                         // The user used "speed up" or something similar
                         // in their client, but we now have the updated info
                         if (isTransactionReplacedError(error)) {
-                            console.log('repriced');
+                            IS_LOCAL_ENV && console.debug('repriced');
                             dispatch(removePendingTx(error.hash));
 
                             const newTransactionHash = error.replacement.hash;
                             dispatch(addPendingTx(newTransactionHash));
 
                             //    setNewSwapTransactionHash(newTransactionHash);
-                            console.log({ newTransactionHash });
+                            IS_LOCAL_ENV &&
+                                console.debug({ newTransactionHash });
                             receipt = error.receipt;
                         } else if (isTransactionFailedError(error)) {
                             receipt = error.receipt;
@@ -570,7 +564,10 @@ export default function InitPool(props: propsIF) {
                                     <Button
                                         title='Pool Already Initialized'
                                         disabled={true}
-                                        action={() => console.log('clicked')}
+                                        action={() => {
+                                            IS_LOCAL_ENV &&
+                                                console.debug('clicked');
+                                        }}
                                         flat={true}
                                     />
                                 ) : isUserLoggedIn ||
@@ -584,18 +581,20 @@ export default function InitPool(props: propsIF) {
                                         <Button
                                             title='Enter an Initial Price'
                                             disabled={true}
-                                            action={() =>
-                                                console.log('clicked')
-                                            }
+                                            action={() => {
+                                                IS_LOCAL_ENV &&
+                                                    console.debug('clicked');
+                                            }}
                                             flat={true}
                                         />
                                     ) : isInitPending === true ? (
                                         <Button
                                             title='Initialization Pending'
                                             disabled={true}
-                                            action={() =>
-                                                console.log('clicked')
-                                            }
+                                            action={() => {
+                                                IS_LOCAL_ENV &&
+                                                    console.debug('clicked');
+                                            }}
                                             flat={true}
                                         />
                                     ) : (

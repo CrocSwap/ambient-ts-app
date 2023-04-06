@@ -7,8 +7,6 @@ import {
 } from 'react-icons/md';
 import { VscClose } from 'react-icons/vsc';
 
-// import { useNavigate } from 'react-router-dom';
-
 interface AppOverlayPropsIf {
     isAppOverlayActive: boolean;
 
@@ -19,34 +17,11 @@ export default function AppOverlay(props: AppOverlayPropsIf) {
 
     const { isAppOverlayActive, setIsAppOverlayActive } = props;
 
-    // console.log(isAppOverlayActive);
     const [page, setPage] = useState(0);
-
-    // useEffect(() => {
-    //     if (page === 4) {
-    //         () => navigate('/trade/limit')
-    //         console.log(page)
-    //     } else if (page === 5) {
-    //        () =>  navigate('/trade/range')
-    //     } else return
-    // }, [page])
-
-    // function handleRedirect() {
-    //     if (page === 4) {
-    //        navigate('/trade/limit')
-    //         console.log(page)
-    //     } else if (page === 5) {
-    //      navigate('/trade/range')
-    //     } else return
-    // }
 
     const page1Overlays = (
         <div>
-            <OverlayComponent
-                top='70px'
-                // left='1200px'
-                left='85vw'
-            >
+            <OverlayComponent top='70px' left='85vw'>
                 Navbar Overlay
             </OverlayComponent>
         </div>
