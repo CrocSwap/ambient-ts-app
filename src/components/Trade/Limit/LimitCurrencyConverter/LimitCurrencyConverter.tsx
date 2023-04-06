@@ -271,7 +271,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 reverseTokens();
                 return !state;
             });
-            dispatch(setShouldLimitDirectionReverse(false));
         }
     }, [tradeData.shouldLimitDirectionReverse]);
 
