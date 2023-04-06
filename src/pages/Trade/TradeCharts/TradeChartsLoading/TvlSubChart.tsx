@@ -74,9 +74,16 @@ export default function TvlSubChart(props: TvlData) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
             const minYBoundary = d3.min(filtered, (d: any) => d.value);
 
-            const domain = [minYBoundary / 2, maxYBoundary * 2];
+            const buffer =
+                Math.abs(Math.log10(maxYBoundary) - Math.log10(minYBoundary)) /
+                5;
 
-            yScale.domain(domain);
+            const domainLog = [
+                Math.pow(10, Math.log10(minYBoundary) - buffer),
+                Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
+            ];
+
+            yScale.domain(domainLog);
         }
 
         const yAxis = d3fc.axisRight().scale(yScale);
@@ -147,7 +154,15 @@ export default function TvlSubChart(props: TvlData) {
                 const minYBoundary = d3.min(filtered, (d: any) => d.value);
                 const maxYBoundary = d3.max(filtered, (d: any) => d.value);
 
-                const domain = [minYBoundary / 2, maxYBoundary * 2];
+                const buffer =
+                    Math.abs(
+                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
+                    ) / 5;
+
+                const domainLog = [
+                    Math.pow(10, Math.log10(minYBoundary) - buffer),
+                    Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
+                ];
 
                 const roundIndexMax = Math.pow(
                     10,
@@ -177,7 +192,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 yAxis.tickValues(ticks).tickFormat(formatDollarAmountAxis);
 
-                tvlyScale.domain(domain);
+                tvlyScale.domain(domainLog);
             }
         }
     }, [

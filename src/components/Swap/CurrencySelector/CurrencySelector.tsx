@@ -273,7 +273,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -283,6 +282,7 @@ export default function CurrencySelector(props: propsIF) {
     const walletBalanceMaxButton =
         isSellTokenSelector &&
         !isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         walletBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
@@ -306,7 +306,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -389,6 +388,7 @@ export default function CurrencySelector(props: propsIF) {
     const surplusMaxButton =
         isSellTokenSelector &&
         isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         surplusBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
