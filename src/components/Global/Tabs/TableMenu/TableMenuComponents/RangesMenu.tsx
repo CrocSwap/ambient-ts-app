@@ -258,27 +258,31 @@ export default function RangesMenu(props: propsIF) {
         </div>
     );
 
-    const walletButton = props.isShowAllEnabled ? (
-        // <li  role='presentation'>
+    const walletButton = (
         <button
             className={styles.option_button}
             tabIndex={0}
             aria-label='View wallet.'
             onClick={props.handleAccountClick}
         >
-            <p> Wallet</p>
-            <FiExternalLink />
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
         </button>
-    ) : // </li>
+    );
+
     null;
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {walletButton}
             {!view3 && !isEmpty && harvestButton}
             {!view2 && !isEmpty && removeButton}
             {detailsButton}
             {userMatchesConnectedAccount && copyButton}
+            {walletButton}
         </div>
     );
 

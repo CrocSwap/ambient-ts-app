@@ -259,18 +259,21 @@ export default function OrdersMenu(props: propsIF) {
         openDetailsModal();
     };
 
-    const walletButton = props.isShowAllEnabled ? (
+    const walletButton = (
         <button
             className={styles.option_button}
             tabIndex={0}
             aria-label='View wallet.'
             onClick={props.handleAccountClick}
         >
-            <p>Wallet</p>
-            <FiExternalLink />
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
         </button>
-    ) : null;
-
+    );
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
             <button
@@ -343,11 +346,11 @@ export default function OrdersMenu(props: propsIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {walletButton}
             {isOwnerActiveAccount && copyButton}
             {/* {!view1 && copyButton} */}
             {/* {!(view1 && !isOrderFilled) && copyButton} */}
             {!minView && removeButton}
+            {walletButton}
         </div>
     );
 

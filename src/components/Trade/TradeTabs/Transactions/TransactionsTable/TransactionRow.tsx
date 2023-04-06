@@ -839,19 +839,7 @@ export default function TransactionRow(props: propsIF) {
                     </div>
                 </li>
             )}
-            {/* {!isOnPortfolioPage && isShowAllEnabled && (
-                <li onClick={handleWalletClick} role='presentation'>
-                    <button
-                        className={styles.view_wallet_link}
-                        tabIndex={0}
-                        aria-label='View wallet.'
-                    >
-                        <p> Wallet</p>
-                        <BiWalletAlt color='#cdc1ff' />
-                        <FiExternalLink />
-                    </button>
-                </li>
-            )} */}
+
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
                     account={account}
