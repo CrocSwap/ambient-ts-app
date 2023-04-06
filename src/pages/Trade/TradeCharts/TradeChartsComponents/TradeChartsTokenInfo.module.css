@@ -44,7 +44,7 @@
     cursor: pointer;
 }
 
-.favorite_button:focus-visible, .amount:focus-visible{
+ .amount:focus-visible{
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
     0px 0px 21px rgba(205, 193, 255, 0.2),
     0px 0px 12px rgba(205, 193, 255, 0.2),
