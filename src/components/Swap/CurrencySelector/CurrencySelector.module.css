@@ -80,11 +80,20 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    padding-right: 5px;
+    color: var(--text-grey-white);
 }
 
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);
+}
+
+.ambient_logo {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding-left: 4px;
+    padding-right: 5px;
 }
 
 .enabled_logo {
@@ -177,7 +186,7 @@
 }
 
 .grey_logo img {
-    filter: grayscale(100%);
+    filter: grayscale(100%) brightness(80%);
 }
 
 /* modal */
