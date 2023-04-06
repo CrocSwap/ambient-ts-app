@@ -1500,8 +1500,14 @@ export default function Chart(props: propsIF) {
                                 minYBoundary !== undefined
                             ) {
                                 const buffer = Math.abs(
-                                    (Math.min(low, minYBoundary) -
-                                        Math.max(high, maxYBoundary)) /
+                                    (Math.min(
+                                        Math.min(low, high),
+                                        minYBoundary,
+                                    ) -
+                                        Math.max(
+                                            Math.max(low, high),
+                                            maxYBoundary,
+                                        )) /
                                         6,
                                 );
 
@@ -2389,14 +2395,19 @@ export default function Chart(props: propsIF) {
                             minYBoundary !== undefined
                         ) {
                             const buffer = Math.abs(
-                                (Math.max(high, maxYBoundary) -
-                                    Math.min(low, minYBoundary)) /
+                                (Math.max(Math.max(low, high), maxYBoundary) -
+                                    Math.min(
+                                        Math.min(low, high),
+                                        minYBoundary,
+                                    )) /
                                     6,
                             );
 
                             const domain = [
-                                Math.min(low, minYBoundary) - buffer,
-                                Math.max(high, maxYBoundary) + buffer / 2,
+                                Math.min(Math.min(low, high), minYBoundary) -
+                                    buffer,
+                                Math.max(Math.max(low, high), maxYBoundary) +
+                                    buffer / 2,
                             ];
 
                             scaleData?.yScale.domain(domain);
@@ -4192,8 +4203,8 @@ export default function Chart(props: propsIF) {
                         minYBoundary !== undefined
                     ) {
                         const buffer = Math.abs(
-                            (Math.max(high, maxYBoundary) -
-                                Math.min(low, minYBoundary)) /
+                            (Math.max(Math.max(low, high), maxYBoundary) -
+                                Math.min(Math.min(low, high), minYBoundary)) /
                                 6,
                         );
 
@@ -4315,8 +4326,14 @@ export default function Chart(props: propsIF) {
                                 minYBoundary !== undefined
                             ) {
                                 const buffer = Math.abs(
-                                    (Math.max(high, maxYBoundary) -
-                                        Math.min(low, minYBoundary)) /
+                                    (Math.max(
+                                        Math.max(low, high),
+                                        maxYBoundary,
+                                    ) -
+                                        Math.min(
+                                            Math.min(low, high),
+                                            minYBoundary,
+                                        )) /
                                         6,
                                 );
 
@@ -5272,8 +5289,8 @@ export default function Chart(props: propsIF) {
 
                     if (maxYBoundary && minYBoundary) {
                         const buffer = Math.abs(
-                            (Math.min(low, minYBoundary) -
-                                Math.max(high, maxYBoundary)) /
+                            (Math.min(Math.min(low, high), minYBoundary) -
+                                Math.max(Math.max(low, high), maxYBoundary)) /
                                 6,
                         );
 
