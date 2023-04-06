@@ -880,7 +880,45 @@ export default function Limit(props: propsIF) {
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
+    // logic to determine if a given token is acknowledged or on a list
+    const isTokenUnknown = (tkn: TokenIF): boolean => {
+        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
+        const isListed: boolean = verifyToken(tkn.address, chainId);
+        return !isAckd && !isListed;
+    };
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+
+    // token acknowledgement needed message (empty string if none needed)
+    const ackTokenMessage = useMemo<string>(() => {
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens "${tokenPair.dataTokenA.name}" and "${tokenPair.dataTokenA.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+        } else if (needConfirmTokenA) {
+            text = `The token "${tokenPair.dataTokenA.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+        } else if (needConfirmTokenB) {
+            text = `The token "${tokenPair.dataTokenB.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    console.log({ areBothAckd });
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        console.clear();
+        console.log('fired fn ackAsNeeded');
+        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+    };
+
     return (
         <FocusTrap
             focusTrapOptions={{
@@ -940,24 +978,30 @@ export default function Limit(props: propsIF) {
                         ) : showBypassConfirmButton ? (
                             <BypassLimitButton {...bypassLimitProps} />
                         ) : (
-                            <LimitButton
-                                onClickFn={
-                                    bypassConfirm.limit.isEnabled
-                                        ? handleLimitButtonClickWithBypass
-                                        : openModal
-                                }
-                                limitAllowed={
-                                    isOrderValid &&
-                                    poolPriceNonDisplay !== 0 &&
-                                    limitAllowed
-                                }
-                                limitButtonErrorMessage={
-                                    limitButtonErrorMessage
-                                }
-                                isBypassConfirmEnabled={
-                                    bypassConfirm.limit.isEnabled
-                                }
-                            />
+                            <>
+                                <LimitButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirm.limit.isEnabled
+                                                ? handleLimitButtonClickWithBypass
+                                                : openModal
+                                            : ackAsNeeded
+                                    }
+                                    limitAllowed={
+                                        isOrderValid &&
+                                        poolPriceNonDisplay !== 0 &&
+                                        limitAllowed
+                                    }
+                                    limitButtonErrorMessage={
+                                        limitButtonErrorMessage
+                                    }
+                                    isBypassConfirmEnabled={
+                                        bypassConfirm.limit.isEnabled
+                                    }
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && <p>{ackTokenMessage}</p>}
+                            </>
                         )
                     ) : (
                         loginButton
