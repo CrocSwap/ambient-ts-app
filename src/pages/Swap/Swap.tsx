@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
@@ -789,6 +789,41 @@ export default function Swap(props: propsIF) {
             </div>
         ) : null;
 
+    const isTokenUnknown = (tkn: TokenIF): boolean => {
+        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
+        const isListed: boolean = verifyToken(tkn.address, chainId);
+        return !isAckd && !isListed;
+    };
+
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+
+    const ackTokenMessage = useMemo<string>(() => {
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens "${tokenPair.dataTokenA.name}" and "${tokenPair.dataTokenA.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+        } else if (needConfirmTokenA) {
+            text = `The token "${tokenPair.dataTokenA.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+        } else if (needConfirmTokenB) {
+            text = `The token "${tokenPair.dataTokenB.name}" is not on any recognized list. Please click 'Acknowledge' to transact with this token.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    console.log({ areBothAckd });
+    console.log({ swapAllowed });
+
+    const ackAsNeeded = (): void => {
+        console.clear();
+        console.log('fired fn ackAsNeeded');
+        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+    };
+
     return (
         <FocusTrap
             focusTrapOptions={{
@@ -860,9 +895,12 @@ export default function Swap(props: propsIF) {
                                         // user has hide confirmation modal off
                                         <SwapButton
                                             onClickFn={
-                                                bypassConfirm.swap.isEnabled
-                                                    ? handleSwapButtonClickWithBypass
-                                                    : openModal
+                                                areBothAckd
+                                                    ? bypassConfirm.swap
+                                                          .isEnabled
+                                                        ? handleSwapButtonClickWithBypass
+                                                        : openModal
+                                                    : ackAsNeeded
                                             }
                                             swapAllowed={
                                                 swapAllowed &&
@@ -875,12 +913,16 @@ export default function Swap(props: propsIF) {
                                             bypassConfirmSwap={
                                                 bypassConfirm.swap
                                             }
+                                            areBothAckd={areBothAckd}
                                         />
                                     ) : (
                                         // user has hide confirmation modal on
                                         <BypassConfirmSwapButton
                                             {...confirmSwapModalProps}
                                         />
+                                    )}
+                                    {ackTokenMessage && (
+                                        <p>{ackTokenMessage}</p>
                                     )}
                                 </>
                             )
