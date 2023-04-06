@@ -38,7 +38,7 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
@@ -825,6 +825,10 @@ export default function Swap(props: propsIF) {
         }
         return text;
     }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
 
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
@@ -938,28 +942,41 @@ export default function Swap(props: propsIF) {
                                         />
                                     )}
                                     {ackTokenMessage && (
-                                        <p>{ackTokenMessage}</p>
+                                        <p
+                                            className={styles.acknowledge_text}
+                                            dangerouslySetInnerHTML={{
+                                                __html: formattedAckTokenMessage,
+                                            }}
+                                        ></p>
                                     )}
-                                    <a
-                                        href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenA.address}`}
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
+                                    <div
+                                        className={
+                                            styles.acknowledge_etherscan_links
+                                        }
                                     >
-                                        View{' '}
-                                        {tokenPair.dataTokenA.symbol ||
-                                            tokenPair.dataTokenA.name}{' '}
-                                        on Etherscan
-                                    </a>
-                                    <a
-                                        href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenB.address}`}
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                    >
-                                        View{' '}
-                                        {tokenPair.dataTokenB.symbol ||
-                                            tokenPair.dataTokenB.name}{' '}
-                                        on Etherscan
-                                    </a>
+                                        <a
+                                            href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenA.address}`}
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {/* View{' '} */}
+                                            {tokenPair.dataTokenA.symbol ||
+                                                tokenPair.dataTokenA.name}{' '}
+                                            <FiExternalLink />
+                                            {/* on Etherscan */}
+                                        </a>
+                                        <a
+                                            href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenB.address}`}
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {/* View{' '} */}
+                                            {tokenPair.dataTokenB.symbol ||
+                                                tokenPair.dataTokenB.name}{' '}
+                                            <FiExternalLink />
+                                            {/* on Etherscan */}
+                                        </a>
+                                    </div>
                                 </>
                             )
                         ) : (
