@@ -121,18 +121,14 @@ import { testTokenMap } from '../utils/data/testTokenMap';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
-import { getVolumeSeries } from './functions/getVolumeSeries';
-import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import { getLiquidityFee } from './functions/getLiquidityFee';
 import Analytics2 from '../pages/Analytics/Analytics2';
 import AnalyticsOverview from '../components/Analytics/AnalyticsOverview/AnalyticsOverview';
 import TopPools from '../components/Analytics/TopPools/TopPools';
@@ -198,6 +194,12 @@ const startMoralis = async () => {
 };
 
 startMoralis();
+
+// Create a new threaded worker instance
+import Worker from 'worker-loader!./worker';
+import { messageSendIF } from './worker';
+import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
+const worker = new Worker();
 
 /** ***** React Function *******/
 export default function App() {
@@ -1044,6 +1046,7 @@ export default function App() {
             if (sliderInput) sliderInput.value = '10';
         }
     };
+
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams && crocEnv) {
@@ -1116,322 +1119,240 @@ export default function App() {
                     setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
                 }
 
-                // retrieve pool liquidity provider fee
-
                 if (isServerEnabled && httpGraphCacheServerDomain) {
-                    getLiquidityFee(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                    )
-                        .then((liquidityFeeNum) => {
-                            if (liquidityFeeNum)
-                                dispatch(setLiquidityFee(liquidityFeeNum));
-                        })
-                        .catch(console.error);
+                    // ///////////////////////////////////////////////////////////////////////////////////////////////
+                    // ///////////////////////////// FIXME NOT IN WORKER /////////////////////////////////////////////
 
-                    // retrieve pool TVL series
-                    getTvlSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((tvlSeries) => {
-                            if (
-                                tvlSeries &&
-                                tvlSeries.base &&
-                                tvlSeries.quote &&
-                                tvlSeries.poolIdx &&
-                                tvlSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolTvlSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: tvlSeries.base,
-                                                    quote: tvlSeries.quote,
-                                                    poolIdx: tvlSeries.poolIdx,
-                                                    chainId: chainData.chainId,
-                                                },
-                                                tvlData: tvlSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
+                    Promise.all([
+                        cachedLiquidityQuery(
+                            // This is memoized in a special way, can offload, but it's at the liquidity level.
+                            chainData.chainId,
+                            sortedTokens[0].toLowerCase(),
+                            sortedTokens[1].toLowerCase(),
+                            chainData.poolIndex,
+                            lastBlockNumber,
+                        )
+                            .then((jsonData) => {
+                                dispatch(setLiquidity(jsonData));
+                            })
+                            .catch(console.error),
+                    ]).catch(console.error);
 
-                    // retrieve pool volume series
-                    getVolumeSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((volumeSeries) => {
-                            if (
-                                volumeSeries &&
-                                volumeSeries.base &&
-                                volumeSeries.quote &&
-                                volumeSeries.poolIdx &&
-                                volumeSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolVolumeSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: volumeSeries.base,
-                                                    quote: volumeSeries.quote,
-                                                    poolIdx:
-                                                        volumeSeries.poolIdx,
-                                                    chainId: chainData.chainId,
-                                                },
-                                                volumeData: volumeSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
+                    // ///////////////////////////////////////////////////////////////////////////////////////////////
+                    // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-                    // retrieve pool liquidity
+                    // Send a message to the worker with the necessary data to execute the API calls
+                    const sendBaseMessage = {
+                        sortedTokens,
+                        chainData,
+                        httpGraphCacheServerDomain,
+                        searchableTokens,
+                    } as messageSendIF;
 
-                    // const poolLiquidityCacheEndpoint =
-                    //     httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
+                    worker.postMessage(sendBaseMessage);
 
-                    cachedLiquidityQuery(
-                        chainData.chainId,
-                        sortedTokens[0].toLowerCase(),
-                        sortedTokens[1].toLowerCase(),
-                        chainData.poolIndex,
-                        lastBlockNumber,
-                    )
-                        .then((jsonData) => {
-                            dispatch(setLiquidity(jsonData));
-                        })
-                        .catch(console.error);
+                    // Listen for the worker response and handle the dispatches
+                    worker.addEventListener(
+                        'message',
+                        (event: MessageEvent) => {
+                            if (event.data.type === 'base') {
+                                const tvlSeries = event.data.tvlSeries;
+                                const volumeSeries = event.data.volumeSeries;
 
-                    // retrieve pool_positions
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                annotate: 'true', // token quantities
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolRangeData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
-                            if (poolPositions && crocEnv) {
-                                Promise.all(
-                                    poolPositions.map(
-                                        (position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        if (
-                                            JSON.stringify(
-                                                graphData.positionsByUser
-                                                    .positions,
-                                            ) !==
-                                            JSON.stringify(updatedPositions)
-                                        ) {
-                                            dispatch(
-                                                setPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                        }
-                                    })
-                                    .catch(console.error);
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain +
-                        '/annotated_pool_positions?';
-                    fetch(
-                        poolPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                                sortByAPY: 'true',
-                                n: '50',
-                                minPosAge: '86400', // restrict leaderboard to position > 1 day old
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const leaderboardPositions = json.data;
-
-                            if (leaderboardPositions && crocEnv) {
-                                Promise.all(
-                                    leaderboardPositions.map(
-                                        (position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        const top10Positions = updatedPositions
-                                            .filter(
-                                                (
-                                                    updatedPosition: PositionIF,
-                                                ) => {
-                                                    return (
-                                                        updatedPosition.isPositionInRange &&
-                                                        updatedPosition.apy !==
-                                                            0
-                                                    );
-                                                },
-                                            )
-                                            .slice(0, 10);
-                                        if (
-                                            JSON.stringify(
-                                                graphData.leaderboardByPool
-                                                    .positions,
-                                            ) !== JSON.stringify(top10Positions)
-                                        ) {
-                                            dispatch(
-                                                setLeaderboardByPool({
-                                                    dataReceived: true,
-                                                    positions: top10Positions,
-                                                }),
-                                            );
-                                        }
-                                    })
-                                    .catch(console.error);
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool recent changes
-                    fetchPoolRecentChanges({
-                        tokenList: searchableTokens,
-                        base: sortedTokens[0],
-                        quote: sortedTokens[1],
-                        poolIdx: chainData.poolIndex,
-                        chainId: chainData.chainId,
-                        annotate: true,
-                        addValue: true,
-                        simpleCalc: true,
-                        annotateMEV: false,
-                        ensResolution: true,
-                        n: 100,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool limit order states
-
-                    const poolLimitOrderStatesCacheEndpoint =
-                        httpGraphCacheServerDomain +
-                        '/pool_limit_order_states?';
-
-                    fetch(
-                        poolLimitOrderStatesCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolLimitOrderStates = json?.data;
-
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolOrderData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
-                            if (poolLimitOrderStates) {
-                                Promise.all(
-                                    poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderIF) => {
-                                            return getLimitOrderData(
-                                                limitOrder,
-                                                searchableTokens,
-                                            );
-                                        },
-                                    ),
-                                ).then((updatedLimitOrderStates) => {
+                                if (event.data.liquidityFeeNum) {
                                     dispatch(
-                                        setLimitOrdersByPool({
+                                        setLiquidityFee(
+                                            event.data.liquidityFeeNum,
+                                        ),
+                                    );
+                                }
+
+                                if (event.data.recentChanges) {
+                                    dispatch(
+                                        setChangesByPool({
                                             dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
+                                            changes: event.data.recentChanges,
                                         }),
                                     );
-                                });
+                                }
+
+                                if (
+                                    tvlSeries &&
+                                    tvlSeries.base &&
+                                    tvlSeries.quote &&
+                                    tvlSeries.poolIdx
+                                ) {
+                                    dispatch(
+                                        setPoolTvlSeries({
+                                            dataReceived: true,
+                                            pools: [
+                                                {
+                                                    dataReceived: true,
+                                                    pool: {
+                                                        base: tvlSeries.base,
+                                                        quote: tvlSeries.quote,
+                                                        poolIdx:
+                                                            tvlSeries.poolIdx,
+                                                        chainId:
+                                                            chainData.chainId,
+                                                    },
+                                                    tvlData: tvlSeries,
+                                                },
+                                            ],
+                                        }),
+                                    );
+                                }
+                                if (
+                                    volumeSeries &&
+                                    volumeSeries.base &&
+                                    volumeSeries.quote &&
+                                    volumeSeries.poolIdx
+                                ) {
+                                    dispatch(
+                                        setPoolVolumeSeries({
+                                            dataReceived: true,
+                                            pools: [
+                                                {
+                                                    dataReceived: true,
+                                                    pool: {
+                                                        base: volumeSeries.base,
+                                                        quote: volumeSeries.quote,
+                                                        poolIdx:
+                                                            volumeSeries.poolIdx,
+                                                        chainId:
+                                                            chainData.chainId,
+                                                    },
+                                                    volumeData: volumeSeries,
+                                                },
+                                            ],
+                                        }),
+                                    );
+                                }
+                            } else if (event.data.type === 'positions') {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolRangeData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+
+                                if (event.data.poolPositions && crocEnv) {
+                                    Promise.all(
+                                        event.data.poolPositions.map(
+                                            (position: PositionIF) => {
+                                                // NOTE: we cannot put anything with crocEnv in the worker.
+                                                return getPositionData(
+                                                    position,
+                                                    searchableTokens,
+                                                    crocEnv,
+                                                    chainData.chainId,
+                                                    lastBlockNumber,
+                                                );
+                                            },
+                                        ),
+                                    )
+                                        .then((updatedPositions) => {
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.positionsByUser
+                                                        .positions,
+                                                ) !==
+                                                JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setPositionsByPool({
+                                                        dataReceived: true,
+                                                        positions:
+                                                            updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        })
+                                        .catch(console.error);
+                                }
+                            } else if (event.data.type === 'leaderboard') {
+                                if (
+                                    event.data.leaderboardPositions &&
+                                    crocEnv
+                                ) {
+                                    Promise.all(
+                                        event.data.leaderboardPositions.map(
+                                            (position: PositionIF) => {
+                                                return getPositionData(
+                                                    position,
+                                                    searchableTokens,
+                                                    crocEnv,
+                                                    chainData.chainId,
+                                                    lastBlockNumber,
+                                                );
+                                            },
+                                        ),
+                                    )
+                                        .then((updatedPositions) => {
+                                            const top10Positions =
+                                                updatedPositions
+                                                    .filter(
+                                                        (
+                                                            updatedPosition: PositionIF,
+                                                        ) => {
+                                                            return (
+                                                                updatedPosition.isPositionInRange &&
+                                                                updatedPosition.apy !==
+                                                                    0
+                                                            );
+                                                        },
+                                                    )
+                                                    .slice(0, 10);
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.leaderboardByPool
+                                                        .positions,
+                                                ) !==
+                                                JSON.stringify(top10Positions)
+                                            ) {
+                                                dispatch(
+                                                    setLeaderboardByPool({
+                                                        dataReceived: true,
+                                                        positions:
+                                                            top10Positions,
+                                                    }),
+                                                );
+                                            }
+                                        })
+                                        .catch(console.error);
+                                }
+                            } else if (event.data.type === 'limits') {
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolOrderData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+
+                                if (event.data.poolLimitOrderStates) {
+                                    Promise.all(
+                                        event.data.poolLimitOrderStates.map(
+                                            (limitOrder: LimitOrderIF) => {
+                                                return getLimitOrderData(
+                                                    limitOrder,
+                                                    searchableTokens,
+                                                );
+                                            },
+                                        ),
+                                    ).then((updatedLimitOrderStates) => {
+                                        dispatch(
+                                            setLimitOrdersByPool({
+                                                dataReceived: true,
+                                                limitOrders:
+                                                    updatedLimitOrderStates,
+                                            }),
+                                        );
+                                    });
+                                }
                             }
-                        })
-                        .catch(console.error);
+                            ///
+                        },
+                    );
                 }
             }
         }
@@ -1463,15 +1384,18 @@ export default function App() {
         fetchCandles();
     }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
 
+    // eslint-disable-next-line
+    const disablethisone = true; // FIXME: ANOTHER CANIDATE FOR WORKER THREAD HERE.
     const fetchCandles = () => {
         if (
-            isServerEnabled &&
+            disablethisone &&
             baseTokenAddress &&
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
+            // ^^^^ SLOW X4
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
@@ -1510,7 +1434,7 @@ export default function App() {
                             } else if (candles) {
                                 if (
                                     JSON.stringify(candleData) !==
-                                    JSON.stringify(candles)
+                                    JSON.stringify(candles) //// FIXME THIS IS SLOW
                                 ) {
                                     setCandleData({
                                         pool: {
