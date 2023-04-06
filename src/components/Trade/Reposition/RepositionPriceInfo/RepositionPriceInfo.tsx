@@ -164,7 +164,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const apr = (
         <div className={styles.apr_display}>
-            <p>Est.APY</p>
+            <p>Est. APR </p>
             <p>{aprPercentageString}</p>
         </div>
     );
