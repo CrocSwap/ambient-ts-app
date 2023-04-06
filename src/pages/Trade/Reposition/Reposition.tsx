@@ -213,6 +213,10 @@ export default function Reposition(props: propsIF) {
     }, []);
 
     useEffect(() => {
+        setSimpleRangeWidth(10);
+    }, [position]);
+
+    useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
             setSimpleRangeWidth(simpleRangeWidth);
             setRangeWidthPercentage(simpleRangeWidth);
