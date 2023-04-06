@@ -306,7 +306,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -339,7 +338,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
