@@ -64,10 +64,14 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         </a>
     );
     return (
-        <div className={styles.transaction_submitted}>
+        <div
+            className={`${styles.transaction_submitted} ${
+                noAnimation && styles.noAnimation_submitted
+            }`}
+        >
             <div
                 style={{
-                    height: '180px',
+                    height: noAnimation ? 'auto' : '180px',
                 }}
             >
                 {!noAnimation && (
@@ -79,12 +83,16 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
 
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
-                    ? 'Limit Transaction Successfully Submitted'
+                    ? 'Limit Transaction Successfully Submitted.'
                     : range
-                    ? 'Range Transaction Successfully Submitted'
-                    : 'Swap Transaction Successfully Submitted'}
+                    ? 'Range Transaction Successfully Submitted.'
+                    : 'Swap Transaction Successfully Submitted.'}
             </h2>
-            <div className={styles.action_buttons}>
+            <div
+                className={`${styles.action_buttons} ${
+                    noAnimation && styles.bypass_buttons
+                }`}
+            >
                 {EthersanTx && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
                     ? null

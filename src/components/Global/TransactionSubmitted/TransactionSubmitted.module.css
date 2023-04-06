@@ -9,6 +9,10 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
+.noAnimation_submitted h2{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
 .transaction_submitted p a {
     cursor: pointer;
     text-decoration: none;
@@ -63,6 +67,12 @@
     align-items: center;
     gap: 4px;
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.bypass_buttons a, .bypass_buttons button{
+    padding: 3px 4px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 
 .view_etherscan:hover,
