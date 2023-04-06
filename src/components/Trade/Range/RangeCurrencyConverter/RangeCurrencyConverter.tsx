@@ -384,10 +384,12 @@ export default function RangeCurrencyConverter(props: propsIF) {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
         navigate(
-            '/trade/range/chain=0x5&tokenA=' +
-                tokenPair.dataTokenB.address +
+            '/trade/range/chain=' +
+                tokenPair.dataTokenA.chainId +
+                '&tokenA=' +
+                tokenPair.dataTokenA.address +
                 '&tokenB=' +
-                tokenPair.dataTokenA.address,
+                tokenPair.dataTokenB.address,
         );
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
     };

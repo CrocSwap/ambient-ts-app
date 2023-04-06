@@ -56,7 +56,6 @@ export default function InitPool(props: propsIF) {
         openModalWallet,
         isUserLoggedIn,
         crocEnv,
-
         tokenPair,
         tokenAAllowance,
         tokenBAllowance,
@@ -356,7 +355,9 @@ export default function InitPool(props: propsIF) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
-                            '/trade/range/chain=0x5&tokenA=' +
+                            '/trade/range/chain=' +
+                                tokenPair.dataTokenA.chainId +
+                                '&tokenA=' +
                                 baseAddr +
                                 '&tokenB=' +
                                 quoteAddr,
@@ -415,7 +416,9 @@ export default function InitPool(props: propsIF) {
             {poolExists && (
                 <Navigate
                     to={
-                        '/trade/market/chain=0x5&tokenA=' +
+                        '/trade/market/chain=' +
+                        tokenPair.dataTokenA.chainId +
+                        '&tokenA=' +
                         baseAddr +
                         '&tokenB=' +
                         quoteAddr
