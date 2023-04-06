@@ -239,14 +239,14 @@ export default function PositionBox(props: propsIF) {
                                 <div style={{ cursor: 'pointer' }}>
                                     <FiCopy
                                         size={19}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        color='text/grey light'
                                         onClick={handleCopyAddress}
                                     />
                                 </div>
                                 <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
                                         size={20}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        color='text/grey light'
                                     />
                                 </div>
                             </div>
@@ -256,7 +256,13 @@ export default function PositionBox(props: propsIF) {
                                 {sideType} Price
                             </div>
 
-                            <div className={styles.price}>
+                            <div
+                                className={
+                                    sideType === 'Buy'
+                                        ? styles.buy_price
+                                        : styles.sell_price
+                                }
+                            >
                                 {truncatedDisplayPrice}
                             </div>
                         </div>
