@@ -380,7 +380,6 @@ export default function Chart(props: propsIF) {
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [isCrosshairActive, setIsCrosshairActive] = useState<string>('chart');
 
-    const [crosshairHorizontal, setCrosshairHorizontal] = useState<crosshair>();
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
@@ -4589,25 +4588,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            const crosshairHorizontal = d3fc
-                .annotationSvgLine()
-                .orient('vertical')
-                .value((d: any) => d.x)
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .label('');
-
-            crosshairHorizontal.decorate((selection: any) => {
-                selection.enter().select('line').attr('class', 'crosshair');
-                selection.enter().style('visibility', 'hidden');
-                selection
-                    .enter()
-                    .append('line')
-                    .attr('stroke-width', 1)
-                    .attr('pointer-events', 'none');
-                selection.enter().select('g.top-handle').remove();
-            });
-
             const crosshairHorizontalCanvas = d3fc
                 .annotationCanvasLine()
                 .orient('vertical')
@@ -4621,10 +4601,6 @@ export default function Chart(props: propsIF) {
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 0.5;
-            });
-
-            setCrosshairHorizontal(() => {
-                return crosshairHorizontal;
             });
 
             setCrosshairHorizontalCanvas(() => {
@@ -5884,6 +5860,7 @@ export default function Chart(props: propsIF) {
         liquidityScale,
         liquidityDepthScale,
         showSidebar,
+        liqMode,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -6242,35 +6219,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    useEffect(() => {
-        if (
-            crosshairVertical !== undefined &&
-            crosshairHorizontal !== undefined
-        ) {
-            const crosshairHorizontalJoin = d3fc.dataJoin(
-                'g',
-                'crosshairHorizontal',
-            );
-
-            d3.select(d3PlotArea.current).on('draw', function () {
-                const svgFeeRateSub = d3
-                    .select('#fee_rate_chart')
-                    .select('svg');
-                const svgTvlSub = d3.select('#d3PlotTvl').select('svg');
-
-                if (svgFeeRateSub.node() !== null)
-                    crosshairHorizontalJoin(svgFeeRateSub, [
-                        crosshairData,
-                    ]).call(crosshairHorizontal);
-
-                if (svgTvlSub.node() !== null)
-                    crosshairHorizontalJoin(svgTvlSub, [crosshairData]).call(
-                        crosshairHorizontal,
-                    );
-            });
-        }
-    }, [crosshairData, scaleData]);
-
     const findTvlNearest = (point: any) => {
         const tvlData = parsedChartData?.tvlChartData;
         if (point == undefined) return 0;
@@ -6531,7 +6479,10 @@ export default function Chart(props: propsIF) {
                     setCrossHairLocation(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
-                    liqDataHover(event);
+
+                    if (liqMode !== 'none') {
+                        liqDataHover(event);
+                    }
 
                     const mousePlacement = scaleData?.yScale.invert(
                         event.offsetY,
@@ -6709,6 +6660,7 @@ export default function Chart(props: propsIF) {
             showVolume,
             showFeeRate,
             ghostLineValues,
+            liqMode,
         ],
     );
 
