@@ -2786,7 +2786,7 @@ export default function Chart(props: propsIF) {
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
             setRanges(() => {
-                const chartTargets = [
+                const newTargets = [
                     {
                         name: 'Min',
                         value: minPrice,
@@ -2796,9 +2796,10 @@ export default function Chart(props: propsIF) {
                         value: maxPrice,
                     },
                 ];
-                setLiqHighlightedLinesAndArea(chartTargets);
 
-                return chartTargets;
+                setLiqHighlightedLinesAndArea(newTargets);
+
+                return newTargets;
             });
 
             setTriangleRangeValues(maxPrice, minPrice);
@@ -3358,50 +3359,6 @@ export default function Chart(props: propsIF) {
                                     ? 100
                                     : rangeWidthPercentage,
                             ),
-                        );
-                    }
-
-                    const offset = rangeWidthPercentage * 100;
-
-                    const lowTick = currentPoolPriceTick - offset;
-                    const highTick = currentPoolPriceTick + offset;
-
-                    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                        denomInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        lowTick,
-                        highTick,
-                        lookupChain(chainId).gridSize,
-                    );
-
-                    const min =
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-                    const max =
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
-                    if (
-                        min &&
-                        min !== 'NaN' &&
-                        !isNaN(parseFloat(min)) &&
-                        max &&
-                        max !== 'NaN' &&
-                        !isNaN(parseFloat(max))
-                    ) {
-                        const rangesF = [
-                            {
-                                name: 'Min',
-                                value: min,
-                            },
-                            {
-                                name: 'Max',
-                                value: max,
-                            },
-                        ];
-
-                        setLiqHighlightedLinesAndArea(
-                            rangesF,
-                            true,
-                            rangeWidthPercentage,
                         );
                     }
 
