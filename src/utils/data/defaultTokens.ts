@@ -1,3 +1,6 @@
+import { TokenIF } from '../interfaces/TokenIF';
+import { ChainIdType } from './chains';
+
 export const ropstenETH = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 3,
@@ -159,7 +162,7 @@ export const arbGoerliDAI = {
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };
 
-export const defaultTokens = [
+export const defaultTokens: TokenIF[] = [
     ropstenETH,
     ropstenWBTC,
     ropstenDAI,
@@ -176,3 +179,22 @@ export const defaultTokens = [
     arbGoerliDAI,
     arbGoerliWBTC,
 ];
+
+export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
+    if (chainId in DEFAULT_PAIRS_BY_CHAIN) {
+        const lookup = DEFAULT_PAIRS_BY_CHAIN[chainId as ChainIdType];
+        return [lookup.A, lookup.B];
+    }
+
+    console.warn(
+        'No default pair found for chain ',
+        chainId,
+        ' defaulting to Goerli',
+    );
+    return [goerliETH, goerliUSDC];
+}
+
+const DEFAULT_PAIRS_BY_CHAIN = {
+    '0x5': { A: goerliUSDC, B: goerliETH },
+    '0x66eed': { A: arbGoerliUSDC, B: arbGoerliETH },
+};
