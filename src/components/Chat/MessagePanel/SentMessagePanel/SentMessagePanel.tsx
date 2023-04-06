@@ -84,9 +84,18 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     sethasSeparator(true);
                 }
             } else {
-                setShowAvatar(true);
-                setShowName(true);
-                sethasSeparator(true);
+                if (
+                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    props.message?.sender === props.nextMessage?.sender
+                ) {
+                    setShowAvatar(true);
+                    setShowName(true);
+                    sethasSeparator(false);
+                } else {
+                    setShowAvatar(true);
+                    setShowName(true);
+                    sethasSeparator(true);
+                }
             }
         } else {
             setShowAvatar(true);
