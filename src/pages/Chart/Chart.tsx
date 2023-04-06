@@ -103,11 +103,6 @@ type lineValue = {
     value: number;
 };
 
-type xAxisLabel = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    type: boolean;
-};
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;

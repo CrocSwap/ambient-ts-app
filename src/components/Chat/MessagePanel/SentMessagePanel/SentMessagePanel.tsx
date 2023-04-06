@@ -33,7 +33,7 @@ interface SentMessageProps {
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
-    const [hasSeparator, sethasSeparator] = useState(false);
+    const [hasSeparator, setHasSeparator] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
@@ -79,9 +79,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     nextCurrentDiffInMs < 10 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
                 ) {
-                    sethasSeparator(false);
+                    setHasSeparator(false);
                 } else {
-                    sethasSeparator(true);
+                    setHasSeparator(true);
                 }
             } else {
                 if (
@@ -90,11 +90,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 ) {
                     setShowAvatar(true);
                     setShowName(true);
-                    sethasSeparator(false);
+                    setHasSeparator(false);
                 } else {
                     setShowAvatar(true);
                     setShowName(true);
-                    sethasSeparator(true);
+                    setHasSeparator(true);
                 }
             }
         } else {
@@ -104,9 +104,9 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 nextCurrentDiffInMs < 10 * 60 * 1000 &&
                 props.nextMessage?.sender === props.message?.sender
             ) {
-                sethasSeparator(false);
+                setHasSeparator(false);
             } else {
-                sethasSeparator(true);
+                setHasSeparator(true);
             }
         }
     }, [props.message]);
