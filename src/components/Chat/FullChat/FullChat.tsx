@@ -134,8 +134,6 @@ export default function FullChat(props: FullChatPropsIF) {
         }
 
         if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
-
-        // handleDropdownMenu();
     }
 
     // eslint-disable-next-line
