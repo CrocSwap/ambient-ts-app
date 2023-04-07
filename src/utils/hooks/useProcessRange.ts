@@ -7,13 +7,14 @@ import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
+import { getChainExplorer } from '../data/chains';
 
 export const useProcessRange = (
     position: PositionIF,
     account: string,
     isOnPortfolioPage?: boolean,
 ) => {
-    const blockExplorer = 'https://goerli.etherscan.io/';
+    const blockExplorer = getChainExplorer(position.chainId);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

@@ -144,7 +144,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             }
             goToNewUrlParams(
                 locationSlug,
-                '0x5',
+                chainId,
                 tkn.address,
                 tokenPair.dataTokenB.address.toLowerCase() ===
                     tkn.address.toLowerCase()
@@ -163,7 +163,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             }
             goToNewUrlParams(
                 locationSlug,
-                '0x5',
+                chainId,
                 tokenPair.dataTokenA.address.toLowerCase() ===
                     tkn.address.toLowerCase()
                     ? tokenPair.dataTokenB.address

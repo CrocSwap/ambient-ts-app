@@ -459,7 +459,9 @@ export default function Trade(props: propsIF) {
     ]);
 
     const initLinkPath =
-        '/initpool/chain=0x5&tokenA=' +
+        '/initpool/chain=' +
+        chainId +
+        '&tokenA=' +
         baseTokenAddress +
         '&tokenB=' +
         quoteTokenAddress;

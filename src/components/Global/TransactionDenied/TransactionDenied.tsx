@@ -1,16 +1,6 @@
 import styles from './TransactionDenied.module.css';
-// import Animation from '../Animation/Animation';
-// import NotFound from '../../../assets/animations/NotFound.json';
 import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
 import Button from '../Button/Button';
-
-// interface TransactionSubmittedProps {
-//     hash: string;
-//     tokenBAddress: string;
-//     tokenBSymbol: string;
-//     tokenBDecimals: number;
-//     tokenBImage: string;
-// }
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;

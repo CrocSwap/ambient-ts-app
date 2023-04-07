@@ -173,6 +173,7 @@ import {
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolsMethodsIF, useTopPools } from './hooks/useTopPools';
@@ -360,9 +361,7 @@ export default function App() {
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
-    // `switchChain` is a function to switch to a different chain
-    // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+    const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
     // hook to manage top pools data
     const topPools: topPoolsMethodsIF = useTopPools(chainData.chainId);
@@ -1489,11 +1488,11 @@ export default function App() {
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
-                                chainId: '0x1',
+                                chainId: mktDataChainId(chainData.chainId),
                                 dex: 'all',
                                 poolStats: 'true',
                                 concise: 'true',
-                                poolStatsChainIdOverride: '0x5',
+                                poolStatsChainIdOverride: chainData.chainId,
                                 poolStatsBaseOverride:
                                     baseTokenAddress.toLowerCase(),
                                 poolStatsQuoteOverride:
@@ -1612,11 +1611,11 @@ export default function App() {
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
                 period: candleTimeLocal.toString(),
-                chainId: '0x1',
+                chainId: mktDataChainId(chainData.chainId),
                 dex: 'all',
                 poolStats: 'true',
                 concise: 'true',
-                poolStatsChainIdOverride: '0x5',
+                poolStatsChainIdOverride: chainData.chainId,
                 poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                 poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                 poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
@@ -1624,6 +1623,7 @@ export default function App() {
         [
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
+            chainData.chainId,
             chainData.poolIndex,
             candleTimeLocal,
         ],
@@ -1688,11 +1688,11 @@ export default function App() {
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
                     // page: '0', // nonnegative integer
-                    chainId: '0x1',
+                    chainId: mktDataChainId(chainData.chainId),
                     dex: 'all',
                     poolStats: 'true',
                     concise: 'true',
-                    poolStatsChainIdOverride: '0x5',
+                    poolStatsChainIdOverride: chainData.chainId,
                     poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                     poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
@@ -3088,10 +3088,10 @@ export default function App() {
         : 'content-container';
 
     const defaultUrlParams = {
-        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
-        market: `/trade/market/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        swap: `/swap/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
+        market: `/trade/market/${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        range: `/trade/range/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        limit: `/trade/limit/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };
 
     // KEYBOARD SHORTCUTS ROUTES

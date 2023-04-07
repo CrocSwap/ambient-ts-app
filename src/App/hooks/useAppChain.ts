@@ -1,11 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { validateChainId } from '../../utils/data/chains';
+import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
 
 export const useAppChain = (
-    defaultChain: string,
     isUserLoggedIn: boolean | undefined,
 ): [
     ChainSpec,
@@ -23,6 +22,7 @@ export const useAppChain = (
     const { chain } = useNetwork();
 
     const chainId = chain ? '0x' + chain.id.toString(16) : '';
+    const defaultChain = getDefaultChainId();
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter

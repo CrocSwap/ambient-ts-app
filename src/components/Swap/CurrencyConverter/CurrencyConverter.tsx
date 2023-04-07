@@ -257,7 +257,9 @@ export default function CurrencyConverter(props: propsIF) {
         }
         return (
             locationSlug +
-            '/chain=0x5&tokenA=' +
+            '/chain=' +
+            tokenPair.dataTokenA.chainId +
+            '&tokenA=' +
             tokenPair.dataTokenB.address +
             '&tokenB=' +
             tokenPair.dataTokenA.address

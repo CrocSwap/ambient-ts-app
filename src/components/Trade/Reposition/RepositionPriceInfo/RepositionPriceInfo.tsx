@@ -105,7 +105,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         position?.quoteDecimals || 18,
         lowTick,
         highTick,
-        lookupChain(position?.chainId || '0x5').gridSize,
+        lookupChain(position.chainId).gridSize,
     );
 
     const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;

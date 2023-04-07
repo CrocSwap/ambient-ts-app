@@ -1,6 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { goerliETH, goerliUSDC } from '../data/defaultTokens';
+import { getDefaultChainId, validateChainId } from '../data/chains';
+import { getDefaultPairForChain } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
 export interface targetData {
@@ -14,6 +15,7 @@ export interface candleDomain {
 }
 
 export interface tradeData {
+    chainId: string;
     tokenA: TokenIF;
     tokenB: TokenIF;
     baseToken: TokenIF;
@@ -50,11 +52,16 @@ export interface tradeData {
     mainnetQuoteTokenAddress: string;
 }
 
+const dfltChainId = getDefaultChainId();
+const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
+const dfltTokenB = getDefaultPairForChain(dfltChainId)[0];
+
 const initialState: tradeData = {
-    tokenA: goerliUSDC,
-    tokenB: goerliETH,
-    baseToken: goerliETH,
-    quoteToken: goerliUSDC,
+    chainId: getDefaultChainId(),
+    tokenA: getDefaultPairForChain(getDefaultChainId())[0],
+    tokenB: getDefaultPairForChain(getDefaultChainId())[1],
+    baseToken: dfltTokenA, // We sort these in the next line
+    quoteToken: dfltTokenB,
     isTokenABase: true,
     liquidityFee: 0,
     didUserFlipDenom: false,
@@ -90,53 +97,45 @@ const initialState: tradeData = {
     mainnetQuoteTokenAddress: '',
 };
 
+sortTokens(initialState);
+
+function sortTokens(state: tradeData) {
+    const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
+        state.tokenA.address,
+        state.tokenB.address,
+    );
+
+    if (state.tokenA.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
+        state.baseToken = state.tokenA;
+        state.quoteToken = state.tokenB;
+        state.isTokenABase = true;
+    } else {
+        state.baseToken = state.tokenB;
+        state.quoteToken = state.tokenA;
+        state.isTokenABase = false;
+    }
+}
+
 export const tradeDataSlice = createSlice({
     name: 'tradeData',
     initialState,
     reducers: {
+        setChainId: (state, action: PayloadAction<string>) => {
+            if (validateChainId(action.payload)) {
+                state.chainId = action.payload;
+                const pair = getDefaultPairForChain(state.chainId);
+                state.tokenA = pair[0];
+                state.tokenB = pair[1];
+                sortTokens(state);
+            }
+        },
         setTokenA: (state, action: PayloadAction<TokenIF>) => {
             state.tokenA = action.payload;
-            const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
-                action.payload.address,
-                state.tokenB.address,
-            );
-            if (
-                action.payload.address.toLowerCase() ===
-                baseTokenAddress.toLowerCase()
-            ) {
-                state.baseToken = action.payload;
-                state.quoteToken = state.tokenB;
-                state.isTokenABase = true;
-            } else if (
-                action.payload.address.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            ) {
-                state.quoteToken = action.payload;
-                state.baseToken = state.tokenB;
-                state.isTokenABase = false;
-            }
+            sortTokens(state);
         },
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
             state.tokenB = action.payload;
-            const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
-                action.payload.address,
-                state.tokenA.address,
-            );
-            if (
-                action.payload.address.toLowerCase() ===
-                baseTokenAddress.toLowerCase()
-            ) {
-                state.baseToken = action.payload;
-                state.quoteToken = state.tokenA;
-                state.isTokenABase = false;
-            } else if (
-                action.payload.address.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            ) {
-                state.quoteToken = action.payload;
-                state.baseToken = state.tokenA;
-                state.isTokenABase = true;
-            }
+            sortTokens(state);
         },
         setLiquidityFee: (state, action: PayloadAction<number>) => {
             state.liquidityFee = action.payload;
@@ -217,7 +216,7 @@ export const tradeDataSlice = createSlice({
             state.targetData = action.payload;
         },
         resetTokens: (state, action: PayloadAction<string>) => {
-            if (action.payload === '0x5') {
+            if (validateChainId(action.payload)) {
                 state.tokenA = initialState.tokenA;
                 state.tokenB = initialState.tokenB;
             }
@@ -271,6 +270,7 @@ export const tradeDataSlice = createSlice({
 export const {
     setTokenA,
     setTokenB,
+    setChainId,
     setLiquidityFee,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,

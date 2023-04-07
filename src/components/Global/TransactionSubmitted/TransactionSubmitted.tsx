@@ -5,6 +5,7 @@ import addTokenToWallet from './addTokenToWallet';
 import Button from '../../Global/Button/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
+import { getChainExplorer } from '../../../utils/data/chains';
 
 interface TransactionSubmittedProps {
     hash: string;
@@ -12,6 +13,7 @@ interface TransactionSubmittedProps {
     tokenBSymbol: string;
     tokenBDecimals: number;
     tokenBImage: string;
+    chainId: string | number;
     noAnimation?: boolean;
     limit?: boolean;
     range?: boolean;
@@ -27,8 +29,10 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         noAnimation,
         limit,
         range,
+        chainId,
     } = props;
-    const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+    const blockExploer = getChainExplorer(chainId);
+    const EthersanTx = `${blockExploer}/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;

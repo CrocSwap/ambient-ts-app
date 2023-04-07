@@ -245,7 +245,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
             // dispatch(reverseTokensInRTK());
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             navigate(
-                '/trade/limit/chain=0x5&tokenA=' +
+                '/trade/limit/chain=' +
+                    tokenPair.dataTokenA.chainId +
+                    '&tokenA=' +
                     tokenPair.dataTokenB.address +
                     '&tokenB=' +
                     tokenPair.dataTokenA.address,
