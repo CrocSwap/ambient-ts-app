@@ -5,6 +5,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface propsIF {
     tradeData: tradeData;
@@ -52,7 +53,7 @@ export default function RecentPoolsCard(props: propsIF) {
                 chainId,
                 pool.baseToken.address,
                 pool.quoteToken.address,
-                pool.poolId ?? 36000,
+                lookupChain(chainId).poolIndex,
                 Math.floor(lastBlockNumber / 4),
             );
             // display the total volume for all time

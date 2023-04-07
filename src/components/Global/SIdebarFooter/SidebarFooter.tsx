@@ -6,8 +6,9 @@ import { MdAccountBox } from 'react-icons/md';
 // import { IoMdAnalytics } from 'react-icons/io';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
-import { useUrlParams } from '../../../App/components/PageHeader/useUrlParams';
 import { BsFillChatDotsFill } from 'react-icons/bs';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+
 export default function SidebarFooter() {
     const location = useLocation();
 
@@ -18,8 +19,6 @@ export default function SidebarFooter() {
             ? styles.position_sticky
             : styles.position_absolute;
 
-    const { paramsSlug } = useUrlParams();
-
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'
         : location.pathname.includes('trade/limit')
@@ -29,6 +28,16 @@ export default function SidebarFooter() {
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
         : '/trade/market';
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const paramsSlug =
+        '/chain=' +
+        tradeData.chainId +
+        '&tokenA=' +
+        tradeData.tokenA.address +
+        '&tokenB=' +
+        tradeData.tokenB.address;
 
     const linksData = [
         { title: 'Home', destination: '/', icon: FaHome },

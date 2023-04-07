@@ -43,7 +43,7 @@ export const useRecentPools = (
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
         if (checkToken(baseToken) && checkToken(quoteToken)) {
-            addPool(chainId, baseToken, quoteToken);
+            addPool(baseToken, quoteToken);
         }
     }, [tokenA.address, tokenB.address]);
 
