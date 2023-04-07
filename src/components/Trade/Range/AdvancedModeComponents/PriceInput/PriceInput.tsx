@@ -34,7 +34,6 @@ export default function PriceInput(props: priceInputProps) {
             className={styles.price_quantity}
             type='text'
             onChange={(event) => handleChangeEvent(event)}
-            // onFocus={onFocus}
             onBlur={() => onBlur()}
             inputMode='decimal'
             autoComplete='off'
@@ -44,7 +43,6 @@ export default function PriceInput(props: priceInputProps) {
             pattern='^[0-9,]*[.]?[0-9]*$'
             placeholder='0.0'
             disabled={disable}
-            required
             aria-label={`${fieldId} price input quantity.`}
         />
     );
