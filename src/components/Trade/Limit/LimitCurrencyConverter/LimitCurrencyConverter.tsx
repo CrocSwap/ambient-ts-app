@@ -75,8 +75,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     // priceInputOnBlur: () => void;
     isDenominationInBase: boolean;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
     poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
@@ -143,8 +141,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setIsSaveAsDexSurplusChecked,
         // priceInputOnBlur,
         isDenominationInBase,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         poolExists,
         gasPriceInGwei,
 
@@ -589,10 +585,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={
-                    indicateActiveTokenListsChanged
-                }
                 gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
                 verifyToken={verifyToken}
@@ -667,10 +659,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={
-                        indicateActiveTokenListsChanged
-                    }
                     gasPriceInGwei={gasPriceInGwei}
                     isOrderCopied={isOrderCopied}
                     verifyToken={verifyToken}

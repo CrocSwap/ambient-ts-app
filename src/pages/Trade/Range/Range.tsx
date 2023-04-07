@@ -109,8 +109,6 @@ interface propsIF {
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
@@ -186,8 +184,6 @@ export default function Range(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainId,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
         dailyVol,
@@ -1380,8 +1376,6 @@ export default function Range(props: propsIF) {
         isOutOfRange: isOutOfRange,
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         tokenAInputQty: tokenAInputQty,
         tokenBInputQty: tokenBInputQty,
         isRangeCopied: isRangeCopied,

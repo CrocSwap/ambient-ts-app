@@ -70,8 +70,6 @@ interface propsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | undefined;
@@ -132,8 +130,6 @@ export default function Swap(props: propsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         openModalWallet,
         isInitialized,
         poolExists,
@@ -713,8 +709,6 @@ export default function Swap(props: propsIF) {
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setSwapAllowed: setSwapAllowed,
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         gasPriceInGwei: gasPriceInGwei,
         isSwapCopied: isSwapCopied,
         verifyToken: verifyToken,

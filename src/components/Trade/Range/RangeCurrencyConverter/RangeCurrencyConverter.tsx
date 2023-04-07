@@ -69,8 +69,6 @@ interface propsIF {
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
 
     isRangeCopied: boolean;
@@ -140,8 +138,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
@@ -796,8 +792,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
             tokenBSurplusMinusTokenBRemainderNum,
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         isRangeCopied: isRangeCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,

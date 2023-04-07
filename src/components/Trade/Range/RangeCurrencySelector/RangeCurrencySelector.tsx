@@ -65,9 +65,7 @@ interface propsIF {
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
     disable?: boolean;
-    activeTokenListsChanged: boolean;
     isRangeCopied: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -131,13 +129,9 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenBQtyCoveredBySurplusBalance,
         tokenASurplusMinusTokenARemainderNum,
         tokenBSurplusMinusTokenBRemainderNum,
-        // tokenASurplusMinusTokenAQtyNum,
-        // tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         handleChangeClick,
         isRangeCopied,
         verifyToken,
