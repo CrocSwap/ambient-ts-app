@@ -3829,7 +3829,6 @@ export default function Chart(props: propsIF) {
                 context.strokeStyle = 'rgba(235, 235, 255, 0.4)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 0.5;
-                context.lineDash = [0.6, 0.6];
             });
 
             const horizontalLine = d3fc
