@@ -217,8 +217,8 @@ export default function OrderRow(props: propsIF) {
     );
 
     function handleWalletCopy() {
-        setValueToCopy(ownerId);
-        copy(ownerId);
+        setValueToCopy(limitOrder.user);
+        copy(limitOrder.user);
 
         setOpenSnackbar(true);
     }
@@ -328,7 +328,7 @@ export default function OrderRow(props: propsIF) {
                             gap: '4px',
                         }}
                     >
-                        {ownerId}
+                        {limitOrder.user}
                         <FiCopy
                             size={'12px'}
                             onClick={() => handleWalletCopy()}
