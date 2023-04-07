@@ -8,13 +8,12 @@ import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchN
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
-import { useUrlParams } from './useUrlParams';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import { useAccount, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
@@ -111,10 +110,18 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
-    useUrlParamsNew(chainId, getTokenByAddress);
 
-    const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
+    useUrlParams(chainId, getTokenByAddress);
+
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const paramsSlug =
+        '/chain=' +
+        tradeData.chainId +
+        '&tokenA=' +
+        tradeData.tokenA.address +
+        '&tokenB=' +
+        tradeData.tokenB.address;
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
@@ -123,20 +130,10 @@ export default function PageHeader(props: HeaderPropsIF) {
     const quoteAddressInRtk = tradeData.quoteToken.address;
 
     useEffect(() => {
-        if (
-            baseAddr &&
-            baseAddressInRtk &&
-            quoteAddr &&
-            quoteAddressInRtk &&
-            baseAddr.toLowerCase() === baseAddressInRtk.toLowerCase() &&
-            quoteAddr.toLowerCase() === quoteAddressInRtk.toLowerCase()
-        ) {
-            recentPools.addPool({
-                baseToken: tradeData.baseToken,
-                quoteToken: tradeData.quoteToken,
-            });
+        if (baseAddressInRtk && quoteAddressInRtk) {
+            recentPools.addPool(tradeData.baseToken, tradeData.quoteToken);
         }
-    }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
+    }, [baseAddressInRtk, quoteAddressInRtk]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase

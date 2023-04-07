@@ -1,3 +1,4 @@
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
 import sortTokens from '../../utils/functions/sortTokens';
 import { TokenIF } from '../../utils/interfaces/exports';
@@ -6,11 +7,10 @@ import { ackTokensMethodsIF } from './useAckTokens';
 export interface SmallerPoolIF {
     baseToken: TokenIF;
     quoteToken: TokenIF;
-    poolId?: number;
 }
 
 export interface recentPoolsMethodsIF {
-    addPool: (pool: SmallerPoolIF) => void;
+    addPool: (tokenA: TokenIF, tokenB: TokenIF) => void;
     getPools: (count: number) => SmallerPoolIF[];
     resetPools: () => void;
 }
@@ -43,25 +43,41 @@ export const useRecentPools = (
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
         if (checkToken(baseToken) && checkToken(quoteToken)) {
-            addPool({ baseToken: baseToken, quoteToken: quoteToken });
+            addPool(chainId, baseToken, quoteToken);
         }
     }, [tokenA.address, tokenB.address]);
 
     // fn to add a token to the recentTokens array
-    function addPool(pool: SmallerPoolIF): void {
-        // remove the current pool from the list, if present
-        // this prevents duplicate entries
-        const recentPoolsWithNewRemoved = recentPools.filter(
-            (recentPool: SmallerPoolIF) =>
-                recentPool.baseToken.address.toLowerCase() !==
-                    pool.baseToken.address.toLowerCase() ||
-                recentPool.quoteToken.address.toLowerCase() !==
-                    pool.quoteToken.address.toLowerCase() ||
-                recentPool.baseToken.chainId !== pool.baseToken.chainId ||
-                recentPool.quoteToken.chainId !== pool.quoteToken.chainId,
+    function addPool(tokenA: TokenIF, tokenB: TokenIF): void {
+        const [baseTokenAddr, quoteTokenAddr] = sortBaseQuoteTokens(
+            tokenA.address,
+            tokenB.address,
         );
-        // add the current pool to the front of the list
-        setRecentPools([pool, ...recentPoolsWithNewRemoved]);
+
+        const [baseToken, quoteToken] =
+            baseTokenAddr === tokenA.address
+                ? [tokenA, tokenB]
+                : [tokenB, tokenA];
+        const nextPool = { baseToken: baseToken, quoteToken: quoteToken };
+
+        function poolMatches(pool: SmallerPoolIF) {
+            return (
+                pool.baseToken.address.toLowerCase() ===
+                    baseTokenAddr.toLowerCase() &&
+                pool.quoteToken.address.toLowerCase() ===
+                    quoteTokenAddr.toLowerCase() &&
+                pool.baseToken.chainId !== baseToken.chainId
+            );
+        }
+
+        if (recentPools.length == 0) {
+            setRecentPools([nextPool]);
+        } else if (poolMatches(recentPools[0])) {
+            // Do nothing because front matches
+        } else {
+            const removed = recentPools.filter((pool) => !poolMatches(pool));
+            setRecentPools([nextPool, ...removed]);
+        }
     }
 
     // fn to return recent pools from local state
