@@ -2722,6 +2722,7 @@ export default function App() {
             repo: bypassConfirmRepo,
         },
         ackTokens: ackTokens,
+        chainData: chainData,
     };
 
     // props for <Swap/> React element on trade route
@@ -2782,6 +2783,7 @@ export default function App() {
             repo: bypassConfirmRepo,
         },
         ackTokens: ackTokens,
+        chainData: chainData,
     };
 
     // props for <Limit/> React element on trade route
@@ -2924,6 +2926,7 @@ export default function App() {
         },
         ackTokens: ackTokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
+        chainData: chainData,
     };
 
     function toggleSidebar() {

@@ -3,7 +3,7 @@ import { useState, Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -109,6 +109,7 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     bypassConfirm: allSkipConfirmMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    chainData: ChainSpec;
 }
 
 export default function Swap(props: propsIF) {
@@ -157,6 +158,7 @@ export default function Swap(props: propsIF) {
         dexBalancePrefs,
         bypassConfirm,
         ackTokens,
+        chainData,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -949,28 +951,38 @@ export default function Swap(props: propsIF) {
                                             styles.acknowledge_etherscan_links
                                         }
                                     >
-                                        <a
-                                            href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenA.address}`}
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                        >
-                                            {/* View{' '} */}
-                                            {tokenPair.dataTokenA.symbol ||
-                                                tokenPair.dataTokenA.name}{' '}
-                                            <FiExternalLink />
-                                            {/* on Etherscan */}
-                                        </a>
-                                        <a
-                                            href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenB.address}`}
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                        >
-                                            {/* View{' '} */}
-                                            {tokenPair.dataTokenB.symbol ||
-                                                tokenPair.dataTokenB.name}{' '}
-                                            <FiExternalLink />
-                                            {/* on Etherscan */}
-                                        </a>
+                                        {needConfirmTokenA && (
+                                            <a
+                                                href={
+                                                    chainData.blockExplorer +
+                                                    'token/' +
+                                                    tokenPair.dataTokenA.address
+                                                }
+                                                rel={'noopener noreferrer'}
+                                                target='_blank'
+                                            >
+                                                {tokenPair.dataTokenA.symbol ||
+                                                    tokenPair.dataTokenA
+                                                        .name}{' '}
+                                                <FiExternalLink />
+                                            </a>
+                                        )}
+                                        {needConfirmTokenB && (
+                                            <a
+                                                href={
+                                                    chainData.blockExplorer +
+                                                    'token/' +
+                                                    tokenPair.dataTokenB.address
+                                                }
+                                                rel={'noopener noreferrer'}
+                                                target='_blank'
+                                            >
+                                                {tokenPair.dataTokenB.symbol ||
+                                                    tokenPair.dataTokenB
+                                                        .name}{' '}
+                                                <FiExternalLink />
+                                            </a>
+                                        )}
                                     </div>
                                 </>
                             )

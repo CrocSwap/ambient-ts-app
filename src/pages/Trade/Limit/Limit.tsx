@@ -1008,26 +1008,38 @@ export default function Limit(props: propsIF) {
                                     areBothAckd={areBothAckd}
                                 />
                                 {ackTokenMessage && <p>{ackTokenMessage}</p>}
-                                <a
-                                    href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenA.address}`}
-                                    rel={'noopener noreferrer'}
-                                    target='_blank'
-                                >
-                                    View{' '}
-                                    {tokenPair.dataTokenA.symbol ||
-                                        tokenPair.dataTokenA.name}{' '}
-                                    on Etherscan
-                                </a>
-                                <a
-                                    href={`https://goerli.etherscan.io/token/${tokenPair.dataTokenB.address}`}
-                                    rel={'noopener noreferrer'}
-                                    target='_blank'
-                                >
-                                    View{' '}
-                                    {tokenPair.dataTokenB.symbol ||
-                                        tokenPair.dataTokenB.name}{' '}
-                                    on Etherscan
-                                </a>
+                                {needConfirmTokenA && (
+                                    <a
+                                        href={
+                                            chainData.blockExplorer +
+                                            'token/' +
+                                            tokenPair.dataTokenA.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                    >
+                                        View{' '}
+                                        {tokenPair.dataTokenA.symbol ||
+                                            tokenPair.dataTokenA.name}{' '}
+                                        on Etherscan
+                                    </a>
+                                )}
+                                {needConfirmTokenB && (
+                                    <a
+                                        href={
+                                            chainData.blockExplorer +
+                                            'token/' +
+                                            tokenPair.dataTokenB.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                    >
+                                        View{' '}
+                                        {tokenPair.dataTokenB.symbol ||
+                                            tokenPair.dataTokenB.name}{' '}
+                                        on Etherscan
+                                    </a>
+                                )}
                             </>
                         )
                     ) : (
