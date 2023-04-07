@@ -44,7 +44,6 @@ export default function EditPriceInput(props: EditPriceInputProps) {
             pattern='^[0-9]*[.,]?[0-9]*$'
             placeholder='0.00'
             disabled={disable}
-            required
             defaultValue={convertedValue}
         />
     );
