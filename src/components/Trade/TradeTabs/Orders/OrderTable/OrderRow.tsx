@@ -241,11 +241,12 @@ export default function OrderRow(props: propsIF) {
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
+
                         fontFamily: 'monospace',
 
                         whiteSpace: 'nowrap',
-                        width: '450px',
+                        width: '440px',
 
                         display: 'flex',
                         alignItems: 'center',
@@ -253,7 +254,10 @@ export default function OrderRow(props: propsIF) {
                     }}
                 >
                     {posHash}
-                    <FiCopy onClick={handleCopyPosHash} />
+                    <FiCopy
+                        style={{ cursor: 'pointer' }}
+                        onClick={handleCopyPosHash}
+                    />
                 </p>
             }
             placement={'right'}
@@ -312,7 +316,7 @@ export default function OrderRow(props: propsIF) {
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
 
                         // width: '450px',
                     }}
@@ -330,11 +334,13 @@ export default function OrderRow(props: propsIF) {
                     >
                         {limitOrder.user}
                         <FiCopy
+                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={() => handleWalletCopy()}
                         />
 
                         <FiExternalLink
+                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={handleWalletLinkClick}
                         />

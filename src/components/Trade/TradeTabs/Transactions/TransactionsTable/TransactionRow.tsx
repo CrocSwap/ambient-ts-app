@@ -252,15 +252,20 @@ export default function TransactionRow(props: propsIF) {
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
                         fontFamily: 'monospace',
                         whiteSpace: 'nowrap',
                         width: '460px',
                     }}
                 >
                     {txHash + 'ㅤ'}
-                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+                    <FiCopy
+                        size={'12px'}
+                        onClick={handleCopyTxHash}
+                        style={{ cursor: 'pointer' }}
+                    />{' '}
                     <FiExternalLink
+                        style={{ cursor: 'pointer' }}
                         size={'12px'}
                         onClick={handleOpenExplorer}
                     />
@@ -326,7 +331,7 @@ export default function TransactionRow(props: propsIF) {
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
 
                         // width: '450px',
                     }}
@@ -344,11 +349,13 @@ export default function TransactionRow(props: propsIF) {
                     >
                         {ownerId}
                         <FiCopy
+                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={() => handleWalletCopy()}
                         />
 
                         <FiExternalLink
+                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={handleWalletClick}
                         />
