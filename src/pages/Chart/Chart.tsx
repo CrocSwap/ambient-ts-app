@@ -3128,6 +3128,7 @@ export default function Chart(props: propsIF) {
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
+                    const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
                     const limitNonDisplay = denomInBase
                         ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
@@ -3135,7 +3136,6 @@ export default function Chart(props: propsIF) {
 
                     limitNonDisplay?.then((limit) => {
                         limit = limit !== 0 ? limit : 1;
-
                         const pinnedTick: number = isTokenABase
                             ? pinTickLower(limit, chainData.gridSize)
                             : pinTickUpper(limit, chainData.gridSize);
@@ -3173,14 +3173,22 @@ export default function Chart(props: propsIF) {
                                 setghostLineValuesLimit(adjTicks(limitValue));
 
                                 newLimitValue = limitValue;
-
-                                setLimit(() => {
-                                    return [
-                                        { name: 'Limit', value: limitValue },
-                                    ];
-                                });
-
-                                setTriangleLimitValues(limitValue);
+                                if (
+                                    !(
+                                        newLimitValue >= noGoZoneMin &&
+                                        newLimitValue <= noGoZoneMax
+                                    )
+                                ) {
+                                    setLimit(() => {
+                                        return [
+                                            {
+                                                name: 'Limit',
+                                                value: limitValue,
+                                            },
+                                        ];
+                                    });
+                                    setTriangleLimitValues(limitValue);
+                                }
                             });
                         }
                     });
