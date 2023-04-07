@@ -110,8 +110,6 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    useUrlParams(chainId);
-
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const paramsSlug =

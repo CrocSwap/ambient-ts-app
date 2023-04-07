@@ -157,7 +157,7 @@ export default function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId);
+    useUrlParams(chainId, provider);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented

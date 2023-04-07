@@ -11,6 +11,10 @@ import {
 } from '../state/tradeDataSlice';
 import { TokenIF } from '../interfaces/exports';
 import { useTokenMap } from './useTokenMap';
+import { useToken } from '../../App/hooks/useToken';
+import { ethers } from 'ethers';
+import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
+import { useProvider } from 'wagmi';
 
 export interface UrlParams {
     chainId?: string;
@@ -18,7 +22,10 @@ export interface UrlParams {
     tokenB?: TokenIF;
 }
 
-export const useUrlParams = (dfltChainId: string) => {
+export const useUrlParams = (
+    dfltChainId: string,
+    provider?: ethers.providers.Provider,
+) => {
     const tokenMetaMap = useTokenMap();
     const { params } = useParams();
 
@@ -47,19 +54,50 @@ export const useUrlParams = (dfltChainId: string) => {
 
     const paramStruct: UrlParams = {};
 
-    function processOptParam(
+    async function processOptParam(
         paramName: string,
-        processFn: (val: string) => void,
-    ) {
+        processFn: (val: string) => Promise<void>,
+    ): Promise<void> {
         if (urlParamMap.has(paramName)) {
             const paramVal = urlParamMap.get(paramName) as string;
-            processFn(paramVal);
+            await processFn(paramVal);
         }
     }
 
-    function getTokenByAddress(addr: string, chainId: string) {
+    async function getTokenByAddress(
+        addr: string,
+        chainId: string,
+    ): Promise<TokenIF | undefined> {
+        // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
+        // on-chain that has mapped data
+        if (tokenMetaMap.size == 0) {
+            return;
+        }
+
         const key = addr.toLowerCase() + '_' + chainId.toLowerCase();
-        return tokenMetaMap.get(key);
+        const lookup = tokenMetaMap.get(key);
+        if (lookup) {
+            return lookup;
+        } else {
+            const provider = inflateProvider(chainId);
+            if (provider) {
+                return fetchContractDetails(provider, addr, chainId);
+            }
+        }
+    }
+
+    function inflateProvider(chainId: string) {
+        if (!provider) {
+            provider = useProvider({ chainId: parseInt(chainId) });
+            if (!provider) {
+                console.warn(
+                    'Cannot set provider to lookup token address on chain',
+                    chainId,
+                );
+                return undefined;
+            }
+        }
+        return provider;
     }
 
     const dependencies = [
@@ -72,39 +110,39 @@ export const useUrlParams = (dfltChainId: string) => {
     ];
 
     useEffect(() => {
-        processOptParam('chainId', (chainId: string) => {
+        console.log('Token map size', tokenMetaMap.size);
+        processOptParam('chainId', async (chainId: string) => {
             dispatch(setChainId(chainId));
             paramStruct.chainId = chainId;
         });
-        const chainToUse = paramStruct.chainId
-            ? paramStruct.chainId
-            : dfltChainId;
 
-        processOptParam('tokenA', (addr: string) => {
-            const tokenData = getTokenByAddress(addr, chainToUse);
+        const chainToUse = urlParamMap.get('chainId') || dfltChainId;
+
+        processOptParam('tokenA', async (addr: string) => {
+            const tokenData = await getTokenByAddress(addr, chainToUse);
             if (tokenData) {
                 dispatch(setTokenA(tokenData));
                 paramStruct.tokenA = tokenData;
             }
         });
 
-        processOptParam('tokenB', (addr: string) => {
-            const tokenData = getTokenByAddress(addr, chainToUse);
+        processOptParam('tokenB', async (addr: string) => {
+            const tokenData = await getTokenByAddress(addr, chainToUse);
             if (tokenData) {
                 dispatch(setTokenB(tokenData));
                 paramStruct.tokenB = tokenData;
             }
         });
 
-        processOptParam('lowTick', (tick: string) => {
+        processOptParam('lowTick', async (tick: string) => {
             dispatch(setAdvancedLowTick(parseInt(tick)));
         });
 
-        processOptParam('highTick', (tick: string) => {
+        processOptParam('highTick', async (tick: string) => {
             dispatch(setAdvancedHighTick(parseInt(tick)));
         });
 
-        processOptParam('limitTick', (tick: string) => {
+        processOptParam('limitTick', async (tick: string) => {
             dispatch(setLimitTick(parseInt(tick)));
         });
     }, [tokenMetaMap.size, ...dependencies.map((x) => urlParamMap.get(x))]);

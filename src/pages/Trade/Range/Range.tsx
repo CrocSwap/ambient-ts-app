@@ -231,7 +231,7 @@ export default function Range(props: propsIF) {
     const [isAmbient, setIsAmbient] = useState(false);
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId);
+    useUrlParams(chainId, provider);
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need

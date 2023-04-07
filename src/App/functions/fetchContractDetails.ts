@@ -35,12 +35,13 @@ export const fetchContractDetails = async (
     let decimals,
         symbol,
         name = undefined;
+
     try {
         decimals = await contract.decimals();
         symbol = await contract.symbol();
         name = await contract.name();
     } catch (error) {
-        console.error({ error });
+        console.warn({ error });
     }
 
     return {

@@ -175,7 +175,7 @@ export default function Limit(props: propsIF) {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
-    useUrlParams(chainId);
+    useUrlParams(chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
