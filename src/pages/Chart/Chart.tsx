@@ -675,261 +675,38 @@ export default function Chart(props: propsIF) {
     };
 
     const sameLocationRange = () => {
-        let isSameLocationMin = false;
-        let sameLocationDataMin = 0;
-        let isSameLocationMax = false;
-        let sameLocationDataMax = 0;
-
         const low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
         const high = ranges.filter((target: any) => target.name === 'Max')[0]
             .value;
-        const marketValue = market[0].value;
 
-        const differenceLowHigh =
-            scaleData?.yScale(low) - scaleData?.yScale(high);
-        const differenceLowMarket =
-            scaleData?.yScale(low) - scaleData?.yScale(marketValue);
-        const differenceHighMarket =
-            scaleData?.yScale(high) - scaleData?.yScale(marketValue);
+        if (high >= low) {
+            const resultData = scaleData?.yScale(low) - scaleData?.yScale(high);
+            const resultLocationData = resultData < 0 ? -20 : 20;
+            const isSameLocation = Math.abs(resultData) < 20;
+            const sameLocationData =
+                scaleData?.yScale(high) + resultLocationData;
 
-        const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 30;
-        const differenceLowHighData = differenceLowHigh <= 0 ? -20 : 20;
-
-        const isSameLocationLowMarket = Math.abs(differenceLowMarket) <= 20;
-        const differenceLowMarketData = differenceLowMarket <= 0 ? -20 : 20;
-
-        const isSameLocationHighMarket = Math.abs(differenceHighMarket) <= 20;
-
-        const differenceHighMarketData = differenceHighMarket <= 0 ? -20 : 20;
-
-        if (high > low) {
-            if (marketValue > low && marketValue < high) {
-                isSameLocationMax = isSameLocationHighMarket;
-                isSameLocationMin = isSameLocationLowMarket;
-                if (isSameLocationHighMarket) {
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-                }
-
-                if (isSameLocationLowMarket) {
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData;
-                }
-
-                if (differenceHighMarketData === differenceLowMarketData) {
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) -
-                        differenceHighMarketData;
-                }
-            } else if (low > marketValue && high > marketValue) {
-                isSameLocationMax =
-                    isSameLocationHighMarket || isSameLocationLowHigh;
-                isSameLocationMin = isSameLocationLowMarket;
-
-                if (isSameLocationLowHigh) {
-                    sameLocationDataMax =
-                        scaleData?.yScale(low) - differenceLowHighData;
-                }
-                if (isSameLocationHighMarket) {
-                    sameLocationDataMax =
-                        scaleData?.yScale(low) + differenceLowHighData;
-                }
-
-                if (isSameLocationLowMarket) {
-                    isSameLocationMin = true;
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData;
-                }
-
-                if (isSameLocationLowHigh && isSameLocationLowMarket) {
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData * 2;
-
-                    if (differenceHighMarketData === differenceLowMarketData) {
-                        sameLocationDataMax =
-                            scaleData?.yScale(marketValue) +
-                            differenceHighMarketData * 2;
-                    }
-                }
-            } else if (low < marketValue && high < marketValue) {
-                isSameLocationMax = isSameLocationHighMarket;
-                isSameLocationMin =
-                    isSameLocationLowHigh || isSameLocationLowMarket;
-
-                if (isSameLocationLowHigh) {
-                    sameLocationDataMin =
-                        scaleData?.yScale(high) + differenceLowHighData;
-                }
-
-                if (isSameLocationHighMarket) {
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-                }
-
-                if (isSameLocationLowHigh && isSameLocationHighMarket) {
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData +
-                        differenceLowHighData;
-
-                    if (differenceHighMarket === 0) {
-                        sameLocationDataMax =
-                            scaleData?.yScale(marketValue) -
-                            differenceHighMarketData;
-                        sameLocationDataMin =
-                            scaleData?.yScale(marketValue) -
-                            differenceHighMarketData * 2;
-                    }
-
-                    if (differenceHighMarket === differenceLowMarket) {
-                        sameLocationDataMax =
-                            scaleData?.yScale(marketValue) -
-                            (differenceLowMarket === 0
-                                ? differenceHighMarketData
-                                : -differenceHighMarketData);
-
-                        sameLocationDataMin =
-                            scaleData?.yScale(marketValue) -
-                            (differenceLowMarket === 0
-                                ? differenceHighMarketData * 2
-                                : -(differenceHighMarketData * 2));
-                    }
-                }
-            }
-        } else if (low > high) {
-            if (marketValue > low && marketValue > high) {
-                if (isSameLocationLowHigh) {
-                    isSameLocationMax = true;
-                    sameLocationDataMax =
-                        scaleData?.yScale(low) - differenceLowHighData;
-                }
-
-                if (isSameLocationLowMarket) {
-                    isSameLocationMin = true;
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData;
-                }
-
-                if (isSameLocationLowMarket && isSameLocationLowHigh) {
-                    isSameLocationMax = true;
-                    isSameLocationMin = true;
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData;
-
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData -
-                        differenceLowHighData;
-                }
-            }
-
-            if (marketValue < low && marketValue > high) {
-                if (isSameLocationLowMarket) {
-                    isSameLocationMin = true;
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData;
-                }
-
-                if (isSameLocationHighMarket) {
-                    isSameLocationMax = true;
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-                }
-            }
-
-            if (marketValue < low && marketValue < high) {
-                if (isSameLocationLowHigh) {
-                    isSameLocationMin = true;
-                    sameLocationDataMin =
-                        scaleData?.yScale(high) + differenceLowHighData;
-                }
-
-                if (isSameLocationHighMarket) {
-                    isSameLocationMax = true;
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-                }
-                if (isSameLocationHighMarket && isSameLocationLowHigh) {
-                    isSameLocationMax = true;
-                    isSameLocationMin = true;
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData +
-                        differenceLowHighData;
-                }
-            }
+            return {
+                isSameLocationMin: isSameLocation,
+                sameLocationDataMin: sameLocationData,
+                isSameLocationMax: false,
+                sameLocationDataMax: 0,
+            };
         } else {
-            if (marketValue < low && marketValue < high) {
-                isSameLocationMax = true;
-                sameLocationDataMax =
-                    scaleData?.yScale(low) - differenceLowHighData;
+            const resultData = scaleData?.yScale(low) - scaleData?.yScale(high);
+            const resultLocationData = resultData < 0 ? -20 : 20;
+            const isSameLocation = Math.abs(resultData) < 20;
+            const sameLocationData =
+                scaleData?.yScale(low) - resultLocationData;
 
-                if (isSameLocationHighMarket || isSameLocationLowMarket) {
-                    isSameLocationMin = true;
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData;
-
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceLowMarketData * 2;
-                }
-            }
-
-            if (marketValue > low && marketValue > high) {
-                isSameLocationMin = true;
-                sameLocationDataMin =
-                    scaleData?.yScale(high) + differenceLowHighData;
-
-                if (isSameLocationLowMarket || differenceLowMarket < 35) {
-                    isSameLocationMax = true;
-                    sameLocationDataMax =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData;
-
-                    sameLocationDataMin =
-                        scaleData?.yScale(marketValue) +
-                        differenceHighMarketData * 2;
-                }
-            }
-
-            if (low === marketValue) {
-                isSameLocationMin = true;
-                isSameLocationMax = true;
-
-                sameLocationDataMax =
-                    scaleData?.yScale(marketValue) - differenceHighMarketData;
-
-                sameLocationDataMin =
-                    scaleData?.yScale(marketValue) + differenceHighMarketData;
-            }
+            return {
+                isSameLocationMin: false,
+                sameLocationDataMin: 0,
+                isSameLocationMax: isSameLocation,
+                sameLocationDataMax: sameLocationData,
+            };
         }
-
-        return {
-            isSameLocationMin: isSameLocationMin,
-            sameLocationDataMin: sameLocationDataMin,
-            isSameLocationMax: isSameLocationMax,
-            sameLocationDataMax: sameLocationDataMax,
-        };
     };
 
     async function getXAxisTick() {
