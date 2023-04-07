@@ -182,13 +182,15 @@ export const useSortedPositions = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // TODO: new user positions reset table sort, new pool positions retains sort
+    // Generates a fingerprint from the positions objects. Used for comparison
+    // in below React hook
+    const posFingerprint = positions.map((pos) => pos.positionId).join('|');
 
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
         const poss = sortData(positions);
         return poss;
-    }, [sortBy, reverseSort, JSON.stringify(positions)]); // fix failure to refresh rows when data changes
+    }, [sortBy, reverseSort, posFingerprint]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };
