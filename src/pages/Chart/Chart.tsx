@@ -3725,18 +3725,14 @@ export default function Chart(props: propsIF) {
 
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         const _width = 65; // magic number of pixels to blur surrounding price
-
+        const tickSize = 6;
         getXAxisTick().then((res) => {
             const _res = res.map((item: any) => item.date);
 
-            xAxis.tickValues([
-                ..._res,
-                ...(isMouseMoveCrosshair ? [crosshairData[0].x] : []),
-            ]);
+            xAxis.tickValues([..._res]);
 
             xAxis.tickValues().forEach((d: any) => {
                 if (d instanceof Date) {
-                    const tickSize = 6;
                     let formatValue = undefined;
                     context.textAlign = 'center';
                     context.textBaseline = 'top';
@@ -3765,17 +3761,6 @@ export default function Chart(props: propsIF) {
                                 : moment(d).format('MMM');
                     }
 
-                    if (d === crosshairData[0].x) {
-                        context.font = 'bold 12.5px Arial';
-                        if (parsedChartData?.period === 86400) {
-                            formatValue = moment(d)
-                                .subtract(utcDiffHours, 'hours')
-                                .format('MMM DD YYYY');
-                        } else {
-                            formatValue = moment(d).format('MMM DD HH:mm');
-                        }
-                    }
-
                     if (
                         isMouseMoveCrosshair &&
                         xScale(d) > xScale(crosshairData[0].x) - _width &&
@@ -3800,6 +3785,29 @@ export default function Chart(props: propsIF) {
                     context.restore();
                 }
             });
+
+            let dateCrosshair;
+            context.font = '800 13px Arial';
+            if (parsedChartData?.period === 86400) {
+                dateCrosshair = moment(crosshairData[0].x)
+                    .subtract(utcDiffHours, 'hours')
+                    .format('MMM DD YYYY');
+            } else {
+                dateCrosshair = moment(crosshairData[0].x).format(
+                    'MMM DD HH:mm',
+                );
+            }
+
+            context.beginPath();
+            if (dateCrosshair) {
+                context.fillText(
+                    dateCrosshair,
+                    xScale(crosshairData[0].x),
+                    Y + tickSize,
+                );
+            }
+
+            context.restore();
         });
     };
 
