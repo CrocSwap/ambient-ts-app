@@ -254,7 +254,7 @@ export default function Portfolio(props: propsIF) {
                         .allowance(connectedAccount);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 setRecheckTokenAllowance(false);
             }
