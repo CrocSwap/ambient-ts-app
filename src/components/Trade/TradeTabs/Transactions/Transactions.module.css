@@ -296,6 +296,20 @@
     border: 1px solid var(--text-grey-white)
 }
 
+
+.id_tooltip_style{
+margin-left: -40px;
+background: var(--dark3);
+color: var(--text-grey-white);
+padding: 12px;
+border-radius: 4px;
+cursor: pointer;
+font-family: monospace;
+white-space: nowrap;
+width: 450px;
+    
+}
+
 @media only screen and (max-width: 768px) {
 
     .view_wallet_link p{

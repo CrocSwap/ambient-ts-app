@@ -22,6 +22,7 @@ import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
+import { useProcessTxRow } from '../useProcessTxRow';
 
 interface propsIF {
     account: string;
@@ -95,60 +96,34 @@ export default function TransactionRow(props: propsIF) {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
+
+        positiveDisplayStyle,
+        negativeDisplayStyle,
+        positiveArrow,
+        negativeArrow,
+        valueArrows,
+
+        sideCharacter,
+        priceCharacter,
+        sideTypeStyle,
+        isBuy,
+        elapsedTimeString,
     } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
-
-    const sideCharacter = isOnPortfolioPage
-        ? isBaseTokenMoneynessGreaterOrEqual
-            ? quoteTokenCharacter
-            : baseTokenCharacter
-        : isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
-
-    const priceCharacter = isOnPortfolioPage
-        ? isBaseTokenMoneynessGreaterOrEqual
-            ? baseTokenCharacter
-            : quoteTokenCharacter
-        : !isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
-
-    const sideTypeStyle = `${sideType}_style`;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
-    const valueArrows = tx.entityType !== 'liqchange';
-
-    const positiveArrow = '↑';
-    const negativeArrow = '↓';
-
-    const isBuy = tx.isBuy === true || tx.isBid === true;
-
     const isSellQtyZero =
         (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
     const isBuyQtyZero =
         (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
-
-    const positiveDisplayStyle =
-        baseQuantityDisplayShort === '0' ||
-        !valueArrows ||
-        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
-        tx.source === 'manual'
-            ? styles.light_grey
-            : styles.positive_value;
-    const negativeDisplayStyle =
-        quoteQuantityDisplayShort === '0' ||
-        !valueArrows ||
-        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
-            ? styles.light_grey
-            : styles.negative_value;
 
     const openDetailsModal = () => {
         openGlobalModal(
@@ -238,45 +213,36 @@ export default function TransactionRow(props: propsIF) {
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
 
-    const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: '-40px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontFamily: 'monospace',
-                        whiteSpace: 'nowrap',
-                        width: '450px',
-                    }}
-                >
-                    {txHash + 'ㅤ'}
-                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
-                    <FiExternalLink
-                        size={'12px'}
-                        onClick={handleOpenExplorer}
-                    />
-                </div>
-            } // invisible space character added
-            placement={'left'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li
-                onClick={openDetailsModal}
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
-                tabIndex={0}
-            >
-                {txHashTruncated}
-            </li>
-        </TextOnlyTooltip>
-    );
+    // const IDWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <div
+    //                 className={styles.id_tooltip_style}
+
+    //             >
+    //                 {txHash + 'ㅤ'}
+    //                 <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+    //                 <FiExternalLink
+    //                     size={'12px'}
+    //                     onClick={handleOpenExplorer}
+    //                 />
+    //             </div>
+    //         } // invisible space character added
+    //         placement={'left'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <li
+    //             onClick={openDetailsModal}
+    //             data-label='id'
+    //             className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+    //             tabIndex={0}
+    //         >
+    //             {txHashTruncated}
+    //         </li>
+    //     </TextOnlyTooltip>
+    // );
 
     const usdValueWithTooltip = (
         <li
@@ -423,28 +389,6 @@ export default function TransactionRow(props: propsIF) {
         // </DefaultTooltip>
     );
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        tx.time * 1000,
-        'seconds',
-    );
-
-    const elapsedTimeString =
-        elapsedTimeInSecondsNum !== undefined
-            ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. '
-                : elapsedTimeInSecondsNum < 120
-                ? '1 min. '
-                : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
-                : elapsedTimeInSecondsNum < 7200
-                ? '1 hour '
-                : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
-                : elapsedTimeInSecondsNum < 172800
-                ? '1 day '
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
-            : 'Pending...';
-
     const TxTimeWithTooltip = (
         <TextOnlyTooltip
             interactive
@@ -535,6 +479,33 @@ export default function TransactionRow(props: propsIF) {
             console.log('Copy key pressed!');
         }
     };
+
+    const useProcessTxRowProps = {
+        txHash,
+        handleCopyTxHash,
+        handleOpenExplorer,
+        txHashTruncated,
+        openDetailsModal,
+        handleRowMouseDown,
+        handleRowMouseOut,
+        sideTypeStyle,
+        usdValue,
+        usernameStyle,
+        userNameToDisplay,
+        baseTokenLogo,
+        baseTokenSymbol,
+        baseTokenAddress,
+        quoteTokenLogo,
+        quoteTokenSymbol,
+        quoteTokenAddress,
+        isOnPortfolioPage,
+        tx,
+        elapsedTimeString,
+        baseQuantityDisplayShort,
+        quoteQuantityDisplayShort,
+    };
+
+    const { IDWithTooltip } = useProcessTxRow(useProcessTxRowProps);
 
     const txIdColumnComponent = (
         <TextOnlyTooltip
