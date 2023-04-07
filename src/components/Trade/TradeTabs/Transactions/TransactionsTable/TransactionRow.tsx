@@ -244,19 +244,19 @@ export default function TransactionRow(props: propsIF) {
     //     </TextOnlyTooltip>
     // );
 
-    const usdValueWithTooltip = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
-            data-label='value'
-            className={sideTypeStyle}
-            style={{ textAlign: 'right' }}
-            tabIndex={0}
-        >
-            {usdValue}
-        </li>
-    );
+    // const usdValueWithTooltip = (
+    //     <li
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //         onClick={openDetailsModal}
+    //         data-label='value'
+    //         className={sideTypeStyle}
+    //         style={{ textAlign: 'right' }}
+    //         tabIndex={0}
+    //     >
+    //         {usdValue}
+    //     </li>
+    // );
 
     const handleWalletClick = () => {
         dispatch(
@@ -272,203 +272,203 @@ export default function TransactionRow(props: propsIF) {
         window.open(accountUrl);
     };
 
-    const walletWithTooltip = (
-        <li
-            // onClick={handleWalletClick}
-            onClick={openDetailsModal}
-            data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase' }}
-            tabIndex={0}
-        >
-            {userNameToDisplay}
-        </li>
-    );
+    // const walletWithTooltip = (
+    //     <li
+    //         // onClick={handleWalletClick}
+    //         onClick={openDetailsModal}
+    //         data-label='wallet'
+    //         className={`${usernameStyle} ${styles.hover_style}`}
+    //         style={{ textTransform: 'lowercase' }}
+    //         tabIndex={0}
+    //     >
+    //         {userNameToDisplay}
+    //     </li>
+    // );
 
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <DefaultTooltip
-                interactive
-                title={
-                    <p>
-                        {baseTokenSymbol}
-                        {`${
-                            baseTokenSymbol === 'ETH'
-                                ? ''
-                                : ': ' + baseTokenAddress
-                        }`}
-                    </p>
-                }
-                placement={'left'}
-                disableHoverListener={!isOnPortfolioPage}
-                arrow
-                enterDelay={750}
-                leaveDelay={0}
-            >
-                <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-            </DefaultTooltip>
-        ) : (
-            <IconWithTooltip
-                title={`${baseTokenSymbol}: ${baseTokenAddress}`}
-                placement='bottom'
-            >
-                <NoTokenIcon
-                    tokenInitial={tx.baseSymbol.charAt(0)}
-                    width={logoSizes}
-                />
-            </IconWithTooltip>
-        );
+    // const baseTokenLogoComponent =
+    //     baseTokenLogo !== '' ? (
+    //         <DefaultTooltip
+    //             interactive
+    //             title={
+    //                 <p>
+    //                     {baseTokenSymbol}
+    //                     {`${
+    //                         baseTokenSymbol === 'ETH'
+    //                             ? ''
+    //                             : ': ' + baseTokenAddress
+    //                     }`}
+    //                 </p>
+    //             }
+    //             placement={'left'}
+    //             disableHoverListener={!isOnPortfolioPage}
+    //             arrow
+    //             enterDelay={750}
+    //             leaveDelay={0}
+    //         >
+    //             <img src={baseTokenLogo} alt='base token' width={logoSizes} />
+    //         </DefaultTooltip>
+    //     ) : (
+    //         <IconWithTooltip
+    //             title={`${baseTokenSymbol}: ${baseTokenAddress}`}
+    //             placement='bottom'
+    //         >
+    //             <NoTokenIcon
+    //                 tokenInitial={tx.baseSymbol.charAt(0)}
+    //                 width={logoSizes}
+    //             />
+    //         </IconWithTooltip>
+    //     );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <DefaultTooltip
-                interactive
-                title={
-                    <div>
-                        {quoteTokenSymbol}: {quoteTokenAddress}
-                    </div>
-                }
-                placement={'left'}
-                disableHoverListener={!isOnPortfolioPage}
-                arrow
-                enterDelay={750}
-                leaveDelay={0}
-            >
-                <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-            </DefaultTooltip>
-        ) : (
-            <IconWithTooltip
-                title={`${quoteTokenSymbol}: ${quoteTokenAddress}`}
-                placement='right'
-            >
-                <NoTokenIcon
-                    tokenInitial={tx.quoteSymbol.charAt(0)}
-                    width={logoSizes}
-                />
-            </IconWithTooltip>
-        );
+    // const quoteTokenLogoComponent =
+    //     quoteTokenLogo !== '' ? (
+    //         <DefaultTooltip
+    //             interactive
+    //             title={
+    //                 <div>
+    //                     {quoteTokenSymbol}: {quoteTokenAddress}
+    //                 </div>
+    //             }
+    //             placement={'left'}
+    //             disableHoverListener={!isOnPortfolioPage}
+    //             arrow
+    //             enterDelay={750}
+    //             leaveDelay={0}
+    //         >
+    //             <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
+    //         </DefaultTooltip>
+    //     ) : (
+    //         <IconWithTooltip
+    //             title={`${quoteTokenSymbol}: ${quoteTokenAddress}`}
+    //             placement='right'
+    //         >
+    //             <NoTokenIcon
+    //                 tokenInitial={tx.quoteSymbol.charAt(0)}
+    //                 width={logoSizes}
+    //             />
+    //         </IconWithTooltip>
+    //     );
 
-    const pair =
-        tx.base !== ZERO_ADDRESS
-            ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
-            : [`${tx.quoteSymbol}: ${tx.quote}`];
+    // const pair =
+    //     tx.base !== ZERO_ADDRESS
+    //         ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
+    //         : [`${tx.quoteSymbol}: ${tx.quote}`];
     // eslint-disable-next-line
-    const tip = pair.join('\n');
+    // const tip = pair.join('\n');
 
-    const tradeLinkPath =
-        (tx.entityType.toLowerCase() === 'limitorder'
-            ? '/trade/limit/'
-            : tx.entityType.toLowerCase() === 'liqchange'
-            ? '/trade/range/'
-            : '/trade/market/') +
-        'chain=' +
-        tx.chainId +
-        '&tokenA=' +
-        tx.quote +
-        '&tokenB=' +
-        tx.base;
+    // const tradeLinkPath =
+    //     (tx.entityType.toLowerCase() === 'limitorder'
+    //         ? '/trade/limit/'
+    //         : tx.entityType.toLowerCase() === 'liqchange'
+    //         ? '/trade/range/'
+    //         : '/trade/market/') +
+    //     'chain=' +
+    //     tx.chainId +
+    //     '&tokenA=' +
+    //     tx.quote +
+    //     '&tokenB=' +
+    //     tx.base;
 
-    const tokenPair = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-        //     placement={'left'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={0}
-        // >
-        <li
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <NavLink to={tradeLinkPath}>
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </NavLink>
-        </li>
-        // </DefaultTooltip>
-    );
+    // const tokenPair = (
+    //     // <DefaultTooltip
+    //     //     interactive
+    //     //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+    //     //     placement={'left'}
+    //     //     arrow
+    //     //     enterDelay={150}
+    //     //     leaveDelay={0}
+    //     // >
+    //     <li
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <NavLink to={tradeLinkPath}>
+    //             {baseTokenSymbol} / {quoteTokenSymbol}
+    //         </NavLink>
+    //     </li>
+    //     // </DefaultTooltip>
+    // );
 
-    const TxTimeWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
-                </p>
-            }
-            placement={'right'}
-            arrow
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li
-                onClick={openDetailsModal}
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-                tabIndex={0}
-            >
-                <p className='base_color'>{elapsedTimeString}</p>
-            </li>
-        </TextOnlyTooltip>
-    );
+    // const TxTimeWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <p
+    //                 style={{
+    //                     marginLeft: '-70px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'pointer',
+    //                 }}
+    //             >
+    //                 {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+    //             </p>
+    //         }
+    //         placement={'right'}
+    //         arrow
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <li
+    //             onClick={openDetailsModal}
+    //             style={{ textTransform: 'lowercase' }}
+    //             onMouseEnter={handleRowMouseDown}
+    //             onMouseLeave={handleRowMouseOut}
+    //             tabIndex={0}
+    //         >
+    //             <p className='base_color'>{elapsedTimeString}</p>
+    //         </li>
+    //     </TextOnlyTooltip>
+    // );
 
-    const baseQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
-                {baseQuantityDisplayShort}
-                {baseTokenLogoComponent}
-            </div>
-        </li>
-    );
-    const quoteQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
-                {quoteQuantityDisplayShort}
-                {quoteTokenLogoComponent}
-            </div>
-        </li>
-    );
+    // const baseQtyDisplayWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label={baseTokenSymbol}
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //         tabIndex={0}
+    //     >
+    //         <div
+    //             style={{
+    //                 display: 'flex',
+    //                 alignItems: 'center',
+    //                 justifyContent: 'flex-end',
+    //                 gap: '4px',
+    //                 textAlign: 'right',
+    //             }}
+    //         >
+    //             {baseQuantityDisplayShort}
+    //             {baseTokenLogoComponent}
+    //         </div>
+    //     </li>
+    // );
+    // const quoteQtyDisplayWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label={quoteTokenSymbol}
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //         tabIndex={0}
+    //     >
+    //         <div
+    //             style={{
+    //                 display: 'flex',
+    //                 alignItems: 'center',
+    //                 justifyContent: 'flex-end',
+    //                 gap: '4px',
+    //                 textAlign: 'right',
+    //             }}
+    //         >
+    //             {quoteQuantityDisplayShort}
+    //             {quoteTokenLogoComponent}
+    //         </div>
+    //     </li>
+    // );
     const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
         event,
     ) => {
@@ -503,87 +503,114 @@ export default function TransactionRow(props: propsIF) {
         elapsedTimeString,
         baseQuantityDisplayShort,
         quoteQuantityDisplayShort,
+        isOwnerActiveAccount,
+        ensName,
+        ownerId,
+        sideType,
+        sideCharacter,
+        isBuy,
+        isOrderRemove,
+        valueArrows,
+        positiveArrow,
+        positiveDisplayStyle,
+        negativeDisplayStyle,
+        negativeArrow,
     };
 
-    const { IDWithTooltip } = useProcessTxRow(useProcessTxRowProps);
+    const {
+        IDWithTooltip,
+        usdValueWithTooltip,
+        walletWithTooltip,
+        baseTokenLogoComponent,
+        quoteTokenLogoComponent,
+        pair,
+        tradeLinkPath,
+        tokenPair,
+        baseQtyDisplayWithTooltip,
+        quoteQtyDisplayWithTooltip,
+        txIdColumnComponent,
+        TxTimeWithTooltip,
+        sideDisplay,
+        baseQuoteQtyDisplayColumn,
+    } = useProcessTxRow(useProcessTxRowProps);
 
-    const txIdColumnComponent = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: '-40px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontFamily: 'monospace',
-                        whiteSpace: 'nowrap',
-                        width: '450px',
-                    }}
-                >
-                    {txHash + 'ㅤ'}
-                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
-                    <FiExternalLink
-                        size={'12px'}
-                        onClick={handleOpenExplorer}
-                    />
-                </div>
-            } // invisible space character added
-            placement={'left'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li data-label='id'>
-                <p
-                    onClick={() => {
-                        handleOpenExplorer();
-                    }}
-                    className={`base_color ${styles.hover_style} ${styles.mono_font}`}
-                >
-                    {txHashTruncated}
-                </p>{' '}
-                {isOnPortfolioPage ? (
-                    <p
-                        className={`${usernameStyle}`}
-                        style={{
-                            textTransform: 'lowercase',
-                            cursor: 'default',
-                        }}
-                    >
-                        {userNameToDisplay}
-                    </p>
-                ) : (
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
-                    >
-                        <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
-                            style={{ textTransform: 'lowercase' }}
-                        >
-                            {userNameToDisplay}
-                        </p>
-                    </NavLink>
-                )}
-            </li>
-        </TextOnlyTooltip>
-    );
+    // const txIdColumnComponent = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <div
+    //                 style={{
+    //                     marginLeft: '-40px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'pointer',
+    //                     fontFamily: 'monospace',
+    //                     whiteSpace: 'nowrap',
+    //                     width: '450px',
+    //                 }}
+    //             >
+    //                 {txHash + 'ㅤ'}
+    //                 <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+    //                 <FiExternalLink
+    //                     size={'12px'}
+    //                     onClick={handleOpenExplorer}
+    //                 />
+    //             </div>
+    //         } // invisible space character added
+    //         placement={'left'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <li data-label='id'>
+    //             <p
+    //                 onClick={() => {
+    //                     handleOpenExplorer();
+    //                 }}
+    //                 className={`base_color ${styles.hover_style} ${styles.mono_font}`}
+    //             >
+    //                 {txHashTruncated}
+    //             </p>{' '}
+    //             {isOnPortfolioPage ? (
+    //                 <p
+    //                     className={`${usernameStyle}`}
+    //                     style={{
+    //                         textTransform: 'lowercase',
+    //                         cursor: 'default',
+    //                     }}
+    //                 >
+    //                     {userNameToDisplay}
+    //                 </p>
+    //             ) : (
+    //                 <NavLink
+    //                     onClick={() => {
+    //                         dispatch(
+    //                             setDataLoadingStatus({
+    //                                 datasetName: 'lookupUserTxData',
+    //                                 loadingStatus: true,
+    //                             }),
+    //                         );
+    //                     }}
+    //                     to={`/${
+    //                         isOwnerActiveAccount
+    //                             ? 'account'
+    //                             : ensName
+    //                             ? ensName
+    //                             : ownerId
+    //                     }`}
+    //                 >
+    //                     <p
+    //                         className={`${usernameStyle} ${styles.hover_style}`}
+    //                         style={{ textTransform: 'lowercase' }}
+    //                     >
+    //                         {userNameToDisplay}
+    //                     </p>
+    //                 </NavLink>
+    //             )}
+    //         </li>
+    //     </TextOnlyTooltip>
+    // );
 
     // end of portfolio page li element ---------------
     return (
@@ -701,22 +728,23 @@ export default function TransactionRow(props: propsIF) {
                               ) || '…'}
                     </li>
                 ))}
-            {!showColumns && (
-                <li
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                    onClick={openDetailsModal}
-                    data-label='side'
-                    className={sideTypeStyle}
-                    style={{ textAlign: 'center' }}
-                    tabIndex={0}
-                >
-                    {tx.entityType === 'liqchange' ||
-                    tx.entityType === 'limitOrder'
-                        ? `${sideType}`
-                        : `${sideType} ${sideCharacter}`}
-                </li>
-            )}
+            {!showColumns &&
+                sideDisplay
+                // <li
+                //     onMouseEnter={handleRowMouseDown}
+                //     onMouseLeave={handleRowMouseOut}
+                //     onClick={openDetailsModal}
+                //     data-label='side'
+                //     className={sideTypeStyle}
+                //     style={{ textAlign: 'center' }}
+                //     tabIndex={0}
+                // >
+                //     {tx.entityType === 'liqchange' ||
+                //     tx.entityType === 'limitOrder'
+                //         ? `${sideType}`
+                //         : `${sideType} ${sideCharacter}`}
+                // </li>
+            }
             {!showColumns && (
                 <li
                     onMouseEnter={handleRowMouseDown}
@@ -751,65 +779,66 @@ export default function TransactionRow(props: propsIF) {
             {usdValueWithTooltip}
             {!showColumns && baseQtyDisplayWithTooltip}
             {!showColumns && quoteQtyDisplayWithTooltip}
-            {showColumns && (
-                <li
-                    data-label={baseTokenSymbol + quoteTokenSymbol}
-                    className='color_white'
-                    style={{ textAlign: 'right' }}
-                    onClick={() => {
-                        openDetailsModal();
-                    }}
-                >
-                    <div
-                        className={`${styles.token_qty} ${positiveDisplayStyle}`}
-                        style={{
-                            whiteSpace: 'nowrap',
-                        }}
-                    >
-                        {isBuy
-                            ? isOrderRemove
-                                ? baseQuantityDisplayShort
-                                : quoteQuantityDisplayShort
-                            : isOrderRemove
-                            ? quoteQuantityDisplayShort
-                            : baseQuantityDisplayShort}
-                        {valueArrows ? positiveArrow : ' '}
-                        {isBuy
-                            ? isOrderRemove
-                                ? baseTokenLogoComponent
-                                : quoteTokenLogoComponent
-                            : isOrderRemove
-                            ? quoteTokenLogoComponent
-                            : baseTokenLogoComponent}
-                    </div>
+            {showColumns &&
+                baseQuoteQtyDisplayColumn
+                // <li
+                //     data-label={baseTokenSymbol + quoteTokenSymbol}
+                //     className='color_white'
+                //     style={{ textAlign: 'right' }}
+                //     onClick={() => {
+                //         openDetailsModal();
+                //     }}
+                // >
+                //     <div
+                //         className={`${styles.token_qty} ${positiveDisplayStyle}`}
+                //         style={{
+                //             whiteSpace: 'nowrap',
+                //         }}
+                //     >
+                //         {isBuy
+                //             ? isOrderRemove
+                //                 ? baseQuantityDisplayShort
+                //                 : quoteQuantityDisplayShort
+                //             : isOrderRemove
+                //             ? quoteQuantityDisplayShort
+                //             : baseQuantityDisplayShort}
+                //         {valueArrows ? positiveArrow : ''}
+                //         {isBuy
+                //             ? isOrderRemove
+                //                 ? baseTokenLogoComponent
+                //                 : quoteTokenLogoComponent
+                //             : isOrderRemove
+                //             ? quoteTokenLogoComponent
+                //             : baseTokenLogoComponent}
+                //     </div>
 
-                    <div
-                        className={`${styles.token_qty} ${negativeDisplayStyle}`}
-                        style={{
-                            whiteSpace: 'nowrap',
-                        }}
-                    >
-                        {isBuy
-                            ? `${
-                                  isOrderRemove
-                                      ? quoteQuantityDisplayShort
-                                      : baseQuantityDisplayShort
-                              }${valueArrows ? negativeArrow : ' '}`
-                            : `${
-                                  isOrderRemove
-                                      ? baseQuantityDisplayShort
-                                      : quoteQuantityDisplayShort
-                              }${valueArrows ? negativeArrow : ' '}`}
-                        {isBuy
-                            ? isOrderRemove
-                                ? quoteTokenLogoComponent
-                                : baseTokenLogoComponent
-                            : isOrderRemove
-                            ? baseTokenLogoComponent
-                            : quoteTokenLogoComponent}
-                    </div>
-                </li>
-            )}
+                //     <div
+                //         className={`${styles.token_qty} ${negativeDisplayStyle}`}
+                //         style={{
+                //             whiteSpace: 'nowrap',
+                //         }}
+                //     >
+                //         {isBuy
+                //             ? `${
+                //                   isOrderRemove
+                //                       ? quoteQuantityDisplayShort
+                //                       : baseQuantityDisplayShort
+                //               }${valueArrows ? negativeArrow : ''}`
+                //             : `${
+                //                   isOrderRemove
+                //                       ? baseQuantityDisplayShort
+                //                       : quoteQuantityDisplayShort
+                //               }${valueArrows ? negativeArrow : ''}`}
+                //         {isBuy
+                //             ? isOrderRemove
+                //                 ? quoteTokenLogoComponent
+                //                 : baseTokenLogoComponent
+                //             : isOrderRemove
+                //             ? baseTokenLogoComponent
+                //             : quoteTokenLogoComponent}
+                //     </div>
+                // </li>
+            }
 
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu

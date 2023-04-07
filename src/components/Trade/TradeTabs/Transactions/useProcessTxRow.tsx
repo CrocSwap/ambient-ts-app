@@ -2,6 +2,10 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
+import { Dispatch } from 'react';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+
 import {
     DefaultTooltip,
     TextOnlyTooltip,
@@ -28,8 +32,22 @@ interface Props {
     quoteTokenAddress: string;
     quoteQuantityDisplayShort: string;
     elapsedTimeString: string;
+    sideType: string;
+    sideCharacter: string;
+    ensName: string | null;
 
+    ownerId: string;
+    positiveArrow: string;
+    positiveDisplayStyle: string;
+    negativeDisplayStyle: string;
+    negativeArrow: string;
+
+    isOwnerActiveAccount: boolean;
     isOnPortfolioPage: boolean;
+    isBuy: boolean;
+    isOrderRemove: boolean;
+    valueArrows: boolean;
+
     handleCopyTxHash: () => void;
     handleOpenExplorer: () => void;
     openDetailsModal: () => void;
@@ -39,6 +57,8 @@ interface Props {
     tx: TransactionIF;
 }
 export const useProcessTxRow = (props: Props) => {
+    const dispatch = useAppDispatch();
+
     const {
         txHash,
         handleCopyTxHash,
@@ -62,6 +82,21 @@ export const useProcessTxRow = (props: Props) => {
         elapsedTimeString,
         baseQuantityDisplayShort,
         quoteQuantityDisplayShort,
+
+        isOwnerActiveAccount,
+        ensName,
+        ownerId,
+
+        sideType,
+        sideCharacter,
+
+        isBuy,
+        isOrderRemove,
+        valueArrows,
+        positiveArrow,
+        positiveDisplayStyle,
+        negativeDisplayStyle,
+        negativeArrow,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -322,5 +357,174 @@ export const useProcessTxRow = (props: Props) => {
         </li>
     );
 
-    return { IDWithTooltip };
+    const txIdColumnComponent = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginLeft: '-40px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        width: '450px',
+                    }}
+                >
+                    {txHash + 'ㅤ'}
+                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+                    <FiExternalLink
+                        size={'12px'}
+                        onClick={handleOpenExplorer}
+                    />
+                </div>
+            } // invisible space character added
+            placement={'left'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <li data-label='id'>
+                <p
+                    onClick={() => {
+                        handleOpenExplorer();
+                    }}
+                    className={`base_color ${styles.hover_style} ${styles.mono_font}`}
+                >
+                    {txHashTruncated}
+                </p>{' '}
+                {isOnPortfolioPage ? (
+                    <p
+                        className={`${usernameStyle}`}
+                        style={{
+                            textTransform: 'lowercase',
+                            cursor: 'default',
+                        }}
+                    >
+                        {userNameToDisplay}
+                    </p>
+                ) : (
+                    <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
+                        to={`/${
+                            isOwnerActiveAccount
+                                ? 'account'
+                                : ensName
+                                ? ensName
+                                : ownerId
+                        }`}
+                    >
+                        <p
+                            className={`${usernameStyle} ${styles.hover_style}`}
+                            style={{ textTransform: 'lowercase' }}
+                        >
+                            {userNameToDisplay}
+                        </p>
+                    </NavLink>
+                )}
+            </li>
+        </TextOnlyTooltip>
+    );
+
+    const sideDisplay = (
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={openDetailsModal}
+            data-label='side'
+            className={sideTypeStyle}
+            style={{ textAlign: 'center' }}
+            tabIndex={0}
+        >
+            {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                ? `${sideType}`
+                : `${sideType} ${sideCharacter}`}
+        </li>
+    );
+
+    const baseQuoteQtyDisplayColumn = (
+        <li
+            data-label={baseTokenSymbol + quoteTokenSymbol}
+            className='color_white'
+            style={{ textAlign: 'right' }}
+            onClick={() => {
+                openDetailsModal();
+            }}
+        >
+            <div
+                className={`${styles.token_qty} ${positiveDisplayStyle}`}
+                style={{
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {isBuy
+                    ? isOrderRemove
+                        ? baseQuantityDisplayShort
+                        : quoteQuantityDisplayShort
+                    : isOrderRemove
+                    ? quoteQuantityDisplayShort
+                    : baseQuantityDisplayShort}
+                {valueArrows ? positiveArrow : ' '}
+                {isBuy
+                    ? isOrderRemove
+                        ? baseTokenLogoComponent
+                        : quoteTokenLogoComponent
+                    : isOrderRemove
+                    ? quoteTokenLogoComponent
+                    : baseTokenLogoComponent}
+            </div>
+
+            <div
+                className={`${styles.token_qty} ${negativeDisplayStyle}`}
+                style={{
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {isBuy
+                    ? `${
+                          isOrderRemove
+                              ? quoteQuantityDisplayShort
+                              : baseQuantityDisplayShort
+                      }${valueArrows ? negativeArrow : ' '}`
+                    : `${
+                          isOrderRemove
+                              ? baseQuantityDisplayShort
+                              : quoteQuantityDisplayShort
+                      }${valueArrows ? negativeArrow : ' '}`}
+                {isBuy
+                    ? isOrderRemove
+                        ? quoteTokenLogoComponent
+                        : baseTokenLogoComponent
+                    : isOrderRemove
+                    ? baseTokenLogoComponent
+                    : quoteTokenLogoComponent}
+            </div>
+        </li>
+    );
+
+    return {
+        IDWithTooltip,
+        usdValueWithTooltip,
+        walletWithTooltip,
+        baseTokenLogoComponent,
+        quoteTokenLogoComponent,
+        pair,
+        tradeLinkPath,
+        tokenPair,
+        TxTimeWithTooltip,
+        baseQtyDisplayWithTooltip,
+        quoteQtyDisplayWithTooltip,
+        txIdColumnComponent,
+        sideDisplay,
+        baseQuoteQtyDisplayColumn,
+    };
 };
