@@ -13,7 +13,6 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import { useAccount, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';

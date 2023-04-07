@@ -11,7 +11,6 @@ import {
 } from '../state/tradeDataSlice';
 import { TokenIF } from '../interfaces/exports';
 import { useTokenMap } from './useTokenMap';
-import { useToken } from '../../App/hooks/useToken';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider } from 'wagmi';

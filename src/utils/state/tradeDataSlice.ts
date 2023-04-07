@@ -100,7 +100,7 @@ const initialState: tradeData = {
 sortTokens(initialState);
 
 function sortTokens(state: tradeData) {
-    const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
+    const [baseTokenAddress] = sortBaseQuoteTokens(
         state.tokenA.address,
         state.tokenB.address,
     );
