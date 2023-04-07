@@ -14,7 +14,7 @@ import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -256,7 +256,7 @@ export default function OrderRow(props: propsIF) {
                     <FiCopy onClick={handleCopyPosHash} />
                 </p>
             }
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
@@ -341,11 +341,12 @@ export default function OrderRow(props: propsIF) {
                     </p>
                 </div>
             }
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
             <p
+                onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
@@ -390,16 +391,6 @@ export default function OrderRow(props: propsIF) {
         />
     );
 
-    const pair =
-        limitOrder.base !== ZERO_ADDRESS
-            ? [
-                  `${limitOrder.baseSymbol}: ${limitOrder.base}`,
-                  `${limitOrder.quoteSymbol}: ${limitOrder.quote}`,
-              ]
-            : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
-    // eslint-disable-next-line
-    const tip = pair.join('\n');
-
     const tradeLinkPath =
         '/trade/limit/' +
         'chain=' +
@@ -410,14 +401,6 @@ export default function OrderRow(props: propsIF) {
         limitOrder.base;
 
     const tokenPair = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-        //     placement={'left'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={0}
-        // >
         <li
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -427,7 +410,6 @@ export default function OrderRow(props: propsIF) {
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
         </li>
-        // </DefaultTooltip>
     );
 
     const positionTime =

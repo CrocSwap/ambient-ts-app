@@ -255,7 +255,7 @@ export default function TransactionRow(props: propsIF) {
                         cursor: 'pointer',
                         fontFamily: 'monospace',
                         whiteSpace: 'nowrap',
-                        width: '450px',
+                        width: '460px',
                     }}
                 >
                     {txHash + 'ㅤ'}
@@ -266,7 +266,7 @@ export default function TransactionRow(props: propsIF) {
                     />
                 </div>
             } // invisible space character added
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
@@ -355,11 +355,12 @@ export default function TransactionRow(props: propsIF) {
                     </p>
                 </div>
             }
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
             <p
+                onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}

@@ -301,7 +301,7 @@ export default function RangesRow(props: propsIF) {
                     <FiCopy onClick={handleCopyPosHash} />
                 </p>
             }
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
@@ -385,11 +385,12 @@ export default function RangesRow(props: propsIF) {
                     </p>
                 </div>
             }
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
             <p
+                onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
@@ -454,14 +455,6 @@ export default function RangesRow(props: propsIF) {
         position.base;
 
     const tokenPair = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-        //     placement={'left'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={0}
-        // >
         <li
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -473,7 +466,6 @@ export default function RangesRow(props: propsIF) {
                 </p>
             </NavLink>
         </li>
-        // </DefaultTooltip>
     );
 
     // end of portfolio page li element ---------------
