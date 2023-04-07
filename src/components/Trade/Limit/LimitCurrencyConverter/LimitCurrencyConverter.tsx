@@ -19,7 +19,6 @@ import {
     // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
-    setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
 import truncateDecimals from '../../../../utils/data/truncateDecimals';

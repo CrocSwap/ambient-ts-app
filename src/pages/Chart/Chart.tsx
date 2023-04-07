@@ -3512,6 +3512,8 @@ export default function Chart(props: propsIF) {
         yAxisCanvasWidth,
         bandwidth,
         reset,
+        sellOrderStyle,
+        checkLimitOrder,
     ]);
 
     function createRectLabel(
