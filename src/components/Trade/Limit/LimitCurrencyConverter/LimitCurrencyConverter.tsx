@@ -36,6 +36,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 // interface for component props
 interface propsIF {
@@ -95,14 +96,13 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 // central react functional component
@@ -143,7 +143,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         indicateActiveTokenListsChanged,
         poolExists,
         gasPriceInGwei,
-
         isOrderCopied,
         verifyToken,
         getTokensByName,
@@ -155,10 +154,10 @@ export default function LimitCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -532,11 +531,10 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
                 dexBalancePrefs={dexBalancePrefs}
+                ackTokens={ackTokens}
             />
-
             <div
                 className={
                     disableReverseTokens
@@ -610,12 +608,11 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    acknowledgeToken={acknowledgeToken}
                     openGlobalPopup={openGlobalPopup}
                     dexBalancePrefs={dexBalancePrefs}
+                    ackTokens={ackTokens}
                 />
             </div>
-            {/* <DividerDark addMarginTop /> */}
             <LimitRate
                 previousDisplayPrice={previousDisplayPrice}
                 displayPrice={displayPrice}

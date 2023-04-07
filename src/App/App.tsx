@@ -446,7 +446,6 @@ export default function App() {
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
-        acknowledgeToken,
     ] = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
@@ -2709,7 +2708,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2724,6 +2722,8 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
+        chainData: chainData,
     };
 
     // props for <Swap/> React element on trade route
@@ -2768,7 +2768,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2784,6 +2783,8 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
+        chainData: chainData,
     };
 
     // props for <Limit/> React element on trade route
@@ -2830,7 +2831,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2845,6 +2845,7 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
     };
 
     // props for <Range/> React element
@@ -2899,7 +2900,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2925,7 +2925,9 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
+        chainData: chainData,
     };
 
     function toggleSidebar() {
@@ -3620,7 +3622,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
@@ -3638,6 +3639,7 @@ export default function App() {
                                         mintSlippage,
                                         repoSlippage,
                                     }}
+                                    ackTokens={ackTokens}
                                 />
                             }
                         />
@@ -3705,7 +3707,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
@@ -3723,6 +3724,7 @@ export default function App() {
                                         mintSlippage,
                                         repoSlippage,
                                     }}
+                                    ackTokens={ackTokens}
                                 />
                             }
                         />
@@ -3821,7 +3823,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
@@ -3839,6 +3840,7 @@ export default function App() {
                                         mintSlippage,
                                         repoSlippage,
                                     }}
+                                    ackTokens={ackTokens}
                                 />
                             }
                         />
