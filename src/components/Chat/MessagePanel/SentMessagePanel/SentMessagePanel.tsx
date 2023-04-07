@@ -189,8 +189,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
                             key={index}
                             style={
                                 isLinkInCrocodileLabsLinks(word)
-                                    ? { color: '#ab7de7' }
-                                    : { color: 'white' }
+                                    ? { color: '#ab7de7', cursor: 'pointer' }
+                                    : { color: 'white', cursor: 'default' }
                             }
                         >
                             {' ' + word}
@@ -202,7 +202,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             if (isLinkInCrocodileLabsLinks(url)) {
                 return (
                     <p
-                        style={{ color: '#ab7de7' }}
+                        style={{ color: '#ab7de7', cursor: 'pointer' }}
                         onClick={() => handleOpenExplorer(url)}
                     >
                         {url}
@@ -327,7 +327,11 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     }
                 >
                     {showAvatar && (
-                        <div className={styles.nft_container}>{myBlockies}</div>
+                        <div>
+                            <div style={{ borderRadius: '50%' }}>
+                                {myBlockies}
+                            </div>
+                        </div>
                     )}
                     {!showAvatar && (
                         <div style={{ display: 'none' }}>
@@ -381,6 +385,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
                             isInput={false}
                             isPosition={isPosition}
                             setIsPosition={setIsPosition}
+                            walletExplorer={getName()}
+                            isCurrentUser={props.isCurrentUser}
                         />
                         {!isPosition && mentionedMessage()}
                     </div>

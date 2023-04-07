@@ -9,6 +9,19 @@
     vertical-align: middle;
     margin: 10px;
 }
+.nft_container{
+    
+   
+    max-width: 25px;
+    max-height: 25px;
+    border-radius: 50%;
+    background: var(--title-gradient);
+    padding: 2px;
+    flex-grow: 1;
+    align-self: end;
+    vertical-align: middle;
+    margin: 10px;
+}
 
 
 
@@ -32,8 +45,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 12px;
+    font-size: 10px;
+    line-height: 10px;
     align-self: flex-end;
 
     /* text/grey dark */
