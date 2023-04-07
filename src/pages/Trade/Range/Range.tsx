@@ -1421,7 +1421,7 @@ export default function Range(props: propsIF) {
         rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFee: 0.3,
+        liquidityProviderFee: tradeData.liquidityFee * 100,
         quoteTokenIsBuy: true,
         isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
