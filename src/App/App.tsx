@@ -3073,7 +3073,7 @@ export default function App() {
 
     const defaultUrlParams = {
         swap: `/swap/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
-        market: `/trade/market/${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
+        market: `/trade/market/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
         range: `/trade/range/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
         limit: `/trade/limit/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
     };

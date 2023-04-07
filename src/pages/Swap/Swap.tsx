@@ -46,6 +46,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../constants';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -156,6 +157,7 @@ export default function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
+    useUrlParams(chainId);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented

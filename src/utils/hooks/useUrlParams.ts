@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from './reduxToolkit';
 import {
@@ -18,10 +18,7 @@ export interface UrlParams {
     tokenB?: TokenIF;
 }
 
-export const useUrlParams = (
-    dfltChainId: string,
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
-): UrlParams => {
+export const useUrlParams = (dfltChainId: string) => {
     const tokenMetaMap = useTokenMap();
     const { params } = useParams();
 
@@ -43,11 +40,7 @@ export const useUrlParams = (
             .map((par) => par.filter((e) => e !== ''))
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
-            .forEach((par) => {
-                if (par.length == 1) {
-                    paramMap.set(par[0], par[1]);
-                }
-            });
+            .forEach((par) => paramMap.set(par[0], par[1]));
 
         return paramMap;
     }, [params]);
@@ -58,44 +51,61 @@ export const useUrlParams = (
         paramName: string,
         processFn: (val: string) => void,
     ) {
-        if (urlParamMap.has('chainId')) {
-            const paramVal = urlParamMap.get('chainId') as string;
+        if (urlParamMap.has(paramName)) {
+            const paramVal = urlParamMap.get(paramName) as string;
             processFn(paramVal);
         }
     }
 
-    processOptParam('chainId', (chainId: string) => {
-        dispatch(setChainId(chainId));
-        paramStruct.chainId = chainId;
-    });
+    function getTokenByAddress(addr: string, chainId: string) {
+        const key = addr.toLowerCase() + '_' + chainId.toLowerCase();
+        return tokenMetaMap.get(key);
+    }
 
-    const chainToUse = paramStruct.chainId ? paramStruct.chainId : dfltChainId;
+    const dependencies = [
+        'chainId',
+        'tokenA',
+        'tokenB',
+        'lowTick',
+        'highTick',
+        'limitTick',
+    ];
 
-    processOptParam('tokenA', (addr: string) => {
-        const tokenData = getTokenByAddress(addr, chainToUse);
-        if (tokenData) {
-            dispatch(setTokenA(tokenData));
-            paramStruct.tokenA = tokenData;
-        }
-    });
+    useEffect(() => {
+        processOptParam('chainId', (chainId: string) => {
+            dispatch(setChainId(chainId));
+            paramStruct.chainId = chainId;
+        });
+        const chainToUse = paramStruct.chainId
+            ? paramStruct.chainId
+            : dfltChainId;
 
-    processOptParam('tokenB', (addr: string) => {
-        const tokenData = getTokenByAddress(addr, chainToUse);
-        if (tokenData) {
-            dispatch(setTokenB(tokenData));
-            paramStruct.tokenB = tokenData;
-        }
-    });
+        processOptParam('tokenA', (addr: string) => {
+            const tokenData = getTokenByAddress(addr, chainToUse);
+            if (tokenData) {
+                dispatch(setTokenA(tokenData));
+                paramStruct.tokenA = tokenData;
+            }
+        });
 
-    processOptParam('lowTick', (tick: string) => {
-        dispatch(setAdvancedLowTick(parseInt(tick)));
-    });
-    processOptParam('highTick', (tick: string) => {
-        dispatch(setAdvancedHighTick(parseInt(tick)));
-    });
-    processOptParam('limitTick', (tick: string) => {
-        dispatch(setLimitTick(parseInt(tick)));
-    });
+        processOptParam('tokenB', (addr: string) => {
+            const tokenData = getTokenByAddress(addr, chainToUse);
+            if (tokenData) {
+                dispatch(setTokenB(tokenData));
+                paramStruct.tokenB = tokenData;
+            }
+        });
 
-    return paramStruct;
+        processOptParam('lowTick', (tick: string) => {
+            dispatch(setAdvancedLowTick(parseInt(tick)));
+        });
+
+        processOptParam('highTick', (tick: string) => {
+            dispatch(setAdvancedHighTick(parseInt(tick)));
+        });
+
+        processOptParam('limitTick', (tick: string) => {
+            dispatch(setLimitTick(parseInt(tick)));
+        });
+    }, [tokenMetaMap.size, ...dependencies.map((x) => urlParamMap.get(x))]);
 };

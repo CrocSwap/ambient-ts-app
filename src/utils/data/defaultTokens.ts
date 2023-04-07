@@ -113,7 +113,7 @@ export const arbGoerliDAI = {
     address: '0xc52f941486978a25fad837bb701d3025679780e4',
     symbol: 'DAI',
     decimals: 18,
-    chainId: '0x66eed',
+    chainId: 421613,
     logoURI:
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };

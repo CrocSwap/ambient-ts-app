@@ -58,11 +58,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         theme,
         poolPriceDisplay,
         chainData,
-        getTokenByAddress,
         isTutorialMode,
         setIsTutorialMode,
         clickLogout,
-    } = props; // TODO (#1391)
+    } = props;
 
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
@@ -111,7 +110,7 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    useUrlParams(chainId, getTokenByAddress);
+    useUrlParams(chainId);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

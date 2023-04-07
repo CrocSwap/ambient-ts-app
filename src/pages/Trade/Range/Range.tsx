@@ -83,6 +83,7 @@ import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     account: string | undefined;
@@ -230,6 +231,7 @@ export default function Range(props: propsIF) {
     const [isAmbient, setIsAmbient] = useState(false);
 
     const dispatch = useAppDispatch();
+    useUrlParams(chainId);
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
