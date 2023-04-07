@@ -13,10 +13,11 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
-import { IS_LOCAL_ENV } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
@@ -26,6 +27,7 @@ interface propsIF {
     favePools: favePoolsMethodsIF;
     chainId: string;
     simplifyVersion?: boolean;
+    chainData: ChainSpec;
 }
 
 export default function TradeChartsTokenInfo(props: propsIF) {
@@ -36,6 +38,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         favePools,
         chainId,
         simplifyVersion,
+        chainData,
     } = props;
     const dispatch = useAppDispatch();
 
@@ -224,13 +227,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         setOpenSnackbar(true);
     }
     const handleLinkOut = (address: string) => {
-        const addressLink = `https://goerli.etherscan.io/address/${address}`;
+        const addressLink = `${chainData.blockExplorer}token/${address}`;
 
         window.open(addressLink);
     };
 
-    const tokenSymbols = (
-        <div className={styles.mono_space}>
+    const baseTokenTooltipContentOrNull =
+        tradeData.baseToken.address === ZERO_ADDRESS ? null : (
             <p>
                 {`${tradeData.baseToken.symbol + ':'} ${
                     tradeData.baseToken.address
@@ -240,11 +243,16 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     onClick={() => handleLinkOut(tradeData.baseToken.address)}
                 />
             </p>
+        );
+
+    const tokenSymbols = (
+        <div className={styles.mono_space}>
+            {baseTokenTooltipContentOrNull}
             <p>
                 {`${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}{' '}
                 <FiCopy onClick={() => handleQuoteCopy()} />{' '}
                 <FiExternalLink
-                    onClick={() => handleLinkOut(tradeData.baseToken.address)}
+                    onClick={() => handleLinkOut(tradeData.quoteToken.address)}
                 />
             </p>
         </div>
@@ -304,7 +312,6 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             <div className={styles.tokens_info_simplify_content}>
                 {favButton}
                 {denomToggleButton}
-                {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
                 {currentAmountDisplay}
                 {poolPriceChange}
             </div>
@@ -319,7 +326,6 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             {denomToggleButton}
             {currentAmountDisplay}
             {poolPriceChange}
-            {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
             {snackbarContent}
         </div>
     );
