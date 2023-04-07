@@ -299,8 +299,10 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const displayWalletMaxButton = isTokenASelector
         ? !isWithdrawTokenAFromDexChecked &&
+          !isTokenAEth &&
           walletBalanceNonLocaleString !== '0.0'
         : !isWithdrawTokenBFromDexChecked &&
+          !isTokenBEth &&
           walletBalanceNonLocaleString !== '0.0';
 
     const walletBalanceMaxButton = displayWalletMaxButton ? (
@@ -319,8 +321,10 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const displaySurplusMaxButton = isTokenASelector
         ? isWithdrawTokenAFromDexChecked &&
+          !isTokenAEth &&
           surplusBalanceNonLocaleString !== '0.0'
         : isWithdrawTokenBFromDexChecked &&
+          !isTokenBEth &&
           surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton = displaySurplusMaxButton ? (
@@ -460,12 +464,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                                 (!isTokenASelector &&
                                     !isWithdrawTokenBFromDexChecked) ||
                                 (isTokenASelector &&
-                                    isTokenAEth === false &&
                                     isWithdrawTokenAFromDexChecked &&
                                     tokenASurplusMinusTokenARemainderNum &&
                                     tokenASurplusMinusTokenARemainderNum < 0) ||
                                 (!isTokenASelector &&
-                                    isTokenBEth === false &&
                                     isWithdrawTokenBFromDexChecked &&
                                     tokenBSurplusMinusTokenBRemainderNum &&
                                     tokenBSurplusMinusTokenBRemainderNum < 0)
@@ -499,12 +501,10 @@ export default function RangeCurrencySelector(props: propsIF) {
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
         (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
         (isTokenASelector &&
-            isTokenAEth === false &&
             isWithdrawTokenAFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0) ||
         (!isTokenASelector &&
-            isTokenBEth === false &&
             isWithdrawTokenBFromDexChecked &&
             tokenBSurplusMinusTokenBRemainderNum &&
             tokenBSurplusMinusTokenBRemainderNum < 0)

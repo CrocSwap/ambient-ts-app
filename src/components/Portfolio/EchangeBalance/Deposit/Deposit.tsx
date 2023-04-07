@@ -398,9 +398,9 @@ export default function Deposit(props: propsIF) {
                 setInputValue={setInputValue}
             />
             <div
-                onClick={handleBalanceClick}
+                onClick={isTokenEth ? () => null : handleBalanceClick}
                 className={
-                    isTokenWalletBalanceGreaterThanZero
+                    isTokenWalletBalanceGreaterThanZero && !isTokenEth
                         ? styles.info_text_clickable
                         : styles.info_text_non_clickable
                 }
