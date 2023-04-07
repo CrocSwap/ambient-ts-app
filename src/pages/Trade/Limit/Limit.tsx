@@ -891,6 +891,7 @@ export default function Limit(props: propsIF) {
     const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
     const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
 
+    // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         // !Important   any changes to verbiage in this code block must be approved
         // !Important   ... by Doug, get in writing by email or request specific
@@ -919,12 +920,8 @@ export default function Limit(props: propsIF) {
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
-    console.log({ areBothAckd });
-
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        console.clear();
-        console.log('fired fn ackAsNeeded');
         needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
         needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
     };
