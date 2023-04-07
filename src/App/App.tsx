@@ -2138,7 +2138,7 @@ export default function App() {
                         setTokenAAllowance(newTokenAllowance);
                     }
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 if (recheckTokenAApproval) setRecheckTokenAApproval(false);
             }
@@ -2169,7 +2169,7 @@ export default function App() {
                         setTokenBAllowance(newTokenAllowance);
                     }
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 if (recheckTokenBApproval) setRecheckTokenBApproval(false);
             }
