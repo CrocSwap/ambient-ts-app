@@ -412,7 +412,8 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [ghostLines, setGhostLines] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [ghostLineValues, setGhostLineValues] = useState<any>();
+    const [ghostLineValuesLimit, setghostLineValuesLimit] = useState<any>();
+    const [ghostLineValuesRange, setghostLineValuesRange] = useState<any>();
 
     // Liq Series
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2893,6 +2894,16 @@ export default function Chart(props: propsIF) {
                                 rangeWidthPercentage,
                             );
 
+                            setghostLineValuesRange(
+                                adjTicks(
+                                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                ).concat(
+                                    adjTicks(
+                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                    ),
+                                ),
+                            );
+
                             if (pinnedDisplayPrices !== undefined) {
                                 setRanges((prevState) => {
                                     const newTargets = [...prevState];
@@ -2972,6 +2983,14 @@ export default function Chart(props: propsIF) {
                                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                             );
                         }
+
+                        setghostLineValuesRange(
+                            adjTicks(
+                                draggingLine === 'Max'
+                                    ? pinnedMaxPriceDisplayTruncated
+                                    : pinnedMinPriceDisplayTruncated,
+                            ),
+                        );
 
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
@@ -3074,6 +3093,8 @@ export default function Chart(props: propsIF) {
                         'default',
                     );
 
+                    setghostLineValuesRange([]);
+
                     setIsCrosshairActive('chart');
                 });
 
@@ -3095,7 +3116,7 @@ export default function Chart(props: propsIF) {
                     );
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
-                    setGhostLineValues(adjTicks(newLimitValue));
+                    setghostLineValuesLimit(adjTicks(newLimitValue));
 
                     if (newLimitValue < 0) newLimitValue = 0;
 
@@ -3112,7 +3133,7 @@ export default function Chart(props: propsIF) {
                         'cursor',
                         'row-resize',
                     );
-                    setGhostLineValues([]);
+                    setghostLineValuesLimit([]);
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
@@ -5502,8 +5523,8 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
                     limitNoGoZone(noGoZoneBoudnaries);
-                    if (ghostLineValues !== undefined) {
-                        ghostLines(ghostLineValues);
+                    if (ghostLineValuesLimit !== undefined) {
+                        ghostLines(ghostLineValuesLimit);
                     }
                 })
                 .on('measure', () => {
@@ -5511,10 +5532,35 @@ export default function Chart(props: propsIF) {
                     ghostLines.context(ctx);
                 });
         }
-    }, [noGoZoneBoudnaries, limitNoGoZone, ghostLineValues, ghostLines]);
+    }, [noGoZoneBoudnaries, limitNoGoZone, ghostLineValuesLimit, ghostLines]);
 
     useEffect(() => {
-        if (isLineDrag && location.pathname.includes('/limit')) {
+        const canvas = d3
+            .select(d3CanvasNoGoZone.current)
+            .select('canvas')
+            .node() as any;
+        const ctx = canvas.getContext('2d');
+
+        if (ghostLines) {
+            d3.select(d3CanvasNoGoZone.current)
+                .on('draw', () => {
+                    if (ghostLineValuesRange !== undefined) {
+                        ghostLines(ghostLineValuesRange);
+                    }
+                })
+                .on('measure', () => {
+                    ghostLines.context(ctx);
+                });
+        }
+    }, [ghostLineValuesRange, ghostLines]);
+
+    useEffect(() => {
+        if (
+            isLineDrag &&
+            (location.pathname.includes('/limit') ||
+                location.pathname.includes('range') ||
+                location.pathname.includes('reposition'))
+        ) {
             d3.select(d3CanvasNoGoZone.current)
                 .select('canvas')
                 .style('display', 'inline');
@@ -6449,7 +6495,7 @@ export default function Chart(props: propsIF) {
             showTvl,
             showVolume,
             showFeeRate,
-            ghostLineValues,
+            ghostLineValuesLimit,
             liqMode,
         ],
     );
