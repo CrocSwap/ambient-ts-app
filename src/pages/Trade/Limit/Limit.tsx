@@ -53,7 +53,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
@@ -920,6 +920,10 @@ export default function Limit(props: propsIF) {
         }
         return text;
     }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
 
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
@@ -1011,39 +1015,50 @@ export default function Limit(props: propsIF) {
                                     }
                                     areBothAckd={areBothAckd}
                                 />
-                                {ackTokenMessage && <p>{ackTokenMessage}</p>}
-                                {needConfirmTokenA && (
-                                    <a
-                                        href={
-                                            chainData.blockExplorer +
-                                            'token/' +
-                                            tokenPair.dataTokenA.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                    >
-                                        View{' '}
-                                        {tokenPair.dataTokenA.symbol ||
-                                            tokenPair.dataTokenA.name}{' '}
-                                        on Etherscan
-                                    </a>
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
                                 )}
-                                {needConfirmTokenB && (
-                                    <a
-                                        href={
-                                            chainData.blockExplorer +
-                                            'token/' +
-                                            tokenPair.dataTokenB.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                    >
-                                        View{' '}
-                                        {tokenPair.dataTokenB.symbol ||
-                                            tokenPair.dataTokenB.name}{' '}
-                                        on Etherscan
-                                    </a>
-                                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                chainData.blockExplorer +
+                                                'token/' +
+                                                tokenPair.dataTokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {tokenPair.dataTokenA.symbol ||
+                                                tokenPair.dataTokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                chainData.blockExplorer +
+                                                'token/' +
+                                                tokenPair.dataTokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {tokenPair.dataTokenB.symbol ||
+                                                tokenPair.dataTokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
                             </>
                         )
                     ) : (
