@@ -406,15 +406,7 @@ export default function App() {
         }
     }, [loginCheckDelayElapsed, isConnected]);
 
-    // this is another case where true vs false is an arbitrary distinction
-    const [activeTokenListsChanged, indicateActiveTokenListsChanged] =
-        useState(false);
-
-    const tokensOnActiveLists = useTokenMap(
-        activeTokenListsChanged,
-        JSON.parse(localStorage.getItem('user') as string)
-            ?.activeTokenLists ?? ['/ambient-token-list.json'],
-    );
+    const tokensOnActiveLists = useTokenMap();
 
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
@@ -691,7 +683,7 @@ export default function App() {
         setSearchableTokens(getTokensFromLists(activeTokenLists));
         // TODO:  this hook runs once after the initial load of the app, we may need to add
         // TODO:  additional triggers for DOM interactions
-    }, [tokenListsReceived, activeTokenListsChanged]);
+    }, [tokenListsReceived]);
 
     function getTokensFromLists(tokenListURIs: Array<string>) {
         // retrieve and parse all token lists held in local storage
@@ -2691,8 +2683,6 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
@@ -2750,8 +2740,6 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
@@ -2811,8 +2799,6 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
@@ -2875,8 +2861,6 @@ export default function App() {
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
         dailyVol: dailyVol,
