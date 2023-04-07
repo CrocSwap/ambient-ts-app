@@ -2669,6 +2669,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        pool: pool,
         tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
@@ -2989,6 +2990,18 @@ export default function App() {
         favePools: favePools,
     };
 
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
+        () =>
+            getMoneynessRank(
+                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
+            ) -
+                getMoneynessRank(
+                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
+                ) >=
+            0,
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
+    );
+
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
@@ -2997,15 +3010,6 @@ export default function App() {
         // if pool price is < 0.1 then denom token will be quote (cheaper one)
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
-        const isBaseTokenMoneynessGreaterOrEqual =
-            getMoneynessRank(
-                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
-            ) -
-                getMoneynessRank(
-                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
-                ) >=
-            0;
-        // if (!poolPriceDisplay) return;
 
         const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
             ? tradeData.didUserFlipDenom
