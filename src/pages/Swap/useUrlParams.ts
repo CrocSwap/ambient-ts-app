@@ -5,7 +5,11 @@ import Moralis from 'moralis';
 
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
-import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
+import {
+    setChainId,
+    setTokenA,
+    setTokenB,
+} from '../../utils/state/tradeDataSlice';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 export const useUrlParams = (
@@ -156,6 +160,11 @@ export const useUrlParams = (
                 'Testnet Token List',
             ]);
         };
+
+        const paramsIncludesChain = paramsUsed.includes('chain');
+        if (paramsIncludesChain) {
+            dispatch(setChainId(chainToUse));
+        }
 
         // TODO: find a way to correctly type this return
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

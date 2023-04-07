@@ -7,6 +7,7 @@ import { ethers } from 'ethers';
 import {
     setTokenA,
     setTokenB,
+    setChainId,
     setAdvancedMode,
     setAdvancedLowTick,
     setAdvancedHighTick,
@@ -221,6 +222,11 @@ export const useUrlParams = (
                 });
         }
 
+        const paramsIncludeChain = paramsUsed.includes('chain');
+        if (paramsIncludeChain) {
+            dispatch(setChainId(chainToUse));
+        }
+
         const addrTokenA = tokenPair[0];
         const addrTokenB = tokenPair[1];
         const tokensAreDifferent =
@@ -229,6 +235,7 @@ export const useUrlParams = (
             addrTokenA !== addrTokenB;
         const paramsIncludesToken =
             paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
+
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
             Promise.all([

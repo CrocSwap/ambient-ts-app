@@ -270,6 +270,7 @@ export const tradeDataSlice = createSlice({
 export const {
     setTokenA,
     setTokenB,
+    setChainId,
     setLiquidityFee,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
