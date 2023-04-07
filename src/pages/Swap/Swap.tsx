@@ -3,7 +3,12 @@ import { useState, Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec, CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    ChainSpec,
+    CrocImpact,
+    CrocPoolView,
+} from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -110,10 +115,12 @@ interface propsIF {
     bypassConfirm: allSkipConfirmMethodsIF;
     ackTokens: ackTokensMethodsIF;
     chainData: ChainSpec;
+    pool: CrocPoolView | undefined;
 }
 
 export default function Swap(props: propsIF) {
     const {
+        pool,
         crocEnv,
         isUserLoggedIn,
         account,
@@ -533,6 +540,7 @@ export default function Swap(props: propsIF) {
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
     const confirmSwapModalProps = {
+        pool: pool,
         poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
@@ -559,6 +567,7 @@ export default function Swap(props: propsIF) {
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
         bypassConfirm: bypassConfirm,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
