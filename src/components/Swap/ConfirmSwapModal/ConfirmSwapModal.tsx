@@ -16,6 +16,8 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { AiOutlineWarning } from 'react-icons/ai';
+import DividerDark from '../../Global/DividerDark/DividerDark';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -197,7 +199,8 @@ export default function ConfirmSwapModal(props: propsIF) {
     const priceIncreaseComponentOrNull =
         buyTokenPriceChangePercentage &&
         parseFloat(buyTokenPriceChangePercentage) > 0 ? (
-            <div className={styles.row}>
+            <div className={` ${styles.warning_box}`}>
+                <AiOutlineWarning color='var(--negative)' />
                 <p>
                     WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
                     {buyTokenPriceChangePercentage + '%'}
@@ -271,6 +274,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
+                <DividerDark />
                 {priceIncreaseComponentOrNull}
             </div>
             <ConfirmationModalControl
