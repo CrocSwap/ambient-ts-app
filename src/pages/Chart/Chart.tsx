@@ -3338,16 +3338,65 @@ export default function Chart(props: propsIF) {
                         event.sourceEvent.clientY - rectLimit.top,
                     );
 
-                    newLimitValue = setLimitForNoGoZone(newLimitValue);
-                    setghostLineValuesLimit(adjTicks(newLimitValue));
-
                     if (newLimitValue < 0) newLimitValue = 0;
 
-                    setLimit(() => {
-                        return [{ name: 'Limit', value: newLimitValue }];
-                    });
+                    newLimitValue = setLimitForNoGoZone(newLimitValue);
 
-                    setTriangleLimitValues(newLimitValue);
+                    const limitNonDisplay = denomInBase
+                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+
+                    limitNonDisplay?.then((limit) => {
+                        limit = limit !== 0 ? limit : 1;
+
+                        const pinnedTick: number = isTokenABase
+                            ? pinTickLower(limit, chainData.gridSize)
+                            : pinTickUpper(limit, chainData.gridSize);
+
+                        const tickPrice = tickToPrice(pinnedTick);
+
+                        const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+
+                        if (tickDispPrice) {
+                            tickDispPrice.then((tp) => {
+                                const displayPriceWithDenom = denomInBase
+                                    ? tp
+                                    : 1 / tp;
+                                const limitRateTruncated =
+                                    displayPriceWithDenom < 2
+                                        ? displayPriceWithDenom.toLocaleString(
+                                              undefined,
+                                              {
+                                                  minimumFractionDigits: 2,
+                                                  maximumFractionDigits: 6,
+                                              },
+                                          )
+                                        : displayPriceWithDenom.toLocaleString(
+                                              undefined,
+                                              {
+                                                  minimumFractionDigits: 2,
+                                                  maximumFractionDigits: 2,
+                                              },
+                                          );
+
+                                const limitValue = parseFloat(
+                                    limitRateTruncated.replace(',', ''),
+                                );
+
+                                setghostLineValuesLimit(adjTicks(limitValue));
+
+                                newLimitValue = limitValue;
+
+                                setLimit(() => {
+                                    return [
+                                        { name: 'Limit', value: limitValue },
+                                    ];
+                                });
+
+                                setTriangleLimitValues(limitValue);
+                            });
+                        }
+                    });
                 })
                 .on('end', (event: any) => {
                     draggingLine = undefined;
