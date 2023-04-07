@@ -289,14 +289,13 @@ export default function OrderRow(props: propsIF) {
     );
 
     function handleWalletLinkClick() {
-        () => {
+        if (!isOnPortfolioPage)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
+                    loadingStatus: isOnPortfolioPage ? false : true,
                 }),
             );
-        };
 
         window.open(
             `/${

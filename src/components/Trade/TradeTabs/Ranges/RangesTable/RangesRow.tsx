@@ -333,14 +333,13 @@ export default function RangesRow(props: propsIF) {
         </li>
     );
     function handleWalletLinkClick() {
-        () => {
+        if (!isOnPortfolioPage)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
+                    loadingStatus: isOnPortfolioPage ? false : true,
                 }),
             );
-        };
 
         window.open(
             `/${

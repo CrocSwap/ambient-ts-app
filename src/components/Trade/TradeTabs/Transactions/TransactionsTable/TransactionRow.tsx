@@ -308,12 +308,13 @@ export default function TransactionRow(props: propsIF) {
     }
 
     const handleWalletClick = () => {
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'lookupUserTxData',
-                loadingStatus: true,
-            }),
-        );
+        if (!isOnPortfolioPage)
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'lookupUserTxData',
+                    loadingStatus: true,
+                }),
+            );
 
         const accountUrl = `/${
             isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
