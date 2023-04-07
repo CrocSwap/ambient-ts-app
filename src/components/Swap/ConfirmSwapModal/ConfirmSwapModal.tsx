@@ -74,64 +74,81 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
-    const [blockNumberWhenModalOpened] = useState<number>(lastBlockNumber);
+    const [baselineBlockNumber, setBaselineBlockNumber] =
+        useState<number>(lastBlockNumber);
 
-    const [poolPriceWhenModalOpened, setPoolPriceWhenModalOpened] = useState<
+    const [baselineBuyTokenPrice, setBaselineBuyTokenPrice] = useState<
         number | undefined
     >();
 
-    const [currentPoolPrice, setCurrentPoolPrice] = useState<
+    const [currentBuyTokenPrice, setCurrentBuyTokenPrice] = useState<
         number | undefined
     >();
 
-    const setInitialPriceAsync = async () => {
+    const [isWaitingForPriceChangeAckt, setIsWaitingForPriceChangeAckt] =
+        useState<boolean>(false);
+
+    const setBaselinePriceAsync = async () => {
         if (!pool) return;
-        const intialPrice = await pool.displayPrice(blockNumberWhenModalOpened);
-        console.log({ intialPrice });
-        setPoolPriceWhenModalOpened(intialPrice);
+        const newBaselinePrice = await pool.displayPrice(baselineBlockNumber);
+        console.log({ newBaselinePrice });
+        const baselineBuyTokenPrice = isSellTokenBase
+            ? 1 / newBaselinePrice
+            : newBaselinePrice;
+        setBaselineBuyTokenPrice(baselineBuyTokenPrice);
     };
 
     const setCurrentPriceAsync = async () => {
         if (!pool) return;
-        const currentPrice = await pool.displayPrice(lastBlockNumber);
-        console.log({ currentPrice });
-        setCurrentPoolPrice(currentPrice);
+        const currentBasePrice = await pool.displayPrice(lastBlockNumber);
+        console.log({ currentBasePrice });
+        const currentBuyTokenPrice = isSellTokenBase
+            ? 1 / currentBasePrice
+            : currentBasePrice;
+        setCurrentBuyTokenPrice(currentBuyTokenPrice);
     };
 
-    const poolPriceChangePercentage = useMemo(() => {
-        if (!currentPoolPrice || !poolPriceWhenModalOpened) return;
-
-        const changePercentage =
-            ((currentPoolPrice - poolPriceWhenModalOpened) /
-                poolPriceWhenModalOpened) *
-            100;
-
-        const changePercentageString =
-            changePercentage === undefined
-                ? '…'
-                : changePercentage.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        return changePercentageString;
-    }, [currentPoolPrice, poolPriceWhenModalOpened]);
-
     useEffect(() => {
-        setInitialPriceAsync();
-    }, []);
+        if (!isWaitingForPriceChangeAckt) setBaselinePriceAsync();
+    }, [isWaitingForPriceChangeAckt]);
 
     useEffect(() => {
         setCurrentPriceAsync();
     }, [lastBlockNumber]);
 
-    useEffect(() => {
-        console.log({ poolPriceChangePercentage });
-    }, [poolPriceChangePercentage]);
+    const buyTokenPriceChangePercentage = useMemo(() => {
+        if (!currentBuyTokenPrice || !baselineBuyTokenPrice) return;
 
-    useEffect(() => {
-        console.log({ blockNumberWhenModalOpened });
-        console.log({ poolPriceWhenModalOpened });
-    }, [poolPriceWhenModalOpened]);
+        const changePercentage =
+            ((currentBuyTokenPrice - baselineBuyTokenPrice) /
+                baselineBuyTokenPrice) *
+            100;
+
+        if (changePercentage > 0) {
+            setIsWaitingForPriceChangeAckt(true);
+        } else {
+            setIsWaitingForPriceChangeAckt(false);
+        }
+
+        const changePercentageString = changePercentage.toLocaleString(
+            undefined,
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            },
+        );
+        return changePercentageString;
+    }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
+
+    // useEffect(() => {
+    //     console.log({ baselineBlockNumber });
+    //     console.log({ baselineBuyTokenPrice });
+    //     console.log({ buyTokenPriceChangePercentage });
+    // }, [
+    //     baselineBuyTokenPrice,
+    //     baselineBlockNumber,
+    //     buyTokenPriceChangePercentage,
+    // ]);
 
     const isPriceInverted =
         (isDenomBaseLocal && !isSellTokenBase) ||
@@ -176,6 +193,25 @@ export default function ConfirmSwapModal(props: propsIF) {
             </div>
         </div>
     );
+
+    const priceIncreaseComponentOrNull =
+        buyTokenPriceChangePercentage &&
+        parseFloat(buyTokenPriceChangePercentage) > 0 ? (
+            <div className={styles.row}>
+                <p>
+                    WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
+                    {buyTokenPriceChangePercentage + '%'}
+                </p>
+                <button
+                    onClick={() => {
+                        setBaselineBlockNumber(lastBlockNumber);
+                        setIsWaitingForPriceChangeAckt(false);
+                    }}
+                >
+                    Understood
+                </button>
+            </div>
+        ) : null;
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -235,10 +271,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
-                <div className={styles.row}>
-                    <p>Change in pool price since modal opened</p>
-                    <p>{poolPriceChangePercentage + '%'}</p>
-                </div>
+                {priceIncreaseComponentOrNull}
             </div>
             <ConfirmationModalControl
                 tempBypassConfirm={tempBypassConfirm}
@@ -312,6 +345,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                             setShowConfirmation(false);
                         }}
                         flat
+                        disabled={isWaitingForPriceChangeAckt}
                     />
                 )}
             </footer>
