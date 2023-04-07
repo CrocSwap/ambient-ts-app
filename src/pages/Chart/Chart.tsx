@@ -2271,7 +2271,11 @@ export default function Chart(props: propsIF) {
     }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
-        if (tradeData.limitTick === undefined) return;
+        if (
+            tradeData.limitTick === undefined ||
+            Array.isArray(tradeData.limitTick)
+        )
+            return;
         const limitDisplayPrice = pool?.toDisplayPrice(
             tickToPrice(tradeData.limitTick),
         );
@@ -2623,19 +2627,22 @@ export default function Chart(props: propsIF) {
 
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
         if (poolPriceDisplay) {
-            const shouldReverse =
-                (limitPreviousData > poolPriceDisplay &&
-                    newLimitValue < poolPriceDisplay) ||
-                (limitPreviousData < poolPriceDisplay &&
-                    newLimitValue > poolPriceDisplay);
-
-            if (
-                shouldReverse &&
-                (sellOrderStyle === 'order_sell' ||
-                    sellOrderStyle === 'order_buy')
-            ) {
-                handlePulseAnimation('limitOrder');
-                dispatch(setShouldLimitDirectionReverse(true));
+            if (sellOrderStyle === 'order_sell') {
+                if (
+                    limitPreviousData > poolPriceDisplay &&
+                    newLimitValue < poolPriceDisplay
+                ) {
+                    handlePulseAnimation('limitOrder');
+                    dispatch(setShouldLimitDirectionReverse(true));
+                }
+            } else {
+                if (
+                    limitPreviousData < poolPriceDisplay &&
+                    newLimitValue > poolPriceDisplay
+                ) {
+                    handlePulseAnimation('limitOrder');
+                    dispatch(setShouldLimitDirectionReverse(true));
+                }
             }
         }
     }
@@ -3098,6 +3105,7 @@ export default function Chart(props: propsIF) {
                     setIsCrosshairActive('chart');
                 });
 
+            let oldLimitValue: number | undefined = undefined;
             const dragLimit = d3
                 .drag()
                 .on('start', () => {
@@ -3106,6 +3114,7 @@ export default function Chart(props: propsIF) {
                         'none',
                     );
 
+                    oldLimitValue = limit[0].value;
                     setIsCrosshairActive('none');
                 })
                 .on('drag', function (event) {
@@ -3244,7 +3253,8 @@ export default function Chart(props: propsIF) {
                         }
                     }
 
-                    onBlurLimitRate(newLimitValue);
+                    if (oldLimitValue)
+                        onBlurLimitRate(oldLimitValue, newLimitValue);
 
                     d3.select(d3CanvasLimitLine.current).style(
                         'cursor',
@@ -3269,6 +3279,7 @@ export default function Chart(props: propsIF) {
         isAdvancedModeActive,
         dragControl,
         ranges,
+        limit,
         minPrice,
         maxPrice,
     ]);
@@ -3348,6 +3359,8 @@ export default function Chart(props: propsIF) {
         yAxisCanvasWidth,
         bandwidth,
         reset,
+        sellOrderStyle,
+        checkLimitOrder,
     ]);
 
     function createRectLabel(
@@ -6326,7 +6339,7 @@ export default function Chart(props: propsIF) {
                                 newLimitValue <= noGoZoneMax
                             )
                         ) {
-                            onBlurLimitRate(newLimitValue);
+                            onBlurLimitRate(limit[0].value, newLimitValue);
                         } else {
                             flashNoGoZone();
                         }
@@ -6755,8 +6768,7 @@ export default function Chart(props: propsIF) {
         }, 1000);
     };
 
-    const onBlurLimitRate = (newLimitValue: any) => {
-        const limitPreviousData = limit[0].value;
+    const onBlurLimitRate = (limitPreviousData: number, newLimitValue: any) => {
         if (newLimitValue === undefined) {
             return;
         }

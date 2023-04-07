@@ -19,7 +19,6 @@ import {
     // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
-    setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
@@ -268,7 +267,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 reverseTokens();
                 return !state;
             });
-            dispatch(setShouldLimitDirectionReverse(false));
         }
     }, [tradeData.shouldLimitDirectionReverse]);
 

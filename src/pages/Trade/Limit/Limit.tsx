@@ -39,6 +39,7 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import {
     setLimitTick,
     setLimitTickCopied,
+    setShouldLimitDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
@@ -242,7 +243,10 @@ export default function Limit(props: propsIF) {
     );
 
     useEffect(() => {
-        dispatch(setLimitTick(undefined));
+        if (!tradeData.shouldLimitDirectionReverse) {
+            dispatch(setLimitTick(undefined));
+        }
+        dispatch(setShouldLimitDirectionReverse(false));
     }, [tokenA + tokenB]);
 
     useEffect(() => {
