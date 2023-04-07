@@ -93,7 +93,6 @@ export default function ConfirmSwapModal(props: propsIF) {
     const setBaselinePriceAsync = async () => {
         if (!pool) return;
         const newBaselinePrice = await pool.displayPrice(baselineBlockNumber);
-        console.log({ newBaselinePrice });
         const baselineBuyTokenPrice = isSellTokenBase
             ? 1 / newBaselinePrice
             : newBaselinePrice;
@@ -103,7 +102,6 @@ export default function ConfirmSwapModal(props: propsIF) {
     const setCurrentPriceAsync = async () => {
         if (!pool) return;
         const currentBasePrice = await pool.displayPrice(lastBlockNumber);
-        console.log({ currentBasePrice });
         const currentBuyTokenPrice = isSellTokenBase
             ? 1 / currentBasePrice
             : currentBasePrice;
@@ -141,16 +139,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         );
         return changePercentageString;
     }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
-
-    // useEffect(() => {
-    //     console.log({ baselineBlockNumber });
-    //     console.log({ baselineBuyTokenPrice });
-    //     console.log({ buyTokenPriceChangePercentage });
-    // }, [
-    //     baselineBuyTokenPrice,
-    //     baselineBlockNumber,
-    //     buyTokenPriceChangePercentage,
-    // ]);
 
     const isPriceInverted =
         (isDenomBaseLocal && !isSellTokenBase) ||
@@ -196,9 +184,12 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const priceIncreaseComponentOrNull =
+    const hasBuyTokenPriceIncreasedSinceBaseline =
         buyTokenPriceChangePercentage &&
-        parseFloat(buyTokenPriceChangePercentage) > 0 ? (
+        parseFloat(buyTokenPriceChangePercentage) > 0;
+
+    const priceIncreaseComponentOrNull =
+        hasBuyTokenPriceIncreasedSinceBaseline ? (
             <div className={` ${styles.warning_box}`}>
                 <AiOutlineWarning color='var(--negative)' />
                 <p>
@@ -211,7 +202,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                         setIsWaitingForPriceChangeAckt(false);
                     }}
                 >
-                    Understood
+                    Acknowledge
                 </button>
             </div>
         ) : null;
@@ -274,13 +265,15 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
-                <DividerDark />
+                {!!priceIncreaseComponentOrNull && <DividerDark />}
                 {priceIncreaseComponentOrNull}
             </div>
-            <ConfirmationModalControl
-                tempBypassConfirm={tempBypassConfirm}
-                setTempBypassConfirm={setTempBypassConfirm}
-            />
+            {!isWaitingForPriceChangeAckt && (
+                <ConfirmationModalControl
+                    tempBypassConfirm={tempBypassConfirm}
+                    setTempBypassConfirm={setTempBypassConfirm}
+                />
+            )}
         </div>
     );
 
@@ -332,7 +325,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation && (
+                {showConfirmation && !isWaitingForPriceChangeAckt && (
                     <Button
                         title='Send Swap'
                         action={() => {
