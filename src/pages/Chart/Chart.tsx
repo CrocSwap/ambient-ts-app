@@ -3598,7 +3598,7 @@ export default function Chart(props: propsIF) {
                         yScale(d),
                         X - tickSize,
                         lastCandle.close > lastCandle.open
-                            ? '#CDC1FF'
+                            ? '#EAEFF2'
                             : '#1d1d30',
                         lastCandle.close > lastCandle.open ? 'black' : 'white',
                         formatAmountChartData(d, undefined),
@@ -4700,6 +4700,7 @@ export default function Chart(props: propsIF) {
         if (crosshairHorizontalCanvas) {
             d3.select(d3CanvasCrHorizontal.current)
                 .on('draw', () => {
+                    ctx.setLineDash([0.6, 0.6]);
                     crosshairHorizontalCanvas(crosshairData);
                 })
                 .on('measure', () => {
@@ -4719,6 +4720,7 @@ export default function Chart(props: propsIF) {
         if (crosshairVertical) {
             d3.select(d3CanvasCrVertical.current)
                 .on('draw', () => {
+                    ctx.setLineDash([0.6, 0.6]);
                     if (isCrosshairActive === 'chart') {
                         crosshairVertical(crosshairData);
                     }
@@ -4742,6 +4744,7 @@ export default function Chart(props: propsIF) {
         if (marketLine) {
             d3.select(d3CanvasMarketLine.current)
                 .on('draw', () => {
+                    ctx.setLineDash([4, 2]);
                     marketLine(market);
                 })
                 .on('measure', () => {
@@ -4762,6 +4765,7 @@ export default function Chart(props: propsIF) {
             if (limitLine && triangle) {
                 d3.select(d3CanvasLimitLine.current)
                     .on('draw', () => {
+                        ctx.setLineDash([16, 16]);
                         limitLine(limit);
                         triangle(limitTriangleData);
                     })
@@ -4788,6 +4792,7 @@ export default function Chart(props: propsIF) {
             if (horizontalLine && triangle) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
+                        ctx.setLineDash([16, 16]);
                         horizontalLine(ranges);
                         triangle(rangeTriangleData);
                     })
