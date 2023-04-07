@@ -2768,8 +2768,7 @@ export default function Chart(props: propsIF) {
                     ) {
                         if (
                             dragedValue === 0 ||
-                            dragedValue === liquidityData?.topBoundary ||
-                            dragedValue < liquidityData?.lowBoundary
+                            dragedValue === liquidityData?.topBoundary
                         ) {
                             rangeWidthPercentage = 100;
 
@@ -5326,7 +5325,9 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        return filtered.sort((a, b) => b.liqPrices - a.liqPrices);
+        return low === 0
+            ? data
+            : filtered.sort((a, b) => b.liqPrices - a.liqPrices);
     };
 
     const addLowValuetoHighlightedLine = (data: any[], liquidityScale: any) => {
@@ -5410,7 +5411,9 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        return filtered.sort((a, b) => b.liqPrices - a.liqPrices);
+        return low === 0
+            ? data
+            : filtered.sort((a, b) => b.liqPrices - a.liqPrices);
     };
 
     useEffect(() => {
