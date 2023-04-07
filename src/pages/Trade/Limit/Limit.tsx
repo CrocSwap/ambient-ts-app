@@ -56,7 +56,6 @@ import { FiCopy } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-import { useUrlParams } from '../../InitPool/useUrlParams';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
@@ -233,17 +232,16 @@ export default function Limit(props: propsIF) {
         }
     }, [limitTickFromParams, limitTick === undefined]);
 
-    const { tokenA, tokenB } = useUrlParams();
     const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(
-        () => pool?.baseToken === tokenA,
-        [pool?.baseToken, tokenA],
+        () => pool?.baseToken === tokenPair.dataTokenA.address,
+        [pool?.baseToken, tokenPair.dataTokenA.address],
     );
 
     useEffect(() => {
         dispatch(setLimitTick(undefined));
-    }, [tokenA + tokenB]);
+    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
 
     useEffect(() => {
         (async () => {
@@ -455,11 +453,13 @@ export default function Limit(props: propsIF) {
         if (!limitTick) return;
 
         const testOrder = isTokenAPrimary
-            ? crocEnv.sell(tokenA, 0)
-            : crocEnv.buy(tokenB, 0);
+            ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
+            : crocEnv.buy(tokenPair.dataTokenA.address, 0);
 
         const ko = testOrder.atLimit(
-            isTokenAPrimary ? tokenB : tokenA,
+            isTokenAPrimary
+                ? tokenPair.dataTokenB.address
+                : tokenPair.dataTokenA.address,
             limitTick,
         );
 
@@ -481,7 +481,13 @@ export default function Limit(props: propsIF) {
                 setIsOrderValid(true);
             }
         })();
-    }, [limitTick, tokenAInputQty, tokenBInputQty]);
+    }, [
+        limitTick,
+        tokenAInputQty,
+        tokenBInputQty,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
+    ]);
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
         useState(false);

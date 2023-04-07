@@ -13,7 +13,6 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import {
     TokenIF,
@@ -67,9 +66,6 @@ export default function InitPool(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    // URL parameters
-    const { chain, baseAddr, quoteAddr } = useUrlParams();
-
     // function to programmatically navigate the user
     const navigate = useNavigate();
 
@@ -77,12 +73,19 @@ export default function InitPool(props: propsIF) {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
+    const { tokenA, tokenB, baseToken, quoteToken, chainId } = useAppSelector(
+        (state) => state.tradeData,
+    );
+
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
             const doesPoolExist = crocEnv
-                .pool(baseAddr as string, quoteAddr as string)
+                .pool(
+                    tokenPair.dataTokenA.address,
+                    tokenPair.dataTokenB.address as string,
+                )
                 .isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
@@ -128,19 +131,19 @@ export default function InitPool(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        if (tokenList && baseAddr && quoteAddr) {
+        if (tokenList && baseToken.address && quoteToken.address) {
             const findToken = (addr: string) =>
                 tokenList.find(
                     (tkn: TokenIF) =>
                         tkn.address.toLowerCase() === addr.toLowerCase(),
                 );
 
-            const dataTokenA = findToken(baseAddr);
-            const dataTokenB = findToken(quoteAddr);
+            const dataTokenA = findToken(baseToken.address);
+            const dataTokenB = findToken(quoteToken.address);
             setTokenALocal(dataTokenA);
             setTokenBLocal(dataTokenB);
         }
-    }, [tokenList, baseAddr, quoteAddr]);
+    }, [tokenList, baseToken.address, quoteToken.address, chainId]);
 
     useEffect(() => {
         // TODO: find a way to correctly type this return
@@ -158,7 +161,7 @@ export default function InitPool(props: propsIF) {
             };
             const promise = Moralis.EvmApi.token.getTokenMetadata({
                 addresses: [addr],
-                chain,
+                chain: chainId,
             });
 
             Promise.resolve(promise)
@@ -176,9 +179,10 @@ export default function InitPool(props: propsIF) {
                 })
                 .then((res) => setTarget(res, target));
         }
-        tokenALocal === undefined && setTokenFromChain(baseAddr, 'tokenALocal');
+        tokenALocal === undefined &&
+            setTokenFromChain(baseToken.address, 'tokenALocal');
         tokenBLocal === undefined &&
-            setTokenFromChain(quoteAddr, 'tokenBLocal');
+            setTokenFromChain(baseToken.address, 'tokenBLocal');
     }, [tokenALocal, tokenBLocal]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
@@ -222,10 +226,6 @@ export default function InitPool(props: propsIF) {
         useState<number>(defaultInitialPrice);
 
     const [valueDisplayString, setValueDisplayString] = useState<string>('');
-
-    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
-        (state) => state.tradeData,
-    );
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
@@ -358,9 +358,9 @@ export default function InitPool(props: propsIF) {
                             '/trade/range/chain=' +
                                 tokenPair.dataTokenA.chainId +
                                 '&tokenA=' +
-                                baseAddr +
+                                baseToken.address +
                                 '&tokenB=' +
-                                quoteAddr,
+                                quoteToken.address,
                             {
                                 replace: true,
                             },
@@ -419,9 +419,9 @@ export default function InitPool(props: propsIF) {
                         '/trade/market/chain=' +
                         tokenPair.dataTokenA.chainId +
                         '&tokenA=' +
-                        baseAddr +
+                        baseToken.address +
                         '&tokenB=' +
-                        quoteAddr
+                        quoteToken.address
                     }
                     replace={true}
                 />

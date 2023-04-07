@@ -10,6 +10,7 @@ import {
     setChainId,
 } from '../state/tradeDataSlice';
 import { TokenIF } from '../interfaces/exports';
+import { useTokenMap } from './useTokenMap';
 
 export interface UrlParams {
     chainId?: string;
@@ -21,6 +22,7 @@ export const useUrlParams = (
     dfltChainId: string,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
 ): UrlParams => {
+    const tokenMetaMap = useTokenMap();
     const { params } = useParams();
 
     const dispatch = useAppDispatch();

@@ -36,7 +36,6 @@ import {
     addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
-import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 import { FiCopy } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
@@ -162,8 +161,6 @@ export default function Swap(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
-
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
@@ -179,10 +176,6 @@ export default function Swap(props: propsIF) {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
-
-    useEffect(() => {
-        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
-    }, [tokenPairFromParams]);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
