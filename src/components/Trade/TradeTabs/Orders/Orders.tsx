@@ -440,15 +440,6 @@ export default function Orders(props: propsIF) {
             sortable: false,
             alignCenter: true,
         },
-        {
-            name: '',
-
-            show: !isOnPortfolioPage && isShowAllEnabled,
-
-            slug: 'walletLink',
-            sortable: false,
-            alignRight: true,
-        },
 
         {
             name: '',
