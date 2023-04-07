@@ -394,6 +394,7 @@ export default function RangeDetails(props: propsIF) {
                     position={position}
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}
+                    isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
             {snackbarContent}
