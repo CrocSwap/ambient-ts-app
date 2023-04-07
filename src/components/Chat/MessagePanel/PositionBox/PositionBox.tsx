@@ -222,7 +222,6 @@ export default function PositionBox(props: propsIF) {
                 .find((item) => item.includes('0x'));
             const explorerUrl = 'https://goerli.etherscan.io/tx/' + hashMsg;
             window.open(explorerUrl);
-            console.log('explorerUrl ', hashMsg);
         } else {
             const walletUrl = props.isCurrentUser
                 ? '/account'
