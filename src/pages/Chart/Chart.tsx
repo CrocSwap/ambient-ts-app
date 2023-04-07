@@ -5437,10 +5437,16 @@ export default function Chart(props: propsIF) {
                   );
 
         if (liquidityData) {
-            const data = addHighValuetoHighlightedLine(
-                liqDataBid,
-                liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
-            );
+            const data =
+                simpleRangeWidth !== 100
+                    ? addHighValuetoHighlightedLine(
+                          liqDataBid,
+                          liqMode === 'curve'
+                              ? liquidityScale
+                              : liquidityDepthScale,
+                      )
+                    : liqDataBid;
+
             const ctx = (
                 d3
                     .select(d3CanvasLiqBidLine.current)
@@ -5500,10 +5506,15 @@ export default function Chart(props: propsIF) {
                 ? liquidityData.depthLiqAskData
                 : liquidityData.liqAskData;
 
-        const data = addLowValuetoHighlightedLine(
-            liqDataAsk,
-            liqMode === 'curve' ? liquidityScale : liquidityDepthScale,
-        );
+        const data =
+            simpleRangeWidth !== 100
+                ? addLowValuetoHighlightedLine(
+                      liqDataAsk,
+                      liqMode === 'curve'
+                          ? liquidityScale
+                          : liquidityDepthScale,
+                  )
+                : liqDataAsk;
 
         const ctx = (
             d3.select(d3CanvasLiqAskLine.current).select('canvas').node() as any
