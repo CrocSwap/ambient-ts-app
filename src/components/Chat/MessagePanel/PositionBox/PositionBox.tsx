@@ -330,13 +330,6 @@ export default function PositionBox(props: propsIF) {
                                 <div className={styles.address}>
                                     {getPositionAdress()}
                                 </div>
-                                <div>
-                                    <HiOutlineExternalLink
-                                        size={16}
-                                        onClick={handleOpenExplorer}
-                                        title='Explorer'
-                                    />
-                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
@@ -457,13 +450,6 @@ export default function PositionBox(props: propsIF) {
                             <div className={styles.address_box}>
                                 <div className={styles.address}>
                                     {getPositionAdress()}
-                                </div>
-                                <div>
-                                    <HiOutlineExternalLink
-                                        size={16}
-                                        onClick={handleOpenExplorer}
-                                        title='Wallet'
-                                    />
                                 </div>
                             </div>
                         </div>
