@@ -522,6 +522,7 @@ export default function TradeCharts(props: propsIF) {
                 setPoolPriceChangePercent={setPoolPriceChangePercent}
                 favePools={favePools}
                 chainId={chainId}
+                chainData={chainData}
             />
             <div
                 style={{
