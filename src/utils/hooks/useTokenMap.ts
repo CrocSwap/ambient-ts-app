@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 
-export const useTokenMap = (
-    activeTokenListsChanged: boolean,
-    tokenListsNeeded: string[],
-) => {
+export const useTokenMap = () => {
+    const tokenListsNeeded = JSON.parse(localStorage.getItem('user') as string)
+        ?.activeTokenLists ?? ['/ambient-token-list.json'];
+
     // hook to preserve the token map value across renders
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -15,6 +15,7 @@ export const useTokenMap = (
             localStorage.getItem('allTokenLists') as string,
         );
         if (!allTokenLists) return;
+
         // function to pull a single token list from local storage by its URI
         const getTokensByURI = (uri: string) => {
             // declare an output variable and apply type protection
@@ -62,7 +63,7 @@ export const useTokenMap = (
         // update local storage with the new value
         setTokenMap(newTokensMap);
         // this dependency array should not work but things seem fine so here it stays
-    }, [localStorage.allTokenLists, activeTokenListsChanged]);
+    }, [localStorage.allTokenLists]);
 
     // return token map held in local state created by useEffect() hook
     return tokenMap;
