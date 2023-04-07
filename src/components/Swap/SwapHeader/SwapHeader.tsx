@@ -2,7 +2,7 @@
 import Modal from '../../../components/Global/Modal/Modal';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
-
+import { useEffect } from 'react';
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -48,15 +48,37 @@ export default function SwapHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
+    const handleFocuseEnter = (event: KeyboardEvent) => {
+        const focusedElement = document.activeElement?.id;
+        if (event.key === 'Enter') {
+            if (focusedElement === 'swap_share_button') {
+                openGlobalModal(<ShareModal />, 'Share');
+            } else if (focusedElement === 'swap_settings_button') {
+                openModal();
+            }
+        } else return;
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleFocuseEnter, false);
+        return () => {
+            document.removeEventListener('keydown', handleFocuseEnter, false);
+        };
+    }, []);
+
     const tradeRouteHeader = (
         <ContentHeader>
-            <div
-                className={styles.share_button}
+            <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                id='swap_share_button'
+                className={styles.share_button}
             >
-                <AiOutlineShareAlt />
-            </div>
+                <AiOutlineShareAlt
+                    id='swap_share_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Share button'
+                />
+            </button>
             <div
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
@@ -71,6 +93,9 @@ export default function SwapHeader(props: propsIF) {
                     style={{ cursor: 'pointer' }}
                     className={`${styles.settings_container} ${styles.settings_icon}`}
                     id='swap_settings_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
@@ -80,13 +105,17 @@ export default function SwapHeader(props: propsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <div
-                className={styles.share_button}
-                id='swap_share_button'
+            <button
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                className={styles.share_button}
             >
-                <AiOutlineShareAlt />
-            </div>
+                <AiOutlineShareAlt
+                    id='swap_share_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Share button'
+                />
+            </button>
             <span className={styles.title}>Swap</span>
             <IconWithTooltip title='Settings' placement='left'>
                 <div
@@ -95,6 +124,9 @@ export default function SwapHeader(props: propsIF) {
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
                     id='swap_settings_button'
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Open Swap Settings'
                 >
                     <img src={settingsIcon} alt='settings' />
                 </div>
@@ -114,7 +146,6 @@ export default function SwapHeader(props: propsIF) {
                 >
                     <TransactionSettings
                         module={isOnTradeRoute ? 'Market Order' : 'Swap'}
-                        toggleFor='swap'
                         slippage={swapSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}

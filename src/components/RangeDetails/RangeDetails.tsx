@@ -4,14 +4,13 @@ import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-// import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -48,6 +47,7 @@ interface propsIF {
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
     closeGlobalModal: () => void;
+    chainData: ChainSpec;
 }
 
 export default function RangeDetails(props: propsIF) {
@@ -78,6 +78,7 @@ export default function RangeDetails(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
+        chainData,
     } = props;
 
     const detailsRef = useRef(null);
@@ -164,30 +165,36 @@ export default function RangeDetails(props: propsIF) {
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
-                    const liqBaseDisplay = liqBaseNum
-                        ? liqBaseNum < 2
-                            ? liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqBaseDisplay =
+                        liqBaseNum !== undefined
+                            ? liqBaseNum === 0
+                                ? '0'
+                                : liqBaseNum < 2
+                                ? liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                  })
+                                : liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
                     setBaseCollateralDisplay(liqBaseDisplay);
 
-                    const liqQuoteDisplay = liqQuoteNum
-                        ? liqQuoteNum < 2
-                            ? liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqQuoteDisplay =
+                        liqQuoteNum !== undefined
+                            ? liqQuoteNum === 0
+                                ? '0'
+                                : liqQuoteNum < 2
+                                ? liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                  })
+                                : liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
                     const usdValue = position.totalValueUSD;
@@ -209,7 +216,7 @@ export default function RangeDetails(props: propsIF) {
                         positionStats.feesLiqQuoteDecimalCorrected;
 
                     const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                        ? '0.00'
+                        ? '0'
                         : baseFeeDisplayNum < 0.0001
                         ? baseFeeDisplayNum.toExponential(2)
                         : baseFeeDisplayNum < 2
@@ -224,7 +231,7 @@ export default function RangeDetails(props: propsIF) {
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
                     const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                        ? '0.00'
+                        ? '0'
                         : quoteFeeDisplayNum < 0.0001
                         ? quoteFeeDisplayNum.toExponential(2)
                         : quoteFeeDisplayNum < 2
@@ -236,12 +243,8 @@ export default function RangeDetails(props: propsIF) {
                               maximumFractionDigits: 2,
                           });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-
-                    // if (positionStats.apy) {
-                    //     setUpdatedPositionApy(positionStats.apy);
-                    // }
                 })
-                .catch(console.log);
+                .catch(console.error);
 
             fetch(
                 apyCacheEndpoint +
@@ -266,7 +269,7 @@ export default function RangeDetails(props: propsIF) {
                         setUpdatedPositionApy(apr);
                     }
                 })
-                .catch(console.log);
+                .catch(console.error);
         }
         if (
             crocEnv &&
@@ -292,14 +295,9 @@ export default function RangeDetails(props: propsIF) {
                         quoteTokenDecimals,
                     );
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        // console.log({ newDisplayPrice });
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
-                //  if (spotPrice !== poolPriceNonDisplay) {
-                //      console.log('dispatching new non-display spot price');
-                //      dispatch(setPoolPriceNonDisplay(spotPrice));
-                //  }
             })();
         }
     }, [lastBlockNumber]);
@@ -366,6 +364,7 @@ export default function RangeDetails(props: propsIF) {
                             isBaseTokenMoneynessGreaterOrEqual
                         }
                         isOnPortfolioPage={isOnPortfolioPage}
+                        chainData={chainData}
                     />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
@@ -395,6 +394,7 @@ export default function RangeDetails(props: propsIF) {
                     position={position}
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}
+                    isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
             {snackbarContent}

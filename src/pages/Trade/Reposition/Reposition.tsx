@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     useLocation,
-    useNavigate,
+    // useNavigate,
     useParams,
     Navigate,
 } from 'react-router-dom';
@@ -47,6 +47,8 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../../constants';
+import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -108,7 +110,7 @@ export default function Reposition(props: propsIF) {
     const locationHook = useLocation();
 
     // fn to conditionally navigate the user
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
 
@@ -133,6 +135,7 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+    console.log({ position });
 
     const [concLiq, setConcLiq] = useState<string>('');
 
@@ -152,7 +155,7 @@ export default function Reposition(props: propsIF) {
         updateConcLiq();
     }, [crocEnv, lastBlockNumber, JSON.stringify(position)]);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tradeData, receiptData } = useAppSelector((state) => state);
 
     const isTokenABase = tradeData.isTokenABase;
 
@@ -229,9 +232,13 @@ export default function Reposition(props: propsIF) {
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
 
     useEffect(() => {
-        console.log('set Advanced Mode to false');
+        IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
         dispatch(setAdvancedMode(false));
     }, []);
+
+    useEffect(() => {
+        setSimpleRangeWidth(10);
+    }, [position]);
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
@@ -283,6 +290,12 @@ export default function Reposition(props: propsIF) {
             return;
         }
         let tx;
+        setTxErrorCode('');
+        setTxErrorMessage('');
+
+        // resetConfirmation();
+        setIsWaitingForWallet(true);
+
         try {
             const pool = crocEnv.pool(position.base, position.quote);
             const repo = new CrocReposition(pool, {
@@ -298,17 +311,20 @@ export default function Reposition(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Reposition',
+                        txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                     }),
                 );
-            navigate(redirectPath, { replace: true });
+            setIsWaitingForWallet(false);
+            // We want the user to exit themselves
+            // navigate(redirectPath, { replace: true });
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+            setIsWaitingForWallet(false);
         }
 
         let receipt;
@@ -316,19 +332,18 @@ export default function Reposition(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRepositionTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -453,7 +468,7 @@ export default function Reposition(props: propsIF) {
                 // console.log({ liqQuoteDisplay });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
-            .catch(console.log);
+            .catch(console.error);
     };
 
     useEffect(() => {
@@ -600,6 +615,108 @@ export default function Reposition(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const [showBypassConfirmButton, setShowBypassConfirmButton] =
+        useState(false);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+
+    const receiveReceiptHashes: Array<string> = [];
+    // eslint-disable-next-line
+    function handleParseReceipt(receipt: any) {
+        const parseReceipt = JSON.parse(receipt);
+        receiveReceiptHashes.push(parseReceipt?.transactionHash);
+    }
+
+    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (
+            !currentPendingTransactionsArray.length &&
+            !isWaitingForWallet &&
+            txErrorCode === ''
+        ) {
+            setShowBypassConfirmButton(false);
+        }
+    }, [
+        currentPendingTransactionsArray.length,
+        isWaitingForWallet,
+        txErrorCode === '',
+    ]);
+    const [showExtraInfo, setShowExtraInfo] = useState(false);
+
+    const confirmRepositionModalProps = {
+        isPositionInRange: isPositionInRange,
+        crocEnv: crocEnv,
+        position: position as PositionIF,
+        ambientApy: ambientApy,
+        dailyVol: dailyVol,
+        currentPoolPriceDisplay: currentPoolPriceDisplay,
+        currentPoolPriceTick: currentPoolPriceTick,
+        rangeWidthPercentage: rangeWidthPercentage,
+        onClose: handleModalClose,
+        onSend: sendRepositionTransaction,
+        setMaxPrice: setMaxPrice,
+        setMinPrice: setMinPrice,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
+        newRepositionTransactionHash: newRepositionTransactionHash,
+        tokenPair: tokenPair,
+        resetConfirmation: resetConfirmation,
+        txErrorCode: txErrorCode,
+        txErrorMessage: txErrorMessage,
+        minPriceDisplay: minPriceDisplay,
+        maxPriceDisplay: maxPriceDisplay,
+        currentBaseQtyDisplayTruncated: currentBaseQtyDisplayTruncated,
+        currentQuoteQtyDisplayTruncated: currentQuoteQtyDisplayTruncated,
+        newBaseQtyDisplay: newBaseQtyDisplay,
+        newQuoteQtyDisplay: newQuoteQtyDisplay,
+        pinnedMinPriceDisplayTruncatedInBase:
+            pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote:
+            pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase:
+            pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote:
+            pinnedMaxPriceDisplayTruncatedInQuote,
+        isDenomBase: isDenomBase,
+        isTokenABase: isTokenABase,
+        poolPriceDisplayNum: poolPriceDisplay || 0,
+        bypassConfirm: bypassConfirm,
+        // showBypassConfirm,
+        // setShowBypassConfirm,
+
+        showExtraInfo,
+        setShowExtraInfo,
+    };
+
+    const bypassConfirmRepositionButtonProps = {
+        newRepositionTransactionHash,
+        txErrorCode,
+        tokenPair,
+        onSend: sendRepositionTransaction,
+        resetConfirmation,
+        showExtraInfo,
+        setShowExtraInfo,
+
+        showBypassConfirm: showBypassConfirmButton,
+        setShowBypassConfirm: setShowBypassConfirmButton,
+        setNewRepositionTransactionHash,
+    };
+
+    const handleRepoButtonClickWithBypass = () => {
+        IS_LOCAL_ENV && console.debug('setting to true');
+        setShowBypassConfirmButton(true);
+        sendRepositionTransaction();
+    };
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -639,24 +756,39 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
+                    repoSlippage={repoSlippage}
+                    isPairStable={isPairStable}
+                    poolPriceDisplay={poolPriceDisplay}
+                    isDenomBase={isDenomBase}
+                    currentMinPrice={position?.lowRangeDisplayInBase}
+                    currentMaxPrice={position?.highRangeDisplayInBase}
                 />
                 <div className={styles.button_container}>
-                    <Button
-                        title={
-                            isPositionInRange
-                                ? 'Position Currently In Range'
-                                : bypassConfirm.repo.isEnabled
-                                ? 'Reposition'
-                                : 'Open Confirmation'
-                        }
-                        action={
-                            bypassConfirm.repo.isEnabled
-                                ? sendRepositionTransaction
-                                : openModal
-                        }
-                        disabled={isPositionInRange}
-                        flat={true}
-                    />
+                    {!showBypassConfirmButton ? (
+                        <Button
+                            title={
+                                isPositionInRange
+                                    ? 'Position Currently In Range'
+                                    : bypassConfirm.repo.isEnabled
+                                    ? 'Reposition'
+                                    : 'Open Confirmation'
+                            }
+                            action={
+                                bypassConfirm.repo.isEnabled
+                                    ? handleRepoButtonClickWithBypass
+                                    : openModal
+                            }
+                            disabled={
+                                isPositionInRange ||
+                                newRepositionTransactionHash !== ''
+                            }
+                            flat
+                        />
+                    ) : (
+                        <BypassConfirmRepositionButton
+                            {...bypassConfirmRepositionButtonProps}
+                        />
+                    )}
                 </div>
             </div>
             {isModalOpen && (
@@ -665,55 +797,7 @@ export default function Reposition(props: propsIF) {
                     title=' Confirm Reposition'
                     centeredTitle
                 >
-                    <ConfirmRepositionModal
-                        isPositionInRange={isPositionInRange}
-                        crocEnv={crocEnv}
-                        position={position as PositionIF}
-                        ambientApy={ambientApy}
-                        dailyVol={dailyVol}
-                        currentPoolPriceDisplay={currentPoolPriceDisplay}
-                        currentPoolPriceTick={currentPoolPriceTick}
-                        rangeWidthPercentage={rangeWidthPercentage}
-                        onClose={handleModalClose}
-                        onSend={sendRepositionTransaction}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
-                        showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
-                        newRepositionTransactionHash={
-                            newRepositionTransactionHash
-                        }
-                        tokenPair={tokenPair}
-                        resetConfirmation={resetConfirmation}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        minPriceDisplay={minPriceDisplay}
-                        maxPriceDisplay={maxPriceDisplay}
-                        currentBaseQtyDisplayTruncated={
-                            currentBaseQtyDisplayTruncated
-                        }
-                        currentQuoteQtyDisplayTruncated={
-                            currentQuoteQtyDisplayTruncated
-                        }
-                        newBaseQtyDisplay={newBaseQtyDisplay}
-                        newQuoteQtyDisplay={newQuoteQtyDisplay}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
-                        isDenomBase={isDenomBase}
-                        isTokenABase={isTokenABase}
-                        poolPriceDisplayNum={poolPriceDisplay || 0}
-                        bypassConfirm={bypassConfirm}
-                    />
+                    <ConfirmRepositionModal {...confirmRepositionModalProps} />
                 </Modal>
             )}
         </div>

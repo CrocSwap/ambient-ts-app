@@ -4,7 +4,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
 
 interface ItemRowPropsIF {
@@ -64,12 +64,6 @@ export default function TransactionDetailsSimplify(
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx, account);
-
-    // console.log({ baseDisplay });
-
-    // console.log({ truncatedDisplayPrice });
-
-    // console.log({ tx });
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -131,7 +125,7 @@ export default function TransactionDetailsSimplify(
         </div>
     );
 
-    console.log({ tx });
+    IS_LOCAL_ENV && console.debug({ tx });
     const changeType = tx.changeType;
     const positionType = tx.positionType;
     const entityType = tx.entityType;

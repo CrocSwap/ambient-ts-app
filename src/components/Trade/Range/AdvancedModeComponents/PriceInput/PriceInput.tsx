@@ -34,7 +34,6 @@ export default function PriceInput(props: priceInputProps) {
             className={styles.price_quantity}
             type='text'
             onChange={(event) => handleChangeEvent(event)}
-            // onFocus={onFocus}
             onBlur={() => onBlur()}
             inputMode='decimal'
             autoComplete='off'
@@ -44,7 +43,7 @@ export default function PriceInput(props: priceInputProps) {
             pattern='^[0-9,]*[.]?[0-9]*$'
             placeholder='0.0'
             disabled={disable}
-            required
+            aria-label={`${fieldId} price input quantity.`}
         />
     );
 
@@ -58,17 +57,32 @@ export default function PriceInput(props: priceInputProps) {
             {/* {disable && disabledContent} */}
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>
-                <span className={styles.sign} onClick={decreaseTick}>
+                <button
+                    className={styles.sign}
+                    onClick={decreaseTick}
+                    aria-label={`decrease tick of ${fieldId} price.`}
+                >
                     <FaMinus size={16} />
-                </span>
+                </button>
                 <span className={isRangeCopied && styles.pulse_animation}>
                     {priceInput}
                 </span>
-                <span className={styles.sign} onClick={increaseTick}>
+                <button
+                    className={styles.sign}
+                    onClick={increaseTick}
+                    aria-label={`increase tick of ${fieldId} price.`}
+                >
                     <FaPlus size={16} />
-                </span>
+                </button>
             </div>
-            <span className={styles.percentage}>
+            <span
+                className={styles.percentage}
+                tabIndex={0}
+                aria-label={`Percentage difference is ${percentageDifferenceString} percent.`}
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='all'
+            >
                 {percentageDifferenceString}%
             </span>
         </div>

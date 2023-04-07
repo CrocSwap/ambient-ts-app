@@ -23,6 +23,8 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { IS_LOCAL_ENV } from '../../../../constants';
+import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -85,13 +87,13 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function RangeCurrencySelector(props: propsIF) {
@@ -99,9 +101,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         gasPriceInGwei,
-        // resetTokenQuantities,
         tokenPair,
-        // tokensBank,
         setImportedTokens,
         chainId,
         isTokenAEth,
@@ -110,8 +110,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenBWalletMinusTokenBQtyNum,
         fieldId,
         sellToken,
         updateOtherQuantity,
@@ -121,8 +119,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenADexBalance,
         tokenAInputQty,
         tokenBInputQty,
-        // tokenAQtyLocal,
-        // tokenBQtyLocal,
         tokenBDexBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
@@ -130,13 +126,9 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenBQtyCoveredBySurplusBalance,
         tokenASurplusMinusTokenARemainderNum,
         tokenBSurplusMinusTokenBRemainderNum,
-        // tokenASurplusMinusTokenAQtyNum,
-        // tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         handleChangeClick,
         isRangeCopied,
         verifyToken,
@@ -150,9 +142,9 @@ export default function RangeCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -277,8 +269,6 @@ export default function RangeCurrencySelector(props: propsIF) {
               ')'
             : '';
 
-    // console.log({ fieldId });
-    // console.log({ tokenBSurplusMinusTokenBRemainderNum });
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||
         (!isTokenASelector && isTokenBDisabled);
@@ -300,8 +290,10 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const displayWalletMaxButton = isTokenASelector
         ? !isWithdrawTokenAFromDexChecked &&
+          !isTokenAEth &&
           walletBalanceNonLocaleString !== '0.0'
         : !isWithdrawTokenBFromDexChecked &&
+          !isTokenBEth &&
           walletBalanceNonLocaleString !== '0.0';
 
     const walletBalanceMaxButton = displayWalletMaxButton ? (
@@ -309,7 +301,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleChangeClick(walletBalanceNonLocaleString);
-                console.log('max button clicked');
+                IS_LOCAL_ENV && console.debug('max button clicked');
             }}
         >
             Max
@@ -320,8 +312,10 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const displaySurplusMaxButton = isTokenASelector
         ? isWithdrawTokenAFromDexChecked &&
+          !isTokenAEth &&
           surplusBalanceNonLocaleString !== '0.0'
         : isWithdrawTokenBFromDexChecked &&
+          !isTokenBEth &&
           surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton = displaySurplusMaxButton ? (
@@ -329,7 +323,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleChangeClick(surplusBalanceNonLocaleString);
-                console.log('clicked');
+                IS_LOCAL_ENV && console.debug('clicked');
             }}
         >
             Max
@@ -461,12 +455,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                                 (!isTokenASelector &&
                                     !isWithdrawTokenBFromDexChecked) ||
                                 (isTokenASelector &&
-                                    isTokenAEth === false &&
                                     isWithdrawTokenAFromDexChecked &&
                                     tokenASurplusMinusTokenARemainderNum &&
                                     tokenASurplusMinusTokenARemainderNum < 0) ||
                                 (!isTokenASelector &&
-                                    isTokenBEth === false &&
                                     isWithdrawTokenBFromDexChecked &&
                                     tokenBSurplusMinusTokenBRemainderNum &&
                                     tokenBSurplusMinusTokenBRemainderNum < 0)
@@ -500,12 +492,10 @@ export default function RangeCurrencySelector(props: propsIF) {
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
         (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
         (isTokenASelector &&
-            isTokenAEth === false &&
             isWithdrawTokenAFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0) ||
         (!isTokenASelector &&
-            isTokenBEth === false &&
             isWithdrawTokenBFromDexChecked &&
             tokenBSurplusMinusTokenBRemainderNum &&
             tokenBSurplusMinusTokenBRemainderNum < 0)
@@ -519,18 +509,16 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={styles.swapbox_bottom}
             style={{ color: surplusContainerColorStyle }}
         >
-            {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
             {walletContent}
             {surplusContent}
-            {/* </div> */}
-
-            {/* {DexBalanceContent} */}
         </div>
     );
 
     return (
         <div className={styles.swapbox}>
-            {sellToken && <span className={styles.direction}>Amounts</span>}
+            <span className={styles.direction}>
+                {sellToken ? 'Amounts' : ''}
+            </span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='range_sell_qty'>
                     <RangeCurrencyQuantity
@@ -544,12 +532,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                         isAdvancedMode={isAdvancedMode}
                     />
                 </div>
-                <div
+                <button
                     className={`${styles.token_select} ${
                         isRangeCopied && styles.pulse_animation
                     }`}
                     onClick={() => openTokenModal()}
                     id='range_token_selector'
+                    tabIndex={0}
+                    aria-label={`Open range ${fieldId} token modal.`}
                 >
                     {thisToken.logoURI ? (
                         <img
@@ -568,7 +558,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         {thisToken.symbol}
                     </span>
                     <RiArrowDownSLine size={27} />
-                </div>
+                </button>
             </div>
             {swapboxBottomOrNull}
             {isTokenModalOpen && (
@@ -604,7 +594,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

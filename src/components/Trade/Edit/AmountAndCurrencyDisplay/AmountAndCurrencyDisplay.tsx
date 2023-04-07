@@ -28,7 +28,6 @@ export default function AmountAndCurrencyDisplay(
                 minLength={1}
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled={disable}
-                required
                 defaultValue={qty}
             />
         </div>

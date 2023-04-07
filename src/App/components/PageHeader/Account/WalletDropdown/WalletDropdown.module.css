@@ -54,6 +54,12 @@
     color: var(--text-grey-light);
 }
 
+.copy_button {
+    background: transparent;
+    outline: none;
+    border: none;
+}
+
 .actions_container {
     width: 100%;
     /* position: absolute; */
@@ -96,13 +102,19 @@
     text-decoration: none;
     border: 1px solid #7371fc;
 }
-.actions_container button:first-of-type:hover {
+.actions_container button:first-of-type:hover,
+.actions_container button:first-of-type:focus-visible {
     color: var(--text-grey-white);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
-.actions_container a:hover {
+.actions_container a:hover,
+.actions_container a:focus-visible {
     background: var(--dark2);
+    color: var(--text-grey-white);
+}
+
+.copy_button:focus-visible {
     color: var(--text-grey-white);
 }
 
@@ -138,4 +150,16 @@
 .token_amount h3,
 .token_amount h6 {
     text-align: right;
+}
+
+.blockie_container{
+   
+    border-radius: 50%;
+}
+.blockie_container canvas{
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    border-radius: 50%;
+    object-fit: cover;
 }

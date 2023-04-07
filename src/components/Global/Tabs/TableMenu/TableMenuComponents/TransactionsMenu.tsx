@@ -28,6 +28,8 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import { ChainSpec } from '@crocswap-libs/sdk';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -44,6 +46,11 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    chainData: ChainSpec;
+
+    isShowAllEnabled: boolean;
+
+    handleWalletClick: () => void;
 }
 
 // React functional component
@@ -63,6 +70,7 @@ export default function TransactionsMenu(props: propsIF) {
         handlePulseAnimation,
         isOnPortfolioPage,
         setSimpleRangeWidth,
+        chainData,
     } = props;
 
     // const [value, copy] = useCopyToClipboard();
@@ -97,7 +105,6 @@ export default function TransactionsMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const handleCopyClick = () => {
-        // console.log('copy clicked');
         if (handlePulseAnimation) {
             if (tx.entityType === 'swap') {
                 handlePulseAnimation('swap');
@@ -125,14 +132,15 @@ export default function TransactionsMenu(props: propsIF) {
             );
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
-            // console.log('limit order copy clicked');
-            console.log({ tradeData });
-            console.log({ tx });
+            if (IS_LOCAL_ENV) {
+                console.debug({ tradeData });
+                console.debug({ tx });
+            }
             const shouldMovePrimaryQuantity =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase());
 
-            console.log({ shouldMovePrimaryQuantity });
+            IS_LOCAL_ENV && console.debug({ shouldMovePrimaryQuantity });
             const shouldClearNonPrimaryQty =
                 tradeData.limitTick !== tx.askTick &&
                 (tradeData.isTokenAPrimary
@@ -149,8 +157,7 @@ export default function TransactionsMenu(props: propsIF) {
                     ? true
                     : false);
             if (shouldMovePrimaryQuantity) {
-                console.log('flipping primary');
-                // setTimeout(() => {
+                IS_LOCAL_ENV && console.debug('flipping primary');
                 const sellQtyField = document.getElementById(
                     'sell-limit-quantity',
                 ) as HTMLInputElement;
@@ -185,7 +192,6 @@ export default function TransactionsMenu(props: propsIF) {
                     ) as HTMLInputElement;
                     if (sellQtyField) {
                         sellQtyField.value = '';
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                     }
                 } else {
                     const buyQtyField = document.getElementById(
@@ -195,16 +201,11 @@ export default function TransactionsMenu(props: propsIF) {
                         buyQtyField.value = '';
                     }
                 }
-                console.log('resetting');
-                // dispatch(setPrimaryQuantity(''));
+                IS_LOCAL_ENV && console.debug('resetting');
             }
             setTimeout(() => {
                 dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
             }, 500);
-
-            // dispatch(
-            //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
-            // );
         }
         setShowDropdownMenu(false);
 
@@ -256,34 +257,30 @@ export default function TransactionsMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };
 
-    // const mainModal = (
-    //     <Modal onClose={closeModal} title={modalTitle}>
-    //         {modalContent}
-    //     </Modal>
-    // );
-
-    // const modalOrNull = isModalOpen ? mainModal : null;
-
-    // const removeButton = userPosition ? (
-    //     <button className={styles.option_button} onClick={openRemoveModal}>
-    //         Remove
-    //     </button>
-    // ) : null;
-
-    // const copyButton = (
-    //     <button className={styles.option_button} onClick={handleCopyClick}>
-    //         Copy
-    //     </button>
-    // );
-
     const isTxCopiable = tx.source !== 'manual';
-    // tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
 
     const navigate = useNavigate();
+
+    const walletButton = (
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleWalletClick}
+        >
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </button>
+    );
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
@@ -305,6 +302,8 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
                 Copy Trade
             </button>
@@ -328,6 +327,8 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
                 Copy Trade
             </button>
@@ -346,13 +347,20 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
                 Copy Trade
             </button>
         );
 
     const explorerButton = (
-        <button className={styles.option_button} onClick={handleOpenExplorer}>
+        <button
+            className={styles.option_button}
+            onClick={handleOpenExplorer}
+            tabIndex={0}
+            aria-label='Open explorer.'
+        >
             Explorer
             <FiExternalLink
                 size={15}
@@ -365,6 +373,8 @@ export default function TransactionsMenu(props: propsIF) {
         <button
             className={styles.option_button}
             onClick={() => openDetailsModal()}
+            tabIndex={0}
+            aria-label='Open details modal.'
         >
             Details
         </button>
@@ -414,6 +424,7 @@ export default function TransactionsMenu(props: propsIF) {
             {detailsButton}
             {explorerButton}
             {!desktopView && copyButton}
+            {walletButton}
         </div>
     );
 
@@ -442,9 +453,12 @@ export default function TransactionsMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
+            <button
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                className={styles.dropdown_button}
+            >
                 <FiMoreHorizontal />
-            </div>
+            </button>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );

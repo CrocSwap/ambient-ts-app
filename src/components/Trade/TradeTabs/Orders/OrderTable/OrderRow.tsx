@@ -6,21 +6,20 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
-import { ZERO_ADDRESS } from '../../../../../constants';
-import { FiExternalLink } from 'react-icons/fi';
+import { IS_LOCAL_ENV } from '../../../../../constants';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -137,7 +136,7 @@ export default function OrderRow(props: propsIF) {
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
-            : 'base_color';
+            : 'username_base_color';
     // eslint-disable-next-line
     const usernameStyleModule =
         isOwnerActiveAccount && isShowAllEnabled
@@ -151,7 +150,7 @@ export default function OrderRow(props: propsIF) {
             : null;
 
     const openDetailsModal = () => {
-        console.log({ limitOrder });
+        IS_LOCAL_ENV && console.debug({ limitOrder });
 
         openGlobalModal(
             <OrderDetails
@@ -163,6 +162,7 @@ export default function OrderRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
+                chainData={chainData}
             />,
         );
     };
@@ -170,8 +170,6 @@ export default function OrderRow(props: propsIF) {
         limitOrder.limitOrderIdentifier === currentPositionActive
             ? `order-${limitOrder.limitOrderIdentifier}`
             : '';
-
-    // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
 
@@ -204,6 +202,33 @@ export default function OrderRow(props: propsIF) {
     const highlightStyle = highlightRow ? 'var(--dark2)' : '';
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
+    // eslint-disable-next-line
+    const [value, copy] = useCopyToClipboard();
+    const [valueToCopy, setValueToCopy] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {valueToCopy} copied
+        </SnackbarComponent>
+    );
+
+    function handleWalletCopy() {
+        setValueToCopy(limitOrder.user);
+        copy(limitOrder.user);
+
+        setOpenSnackbar(true);
+    }
+
+    function handleCopyPosHash() {
+        setValueToCopy(posHash.toString());
+        copy(posHash.toString());
+
+        setOpenSnackbar(true);
+    }
 
     const IDWithTooltip = (
         <TextOnlyTooltip
@@ -211,29 +236,41 @@ export default function OrderRow(props: propsIF) {
             title={
                 <p
                     style={{
-                        marginLeft: '-40px',
+                        marginLeft: '-60px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
+
+                        fontFamily: 'monospace',
+
+                        whiteSpace: 'nowrap',
+                        width: '440px',
+
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
                     }}
                 >
                     {posHash}
+                    <FiCopy
+                        style={{ cursor: 'pointer' }}
+                        onClick={handleCopyPosHash}
+                    />
                 </p>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 onClick={openDetailsModal}
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style}`}
-                style={{ fontFamily: 'monospace' }}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
@@ -241,8 +278,8 @@ export default function OrderRow(props: propsIF) {
         <li
             onClick={openDetailsModal}
             data-label='value'
-            className='base_color'
-            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            className={sellOrderStyle}
+            style={{ textAlign: 'right' }}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
@@ -250,75 +287,96 @@ export default function OrderRow(props: propsIF) {
             {'$' + usdValue}
         </li>
     );
-    const navigate = useNavigate();
 
-    const walletWithTooltip = (
+    function handleWalletLinkClick() {
+        if (!isOnPortfolioPage)
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'lookupUserTxData',
+                    loadingStatus: isOnPortfolioPage ? false : true,
+                }),
+            );
+
+        window.open(
+            `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`,
+        );
+    }
+
+    const actualWalletWithTooltip = (
         <TextOnlyTooltip
             interactive
             title={
                 <div
                     style={{
-                        marginLeft: isOwnerActiveAccount ? '-100px' : '-50px',
+                        marginRight: '-80px',
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
+
+                        // width: '450px',
                     }}
                 >
-                    <p>{ensName ? ensName : ownerId}</p>
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
+                    <p
+                        style={{
+                            fontFamily: 'monospace',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            whiteSpace: 'nowrap',
+
+                            gap: '4px',
                         }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
                     >
-                        {'View Account' + 'ㅤ'}
-                        <FiExternalLink size={'12px'} />
-                    </NavLink>
+                        {limitOrder.user}
+                        <FiCopy
+                            style={{ cursor: 'pointer' }}
+                            size={'12px'}
+                            onClick={() => handleWalletCopy()}
+                        />
+
+                        <FiExternalLink
+                            style={{ cursor: 'pointer' }}
+                            size={'12px'}
+                            onClick={handleWalletLinkClick}
+                        />
+                    </p>
                 </div>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
-                onClick={() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: true,
-                        }),
-                    );
-                    navigate(
-                        `/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`,
-                    );
-                }}
+            <p
+                onClick={openDetailsModal}
                 data-label='wallet'
-                className={`${usernameStyle} ${styles.hover_style}`}
+                className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
+
+    const walletWithoutTooltip = (
+        <p
+            // onClick={handleWalletClick}
+            onClick={openDetailsModal}
+            data-label='wallet'
+            className={`${usernameStyle} ${styles.hover_style}`}
+            style={{ textTransform: 'lowercase' }}
+            tabIndex={0}
+        >
+            {userNameToDisplay}
+        </p>
+    );
+
+    const walletWithTooltip = isOwnerActiveAccount
+        ? walletWithoutTooltip
+        : actualWalletWithTooltip;
 
     const baseTokenLogoComponent = baseTokenLogo ? (
         <img src={baseTokenLogo} alt='base token' width={logoSizes} />
@@ -338,15 +396,6 @@ export default function OrderRow(props: propsIF) {
         />
     );
 
-    const pair =
-        limitOrder.base !== ZERO_ADDRESS
-            ? [
-                  `${limitOrder.baseSymbol}: ${limitOrder.base}`,
-                  `${limitOrder.quoteSymbol}: ${limitOrder.quote}`,
-              ]
-            : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
-    const tip = pair.join('\n');
-
     const tradeLinkPath =
         '/trade/limit/' +
         'chain=' +
@@ -357,24 +406,15 @@ export default function OrderRow(props: propsIF) {
         limitOrder.base;
 
     const tokenPair = (
-        <DefaultTooltip
-            interactive
-            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-            placement={'left'}
-            arrow
-            enterDelay={150}
-            leaveDelay={0}
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
-            <li
-                className='base_color'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <NavLink to={tradeLinkPath}>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </NavLink>
-            </li>
-        </DefaultTooltip>
+            <NavLink to={tradeLinkPath}>
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </NavLink>
+        </li>
     );
 
     const positionTime =
@@ -416,7 +456,6 @@ export default function OrderRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                 }}
             >
                 {baseDisplay}
@@ -439,7 +478,6 @@ export default function OrderRow(props: propsIF) {
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
-                    fontFamily: 'monospace',
                 }}
             >
                 {quoteDisplay}
@@ -462,10 +500,9 @@ export default function OrderRow(props: propsIF) {
                         cursor: 'pointer',
                     }}
                 >
-                    {'First Minted: ' +
-                        moment(limitOrder.timeFirstMint * 1000).format(
-                            'MM/DD/YYYY HH:mm',
-                        )}
+                    {moment(limitOrder.latestUpdateTime * 1000).format(
+                        'MM/DD/YYYY HH:mm',
+                    )}
                 </p>
             }
             placement={'right'}
@@ -478,9 +515,7 @@ export default function OrderRow(props: propsIF) {
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >
-                <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                    {elapsedTimeString}
-                </p>
+                <p className='base_color'>{elapsedTimeString}</p>
             </li>
         </TextOnlyTooltip>
     ) : (
@@ -490,14 +525,18 @@ export default function OrderRow(props: propsIF) {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
-            <p className='base_color' style={{ fontFamily: 'monospace' }}>
-                {elapsedTimeString}
-            </p>
+            <p className='base_color'>{elapsedTimeString}</p>
+        </li>
+    );
+    const txIdColumnComponent = (
+        <li>
+            {IDWithTooltip}
+            {walletWithTooltip}
         </li>
     );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
-
+    // eslint-disable-next-line
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -506,189 +545,176 @@ export default function OrderRow(props: propsIF) {
                     loadingStatus: true,
                 }),
             );
-            navigate(
-                `/${
-                    isOwnerActiveAccount
-                        ? 'account'
-                        : ensName
-                        ? ensName
-                        : ownerId
-                }`,
-            );
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
         } else {
             openDetailsModal();
         }
     };
 
     return (
-        <ul
-            onMouseEnter={() => setShowHighlightedButton(true)}
-            onMouseLeave={() => setShowHighlightedButton(false)}
-            className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
-            id={orderDomId}
-            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-            onClick={() =>
-                limitOrder.limitOrderIdentifier === currentPositionActive
-                    ? null
-                    : setCurrentPositionActive('')
-            }
-            ref={currentPositionActive ? activePositionRef : null}
-        >
-            {!showColumns && OrderTimeWithTooltip}
-            {isOnPortfolioPage && showPair && tokenPair}
-            {!showColumns && IDWithTooltip}
-            {!isOnPortfolioPage && !showColumns && walletWithTooltip}
-            {showColumns && (
-                <li data-label='id'>
-                    <p className={`base_color ${styles.hover_style}`}>
-                        {posHashTruncated}
-                    </p>{' '}
-                    <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
-                        onClick={handleAccountClick}
-                        style={{ textTransform: 'lowercase' }}
+        <>
+            <ul
+                onMouseEnter={() => setShowHighlightedButton(true)}
+                onMouseLeave={() => setShowHighlightedButton(false)}
+                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                id={orderDomId}
+                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+                onClick={() =>
+                    limitOrder.limitOrderIdentifier === currentPositionActive
+                        ? null
+                        : setCurrentPositionActive('')
+                }
+                ref={currentPositionActive ? activePositionRef : null}
+            >
+                {!showColumns && OrderTimeWithTooltip}
+                {isOnPortfolioPage && showPair && tokenPair}
+                {!showColumns && <li>{IDWithTooltip}</li>}
+                {!showColumns && !isOnPortfolioPage && (
+                    <li>{walletWithTooltip}</li>
+                )}
+                {showColumns && txIdColumnComponent}
+                {!ipadView && (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='price'
+                        className={priceStyle + ' ' + sellOrderStyle}
+                        style={{ textAlign: 'right' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
-                        {userNameToDisplay}
-                    </p>
-                </li>
-            )}
-            {!ipadView && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='price'
-                    className={priceStyle}
-                    style={{ textAlign: 'right' }}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    {isOnPortfolioPage
-                        ? (
-                              <p className={`${styles.align_right} `}>
-                                  <span>{priceCharacter}</span>
-                                  <span style={{ fontFamily: 'monospace' }}>
-                                      {truncatedDisplayPriceDenomByMoneyness}
-                                  </span>
-                              </p>
-                          ) || '…'
-                        : (
-                              <p className={`${styles.align_right} `}>
-                                  <span>{priceCharacter}</span>
-                                  <span style={{ fontFamily: 'monospace' }}>
-                                      {truncatedDisplayPrice}
-                                  </span>
-                              </p>
-                          ) || '…'}
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    style={{ textAlign: 'center' }}
-                    onClick={openDetailsModal}
-                    data-label='side'
-                    className={sellOrderStyle}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    {`${sideType} ${sideCharacter}`}
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='type'
-                    className={sellOrderStyle}
-                    style={{ textAlign: 'center' }}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    Order
-                </li>
-            )}
-            {showColumns && !ipadView && (
-                <li
-                    data-label='side-type'
-                    className={sellOrderStyle}
-                    style={{ textAlign: 'center' }}
-                    onClick={openDetailsModal}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    <p>Order</p>
-                    <p>{`${sideType} ${sideCharacter}`}</p>
-                </li>
-            )}
+                        {isOnPortfolioPage
+                            ? (
+                                  <p className={`${styles.align_right} `}>
+                                      <span>{priceCharacter}</span>
+                                      <span>
+                                          {
+                                              truncatedDisplayPriceDenomByMoneyness
+                                          }
+                                      </span>
+                                  </p>
+                              ) || '…'
+                            : (
+                                  <p className={`${styles.align_right} `}>
+                                      <span>{priceCharacter}</span>
+                                      <span>{truncatedDisplayPrice}</span>
+                                  </p>
+                              ) || '…'}
+                    </li>
+                )}
+                {!showColumns && (
+                    <li
+                        style={{ textAlign: 'center' }}
+                        onClick={openDetailsModal}
+                        data-label='side'
+                        className={sellOrderStyle}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
+                    >
+                        {`${sideType} ${sideCharacter}`}
+                    </li>
+                )}
+                {!showColumns && (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='type'
+                        className={sellOrderStyle}
+                        style={{ textAlign: 'center' }}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
+                    >
+                        Order
+                    </li>
+                )}
+                {showColumns && !ipadView && (
+                    <li
+                        data-label='side-type'
+                        className={sellOrderStyle}
+                        style={{ textAlign: 'center' }}
+                        onClick={openDetailsModal}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
+                    >
+                        <p>Order</p>
+                        <p>{`${sideType} ${sideCharacter}`}</p>
+                    </li>
+                )}
 
-            {ValueWithTooltip}
-            {!showColumns && baseQtyDisplayWithTooltip}
-            {!showColumns && quoteQtyDisplayWithTooltip}
-            {showColumns && (
-                <li
-                    data-label={baseTokenSymbol + quoteTokenSymbol}
-                    className='base_color'
-                    onClick={openDetailsModal}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    <div
-                        className={styles.token_qty}
-                        style={{
-                            fontFamily: 'monospace',
-                            whiteSpace: 'nowrap',
-                        }}
+                {ValueWithTooltip}
+                {!showColumns && baseQtyDisplayWithTooltip}
+                {!showColumns && quoteQtyDisplayWithTooltip}
+                {showColumns && (
+                    <li
+                        data-label={baseTokenSymbol + quoteTokenSymbol}
+                        className='base_color'
+                        onClick={openDetailsModal}
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
-                        {' '}
-                        {baseDisplay} {baseTokenLogoComponent}
-                    </div>
+                        <div
+                            className={styles.token_qty}
+                            style={{
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            {' '}
+                            {baseDisplay} {baseTokenLogoComponent}
+                        </div>
 
-                    <div
-                        className={styles.token_qty}
-                        style={{
-                            fontFamily: 'monospace',
-                            whiteSpace: 'nowrap',
-                        }}
+                        <div
+                            className={styles.token_qty}
+                            style={{
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            {' '}
+                            {quoteDisplay}
+                            {quoteTokenLogoComponent}
+                        </div>
+                    </li>
+                )}
+                {!ipadView && (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='status'
+                        onMouseEnter={handleRowMouseDown}
+                        onMouseLeave={handleRowMouseOut}
                     >
-                        {' '}
-                        {quoteDisplay}
-                        {quoteTokenLogoComponent}
-                    </div>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <OpenOrderStatus isFilled={isOrderFilled} />
+                        </div>
+                    </li>
+                )}
+
+                <li data-label='menu'>
+                    <OrdersMenu
+                        account={account}
+                        chainData={chainData}
+                        isShowAllEnabled={isShowAllEnabled}
+                        tradeData={tradeData}
+                        limitOrder={limitOrder}
+                        {...orderMenuProps}
+                        showSidebar={showSidebar}
+                        handlePulseAnimation={handlePulseAnimation}
+                        lastBlockNumber={lastBlockNumber}
+                        showHighlightedButton={showHighlightedButton}
+                        isBaseTokenMoneynessGreaterOrEqual={
+                            isBaseTokenMoneynessGreaterOrEqual
+                        }
+                        isOnPortfolioPage={isOnPortfolioPage}
+                        handleAccountClick={handleAccountClick}
+                    />
                 </li>
-            )}
-            {!ipadView && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='status'
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <OpenOrderStatus isFilled={isOrderFilled} />
-                    </div>
-                </li>
-            )}
-            <li data-label='menu'>
-                <OrdersMenu
-                    account={account}
-                    chainData={chainData}
-                    isShowAllEnabled={isShowAllEnabled}
-                    tradeData={tradeData}
-                    limitOrder={limitOrder}
-                    {...orderMenuProps}
-                    showSidebar={showSidebar}
-                    handlePulseAnimation={handlePulseAnimation}
-                    lastBlockNumber={lastBlockNumber}
-                    showHighlightedButton={showHighlightedButton}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isOnPortfolioPage={isOnPortfolioPage}
-                />
-            </li>
-        </ul>
+            </ul>
+            {snackbarContent}
+        </>
     );
 }

@@ -75,6 +75,8 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                 onClick={() =>
                     setShowVolumeTVLFeeDropdown(!showVolumeTVLFeeDropdown)
                 }
+                tabIndex={0}
+                aria-label='Open volume and tvl dropdown.'
             >
                 {showVolume
                     ? 'Volume'
@@ -97,6 +99,7 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
+                            aria-label={`Show ${button.name}.`}
                         >
                             {button.name}
                         </button>
@@ -125,6 +128,9 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        aria-label={`${button.selected ? 'hide' : 'show'} ${
+                            button.name
+                        }.`}
                     >
                         {button.name}
                     </button>

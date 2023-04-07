@@ -11,12 +11,13 @@ import headerLogo from '../../../assets/images/logos/header_logo.svg';
 import { useUrlParams } from './useUrlParams';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { SmallerPoolIF } from '../../hooks/useRecentPools';
+import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import { useAccount, useEnsName } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
+import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -37,7 +38,7 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
     poolPriceDisplay: number | undefined;
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
-    addRecentPool: (pool: SmallerPoolIF) => void;
+    recentPools: recentPoolsMethodsIF;
     switchTheme: () => void;
     theme: string;
     chainData: ChainSpec;
@@ -54,7 +55,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
-        addRecentPool,
+        recentPools,
         theme,
         poolPriceDisplay,
         chainData,
@@ -68,16 +69,6 @@ export default function PageHeader(props: HeaderPropsIF) {
     const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
-    const branchName =
-        process.env.REACT_APP_BRANCH_NAME !== undefined
-            ? process.env.REACT_APP_BRANCH_NAME
-            : 'local';
-
-    const showBranchName =
-        branchName.toLowerCase() !== 'main' &&
-        branchName.toLowerCase() !== 'production';
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -140,7 +131,10 @@ export default function PageHeader(props: HeaderPropsIF) {
             baseAddr.toLowerCase() === baseAddressInRtk.toLowerCase() &&
             quoteAddr.toLowerCase() === quoteAddressInRtk.toLowerCase()
         ) {
-            addRecentPool({ base: baseAddr, quote: quoteAddr });
+            recentPools.addPool({
+                baseToken: tradeData.baseToken,
+                quoteToken: tradeData.quoteToken,
+            });
         }
     }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
 
@@ -207,8 +201,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/market'
         : location.pathname.includes('trade/limit')
         ? '/trade/limit'
-        : location.pathname.includes('trade/range')
-        ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
         : '/trade/market';
@@ -231,6 +223,11 @@ export default function PageHeader(props: HeaderPropsIF) {
             shouldDisplay: false,
         },
         {
+            title: t('common:poolTitle'),
+            destination: '/trade/range' + paramsSlug,
+            shouldDisplay: true,
+        },
+        {
             title: t('common:accountTitle'),
             destination: '/account',
             shouldDisplay: isConnected,
@@ -239,6 +236,40 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // Most of this functionality can be achieve by using the NavLink instead of Link and accessing the isActive prop on the
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
+
+    function isActive(linkDestination: string, locationPathname: string) {
+        if (linkDestination.includes('/trade')) {
+            if (linkDestination.includes('/range')) {
+                return locationPathname.includes('/trade/range')
+                    ? styles.active
+                    : styles.inactive;
+            } else {
+                return locationPathname.includes(tradeDestination)
+                    ? styles.active
+                    : styles.inactive;
+            }
+        } else if (linkDestination.includes('/swap')) {
+            return locationPathname.includes('/swap')
+                ? styles.active
+                : styles.inactive;
+        } else {
+            return locationPathname === linkDestination
+                ? styles.active
+                : styles.inactive;
+        }
+    }
+
+    function isUnderlined(linkDestination: string, locationPathname: string) {
+        return (
+            (linkDestination.includes('/trade') &&
+                (linkDestination.includes('/trade/range')
+                    ? locationPathname.includes('/trade/range')
+                    : locationPathname.includes(tradeDestination))) ||
+            (locationPathname.includes('/swap') &&
+                linkDestination.includes('/swap')) ||
+            locationPathname === linkDestination
+        );
+    }
 
     const routeDisplay = (
         <AnimateSharedLayout>
@@ -250,31 +281,20 @@ export default function PageHeader(props: HeaderPropsIF) {
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
                         <Link
-                            className={
-                                link.destination.includes('/trade')
-                                    ? location.pathname.includes(
-                                          tradeDestination,
-                                      )
-                                        ? styles.active
-                                        : styles.inactive
-                                    : link.destination.includes('/swap')
-                                    ? location.pathname.includes('/swap')
-                                        ? styles.active
-                                        : styles.inactive
-                                    : location.pathname === link.destination
-                                    ? styles.active
-                                    : styles.inactive
-                            }
+                            tabIndex={0}
+                            className={isActive(
+                                link.destination,
+                                location.pathname,
+                            )}
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {((link.destination.includes('/trade') &&
-                                location.pathname.includes(tradeDestination)) ||
-                                (location.pathname.includes('/swap') &&
-                                    link.destination.includes('/swap')) ||
-                                location.pathname === link.destination) && (
+                            {isUnderlined(
+                                link.destination,
+                                location.pathname,
+                            ) && (
                                 <motion.div
                                     className={styles.underline}
                                     layoutId='underline'
@@ -300,13 +320,14 @@ export default function PageHeader(props: HeaderPropsIF) {
             {routeDisplay}
             <div>
                 <div className={styles.account}>
-                    <p className={styles.branch_name}>
-                        {showBranchName ? (
+                    <div className={styles.branch_name}>
+                        {APP_ENVIRONMENT !== 'local' &&
+                        APP_ENVIRONMENT !== 'production' ? (
                             <div className={styles.branch}>
-                                {branchName} <BiGitBranch color='yellow' />
+                                {BRANCH_NAME} <BiGitBranch color='yellow' />
                             </div>
                         ) : null}
-                    </p>
+                    </div>
                     <NetworkSelector chainId={chainId} />
                     {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />

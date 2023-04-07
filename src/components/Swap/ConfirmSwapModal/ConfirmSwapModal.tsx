@@ -1,6 +1,6 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -16,6 +16,8 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { AiOutlineWarning } from 'react-icons/ai';
+import DividerDark from '../../Global/DividerDark/DividerDark';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -38,13 +40,14 @@ interface propsIF {
     sellQtyString: string;
     buyQtyString: string;
     bypassConfirm: allSkipConfirmMethodsIF;
+    lastBlockNumber: number;
+    pool: CrocPoolView | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
     const {
         initiateSwapMethod,
         isDenomBase,
-        poolPriceDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         newSwapTransactionHash,
@@ -59,6 +62,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         sellQtyString,
         buyQtyString,
         bypassConfirm,
+        lastBlockNumber,
+        pool,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -70,6 +75,70 @@ export default function ConfirmSwapModal(props: propsIF) {
     const buyTokenData = tokenPair.dataTokenB;
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
+
+    const [baselineBlockNumber, setBaselineBlockNumber] =
+        useState<number>(lastBlockNumber);
+
+    const [baselineBuyTokenPrice, setBaselineBuyTokenPrice] = useState<
+        number | undefined
+    >();
+
+    const [currentBuyTokenPrice, setCurrentBuyTokenPrice] = useState<
+        number | undefined
+    >();
+
+    const [isWaitingForPriceChangeAckt, setIsWaitingForPriceChangeAckt] =
+        useState<boolean>(false);
+
+    const setBaselinePriceAsync = async () => {
+        if (!pool) return;
+        const newBaselinePrice = await pool.displayPrice(baselineBlockNumber);
+        const baselineBuyTokenPrice = isSellTokenBase
+            ? 1 / newBaselinePrice
+            : newBaselinePrice;
+        setBaselineBuyTokenPrice(baselineBuyTokenPrice);
+    };
+
+    const setCurrentPriceAsync = async () => {
+        if (!pool) return;
+        const currentBasePrice = await pool.displayPrice(lastBlockNumber);
+        const currentBuyTokenPrice = isSellTokenBase
+            ? 1 / currentBasePrice
+            : currentBasePrice;
+        setCurrentBuyTokenPrice(currentBuyTokenPrice);
+    };
+
+    useEffect(() => {
+        if (!isWaitingForPriceChangeAckt) setBaselinePriceAsync();
+    }, [isWaitingForPriceChangeAckt]);
+
+    useEffect(() => {
+        setCurrentPriceAsync();
+    }, [lastBlockNumber]);
+
+    const buyTokenPriceChangePercentage = useMemo(() => {
+        if (!currentBuyTokenPrice || !baselineBuyTokenPrice) return;
+
+        const changePercentage =
+            ((currentBuyTokenPrice - baselineBuyTokenPrice) /
+                baselineBuyTokenPrice) *
+            100;
+
+        if (changePercentage > 0) {
+            setIsWaitingForPriceChangeAckt(true);
+        } else {
+            setIsWaitingForPriceChangeAckt(false);
+        }
+
+        const changePercentageString = changePercentage.toLocaleString(
+            undefined,
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            },
+        );
+        return changePercentageString;
+    }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
 
     const isPriceInverted =
         (isDenomBaseLocal && !isSellTokenBase) ||
@@ -96,24 +165,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const displayPriceWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : undefined;
-    // eslint-disable-next-line
-    const displayConversionRate = displayPriceWithDenom
-        ? displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '...';
-
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{buyQtyString}</h2>
@@ -132,6 +183,29 @@ export default function ConfirmSwapModal(props: propsIF) {
             </div>
         </div>
     );
+
+    const hasBuyTokenPriceIncreasedSinceBaseline =
+        buyTokenPriceChangePercentage &&
+        parseFloat(buyTokenPriceChangePercentage) > 0;
+
+    const priceIncreaseComponentOrNull =
+        hasBuyTokenPriceIncreasedSinceBaseline ? (
+            <div className={` ${styles.warning_box}`}>
+                <AiOutlineWarning color='var(--negative)' />
+                <p>
+                    WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
+                    {buyTokenPriceChangePercentage + '%'}
+                </p>
+                <button
+                    onClick={() => {
+                        setBaselineBlockNumber(lastBlockNumber);
+                        setIsWaitingForPriceChangeAckt(false);
+                    }}
+                >
+                    Acknowledge
+                </button>
+            </div>
+        ) : null;
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -154,18 +228,16 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const toggleFor = 'swap';
-
-    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(
-        bypassConfirm.swap.isEnabled,
-    );
+    // this is the starting state for the bypass confirmation toggle switch
+    // if the modal is being shown, we can assume bypass is disabled
+    const [tempBypassConfirm, setTempBypassConfirm] = useState<boolean>(false);
 
     const fullTxDetails2 = (
         <div className={styles.main_container}>
             <section>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
-                    <TokensArrow />
+                    <TokensArrow onlyDisplay />
                 </div>
                 {buyCurrencyRow}
             </section>
@@ -193,24 +265,22 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
+                {!!priceIncreaseComponentOrNull && <DividerDark />}
+                {priceIncreaseComponentOrNull}
             </div>
-            <ConfirmationModalControl
-                tempBypassConfirm={tempBypassConfirm}
-                setTempBypassConfirm={setTempBypassConfirm}
-                toggleFor={toggleFor}
-            />
+            {!isWaitingForPriceChangeAckt && (
+                <ConfirmationModalControl
+                    tempBypassConfirm={tempBypassConfirm}
+                    setTempBypassConfirm={setTempBypassConfirm}
+                />
+            )}
         </div>
     );
 
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${
-                sellTokenData.symbol
-            } for ${buyQtyString} ${
-                buyTokenData.symbol
-            }. Please check the ${'Metamask'} extension in your browser for notifications.
-            `}
+            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}.`}
         />
     );
 
@@ -242,20 +312,37 @@ export default function ConfirmSwapModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <div className={styles.modal_container}>
-            <section className={styles.modal_content}>
+        <div
+            className={styles.modal_container}
+            aria-label='Swap Confirmation modal'
+        >
+            <section
+                className={styles.modal_content}
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='additions text'
+            >
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation && (
+                {showConfirmation && !isWaitingForPriceChangeAckt && (
                     <Button
                         title='Send Swap'
                         action={() => {
-                            bypassConfirm.swap.setValue(tempBypassConfirm);
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            if (tempBypassConfirm) {
+                                bypassConfirm.swap.enable();
+                                bypassConfirm.limit.enable();
+                                bypassConfirm.range.enable();
+                                bypassConfirm.repo.enable();
+                            }
                             initiateSwapMethod();
                             setShowConfirmation(false);
                         }}
                         flat
+                        disabled={isWaitingForPriceChangeAckt}
                     />
                 )}
             </footer>

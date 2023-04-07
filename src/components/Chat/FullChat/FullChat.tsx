@@ -9,19 +9,18 @@ import { MdOutlineChat } from 'react-icons/md';
 import { AiOutlineSound } from 'react-icons/ai';
 import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link, useParams } from 'react-router-dom';
-import { topPools } from '../../../App/mockData';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
+import { topPoolsMethodsIF } from '../../../App/hooks/useTopPools';
+
 interface FullChatPropsIF {
     messageList: JSX.Element;
     chatNotification: JSX.Element;
     messageInput: JSX.Element;
     room: string;
-
     setRoom: Dispatch<SetStateAction<string>>;
     setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
-
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
@@ -30,6 +29,7 @@ interface FullChatPropsIF {
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
+    topPools: topPoolsMethodsIF;
 }
 
 interface ChannelDisplayPropsIF {
@@ -39,10 +39,12 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
+    const { topPools } = props;
+    const rooms = topPools.onActiveChain;
     const { params } = useParams();
     const reconstructedReadableRoom =
         params && !params.includes('global')
-            ? params.replace('&', '/').toUpperCase()
+            ? params.replace('&', ' / ').toUpperCase()
             : params && params.includes('global')
             ? 'Global'
             : 'Global';
@@ -54,7 +56,7 @@ export default function FullChat(props: FullChatPropsIF) {
         currencies && currencies.length === 2
             ? (() => {
                   const [currency1, currency2] = currencies;
-                  return currency1 + '/' + currency2;
+                  return currency1 + ' / ' + currency2;
               })()
             : params && params.includes('global')
             ? 'Global'
@@ -64,7 +66,7 @@ export default function FullChat(props: FullChatPropsIF) {
         currencies && currencies.length === 2
             ? (() => {
                   const [currency1, currency2] = currencies;
-                  return (currency2 + '/' + currency1).toUpperCase();
+                  return (currency2 + ' / ' + currency1).toUpperCase();
               })()
             : swappedReconstructedReadableRoom &&
               swappedReconstructedReadableRoom.includes('global')
@@ -91,13 +93,13 @@ export default function FullChat(props: FullChatPropsIF) {
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (topPools.some(({ name }) => name === reconstructedReadableRoom)) {
+        if (rooms.some(({ name }) => name === reconstructedReadableRoom)) {
             setReadableName(reconstructedReadableRoom);
             props.setRoom(reconstructedReadableRoom);
-            setReadableName(readableRoomName);
+            setReadableName(reconstructedReadableRoom);
         } else {
             if (
-                topPools.some(
+                rooms.some(
                     ({ name }) => name === reSwappedReconstructedReadableRoom,
                 )
             ) {
@@ -110,14 +112,14 @@ export default function FullChat(props: FullChatPropsIF) {
                 setReadableName('Global');
             }
         }
-    }, [reconstructedReadableRoom]);
+    }, [reconstructedReadableRoom, rooms.length === 0]);
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
-        const roomName = pool.base.symbol + '/' + pool.quote.symbol;
+        const roomName = pool.base.symbol + ' / ' + pool.quote.symbol;
         props.setRoom(roomName);
 
-        const readableRoomName = `${pool.base.symbol}/${pool.quote.symbol}`;
+        const readableRoomName = `${pool.base.symbol} / ${pool.quote.symbol}`;
         setReadableName(readableRoomName);
         setReadableRoom(pool);
 
@@ -132,24 +134,22 @@ export default function FullChat(props: FullChatPropsIF) {
         }
 
         if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
-
-        // handleDropdownMenu();
     }
 
     // eslint-disable-next-line
     function findSpeed(pool: any) {
-        switch (pool.base.symbol + '/' + pool.quote.symbol) {
-            case 'ETH/USDC':
+        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+            case 'ETH / USDC':
                 return 0 as number;
-            case 'ETH/WBTC':
+            case 'ETH / WBTC':
                 return 5;
-            case 'USDC/DAI':
+            case 'USDC / DAI':
                 return -2;
-            case 'ETH/DAI':
+            case 'ETH / DAI':
                 return -2;
-            case 'USDC/WBTC':
+            case 'USDC / WBTC':
                 return -2;
-            case 'WBTC/DAI':
+            case 'WBTC / DAI':
                 return -2;
             default:
                 return 10;
@@ -158,18 +158,18 @@ export default function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function findId(pool: any) {
-        switch (pool.base.symbol + '/' + pool.quote.symbol) {
-            case 'ETH/USDC':
+        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+            case 'ETH / USDC':
                 return 1;
-            case 'ETH/WBTC':
+            case 'ETH / WBTC':
                 return 3;
-            case 'USDC/DAI':
+            case 'USDC / DAI':
                 return 4;
-            case 'ETH/DAI':
+            case 'ETH / DAI':
                 return 2;
-            case 'USDC/WBTC':
+            case 'USDC / WBTC':
                 return 5;
-            case 'WBTC/DAI':
+            case 'WBTC / DAI':
                 return 6;
             default:
                 return 10;
@@ -204,7 +204,7 @@ export default function FullChat(props: FullChatPropsIF) {
 
         props.favePools.pools.map((pool: PoolIF) => {
             const favPool = {
-                name: pool.base.symbol + '/' + pool.quote.symbol,
+                name: pool.base.symbol + ' / ' + pool.quote.symbol,
                 base: {
                     name: pool.base.name,
                     address: pool.base.address,
@@ -227,15 +227,13 @@ export default function FullChat(props: FullChatPropsIF) {
                 id: findId(pool),
             };
 
-            if (!topPools.some(({ name }) => name === favPool.name)) {
-                topPools.push(favPool);
+            if (!rooms.some(({ name }) => name === favPool.name)) {
+                rooms.push(favPool);
             }
 
-            for (let x = 0; x < topPools.length; x++) {
-                if (favPool.name === topPools[x].name) {
-                    topPools.push(topPools.splice(x, 1)[0]);
-                } else {
-                    // do nothing
+            for (let x = 0; x < rooms.length; x++) {
+                if (favPool.name === rooms[x].name) {
+                    rooms.push(rooms.splice(x, 1)[0]);
                 }
             }
             fave.push(favPool);
@@ -411,7 +409,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 <span> Global</span>
             </div>
 
-            {topPools.map((pool, idx) => (
+            {rooms.map((pool, idx) => (
                 <ChannelDisplay
                     pool={pool}
                     key={idx}
@@ -439,7 +437,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             : styles.channel_dropdown_items_containers
                     }
                 >
-                    {topPools.map((pool, idx) => (
+                    {rooms.map((pool, idx) => (
                         <ChannelDisplay
                             pool={pool}
                             key={idx}
@@ -538,7 +536,6 @@ export default function FullChat(props: FullChatPropsIF) {
                     <Link to='/account'>{userName}</Link>
                     {sidebarExpandOrCollapseIcon}
                 </header>
-                {/* {chatOptions} */}
                 {chatChanels}
             </section>
 

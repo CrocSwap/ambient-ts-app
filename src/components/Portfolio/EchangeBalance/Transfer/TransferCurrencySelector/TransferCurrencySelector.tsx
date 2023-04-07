@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 
 interface propsIF {
     fieldId: string;
@@ -59,7 +60,6 @@ export default function TransferCurrencySelector(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
-                required
             />
         </div>
     );
@@ -69,27 +69,36 @@ export default function TransferCurrencySelector(props: propsIF) {
             <span className={styles.direction}>Select Token</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
-                <div className={styles.token_select} onClick={onClick}>
-                    {selectedToken.logoURI ? (
-                        <img
-                            className={styles.token_list_img}
-                            src={uriToHttp(selectedToken.logoURI)}
-                            alt={selectedToken.symbol.charAt(0)}
-                            // alt={`logo for token ${token.name}`}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={selectedToken.symbol.charAt(0)}
-                            width='30px'
-                        />
-                    )}
+                <DefaultTooltip
+                    interactive
+                    title={`${selectedToken.symbol + ':'} ${
+                        selectedToken.address
+                    }`}
+                    placement={'top'}
+                    enterDelay={200}
+                >
+                    <div className={styles.token_select} onClick={onClick}>
+                        {selectedToken.logoURI ? (
+                            <img
+                                className={styles.token_list_img}
+                                src={uriToHttp(selectedToken.logoURI)}
+                                alt={selectedToken.symbol.charAt(0)}
+                                // alt={`logo for token ${token.name}`}
+                                width='30px'
+                            />
+                        ) : (
+                            <NoTokenIcon
+                                tokenInitial={selectedToken.symbol.charAt(0)}
+                                width='30px'
+                            />
+                        )}
 
-                    <span className={styles.token_list_text}>
-                        {selectedToken.symbol}
-                    </span>
-                    <RiArrowDownSLine size={27} />
-                </div>
+                        <span className={styles.token_list_text}>
+                            {selectedToken.symbol}
+                        </span>
+                        <RiArrowDownSLine size={27} />
+                    </div>
+                </DefaultTooltip>
             </div>
         </div>
     );

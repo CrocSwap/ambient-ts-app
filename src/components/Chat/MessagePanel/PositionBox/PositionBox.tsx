@@ -12,7 +12,7 @@ import {
 } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { useSortedPositions } from '../../../Trade/TradeTabs/useSortedPositions';
+
 import { FiCopy } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
@@ -43,15 +43,18 @@ export default function PositionBox(props: propsIF) {
     >();
     const tradeData = useAppSelector((state) => state.tradeData);
     const graphData = useAppSelector((state) => state?.graphData);
+
     const transactionsData = graphData?.changesByPool?.changes;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('lastUpdate', graphData?.positionsByPool?.positions);
+    const positionData = graphData?.positionsByPool?.positions;
+
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
     const [apy, setApy] = useState<any | undefined>();
 
-    useEffect(() => {
+    const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
+    const txFingerprint = transactionsData.map((tx) => tx.tx).join('|');
+
+    const updateIsPosition = () => {
         if (message && message.includes('0x')) {
             const hashMsg = message
                 .split(' ')
@@ -63,12 +66,12 @@ export default function PositionBox(props: propsIF) {
                 );
                 props.setIsPosition(true);
             } else if (
-                sortedPositions.find(
+                positionData.find(
                     (item: PositionIF) => item.positionStorageSlot === hashMsg,
                 )
             ) {
                 setSPosition(
-                    sortedPositions.find(
+                    positionData.find(
                         (item: PositionIF) =>
                             item.positionStorageSlot === hashMsg,
                     ),
@@ -80,7 +83,11 @@ export default function PositionBox(props: propsIF) {
             setSPosition(undefined);
             props.setIsPosition(false);
         }
-    }, [message, sortedPositions, transactionsData]);
+    };
+
+    useEffect(() => {
+        updateIsPosition();
+    }, [message, posFingerprint, txFingerprint]);
 
     function financial(x: any) {
         return Number.parseFloat(x).toFixed(2);
@@ -239,14 +246,14 @@ export default function PositionBox(props: propsIF) {
                                 <div style={{ cursor: 'pointer' }}>
                                     <FiCopy
                                         size={19}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        color='text/grey light'
                                         onClick={handleCopyAddress}
                                     />
                                 </div>
                                 <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
                                         size={20}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        color='text/grey light'
                                     />
                                 </div>
                             </div>
@@ -256,7 +263,13 @@ export default function PositionBox(props: propsIF) {
                                 {sideType} Price
                             </div>
 
-                            <div className={styles.price}>
+                            <div
+                                className={
+                                    sideType === 'Buy'
+                                        ? styles.buy_price
+                                        : styles.sell_price
+                                }
+                            >
                                 {truncatedDisplayPrice}
                             </div>
                         </div>

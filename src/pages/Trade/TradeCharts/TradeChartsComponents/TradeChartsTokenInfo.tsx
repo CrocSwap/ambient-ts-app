@@ -1,18 +1,23 @@
 import styles from './TradeChartsTokenInfo.module.css';
 import {
-    DefaultTooltip,
     NoColorTooltip,
+    TextOnlyTooltip,
 } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import {
     useAppSelector,
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
@@ -22,6 +27,7 @@ interface propsIF {
     favePools: favePoolsMethodsIF;
     chainId: string;
     simplifyVersion?: boolean;
+    chainData: ChainSpec;
 }
 
 export default function TradeChartsTokenInfo(props: propsIF) {
@@ -32,6 +38,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         favePools,
         chainId,
         simplifyVersion,
+        chainData,
     } = props;
     const dispatch = useAppDispatch();
 
@@ -76,17 +83,24 @@ export default function TradeChartsTokenInfo(props: propsIF) {
 
     const logoSizes = smallScrenView ? '18px' : '25px';
 
+    const poolPrice =
+        poolPriceDisplay === Infinity || poolPriceDisplay === 0
+            ? '…'
+            : `${currencyCharacter}${truncatedPoolPrice}`;
+
     const currentAmountDisplay = (
         <span
             onClick={() => dispatch(toggleDidUserFlipDenom())}
             className={styles.amount}
             style={{ marginTop: '2.5px', cursor: 'pointer' }}
+            aria-label={poolPrice}
         >
-            {poolPriceDisplay === Infinity || poolPriceDisplay === 0
-                ? '…'
-                : `${currencyCharacter}${truncatedPoolPrice}`}
+            {poolPrice}
         </span>
     );
+
+    const poolPriceNumber =
+        poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
     const poolPriceChange = (
         <NoColorTooltip
@@ -107,10 +121,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                           }
                         : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
                 }
+                aria-label={`Pool price change is ${poolPriceNumber}`}
             >
-                {poolPriceChangePercent === undefined
-                    ? '…'
-                    : poolPriceChangePercent}
+                {poolPriceNumber}
             </span>
         </NoColorTooltip>
     );
@@ -144,7 +157,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                   chainId,
                   36000,
               );
-        console.log(tradeData);
+        IS_LOCAL_ENV && console.debug(tradeData);
     }
 
     const favButton = (
@@ -152,6 +165,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             className={styles.favorite_button}
             onClick={handleFavButton}
             id='trade_fav_button'
+            role='button'
+            tabIndex={0}
+            aria-label={
+                isButtonFavorited
+                    ? ' Remove pool from favorites'
+                    : 'Add pool from favorites'
+            }
         >
             {
                 <svg
@@ -184,93 +204,71 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             }
         </button>
     );
+    const [value, copy] = useCopyToClipboard();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {value} copied
+        </SnackbarComponent>
+    );
 
-    // end of fav button-------------------------------
+    function handleBaseCopy() {
+        copy(tradeData.baseToken.address);
 
-    const simpleHeaderDisplay = (
-        <div className={styles.tokens_info_simplify}>
-            <div className={styles.tokens_info_simplify_content}>
-                {favButton}
-                <section>
-                    <DefaultTooltip
-                        interactive
-                        title={`${tradeData.baseToken.symbol + ':'} ${
-                            tradeData.baseToken.address
-                        } ${tradeData.quoteToken.symbol}: ${
-                            tradeData.quoteToken.address
-                        }`}
-                        placement={'top'}
-                    >
-                        <div
-                            className={styles.tokens_images}
-                            onClick={() => dispatch(toggleDidUserFlipDenom())}
-                        >
-                            {topTokenLogo ? (
-                                <img src={topTokenLogo} alt={topTokenSymbol} />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={topTokenSymbol.charAt(0)}
-                                    width={logoSizes}
-                                />
-                            )}
-                            {bottomTokenLogo ? (
-                                <img
-                                    src={bottomTokenLogo}
-                                    alt={bottomTokenSymbol}
-                                />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={bottomTokenSymbol.charAt(0)}
-                                    width={logoSizes}
-                                />
-                            )}
-                        </div>
-                    </DefaultTooltip>
-                    <DefaultTooltip
-                        interactive
-                        title={`${tradeData.baseToken.symbol + ':'} ${
-                            tradeData.baseToken.address
-                        } ${tradeData.quoteToken.symbol}: ${
-                            tradeData.quoteToken.address
-                        }`}
-                        placement={'top'}
-                    >
-                        <div
-                            className={styles.tokens_name}
-                            onClick={() => dispatch(toggleDidUserFlipDenom())}
-                        >
-                            {topTokenSymbol} / {bottomTokenSymbol}
-                            {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
-                            {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
-                        </div>
-                    </DefaultTooltip>
-                </section>
-                {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
-                {currentAmountDisplay}
-                {poolPriceChange}
-            </div>
+        setOpenSnackbar(true);
+    }
+    function handleQuoteCopy() {
+        copy(tradeData.quoteToken.address);
+
+        setOpenSnackbar(true);
+    }
+    const handleLinkOut = (address: string) => {
+        const addressLink = `${chainData.blockExplorer}token/${address}`;
+
+        window.open(addressLink);
+    };
+
+    const baseTokenTooltipContentOrNull =
+        tradeData.baseToken.address === ZERO_ADDRESS ? null : (
+            <p>
+                {`${tradeData.baseToken.symbol + ':'} ${
+                    tradeData.baseToken.address
+                }`}{' '}
+                <FiCopy onClick={() => handleBaseCopy()} />{' '}
+                <FiExternalLink
+                    onClick={() => handleLinkOut(tradeData.baseToken.address)}
+                />
+            </p>
+        );
+
+    const tokenSymbols = (
+        <div className={styles.mono_space} style={{ cursor: 'default' }}>
+            {baseTokenTooltipContentOrNull}
+            <p>
+                {`${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}{' '}
+                <FiCopy onClick={() => handleQuoteCopy()} />{' '}
+                <FiExternalLink
+                    onClick={() => handleLinkOut(tradeData.quoteToken.address)}
+                />
+            </p>
         </div>
     );
 
-    if (simplifyVersion) return simpleHeaderDisplay;
-
-    return (
-        <div className={styles.tokens_info}>
-            {favButton}
-            <DefaultTooltip
+    const denomToggleButton = (
+        <button
+            className={styles.denom_toggle_button}
+            aria-label='flip denomination.'
+        >
+            <TextOnlyTooltip
                 interactive
-                title={`${tradeData.baseToken.symbol + ':'} ${
-                    tradeData.baseToken.address
-                } ${tradeData.quoteToken.symbol}: ${
-                    tradeData.quoteToken.address
-                }`}
-                placement={'top'}
+                title={tokenSymbols}
+                placement={'bottom'}
             >
-                <div
-                    className={styles.tokens_images}
-                    id='trade_token_pair'
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
-                >
+                <div className={styles.tokens_images} id='trade_token_pair'>
                     {topTokenLogo ? (
                         <img src={topTokenLogo} alt={topTokenSymbol} />
                     ) : (
@@ -288,28 +286,47 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         />
                     )}
                 </div>
-            </DefaultTooltip>
-            <DefaultTooltip
+            </TextOnlyTooltip>
+            <TextOnlyTooltip
                 interactive
-                title={`${tradeData.baseToken.symbol + ':'} ${
-                    tradeData.baseToken.address
-                } ${tradeData.quoteToken.symbol}: ${
-                    tradeData.quoteToken.address
-                }`}
-                placement={'top'}
+                title={tokenSymbols}
+                placement={'bottom'}
             >
                 <div
                     className={styles.tokens_name}
+                    aria-live='polite'
+                    aria-atomic='true'
+                    aria-relevant='all'
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
                     {topTokenSymbol} / {bottomTokenSymbol}
-                    {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
-                    {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
                 </div>
-            </DefaultTooltip>
+            </TextOnlyTooltip>
+        </button>
+    );
+
+    // end of fav button-------------------------------
+
+    const simpleHeaderDisplay = (
+        <div className={styles.tokens_info_simplify}>
+            <div className={styles.tokens_info_simplify_content}>
+                {favButton}
+                {denomToggleButton}
+                {currentAmountDisplay}
+                {poolPriceChange}
+            </div>
+        </div>
+    );
+
+    if (simplifyVersion) return simpleHeaderDisplay;
+
+    return (
+        <div className={styles.tokens_info}>
+            {favButton}
+            {denomToggleButton}
             {currentAmountDisplay}
             {poolPriceChange}
-            {/* {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed} */}
+            {snackbarContent}
         </div>
     );
 }

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IS_LOCAL_ENV } from '../../constants';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
@@ -433,7 +434,7 @@ export const graphDataSlice = createSlice({
         ) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                console.log({ updatedTx });
+                IS_LOCAL_ENV && console.debug({ updatedTx });
                 const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByUser.limitOrders.findIndex(
@@ -537,7 +538,7 @@ export const graphDataSlice = createSlice({
                     .findIndex((duration) => duration === durationToFind);
 
                 if (indexOfDuration === -1) {
-                    console.log('duration not found');
+                    IS_LOCAL_ENV && console.debug('duration not found');
 
                     state.candlesForAllPools.pools[
                         indexOfPool

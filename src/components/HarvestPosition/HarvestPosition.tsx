@@ -34,12 +34,13 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { checkIsStable } from '../../utils/data/stablePairs';
+import { isStablePair } from '../../utils/data/stablePairs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -89,7 +90,7 @@ export default function HarvestPosition(props: propsIF) {
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
-    const isPairStable: boolean = checkIsStable(
+    const isPairStable: boolean = isStablePair(
         position.base,
         position.quote,
         chainData.chainId,
@@ -222,43 +223,51 @@ export default function HarvestPosition(props: propsIF) {
                     .walletDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== baseTokenBalance) {
-                            console.log('setting base token wallet balance');
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting base token wallet balance',
+                                );
                             setBaseTokenBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(position.base)
                     .balanceDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== baseTokenDexBalance) {
-                            console.log('setting base token dex balance');
+                            IS_LOCAL_ENV &&
+                                console.debug('setting base token dex balance');
                             setBaseTokenDexBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(position.quote)
                     .walletDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== quoteTokenBalance) {
-                            console.log('setting quote token balance');
+                            IS_LOCAL_ENV &&
+                                console.debug('setting quote token balance');
 
                             setQuoteTokenBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(position.quote)
                     .balanceDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== quoteTokenDexBalance) {
-                            console.log('setting quote token dex balance');
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting quote token dex balance',
+                                );
 
                             setQuoteTokenDexBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         })();
     }, [
@@ -305,25 +314,25 @@ export default function HarvestPosition(props: propsIF) {
         let tx;
         if (position.positionType === 'concentrated') {
             try {
-                console.log('Harvesting 100% of fees.');
+                IS_LOCAL_ENV && console.debug('Harvesting 100% of fees.');
                 dispatch(addPositionPendingUpdate(posHash as string));
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
                     { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
                 );
-                console.log(tx?.hash);
+                IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewHarvestTransactionHash(tx?.hash);
                 if (tx?.hash)
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: 'Harvest',
+                            txType: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
                         }),
                     );
             } catch (error) {
-                console.log('caught error');
+                console.error({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 dispatch(removePositionPendingUpdate(posHash as string));
@@ -334,7 +343,7 @@ export default function HarvestPosition(props: propsIF) {
                 }
             }
         } else {
-            console.log('unsupported position type for harvest');
+            console.error('unsupported position type for harvest');
         }
 
         const newLiqChangeCacheEndpoint =
@@ -367,16 +376,16 @@ export default function HarvestPosition(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 setNewHarvestTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
 
                 receipt = error.receipt;
 
@@ -406,8 +415,8 @@ export default function HarvestPosition(props: propsIF) {
             }
         }
         if (receipt) {
-            console.log('dispatching receipt');
-            console.log({ receipt });
+            IS_LOCAL_ENV && console.debug('dispatching receipt');
+            IS_LOCAL_ENV && console.debug({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
             dispatch(removePositionPendingUpdate(posHash as string));
@@ -460,7 +469,7 @@ export default function HarvestPosition(props: propsIF) {
 
     const removalPending = (
         <WaitingConfirmation
-            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+            content={`Submitting harvest rewards transaction for ${position.baseSymbol} and ${position.quoteSymbol}.`}
         />
     );
 
@@ -468,11 +477,8 @@ export default function HarvestPosition(props: propsIF) {
         useState(removalPending);
 
     const transactionApproved = newHarvestTransactionHash !== '';
-
-    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -483,13 +489,9 @@ export default function HarvestPosition(props: propsIF) {
 
         if (transactionApproved) {
             setCurrentConfirmationData(removalSuccess);
-        } else if (isRemovalDenied) {
+        } else if (isTransactionDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -507,7 +509,7 @@ export default function HarvestPosition(props: propsIF) {
         newHarvestTransactionHash,
         txErrorCode,
         showConfirmation,
-        isRemovalDenied,
+        isTransactionDenied,
     ]);
 
     const mainModalContent = showSettings ? (

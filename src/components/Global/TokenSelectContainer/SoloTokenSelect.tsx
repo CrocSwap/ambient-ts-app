@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setToken } from '../../../utils/state/temp';
-// import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
+import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -29,10 +29,8 @@ interface propsIF {
         exact: boolean,
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
-
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -46,37 +44,29 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
-    acknowledgeToken: (tkn: TokenIF) => void;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
         modalCloseCustom,
         provider,
-        // importedTokens,
         chainId,
-        // setImportedTokens,
         closeModal,
-        // getTokensByName,
-        // getTokenByAddress,
         verifyToken,
-
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
-
         outputTokens,
         validatedInput,
         setInput,
         searchType,
-
-        // verifyToken,
         addRecentToken,
         getRecentTokens,
         isSingleToken,
         tokenAorB,
         reverseTokens,
         tokenPair,
-        acknowledgeToken,
+        ackTokens,
     } = props;
 
     // add an event listener for custom functionalities on modal close
@@ -99,30 +89,15 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
-        if (isCustom && acknowledgeToken) {
-            acknowledgeToken(tkn);
+        if (isCustom) {
+            ackTokens.acknowledge(tkn);
             dispatch(setShouldRecheckLocalStorage(true));
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
-            dispatch(setToken(tkn));
+            dispatch(setSoloToken(tkn));
         }
-        // // determine if the token is a previously imported token
-        // const isTokenImported: boolean = importedTokens.some(
-        //     (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
-        // );
-        // // if token is NOT imported, update local storage accordingly
-        // if (!isTokenImported) {
-        //     // retrieve and parse user data object from local storage
-        //     const userData = JSON.parse(localStorage.getItem('user') as string);
-        //     // update value of `tokens` on user data object
-        //     userData.tokens = [...importedTokens, tkn];
-        //     // write updated value to local storage
-        //     localStorage.setItem('user', JSON.stringify(userData));
-        //     // update local state record of imported tokens
-        //     // necessary as there is no event listener on local storage 😱
-        //     setImportedTokens([...importedTokens, tkn]);
-        // }
+
         // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();
         // determine if clicked token is already in the recent tokens array
@@ -223,7 +198,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 // error handling
                 .catch((err) => {
                     // log error to console
-                    console.warn(err);
+                    console.error(err);
                     // set custom token as `null`
                     setCustomToken(null);
                 });
@@ -279,14 +254,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         // until then it does not hurt anything to put it there
     }, [validatedInput, searchType]);
 
-    // TODO: find the control flow to put this in the DOM
-    // const tokenNotFound = (
-    //     <div className={styles.token_not_found}>
-    //         <p>Cound not find matching token</p>
-    //         <AiOutlineQuestionCircle />
-    //     </div>
-    // );
-
     useEffect(() => {
         if (contentRouter === 'from chain') {
             setShowSoloSelectTokenButtons(false);
@@ -294,15 +261,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             setShowSoloSelectTokenButtons(true);
         }
     }, [contentRouter]);
-    // hook to add focus to the input on after initial render, this is
-    // preferable to autofocusing the element to ensure the DOM does not
-    // ... have multiple autofocuses at once, background included
-    // useEffect(() => {
-    //     document.getElementById('token_select_input_field')?.focus();
-    // }, []);
 
-    // // TODO: this is a function to clear the input field on click
-    // // TODO: we just need a button in the DOM to attach it
     const input = document.getElementById(
         'token_select_input_field',
     ) as HTMLInputElement;
@@ -313,23 +272,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         document.getElementById('token_select_input_field')?.focus();
     };
 
-    // const [ isLoading, setIsLoading] = useState(false)
-
-    // function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-    //     setInput(e.target.value)
-
-    //     if (e.target.value.length > 2) {
-    //         setIsLoading(true)
-    //     }
-
-    //     setTimeout(() => {
-    //       setIsLoading(false)
-    //       }, 1500);
-    // }
-
-    // if (isLoading) return <div className={styles.loader}> <SimpleLoader /></div>
-
-    // console.log({ customToken });
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>
@@ -346,9 +288,14 @@ export const SoloTokenSelect = (props: propsIF) => {
                     }}
                 />
                 {input?.value && (
-                    <button onClick={clearInputField}>Clear</button>
+                    <button
+                        onClick={clearInputField}
+                        aria-label='Clear input'
+                        tabIndex={0}
+                    >
+                        Clear
+                    </button>
                 )}
-                {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (

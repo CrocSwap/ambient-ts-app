@@ -17,6 +17,8 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
+import { topPoolsMethodsIF } from '../../App/hooks/useTopPools';
+import NotFound from '../../pages/NotFound/NotFound';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -47,10 +49,21 @@ interface propsIF {
     userImageData: string[];
     appPage?: boolean;
     username?: string | null;
+    topPools: topPoolsMethodsIF;
+    isChatEnabled: boolean;
 }
 
 export default function ChatPanel(props: propsIF) {
-    const { isFullScreen, favePools, currentPool, setIsChatOpen } = props;
+    const {
+        isChatEnabled,
+        isFullScreen,
+        favePools,
+        currentPool,
+        setIsChatOpen,
+        topPools,
+    } = props;
+
+    if (!isChatEnabled) return <NotFound />;
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
@@ -59,7 +72,7 @@ export default function ChatPanel(props: propsIF) {
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-    const [userCurrentPool, setUserCurrentPool] = useState('ETH/USDC');
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -207,6 +220,7 @@ export default function ChatPanel(props: propsIF) {
                 setUserCurrentPool(result.userData.userCurrentPool);
                 if (result.userData.ensName !== ensName) {
                     // eslint-disable-next-line
+
                     updateUser(
                         currentUser as string,
                         ensName,
@@ -236,6 +250,7 @@ export default function ChatPanel(props: propsIF) {
     useEffect(() => {
         if (isMessageDeleted === true) {
             getMsg();
+            window.scrollTo(0, 0);
         }
     }, [isMessageDeleted]);
 
@@ -293,6 +308,17 @@ export default function ChatPanel(props: propsIF) {
         }
     };
 
+    const convertCurreny = (currencyPair: string) => {
+        if (currencyPair === 'Global') {
+            return 'global';
+        } else {
+            const [currencyA, currencyB] = currencyPair.split('/');
+            const lowercaseA = currencyA.trim().toLowerCase();
+            const lowercaseB = currencyB.trim().toLowerCase();
+            return `${lowercaseA}&${lowercaseB}`;
+        }
+    };
+
     const header = (
         <div
             className={styles.chat_header}
@@ -307,10 +333,11 @@ export default function ChatPanel(props: propsIF) {
                         size={18}
                         className={styles.open_full_button}
                         onClick={() =>
-                            window.open(
-                                '/chat/' + room.replace('/', '&').toLowerCase(),
-                            )
+                            window.open('/chat/' + convertCurreny(room))
                         }
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open chat in full screen'
                     />
                 )}
                 {isFullScreen || !props.isChatOpen ? (
@@ -320,9 +347,19 @@ export default function ChatPanel(props: propsIF) {
                         size={22}
                         className={styles.close_button}
                         onClick={() => handleCloseChatPanel()}
+                        role='button'
+                        tabIndex={0}
+                        aria-label='hide chat button'
                     />
                 )}
-                {!props.isChatOpen && <IoIosArrowUp size={22} />}
+                {!props.isChatOpen && (
+                    <IoIosArrowUp
+                        size={22}
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open chat button'
+                    />
+                )}
             </section>
         </div>
     );
@@ -384,6 +421,8 @@ export default function ChatPanel(props: propsIF) {
                                 size={27}
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
+                                tabIndex={0}
+                                aria-label='Scroll to bottom button'
                             />
                         </span>
                     </div>
@@ -399,6 +438,8 @@ export default function ChatPanel(props: propsIF) {
                                 size={27}
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
+                                tabIndex={0}
+                                aria-label='Scroll to bottom button'
                             />
                         </span>
                     </div>
@@ -413,6 +454,8 @@ export default function ChatPanel(props: propsIF) {
                             size={27}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
+                            tabIndex={0}
+                            aria-label='Scroll to bottom button'
                         />
                     </span>
                 ) : (
@@ -422,6 +465,8 @@ export default function ChatPanel(props: propsIF) {
                             size={27}
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
+                            tabIndex={0}
+                            aria-label='Scroll to bottom button'
                         />
                     </span>
                 )
@@ -438,11 +483,12 @@ export default function ChatPanel(props: propsIF) {
             room={
                 room === 'Current Pool'
                     ? currentPool.baseToken.symbol +
-                      '/' +
+                      ' / ' +
                       currentPool.quoteToken.symbol
                     : room
             }
             ensName={ensName}
+            appPage={props.appPage}
         />
     );
 
@@ -467,6 +513,7 @@ export default function ChatPanel(props: propsIF) {
                 userCurrentPool={userCurrentPool}
                 favoritePoolsArray={favoritePoolsArray}
                 setFavoritePoolsArray={setFavoritePoolsArray}
+                topPools={topPools}
             />
         );
 
@@ -500,6 +547,7 @@ export default function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
+                        topPools={topPools}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

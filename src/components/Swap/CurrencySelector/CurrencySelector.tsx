@@ -23,6 +23,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -81,7 +82,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -89,6 +89,7 @@ interface propsIF {
     ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -101,10 +102,8 @@ export default function CurrencySelector(props: propsIF) {
         setBuyQtyString,
         isUserLoggedIn,
         tokenPair,
-        // tokensBank,
         setImportedTokens,
         chainId,
-        // direction,
         fieldId,
         tokenAorB,
         handleChangeEvent,
@@ -123,11 +122,7 @@ export default function CurrencySelector(props: propsIF) {
         tokenAQtyCoveredBySurplusBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenASurplusMinusTokenARemainderNum,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenASurplusMinusTokenAQtyNum,
         reverseTokens,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         gasPriceInGwei,
         verifyToken,
         getTokensByName,
@@ -139,12 +134,10 @@ export default function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
-
-    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector
@@ -165,32 +158,6 @@ export default function CurrencySelector(props: propsIF) {
     useEffect(() => {
         handleDexBalanceChange();
     }, [tokenADexBalance]);
-
-    // const WithdrawTokensContent = (
-    //     <div className={styles.surplus_toggle}>
-    //         {isSellTokenSelector ? (
-    //             <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-    //                 <Toggle2
-    //                     isOn={isWithdrawFromDexChecked}
-    //                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-    //                     id='sell_token_withdrawal'
-    //                     disabled={false}
-    //                     // disabled={isWithdrawFromDexDisabled}
-    //                 />
-    //             </IconWithTooltip>
-    //         ) : (
-    //             <IconWithTooltip title='Save to Exchange Balance' placement='bottom'>
-    //                 <Toggle2
-    //                     isOn={isSaveAsDexSurplusChecked}
-    //                     handleToggle={() =>
-    //                         setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)
-    //                     }
-    //                     id='buy_token_withdrawal'
-    //                 />
-    //             </IconWithTooltip>
-    //         )}
-    //     </div>
-    // );
 
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
@@ -306,7 +273,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -316,6 +282,7 @@ export default function CurrencySelector(props: propsIF) {
     const walletBalanceMaxButton =
         isSellTokenSelector &&
         !isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         walletBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
@@ -339,7 +306,6 @@ export default function CurrencySelector(props: propsIF) {
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
         (isSellTokenSelector &&
-            isSellTokenEth === false &&
             isWithdrawFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
@@ -422,6 +388,7 @@ export default function CurrencySelector(props: propsIF) {
     const surplusMaxButton =
         isSellTokenSelector &&
         isWithdrawFromDexChecked &&
+        !isSellTokenEth &&
         surplusBalanceNonLocaleString !== '0.0' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
@@ -552,7 +519,7 @@ export default function CurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction}> </div>
+            <div className={styles.direction} />
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity
@@ -565,11 +532,13 @@ export default function CurrencySelector(props: propsIF) {
                         setDisableReverseTokens={setDisableReverseTokens}
                     />
                 </div>
-                <div
+                <button
                     className={`${styles.token_select} ${
                         isSwapCopied && styles.pulse_animation
                     }`}
                     onClick={openTokenModal}
+                    tabIndex={0}
+                    aria-label='Open swap sell token modal.'
                     id='swap_token_selector'
                 >
                     {thisToken.logoURI ? (
@@ -587,7 +556,7 @@ export default function CurrencySelector(props: propsIF) {
                     )}
                     {tokenSymbol}
                     <RiArrowDownSLine size={27} />
-                </div>
+                </button>
             </div>
             {swapboxBottomOrNull}
 
@@ -624,7 +593,7 @@ export default function CurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

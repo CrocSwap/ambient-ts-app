@@ -1,10 +1,12 @@
 // START: Import React and Dongles
-import { useCallback, useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import Local Files
 import styles from './SimpleModal.module.css';
 import SimpleModalHeader from './SimpleModalHeader/SimpleModalHeader';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 // interface for React functional component
 interface SimpleModalPropsIF {
@@ -21,39 +23,45 @@ interface SimpleModalPropsIF {
 export default function SimpleModal(props: SimpleModalPropsIF) {
     const { onClose, title, children, noBackground } = props;
 
-    const escFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
             onClose();
         }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', escFunction, false);
-        return () => {
-            document.removeEventListener('keydown', escFunction, false);
-        };
-    }, []);
+    }, [isEscapePressed]);
 
     return (
-        <div className={styles.outside_modal} onMouseDown={onClose}>
-            <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className={`
+        <aside
+            className={styles.outside_modal}
+            onMouseDown={onClose}
+            role='dialog'
+            aria-modal='true'
+        >
+            <FocusTrap>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className={`
                 ${styles.modal_body}
                 ${noBackground ? styles.no_background_modal : null}
                 `}
-                onMouseDown={(e) => e.stopPropagation()}
-                style={{ justifyContent: 'flex-start' }}
-            >
-                <section className={styles.modal_content}>
-                    {title && (
-                        <SimpleModalHeader title={title} onClose={onClose} />
-                    )}
-                    {children}
-                </section>
-            </motion.div>
-        </div>
+                    onMouseDown={(e) => e.stopPropagation()}
+                    style={{ justifyContent: 'flex-start' }}
+                    tabIndex={0}
+                    aria-label={`${title} modal`}
+                >
+                    <section className={styles.modal_content}>
+                        {title && (
+                            <SimpleModalHeader
+                                title={title}
+                                onClose={onClose}
+                            />
+                        )}
+                        {children}
+                    </section>
+                </motion.div>
+            </FocusTrap>
+        </aside>
     );
 }

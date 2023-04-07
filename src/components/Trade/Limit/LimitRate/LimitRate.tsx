@@ -8,6 +8,7 @@ import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
+import { IS_LOCAL_ENV } from '../../../../constants';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -71,14 +72,12 @@ export default function LimitRate(props: propsIF) {
     // const initialLimitRateNonDisplay =
     //     (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
 
-    // console.log({ initialLimitRateNonDisplay });
-
     // const pinnedInitialTick: number = isSellTokenBase
     //     ? pinTickLower(initialLimitRateNonDisplay, gridSize)
     //     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
     const handleLimitChange = (value: string) => {
-        console.log({ value });
+        IS_LOCAL_ENV && console.debug({ value });
         // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(value));
         const limitNonDisplay = isDenomBase
             ? pool?.fromDisplayPrice(parseFloat(value))
@@ -89,8 +88,6 @@ export default function LimitRate(props: propsIF) {
             const pinnedTick: number = isSellTokenBase
                 ? pinTickLower(limit, gridSize)
                 : pinTickUpper(limit, gridSize);
-            // console.log({ limitPriceInTick });
-            // console.log({ isDenomBase });
             dispatch(setLimitTick(pinnedTick));
             setPriceInputFieldBlurred(true);
         });
@@ -123,8 +120,6 @@ export default function LimitRate(props: propsIF) {
                         event.target.value === '' ||
                         event.target.validity.valid;
                     const targetValue = event.target.value;
-                    // console.log({ targetValue });
-                    // console.log({ previousDisplayPrice });
                     if (isValid && targetValue !== previousDisplayPrice) {
                         handleLimitChange(targetValue.replaceAll(',', ''));
                         setPreviousDisplayPrice(targetValue);
@@ -139,7 +134,11 @@ export default function LimitRate(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
-                required
+                tabIndex={0}
+                aria-label='Limit Price.'
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='all'
                 // value={limitPrice}
             />
         </div>
@@ -147,11 +146,17 @@ export default function LimitRate(props: propsIF) {
 
     const buttonControls = (
         <div className={styles.button_controls}>
-            <button onClick={!isDenomBase ? increaseTick : decreaseTick}>
+            <button
+                onClick={!isDenomBase ? increaseTick : decreaseTick}
+                aria-label='Increase limit tick.'
+            >
                 <HiPlus />
             </button>
             <button>
-                <HiMinus onClick={!isDenomBase ? decreaseTick : increaseTick} />
+                <HiMinus
+                    onClick={!isDenomBase ? decreaseTick : increaseTick}
+                    aria-label='Decrease limit tick.'
+                />
             </button>
         </div>
     );
@@ -175,7 +180,6 @@ export default function LimitRate(props: propsIF) {
                     className={styles.reset_limit_button}
                     onClick={() => {
                         dispatch(setLimitTick(pinnedInitialTick));
-                        // console.log({ displayPrice });
                     }}
                 >
                     Top of Book

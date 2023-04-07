@@ -49,7 +49,7 @@ export default function WalletCard(props: propsIF) {
                     if (price) setTokenPrice(price);
                 }
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         })();
     }, [tokenAddress]);

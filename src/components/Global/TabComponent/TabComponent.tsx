@@ -51,7 +51,6 @@ export default function TabComponent(props: TabPropsIF) {
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
     function handleSelectedTab(item: tabData) {
-        // console.log({ item });
         if (setSelectedInsideTab) {
             switch (item.label) {
                 case 'Transactions':
@@ -136,7 +135,11 @@ export default function TabComponent(props: TabPropsIF) {
 
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
-            <ul className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}>
+            <ul
+                className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}
+                aria-label='Navigation Tabs'
+                role='tablist'
+            >
                 {data.map((item) => (
                     <li
                         key={item.label}
@@ -146,12 +149,27 @@ export default function TabComponent(props: TabPropsIF) {
                                 : ''
                         }
                         onClick={() => handleSelectedTab(item)}
+                        aria-describedby={
+                            item.label === selectedTab.label
+                                ? 'current-tab'
+                                : ''
+                        }
+                        tabIndex={0}
                     >
                         {item.icon
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        <div className={styles.item_label}> {item.label}</div>
+                        <button
+                            onClick={() => handleSelectedTab(item)}
+                            className={styles.item_label}
+                            role='tab'
+                            aria-selected={item.label === selectedTab.label}
+                            tabIndex={0}
+                        >
+                            {' '}
+                            {item.label}
+                        </button>
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
@@ -173,7 +191,10 @@ export default function TabComponent(props: TabPropsIF) {
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
 
     const fullTabs = (
-        <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
+        <ul
+            className={`${styles.tab_ul} ${styles.desktop_tabs}`}
+            aria-label='Navigation Tabs'
+        >
             {data.map((item) => {
                 return (
                     <li
@@ -184,16 +205,37 @@ export default function TabComponent(props: TabPropsIF) {
                                 : ''
                         }
                         onClick={() => handleSelectedTab(item)}
+                        role='tablist'
+                        aria-describedby={
+                            item.label === selectedTab.label
+                                ? 'current-tab'
+                                : ''
+                        }
                     >
                         {item.icon
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
-                        <div className={styles.item_label}> {item.label}</div>
+                        <button
+                            className={`${styles.item_label} ${
+                                item.label === selectedTab.label
+                                    ? styles.selected
+                                    : ''
+                            }`}
+                            onClick={() => handleSelectedTab(item)}
+                            role='tab'
+                            aria-selected={item.label === selectedTab.label}
+
+                            // tabIndex={item.label === selectedTab.label ? 0 : -1}
+                        >
+                            {' '}
+                            {item.label}
+                        </button>
 
                         {item.label === selectedTab.label && (
                             <motion.div
                                 className={styles.underline}
                                 layoutId='underline'
+                                role='presentation'
                             />
                         )}
                     </li>
@@ -203,7 +245,12 @@ export default function TabComponent(props: TabPropsIF) {
     );
 
     return (
-        <div className={styles.tab_window}>
+        <div
+            className={styles.tab_window}
+            role='tablist'
+            aria-orientation='horizontal'
+            aria-label=''
+        >
             <nav className={styles.tab_nav}>
                 <AnimateSharedLayout>
                     {rightTabOptions ? tabsWithRightOption : fullTabs}
@@ -217,6 +264,9 @@ export default function TabComponent(props: TabPropsIF) {
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -10, opacity: 0 }}
                         transition={{ duration: 0.2 }}
+                        role='tabpanel'
+                        tabIndex={0}
+                        hidden={!selectedTab}
                     >
                         {selectedTab ? selectedTab.content : null}
                     </motion.div>

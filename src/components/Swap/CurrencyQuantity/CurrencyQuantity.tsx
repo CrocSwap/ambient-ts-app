@@ -84,12 +84,17 @@ export default function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
+    const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
+                autoFocus={fieldId === 'sell'}
                 className={styles.currency_quantity}
                 placeholder='0.0'
+                tabIndex={0}
+                aria-live={ariaLive}
+                aria-label={`Enter ${fieldId} amount`}
                 onChange={(event) => {
                     const targetValue = event.target.value.replaceAll(',', '');
                     const isPrecisionGreaterThanDecimals =
@@ -111,7 +116,6 @@ export default function CurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
-                required
             />
         </div>
     );

@@ -46,6 +46,7 @@ import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { IS_LOCAL_ENV } from '../../constants';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -232,7 +233,7 @@ export default function Trade(props: propsIF) {
             props.candleData !== undefined &&
             props.candleData.candles?.length > 0
         ) {
-            console.log('Data arrived');
+            IS_LOCAL_ENV && console.debug('Data arrived');
             setIsCandleDataArrived(false);
         }
     }, [props.candleData]);
@@ -328,8 +329,8 @@ export default function Trade(props: propsIF) {
     const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
     const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
     const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
-    const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.8)');
-    const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.8)');
+    const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.5)');
+    const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.5)');
 
     const handleChartBgColorPickerChange = (color: any) => {
         setChartBg(color.hex);
@@ -445,9 +446,17 @@ export default function Trade(props: propsIF) {
         setIsCandleSelected(false);
     };
 
+    const activeCandleDuration = isMarketOrLimitModule
+        ? chartSettings.candleTime.market.time
+        : chartSettings.candleTime.range.time;
+
     useEffect(() => {
         unselectCandle();
-    }, [chartSettings.candleTime, tradeData.baseToken.name, tradeData.quoteToken.name]);
+    }, [
+        activeCandleDuration,
+        tradeData.baseToken.name,
+        tradeData.quoteToken.name,
+    ]);
 
     const initLinkPath =
         '/initpool/chain=0x5&tokenA=' +
@@ -534,8 +543,6 @@ export default function Trade(props: propsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        // activeTimeFrame: activeTimeFrame,
-        // setActiveTimeFrame: setActiveTimeFrame,
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
         setPoolPriceChangePercent: setPoolPriceChangePercent,

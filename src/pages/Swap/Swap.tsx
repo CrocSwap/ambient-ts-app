@@ -1,9 +1,15 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    ChainSpec,
+    CrocImpact,
+    CrocPoolView,
+} from '@crocswap-libs/sdk';
+import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -37,7 +43,7 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
@@ -45,6 +51,8 @@ import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../constants';
+import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -100,16 +108,19 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
     bypassConfirm: allSkipConfirmMethodsIF;
+    ackTokens: ackTokensMethodsIF;
+    chainData: ChainSpec;
+    pool: CrocPoolView | undefined;
 }
 
 export default function Swap(props: propsIF) {
     const {
+        pool,
         crocEnv,
         isUserLoggedIn,
         account,
@@ -148,12 +159,13 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
         tokenPairLocal,
         dexBalancePrefs,
         bypassConfirm,
+        ackTokens,
+        chainData,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -242,14 +254,17 @@ export default function Swap(props: propsIF) {
         if (
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
-            txErrorCode === ''
+            txErrorCode === '' &&
+            bypassConfirm.swap.isEnabled
         ) {
+            setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
         }
     }, [
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
+        bypassConfirm.swap.isEnabled,
     ]);
 
     const resetConfirmation = () => {
@@ -261,9 +276,7 @@ export default function Swap(props: propsIF) {
     useEffect(() => {
         setNewSwapTransactionHash('');
         setShowBypassConfirm(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     async function initiateSwap() {
         resetConfirmation();
@@ -275,13 +288,13 @@ export default function Swap(props: propsIF) {
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
-        // const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
-        // const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
+
         const qty = isTokenAPrimary
             ? sellQtyString.replaceAll(',', '')
             : buyQtyString.replaceAll(',', '');
+
         const isQtySell = isTokenAPrimary;
-        // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
+
         let tx;
         try {
             const plan = isQtySell
@@ -300,13 +313,16 @@ export default function Swap(props: propsIF) {
             dispatch(addPendingTx(tx?.hash));
             if (tx.hash)
                 dispatch(
-                    addTransactionByType({ txHash: tx.hash, txType: 'Swap' }),
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    }),
                 );
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
@@ -354,18 +370,18 @@ export default function Swap(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
 
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
 
                 setNewSwapTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -401,7 +417,6 @@ export default function Swap(props: propsIF) {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
-            // setNewSwapTransactionHash('');
         }
     }
 
@@ -415,6 +430,7 @@ export default function Swap(props: propsIF) {
         <button
             onClick={openModalWallet}
             className={styles.authenticate_button}
+            style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
             Connect Wallet
         </button>
@@ -429,13 +445,13 @@ export default function Swap(props: propsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA.address);
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat
         />
     );
 
-    const approve = async (tokenAddress: string) => {
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
             location.reload();
             return;
@@ -448,7 +464,7 @@ export default function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: 'Approval',
+                        txType: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -456,17 +472,17 @@ export default function Swap(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
                     receipt = error.receipt;
@@ -480,7 +496,7 @@ export default function Swap(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -524,6 +540,7 @@ export default function Swap(props: propsIF) {
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
     const confirmSwapModalProps = {
+        pool: pool,
         poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
@@ -541,7 +558,6 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         effectivePrice: effectivePrice,
         isSellTokenBase: isSellTokenBase,
-        bypassConfirmSwap: bypassConfirm.swap,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
@@ -551,6 +567,7 @@ export default function Swap(props: propsIF) {
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
         bypassConfirm: bypassConfirm,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -581,8 +598,13 @@ export default function Swap(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(sellQtyString);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
     const swapContainerStyle = pathname.startsWith('/swap')
         ? styles.swap_page_container
@@ -724,14 +746,15 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         dexBalancePrefs: dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        ackTokens: ackTokens,
     };
 
     const handleSwapButtonClickWithBypass = () => {
-        console.log('setting to true');
+        IS_LOCAL_ENV && console.debug('setting to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
@@ -777,109 +800,224 @@ export default function Swap(props: propsIF) {
             </div>
         ) : null;
 
+    // logic to determine if a given token is acknowledged or on a list
+    const isTokenUnknown = (tkn: TokenIF): boolean => {
+        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
+        const isListed: boolean = verifyToken(tkn.address, chainId);
+        return !isAckd && !isListed;
+    };
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+
+    // token acknowledgement needed message (empty string if none needed)
+    const ackTokenMessage = useMemo<string>(() => {
+        // !Important   any changes to verbiage in this code block must be approved
+        // !Important   ... by Doug, get in writing by email or request specific
+        // !Important   ... review for a pull request on GitHub
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } and ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA) {
+            text = `The token ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenB) {
+            text = `The token ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+    };
+
     return (
-        <section data-testid={'swap'} className={swapPageStyle}>
-            {props.isTutorialMode && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
-            <div className={`${swapContainerStyle}`}>
-                <ContentContainer
-                    isOnTradeRoute={isOnTradeRoute}
-                    padding={isOnTradeRoute ? '0 1rem' : '1rem'}
-                >
-                    <SwapHeader
-                        swapSlippage={swapSlippage}
-                        isPairStable={isPairStable}
-                        isOnTradeRoute={isOnTradeRoute}
-                        openGlobalModal={props.openGlobalModal}
-                        shareOptionsDisplay={shareOptionsDisplay}
-                        bypassConfirm={bypassConfirm}
-                    />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        <CurrencyConverter {...currencyConverterProps} />
-                    </motion.div>
-                    <ExtraInfo
-                        account={account}
-                        tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
-                        priceImpact={priceImpact}
-                        isTokenABase={isSellTokenBase}
-                        displayEffectivePriceString={
-                            displayEffectivePriceString
-                        }
-                        poolPriceDisplay={poolPriceDisplay || 0}
-                        slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFee={tradeData.liquidityFee}
-                        quoteTokenIsBuy={true}
-                        swapGasPriceinDollars={swapGasPriceinDollars}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
-                        isDenomBase={tradeData.isDenomBase}
-                        isOnTradeRoute={isOnTradeRoute}
-                    />
-                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                      true ? (
-                        poolExists &&
-                        !isTokenAAllowanceSufficient &&
-                        parseFloat(sellQtyString) > 0 &&
-                        sellQtyString !== 'Infinity' ? (
-                            approvalButton
-                        ) : (
-                            <>
-                                {!showBypassConfirm ? (
-                                    // user has hide confirmation modal off
-                                    <SwapButton
-                                        onClickFn={
-                                            bypassConfirm.swap.isEnabled
-                                                ? handleSwapButtonClickWithBypass
-                                                : openModal
-                                        }
-                                        swapAllowed={swapAllowed}
-                                        swapButtonErrorMessage={
-                                            swapButtonErrorMessage
-                                        }
-                                        bypassConfirmSwap={bypassConfirm.swap}
-                                    />
-                                ) : (
-                                    // user has hide confirmation modal on
-                                    <BypassConfirmSwapButton
-                                        {...confirmSwapModalProps}
-                                    />
-                                )}
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                    {priceImpactWarningOrNull}
-                </ContentContainer>
-                {confirmSwapModalOrNull}
-                {isRelativeModalOpen && (
-                    <RelativeModal
-                        onClose={closeRelativeModal}
-                        title='Relative Modal'
-                    >
-                        You are about to do something that will lose you a lot
-                        of money. If you think you are smarter than the awesome
-                        team that programmed this, press dismiss.
-                    </RelativeModal>
+        <FocusTrap
+            focusTrapOptions={{
+                clickOutsideDeactivates: true,
+            }}
+        >
+            <section data-testid={'swap'} className={swapPageStyle}>
+                {props.isTutorialMode && (
+                    <div className={styles.tutorial_button_container}>
+                        <button
+                            className={styles.tutorial_button}
+                            onClick={() => setIsTutorialEnabled(true)}
+                        >
+                            Tutorial Mode
+                        </button>
+                    </div>
                 )}
-            </div>
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={swapTutorialSteps}
-            />
-        </section>
+                <div className={`${swapContainerStyle}`}>
+                    <ContentContainer
+                        isOnTradeRoute={isOnTradeRoute}
+                        padding={isOnTradeRoute ? '0 1rem' : '1rem'}
+                    >
+                        <SwapHeader
+                            swapSlippage={swapSlippage}
+                            isPairStable={isPairStable}
+                            isOnTradeRoute={isOnTradeRoute}
+                            openGlobalModal={props.openGlobalModal}
+                            shareOptionsDisplay={shareOptionsDisplay}
+                            bypassConfirm={bypassConfirm}
+                        />
+                        {navigationMenu}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <CurrencyConverter {...currencyConverterProps} />
+                        </motion.div>
+                        <ExtraInfo
+                            account={account}
+                            tokenPair={{
+                                dataTokenA: tokenA,
+                                dataTokenB: tokenB,
+                            }}
+                            priceImpact={priceImpact}
+                            isTokenABase={isSellTokenBase}
+                            displayEffectivePriceString={
+                                displayEffectivePriceString
+                            }
+                            poolPriceDisplay={poolPriceDisplay || 0}
+                            slippageTolerance={slippageTolerancePercentage}
+                            liquidityProviderFee={tradeData.liquidityFee}
+                            quoteTokenIsBuy={true}
+                            swapGasPriceinDollars={swapGasPriceinDollars}
+                            didUserFlipDenom={tradeData.didUserFlipDenom}
+                            isDenomBase={tradeData.isDenomBase}
+                            isOnTradeRoute={isOnTradeRoute}
+                        />
+                        {isUserLoggedIn ===
+                        undefined ? null : isUserLoggedIn === true ? (
+                            poolExists &&
+                            !isTokenAAllowanceSufficient &&
+                            parseFloat(sellQtyString) > 0 &&
+                            sellQtyString !== 'Infinity' ? (
+                                approvalButton
+                            ) : (
+                                <>
+                                    {!showBypassConfirm ? (
+                                        // user has hide confirmation modal off
+                                        <SwapButton
+                                            onClickFn={
+                                                areBothAckd
+                                                    ? bypassConfirm.swap
+                                                          .isEnabled
+                                                        ? handleSwapButtonClickWithBypass
+                                                        : openModal
+                                                    : ackAsNeeded
+                                            }
+                                            swapAllowed={
+                                                swapAllowed &&
+                                                sellQtyString !== '' &&
+                                                buyQtyString !== ''
+                                            }
+                                            swapButtonErrorMessage={
+                                                swapButtonErrorMessage
+                                            }
+                                            bypassConfirmSwap={
+                                                bypassConfirm.swap
+                                            }
+                                            areBothAckd={areBothAckd}
+                                        />
+                                    ) : (
+                                        // user has hide confirmation modal on
+                                        <BypassConfirmSwapButton
+                                            {...confirmSwapModalProps}
+                                        />
+                                    )}
+                                    {ackTokenMessage && (
+                                        <p
+                                            className={styles.acknowledge_text}
+                                            dangerouslySetInnerHTML={{
+                                                __html: formattedAckTokenMessage,
+                                            }}
+                                        ></p>
+                                    )}
+                                    <div
+                                        className={
+                                            styles.acknowledge_etherscan_links
+                                        }
+                                    >
+                                        {needConfirmTokenA && (
+                                            <a
+                                                href={
+                                                    chainData.blockExplorer +
+                                                    'token/' +
+                                                    tokenPair.dataTokenA.address
+                                                }
+                                                rel={'noopener noreferrer'}
+                                                target='_blank'
+                                            >
+                                                {tokenPair.dataTokenA.symbol ||
+                                                    tokenPair.dataTokenA
+                                                        .name}{' '}
+                                                <FiExternalLink />
+                                            </a>
+                                        )}
+                                        {needConfirmTokenB && (
+                                            <a
+                                                href={
+                                                    chainData.blockExplorer +
+                                                    'token/' +
+                                                    tokenPair.dataTokenB.address
+                                                }
+                                                rel={'noopener noreferrer'}
+                                                target='_blank'
+                                            >
+                                                {tokenPair.dataTokenB.symbol ||
+                                                    tokenPair.dataTokenB
+                                                        .name}{' '}
+                                                <FiExternalLink />
+                                            </a>
+                                        )}
+                                    </div>
+                                </>
+                            )
+                        ) : (
+                            loginButton
+                        )}
+                        {priceImpactWarningOrNull}
+                    </ContentContainer>
+                    {confirmSwapModalOrNull}
+                    {isRelativeModalOpen && (
+                        <RelativeModal
+                            onClose={closeRelativeModal}
+                            title='Relative Modal'
+                        >
+                            You are about to do something that will lose you a
+                            lot of money. If you think you are smarter than the
+                            awesome team that programmed this, press dismiss.
+                        </RelativeModal>
+                    )}
+                </div>
+                <TutorialOverlay
+                    isTutorialEnabled={isTutorialEnabled}
+                    setIsTutorialEnabled={setIsTutorialEnabled}
+                    steps={swapTutorialSteps}
+                />
+            </section>
+        </FocusTrap>
     );
 }

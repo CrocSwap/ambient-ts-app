@@ -37,9 +37,10 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
-import { checkIsStable } from '../../utils/data/stablePairs';
+import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -179,43 +180,51 @@ export default function RemoveRange(props: propsIF) {
                     .walletDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== baseTokenBalance) {
-                            console.log('setting base token wallet balance');
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting base token wallet balance',
+                                );
                             setBaseTokenBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(position.base)
                     .balanceDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== baseTokenDexBalance) {
-                            console.log('setting base token dex balance');
+                            IS_LOCAL_ENV &&
+                                console.debug('setting base token dex balance');
                             setBaseTokenDexBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(position.quote)
                     .walletDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== quoteTokenBalance) {
-                            console.log('setting quote token balance');
+                            IS_LOCAL_ENV &&
+                                console.debug('setting quote token balance');
 
                             setQuoteTokenBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
                 crocEnv
                     .token(position.quote)
                     .balanceDisplay(position.user)
                     .then((bal: string) => {
                         if (bal !== quoteTokenDexBalance) {
-                            console.log('setting quote token dex balance');
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting quote token dex balance',
+                                );
 
                             setQuoteTokenDexBalance(bal);
                         }
                     })
-                    .catch(console.log);
+                    .catch(console.error);
             }
         })();
     }, [
@@ -256,7 +265,7 @@ export default function RemoveRange(props: propsIF) {
                 )
                     .then((response) => response.json())
                     .then((json) => {
-                        console.log({ json });
+                        IS_LOCAL_ENV && console.debug({ json });
                         setPosLiqBaseDecimalCorrected(
                             json?.data?.positionLiqBaseDecimalCorrected,
                         );
@@ -317,7 +326,7 @@ export default function RemoveRange(props: propsIF) {
     const isPositionPendingUpdate =
         positionsPendingUpdate.indexOf(posHash as string) > -1;
 
-    const isPairStable: boolean = checkIsStable(
+    const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
@@ -330,6 +339,7 @@ export default function RemoveRange(props: propsIF) {
     const removeFn = async () => {
         if (!crocEnv || !liquidityToBurn) return;
         console.log('removing');
+        IS_LOCAL_ENV && console.debug('removing');
         setShowConfirmation(true);
 
         const pool = crocEnv.pool(position.base, position.quote);
@@ -343,12 +353,13 @@ export default function RemoveRange(props: propsIF) {
         let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
-                console.log(`${removalPercentage}% to be removed.`);
+                IS_LOCAL_ENV &&
+                    console.debug(`${removalPercentage}% to be removed.`);
                 try {
                     tx = await pool.burnAmbientAll([lowLimit, highLimit], {
                         surplus: dexBalancePrefs.range.outputToDexBal.isEnabled,
                     });
-                    console.log(tx?.hash);
+                    IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
@@ -357,7 +368,7 @@ export default function RemoveRange(props: propsIF) {
                     ) {
                         location.reload();
                     }
-                    console.log({ error });
+                    console.error({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                 }
@@ -367,7 +378,7 @@ export default function RemoveRange(props: propsIF) {
                         lowLimit,
                         highLimit,
                     ]);
-                    console.log(tx?.hash);
+                    IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
@@ -376,13 +387,19 @@ export default function RemoveRange(props: propsIF) {
                     ) {
                         location.reload();
                     }
-                    console.log({ error });
+                    IS_LOCAL_ENV && console.debug({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            console.log(`${removalPercentage}% to be removed.`);
+            const positionLiq = position.positionLiq;
+
+            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                .mul(removalPercentage)
+                .div(100);
+            IS_LOCAL_ENV &&
+                console.debug(`${removalPercentage}% to be removed.`);
 
             try {
                 tx = await pool.burnRangeLiq(
@@ -391,14 +408,14 @@ export default function RemoveRange(props: propsIF) {
                     [lowLimit, highLimit],
                     { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
                 );
-                console.log(tx?.hash);
+                IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
                 if (tx?.hash)
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: 'Removal',
+                            txType: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
                         }),
                     );
             } catch (error) {
@@ -407,13 +424,14 @@ export default function RemoveRange(props: propsIF) {
                 ) {
                     location.reload();
                 }
-                console.log({ error });
+                console.error({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
-            console.log('unsupported position type for removal');
+            IS_LOCAL_ENV &&
+                console.debug('unsupported position type for removal');
         }
 
         const newLiqChangeCacheEndpoint =
@@ -462,16 +480,16 @@ export default function RemoveRange(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 setNewRemovalTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
-                console.log({ newTransactionHash });
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -516,8 +534,8 @@ export default function RemoveRange(props: propsIF) {
             }
         }
         if (receipt) {
-            console.log('dispatching receipt');
-            console.log({ receipt });
+            IS_LOCAL_ENV && console.debug('dispatching receipt');
+            IS_LOCAL_ENV && console.debug({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
             dispatch(removePositionPendingUpdate(posHash as string));
@@ -530,13 +548,13 @@ export default function RemoveRange(props: propsIF) {
     const removalSuccess = (
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
-            content='Removal Transaction Successfully Submitted.'
+            content='Removal Transaction Successfully Submitted'
         />
     );
 
     const removalPending = (
         <WaitingConfirmation
-            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+            content={`Submitting removal transaction for ${position.baseSymbol} and ${position.quoteSymbol}.`}
         />
     );
 
@@ -544,11 +562,8 @@ export default function RemoveRange(props: propsIF) {
         useState(removalPending);
 
     const transactionApproved = newRemovalTransactionHash !== '';
-
     const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
-    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
-    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+    const isTransactionException = txErrorCode !== '' && !isRemovalDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
@@ -561,11 +576,7 @@ export default function RemoveRange(props: propsIF) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
-        } else if (
-            isTransactionException ||
-            isGasLimitException ||
-            isInsufficientFundsException
-        ) {
+        } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
     }
@@ -594,20 +605,6 @@ export default function RemoveRange(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {/* {showConfirmation && (
-                <header>
-                    <div className={styles.button} onClick={resetConfirmation}>
-                        {newRemovalTransactionHash == '' && (
-                            <BsArrowLeft size={30} />
-                        )}
-                    </div>
-                    {newRemovalTransactionHash !== '' && (
-                        <div onClick={handleModalClose}>
-                            <VscClose size={30} />
-                        </div>
-                    )}
-                </header>
-            )} */}
             <RemoveRangeHeader
                 onClose={handleModalClose}
                 title={

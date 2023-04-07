@@ -15,6 +15,7 @@ interface TransactionSubmittedProps {
     noAnimation?: boolean;
     limit?: boolean;
     range?: boolean;
+    reposition?: boolean;
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
@@ -27,6 +28,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         noAnimation,
         limit,
         range,
+        reposition,
     } = props;
     const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
@@ -45,7 +47,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     const addToMetamaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to Metamask`}
+            title={`Add ${tokenBSymbol} to Metamask.`}
             // action={props.onClickFn}
             action={handleAddToMetamask}
             disabled={false}
@@ -59,28 +61,42 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             rel='noreferrer'
             className={styles.view_etherscan}
         >
-            View on Etherscan
+            View on Etherscan.
             <FiExternalLink size={20} color='var(--text-grey-white)' />
         </a>
     );
     return (
         <div
-            className={styles.transaction_submitted}
-            style={{ height: noAnimation ? 'auto' : '300px' }}
+            className={`${styles.transaction_submitted} ${
+                noAnimation && styles.noAnimation_submitted
+            }`}
         >
-            {!noAnimation && (
-                <div className={styles.completed_animation}>
-                    <Animation animData={completed} loop={false} />
-                </div>
-            )}
+            <div
+                style={{
+                    height: noAnimation ? 'auto' : '180px',
+                }}
+            >
+                {!noAnimation && (
+                    <div className={styles.completed_animation}>
+                        <Animation animData={completed} loop={false} />
+                    </div>
+                )}
+            </div>
+
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
                     ? 'Limit Transaction Successfully Submitted.'
                     : range
                     ? 'Range Transaction Successfully Submitted.'
+                    : reposition
+                    ? 'Respotion Successfully Submitted.'
                     : 'Swap Transaction Successfully Submitted.'}
             </h2>
-            <div className={styles.action_buttons}>
+            <div
+                className={`${styles.action_buttons} ${
+                    noAnimation && styles.bypass_buttons
+                }`}
+            >
                 {EthersanTx && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
                     ? null
