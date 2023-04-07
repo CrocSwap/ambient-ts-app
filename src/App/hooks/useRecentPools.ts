@@ -49,6 +49,12 @@ export const useRecentPools = (
 
     // fn to add a token to the recentTokens array
     function addPool(tokenA: TokenIF, tokenB: TokenIF): void {
+        // Necessary because tokenA and tokenB are dispatched separately and
+        // during switch may temporarily have the same value
+        if (tokenA.address === tokenB.address) {
+            return;
+        }
+
         const [baseTokenAddr, quoteTokenAddr] = sortBaseQuoteTokens(
             tokenA.address,
             tokenB.address,
@@ -66,7 +72,7 @@ export const useRecentPools = (
                     baseTokenAddr.toLowerCase() &&
                 pool.quoteToken.address.toLowerCase() ===
                     quoteTokenAddr.toLowerCase() &&
-                pool.baseToken.chainId !== baseToken.chainId
+                pool.baseToken.chainId === baseToken.chainId
             );
         }
 
