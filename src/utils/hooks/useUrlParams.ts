@@ -109,7 +109,6 @@ export const useUrlParams = (
     ];
 
     useEffect(() => {
-        console.log('Token map size', tokenMetaMap.size);
         processOptParam('chainId', async (chainId: string) => {
             dispatch(setChainId(chainId));
             paramStruct.chainId = chainId;
