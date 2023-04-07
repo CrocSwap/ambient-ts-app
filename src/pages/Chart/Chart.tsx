@@ -2473,7 +2473,9 @@ export default function Chart(props: propsIF) {
                     liqData?.liqPrices >= min && liqData?.liqPrices <= max,
             );
             const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-            liquidityDepthScale.domain([0, maxLiq]);
+            if (maxLiq && parseFloat(maxLiq) !== 1) {
+                liquidityDepthScale.domain([0, maxLiq]);
+            }
         } catch (error) {
             console.error({ error });
         }
@@ -5692,6 +5694,8 @@ export default function Chart(props: propsIF) {
         ranges,
         reset,
         isDrawAskLiq,
+        liquidityScale,
+        liquidityDepthScale,
     ]);
 
     // NoGoZone
