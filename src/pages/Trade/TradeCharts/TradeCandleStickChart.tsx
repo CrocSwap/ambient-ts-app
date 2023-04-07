@@ -608,21 +608,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                     (a: any, b: any) => b.liqPrices - a.liqPrices,
                 );
 
-                // const liqAllAskPrices = liqAskData.map(({ liqPrices }) => liqPrices);
-                // const liqAskDeviation = standardDeviation(liqAllAskPrices);
-
-                // const liqAllBidPrices = liqBidData.map(({ liqPrices }) => liqPrices);
-                // const liqBidDeviation = standardDeviation(liqAllBidPrices);
-
-                // while (liqBidData[0].liqPrices < limitBoundary) {
-                //     liqBidData.unshift({
-                //         activeLiq: liqBidData[0].activeLiq,
-                //         liqPrices: liqBidData[0].liqPrices + liqBidDeviation,
-                //         deltaAverageUSD: 0,
-                //         cumAverageUSD: 0,
-                //     });
-                // }
-
                 liqBidData.push({
                     activeLiq: liqBidData.find(
                         (liqData) => liqData.liqPrices < limitBoundary,
@@ -640,16 +625,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
-
-                // while (liqAskData[liqAskData.length - 1].liqPrices - liqAskDeviation > 0) {
-                //     liqAskData.push({
-                //         activeLiq: liqAskData[liqAskData.length - 1].activeLiq,
-                //         liqPrices:
-                //             liqAskData[liqAskData.length - 1].liqPrices - liqAskDeviation / 2,
-                //         deltaAverageUSD: 0,
-                //         cumAverageUSD: 0,
-                //     });
-                // }
 
                 liqAskData.push({
                     activeLiq: liqAskData[liqAskData.length - 1].activeLiq,

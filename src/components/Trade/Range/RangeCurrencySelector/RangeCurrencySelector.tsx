@@ -458,12 +458,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                                 (!isTokenASelector &&
                                     !isWithdrawTokenBFromDexChecked) ||
                                 (isTokenASelector &&
-                                    isTokenAEth === false &&
                                     isWithdrawTokenAFromDexChecked &&
                                     tokenASurplusMinusTokenARemainderNum &&
                                     tokenASurplusMinusTokenARemainderNum < 0) ||
                                 (!isTokenASelector &&
-                                    isTokenBEth === false &&
                                     isWithdrawTokenBFromDexChecked &&
                                     tokenBSurplusMinusTokenBRemainderNum &&
                                     tokenBSurplusMinusTokenBRemainderNum < 0)
@@ -497,12 +495,10 @@ export default function RangeCurrencySelector(props: propsIF) {
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
         (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
         (isTokenASelector &&
-            isTokenAEth === false &&
             isWithdrawTokenAFromDexChecked &&
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0) ||
         (!isTokenASelector &&
-            isTokenBEth === false &&
             isWithdrawTokenBFromDexChecked &&
             tokenBSurplusMinusTokenBRemainderNum &&
             tokenBSurplusMinusTokenBRemainderNum < 0)

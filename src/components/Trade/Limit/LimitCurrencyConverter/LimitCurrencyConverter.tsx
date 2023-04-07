@@ -19,7 +19,6 @@ import {
     // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
-    setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
@@ -194,17 +193,14 @@ export default function LimitCurrencyConverter(props: propsIF) {
         tokenASurplusMinusTokenARemainderNum >= 0
             ? tokenASurplusMinusTokenARemainderNum
             : 0;
-    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
-        ? isWithdrawFromDexChecked
+    const tokenAWalletMinusTokenAQtyNum =
+        isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+            ? parseFloat(tokenABalance || '0') +
+              tokenASurplusMinusTokenARemainderNum
+            : isWithdrawFromDexChecked
             ? parseFloat(tokenABalance || '0')
             : parseFloat(tokenABalance || '0') -
-              parseFloat(tokenAQtyLocal || '0')
-        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-        ? parseFloat(tokenABalance || '0') +
-          tokenASurplusMinusTokenARemainderNum
-        : isWithdrawFromDexChecked
-        ? parseFloat(tokenABalance || '0')
-        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+              parseFloat(tokenAQtyLocal || '0');
     // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
     // TODO: ... logo instead of the hardcoded one it contains
 
@@ -269,7 +265,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 reverseTokens();
                 return !state;
             });
-            dispatch(setShouldLimitDirectionReverse(false));
         }
     }, [tradeData.shouldLimitDirectionReverse]);
 
@@ -297,52 +292,26 @@ export default function LimitCurrencyConverter(props: propsIF) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
         } else {
-            if (isSellTokenEth) {
-                if (isWithdrawFromDexChecked) {
-                    const roundedTokenADexBalance =
-                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenADexBalance) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+            if (isWithdrawFromDexChecked) {
+                if (
+                    tokenAAmount >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                    );
                 } else {
-                    const roundedTokenAWalletBalance =
-                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenAWalletBalance) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                    setLimitAllowed(true);
                 }
             } else {
-                if (isWithdrawFromDexChecked) {
-                    if (
-                        tokenAAmount >
-                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    ) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                if (tokenAAmount > parseFloat(tokenABalance)) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
                 } else {
-                    if (tokenAAmount > parseFloat(tokenABalance)) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                    setLimitAllowed(true);
                 }
             }
         }
