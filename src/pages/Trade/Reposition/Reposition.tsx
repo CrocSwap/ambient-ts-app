@@ -266,7 +266,7 @@ export default function Reposition(props: propsIF) {
         setTxErrorCode('');
         setTxErrorMessage('');
 
-        resetConfirmation();
+        // resetConfirmation();
         setIsWaitingForWallet(true);
 
         try {
@@ -748,7 +748,10 @@ export default function Reposition(props: propsIF) {
                                     ? handleRepoButtonClickWithBypass
                                     : openModal
                             }
-                            disabled={isPositionInRange}
+                            disabled={
+                                isPositionInRange ||
+                                newRepositionTransactionHash !== ''
+                            }
                             flat
                         />
                     ) : (
