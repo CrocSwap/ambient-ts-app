@@ -79,6 +79,5 @@ export const useAppChain = (
         // }
     }, [chainId, currentChain, isUserLoggedIn]);
 
-    console.log('useAppChain', chainData.chainId, currentChain, chainId);
     return [chainData, isChainSupported, setCurrentChain, switchNetwork];
 };
