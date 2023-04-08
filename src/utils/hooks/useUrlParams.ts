@@ -13,7 +13,7 @@ import { TokenIF } from '../interfaces/exports';
 import { useTokenMap } from './useTokenMap';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
-import { useProvider } from 'wagmi';
+import { useProvider, useSwitchNetwork } from 'wagmi';
 
 export interface UrlParams {
     chainId?: string;
@@ -29,6 +29,8 @@ export const useUrlParams = (
     const { params } = useParams();
 
     const dispatch = useAppDispatch();
+
+    const { switchNetwork } = useSwitchNetwork();
 
     const urlParamMap = useMemo<Map<string, string>>(() => {
         // get URL parameters or empty string if undefined
@@ -100,7 +102,7 @@ export const useUrlParams = (
     }
 
     const dependencies = [
-        'chainId',
+        'chain',
         'tokenA',
         'tokenB',
         'lowTick',
@@ -109,12 +111,13 @@ export const useUrlParams = (
     ];
 
     useEffect(() => {
-        processOptParam('chainId', async (chainId: string) => {
+        processOptParam('chain', async (chainId: string) => {
+            switchNetwork && switchNetwork(parseInt(chainId));
             dispatch(setChainId(chainId));
             paramStruct.chainId = chainId;
         });
 
-        const chainToUse = urlParamMap.get('chainId') || dfltChainId;
+        const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
         processOptParam('tokenA', async (addr: string) => {
             const tokenData = await getTokenByAddress(addr, chainToUse);

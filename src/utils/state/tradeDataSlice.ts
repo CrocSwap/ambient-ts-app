@@ -15,7 +15,6 @@ export interface candleDomain {
 }
 
 export interface tradeData {
-    chainId: string;
     tokenA: TokenIF;
     tokenB: TokenIF;
     baseToken: TokenIF;
@@ -54,12 +53,11 @@ export interface tradeData {
 
 const dfltChainId = getDefaultChainId();
 const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
-const dfltTokenB = getDefaultPairForChain(dfltChainId)[0];
+const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
 
 const initialState: tradeData = {
-    chainId: getDefaultChainId(),
-    tokenA: getDefaultPairForChain(getDefaultChainId())[0],
-    tokenB: getDefaultPairForChain(getDefaultChainId())[1],
+    tokenA: dfltTokenA,
+    tokenB: dfltTokenB,
     baseToken: dfltTokenA, // We sort these in the next line
     quoteToken: dfltTokenB,
     isTokenABase: true,
@@ -121,14 +119,18 @@ export const tradeDataSlice = createSlice({
     initialState,
     reducers: {
         setChainId: (state, action: PayloadAction<string>) => {
-            if (validateChainId(action.payload)) {
-                state.chainId = action.payload;
-                const pair = getDefaultPairForChain(state.chainId);
-                state.tokenA = pair[0];
-                state.tokenB = pair[1];
+            const chainNum = parseInt(action.payload);
+
+            // If token pair isn't set to a chain token, always reset to default
+            // pair for the chain
+            if (state.tokenA.chainId !== chainNum) {
+                const [tokenA, tokenB] = getDefaultPairForChain(action.payload);
+                state.tokenA = tokenA;
+                state.tokenB = tokenB;
                 sortTokens(state);
             }
         },
+
         setTokenA: (state, action: PayloadAction<TokenIF>) => {
             state.tokenA = action.payload;
             sortTokens(state);
@@ -268,9 +270,9 @@ export const tradeDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    setChainId,
     setTokenA,
     setTokenB,
-    setChainId,
     setLiquidityFee,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
@@ -310,43 +312,3 @@ export const {
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
-
-// ETH:   0x0000000000000000000000000000000000000000
-// DAI:   0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa
-// USDC:  0xb7a4F3E9097C08dA09517b5aB877F7a917224ede
-
-// ETH
-/*
-{
-    name: 'Native Ether',
-    address: '0x0000000000000000000000000000000000000000',
-    symbol: 'ETH',
-    decimals: 18,
-    chainId: 42,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'
-}
-*/
-
-// DAI
-/*
-{
-    name: 'Dai Stablecoin',
-    address: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
-    symbol: 'DAI',
-    decimals: 18,
-    chainId: 42,
-    logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png'
-}
-*/
-
-// USDC
-/*
-{
-    name: 'USDCoin',
-    address: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
-    symbol: 'USDC',
-    decimals: 6,
-    chainId: 42,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png'
-}
-*/

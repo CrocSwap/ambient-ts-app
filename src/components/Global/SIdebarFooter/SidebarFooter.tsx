@@ -32,8 +32,8 @@ export default function SidebarFooter() {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const paramsSlug =
-        '/chain=' +
-        tradeData.chainId +
+        '/chain=0x' +
+        tradeData.tokenA.chainId.toString(16) +
         '&tokenA=' +
         tradeData.tokenA.address +
         '&tokenB=' +

@@ -133,14 +133,15 @@ export const defaultTokens: TokenIF[] = [
 ];
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
-    if (chainId in DEFAULT_PAIRS_BY_CHAIN) {
-        const lookup = DEFAULT_PAIRS_BY_CHAIN[chainId as ChainIdType];
+    const normChainId = chainId.toLowerCase();
+    if (normChainId in DEFAULT_PAIRS_BY_CHAIN) {
+        const lookup = DEFAULT_PAIRS_BY_CHAIN[normChainId as ChainIdType];
         return [lookup.A, lookup.B];
     }
 
     console.warn(
         'No default pair found for chain ',
-        chainId,
+        normChainId,
         ' defaulting to Goerli',
     );
     return [goerliETH, goerliUSDC];

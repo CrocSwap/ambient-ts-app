@@ -73,7 +73,7 @@ export default function InitPool(props: propsIF) {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
-    const { tokenA, tokenB, baseToken, quoteToken, chainId } = useAppSelector(
+    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
         (state) => state.tradeData,
     );
 
@@ -143,7 +143,7 @@ export default function InitPool(props: propsIF) {
             setTokenALocal(dataTokenA);
             setTokenBLocal(dataTokenB);
         }
-    }, [tokenList, baseToken.address, quoteToken.address, chainId]);
+    }, [tokenList, baseToken.address, quoteToken.address, baseToken.chainId]);
 
     useEffect(() => {
         // TODO: find a way to correctly type this return
@@ -161,7 +161,7 @@ export default function InitPool(props: propsIF) {
             };
             const promise = Moralis.EvmApi.token.getTokenMetadata({
                 addresses: [addr],
-                chain: chainId,
+                chain: baseToken.chainId,
             });
 
             Promise.resolve(promise)

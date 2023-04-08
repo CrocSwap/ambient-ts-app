@@ -67,7 +67,10 @@ import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import { defaultTokens } from '../utils/data/defaultTokens';
+import {
+    defaultTokens,
+    getDefaultPairForChain,
+} from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import {
     LimitOrderIF,
@@ -527,13 +530,6 @@ export default function App() {
             })();
         }
     }, [provider]);
-
-    useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug('resetting token data because chainId changed');
-        dispatch(resetTokens(chainData.chainId));
-        dispatch(resetTokenData());
-    }, [chainData.chainId]);
 
     const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
@@ -3071,12 +3067,32 @@ export default function App() {
         ? 'content-container-trade'
         : 'content-container';
 
-    const defaultUrlParams = {
-        swap: `/swap/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
-        market: `/trade/market/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        range: `/trade/range/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        limit: `/trade/limit/chain=${tradeData.chainId}&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-    };
+    interface UrlRoutesTemplate {
+        swap: string;
+        market: string;
+        limit: string;
+        range: string;
+    }
+
+    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
+        const [tokenA, tokenB] = getDefaultPairForChain(chainData.chainId);
+        const chainHex = '0x' + tokenA.chainId.toString(16);
+        const pairSlug = `chain=${chainHex}&tokenA=${tokenA.address}&tokenB=${tokenB.address}`;
+        return {
+            swap: `/swap/${pairSlug}`,
+            market: `/trade/market/${pairSlug}}&lowTick=0&highTick=0`,
+            range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
+            limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
+        };
+    }
+
+    const initUrl = createDefaultUrlParams(chainData.chainId);
+    const [defaultUrlParams, setDefaultUrlParams] =
+        useState<UrlRoutesTemplate>(initUrl);
+
+    useEffect(() => {
+        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
+    }, [chainData.chainId]);
 
     // KEYBOARD SHORTCUTS ROUTES
     const routeShortcuts = {
