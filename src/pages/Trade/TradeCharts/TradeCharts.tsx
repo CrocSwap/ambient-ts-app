@@ -10,7 +10,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import FocusTrap from 'focus-trap-react';
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
