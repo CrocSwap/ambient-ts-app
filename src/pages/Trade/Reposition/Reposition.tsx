@@ -101,6 +101,9 @@ export default function Reposition(props: propsIF) {
         setTxErrorMessage('');
     };
 
+    console.log({ newRepositionTransactionHash });
+    const isRepositionSent = newRepositionTransactionHash !== '';
+
     // locationHook object (we need this mainly for position data)
     const locationHook = useLocation();
 
@@ -199,7 +202,6 @@ export default function Reposition(props: propsIF) {
 
     const handleModalClose = () => {
         closeModal();
-        setNewRepositionTransactionHash('');
         resetConfirmation();
     };
 
@@ -215,6 +217,7 @@ export default function Reposition(props: propsIF) {
 
     useEffect(() => {
         setSimpleRangeWidth(10);
+        setNewRepositionTransactionHash('');
     }, [position]);
 
     useEffect(() => {
@@ -700,6 +703,7 @@ export default function Reposition(props: propsIF) {
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
                 bypassConfirm={bypassConfirm}
+                resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>
                 <RepositionRangeWidth
@@ -741,7 +745,9 @@ export default function Reposition(props: propsIF) {
                     {!showBypassConfirmButton ? (
                         <Button
                             title={
-                                isPositionInRange
+                                isRepositionSent
+                                    ? 'Reposition Sent'
+                                    : isPositionInRange
                                     ? 'Position Currently In Range'
                                     : bypassConfirm.repo.isEnabled
                                     ? 'Reposition'
@@ -752,10 +758,7 @@ export default function Reposition(props: propsIF) {
                                     ? handleRepoButtonClickWithBypass
                                     : openModal
                             }
-                            disabled={
-                                isPositionInRange ||
-                                newRepositionTransactionHash !== ''
-                            }
+                            disabled={isRepositionSent || isPositionInRange}
                             flat
                         />
                     ) : (
