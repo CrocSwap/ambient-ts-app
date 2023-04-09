@@ -60,5 +60,6 @@ const defaultTopPools = {
     '0x66eed': [
         new TopPool(arbGoerliETH, arbGoerliUSDC, 36000, 0, 1),
         new TopPool(arbGoerliETH, arbGoerliWBTC, 36000, 0.5, 3),
+        new TopPool(arbGoerliETH, arbGoerliDAI, 36000, 0.5, 3),
     ],
 };
