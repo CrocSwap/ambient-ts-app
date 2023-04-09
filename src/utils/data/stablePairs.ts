@@ -9,7 +9,7 @@ const STABLE_TOKENS_BY_CHAIN = {
     ],
 };
 
-type StableMapKey = '0x5';
+type StableMapKey = keyof typeof STABLE_TOKENS_BY_CHAIN;
 
 // @return true if the two tokens constitute a stable pair (USD based stables only for now)
 //

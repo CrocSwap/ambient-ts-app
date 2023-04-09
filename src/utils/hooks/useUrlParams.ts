@@ -16,6 +16,9 @@ import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 
+/* Hook to process GET-request style parameters passed to the URL. This includes
+ * chain, tokens, and context-specific tick parameters. All action is intermediated
+ * by passing parameters through to the tradeDataSlice in redux. */
 export const useUrlParams = (
     dfltChainId: string,
     provider?: ethers.providers.Provider,
@@ -33,6 +36,7 @@ export const useUrlParams = (
         // split params string at every ampersand
         const paramMap = new Map<string, string>();
 
+        // Splits and parses GET params in x=a&y=b&z=c formater
         fixedParams
             .split('&')
             // remove any values missing an = symbol
@@ -48,6 +52,8 @@ export const useUrlParams = (
         return paramMap;
     }, [params]);
 
+    /* Given an address and chain ID retrieves full token context data from the useTokenMap
+     * hook. */
     async function getTokenByAddress(
         addr: string,
         chainId: string,
@@ -84,6 +90,7 @@ export const useUrlParams = (
         return provider;
     }
 
+    // All relevant flags that we want to update on any change
     const dependencies = [
         'chain',
         'tokenA',
@@ -113,6 +120,9 @@ export const useUrlParams = (
             tokenAddrB,
             chainToUse,
         );
+
+        // If both tokens are valid and have data for this chain, use those
+        // Otherwise fallback to the chain's default pair.
         if (tokenPair) {
             dispatch(setTokenA(tokenPair[0]));
             dispatch(setTokenB(tokenPair[1]));
@@ -130,6 +140,7 @@ export const useUrlParams = (
             getTokenByAddress(addrA, chainToUse),
             getTokenByAddress(addrB, chainToUse),
         ]);
+
         if (tokenA && tokenB) {
             if (
                 tokenA.chainId == parseInt(chainToUse) &&
