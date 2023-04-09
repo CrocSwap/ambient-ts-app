@@ -4,6 +4,9 @@ const STABLE_TOKENS_BY_CHAIN = {
         '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60', // DAI
         '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C', // USDC
     ],
+    '0x66eed': [
+        '0xc944b73fba33a773a4a07340333a3184a70af1ae', // USDC
+    ],
 };
 
 type StableMapKey = '0x5';
