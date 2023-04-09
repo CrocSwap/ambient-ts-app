@@ -35,7 +35,6 @@ interface propsIF {
     chainId: string;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -100,7 +99,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         isUserLoggedIn,
         gasPriceInGwei,
         tokenPair,
-        setImportedTokens,
         chainId,
         isTokenAEth,
         isTokenBEth,
@@ -574,7 +572,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainId}
                         importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

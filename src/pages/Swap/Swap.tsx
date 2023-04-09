@@ -59,7 +59,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
     importedTokens: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -123,7 +122,6 @@ export default function Swap(props: propsIF) {
         isUserLoggedIn,
         account,
         importedTokens,
-        setImportedTokens,
         swapSlippage,
         isPairStable,
         provider,
@@ -701,7 +699,6 @@ export default function Swap(props: propsIF) {
         tokenPair: tokenPair,
         tokensBank: importedTokens,
         priceImpact: priceImpact,
-        setImportedTokens: setImportedTokens,
         chainId: chainId,
         isLiq: false,
         poolPriceDisplay: poolPriceDisplay,

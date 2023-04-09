@@ -29,7 +29,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
@@ -90,7 +89,6 @@ export default function LimitCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         tokenPair,
-        setImportedTokens,
         chainId,
         tokenAInputQty,
         tokenBInputQty,
@@ -466,7 +464,6 @@ export default function LimitCurrencySelector(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainId}
                         importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

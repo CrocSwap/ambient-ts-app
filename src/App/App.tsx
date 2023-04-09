@@ -2660,7 +2660,6 @@ export default function App() {
         isUserLoggedIn: isUserLoggedIn,
         account: account,
         importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2717,7 +2716,6 @@ export default function App() {
         isUserLoggedIn: isConnected,
         account: account,
         importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2777,7 +2775,6 @@ export default function App() {
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -2837,7 +2834,6 @@ export default function App() {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -3594,7 +3590,6 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     importedTokens={importedTokens}
-                                    setImportedTokens={setImportedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive
@@ -3679,7 +3674,6 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     importedTokens={importedTokens}
-                                    setImportedTokens={setImportedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive
@@ -3795,7 +3789,6 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     importedTokens={importedTokens}
-                                    setImportedTokens={setImportedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive

@@ -30,7 +30,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     fieldId: string;
     tokenAorB: string | null;
@@ -100,7 +99,6 @@ export default function CurrencySelector(props: propsIF) {
         setBuyQtyString,
         isUserLoggedIn,
         tokenPair,
-        setImportedTokens,
         chainId,
         fieldId,
         tokenAorB,
@@ -573,7 +571,6 @@ export default function CurrencySelector(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainId}
                         importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

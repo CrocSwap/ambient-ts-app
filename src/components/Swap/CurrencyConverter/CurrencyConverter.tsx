@@ -38,7 +38,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
@@ -98,7 +97,6 @@ export default function CurrencyConverter(props: propsIF) {
         setPriceImpact,
         tokenPair,
         tokensBank,
-        setImportedTokens,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -703,7 +701,6 @@ export default function CurrencyConverter(props: propsIF) {
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
@@ -772,7 +769,6 @@ export default function CurrencyConverter(props: propsIF) {
                     tokenBQtyLocal={tokenBQtyLocal}
                     tokenPair={tokenPair}
                     tokensBank={tokensBank}
-                    setImportedTokens={setImportedTokens}
                     chainId={chainId}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'

@@ -39,7 +39,6 @@ interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
@@ -112,7 +111,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         chainId,
         isLiq,
         tokensBank,
-        setImportedTokens,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -704,7 +702,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         chainId: chainId,
         tokenPair: tokenPair,
         tokensBank: tokensBank,
-        setImportedTokens: setImportedTokens,
         isTokenAEth,
         isTokenBEth,
         tokenAInputQty: tokenAInputQty,

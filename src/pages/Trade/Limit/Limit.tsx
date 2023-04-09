@@ -74,7 +74,6 @@ interface propsIF {
     importedTokens: Array<TokenIF>;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
@@ -137,7 +136,6 @@ export default function Limit(props: propsIF) {
         importedTokens,
         mintSlippage,
         isPairStable,
-        setImportedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -847,7 +845,6 @@ export default function Limit(props: propsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
         tokensBank: importedTokens,
-        setImportedTokens: setImportedTokens,
         chainId: chainId,
         setLimitAllowed: setLimitAllowed,
         baseTokenBalance: baseTokenBalance,

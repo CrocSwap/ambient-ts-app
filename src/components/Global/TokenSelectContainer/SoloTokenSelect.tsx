@@ -19,8 +19,6 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    // TODO: rewrite logic to build this Map from all lists not just active ones
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (

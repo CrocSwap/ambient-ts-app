@@ -76,7 +76,6 @@ interface propsIF {
     importedTokens: TokenIF[];
     chainData: ChainSpec;
     searchableTokens: TokenIF[];
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
@@ -129,7 +128,6 @@ export default function Portfolio(props: propsIF) {
         selectedOutsideTab,
         setSelectedOutsideTab,
         importedTokens,
-        setImportedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -688,7 +686,6 @@ export default function Portfolio(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainData.chainId}
                         importedTokens={outputTokens}
-                        setImportedTokens={setImportedTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

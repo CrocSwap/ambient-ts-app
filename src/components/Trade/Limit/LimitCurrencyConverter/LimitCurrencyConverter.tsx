@@ -51,7 +51,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
@@ -117,7 +116,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         isUserLoggedIn,
         tokenPair,
         tokensBank,
-        setImportedTokens,
         chainId,
         poolPriceNonDisplay,
         limitTickDisplayPrice,
@@ -480,7 +478,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
@@ -552,7 +549,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     tokenPair={tokenPair}
                     tokensBank={tokensBank}
-                    setImportedTokens={setImportedTokens}
                     chainId={chainId}
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
