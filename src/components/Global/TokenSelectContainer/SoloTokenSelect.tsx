@@ -8,7 +8,6 @@ import { memoizeFetchContractDetails } from '../../../App/functions/fetchContrac
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
-import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
@@ -89,7 +88,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
             ackTokens.acknowledge(tkn);
-            dispatch(setShouldRecheckLocalStorage(true));
         }
         // dispatch token data object to RTK
         if (isSingleToken) {

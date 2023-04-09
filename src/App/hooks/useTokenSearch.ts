@@ -11,9 +11,9 @@ export const useTokenSearch = (
         chn: string,
         exact: boolean,
     ) => TokenIF[],
-    defaultTokens: TokenIF[],
+    getDefaultTokens: () => TokenIF[],
     walletTokens: TokenIF[],
-    recentTokens: TokenIF[],
+    getRecentTokens: () => TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
@@ -93,7 +93,7 @@ export const useTokenSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = defaultTokens;
+            const outputTokens = getDefaultTokens();
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -130,7 +130,7 @@ export const useTokenSearch = (
             // add tokens from recent txs to output array
             addTokensToOutput(recentTxTokens ?? [], false, 2);
             // add recent tokens to output array
-            addTokensToOutput(recentTokens, false, 2);
+            addTokensToOutput(getRecentTokens(), false, 2);
             // remove off-chain tokens from output array
             const ouputTokensOnChain = outputTokens.filter(
                 (tk: TokenIF) => tk.chainId === parseInt(chainId),
@@ -159,9 +159,9 @@ export const useTokenSearch = (
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        defaultTokens.length,
+        getDefaultTokens().length,
         walletTokens.length,
-        recentTokens.length,
+        getRecentTokens().length,
         validatedInput,
     ]);
 

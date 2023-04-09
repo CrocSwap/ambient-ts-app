@@ -383,35 +383,6 @@ export default function Transactions(props: propsIF) {
             onOpen: () => {
                 IS_LOCAL_ENV &&
                     console.debug('pool recent changes subscription opened');
-
-                // repeat fetch with the interval of 30 seconds
-                // const timerId = setInterval(() => {
-                //     fetchPoolRecentChanges({
-                //         tokensOnActiveLists: tokenMap,
-
-                //         base: baseTokenAddress,
-                //         quote: quoteTokenAddress,
-                //         poolIdx: chainData.poolIndex,
-                //         chainId: chainData.chainId,
-                //         annotate: true,
-                //         addValue: true,
-                //         simpleCalc: true,
-                //         annotateMEV: false,
-                //         ensResolution: true,
-                //         n: 100,
-                //     })
-                //         .then((poolChangesJsonData) => {
-                //             if (poolChangesJsonData) {
-                //                 dispatch(addChangesByPool(poolChangesJsonData));
-                //             }
-                //         })
-                //         .catch(console.error);
-                // }, 30000);
-
-                // // after 90 seconds stop
-                // setTimeout(() => {
-                //     clearInterval(timerId);
-                // }, 90000);
             },
             onClose: (event: CloseEvent) => {
                 IS_LOCAL_ENV && console.debug({ event });

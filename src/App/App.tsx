@@ -114,7 +114,6 @@ import {
     setIsUserIdle,
     setNativeToken,
     setRecentTokens,
-    setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -388,7 +387,6 @@ export default function App() {
         IS_LOCAL_ENV && console.debug('setting login check delay');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
-            dispatch(setShouldRecheckLocalStorage(true));
         }, 1000);
         return () => clearTimeout(timer);
     }, []);
@@ -431,16 +429,12 @@ export default function App() {
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
     const [
-        localTokens,
         verifyToken,
-        getAllTokens,
         getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
     ] = useToken(chainData.chainId);
-    false && localTokens;
-    false && getAllTokens;
     false && getTokensOnChain;
 
     // hook to manage recent pool data in-session
@@ -2633,9 +2627,9 @@ export default function App() {
         verifyToken,
         getTokenByAddress,
         getTokensByName,
-        getAmbientTokens(),
+        getAmbientTokens,
         connectedUserErc20Tokens ?? [],
-        getRecentTokens(),
+        getRecentTokens,
     );
 
     // props for <Swap/> React element

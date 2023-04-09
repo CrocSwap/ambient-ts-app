@@ -1,57 +1,78 @@
 import { useEffect, useState } from 'react';
+import { defaultTokenLists } from '../data/defaultTokenLists';
+import { tokenListURIs } from '../data/tokenListURIs';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 
 export const useTokenMap = () => {
-    const tokenListsNeeded = JSON.parse(localStorage.getItem('user') as string)
-        ?.activeTokenLists ?? ['/ambient-token-list.json'];
+    const tokenListsNeeded = defaultTokenLists.map(
+        (listName) => tokenListURIs[listName],
+    );
 
     // hook to preserve the token map value across renders
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
     // hook to create a new token map and write it to local storage
     useEffect(() => {
-        // JSON value of 'allTokenLists' from local storage
-        const allTokenLists = JSON.parse(
-            localStorage.getItem('allTokenLists') as string,
-        );
-        if (!allTokenLists) return;
-
-        const getTokensByURI = (uri: string) => {
-            try {
-                const findListByURI = (list: TokenListIF) => list.uri === uri;
-                const doesListExist = allTokenLists.some(findListByURI);
-
-                if (doesListExist) {
-                    return allTokenLists.find(findListByURI).tokens;
-                } else {
-                    throw new Error(
-                        `Did not find a token list with URI <<${uri}>> in local storage.`,
+        function parseAllTokens(): TokenListIF[] {
+            const entry = localStorage.getItem('allTokenLists');
+            if (entry) {
+                try {
+                    const entryObj = JSON.parse(entry);
+                    return entryObj as TokenListIF[];
+                } catch {
+                    console.warn(
+                        'localStorage allTokenList corrupt. Clearning entry',
                     );
+                    localStorage.removeItem('allTokenLists');
                 }
-            } catch (err) {
-                console.warn(err);
             }
             return [];
+        }
+
+        function parseAckTokens(): TokenIF[] {
+            const entry = localStorage.getItem('acknowledgedTokens');
+            if (entry) {
+                try {
+                    return JSON.parse(entry) as TokenIF[];
+                } catch {
+                    console.warn(
+                        'localStorage acknowledgedTokens corrupt. Clearing entry',
+                    );
+                    localStorage.removeItem('ackowledgedTokens');
+                }
+            }
+            return [];
+        }
+
+        const allTokenLists = parseAllTokens();
+        const ackTokens = parseAckTokens();
+
+        const getTokensByURI = (uri: string) => {
+            const findListByURI = (list: TokenListIF) => list.uri === uri;
+            return allTokenLists.find(findListByURI)?.tokens || [];
         };
+
+        // Ack tokens have lower priority (go first in list, so are overwrriten if
+        // duplicated) than list token entries.
+        const tokenUniv = tokenListsNeeded
+            .flatMap(getTokensByURI)
+            .concat(ackTokens)
+            .reverse();
 
         // declare a variable to hold the token map
         const newTokensMap = new Map<string, TokenIF>();
 
-        // make array of all tokens in the relevant lists
-        tokenListsNeeded
-            .flatMap(getTokensByURI)
-            // create a value in the Map object
-            .forEach((tkn: TokenIF) =>
-                newTokensMap.set(
-                    tkn.address.toLowerCase() +
-                        '_0x' +
-                        tkn.chainId.toString(16).toLowerCase(),
-                    tkn,
-                ),
-            );
+        tokenUniv.forEach((tkn: TokenIF) =>
+            newTokensMap.set(
+                tkn.address.toLowerCase() +
+                    '_0x' +
+                    tkn.chainId.toString(16).toLowerCase(),
+                tkn,
+            ),
+        );
 
         setTokenMap(newTokensMap);
-    }, [localStorage.allTokenLists]);
+    }, [localStorage.allTokenLists, localStorage.acknowledgedTokens]);
 
     // return token map held in local state created by useEffect() hook
     return tokenMap;
