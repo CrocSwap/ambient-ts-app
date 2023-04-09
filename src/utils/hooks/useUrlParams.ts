@@ -16,12 +16,6 @@ import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 
-export interface UrlParams {
-    chainId?: string;
-    tokenA?: TokenIF;
-    tokenB?: TokenIF;
-}
-
 export const useUrlParams = (
     dfltChainId: string,
     provider?: ethers.providers.Provider,
@@ -53,8 +47,6 @@ export const useUrlParams = (
 
         return paramMap;
     }, [params]);
-
-    const paramStruct: UrlParams = {};
 
     async function getTokenByAddress(
         addr: string,

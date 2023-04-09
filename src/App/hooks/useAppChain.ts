@@ -3,14 +3,9 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
-import {
-    setChainId,
-    setTokenA,
-    setTokenB,
-} from '../../utils/state/tradeDataSlice';
+import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useNavigate } from 'react-router-dom';
-import { getDefaultPairForChain } from '../../utils/data/defaultTokens';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,

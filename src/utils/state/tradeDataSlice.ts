@@ -1,6 +1,6 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getDefaultChainId, validateChainId } from '../data/chains';
+import { getDefaultChainId } from '../data/chains';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
@@ -217,12 +217,6 @@ export const tradeDataSlice = createSlice({
         setTargetData: (state, action: PayloadAction<targetData[]>) => {
             state.targetData = action.payload;
         },
-        resetTokens: (state, action: PayloadAction<string>) => {
-            if (validateChainId(action.payload)) {
-                state.tokenA = initialState.tokenA;
-                state.tokenB = initialState.tokenB;
-            }
-        },
         reverseTokensInRTK: (state) => {
             state.tokenA = state.tokenB;
             state.tokenB = state.tokenA;
@@ -296,7 +290,6 @@ export const {
     setSimpleRangeWidth,
     setSlippageTolerance,
     resetTradeData,
-    resetTokens,
     reverseTokensInRTK,
     setPinnedMaxPrice,
     setPinnedMinPrice,

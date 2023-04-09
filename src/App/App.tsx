@@ -81,7 +81,6 @@ import {
 } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
-    resetTokens,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
