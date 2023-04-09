@@ -2929,9 +2929,15 @@ export default function App() {
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
-        positionsByUser: graphData.positionsByUser.positions,
-        txsByUser: graphData.changesByUser.changes,
-        limitsByUser: graphData.limitOrdersByUser.limitOrders,
+        positionsByUser: graphData.positionsByUser.positions.filter(
+            (x) => x.chainId === chainData.chainId,
+        ),
+        txsByUser: graphData.changesByUser.changes.filter(
+            (x) => x.chainId === chainData.chainId,
+        ),
+        limitsByUser: graphData.limitOrdersByUser.limitOrders.filter(
+            (x) => x.chainId === chainData.chainId,
+        ),
         ackTokens: ackTokens,
         topPools: topPools,
     };

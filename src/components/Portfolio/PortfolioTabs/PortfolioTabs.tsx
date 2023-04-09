@@ -132,10 +132,16 @@ export default function PortfolioTabs(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const graphData = useAppSelector((state) => state?.graphData);
-    const connectedAccountPositionData = graphData.positionsByUser.positions;
+    const connectedAccountPositionData =
+        graphData.positionsByUser.positions.filter(
+            (x) => x.chainId === chainId,
+        );
     const connectedAccountLimitOrderData =
-        graphData.limitOrdersByUser.limitOrders;
-    const connectedAccountTransactionData = graphData.changesByUser.changes;
+        graphData.limitOrdersByUser.limitOrders.filter(
+            (x) => x.chainId === chainId,
+        );
+    const connectedAccountTransactionData =
+        graphData.changesByUser.changes.filter((x) => x.chainId === chainId);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
         PositionIF[]

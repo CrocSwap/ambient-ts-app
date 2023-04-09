@@ -84,8 +84,12 @@ export default function Orders(props: propsIF) {
         lastBlockNumber,
     } = props;
 
-    const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
-    const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
+    const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
+        (x) => x.chainId === chainData.chainId,
+    );
+    const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders.filter(
+        (x) => x.chainId === chainData.chainId,
+    );
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
