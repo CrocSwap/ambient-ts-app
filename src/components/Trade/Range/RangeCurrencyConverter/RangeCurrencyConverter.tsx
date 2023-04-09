@@ -32,6 +32,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 // interface for component props
 interface propsIF {
@@ -92,8 +93,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -101,6 +100,7 @@ interface propsIF {
     ) => void;
     poolExists: boolean | undefined;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 // central React functional component
@@ -153,9 +153,9 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -745,9 +745,9 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
+        ackTokens: ackTokens,
     };
 
     return (

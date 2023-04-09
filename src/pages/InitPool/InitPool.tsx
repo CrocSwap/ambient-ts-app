@@ -541,7 +541,6 @@ export default function InitPool(props: propsIF) {
                                             min='0'
                                             minLength={1}
                                             pattern='^[0-9,]*[.]?[0-9]*$'
-                                            required
                                         />
                                     </section>
                                 </div>

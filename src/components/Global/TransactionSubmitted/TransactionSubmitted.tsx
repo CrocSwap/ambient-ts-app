@@ -17,6 +17,7 @@ interface TransactionSubmittedProps {
     noAnimation?: boolean;
     limit?: boolean;
     range?: boolean;
+    reposition?: boolean;
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
@@ -30,14 +31,16 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         limit,
         range,
         chainId,
+        reposition,
     } = props;
+
     const blockExploer = getChainExplorer(chainId);
-    const EthersanTx = `${blockExploer}/tx/${hash}`;
+    const txUrlOnBlockExplorer = `${blockExploer}/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
 
-    const handleAddToMetamask = async () => {
+    const handleAddToMetaMask = async () => {
         await addTokenToWallet(
             tokenBAddress,
             tokenBSymbol,
@@ -46,19 +49,19 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         );
     };
 
-    const addToMetamaskButton = (
+    const addToMetaMaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to Metamask.`}
+            title={`Add ${tokenBSymbol} to MetaMask`}
             // action={props.onClickFn}
-            action={handleAddToMetamask}
+            action={handleAddToMetaMask}
             disabled={false}
         ></Button>
     );
 
     const etherscanButton = (
         <a
-            href={EthersanTx}
+            href={txUrlOnBlockExplorer}
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
@@ -68,10 +71,14 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         </a>
     );
     return (
-        <div className={styles.transaction_submitted}>
+        <div
+            className={`${styles.transaction_submitted} ${
+                noAnimation && styles.noAnimation_submitted
+            }`}
+        >
             <div
                 style={{
-                    height: '180px',
+                    height: noAnimation ? 'auto' : '180px',
                 }}
             >
                 {!noAnimation && (
@@ -86,13 +93,19 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                     ? 'Limit Transaction Successfully Submitted'
                     : range
                     ? 'Range Transaction Successfully Submitted'
+                    : reposition
+                    ? 'Reposition Successfully Submitted'
                     : 'Swap Transaction Successfully Submitted'}
             </h2>
-            <div className={styles.action_buttons}>
-                {EthersanTx && etherscanButton}
+            <div
+                className={`${styles.action_buttons} ${
+                    noAnimation && styles.bypass_buttons
+                }`}
+            >
+                {txUrlOnBlockExplorer && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
                     ? null
-                    : addToMetamaskButton}
+                    : addToMetaMaskButton}
             </div>
         </div>
     );

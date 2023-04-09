@@ -40,7 +40,6 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
                 minLength={1}
                 // pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled={disable}
-                required
             />
         </div>
     );

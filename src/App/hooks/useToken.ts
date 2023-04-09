@@ -17,7 +17,6 @@ export const useToken = (
         chn: string,
         exact: boolean,
     ) => TokenIF[],
-    acknowledgeToken: (tkn: TokenIF) => void,
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -185,29 +184,6 @@ export const useToken = (
         return [...exactMatches, ...partialMatches];
     };
 
-    // fn to add a token to the acknowledged list in local storage
-    const acknowledgeToken = (tkn: TokenIF): void => {
-        // retrieve and parse user data object from local storage
-        const userData = JSON.parse(localStorage.getItem('user') as string);
-        // determine whether token is already in the acknowledged tokens array
-        const isTokenNew = !userData.ackTokens.some(
-            (ackToken: TokenIF) =>
-                tkn.address.toLowerCase() === ackToken.address.toLowerCase() &&
-                tkn.chainId === ackToken.chainId,
-        );
-        // if token is not yet in the array, add it and update local storage
-        if (isTokenNew) {
-            userData.ackTokens = [...userData.ackTokens, tkn];
-            localStorage.setItem('user', JSON.stringify(userData));
-        }
-        // mutable copy of the current token map
-        const newTokenMap = tokenMap;
-        // update the map with the new token
-        addTokenToMap(tkn, newTokenMap);
-        // send the updated map to local state in this hook
-        setTokenMap(newTokenMap);
-    };
-
     // return functions to verify a token and retrieve token metadata
     return [
         tokenMap,
@@ -217,6 +193,5 @@ export const useToken = (
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
-        acknowledgeToken,
     ];
 };

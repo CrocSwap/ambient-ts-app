@@ -194,8 +194,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/market'
         : location.pathname.includes('trade/limit')
         ? '/trade/limit'
-        : location.pathname.includes('trade/range')
-        ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
         : '/trade/market';
@@ -218,6 +216,11 @@ export default function PageHeader(props: HeaderPropsIF) {
             shouldDisplay: false,
         },
         {
+            title: t('common:poolTitle'),
+            destination: '/trade/range' + paramsSlug,
+            shouldDisplay: true,
+        },
+        {
             title: t('common:accountTitle'),
             destination: '/account',
             shouldDisplay: isConnected,
@@ -226,6 +229,40 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // Most of this functionality can be achieve by using the NavLink instead of Link and accessing the isActive prop on the
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
+
+    function isActive(linkDestination: string, locationPathname: string) {
+        if (linkDestination.includes('/trade')) {
+            if (linkDestination.includes('/range')) {
+                return locationPathname.includes('/trade/range')
+                    ? styles.active
+                    : styles.inactive;
+            } else {
+                return locationPathname.includes(tradeDestination)
+                    ? styles.active
+                    : styles.inactive;
+            }
+        } else if (linkDestination.includes('/swap')) {
+            return locationPathname.includes('/swap')
+                ? styles.active
+                : styles.inactive;
+        } else {
+            return locationPathname === linkDestination
+                ? styles.active
+                : styles.inactive;
+        }
+    }
+
+    function isUnderlined(linkDestination: string, locationPathname: string) {
+        return (
+            (linkDestination.includes('/trade') &&
+                (linkDestination.includes('/trade/range')
+                    ? locationPathname.includes('/trade/range')
+                    : locationPathname.includes(tradeDestination))) ||
+            (locationPathname.includes('/swap') &&
+                linkDestination.includes('/swap')) ||
+            locationPathname === linkDestination
+        );
+    }
 
     const routeDisplay = (
         <AnimateSharedLayout>
@@ -238,31 +275,19 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             tabIndex={0}
-                            className={
-                                link.destination.includes('/trade')
-                                    ? location.pathname.includes(
-                                          tradeDestination,
-                                      )
-                                        ? styles.active
-                                        : styles.inactive
-                                    : link.destination.includes('/swap')
-                                    ? location.pathname.includes('/swap')
-                                        ? styles.active
-                                        : styles.inactive
-                                    : location.pathname === link.destination
-                                    ? styles.active
-                                    : styles.inactive
-                            }
+                            className={isActive(
+                                link.destination,
+                                location.pathname,
+                            )}
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {((link.destination.includes('/trade') &&
-                                location.pathname.includes(tradeDestination)) ||
-                                (location.pathname.includes('/swap') &&
-                                    link.destination.includes('/swap')) ||
-                                location.pathname === link.destination) && (
+                            {isUnderlined(
+                                link.destination,
+                                location.pathname,
+                            ) && (
                                 <motion.div
                                     className={styles.underline}
                                     layoutId='underline'

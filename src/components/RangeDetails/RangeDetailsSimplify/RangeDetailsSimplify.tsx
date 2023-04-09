@@ -261,14 +261,14 @@ export default function RangeDetailsSimplify(
         //     explanation: 'this is explanation',
         // },
         {
-            title: 'Token 1 Unclaimed Fees ',
+            title: 'Token 1 Unclaimed Rewards ',
             content: baseFeesDisplay + ' ' + baseTokenSymbol,
-            explanation: 'Token #1 unclaimed fees',
+            explanation: 'Token #1 unclaimed rewards',
         },
         {
-            title: 'Token 2 Unclaimed Fees ',
+            title: 'Token 2 Unclaimed Rewards ',
             content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
-            explanation: 'Token #2 unclaimed fees',
+            explanation: 'Token #2 unclaimed rewards',
         },
         // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
         {

@@ -244,7 +244,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 {!isConfirmModal ? apr : null}
                 <aside className={styles.divider} />
 
-                <RowDisplay item1='' item2='Current' item3='New' />
+                <RowDisplay item1='' item2='Current' item3='Est. New' />
                 <aside className={styles.divider} />
 
                 <RowDisplay
