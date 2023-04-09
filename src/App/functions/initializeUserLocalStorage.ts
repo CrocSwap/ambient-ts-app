@@ -1,6 +1,5 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
-import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeUserLocalStorage() {
     // boolean to control whether local storage for user data needs updating

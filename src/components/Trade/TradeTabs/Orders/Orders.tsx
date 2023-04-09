@@ -39,7 +39,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 // interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
-    importedTokens: TokenIF[];
+    searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
@@ -66,7 +66,7 @@ interface propsIF {
 export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
-        importedTokens,
+        searchableTokens,
         connectedAccountActive,
         crocEnv,
         chainData,
@@ -202,7 +202,7 @@ export default function Orders(props: propsIF) {
                             orderJsonData.map((limitOrder: LimitOrderIF) => {
                                 return getLimitOrderData(
                                     limitOrder,
-                                    importedTokens,
+                                    searchableTokens,
                                 );
                             }),
                         ).then((updatedLimitOrderStates) => {
@@ -277,7 +277,7 @@ export default function Orders(props: propsIF) {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, importedTokens);
+                        return getLimitOrderData(limitOrder, searchableTokens);
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(

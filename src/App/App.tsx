@@ -552,9 +552,6 @@ export default function App() {
     // current configurations of trade as specified by the user
     const currentPoolInfo = tradeData;
 
-    // tokens specifically imported by the end user
-    const [importedTokens, setImportedTokens] =
-        useState<TokenIF[]>(defaultTokens);
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] =
         useState<TokenIF[]>(defaultTokens);
@@ -574,7 +571,6 @@ export default function App() {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('initializing local storage');
         initializeUserLocalStorage();
-        getImportedTokens();
     }, [tokenListsReceived]);
 
     useEffect(() => {
@@ -697,16 +693,6 @@ export default function App() {
         return tokensFromLists;
     }
 
-    // function to return array of all tokens on lists as specified by URI
-    function getImportedTokens() {
-        // see if there's a user object in local storage
-        if (localStorage.user) {
-            // if user object exists, pull it
-            const user = JSON.parse(localStorage.getItem('user') as string);
-            // if imported tokens are listed, hold in local state
-            user.tokens && setImportedTokens(user.tokens);
-        }
-    }
     const [sidebarManuallySet, setSidebarManuallySet] =
         useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
@@ -2659,7 +2645,6 @@ export default function App() {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
-        importedTokens: importedTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2715,7 +2700,6 @@ export default function App() {
         crocEnv: crocEnv,
         isUserLoggedIn: isConnected,
         account: account,
-        importedTokens: importedTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2774,7 +2758,6 @@ export default function App() {
         crocEnv: crocEnv,
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
-        importedTokens: importedTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -2833,7 +2816,6 @@ export default function App() {
         account: account,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
-        importedTokens: importedTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -3229,7 +3211,7 @@ export default function App() {
                                         );
                                     }}
                                     limitRate={''}
-                                    importedTokens={searchableTokens}
+                                    searchableTokens={searchableTokens}
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
@@ -3589,7 +3571,6 @@ export default function App() {
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    importedTokens={importedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive
@@ -3673,7 +3654,6 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    importedTokens={importedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive
@@ -3788,7 +3768,6 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    importedTokens={importedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive

@@ -91,7 +91,6 @@ interface propsIF {
     account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    importedTokens: Array<TokenIF>;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -167,7 +166,6 @@ export default function Range(props: propsIF) {
         account,
         crocEnv,
         isUserLoggedIn,
-        importedTokens,
         mintSlippage,
         isPairStable,
         provider,
@@ -1354,9 +1352,7 @@ export default function Range(props: propsIF) {
         provider: provider,
         isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
-        chainId: chainId ?? '0x2a',
-        tokensBank: importedTokens,
-
+        chainId: chainId,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,

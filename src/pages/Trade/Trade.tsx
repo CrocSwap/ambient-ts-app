@@ -88,7 +88,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
-    importedTokens: TokenIF[];
+    searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
@@ -148,7 +148,7 @@ export default function Trade(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         favePools,
-        importedTokens,
+        searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
         isShowAllEnabled,
@@ -593,7 +593,7 @@ export default function Trade(props: propsIF) {
         setCurrentPositionActive: props.setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,
         closeGlobalModal: props.closeGlobalModal,
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         showSidebar: showSidebar,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,

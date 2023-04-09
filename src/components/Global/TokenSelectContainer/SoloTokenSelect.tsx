@@ -17,7 +17,7 @@ import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 interface propsIF {
     modalCloseCustom: () => void;
     provider: ethers.providers.Provider | undefined;
-    importedTokens: TokenIF[];
+    importedTokensPlus: TokenIF[];
     chainId: string;
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;

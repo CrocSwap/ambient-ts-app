@@ -29,7 +29,6 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     tokenAorB: string | null;
@@ -570,7 +569,7 @@ export default function CurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

@@ -71,7 +71,6 @@ interface propsIF {
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    importedTokens: Array<TokenIF>;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -133,7 +132,6 @@ export default function Limit(props: propsIF) {
         pool,
         crocEnv,
         isUserLoggedIn,
-        importedTokens,
         mintSlippage,
         isPairStable,
         baseTokenBalance,
@@ -844,7 +842,6 @@ export default function Limit(props: propsIF) {
         tokenPair: tokenPair,
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
-        tokensBank: importedTokens,
         chainId: chainId,
         setLimitAllowed: setLimitAllowed,
         baseTokenBalance: baseTokenBalance,

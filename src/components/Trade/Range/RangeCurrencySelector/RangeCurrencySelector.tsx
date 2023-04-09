@@ -34,7 +34,6 @@ interface propsIF {
     fieldId: string;
     chainId: string;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -571,7 +570,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

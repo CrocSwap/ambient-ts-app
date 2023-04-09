@@ -38,7 +38,6 @@ import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
-    tokensBank: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
@@ -110,7 +109,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         gasPriceInGwei,
         chainId,
         isLiq,
-        tokensBank,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -701,7 +699,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         resetTokenQuantities: resetTokenQuantities,
         chainId: chainId,
         tokenPair: tokenPair,
-        tokensBank: tokensBank,
         isTokenAEth,
         isTokenBEth,
         tokenAInputQty: tokenAInputQty,

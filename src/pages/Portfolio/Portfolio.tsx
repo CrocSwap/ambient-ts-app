@@ -73,9 +73,8 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     openModalWallet: () => void;
-    importedTokens: TokenIF[];
-    chainData: ChainSpec;
     searchableTokens: TokenIF[];
+    chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
@@ -127,7 +126,6 @@ export default function Portfolio(props: propsIF) {
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        importedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -560,7 +558,6 @@ export default function Portfolio(props: propsIF) {
         isTokenABase: isTokenABase,
         provider: provider,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
-        importedTokens: importedTokens,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
@@ -685,7 +682,7 @@ export default function Portfolio(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainData.chainId}
-                        importedTokens={outputTokens}
+                        importedTokensPlus={outputTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

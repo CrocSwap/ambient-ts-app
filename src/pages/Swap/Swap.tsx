@@ -58,7 +58,6 @@ interface propsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
-    importedTokens: Array<TokenIF>;
     swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -121,7 +120,6 @@ export default function Swap(props: propsIF) {
         crocEnv,
         isUserLoggedIn,
         account,
-        importedTokens,
         swapSlippage,
         isPairStable,
         provider,
@@ -697,7 +695,6 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
         tokenPair: tokenPair,
-        tokensBank: importedTokens,
         priceImpact: priceImpact,
         chainId: chainId,
         isLiq: false,

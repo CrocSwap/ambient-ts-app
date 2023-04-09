@@ -50,7 +50,6 @@ interface propsIF {
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
@@ -115,7 +114,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setPriceInputFieldBlurred,
         isUserLoggedIn,
         tokenPair,
-        tokensBank,
         chainId,
         poolPriceNonDisplay,
         limitTickDisplayPrice,
@@ -477,7 +475,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 provider={provider}
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
-                tokensBank={tokensBank}
                 chainId={chainId}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
@@ -548,7 +545,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 <LimitCurrencySelector
                     isUserLoggedIn={isUserLoggedIn}
                     tokenPair={tokenPair}
-                    tokensBank={tokensBank}
                     chainId={chainId}
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
@@ -609,7 +605,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 isSellTokenBase={isSellTokenBase}
                 setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                 tokenPair={tokenPair}
-                tokensBank={tokensBank}
                 chainId={chainId}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
