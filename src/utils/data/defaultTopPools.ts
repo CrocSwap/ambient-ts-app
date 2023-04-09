@@ -11,6 +11,7 @@ import {
 import { topPoolIF } from '../../App/hooks/useTopPools';
 import { TokenIF } from '../interfaces/exports';
 import sortTokens from '../functions/sortTokens';
+import { ChainIdType } from './chains';
 
 class TopPool implements topPoolIF {
     name: string;
@@ -41,13 +42,23 @@ class TopPool implements topPoolIF {
     }
 }
 
-export const defaultTopPools: topPoolIF[] = [
-    new TopPool(goerliETH, goerliUSDC, 36000, 0, 1),
-    new TopPool(goerliETH, goerliWBTC, 36000, 0.5, 3),
-    new TopPool(goerliWBTC, goerliUSDC, 36000, -2, 4),
-    new TopPool(goerliUSDC, goerliDAI, 36000, -2, 4),
-    new TopPool(arbGoerliETH, arbGoerliUSDC, 36000, 0, 1),
-    new TopPool(arbGoerliETH, arbGoerliWBTC, 36000, 0.5, 3),
-    new TopPool(arbGoerliWBTC, arbGoerliUSDC, 36000, -2, 4),
-    new TopPool(arbGoerliUSDC, arbGoerliDAI, 36000, -2, 4),
-];
+export function getDefaultTopPools(chainId: string): topPoolIF[] {
+    if (chainId in defaultTopPools) {
+        return defaultTopPools[chainId as ChainIdType];
+    } else {
+        return [];
+    }
+}
+
+const defaultTopPools = {
+    '0x5': [
+        new TopPool(goerliETH, goerliUSDC, 36000, 0, 1),
+        new TopPool(goerliETH, goerliWBTC, 36000, 0.5, 3),
+        new TopPool(goerliWBTC, goerliUSDC, 36000, -2, 4),
+        new TopPool(goerliUSDC, goerliDAI, 36000, -2, 4),
+    ],
+    '0x66eed': [
+        new TopPool(arbGoerliETH, arbGoerliUSDC, 36000, 0, 1),
+        new TopPool(arbGoerliETH, arbGoerliWBTC, 36000, 0.5, 3),
+    ],
+};

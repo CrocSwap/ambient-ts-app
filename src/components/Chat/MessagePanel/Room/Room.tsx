@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import useChatApi from '../../Service/ChatApi';
-import { topPoolsMethodsIF } from '../../../../App/hooks/useTopPools';
+import { topPoolIF } from '../../../../App/hooks/useTopPools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -43,7 +43,7 @@ interface propsIF {
     currentUser: any;
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -82,7 +82,7 @@ export default function RoomDropdown(props: propsIF) {
         },
     ];
 
-    const rooms = topPools.onActiveChain;
+    const rooms = topPools;
 
     function findSpeed(pool: any) {
         switch (pool.base.symbol + '/' + pool.quote.symbol) {

@@ -176,7 +176,7 @@ import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
-import { topPoolsMethodsIF, useTopPools } from './hooks/useTopPools';
+import { topPoolIF, useTopPools } from './hooks/useTopPools';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -364,7 +364,7 @@ export default function App() {
     const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
     // hook to manage top pools data
-    const topPools: topPoolsMethodsIF = useTopPools(chainData.chainId);
+    const topPools: topPoolIF[] = useTopPools(chainData.chainId);
 
     // hook to manage acknowledged tokens
     const ackTokens: ackTokensMethodsIF = useAckTokens();

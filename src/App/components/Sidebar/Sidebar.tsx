@@ -50,7 +50,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
-import { topPoolsMethodsIF } from '../../hooks/useTopPools';
+import { topPoolIF } from '../../hooks/useTopPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -92,7 +92,7 @@ interface propsIF {
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 export default function Sidebar(props: propsIF) {
