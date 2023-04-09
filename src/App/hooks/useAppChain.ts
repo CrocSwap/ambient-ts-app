@@ -52,6 +52,7 @@ export const useAppChain = (
 
                     if (validateChainId(currentChain)) {
                         navigate('/');
+                        window.location.reload();
                     }
                 } else if (!validateChainId(chainId)) {
                     setIsChainSupported(false);
