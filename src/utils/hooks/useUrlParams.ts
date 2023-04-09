@@ -14,6 +14,7 @@ import { useTokenMap } from './useTokenMap';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
+import { getDefaultPairForChain } from '../data/defaultTokens';
 
 export interface UrlParams {
     chainId?: string;
@@ -54,16 +55,6 @@ export const useUrlParams = (
     }, [params]);
 
     const paramStruct: UrlParams = {};
-
-    async function processOptParam(
-        paramName: string,
-        processFn: (val: string) => Promise<void>,
-    ): Promise<void> {
-        if (urlParamMap.has(paramName)) {
-            const paramVal = urlParamMap.get(paramName) as string;
-            await processFn(paramVal);
-        }
-    }
 
     async function getTokenByAddress(
         addr: string,
@@ -110,30 +101,75 @@ export const useUrlParams = (
         'limitTick',
     ];
 
-    useEffect(() => {
-        processOptParam('chain', async (chainId: string) => {
-            switchNetwork && switchNetwork(parseInt(chainId));
-            dispatch(setChainId(chainId));
-            paramStruct.chainId = chainId;
-        });
+    function processOptParam(
+        paramName: string,
+        processFn: (val: string) => void,
+    ): void {
+        if (urlParamMap.has(paramName)) {
+            const paramVal = urlParamMap.get(paramName) as string;
+            processFn(paramVal);
+        }
+    }
 
+    async function processTokenAddr(
+        tokenAddrA: string,
+        tokenAddrB: string,
+        chainToUse: string,
+    ) {
+        const tokenPair = await resolveTokenData(
+            tokenAddrA,
+            tokenAddrB,
+            chainToUse,
+        );
+        if (tokenPair) {
+            dispatch(setTokenA(tokenPair[0]));
+            dispatch(setTokenB(tokenPair[1]));
+        } else {
+            processDefaultTokens(chainToUse);
+        }
+    }
+
+    async function resolveTokenData(
+        addrA: string,
+        addrB: string,
+        chainToUse: string,
+    ): Promise<[TokenIF, TokenIF] | undefined> {
+        const [tokenA, tokenB] = await Promise.all([
+            getTokenByAddress(addrA, chainToUse),
+            getTokenByAddress(addrB, chainToUse),
+        ]);
+        if (tokenA && tokenB) {
+            if (
+                tokenA.chainId == parseInt(chainToUse) &&
+                tokenB.chainId == parseInt(chainToUse)
+            ) {
+                return [tokenA, tokenB];
+            }
+        }
+        return undefined;
+    }
+
+    function processDefaultTokens(chainToUse: string) {
+        const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
+        dispatch(setTokenA(dfltA));
+        dispatch(setTokenB(dfltB));
+    }
+
+    useEffect(() => {
         const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
-        processOptParam('tokenA', async (addr: string) => {
-            const tokenData = await getTokenByAddress(addr, chainToUse);
-            if (tokenData) {
-                dispatch(setTokenA(tokenData));
-                paramStruct.tokenA = tokenData;
-            }
-        });
+        if (urlParamMap.has('chain')) {
+            switchNetwork && switchNetwork(parseInt(chainToUse));
+            dispatch(setChainId(chainToUse));
+        }
 
-        processOptParam('tokenB', async (addr: string) => {
-            const tokenData = await getTokenByAddress(addr, chainToUse);
-            if (tokenData) {
-                dispatch(setTokenB(tokenData));
-                paramStruct.tokenB = tokenData;
-            }
-        });
+        const tokenA = urlParamMap.get('tokenA');
+        const tokenB = urlParamMap.get('tokenB');
+        if (tokenA && tokenB) {
+            processTokenAddr(tokenA, tokenB, chainToUse);
+        } else {
+            processDefaultTokens(chainToUse);
+        }
 
         processOptParam('lowTick', async (tick: string) => {
             dispatch(setAdvancedLowTick(parseInt(tick)));

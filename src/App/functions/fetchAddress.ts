@@ -10,7 +10,6 @@ export const fetchAddress = async (
     try {
         return provider.lookupAddress(address);
     } catch {
-        console.log('ENS lookup failed for', address);
         return null;
     }
 };

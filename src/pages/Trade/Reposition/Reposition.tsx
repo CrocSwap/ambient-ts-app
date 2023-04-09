@@ -129,7 +129,6 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
-    console.log({ position });
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

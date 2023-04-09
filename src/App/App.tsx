@@ -486,8 +486,7 @@ export default function App() {
         //  isLoading
     } = useSigner();
 
-    // 1535 - remove console logging
-    const setNewCrocEnv = () => {
+    const setNewCrocEnv = async () => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
             console.debug({ signer });
@@ -506,15 +505,20 @@ export default function App() {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
         } else {
-            const newCrocEnv = new CrocEnv(signer?.provider || provider);
-            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-            setCrocEnv(newCrocEnv);
+            if (
+                (await signer?.getChainId()) ==
+                (await provider.getNetwork()).chainId
+            ) {
+                const newCrocEnv = new CrocEnv(signer?.provider || provider);
+                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
+                setCrocEnv(newCrocEnv);
+            }
         }
     };
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus === 'success', crocEnv === undefined]);
+    }, [signerStatus === 'success', crocEnv === undefined, chainData.chainId]);
 
     useEffect(() => {
         if (provider) {
@@ -938,7 +942,6 @@ export default function App() {
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
         if (crocEnv && baseTokenAddress && quoteTokenAddress) {
-            // setPoolExists(undefined);
             IS_LOCAL_ENV && console.debug('checking if pool exists');
             if (
                 baseTokenAddress.toLowerCase() ===
@@ -958,10 +961,7 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [
-        crocEnv,
-        JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress }),
-    ]);
+    }, [crocEnv, baseTokenAddress, quoteTokenAddress, chainData.chainId]);
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -3075,8 +3075,8 @@ export default function App() {
     }
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB] = getDefaultPairForChain(chainData.chainId);
-        const chainHex = '0x' + tokenA.chainId.toString(16);
+        const [tokenA, tokenB] = getDefaultPairForChain(chainId);
+        const chainHex = '0x' + chainId;
         const pairSlug = `chain=${chainHex}&tokenA=${tokenA.address}&tokenB=${tokenB.address}`;
         return {
             swap: `/swap/${pairSlug}`,
