@@ -3052,11 +3052,10 @@ export default function App() {
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
         const [tokenA, tokenB] = getDefaultPairForChain(chainId);
-        const chainHex = '0x' + chainId;
-        const pairSlug = `chain=${chainHex}&tokenA=${tokenA.address}&tokenB=${tokenB.address}`;
+        const pairSlug = `chain=${chainId}&tokenA=${tokenA.address}&tokenB=${tokenB.address}`;
         return {
             swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}}&lowTick=0&highTick=0`,
+            market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,
             range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
             limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
         };
