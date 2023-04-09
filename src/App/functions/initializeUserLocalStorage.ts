@@ -40,28 +40,6 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
-    // if there is an array of active token lists in local storage but no array
-    // of tokens on the user object, then create an array of tokens from any
-    // lists which are marked as default in defaultTokenLists.ts
-    if (
-        (!user.tokens || !user.tokens.length) &&
-        user.activeTokenLists &&
-        localStorage.allTokenLists
-    ) {
-        user.tokens = JSON.parse(
-            localStorage.getItem('allTokenLists') as string,
-        ).find(
-            (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
-        ).tokens;
-        userUpdated = true;
-    }
-
-    // create a value to track whether the sidebar is open or closed
-    if (!user.sidebar) {
-        user.sidebar = 'open';
-        userUpdated = true;
-    }
-
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }
