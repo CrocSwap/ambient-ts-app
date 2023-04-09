@@ -3329,10 +3329,6 @@ export default function App() {
                                 element={<Range {...rangeProps} />}
                             />
                             <Route
-                                path='edit/:positionHash'
-                                element={<Edit />}
-                            />
-                            <Route
                                 path='reposition'
                                 element={
                                     <Navigate
