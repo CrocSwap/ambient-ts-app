@@ -226,16 +226,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (
-                    verifyToken(validatedInput, chainId) ||
-                    JSON.parse(
-                        localStorage.getItem('user') as string,
-                    ).tokens.some(
-                        (tkn: TokenIF) =>
-                            tkn.address.toLowerCase() ===
-                            validatedInput.toLowerCase(),
-                    )
-                ) {
+                if (verifyToken(validatedInput, chainId)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {

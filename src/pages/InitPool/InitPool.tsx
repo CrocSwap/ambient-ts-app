@@ -3,8 +3,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import Moralis from 'moralis';
-// import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -14,13 +12,8 @@ import Button from '../../components/Global/Button/Button';
 // START: Import Local Files
 import styles from './InitPool.module.css';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import {
-    TokenIF,
-    TokenListIF,
-    TokenPairIF,
-} from '../../utils/interfaces/exports';
+import { TokenPairIF } from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
     addReceipt,
@@ -84,7 +77,7 @@ export default function InitPool(props: propsIF) {
             const doesPoolExist = crocEnv
                 .pool(
                     tokenPair.dataTokenA.address,
-                    tokenPair.dataTokenB.address as string,
+                    tokenPair.dataTokenB.address,
                 )
                 .isInit();
             // resolve the promise
@@ -99,91 +92,6 @@ export default function InitPool(props: propsIF) {
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
     }, [crocEnv]);
-
-    const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
-    const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(
-        null,
-    );
-    const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(
-        null,
-    );
-    useEffect(() => {
-        tokenALocal && dispatch(setTokenA(tokenALocal));
-        tokenBLocal && dispatch(setTokenB(tokenBLocal));
-    }, [tokenALocal, tokenBLocal]);
-
-    useEffect(() => {
-        // get allTokenLists from local storage
-        function check() {
-            const tokenListsFromStorage = localStorage.getItem('allTokenLists');
-            if (tokenListsFromStorage !== null) {
-                const tokenLists = JSON.parse(tokenListsFromStorage as string);
-                const ambientList = tokenLists.find(
-                    (list: TokenListIF) => list.name === 'Ambient Token List',
-                );
-                const tokens = ambientList.tokens;
-                setTokenList(tokens);
-            } else {
-                setTimeout(check, 100);
-            }
-        }
-        setTimeout(check, 100);
-    }, []);
-
-    useEffect(() => {
-        if (tokenList && baseToken.address && quoteToken.address) {
-            const findToken = (addr: string) =>
-                tokenList.find(
-                    (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() === addr.toLowerCase(),
-                );
-
-            const dataTokenA = findToken(baseToken.address);
-            const dataTokenB = findToken(quoteToken.address);
-            setTokenALocal(dataTokenA);
-            setTokenBLocal(dataTokenB);
-        }
-    }, [tokenList, baseToken.address, quoteToken.address, baseToken.chainId]);
-
-    useEffect(() => {
-        // TODO: find a way to correctly type this return
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        function setTokenFromChain(addr: string, target: string): any {
-            const setTarget = (data: TokenIF, whichToken: string) => {
-                switch (whichToken) {
-                    case 'tokenALocal':
-                        setTokenALocal(data);
-                        break;
-                    case 'tokenBLocal':
-                        setTokenBLocal(data);
-                        break;
-                }
-            };
-            const promise = Moralis.EvmApi.token.getTokenMetadata({
-                addresses: [addr],
-                chain: baseToken.chainId,
-            });
-
-            Promise.resolve(promise)
-                .then((res) => res?.result[0].token)
-                .then((token) => {
-                    return {
-                        name: token.name,
-                        chainId: token.chain.decimal,
-                        address: token.contractAddress.lowercase,
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        logoURI: token.logo ?? '',
-                        fromList: 'urlParam',
-                    };
-                })
-                .then((res) => setTarget(res, target));
-        }
-        tokenALocal === undefined &&
-            setTokenFromChain(baseToken.address, 'tokenALocal');
-        tokenBLocal === undefined &&
-            setTokenFromChain(baseToken.address, 'tokenBLocal');
-    }, [tokenALocal, tokenBLocal]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);

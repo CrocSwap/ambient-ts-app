@@ -55,7 +55,6 @@ import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
-import Edit from '../pages/Trade/Edit/Edit';
 import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
