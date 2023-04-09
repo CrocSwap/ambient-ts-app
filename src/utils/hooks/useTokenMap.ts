@@ -16,33 +16,22 @@ export const useTokenMap = () => {
         );
         if (!allTokenLists) return;
 
-        // function to pull a single token list from local storage by its URI
         const getTokensByURI = (uri: string) => {
-            // declare an output variable and apply type protection
-            let tokens: TokenIF[] = [];
-            // attempt to find the token list by uri
             try {
-                // callback function reusable in array methods
                 const findListByURI = (list: TokenListIF) => list.uri === uri;
-                // boolean value to see if the desired list exists
                 const doesListExist = allTokenLists.some(findListByURI);
-                // gatekeep action based on whether local storage has the desired list
+
                 if (doesListExist) {
-                    // if list is present, get tokens and assign to output variable
-                    tokens = allTokenLists.find(findListByURI).tokens;
+                    return allTokenLists.find(findListByURI).tokens;
                 } else {
-                    // if list is missing, trigger error handling with console message
                     throw new Error(
                         `Did not find a token list with URI <<${uri}>> in local storage.`,
                     );
                 }
             } catch (err) {
-                // log to console in case of error
-                console.error(err);
+                console.warn(err);
             }
-            // return array of tokens
-            // if list was not found an empty array will return
-            return tokens;
+            return [];
         };
 
         // declare a variable to hold the token map
@@ -50,7 +39,7 @@ export const useTokenMap = () => {
 
         // make array of all tokens in the relevant lists
         tokenListsNeeded
-            .flatMap((listURI: string) => getTokensByURI(listURI))
+            .flatMap(getTokensByURI)
             // create a value in the Map object
             .forEach((tkn: TokenIF) =>
                 newTokensMap.set(
@@ -60,9 +49,8 @@ export const useTokenMap = () => {
                     tkn,
                 ),
             );
-        // update local storage with the new value
+
         setTokenMap(newTokensMap);
-        // this dependency array should not work but things seem fine so here it stays
     }, [localStorage.allTokenLists]);
 
     // return token map held in local state created by useEffect() hook
