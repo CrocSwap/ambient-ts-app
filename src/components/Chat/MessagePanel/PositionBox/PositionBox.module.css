@@ -58,22 +58,37 @@
 }
 
 .tokens_name {
-    font-style: normal;
-    font-weight: 100;
-    font-size: 15px;
-    line-height: 8px;
-    font-family: 'Lexend Deca';
+    font-family: 'Lexend Exa';
+font-style: normal;
+font-weight: 100;
+font-size: 11px;
+line-height: 12px;
     display: flex;
     align-items: center;
     letter-spacing: -0.02em;
     flex-grow: 4;
-    color: #ebebff;
+    color: rgba(235, 235, 255, 0.87);
+
+}
+
+.tokens_type {
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 10px;
+    line-height: 12px;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.02em;
+    flex-grow: 4;
+    color: rgba(235, 235, 255, 0.6);
+
 }
 
 .tokens_apy {
     flex-grow: 4;
     font-weight: lighter;
-    text-align: -webkit-left;
     background: linear-gradient(
         90deg,
         #15be6f 32.38%,
@@ -86,23 +101,32 @@
 
     /* glow/positive */
     text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+    font-size: 13px;
+    align-items: center;
+    text-align: right;
 }
 
 .tokens_min_price {
     flex-grow: 4;
     font-weight: lighter;
     color: #cdc1ff;
+    font-size: 13px;
+    align-items: center;
+    text-align: right;
 }
 
 .tokens_max_price {
     flex-grow: 4;
     font-weight: lighter;
     color: #7371fc;
+    font-size: 13px;
+    align-items: center;
+    text-align: right;
 }
 
 .address {
-    color: rgba(235, 235, 255, 0.4);
-    font-size: 14px;
+    color: rgba(235, 235, 255, 0.6);
+    font-size: 11px;
     line-height: 22px;
     font-family: 'Roboto Mono';
     flex-grow: 2;
@@ -120,14 +144,28 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    padding: 1%;
+    padding: 0%;
 }
 
-.price {
+.buy_price {
     flex-grow: 4;
     font-weight: lighter;
     text-align: -webkit-right;
+    color: #7371FC;
+    font-size: 14px;
+
 }
+
+.sell_price {
+    flex-grow: 4;
+    font-weight: lighter;
+    text-align: -webkit-right;
+    color:#E480FF;
+    font-size: 14px;
+}
+
+
+
 .range_price {
     flex-grow: 2;
     font-weight: lighter;

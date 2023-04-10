@@ -23,10 +23,10 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
-// import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -61,7 +61,6 @@ interface propsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
-
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -79,7 +78,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     priceImpact: CrocImpact | undefined;
     openGlobalPopup: (
         content: React.ReactNode,
@@ -89,6 +87,7 @@ interface propsIF {
     lastBlockNumber: number;
     dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -133,11 +132,11 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
         dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
+        ackTokens,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -161,19 +160,11 @@ export default function CurrencyConverter(props: propsIF) {
         tradeData.tokenB.symbol,
     );
 
-    const [isSellTokenEth, setIsSellTokenEth] = useState<boolean>(
-        tradeData.tokenA.address === ZERO_ADDRESS,
-    );
+    const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
         setTokenALocal(tradeData.tokenA.address);
         setTokenASymbolLocal(tradeData.tokenA.symbol);
-
-        if (tradeData.tokenA.address === ZERO_ADDRESS) {
-            setIsSellTokenEth(true);
-        } else {
-            setIsSellTokenEth(false);
-        }
     }, [tradeData.tokenA.address + tradeData.tokenA.symbol]);
 
     useEffect(() => {
@@ -238,17 +229,14 @@ export default function CurrencyConverter(props: propsIF) {
         setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
     }, [tokenAQtyCoveredByWalletBalance]);
 
-    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
-        ? isWithdrawFromDexChecked
+    const tokenAWalletMinusTokenAQtyNum =
+        isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
+            ? parseFloat(tokenABalance || '0') +
+              tokenASurplusMinusTokenARemainderNum
+            : isWithdrawFromDexChecked
             ? parseFloat(tokenABalance || '0')
             : parseFloat(tokenABalance || '0') -
-              parseFloat(tokenAQtyLocal || '0')
-        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-        ? parseFloat(tokenABalance || '0') +
-          tokenASurplusMinusTokenARemainderNum
-        : isWithdrawFromDexChecked
-        ? parseFloat(tokenABalance || '0')
-        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
+              parseFloat(tokenAQtyLocal || '0');
 
     const tokenBWalletPlusTokenBQtyNum =
         parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
@@ -295,12 +283,6 @@ export default function CurrencyConverter(props: propsIF) {
         } else {
             setDisableReverseTokens(true);
             setSwitchBoxes(!switchBoxes);
-
-            if (tokenBLocal === ZERO_ADDRESS) {
-                setIsSellTokenEth(true);
-            } else {
-                setIsSellTokenEth(false);
-            }
 
             setTokenALocal(tokenBLocal);
             setTokenBLocal(tokenALocal);
@@ -394,52 +376,26 @@ export default function CurrencyConverter(props: propsIF) {
         } else if (buyQtyString === '' || sellQtyString === '') {
             setSwapButtonErrorMessage('...');
         } else {
-            if (isSellTokenEth) {
-                if (isWithdrawFromDexChecked) {
-                    const roundedTokenADexBalance =
-                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenADexBalance) {
-                        setSwapAllowed(false);
-                        setSwapButtonErrorMessage(
-                            `${tokenASymbolLocal} Amount Must Be Less Than Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setSwapAllowed(true);
-                    }
+            if (isWithdrawFromDexChecked) {
+                if (
+                    tokenAAmount >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage(
+                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                    );
                 } else {
-                    const roundedTokenAWalletBalance =
-                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenAWalletBalance) {
-                        setSwapAllowed(false);
-                        setSwapButtonErrorMessage(
-                            `${tokenASymbolLocal} Amount Must Be Less Than Wallet Balance`,
-                        );
-                    } else {
-                        setSwapAllowed(true);
-                    }
+                    setSwapAllowed(true);
                 }
             } else {
-                if (isWithdrawFromDexChecked) {
-                    if (
-                        tokenAAmount >
-                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    ) {
-                        setSwapAllowed(false);
-                        setSwapButtonErrorMessage(
-                            `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setSwapAllowed(true);
-                    }
+                if (tokenAAmount > parseFloat(tokenABalance)) {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage(
+                        `${tokenASymbolLocal} Amount Exceeds Wallet Balance`,
+                    );
                 } else {
-                    if (tokenAAmount > parseFloat(tokenABalance)) {
-                        setSwapAllowed(false);
-                        setSwapButtonErrorMessage(
-                            `${tokenASymbolLocal} Amount Exceeds Wallet Balance`,
-                        );
-                    } else {
-                        setSwapAllowed(true);
-                    }
+                    setSwapAllowed(true);
                 }
             }
         }
@@ -796,10 +752,10 @@ export default function CurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
                 dexBalancePrefs={dexBalancePrefs}
+                ackTokens={ackTokens}
             />
             <div
                 className={
@@ -863,10 +819,10 @@ export default function CurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    acknowledgeToken={acknowledgeToken}
                     openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
                     dexBalancePrefs={dexBalancePrefs}
+                    ackTokens={ackTokens}
                 />
             </div>
         </section>

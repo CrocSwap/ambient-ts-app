@@ -112,6 +112,40 @@
     color: var(--text-grey-white);
 }
 
+
+.acknowledge_text{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+   border: 1px var(--border);
+    border-radius: var(--border-radius);
+    border: 0.1px solid var(--text-grey-dark);
+    text-align: center;
+    padding: 4px;
+    margin-top: 8px;
+}
+
+.acknowledge_etherscan_links{
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1rem;
+margin: 4px 0;
+}
+
+.acknowledge_etherscan_links a{
+    border: 1px solid transparent;
+    border-bottom:  1px solid #7371fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--animation-speed) ease-in-out
+}
+.acknowledge_etherscan_links a:hover{
+    color: var(--text-grey-white);
+    border: 1px solid #7371fc;
+
+}
+
 @media only screen and (min-width: 1280px) {
     .scrollable_container {
         height: 100vh;

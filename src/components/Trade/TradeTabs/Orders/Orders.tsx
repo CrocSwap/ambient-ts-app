@@ -440,6 +440,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
             alignCenter: true,
         },
+
         {
             name: '',
             className: '',

@@ -316,7 +316,7 @@ export const useProcessTransaction = (
         isBaseFlowPositive = baseFlowDisplayNum > 0;
         const baseFlowDisplayTruncatedShort =
             baseFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : baseFlowAbsNum < 0.0001
                 ? baseFlowAbsNum.toExponential(2)
                 : baseFlowAbsNum < 0.1
@@ -334,7 +334,7 @@ export const useProcessTransaction = (
 
         const baseFlowDisplayTruncatedLong =
             baseFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : baseFlowAbsNum < 0.0001
                 ? baseFlowAbsNum.toExponential(2)
                 : baseFlowAbsNum < 0.1
@@ -359,7 +359,7 @@ export const useProcessTransaction = (
         isQuoteFlowPositive = quoteFlowDisplayNum > 0;
         const quoteFlowDisplayTruncatedShort =
             quoteFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : quoteFlowAbsNum < 0.0001
                 ? quoteFlowAbsNum.toExponential(2)
                 : quoteFlowAbsNum < 0.1
@@ -374,7 +374,7 @@ export const useProcessTransaction = (
         quoteFlowDisplayShort = quoteFlowDisplayTruncatedShort;
         const quoteFlowDisplayTruncatedLong =
             quoteFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : quoteFlowAbsNum < 0.0001
                 ? quoteFlowAbsNum.toExponential(2)
                 : quoteFlowAbsNum < 0.1
@@ -543,19 +543,19 @@ export const useProcessTransaction = (
         quoteFlowDisplayShort !== undefined;
 
     const baseQuantityDisplayLong = quantitiesAvailable
-        ? baseFlowDisplayLong || '0.00'
+        ? baseFlowDisplayLong || '0'
         : '…';
 
     const quoteQuantityDisplayLong = quantitiesAvailable
-        ? quoteFlowDisplayLong || '0.00'
+        ? quoteFlowDisplayLong || '0'
         : '…';
 
     const baseQuantityDisplayShort = quantitiesAvailable
-        ? `${baseFlowDisplayShort || '0.00'}`
+        ? `${baseFlowDisplayShort || '0'}`
         : '…';
 
     const quoteQuantityDisplayShort = quantitiesAvailable
-        ? `${quoteFlowDisplayShort || '0.00'}`
+        ? `${quoteFlowDisplayShort || '0'}`
         : '…';
 
     // --------------------------------------------------------

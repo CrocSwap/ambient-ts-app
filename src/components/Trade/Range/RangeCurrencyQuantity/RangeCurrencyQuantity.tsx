@@ -1,5 +1,4 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { IS_LOCAL_ENV } from '../../../../constants';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 // import { GoCircleSlash } from 'react-icons/go';
@@ -57,7 +56,6 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         // String Does Not Contain Decimal
         return 0;
     };
-    IS_LOCAL_ENV && console.debug(fieldId);
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
@@ -85,7 +83,6 @@ export default function RangeCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
-                required
                 autoFocus={fieldId === 'A'}
             />
         </div>

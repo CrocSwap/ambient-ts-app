@@ -373,7 +373,13 @@ export default function App() {
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    const isChatEnabled =
+        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
             : true;
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
@@ -440,7 +446,6 @@ export default function App() {
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
-        acknowledgeToken,
     ] = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
@@ -2663,6 +2668,7 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
+        pool: pool,
         tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
@@ -2702,7 +2708,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2717,6 +2722,8 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
+        chainData: chainData,
     };
 
     // props for <Swap/> React element on trade route
@@ -2761,7 +2768,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2777,6 +2783,8 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
+        chainData: chainData,
     };
 
     // props for <Limit/> React element on trade route
@@ -2823,7 +2831,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2838,6 +2845,7 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
     };
 
     // props for <Range/> React element
@@ -2892,7 +2900,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
@@ -2918,6 +2925,9 @@ export default function App() {
             range: bypassConfirmRange,
             repo: bypassConfirmRepo,
         },
+        ackTokens: ackTokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
+        chainData: chainData,
     };
 
     function toggleSidebar() {
@@ -2982,6 +2992,18 @@ export default function App() {
         favePools: favePools,
     };
 
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
+        () =>
+            getMoneynessRank(
+                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
+            ) -
+                getMoneynessRank(
+                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
+                ) >=
+            0,
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
+    );
+
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
@@ -2990,15 +3012,6 @@ export default function App() {
         // if pool price is < 0.1 then denom token will be quote (cheaper one)
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
-        const isBaseTokenMoneynessGreaterOrEqual =
-            getMoneynessRank(
-                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
-            ) -
-                getMoneynessRank(
-                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
-                ) >=
-            0;
-        // if (!poolPriceDisplay) return;
 
         const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
             ? tradeData.didUserFlipDenom
@@ -3478,6 +3491,7 @@ export default function App() {
                             path='chat'
                             element={
                                 <ChatPanel
+                                    isChatEnabled={isChatEnabled}
                                     isChatOpen={true}
                                     onClose={() => {
                                         console.error(
@@ -3500,6 +3514,7 @@ export default function App() {
                             path='chat/:params'
                             element={
                                 <ChatPanel
+                                    isChatEnabled={isChatEnabled}
                                     isChatOpen={true}
                                     onClose={() => {
                                         console.error(
@@ -3607,7 +3622,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
@@ -3625,6 +3639,7 @@ export default function App() {
                                         mintSlippage,
                                         repoSlippage,
                                     }}
+                                    ackTokens={ackTokens}
                                 />
                             }
                         />
@@ -3692,7 +3707,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
@@ -3710,6 +3724,7 @@ export default function App() {
                                         mintSlippage,
                                         repoSlippage,
                                     }}
+                                    ackTokens={ackTokens}
                                 />
                             }
                         />
@@ -3808,7 +3823,6 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
-                                    acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
@@ -3826,6 +3840,7 @@ export default function App() {
                                         mintSlippage,
                                         repoSlippage,
                                     }}
+                                    ackTokens={ackTokens}
                                 />
                             }
                         />
@@ -3836,7 +3851,8 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
-                    !currentLocation.includes('/chat') && (
+                    !currentLocation.includes('/chat') &&
+                    isChatEnabled && (
                         <ChatPanel
                             isChatOpen={isChatOpen}
                             onClose={() => {
@@ -3848,6 +3864,7 @@ export default function App() {
                             isFullScreen={false}
                             userImageData={imageData}
                             topPools={topPools}
+                            isChatEnabled={isChatEnabled}
                         />
                     )}
             </div>

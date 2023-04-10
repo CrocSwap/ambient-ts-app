@@ -63,8 +63,8 @@ export default function TvlSubChart(props: TvlData) {
     useEffect(() => {
         const yScale = d3.scaleSymlog();
 
-        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
         const filtered = tvlData?.filter(
             (data: any) => data.time >= xmin && data.time <= xmax,
@@ -74,9 +74,16 @@ export default function TvlSubChart(props: TvlData) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
             const minYBoundary = d3.min(filtered, (d: any) => d.value);
 
-            const domain = [minYBoundary / 2, maxYBoundary * 2];
+            const buffer =
+                Math.abs(Math.log10(maxYBoundary) - Math.log10(minYBoundary)) /
+                5;
 
-            yScale.domain(domain);
+            const domainLog = [
+                Math.pow(10, Math.log10(minYBoundary) - buffer),
+                Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
+            ];
+
+            yScale.domain(domainLog);
         }
 
         const yAxis = d3fc.axisRight().scale(yScale);
@@ -102,10 +109,10 @@ export default function TvlSubChart(props: TvlData) {
                     }
                 })
                 .on('zoom', (event: any) => {
-                    const domainX = scaleData.xScale.domain();
+                    const domainX = scaleData?.xScale.domain();
                     const linearX = d3
                         .scaleTime()
-                        .domain(scaleData.xScale.range())
+                        .domain(scaleData?.xScale.range())
                         .range([0, domainX[1] - domainX[0]]);
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
@@ -115,7 +122,7 @@ export default function TvlSubChart(props: TvlData) {
                         date,
                     );
 
-                    scaleData.xScale.domain([
+                    scaleData?.xScale.domain([
                         new Date(domainX[0].getTime() + deltaX),
                         new Date(domainX[1].getTime() + deltaX),
                     ]);
@@ -130,14 +137,14 @@ export default function TvlSubChart(props: TvlData) {
     }, [
         tvlData,
         scaleData,
-        JSON.stringify(scaleData.xScale.domain()[0]),
-        JSON.stringify(scaleData.xScale.domain()[1]),
+        JSON.stringify(scaleData?.xScale.domain()[0]),
+        JSON.stringify(scaleData?.xScale.domain()[1]),
     ]);
 
     useEffect(() => {
         if (yAxis !== undefined && tvlyScale !== undefined) {
-            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+            const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+            const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
             const filtered = tvlData?.filter(
                 (data: any) => data.time >= xmin && data.time <= xmax,
@@ -147,7 +154,15 @@ export default function TvlSubChart(props: TvlData) {
                 const minYBoundary = d3.min(filtered, (d: any) => d.value);
                 const maxYBoundary = d3.max(filtered, (d: any) => d.value);
 
-                const domain = [minYBoundary / 2, maxYBoundary * 2];
+                const buffer =
+                    Math.abs(
+                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
+                    ) / 5;
+
+                const domainLog = [
+                    Math.pow(10, Math.log10(minYBoundary) - buffer),
+                    Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
+                ];
 
                 const roundIndexMax = Math.pow(
                     10,
@@ -177,13 +192,13 @@ export default function TvlSubChart(props: TvlData) {
 
                 yAxis.tickValues(ticks).tickFormat(formatDollarAmountAxis);
 
-                tvlyScale.domain(domain);
+                tvlyScale.domain(domainLog);
             }
         }
     }, [
         tvlyScale,
-        JSON.stringify(scaleData.xScale.domain()[0]),
-        JSON.stringify(scaleData.xScale.domain()[1]),
+        JSON.stringify(scaleData?.xScale.domain()[0]),
+        JSON.stringify(scaleData?.xScale.domain()[1]),
     ]);
 
     useEffect(() => {
@@ -210,7 +225,7 @@ export default function TvlSubChart(props: TvlData) {
         ) {
             const areaSeries = d3fc
                 .seriesCanvasArea()
-                .xScale(scaleData.xScale)
+                .xScale(scaleData?.xScale)
                 .yScale(tvlyScale)
                 // .curve(d3.curveBasis)
                 .mainValue((d: any) => d.value)
@@ -225,7 +240,7 @@ export default function TvlSubChart(props: TvlData) {
 
             const lineSeries = d3fc
                 .seriesCanvasLine()
-                .xScale(scaleData.xScale)
+                .xScale(scaleData?.xScale)
                 .yScale(tvlyScale)
                 .mainValue((d: any) => d.value)
                 .crossValue((d: any) => d.time)
@@ -240,7 +255,7 @@ export default function TvlSubChart(props: TvlData) {
                 .annotationCanvasLine()
                 .orient('vertical')
                 .value((d: any) => d.x)
-                .xScale(scaleData.xScale)
+                .xScale(scaleData?.xScale)
                 .yScale(tvlyScale)
                 .label('');
 
@@ -255,7 +270,7 @@ export default function TvlSubChart(props: TvlData) {
             const crosshairHorizontalCanvas = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.y)
-                .xScale(scaleData.xScale)
+                .xScale(scaleData?.xScale)
                 .yScale(tvlyScale)
                 .label('');
 
@@ -375,7 +390,7 @@ export default function TvlSubChart(props: TvlData) {
                 d3.select(d3PlotTvl.current).on(
                     'measure',
                     function (event: any) {
-                        scaleData.xScale.range([0, event.detail.width]);
+                        scaleData?.xScale.range([0, event.detail.width]);
                         tvlyScale.range([event.detail.height, 0]);
                     },
                 );

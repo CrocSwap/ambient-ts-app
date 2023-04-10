@@ -12,9 +12,7 @@ import {
 } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { useSortedPositions } from '../../../Trade/TradeTabs/useSortedPositions';
-import { FiCopy } from 'react-icons/fi';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
@@ -22,12 +20,13 @@ interface propsIF {
     isInput: boolean;
     isPosition: boolean;
     setIsPosition: Dispatch<SetStateAction<boolean>>;
+    walletExplorer: any;
+    isCurrentUser?: boolean;
 }
 
 export default function PositionBox(props: propsIF) {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [value, copy] = useCopyToClipboard();
     const [isPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
     const [hashMsg, setHashMsg] = useState('');
@@ -43,15 +42,18 @@ export default function PositionBox(props: propsIF) {
     >();
     const tradeData = useAppSelector((state) => state.tradeData);
     const graphData = useAppSelector((state) => state?.graphData);
+
     const transactionsData = graphData?.changesByPool?.changes;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('lastUpdate', graphData?.positionsByPool?.positions);
+    const positionData = graphData?.positionsByPool?.positions;
+
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
     const [apy, setApy] = useState<any | undefined>();
 
-    useEffect(() => {
+    const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
+    const txFingerprint = transactionsData.map((tx) => tx.tx).join('|');
+
+    const updateIsPosition = () => {
         if (message && message.includes('0x')) {
             const hashMsg = message
                 .split(' ')
@@ -63,12 +65,12 @@ export default function PositionBox(props: propsIF) {
                 );
                 props.setIsPosition(true);
             } else if (
-                sortedPositions.find(
+                positionData.find(
                     (item: PositionIF) => item.positionStorageSlot === hashMsg,
                 )
             ) {
                 setSPosition(
-                    sortedPositions.find(
+                    positionData.find(
                         (item: PositionIF) =>
                             item.positionStorageSlot === hashMsg,
                     ),
@@ -80,7 +82,11 @@ export default function PositionBox(props: propsIF) {
             setSPosition(undefined);
             props.setIsPosition(false);
         }
-    }, [message, sortedPositions, transactionsData]);
+    };
+
+    useEffect(() => {
+        updateIsPosition();
+    }, [message, posFingerprint, txFingerprint]);
 
     function financial(x: any) {
         return Number.parseFloat(x).toFixed(2);
@@ -201,13 +207,6 @@ export default function PositionBox(props: propsIF) {
         </SnackbarComponent>
     );
 
-    function handleCopyAddress() {
-        const hashMsg = message.split(' ').find((item) => item.includes('0x'));
-
-        copy(hashMsg as string);
-        setOpenSnackbar(true);
-    }
-
     function getRestOfMessagesIfAny() {
         if (message.includes(' ')) {
             return message.substring(message.indexOf(' ') + 1);
@@ -220,6 +219,21 @@ export default function PositionBox(props: propsIF) {
             } else {
                 return '';
             }
+        }
+    }
+
+    function handleOpenExplorer() {
+        if (sPositions === undefined && position !== undefined) {
+            const hashMsg = message
+                .split(' ')
+                .find((item) => item.includes('0x'));
+            const explorerUrl = 'https://goerli.etherscan.io/tx/' + hashMsg;
+            window.open(explorerUrl);
+        } else {
+            const walletUrl = props.isCurrentUser
+                ? '/account'
+                : `/account/${props.walletExplorer}`;
+            window.open(walletUrl);
         }
     }
     return props.isPosition ? (
@@ -237,33 +251,33 @@ export default function PositionBox(props: propsIF) {
                                 </div>
 
                                 <div style={{ cursor: 'pointer' }}>
-                                    <FiCopy
-                                        size={19}
-                                        color='rgba(235, 235, 255, 0.4)'
-                                        onClick={handleCopyAddress}
-                                    />
-                                </div>
-                                <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
-                                        size={20}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        size={16}
+                                        onClick={handleOpenExplorer}
+                                        title='Explorer'
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
+                            <div className={styles.tokens_type}>
                                 {sideType} Price
                             </div>
 
-                            <div className={styles.price}>
+                            <div
+                                className={
+                                    sideType === 'Buy'
+                                        ? styles.buy_price
+                                        : styles.sell_price
+                                }
+                            >
                                 {truncatedDisplayPrice}
                             </div>
                         </div>
                         {isPoolPriceChangePositive ? (
                             <>
                                 <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
+                                    <div className={styles.tokens_type}>
                                         Range
                                     </div>
 
@@ -322,19 +336,10 @@ export default function PositionBox(props: propsIF) {
                                 <div className={styles.address}>
                                     {getPositionAdress()}
                                 </div>
-                                <div>
-                                    <HiOutlineExternalLink
-                                        size={22}
-                                        color='rgba(235, 235, 255, 0.4)'
-                                    />
-                                </div>
-                                <div>
-                                    <FiCopy onClick={handleCopyAddress} />
-                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
+                            <div className={styles.tokens_type}>
                                 {sideType} Price
                             </div>
 
@@ -345,7 +350,7 @@ export default function PositionBox(props: propsIF) {
                         {isPoolPriceChangePositive ? (
                             <>
                                 <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
+                                    <div className={styles.tokens_type}>
                                         Range
                                     </div>
 
@@ -357,7 +362,7 @@ export default function PositionBox(props: propsIF) {
                                     </div>
                                 </div>
                                 <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
+                                    <div className={styles.tokens_type}>
                                         APY
                                     </div>
                                     <div
@@ -399,17 +404,15 @@ export default function PositionBox(props: propsIF) {
                                 </div>
                                 <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
-                                        size={22}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        size={16}
+                                        onClick={handleOpenExplorer}
+                                        title='Wallet'
                                     />
-                                </div>
-                                <div style={{ cursor: 'pointer' }}>
-                                    <FiCopy onClick={handleCopyAddress} />
                                 </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>Range</div>
+                            <div className={styles.tokens_type}>Range</div>
                             <div className={styles.tokens_min_price}>
                                 ${minPrice}
                             </div>
@@ -418,7 +421,7 @@ export default function PositionBox(props: propsIF) {
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>APY</div>
+                            <div className={styles.tokens_type}>APY</div>
                             <div className={styles.tokens_apy}>
                                 {financial(apy)}%
                             </div>
@@ -454,19 +457,10 @@ export default function PositionBox(props: propsIF) {
                                 <div className={styles.address}>
                                     {getPositionAdress()}
                                 </div>
-                                <div>
-                                    <HiOutlineExternalLink
-                                        size={22}
-                                        color='rgba(235, 235, 255, 0.4)'
-                                    />
-                                </div>
-                                <div>
-                                    <FiCopy onClick={handleCopyAddress} />
-                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>Range</div>
+                            <div className={styles.tokens_type}>Range</div>
                             <div className={styles.tokens_min_price}>
                                 ${minPrice}
                             </div>
@@ -475,7 +469,7 @@ export default function PositionBox(props: propsIF) {
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>APY</div>
+                            <div className={styles.tokens_type}>APY</div>
                             <div className={styles.tokens_apy}>
                                 {financial(apy)}%
                             </div>
