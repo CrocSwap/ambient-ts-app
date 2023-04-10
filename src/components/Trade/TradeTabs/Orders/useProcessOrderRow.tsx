@@ -110,6 +110,28 @@ export const useProcessOrderRow = (props: Props) => {
         '&tokenB=' +
         limitOrder.base;
 
+    interface CustomLIPropsIF {
+        children: React.ReactNode;
+        className?: any;
+        style?: any;
+        noClick?: boolean;
+    }
+    function CustomLI(props: CustomLIPropsIF) {
+        const { children, className, style, noClick } = props;
+
+        return (
+            <li
+                onClick={noClick ? undefined : openDetailsModal}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+                className={className}
+                style={style}
+            >
+                {children}
+            </li>
+        );
+    }
+
     const IDWithTooltip = (
         <TextOnlyTooltip
             interactive
@@ -137,17 +159,26 @@ export const useProcessOrderRow = (props: Props) => {
     );
 
     const ValueWithTooltip = (
-        <li
-            onClick={openDetailsModal}
+        // <li
+        //     onClick={openDetailsModal}
+        //     data-label='value'
+        //     className={sellOrderStyle}
+        //     style={{ textAlign: 'right' }}
+        //     onMouseEnter={handleRowMouseDown}
+        //     onMouseLeave={handleRowMouseOut}
+        // >
+        //     {' '}
+        //     {'$' + usdValue}
+        // </li>
+
+        <CustomLI
             data-label='value'
             className={sellOrderStyle}
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             {' '}
             {'$' + usdValue}
-        </li>
+        </CustomLI>
     );
 
     const actualWalletWithTooltip = (
@@ -222,43 +253,50 @@ export const useProcessOrderRow = (props: Props) => {
     );
 
     const tokenPair = (
-        <li
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        // <li
+        //     className='base_color'
+        //     onMouseEnter={handleRowMouseDown}
+        //     onMouseLeave={handleRowMouseOut}
+        // >
+        //     <NavLink to={tradeLinkPath}>
+        //         {baseTokenSymbol} / {quoteTokenSymbol}
+        //     </NavLink>
+        // </li>
+
+        <CustomLI data-label='tokens' className='base_color'>
             <NavLink to={tradeLinkPath}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
-        </li>
+        </CustomLI>
     );
     const baseQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        // <li
+        //     onClick={openDetailsModal}
+        //     data-label={baseTokenSymbol}
+        //     className='base_color'
+        //     onMouseEnter={handleRowMouseDown}
+        //     onMouseLeave={handleRowMouseOut}
+        // >
+        //     <div className={styles.token_qty_tooltip}>
+        //         {baseDisplay}
+        //         {baseTokenLogoComponent}
+        //     </div>
+        // </li>
+
+        <CustomLI data-label={baseTokenSymbol} className='base_color'>
             <div className={styles.token_qty_tooltip}>
                 {baseDisplay}
                 {baseTokenLogoComponent}
             </div>
-        </li>
+        </CustomLI>
     );
     const quoteQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI data-label={quoteTokenSymbol} className='base_color'>
             <div className={styles.token_qty_tooltip}>
                 {quoteDisplay}
                 {quoteTokenLogoComponent}
             </div>
-        </li>
+        </CustomLI>
     );
 
     const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
@@ -275,24 +313,14 @@ export const useProcessOrderRow = (props: Props) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
-                onClick={openDetailsModal}
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
+            <CustomLI style={{ textTransform: 'lowercase' }}>
                 <p className='base_color'>{elapsedTimeString}</p>
-            </li>
+            </CustomLI>
         </TextOnlyTooltip>
     ) : (
-        <li
-            onClick={openDetailsModal}
-            style={{ textTransform: 'lowercase' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI style={{ textTransform: 'lowercase' }}>
             <p className='base_color'>{elapsedTimeString}</p>
-        </li>
+        </CustomLI>
     );
     const txIdColumnComponent = (
         <li>
@@ -302,13 +330,10 @@ export const useProcessOrderRow = (props: Props) => {
     );
 
     const priceDisplay = (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='price'
             className={priceStyle + ' ' + sellOrderStyle}
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             {(
                 <p className={`${styles.align_right} `}>
@@ -320,56 +345,44 @@ export const useProcessOrderRow = (props: Props) => {
                     </span>
                 </p>
             ) || '…'}
-        </li>
+        </CustomLI>
     );
 
     const typeDisplay = (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='type'
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             Order
-        </li>
+        </CustomLI>
     );
 
     const sideDisplay = (
-        <li
-            style={{ textAlign: 'center' }}
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='side'
             className={sellOrderStyle}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+            style={{ textAlign: 'center' }}
         >
             {`${sideType} ${sideCharacter}`}
-        </li>
+        </CustomLI>
     );
 
     const sideTypeColumn = (
-        <li
+        <CustomLI
             data-label='side-type'
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
-            onClick={openDetailsModal}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <p>Order</p>
             <p>{`${sideType} ${sideCharacter}`}</p>
-        </li>
+        </CustomLI>
     );
 
     const tokensColumn = (
-        <li
+        <CustomLI
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
-            onClick={openDetailsModal}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <div
                 className={styles.token_qty}
@@ -391,16 +404,11 @@ export const useProcessOrderRow = (props: Props) => {
                 {quoteDisplay}
                 {quoteTokenLogoComponent}
             </div>
-        </li>
+        </CustomLI>
     );
 
     const statusDisplay = (
-        <li
-            onClick={openDetailsModal}
-            data-label='status'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI data-label='status'>
             <div
                 style={{
                     display: 'flex',
@@ -410,7 +418,7 @@ export const useProcessOrderRow = (props: Props) => {
             >
                 <OpenOrderStatus isFilled={isOrderFilled} />
             </div>
-        </li>
+        </CustomLI>
     );
 
     return {
