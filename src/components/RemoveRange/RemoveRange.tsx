@@ -157,7 +157,7 @@ export default function RemoveRange(props: propsIF) {
             const pos = new CrocPositionView(pool, position.user);
 
             const liqBigNum = isAmbient
-                ? (await pos.queryAmbient()).liq
+                ? (await pos.queryAmbient()).seeds
                 : (await pos.queryRangePos(position.bidTick, position.askTick))
                       .liq;
 
