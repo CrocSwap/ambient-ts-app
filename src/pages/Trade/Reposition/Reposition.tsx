@@ -106,7 +106,6 @@ export default function Reposition(props: propsIF) {
         setTxErrorMessage('');
     };
 
-    console.log({ newRepositionTransactionHash });
     const isRepositionSent = newRepositionTransactionHash !== '';
 
     // locationHook object (we need this mainly for position data)
@@ -138,7 +137,6 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
-    console.log({ position });
 
     const [concLiq, setConcLiq] = useState<string>('');
 
@@ -155,8 +153,9 @@ export default function Reposition(props: propsIF) {
     };
 
     useEffect(() => {
+        if (!crocEnv || !position) return;
         updateConcLiq();
-    }, [crocEnv, lastBlockNumber, JSON.stringify(position)]);
+    }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
 

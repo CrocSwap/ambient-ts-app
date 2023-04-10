@@ -1,9 +1,9 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
-import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
+import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
 import { BigNumber, ethers } from 'ethers';
@@ -114,12 +114,6 @@ export default function RemoveRange(props: propsIF) {
         (state) => state.receiptData,
     ).positionsPendingUpdate;
 
-    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
-    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
-    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
-        useState<string>('');
-
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -145,9 +139,19 @@ export default function RemoveRange(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const [liquidityToBurn, setLiquidityToBurn] = useState<
+    const [currentLiquidity, setCurrentLiquidity] = useState<
         BigNumber | undefined
     >();
+
+    const positionHasLiquidity = useMemo(
+        () => !currentLiquidity?.isZero(),
+        [currentLiquidity],
+    );
+
+    const liquidityToBurn = useMemo(
+        () => currentLiquidity?.mul(removalPercentage).div(100),
+        [currentLiquidity, removalPercentage],
+    );
 
     const updateLiq = async () => {
         try {
@@ -159,8 +163,7 @@ export default function RemoveRange(props: propsIF) {
                 ? (await pos.queryAmbient()).seeds
                 : (await pos.queryRangePos(position.bidTick, position.askTick))
                       .liq;
-
-            setLiquidityToBurn(liqBigNum.mul(removalPercentage).div(100));
+            setCurrentLiquidity(liqBigNum);
         } catch (error) {
             console.error(error);
         }
@@ -170,71 +173,7 @@ export default function RemoveRange(props: propsIF) {
         if (crocEnv && position) {
             updateLiq();
         }
-    }, [crocEnv, lastBlockNumber, position.positionId, removalPercentage]);
-
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && position.user && position.base && position.quote) {
-                crocEnv
-                    .token(position.base)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.base)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
-    }, [
-        crocEnv,
-        position.user,
-        position.base,
-        position.quote,
-        lastBlockNumber,
-    ]);
+    }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     useEffect(() => {
         if (
@@ -266,29 +205,34 @@ export default function RemoveRange(props: propsIF) {
                 )
                     .then((response) => response.json())
                     .then((json) => {
-                        IS_LOCAL_ENV && console.debug({ json });
                         setPosLiqBaseDecimalCorrected(
-                            json?.data?.positionLiqBaseDecimalCorrected,
+                            json?.data?.positionLiqBaseDecimalCorrected === null
+                                ? undefined
+                                : json?.data?.positionLiqBaseDecimalCorrected,
                         );
                         setPosLiqQuoteDecimalCorrected(
-                            json?.data?.positionLiqQuoteDecimalCorrected,
+                            json?.data?.positionLiqQuoteDecimalCorrected ===
+                                null
+                                ? undefined
+                                : json?.data?.positionLiqQuoteDecimalCorrected,
                         );
                         setFeeLiqBaseDecimalCorrected(
-                            json?.data?.feesLiqBaseDecimalCorrected,
+                            json?.data?.feesLiqBaseDecimalCorrected === null
+                                ? undefined
+                                : json?.data?.feesLiqBaseDecimalCorrected,
                         );
                         setFeeLiqQuoteDecimalCorrected(
-                            json?.data?.feesLiqQuoteDecimalCorrected,
+                            json?.data?.feesLiqQuoteDecimalCorrected === null
+                                ? undefined
+                                : json?.data?.feesLiqQuoteDecimalCorrected,
                         );
-                    });
+                    })
+                    .catch((error) => console.error({ error }));
             })();
         }
     }, [lastBlockNumber]);
 
     const [showSettings, setShowSettings] = useState(false);
-
-    const positionHasLiquidity =
-        (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) >
-        0;
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
