@@ -150,9 +150,8 @@ export default function RemoveRange(props: propsIF) {
     >();
 
     const updateLiq = async () => {
-        if (!crocEnv || !position || !removalPercentage) return;
-
         try {
+            if (!crocEnv || !position) return;
             const pool = crocEnv.pool(position.base, position.quote);
             const pos = new CrocPositionView(pool, position.user);
 
@@ -168,8 +167,10 @@ export default function RemoveRange(props: propsIF) {
     };
 
     useEffect(() => {
-        updateLiq();
-    }, [crocEnv, lastBlockNumber, JSON.stringify(position), removalPercentage]);
+        if (crocEnv && position) {
+            updateLiq();
+        }
+    }, [crocEnv, lastBlockNumber, position.positionId, removalPercentage]);
 
     // useEffect to update selected token balances
     useEffect(() => {
