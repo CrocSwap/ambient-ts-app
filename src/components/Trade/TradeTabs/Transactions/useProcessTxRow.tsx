@@ -3,7 +3,6 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
-import { Dispatch } from 'react';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 
 import {
@@ -164,23 +163,8 @@ export const useProcessTxRow = (props: Props) => {
         </li>
     );
 
-    // const handleWalletClick = () => {
-    //     dispatch(
-    //         setDataLoadingStatus({
-    //             datasetName: 'lookupUserTxData',
-    //             loadingStatus: true,
-    //         }),
-    //     );
-
-    //     const accountUrl = `/${
-    //         isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-    //     }`;
-    //     window.open(accountUrl);
-    // };
-
     const walletWithTooltip = (
         <li
-            // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
@@ -273,14 +257,6 @@ export const useProcessTxRow = (props: Props) => {
         tx.base;
 
     const tokenPair = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-        //     placement={'left'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={0}
-        // >
         <li
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -290,8 +266,6 @@ export const useProcessTxRow = (props: Props) => {
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
         </li>
-
-        // </DefaultTooltip>
     );
 
     const TxTimeWithTooltip = (

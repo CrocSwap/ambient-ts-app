@@ -3,22 +3,13 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import {
-    DefaultTooltip,
-    TextOnlyTooltip,
-} from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
-import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
+
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import moment from 'moment';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../../constants';
+
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
@@ -89,9 +80,9 @@ export default function TransactionRow(props: propsIF) {
         quoteTokenAddress,
         isOwnerActiveAccount,
         ensName,
-        baseTokenCharacter,
-        quoteTokenCharacter,
-        isDenomBase,
+        // baseTokenCharacter,
+        // quoteTokenCharacter,
+        // isDenomBase,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
@@ -111,16 +102,6 @@ export default function TransactionRow(props: propsIF) {
     } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
     const dispatch = useAppDispatch();
-
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
-
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
-    const isSellQtyZero =
-        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
-    const isBuyQtyZero =
-        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
 
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
@@ -287,10 +268,10 @@ export default function TransactionRow(props: propsIF) {
         IDWithTooltip,
         usdValueWithTooltip,
         walletWithTooltip,
-        baseTokenLogoComponent,
-        quoteTokenLogoComponent,
-        pair,
-        tradeLinkPath,
+        // baseTokenLogoComponent,
+        // quoteTokenLogoComponent,
+        // pair,
+        // tradeLinkPath,
         tokenPair,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
