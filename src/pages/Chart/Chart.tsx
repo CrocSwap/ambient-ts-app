@@ -3668,7 +3668,11 @@ export default function Chart(props: propsIF) {
             }
 
             context.beginPath();
-            if (dateCrosshair) {
+            if (
+                dateCrosshair &&
+                isMouseMoveCrosshair &&
+                isCrosshairActive !== 'none'
+            ) {
                 context.fillText(
                     dateCrosshair,
                     xScale(crosshairData[0].x),
