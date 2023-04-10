@@ -198,7 +198,6 @@ startMoralis();
 // Create a new threaded worker instance
 import Worker from 'worker-loader!./worker';
 import { messageSendIF } from './worker';
-import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 const worker = new Worker();
 
 /** ***** React Function *******/
@@ -1141,21 +1140,11 @@ export default function App() {
                     // ///////////////////////////////////////////////////////////////////////////////////////////////
                     // ///////////////////////////////////////////////////////////////////////////////////////////////
 
-                    // Send a message to the worker with the necessary data to execute the API calls
-                    const sendBaseMessage = {
-                        sortedTokens,
-                        chainData,
-                        httpGraphCacheServerDomain,
-                        searchableTokens,
-                    } as messageSendIF;
-
-                    worker.postMessage(sendBaseMessage);
-
                     // Listen for the worker response and handle the dispatches
                     worker.addEventListener(
                         'message',
                         (event: MessageEvent) => {
-                            if (event.data.type === 'base') {
+                            if (event.data.type === 'tables') {
                                 const tvlSeries = event.data.tvlSeries;
                                 const volumeSeries = event.data.volumeSeries;
 
@@ -1350,9 +1339,18 @@ export default function App() {
                                     });
                                 }
                             }
-                            ///
+                            // /
                         },
                     );
+
+                    // Send a message to the worker with the necessary data to execute the API calls
+                    worker.postMessage({
+                        type: 'tables',
+                        sortedTokens,
+                        chainData,
+                        httpGraphCacheServerDomain,
+                        searchableTokens,
+                    });
                 }
             }
         }
@@ -1385,73 +1383,46 @@ export default function App() {
     }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
 
     // eslint-disable-next-line
-    const disablethisone = true; // FIXME: ANOTHER CANIDATE FOR WORKER THREAD HERE.
+    // const disablethisone = true; // FIXME: ANOTHER CANIDATE FOR WORKER THREAD HERE.
     const fetchCandles = () => {
         if (
-            disablethisone &&
             baseTokenAddress &&
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
-            // ^^^^ SLOW X4
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
-                    const candleSeriesCacheEndpoint =
-                        httpGraphCacheServerDomain + '/candle_series?';
                     setFetchingCandle(true);
-                    fetch(
-                        candleSeriesCacheEndpoint +
-                            new URLSearchParams({
-                                base: mainnetBaseTokenAddress.toLowerCase(),
-                                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                period: candleTimeLocal.toString(),
-                                // time: '1657833300', // optional
-                                n: '200', // positive integer
-                                // page: '0', // nonnegative integer
-                                chainId: '0x1',
-                                dex: 'all',
-                                poolStats: 'true',
-                                concise: 'true',
-                                poolStatsChainIdOverride: '0x5',
-                                poolStatsBaseOverride:
-                                    baseTokenAddress.toLowerCase(),
-                                poolStatsQuoteOverride:
-                                    quoteTokenAddress.toLowerCase(),
-                                poolStatsPoolIdxOverride:
-                                    chainData.poolIndex.toString(),
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const candles = json?.data;
-                            if (candles?.length === 0) {
-                                setIsCandleDataNull(true);
-                                setExpandTradeTable(true);
-                            } else if (candles) {
-                                if (
-                                    JSON.stringify(candleData) !==
-                                    JSON.stringify(candles) //// FIXME THIS IS SLOW
-                                ) {
-                                    setCandleData({
-                                        pool: {
-                                            baseAddress:
-                                                baseTokenAddress.toLowerCase(),
-                                            quoteAddress:
-                                                quoteTokenAddress.toLowerCase(),
-                                            poolIdx: chainData.poolIndex,
-                                            network: chainData.chainId,
-                                        },
-                                        duration: candleTimeLocal,
-                                        candles: candles,
-                                    });
+
+                    // Listen for the worker response and handle the dispatches
+                    worker.addEventListener(
+                        'message',
+                        (event: MessageEvent) => {
+                            if (event.data.type === 'candles') {
+                                if (event.data.candleData != null) {
+                                    setCandleData(event.data.candleData);
+                                } else {
+                                    setIsCandleDataNull(true);
+                                    setExpandTradeTable(true);
                                 }
                             }
-                        })
-                        .catch(console.error);
+                        },
+                    );
+
+                    worker.postMessage({
+                        type: 'candles',
+                        chainData: chainData,
+                        httpGraphCacheServerDomain: httpGraphCacheServerDomain,
+                        mainnetBaseTokenAddress: mainnetBaseTokenAddress,
+                        mainnetQuoteTokenAddress: mainnetQuoteTokenAddress,
+                        candleTimeLocal: candleTimeLocal,
+                        baseTokenAddress: baseTokenAddress,
+                        quoteTokenAddress: quoteTokenAddress,
+                        candleData: candleData,
+                    });
                 }
             } catch (error) {
                 console.error({ error });

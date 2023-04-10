@@ -14,6 +14,7 @@ import { getVolumeSeries } from './functions/getVolumeSeries';
 const ctx: Worker = self as any;
 
 export interface messageSendIF {
+    type: 'tables';
     sortedTokens: [string, string];
     chainData: ChainSpec;
     httpGraphCacheServerDomain: string;
@@ -21,7 +22,7 @@ export interface messageSendIF {
 }
 
 export interface messageReceiveIF {
-    type: 'base';
+    type: 'tables';
     liquidityFeeNum: number | undefined;
     tvlSeries: TvlSeriesByPoolTimeAndResolution | undefined;
     volumeSeries: VolumeSeriesByPoolTimeAndResolution | undefined;
@@ -42,139 +43,198 @@ export interface LimitOrderIF {
     poolLimitOrderStates: any;
 }
 
-// Listen for messages from the parent thread, and get data about the pool from graphcache
-// NOTE: commented out blocks are in App.tsx because they interact with DOM.
-ctx.addEventListener('message', (event: MessageEvent<messageSendIF>) => {
-    const {
-        sortedTokens,
-        chainData,
-        httpGraphCacheServerDomain,
-        searchableTokens,
-    } = event.data;
+ctx.addEventListener('message', (event: MessageEvent) => {
+    if (event.data.type === 'tables') {
+        const {
+            sortedTokens,
+            chainData,
+            httpGraphCacheServerDomain,
+            searchableTokens,
+        } = event.data;
 
-    const allPositionsCacheEndpoint =
-        httpGraphCacheServerDomain + '/pool_positions?';
-    const poolPositionsCacheEndpoint =
-        httpGraphCacheServerDomain + '/annotated_pool_positions?';
-    const poolLimitOrderStatesCacheEndpoint =
-        httpGraphCacheServerDomain + '/pool_limit_order_states?';
+        const allPositionsCacheEndpoint =
+            httpGraphCacheServerDomain + '/pool_positions?';
+        const poolPositionsCacheEndpoint =
+            httpGraphCacheServerDomain + '/annotated_pool_positions?';
+        const poolLimitOrderStatesCacheEndpoint =
+            httpGraphCacheServerDomain + '/pool_limit_order_states?';
 
-    Promise.all([
-        getLiquidityFee(
-            sortedTokens[0],
-            sortedTokens[1],
-            chainData.poolIndex,
-            chainData.chainId,
-        ),
-        getTvlSeries(
-            sortedTokens[0],
-            sortedTokens[1],
-            chainData.poolIndex,
-            chainData.chainId,
-            600, // 10 minute resolution
-        ),
-        getVolumeSeries(
-            sortedTokens[0],
-            sortedTokens[1],
-            chainData.poolIndex,
-            chainData.chainId,
-            600, // 10 minute resolution
-        ),
-        fetchPoolRecentChanges({
-            tokenList: searchableTokens,
-            base: sortedTokens[0],
-            quote: sortedTokens[1],
-            poolIdx: chainData.poolIndex,
-            chainId: chainData.chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
-            n: 100,
-        }),
+        Promise.all([
+            getLiquidityFee(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+            ),
+            getTvlSeries(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+                600, // 10 minute resolution
+            ),
+            getVolumeSeries(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+                600, // 10 minute resolution
+            ),
+            fetchPoolRecentChanges({
+                tokenList: searchableTokens,
+                base: sortedTokens[0],
+                quote: sortedTokens[1],
+                poolIdx: chainData.poolIndex,
+                chainId: chainData.chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 100,
+            }),
+            fetch(
+                allPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        chainId: chainData.chainId,
+                        annotate: 'true',
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                        omitKnockout: 'true',
+                        addValue: 'true',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const poolPositions = json.data;
+                    ctx.postMessage({
+                        type: 'positions',
+                        poolPositions: poolPositions,
+                    } as PoolPositionsIF);
+                })
+                .catch(console.error),
+
+            fetch(
+                poolPositionsCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        chainId: chainData.chainId,
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                        omitKnockout: 'true',
+                        addValue: 'true',
+                        sortByAPY: 'true',
+                        n: '50',
+                        minPosAge: '86400', // restrict leaderboard to position > 1 day old
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const leaderboardPositions = json.data;
+                    ctx.postMessage({
+                        type: 'leaderboard',
+                        leaderboardPositions: leaderboardPositions,
+                    } as LeaderBoardIF);
+                })
+                .catch(console.error),
+
+            fetch(
+                poolLimitOrderStatesCacheEndpoint +
+                    new URLSearchParams({
+                        base: sortedTokens[0].toLowerCase(),
+                        quote: sortedTokens[1].toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        chainId: chainData.chainId,
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const poolLimitOrderStates = json.data;
+                    ctx.postMessage({
+                        type: 'limits',
+                        poolLimitOrderStates: poolLimitOrderStates,
+                    } as LimitOrderIF);
+                })
+                .catch(console.error),
+        ])
+            .then((result) => {
+                ctx.postMessage({
+                    type: 'tables',
+                    liquidityFeeNum: result[0],
+                    tvlSeries: result[1],
+                    volumeSeries: result[2],
+                    recentChanges: result[3],
+                });
+            })
+            .catch(console.error);
+    } else if (event.data.type === 'candles') {
+        const {
+            chainData,
+            httpGraphCacheServerDomain,
+            mainnetBaseTokenAddress,
+            mainnetQuoteTokenAddress,
+            candleTimeLocal,
+            baseTokenAddress,
+            quoteTokenAddress,
+            candleData,
+        } = event.data;
+
+        const candleSeriesCacheEndpoint =
+            httpGraphCacheServerDomain + '/candle_series?';
+
         fetch(
-            allPositionsCacheEndpoint +
+            candleSeriesCacheEndpoint +
                 new URLSearchParams({
-                    base: sortedTokens[0].toLowerCase(),
-                    quote: sortedTokens[1].toLowerCase(),
+                    base: mainnetBaseTokenAddress.toLowerCase(),
+                    quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
-                    chainId: chainData.chainId,
-                    annotate: 'true', // token quantities
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
+                    period: candleTimeLocal.toString(),
+                    // time: '1657833300', // optional
+                    n: '200', // positive integer
+                    // page: '0', // nonnegative integer
+                    chainId: '0x1',
+                    dex: 'all',
+                    poolStats: 'true',
+                    concise: 'true',
+                    poolStatsChainIdOverride: '0x5',
+                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
                 }),
         )
-            .then((response) => response.json())
+            .then((response) => response?.json())
             .then((json) => {
-                const poolPositions = json.data;
-                ctx.postMessage({
-                    type: 'positions',
-                    poolPositions: poolPositions,
-                } as PoolPositionsIF);
+                const candles = json?.data;
+                if (candles?.length === 0) {
+                    ctx.postMessage({
+                        type: 'candles',
+                        candleData: null,
+                    });
+                } else if (
+                    JSON.stringify(candleData) !== JSON.stringify(candles)
+                ) {
+                    ctx.postMessage({
+                        type: 'candles',
+                        candleData: {
+                            pool: {
+                                baseAddress: baseTokenAddress.toLowerCase(),
+                                quoteAddress: quoteTokenAddress.toLowerCase(),
+                                poolIdx: chainData.poolIndex,
+                                network: chainData.chainId,
+                            },
+                            duration: candleTimeLocal,
+                            candles: candles,
+                        },
+                    });
+                }
             })
-            .catch(console.error),
-
-        fetch(
-            poolPositionsCacheEndpoint +
-                new URLSearchParams({
-                    base: sortedTokens[0].toLowerCase(),
-                    quote: sortedTokens[1].toLowerCase(),
-                    poolIdx: chainData.poolIndex.toString(),
-                    chainId: chainData.chainId,
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
-                    sortByAPY: 'true',
-                    n: '50',
-                    minPosAge: '86400', // restrict leaderboard to position > 1 day old
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                const leaderboardPositions = json.data;
-                ctx.postMessage({
-                    type: 'leaderboard',
-                    leaderboardPositions: leaderboardPositions,
-                } as LeaderBoardIF);
-            })
-            .catch(console.error),
-
-        fetch(
-            poolLimitOrderStatesCacheEndpoint +
-                new URLSearchParams({
-                    base: sortedTokens[0].toLowerCase(),
-                    quote: sortedTokens[1].toLowerCase(),
-                    poolIdx: chainData.poolIndex.toString(),
-                    chainId: chainData.chainId,
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
-                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                const poolLimitOrderStates = json.data;
-                ctx.postMessage({
-                    type: 'limits',
-                    poolLimitOrderStates: poolLimitOrderStates,
-                } as LimitOrderIF);
-            })
-            .catch(console.error),
-    ])
-        .then((result) => {
-            const baseResult = {
-                type: 'base',
-                liquidityFeeNum: result[0],
-                tvlSeries: result[1],
-                volumeSeries: result[2],
-                recentChanges: result[3],
-            } as messageReceiveIF;
-            ctx.postMessage(baseResult);
-        })
-        .catch(console.error);
+            .catch(console.error);
+    }
 });
