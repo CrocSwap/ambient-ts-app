@@ -197,7 +197,6 @@ startMoralis();
 
 // Create a new threaded worker instance
 import Worker from 'worker-loader!./worker';
-import { messageSendIF } from './worker';
 const worker = new Worker();
 
 /** ***** React Function *******/

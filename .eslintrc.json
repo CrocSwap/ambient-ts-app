@@ -22,13 +22,13 @@
     "rules": {
         "react/react-in-jsx-scope": "off",
         "camelcase": "error",
-        "spaced-comment": "error",
+        "spaced-comment": "off",
         "quotes": ["error", "single"],
         "no-duplicate-imports": "error",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-unused-vars": [
             "warn", // or "error"
-            { 
+            {
                 "argsIgnorePattern": "^_",
                 "varsIgnorePattern": "^_",
                 "caughtErrorsIgnorePattern": "^_"

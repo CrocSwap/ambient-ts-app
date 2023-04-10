@@ -30,16 +30,19 @@ export interface messageReceiveIF {
 
 export interface PoolPositionsIF {
     type: 'positions';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     poolPositions: any;
 }
 
 export interface LeaderBoardIF {
     type: 'leaderboard';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     leaderboardPositions: any;
 }
 
 export interface LimitOrderIF {
     type: 'limits';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     poolLimitOrderStates: any;
 }
 
