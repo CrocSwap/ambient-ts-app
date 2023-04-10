@@ -20,6 +20,7 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { useProcessOrderRow } from '../useProcessOrderRow';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -93,6 +94,7 @@ export default function OrderRow(props: propsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
+        elapsedTimeString,
     } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
     const orderMenuProps = {
@@ -230,63 +232,63 @@ export default function OrderRow(props: propsIF) {
         setOpenSnackbar(true);
     }
 
-    const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-60px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
+    // const IDWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <p
+    //                 style={{
+    //                     marginLeft: '-60px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'default',
 
-                        fontFamily: 'monospace',
+    //                     fontFamily: 'monospace',
 
-                        whiteSpace: 'nowrap',
-                        width: '440px',
+    //                     whiteSpace: 'nowrap',
+    //                     width: '440px',
 
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                    }}
-                >
-                    {posHash}
-                    <FiCopy
-                        style={{ cursor: 'pointer' }}
-                        onClick={handleCopyPosHash}
-                    />
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                onClick={openDetailsModal}
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
-            >
-                {posHashTruncated}
-            </p>
-        </TextOnlyTooltip>
-    );
+    //                     display: 'flex',
+    //                     alignItems: 'center',
+    //                     gap: '4px',
+    //                 }}
+    //             >
+    //                 {posHash}
+    //                 <FiCopy
+    //                     style={{ cursor: 'pointer' }}
+    //                     onClick={handleCopyPosHash}
+    //                 />
+    //             </p>
+    //         }
+    //         placement={'right'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <p
+    //             onClick={openDetailsModal}
+    //             data-label='id'
+    //             className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+    //         >
+    //             {posHashTruncated}
+    //         </p>
+    //     </TextOnlyTooltip>
+    // );
 
-    const ValueWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label='value'
-            className={sellOrderStyle}
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            {' '}
-            {'$' + usdValue}
-        </li>
-    );
+    // const ValueWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label='value'
+    //         className={sellOrderStyle}
+    //         style={{ textAlign: 'right' }}
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         {' '}
+    //         {'$' + usdValue}
+    //     </li>
+    // );
 
     function handleWalletLinkClick() {
         if (!isOnPortfolioPage)
@@ -304,236 +306,236 @@ export default function OrderRow(props: propsIF) {
         );
     }
 
-    const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
+    // const actualWalletWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <div
+    //                 style={{
+    //                     marginRight: '-80px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'default',
 
-                        // width: '450px',
-                    }}
-                >
-                    <p
-                        style={{
-                            fontFamily: 'monospace',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            whiteSpace: 'nowrap',
+    //                     // width: '450px',
+    //                 }}
+    //             >
+    //                 <p
+    //                     style={{
+    //                         fontFamily: 'monospace',
+    //                         display: 'flex',
+    //                         flexDirection: 'row',
+    //                         alignItems: 'center',
+    //                         whiteSpace: 'nowrap',
 
-                            gap: '4px',
-                        }}
-                    >
-                        {limitOrder.user}
-                        <FiCopy
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={() => handleWalletCopy()}
-                        />
+    //                         gap: '4px',
+    //                     }}
+    //                 >
+    //                     {limitOrder.user}
+    //                     <FiCopy
+    //                         style={{ cursor: 'pointer' }}
+    //                         size={'12px'}
+    //                         onClick={() => handleWalletCopy()}
+    //                     />
 
-                        <FiExternalLink
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={handleWalletLinkClick}
-                        />
-                    </p>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                onClick={openDetailsModal}
-                data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
-            >
-                {userNameToDisplay}
-            </p>
-        </TextOnlyTooltip>
-    );
+    //                     <FiExternalLink
+    //                         style={{ cursor: 'pointer' }}
+    //                         size={'12px'}
+    //                         onClick={handleWalletLinkClick}
+    //                     />
+    //                 </p>
+    //             </div>
+    //         }
+    //         placement={'right'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <p
+    //             onClick={openDetailsModal}
+    //             data-label='wallet'
+    //             className={usernameStyle}
+    //             style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+    //         >
+    //             {userNameToDisplay}
+    //         </p>
+    //     </TextOnlyTooltip>
+    // );
 
-    const walletWithoutTooltip = (
-        <p
-            // onClick={handleWalletClick}
-            onClick={openDetailsModal}
-            data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase' }}
-            tabIndex={0}
-        >
-            {userNameToDisplay}
-        </p>
-    );
+    // const walletWithoutTooltip = (
+    //     <p
+    //         // onClick={handleWalletClick}
+    //         onClick={openDetailsModal}
+    //         data-label='wallet'
+    //         className={`${usernameStyle} ${styles.hover_style}`}
+    //         style={{ textTransform: 'lowercase' }}
+    //         tabIndex={0}
+    //     >
+    //         {userNameToDisplay}
+    //     </p>
+    // );
 
-    const walletWithTooltip = isOwnerActiveAccount
-        ? walletWithoutTooltip
-        : actualWalletWithTooltip;
+    // const walletWithTooltip = isOwnerActiveAccount
+    //     ? walletWithoutTooltip
+    //     : actualWalletWithTooltip;
 
-    const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.baseSymbol.charAt(0)}
-            width={logoSizes}
-        />
-    );
+    // const baseTokenLogoComponent = baseTokenLogo ? (
+    //     <img src={baseTokenLogo} alt='base token' width={logoSizes} />
+    // ) : (
+    //     <NoTokenIcon
+    //         tokenInitial={limitOrder.baseSymbol.charAt(0)}
+    //         width={logoSizes}
+    //     />
+    // );
 
-    const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.quoteSymbol.charAt(0)}
-            width={logoSizes}
-        />
-    );
+    // const quoteTokenLogoComponent = quoteTokenLogo ? (
+    //     <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
+    // ) : (
+    //     <NoTokenIcon
+    //         tokenInitial={limitOrder.quoteSymbol.charAt(0)}
+    //         width={logoSizes}
+    //     />
+    // );
 
-    const tradeLinkPath =
-        '/trade/limit/' +
-        'chain=' +
-        limitOrder.chainId +
-        '&tokenA=' +
-        limitOrder.quote +
-        '&tokenB=' +
-        limitOrder.base;
+    // const tradeLinkPath =
+    //     '/trade/limit/' +
+    //     'chain=' +
+    //     limitOrder.chainId +
+    //     '&tokenA=' +
+    //     limitOrder.quote +
+    //     '&tokenB=' +
+    //     limitOrder.base;
 
-    const tokenPair = (
-        <li
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <NavLink to={tradeLinkPath}>
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </NavLink>
-        </li>
-    );
+    // const tokenPair = (
+    //     <li
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <NavLink to={tradeLinkPath}>
+    //             {baseTokenSymbol} / {quoteTokenSymbol}
+    //         </NavLink>
+    //     </li>
+    // );
 
-    const positionTime =
-        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+    // const positionTime =
+    //     limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
 
-    const elapsedTimeInSecondsNum = positionTime
-        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
-        : 0;
+    // const elapsedTimeInSecondsNum = positionTime
+    //     ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+    //     : 0;
 
-    const elapsedTimeString =
-        elapsedTimeInSecondsNum !== undefined
-            ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. '
-                : elapsedTimeInSecondsNum < 120
-                ? '1 min. '
-                : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
-                : elapsedTimeInSecondsNum < 7200
-                ? '1 hour '
-                : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
-                : elapsedTimeInSecondsNum < 172800
-                ? '1 day '
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
-            : 'Pending...';
+    // const elapsedTimeString =
+    //     elapsedTimeInSecondsNum !== undefined
+    //         ? elapsedTimeInSecondsNum < 60
+    //             ? '< 1 min. '
+    //             : elapsedTimeInSecondsNum < 120
+    //             ? '1 min. '
+    //             : elapsedTimeInSecondsNum < 3600
+    //             ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
+    //             : elapsedTimeInSecondsNum < 7200
+    //             ? '1 hour '
+    //             : elapsedTimeInSecondsNum < 86400
+    //             ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
+    //             : elapsedTimeInSecondsNum < 172800
+    //             ? '1 day '
+    //             : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
+    //         : 'Pending...';
 
-    const baseQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
-                {baseDisplay}
-                {baseTokenLogoComponent}
-            </div>
-        </li>
-    );
-    const quoteQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
-                {quoteDisplay}
-                {quoteTokenLogoComponent}
-            </div>
-        </li>
-    );
+    // const baseQtyDisplayWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label={baseTokenSymbol}
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <div
+    //             style={{
+    //                 display: 'flex',
+    //                 alignItems: 'center',
+    //                 justifyContent: 'flex-end',
+    //                 gap: '4px',
+    //                 textAlign: 'right',
+    //             }}
+    //         >
+    //             {baseDisplay}
+    //             {baseTokenLogoComponent}
+    //         </div>
+    //     </li>
+    // );
+    // const quoteQtyDisplayWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label={quoteTokenSymbol}
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <div
+    //             style={{
+    //                 display: 'flex',
+    //                 alignItems: 'center',
+    //                 justifyContent: 'flex-end',
+    //                 gap: '4px',
+    //                 textAlign: 'right',
+    //             }}
+    //         >
+    //             {quoteDisplay}
+    //             {quoteTokenLogoComponent}
+    //         </div>
+    //     </li>
+    // );
 
-    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    {moment(limitOrder.latestUpdateTime * 1000).format(
-                        'MM/DD/YYYY HH:mm',
-                    )}
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li
-                onClick={openDetailsModal}
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <p className='base_color'>{elapsedTimeString}</p>
-            </li>
-        </TextOnlyTooltip>
-    ) : (
-        <li
-            onClick={openDetailsModal}
-            style={{ textTransform: 'lowercase' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <p className='base_color'>{elapsedTimeString}</p>
-        </li>
-    );
-    const txIdColumnComponent = (
-        <li>
-            {IDWithTooltip}
-            {walletWithTooltip}
-        </li>
-    );
+    // const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <p
+    //                 style={{
+    //                     marginLeft: '-70px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'pointer',
+    //                 }}
+    //             >
+    //                 {moment(limitOrder.latestUpdateTime * 1000).format(
+    //                     'MM/DD/YYYY HH:mm',
+    //                 )}
+    //             </p>
+    //         }
+    //         placement={'right'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <li
+    //             onClick={openDetailsModal}
+    //             style={{ textTransform: 'lowercase' }}
+    //             onMouseEnter={handleRowMouseDown}
+    //             onMouseLeave={handleRowMouseOut}
+    //         >
+    //             <p className='base_color'>{elapsedTimeString}</p>
+    //         </li>
+    //     </TextOnlyTooltip>
+    // ) : (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         style={{ textTransform: 'lowercase' }}
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <p className='base_color'>{elapsedTimeString}</p>
+    //     </li>
+    // );
+    // const txIdColumnComponent = (
+    //     <li>
+    //         {IDWithTooltip}
+    //         {walletWithTooltip}
+    //     </li>
+    // );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
@@ -553,6 +555,45 @@ export default function OrderRow(props: propsIF) {
             openDetailsModal();
         }
     };
+
+    const useProcessOrderRowProps = {
+        posHashTruncated,
+        openDetailsModal,
+        handleRowMouseDown,
+        handleRowMouseOut,
+        posHash,
+        handleCopyPosHash,
+        sellOrderStyle,
+        usdValue,
+        usernameStyle,
+        userNameToDisplay,
+        limitOrder,
+        handleWalletCopy,
+        handleWalletLinkClick,
+        baseTokenLogo,
+        quoteTokenLogo,
+        isOwnerActiveAccount,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseDisplay,
+        quoteDisplay,
+        elapsedTimeString,
+    };
+
+    const {
+        IDWithTooltip,
+        ValueWithTooltip,
+        actualWalletWithTooltip,
+        walletWithoutTooltip,
+        walletWithTooltip,
+        baseTokenLogoComponent,
+        quoteTokenLogoComponent,
+        tokenPair,
+        baseQtyDisplayWithTooltip,
+        quoteQtyDisplayWithTooltip,
+        OrderTimeWithTooltip,
+        txIdColumnComponent,
+    } = useProcessOrderRow(useProcessOrderRowProps);
 
     return (
         <>

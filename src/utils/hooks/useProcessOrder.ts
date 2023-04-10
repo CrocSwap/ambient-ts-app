@@ -12,6 +12,7 @@ import {
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import moment from 'moment';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -542,6 +543,33 @@ export const useProcessOrder = (
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
     // ------------------------------------------------------------------
     const usdValue = usdValueTruncated ? usdValueTruncated : '…';
+    // ----------------------------------------------------------------------
+
+    const positionTime =
+        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
+            : 'Pending...';
+
+    // ----------------------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 15
@@ -618,5 +646,7 @@ export const useProcessOrder = (
         orderMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
         blockExplorer,
+
+        elapsedTimeString,
     };
 };
