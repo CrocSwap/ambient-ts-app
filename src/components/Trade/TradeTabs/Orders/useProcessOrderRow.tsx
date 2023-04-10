@@ -6,6 +6,7 @@ import styles from './Orders.module.css';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
+import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 
 interface Props {
     posHashTruncated: string;
@@ -21,10 +22,11 @@ interface Props {
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
+    priceStyle: string;
     // quoteQuantityDisplayShort: string;
     elapsedTimeString: string;
-    // sideType: string;
-    // sideCharacter: string;
+    sideType: string;
+    sideCharacter: string;
     // ensName: string | null;
 
     // ownerId: string;
@@ -38,14 +40,15 @@ interface Props {
     // type: string;
     // truncatedLowDisplayPrice: string | undefined;
     // truncatedHighDisplayPrice: string | undefined;
-    // priceCharacter: string;
+    priceCharacter: string;
     // truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
     // truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
-    // truncatedDisplayPriceDenomByMoneyness: string | undefined;
-    // truncatedDisplayPrice: string | undefined;
+    truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
-    // isOnPortfolioPage: boolean;
+    isOnPortfolioPage: boolean;
+    isOrderFilled: boolean;
     // isBuy: boolean;
     // isOrderRemove: boolean;
     // valueArrows: boolean;
@@ -83,6 +86,14 @@ export const useProcessOrderRow = (props: Props) => {
         baseDisplay,
         quoteDisplay,
         elapsedTimeString,
+        isOnPortfolioPage,
+        priceCharacter,
+        priceStyle,
+        truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
+        sideType,
+        sideCharacter,
+        isOrderFilled,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -354,6 +365,118 @@ export const useProcessOrderRow = (props: Props) => {
         </li>
     );
 
+    const priceDisplay = (
+        <li
+            onClick={openDetailsModal}
+            data-label='price'
+            className={priceStyle + ' ' + sellOrderStyle}
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            {(
+                <p className={`${styles.align_right} `}>
+                    <span>{priceCharacter}</span>
+                    <span>
+                        {isOnPortfolioPage
+                            ? truncatedDisplayPriceDenomByMoneyness
+                            : truncatedDisplayPrice}
+                    </span>
+                </p>
+            ) || '…'}
+        </li>
+    );
+
+    const typeDisplay = (
+        <li
+            onClick={openDetailsModal}
+            data-label='type'
+            className={sellOrderStyle}
+            style={{ textAlign: 'center' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            Order
+        </li>
+    );
+
+    const sideDisplay = (
+        <li
+            style={{ textAlign: 'center' }}
+            onClick={openDetailsModal}
+            data-label='side'
+            className={sellOrderStyle}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            {`${sideType} ${sideCharacter}`}
+        </li>
+    );
+
+    const sideTypeColumn = (
+        <li
+            data-label='side-type'
+            className={sellOrderStyle}
+            style={{ textAlign: 'center' }}
+            onClick={openDetailsModal}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <p>Order</p>
+            <p>{`${sideType} ${sideCharacter}`}</p>
+        </li>
+    );
+
+    const tokensColumn = (
+        <li
+            data-label={baseTokenSymbol + quoteTokenSymbol}
+            className='base_color'
+            onClick={openDetailsModal}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <div
+                className={styles.token_qty}
+                style={{
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {' '}
+                {baseDisplay} {baseTokenLogoComponent}
+            </div>
+
+            <div
+                className={styles.token_qty}
+                style={{
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {' '}
+                {quoteDisplay}
+                {quoteTokenLogoComponent}
+            </div>
+        </li>
+    );
+
+    const statusDisplay = (
+        <li
+            onClick={openDetailsModal}
+            data-label='status'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <OpenOrderStatus isFilled={isOrderFilled} />
+            </div>
+        </li>
+    );
+
     return {
         IDWithTooltip,
         ValueWithTooltip,
@@ -367,5 +490,11 @@ export const useProcessOrderRow = (props: Props) => {
         quoteQtyDisplayWithTooltip,
         OrderTimeWithTooltip,
         txIdColumnComponent,
+        priceDisplay,
+        typeDisplay,
+        sideDisplay,
+        sideTypeColumn,
+        tokensColumn,
+        statusDisplay,
     };
 };

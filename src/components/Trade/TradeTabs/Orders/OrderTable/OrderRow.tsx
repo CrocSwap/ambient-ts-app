@@ -578,6 +578,14 @@ export default function OrderRow(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         elapsedTimeString,
+        isOnPortfolioPage,
+        priceCharacter,
+        priceStyle,
+        truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
+        sideType,
+        sideCharacter,
+        isOrderFilled,
     };
 
     const {
@@ -593,6 +601,12 @@ export default function OrderRow(props: propsIF) {
         quoteQtyDisplayWithTooltip,
         OrderTimeWithTooltip,
         txIdColumnComponent,
+        priceDisplay,
+        typeDisplay,
+        sideDisplay,
+        sideTypeColumn,
+        tokensColumn,
+        statusDisplay,
     } = useProcessOrderRow(useProcessOrderRowProps);
 
     return (
@@ -617,123 +631,16 @@ export default function OrderRow(props: propsIF) {
                     <li>{walletWithTooltip}</li>
                 )}
                 {showColumns && txIdColumnComponent}
-                {!ipadView && (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='price'
-                        className={priceStyle + ' ' + sellOrderStyle}
-                        style={{ textAlign: 'right' }}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        {isOnPortfolioPage
-                            ? (
-                                  <p className={`${styles.align_right} `}>
-                                      <span>{priceCharacter}</span>
-                                      <span>
-                                          {
-                                              truncatedDisplayPriceDenomByMoneyness
-                                          }
-                                      </span>
-                                  </p>
-                              ) || '…'
-                            : (
-                                  <p className={`${styles.align_right} `}>
-                                      <span>{priceCharacter}</span>
-                                      <span>{truncatedDisplayPrice}</span>
-                                  </p>
-                              ) || '…'}
-                    </li>
-                )}
-                {!showColumns && (
-                    <li
-                        style={{ textAlign: 'center' }}
-                        onClick={openDetailsModal}
-                        data-label='side'
-                        className={sellOrderStyle}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        {`${sideType} ${sideCharacter}`}
-                    </li>
-                )}
-                {!showColumns && (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='type'
-                        className={sellOrderStyle}
-                        style={{ textAlign: 'center' }}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        Order
-                    </li>
-                )}
-                {showColumns && !ipadView && (
-                    <li
-                        data-label='side-type'
-                        className={sellOrderStyle}
-                        style={{ textAlign: 'center' }}
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <p>Order</p>
-                        <p>{`${sideType} ${sideCharacter}`}</p>
-                    </li>
-                )}
+                {!ipadView && priceDisplay}
+                {!showColumns && sideDisplay}
+                {!showColumns && typeDisplay}
+                {showColumns && !ipadView && sideTypeColumn}
 
                 {ValueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && (
-                    <li
-                        data-label={baseTokenSymbol + quoteTokenSymbol}
-                        className='base_color'
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <div
-                            className={styles.token_qty}
-                            style={{
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {' '}
-                            {baseDisplay} {baseTokenLogoComponent}
-                        </div>
-
-                        <div
-                            className={styles.token_qty}
-                            style={{
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {' '}
-                            {quoteDisplay}
-                            {quoteTokenLogoComponent}
-                        </div>
-                    </li>
-                )}
-                {!ipadView && (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='status'
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <OpenOrderStatus isFilled={isOrderFilled} />
-                        </div>
-                    </li>
-                )}
+                {showColumns && tokensColumn}
+                {!ipadView && statusDisplay}
 
                 <li data-label='menu'>
                     <OrdersMenu
