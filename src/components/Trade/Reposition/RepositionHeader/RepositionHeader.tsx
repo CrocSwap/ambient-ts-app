@@ -26,6 +26,7 @@ interface propsIF {
     bypassConfirm: allSkipConfirmMethodsIF;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    resetTxHash: () => void;
 }
 
 export default function RepositionHeader(props: propsIF) {
@@ -36,6 +37,7 @@ export default function RepositionHeader(props: propsIF) {
         isPairStable,
         bypassConfirm,
         setSimpleRangeWidth,
+        resetTxHash,
     } = props;
 
     const navigate = useNavigate();
@@ -50,7 +52,7 @@ export default function RepositionHeader(props: propsIF) {
         <ContentHeader>
             <div
                 onClick={() => openModal()}
-                style={{ cursor: 'pointer', marginLeft: '10px' }}
+                style={{ cursor: 'pointer', marginLeft: '5px' }}
             >
                 <RiSettings5Line />
             </div>
@@ -79,10 +81,11 @@ export default function RepositionHeader(props: propsIF) {
                     setRangeWidthPercentage(10);
                     setSimpleRangeWidth(10);
                     navigate(exitPath, { replace: true });
+                    resetTxHash();
                 }}
                 style={{ cursor: 'pointer', marginRight: '10px' }}
             >
-                <VscClose size={22} />
+                <VscClose size={30} />
             </div>
         </ContentHeader>
     );

@@ -23,10 +23,10 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
-// import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -61,7 +61,6 @@ interface propsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
-
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -79,7 +78,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     priceImpact: CrocImpact | undefined;
     openGlobalPopup: (
         content: React.ReactNode,
@@ -89,6 +87,7 @@ interface propsIF {
     lastBlockNumber: number;
     dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -133,11 +132,11 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
         dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
+        ackTokens,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -753,10 +752,10 @@ export default function CurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                acknowledgeToken={acknowledgeToken}
                 openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
                 dexBalancePrefs={dexBalancePrefs}
+                ackTokens={ackTokens}
             />
             <div
                 className={
@@ -820,10 +819,10 @@ export default function CurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    acknowledgeToken={acknowledgeToken}
                     openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
                     dexBalancePrefs={dexBalancePrefs}
+                    ackTokens={ackTokens}
                 />
             </div>
         </section>
