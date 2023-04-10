@@ -516,6 +516,13 @@ export default function TransactionRow(props: propsIF) {
         negativeDisplayStyle,
         negativeArrow,
         type,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
+        priceCharacter,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedDisplayPriceDenomByMoneyness,
+        truncatedDisplayPrice,
     };
 
     const {
@@ -535,6 +542,9 @@ export default function TransactionRow(props: propsIF) {
         baseQuoteQtyDisplayColumn,
         typeDisplay,
         typeAndSideColumn,
+        ambientPriceDisplay,
+        lowAndHighPriceDisplay,
+        priceDisplay,
     } = useProcessTxRow(useProcessTxRowProps);
 
     // const txIdColumnComponent = (
@@ -636,94 +646,11 @@ export default function TransactionRow(props: propsIF) {
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && txIdColumnComponent}
             {!ipadView &&
-                (tx.entityType === 'liqchange' ? (
-                    tx.positionType === 'ambient' ? (
-                        <li
-                            onMouseEnter={handleRowMouseDown}
-                            onMouseLeave={handleRowMouseOut}
-                            onClick={openDetailsModal}
-                            data-label='price'
-                            className={'gradient_text'}
-                            style={{
-                                textAlign: 'right',
-                                textTransform: 'lowercase',
-                            }}
-                            tabIndex={0}
-                        >
-                            ambient
-                        </li>
-                    ) : (
-                        <li
-                            onMouseEnter={handleRowMouseDown}
-                            onMouseLeave={handleRowMouseOut}
-                            onClick={openDetailsModal}
-                            data-label='price'
-                            className={`${sideTypeStyle}`}
-                            tabIndex={0}
-                        >
-                            <p className={`${styles.align_right} `}>
-                                <span>
-                                    {truncatedLowDisplayPrice
-                                        ? priceCharacter
-                                        : '…'}
-                                </span>
-                                <span>
-                                    {isOnPortfolioPage
-                                        ? truncatedLowDisplayPriceDenomByMoneyness
-                                        : truncatedLowDisplayPrice}
-                                </span>
-                            </p>
-                            <p className={`${styles.align_right} `}>
-                                <span>
-                                    {truncatedHighDisplayPrice
-                                        ? priceCharacter
-                                        : '…'}
-                                </span>
-                                <span>
-                                    {isOnPortfolioPage
-                                        ? truncatedHighDisplayPriceDenomByMoneyness
-                                        : truncatedHighDisplayPrice}
-                                </span>
-                            </p>
-                        </li>
-                    )
-                ) : (
-                    <li
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                        onClick={() => {
-                            if (IS_LOCAL_ENV) {
-                                console.debug({ isOnPortfolioPage });
-                                console.debug({
-                                    truncatedDisplayPriceDenomByMoneyness,
-                                });
-                            }
-                            openDetailsModal();
-                        }}
-                        data-label='price'
-                        className={`${styles.align_right}  ${sideTypeStyle}`}
-                        tabIndex={0}
-                    >
-                        {(
-                            <p className={`${styles.align_right} `}>
-                                <span>
-                                    {(
-                                        isOnPortfolioPage
-                                            ? truncatedDisplayPriceDenomByMoneyness
-                                            : truncatedDisplayPrice
-                                    )
-                                        ? priceCharacter
-                                        : '…'}
-                                </span>
-                                <span>
-                                    {isOnPortfolioPage
-                                        ? truncatedDisplayPriceDenomByMoneyness
-                                        : truncatedDisplayPrice}
-                                </span>
-                            </p>
-                        ) || '…'}
-                    </li>
-                ))}
+                (tx.entityType === 'liqchange'
+                    ? tx.positionType === 'ambient'
+                        ? ambientPriceDisplay
+                        : lowAndHighPriceDisplay
+                    : priceDisplay)}
             {
                 !showColumns && sideDisplay
                 // <li
@@ -741,8 +668,8 @@ export default function TransactionRow(props: propsIF) {
                 //         : `${sideType} ${sideCharacter}`}
                 // </li>
             }
-            {!showColumns &&
-                typeDisplay
+            {
+                !showColumns && typeDisplay
                 // <li
                 //     onMouseEnter={handleRowMouseDown}
                 //     onMouseLeave={handleRowMouseOut}
@@ -755,9 +682,8 @@ export default function TransactionRow(props: propsIF) {
                 //     {type}
                 // </li>
             }
-            {showColumns &&
-                !ipadView &&
-                typeAndSideColumn
+            {
+                showColumns && !ipadView && typeAndSideColumn
                 // <li
                 //     onMouseEnter={handleRowMouseDown}
                 //     onMouseLeave={handleRowMouseOut}

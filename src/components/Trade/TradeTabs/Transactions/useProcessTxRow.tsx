@@ -43,6 +43,13 @@ interface Props {
     negativeArrow: string;
 
     type: string;
+    truncatedLowDisplayPrice: string | undefined;
+    truncatedHighDisplayPrice: string | undefined;
+    priceCharacter: string;
+    truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
+    truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
+    truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
     isOnPortfolioPage: boolean;
@@ -100,6 +107,14 @@ export const useProcessTxRow = (props: Props) => {
         negativeDisplayStyle,
         negativeArrow,
         type,
+
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
+        priceCharacter,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedDisplayPriceDenomByMoneyness,
+        truncatedDisplayPrice,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -546,6 +561,89 @@ export const useProcessTxRow = (props: Props) => {
         </li>
     );
 
+    const ambientPriceDisplay = (
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={openDetailsModal}
+            data-label='price'
+            className={'gradient_text'}
+            style={{
+                textAlign: 'right',
+                textTransform: 'lowercase',
+            }}
+            tabIndex={0}
+        >
+            ambient
+        </li>
+    );
+
+    const lowAndHighPriceDisplay = (
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={openDetailsModal}
+            data-label='price'
+            className={`${sideTypeStyle}`}
+            tabIndex={0}
+        >
+            <p className={`${styles.align_right} `}>
+                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
+                <span>
+                    {isOnPortfolioPage
+                        ? truncatedLowDisplayPriceDenomByMoneyness
+                        : truncatedLowDisplayPrice}
+                </span>
+            </p>
+            <p className={`${styles.align_right} `}>
+                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
+                <span>
+                    {isOnPortfolioPage
+                        ? truncatedHighDisplayPriceDenomByMoneyness
+                        : truncatedHighDisplayPrice}
+                </span>
+            </p>
+        </li>
+    );
+
+    const priceDisplay = (
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={() => {
+                if (IS_LOCAL_ENV) {
+                    console.debug({ isOnPortfolioPage });
+                    console.debug({
+                        truncatedDisplayPriceDenomByMoneyness,
+                    });
+                }
+                openDetailsModal();
+            }}
+            data-label='price'
+            className={`${styles.align_right}  ${sideTypeStyle}`}
+            tabIndex={0}
+        >
+            {(
+                <p className={`${styles.align_right} `}>
+                    <span>
+                        {(
+                            isOnPortfolioPage
+                                ? truncatedDisplayPriceDenomByMoneyness
+                                : truncatedDisplayPrice
+                        )
+                            ? priceCharacter
+                            : '…'}
+                    </span>
+                    <span>
+                        {isOnPortfolioPage
+                            ? truncatedDisplayPriceDenomByMoneyness
+                            : truncatedDisplayPrice}
+                    </span>
+                </p>
+            ) || '…'}
+        </li>
+    );
+
     return {
         IDWithTooltip,
         usdValueWithTooltip,
@@ -563,5 +661,8 @@ export const useProcessTxRow = (props: Props) => {
         baseQuoteQtyDisplayColumn,
         typeDisplay,
         typeAndSideColumn,
+        ambientPriceDisplay,
+        lowAndHighPriceDisplay,
+        priceDisplay,
     };
 };
