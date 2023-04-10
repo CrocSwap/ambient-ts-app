@@ -247,28 +247,28 @@ export default function RangeDetailsSimplify(
             title: 'APR',
             content: apyString,
             explanation:
-                'The estimated APR of the position based on fees earned',
+                'The estimated APR of the position based on rewards eaned',
         },
 
         // {
-        //     title: 'Token 1 Total Fees Earned ',
-        //     content: 'T1 fees earned',
+        //     title: 'Token 1 Total Rewards Earned ',
+        //     content: 'T1 rewards eaned',
         //     explanation: 'this is explanation',
         // },
         // {
-        //     title: 'Token 2 Total Fees Earned ',
-        //     content: 'T2 fees earned',
+        //     title: 'Token 2 Total Rewards Earned ',
+        //     content: 'T2 rewards eaned',
         //     explanation: 'this is explanation',
         // },
         {
-            title: 'Token 1 Unclaimed Fees ',
+            title: 'Token 1 Unclaimed Rewards ',
             content: baseFeesDisplay + ' ' + baseTokenSymbol,
-            explanation: 'Token #1 unclaimed fees',
+            explanation: 'Token #1 unclaimed rewards',
         },
         {
-            title: 'Token 2 Unclaimed Fees ',
+            title: 'Token 2 Unclaimed Rewards ',
             content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
-            explanation: 'Token #2 unclaimed fees',
+            explanation: 'Token #2 unclaimed rewards',
         },
         // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
         {

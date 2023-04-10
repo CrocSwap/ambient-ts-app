@@ -582,6 +582,44 @@ export default function Chart(props: propsIF) {
         );
     };
 
+    const fillLiqAdvanced = (standardDeviation: number, scaleData: any) => {
+        const border = scaleData?.yScale.domain()[1];
+
+        const filledTickNumber = Math.min(border / standardDeviation, 150);
+
+        standardDeviation =
+            filledTickNumber === 150
+                ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
+                : standardDeviation;
+
+        if (scaleData !== undefined) {
+            if (
+                border + standardDeviation >=
+                liquidityData?.liqBidData[0].liqPrices
+            ) {
+                for (let index = 0; index < filledTickNumber; index++) {
+                    liquidityData?.liqBidData.unshift({
+                        activeLiq: 30,
+                        liqPrices:
+                            liquidityData?.liqBidData[0]?.liqPrices +
+                            standardDeviation,
+                        deltaAverageUSD: 0,
+                        cumAverageUSD: 0,
+                    });
+
+                    liquidityData?.depthLiqBidData.unshift({
+                        activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
+                        liqPrices:
+                            liquidityData?.depthLiqBidData[0]?.liqPrices +
+                            standardDeviation,
+                        deltaAverageUSD: 0,
+                        cumAverageUSD: 0,
+                    });
+                }
+            }
+        }
+    };
+
     const setDefaultRangeData = () => {
         if (scaleData) {
             const maxPrice =
@@ -1568,35 +1606,7 @@ export default function Chart(props: propsIF) {
                                     const liqBidDeviation =
                                         standardDeviation(liqAllBidPrices);
 
-                                    while (
-                                        scaleData?.yScale.domain()[1] +
-                                            liqBidDeviation >=
-                                        liquidityData?.liqBidData[0].liqPrices
-                                    ) {
-                                        liquidityData?.liqBidData.unshift({
-                                            activeLiq: 30,
-                                            liqPrices:
-                                                liquidityData?.liqBidData[0]
-                                                    .liqPrices +
-                                                liqBidDeviation,
-                                            deltaAverageUSD: 0,
-                                            cumAverageUSD: 0,
-                                        });
-
-                                        liquidityData?.depthLiqBidData.unshift({
-                                            activeLiq:
-                                                liquidityData
-                                                    ?.depthLiqBidData[1]
-                                                    .activeLiq,
-                                            liqPrices:
-                                                liquidityData
-                                                    ?.depthLiqBidData[0]
-                                                    .liqPrices +
-                                                liqBidDeviation,
-                                            deltaAverageUSD: 0,
-                                            cumAverageUSD: 0,
-                                        });
-                                    }
+                                    fillLiqAdvanced(liqBidDeviation, scaleData);
 
                                     setLiqHighlightedLinesAndArea(ranges);
                                 }
@@ -1680,8 +1690,6 @@ export default function Chart(props: propsIF) {
                     }
 
                     props.setShowTooltip(true);
-
-                    setIsMouseMoveCrosshair(false);
                 }) as any;
 
             let firstLocation: any;
@@ -1849,29 +1857,7 @@ export default function Chart(props: propsIF) {
                         const liqBidDeviation =
                             standardDeviation(liqAllBidPrices);
 
-                        while (
-                            scaleData?.yScale.domain()[1] + liqBidDeviation >=
-                            liquidityData?.liqBidData[0].liqPrices
-                        ) {
-                            liquidityData?.liqBidData.unshift({
-                                activeLiq: 30,
-                                liqPrices:
-                                    liquidityData?.liqBidData[0].liqPrices +
-                                    liqBidDeviation,
-                                deltaAverageUSD: 0,
-                                cumAverageUSD: 0,
-                            });
-
-                            liquidityData?.depthLiqBidData.unshift({
-                                activeLiq:
-                                    liquidityData?.depthLiqBidData[1].activeLiq,
-                                liqPrices:
-                                    liquidityData?.depthLiqBidData[0]
-                                        .liqPrices + liqBidDeviation,
-                                deltaAverageUSD: 0,
-                                cumAverageUSD: 0,
-                            });
-                        }
+                        fillLiqAdvanced(liqBidDeviation, scaleData);
 
                         setLiqHighlightedLinesAndArea(ranges);
                     }
@@ -2108,29 +2094,7 @@ export default function Chart(props: propsIF) {
                         const liqBidDeviation =
                             standardDeviation(liqAllBidPrices);
 
-                        while (
-                            scaleData?.yScale.domain()[1] + liqBidDeviation >=
-                            liquidityData?.liqBidData[0]?.liqPrices
-                        ) {
-                            liquidityData?.liqBidData.unshift({
-                                activeLiq: 30,
-                                liqPrices:
-                                    liquidityData?.liqBidData[0].liqPrices +
-                                    liqBidDeviation,
-                                deltaAverageUSD: 0,
-                                cumAverageUSD: 0,
-                            });
-
-                            liquidityData?.depthLiqBidData.unshift({
-                                activeLiq:
-                                    liquidityData?.depthLiqBidData[1].activeLiq,
-                                liqPrices:
-                                    liquidityData?.depthLiqBidData[0]
-                                        .liqPrices + liqBidDeviation,
-                                deltaAverageUSD: 0,
-                                cumAverageUSD: 0,
-                            });
-                        }
+                        fillLiqAdvanced(liqBidDeviation, scaleData);
 
                         setLiqHighlightedLinesAndArea(ranges);
                     } else if (location.pathname.includes('/limit')) {
@@ -2251,7 +2215,9 @@ export default function Chart(props: propsIF) {
                     liqData?.liqPrices >= min && liqData?.liqPrices <= max,
             );
             const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-            liquidityDepthScale.domain([0, maxLiq]);
+            if (maxLiq && parseFloat(maxLiq) !== 1) {
+                liquidityDepthScale.domain([0, maxLiq]);
+            }
         } catch (error) {
             console.error({ error });
         }
@@ -2572,29 +2538,7 @@ export default function Chart(props: propsIF) {
             );
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-            while (
-                liquidityData?.liqBidData.length > 0 &&
-                scaleData?.yScale.domain()[1] + liqBidDeviation >=
-                    liquidityData?.liqBidData[0]?.liqPrices
-            ) {
-                liquidityData?.liqBidData.unshift({
-                    activeLiq: 30,
-                    liqPrices:
-                        liquidityData?.liqBidData[0]?.liqPrices +
-                        liqBidDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-
-                liquidityData?.depthLiqBidData.unshift({
-                    activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
-                    liqPrices:
-                        liquidityData?.depthLiqBidData[0]?.liqPrices +
-                        liqBidDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-            }
+            fillLiqAdvanced(liqBidDeviation, scaleData);
 
             setLiqHighlightedLinesAndArea(ranges);
         } else {
@@ -3126,6 +3070,7 @@ export default function Chart(props: propsIF) {
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
+                    const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
                     const limitNonDisplay = denomInBase
                         ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
@@ -3133,7 +3078,6 @@ export default function Chart(props: propsIF) {
 
                     limitNonDisplay?.then((limit) => {
                         limit = limit !== 0 ? limit : 1;
-
                         const pinnedTick: number = isTokenABase
                             ? pinTickLower(limit, chainData.gridSize)
                             : pinTickUpper(limit, chainData.gridSize);
@@ -3171,14 +3115,22 @@ export default function Chart(props: propsIF) {
                                 setghostLineValuesLimit(adjTicks(limitValue));
 
                                 newLimitValue = limitValue;
-
-                                setLimit(() => {
-                                    return [
-                                        { name: 'Limit', value: limitValue },
-                                    ];
-                                });
-
-                                setTriangleLimitValues(limitValue);
+                                if (
+                                    !(
+                                        newLimitValue >= noGoZoneMin &&
+                                        newLimitValue <= noGoZoneMax
+                                    )
+                                ) {
+                                    setLimit(() => {
+                                        return [
+                                            {
+                                                name: 'Limit',
+                                                value: limitValue,
+                                            },
+                                        ];
+                                    });
+                                    setTriangleLimitValues(limitValue);
+                                }
                             });
                         }
                     });
@@ -3658,7 +3610,11 @@ export default function Chart(props: propsIF) {
             }
 
             context.beginPath();
-            if (dateCrosshair) {
+            if (
+                dateCrosshair &&
+                isMouseMoveCrosshair &&
+                isCrosshairActive !== 'none'
+            ) {
                 context.fillText(
                     dateCrosshair,
                     xScale(crosshairData[0].x),
@@ -5566,6 +5522,8 @@ export default function Chart(props: propsIF) {
         ranges,
         reset,
         isDrawAskLiq,
+        liquidityScale,
+        liquidityDepthScale,
     ]);
 
     // NoGoZone
@@ -5599,8 +5557,18 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
                     limitNoGoZone(noGoZoneBoudnaries);
-                    if (ghostLineValuesLimit !== undefined) {
+                    if (
+                        ghostLineValuesLimit !== undefined &&
+                        location.pathname.includes('/limit')
+                    ) {
                         ghostLines(ghostLineValuesLimit);
+                    }
+                    if (
+                        ghostLineValuesRange &&
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition'))
+                    ) {
+                        ghostLines(ghostLineValuesRange);
                     }
                 })
                 .on('measure', () => {
@@ -5608,27 +5576,13 @@ export default function Chart(props: propsIF) {
                     ghostLines.context(ctx);
                 });
         }
-    }, [noGoZoneBoudnaries, limitNoGoZone, ghostLineValuesLimit, ghostLines]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasNoGoZone.current)
-            .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
-
-        if (ghostLines) {
-            d3.select(d3CanvasNoGoZone.current)
-                .on('draw', () => {
-                    if (ghostLineValuesRange !== undefined) {
-                        ghostLines(ghostLineValuesRange);
-                    }
-                })
-                .on('measure', () => {
-                    ghostLines.context(ctx);
-                });
-        }
-    }, [ghostLineValuesRange, ghostLines]);
+    }, [
+        noGoZoneBoudnaries,
+        limitNoGoZone,
+        ghostLineValuesLimit,
+        ghostLines,
+        ghostLineValuesRange,
+    ]);
 
     useEffect(() => {
         if (
@@ -5742,7 +5696,7 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         parsedChartData?.period,
-        parsedChartData?.chartData[0]?.close,
+        JSON.stringify(parsedChartData?.chartData[0]),
     ]);
 
     // Call drawChart()

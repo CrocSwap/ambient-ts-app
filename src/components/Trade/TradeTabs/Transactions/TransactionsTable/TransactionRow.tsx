@@ -38,6 +38,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 export default function TransactionRow(props: propsIF) {
+    // const navigate = useNavigate();
     const {
         account,
         showColumns,
@@ -168,8 +169,9 @@ export default function TransactionRow(props: propsIF) {
             window.open(explorerUrl);
         }
     }
-
+    // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
+    const [valueToCopy, setValueToCopy] = useState('');
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -179,11 +181,12 @@ export default function TransactionRow(props: propsIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {valueToCopy} copied
         </SnackbarComponent>
     );
 
     function handleCopyTxHash() {
+        setValueToCopy(txHash);
         copy(txHash);
 
         setOpenSnackbar(true);
@@ -194,13 +197,21 @@ export default function TransactionRow(props: propsIF) {
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
 
+    function handleWalletCopy() {
+        setValueToCopy(ownerId);
+        copy(ownerId);
+
+        setOpenSnackbar(true);
+    }
+
     const handleWalletClick = () => {
-        dispatch(
-            setDataLoadingStatus({
-                datasetName: 'lookupUserTxData',
-                loadingStatus: true,
-            }),
-        );
+        if (!isOnPortfolioPage)
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'lookupUserTxData',
+                    loadingStatus: true,
+                }),
+            );
 
         const accountUrl = `/${
             isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
@@ -262,6 +273,9 @@ export default function TransactionRow(props: propsIF) {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedDisplayPrice,
+
+        handleWalletClick,
+        handleWalletCopy,
     };
 
     const {
@@ -303,8 +317,8 @@ export default function TransactionRow(props: propsIF) {
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && showPair && tokenPair}
-            {!showColumns && IDWithTooltip}
-            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
+            {!showColumns && <li>{IDWithTooltip}</li>}
+            {!showColumns && !isOnPortfolioPage && <li>{walletWithTooltip}</li>}
             {showColumns && txIdColumnComponent}
             {!ipadView &&
                 (tx.entityType === 'liqchange'

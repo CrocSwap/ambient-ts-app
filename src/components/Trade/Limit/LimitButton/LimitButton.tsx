@@ -6,6 +6,7 @@ interface propsIF {
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
     isBypassConfirmEnabled: boolean;
+    areBothAckd: boolean;
 }
 
 export default function LimitButton(props: propsIF) {
@@ -14,6 +15,7 @@ export default function LimitButton(props: propsIF) {
         limitAllowed,
         limitButtonErrorMessage,
         isBypassConfirmEnabled,
+        areBothAckd,
     } = props;
 
     // TODO:  @Junior do we need the top-level `<div>` here or can it be eliminated
@@ -23,14 +25,16 @@ export default function LimitButton(props: propsIF) {
         <div className={styles.button_container}>
             <Button
                 title={
-                    limitAllowed
-                        ? isBypassConfirmEnabled
-                            ? 'Send Limit'
-                            : 'Open Confirmation'
-                        : limitButtonErrorMessage
+                    areBothAckd
+                        ? limitAllowed
+                            ? isBypassConfirmEnabled
+                                ? 'Send Limit'
+                                : 'Open Confirmation'
+                            : limitButtonErrorMessage
+                        : 'Acknowledge'
                 }
                 action={onClickFn}
-                disabled={!limitAllowed}
+                disabled={!limitAllowed && areBothAckd}
                 flat
             />
         </div>

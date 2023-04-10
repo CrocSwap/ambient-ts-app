@@ -83,7 +83,6 @@ export default function RangeCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
-                required
                 autoFocus={fieldId === 'A'}
             />
         </div>

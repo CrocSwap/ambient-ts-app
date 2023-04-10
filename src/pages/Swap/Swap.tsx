@@ -1,9 +1,14 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    ChainSpec,
+    CrocImpact,
+    CrocPoolView,
+} from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -38,7 +43,7 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
@@ -47,6 +52,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../constants';
+import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -102,16 +108,19 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     dexBalancePrefs: allDexBalanceMethodsIF;
     bypassConfirm: allSkipConfirmMethodsIF;
+    ackTokens: ackTokensMethodsIF;
+    chainData: ChainSpec;
+    pool: CrocPoolView | undefined;
 }
 
 export default function Swap(props: propsIF) {
     const {
+        pool,
         crocEnv,
         isUserLoggedIn,
         account,
@@ -150,12 +159,13 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         lastBlockNumber,
         tokenPairLocal,
         dexBalancePrefs,
         bypassConfirm,
+        ackTokens,
+        chainData,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -530,6 +540,7 @@ export default function Swap(props: propsIF) {
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
     const confirmSwapModalProps = {
+        pool: pool,
         poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
@@ -556,6 +567,7 @@ export default function Swap(props: propsIF) {
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
         bypassConfirm: bypassConfirm,
+        lastBlockNumber: lastBlockNumber,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -734,11 +746,11 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         dexBalancePrefs: dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        ackTokens: ackTokens,
     };
 
     const handleSwapButtonClickWithBypass = () => {
@@ -787,6 +799,56 @@ export default function Swap(props: propsIF) {
                 </div>
             </div>
         ) : null;
+
+    // logic to determine if a given token is acknowledged or on a list
+    const isTokenUnknown = (tkn: TokenIF): boolean => {
+        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
+        const isListed: boolean = verifyToken(tkn.address, chainId);
+        return !isAckd && !isListed;
+    };
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+
+    // token acknowledgement needed message (empty string if none needed)
+    const ackTokenMessage = useMemo<string>(() => {
+        // !Important   any changes to verbiage in this code block must be approved
+        // !Important   ... by Doug, get in writing by email or request specific
+        // !Important   ... review for a pull request on GitHub
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } and ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA) {
+            text = `The token ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenB) {
+            text = `The token ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+    };
 
     return (
         <FocusTrap
@@ -859,9 +921,12 @@ export default function Swap(props: propsIF) {
                                         // user has hide confirmation modal off
                                         <SwapButton
                                             onClickFn={
-                                                bypassConfirm.swap.isEnabled
-                                                    ? handleSwapButtonClickWithBypass
-                                                    : openModal
+                                                areBothAckd
+                                                    ? bypassConfirm.swap
+                                                          .isEnabled
+                                                        ? handleSwapButtonClickWithBypass
+                                                        : openModal
+                                                    : ackAsNeeded
                                             }
                                             swapAllowed={
                                                 swapAllowed &&
@@ -874,6 +939,7 @@ export default function Swap(props: propsIF) {
                                             bypassConfirmSwap={
                                                 bypassConfirm.swap
                                             }
+                                            areBothAckd={areBothAckd}
                                         />
                                     ) : (
                                         // user has hide confirmation modal on
@@ -881,6 +947,52 @@ export default function Swap(props: propsIF) {
                                             {...confirmSwapModalProps}
                                         />
                                     )}
+                                    {ackTokenMessage && (
+                                        <p
+                                            className={styles.acknowledge_text}
+                                            dangerouslySetInnerHTML={{
+                                                __html: formattedAckTokenMessage,
+                                            }}
+                                        ></p>
+                                    )}
+                                    <div
+                                        className={
+                                            styles.acknowledge_etherscan_links
+                                        }
+                                    >
+                                        {needConfirmTokenA && (
+                                            <a
+                                                href={
+                                                    chainData.blockExplorer +
+                                                    'token/' +
+                                                    tokenPair.dataTokenA.address
+                                                }
+                                                rel={'noopener noreferrer'}
+                                                target='_blank'
+                                            >
+                                                {tokenPair.dataTokenA.symbol ||
+                                                    tokenPair.dataTokenA
+                                                        .name}{' '}
+                                                <FiExternalLink />
+                                            </a>
+                                        )}
+                                        {needConfirmTokenB && (
+                                            <a
+                                                href={
+                                                    chainData.blockExplorer +
+                                                    'token/' +
+                                                    tokenPair.dataTokenB.address
+                                                }
+                                                rel={'noopener noreferrer'}
+                                                target='_blank'
+                                            >
+                                                {tokenPair.dataTokenB.symbol ||
+                                                    tokenPair.dataTokenB
+                                                        .name}{' '}
+                                                <FiExternalLink />
+                                            </a>
+                                        )}
+                                    </div>
                                 </>
                             )
                         ) : (

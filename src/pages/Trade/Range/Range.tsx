@@ -14,6 +14,7 @@ import {
     concDepositSkew,
     capitalConcFactor,
     CrocEnv,
+    ChainSpec,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import FocusTrap from 'focus-trap-react';
@@ -34,7 +35,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -83,6 +84,7 @@ import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     account: string | undefined;
@@ -138,7 +140,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -158,7 +159,9 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
+    ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
+    chainData: ChainSpec;
 }
 
 export default function Range(props: propsIF) {
@@ -209,7 +212,6 @@ export default function Range(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         bypassConfirm,
         dexBalancePrefs,
@@ -223,6 +225,8 @@ export default function Range(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         cachedFetchTokenPrice,
+        ackTokens,
+        chainData,
     } = props;
 
     const [
@@ -1399,9 +1403,9 @@ export default function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
+        ackTokens: ackTokens,
     };
 
     // props for <RangeWidth/> React element
@@ -1437,7 +1441,6 @@ export default function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode={false}
             />
-            {/* <DividerDark addMarginTop /> */}
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1651,8 +1654,57 @@ export default function Range(props: propsIF) {
         </div>
     );
 
-    // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
+
+    // logic to determine if a given token is acknowledged or on a list
+    const isTokenUnknown = (tkn: TokenIF): boolean => {
+        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
+        const isListed: boolean = verifyToken(tkn.address, chainId);
+        return !isAckd && !isListed;
+    };
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+
+    // token acknowledgement needed message (empty string if none needed)
+    const ackTokenMessage = useMemo<string>(() => {
+        // !Important   any changes to verbiage in this code block must be approved
+        // !Important   ... by Doug, get in writing by email or request specific
+        // !Important   ... review for a pull request on GitHub
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } and ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA) {
+            text = `The token ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenB) {
+            text = `The token ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+    };
 
     return (
         <FocusTrap
@@ -1712,26 +1764,76 @@ export default function Range(props: propsIF) {
                                 {...bypassConfirmButtonProps}
                             />
                         ) : (
-                            <RangeButton
-                                onClickFn={
-                                    bypassConfirm.range.isEnabled
-                                        ? handleRangeButtonClickWithBypass
-                                        : openConfirmationModal
-                                }
-                                rangeAllowed={
-                                    poolExists === true &&
-                                    rangeAllowed &&
-                                    !isInvalidRange
-                                }
-                                rangeButtonErrorMessage={
-                                    rangeButtonErrorMessage
-                                }
-                                isBypassConfirmEnabled={
-                                    bypassConfirm.range.isEnabled
-                                }
-                                isAmbient={isAmbient}
-                                isAdd={isAdd}
-                            />
+                            <>
+                                <RangeButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirm.range.isEnabled
+                                                ? handleRangeButtonClickWithBypass
+                                                : openConfirmationModal
+                                            : ackAsNeeded
+                                    }
+                                    rangeAllowed={
+                                        poolExists === true &&
+                                        rangeAllowed &&
+                                        !isInvalidRange
+                                    }
+                                    rangeButtonErrorMessage={
+                                        rangeButtonErrorMessage
+                                    }
+                                    isBypassConfirmEnabled={
+                                        bypassConfirm.range.isEnabled
+                                    }
+                                    isAmbient={isAmbient}
+                                    isAdd={isAdd}
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
+
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                chainData.blockExplorer +
+                                                'token/' +
+                                                tokenPair.dataTokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {tokenPair.dataTokenA.symbol ||
+                                                tokenPair.dataTokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                chainData.blockExplorer +
+                                                'token/' +
+                                                tokenPair.dataTokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {tokenPair.dataTokenB.symbol ||
+                                                tokenPair.dataTokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
                         )
                     ) : (
                         loginButton

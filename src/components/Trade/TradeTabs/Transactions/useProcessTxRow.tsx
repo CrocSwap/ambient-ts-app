@@ -2,8 +2,8 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
-import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+// import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
+// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 
 import {
     DefaultTooltip,
@@ -61,11 +61,13 @@ interface Props {
     openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
+    handleWalletClick: () => void;
+    handleWalletCopy: () => void;
 
     tx: TransactionIF;
 }
 export const useProcessTxRow = (props: Props) => {
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
     const {
         txHash,
@@ -92,7 +94,7 @@ export const useProcessTxRow = (props: Props) => {
         quoteQuantityDisplayShort,
 
         isOwnerActiveAccount,
-        ensName,
+        // ensName,
         ownerId,
 
         sideType,
@@ -114,6 +116,9 @@ export const useProcessTxRow = (props: Props) => {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedDisplayPrice,
+
+        handleWalletClick,
+        handleWalletCopy,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -134,18 +139,18 @@ export const useProcessTxRow = (props: Props) => {
                     />
                 </div>
             } // invisible space character added
-            placement={'left'}
+            placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
                 tabIndex={0}
             >
                 {txHashTruncated}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
@@ -163,8 +168,64 @@ export const useProcessTxRow = (props: Props) => {
         </li>
     );
 
-    const walletWithTooltip = (
-        <li
+    const actualWalletWithTooltip = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginRight: '-80px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'default',
+                    }}
+                >
+                    <p
+                        style={{
+                            fontFamily: 'monospace',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            whiteSpace: 'nowrap',
+
+                            gap: '4px',
+                        }}
+                    >
+                        {ownerId}
+                        <FiCopy
+                            style={{ cursor: 'pointer' }}
+                            size={'12px'}
+                            onClick={() => handleWalletCopy()}
+                        />
+
+                        <FiExternalLink
+                            style={{ cursor: 'pointer' }}
+                            size={'12px'}
+                            onClick={handleWalletClick}
+                        />
+                    </p>
+                </div>
+            }
+            placement={'right'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <p
+                onClick={openDetailsModal}
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            >
+                {userNameToDisplay}
+            </p>
+        </TextOnlyTooltip>
+    );
+
+    const walletWithoutTooltip = (
+        <p
+            // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
@@ -172,8 +233,12 @@ export const useProcessTxRow = (props: Props) => {
             tabIndex={0}
         >
             {userNameToDisplay}
-        </li>
+        </p>
     );
+
+    const walletWithTooltip = isOwnerActiveAccount
+        ? walletWithoutTooltip
+        : actualWalletWithTooltip;
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
@@ -350,81 +415,10 @@ export const useProcessTxRow = (props: Props) => {
     );
 
     const txIdColumnComponent = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginLeft: '-40px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontFamily: 'monospace',
-                        whiteSpace: 'nowrap',
-                        width: '450px',
-                    }}
-                >
-                    {txHash + 'ㅤ'}
-                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
-                    <FiExternalLink
-                        size={'12px'}
-                        onClick={handleOpenExplorer}
-                    />
-                </div>
-            } // invisible space character added
-            placement={'left'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li data-label='id'>
-                <p
-                    onClick={() => {
-                        handleOpenExplorer();
-                    }}
-                    className={`base_color ${styles.hover_style} ${styles.mono_font}`}
-                >
-                    {txHashTruncated}
-                </p>{' '}
-                {isOnPortfolioPage ? (
-                    <p
-                        className={`${usernameStyle}`}
-                        style={{
-                            textTransform: 'lowercase',
-                            cursor: 'default',
-                        }}
-                    >
-                        {userNameToDisplay}
-                    </p>
-                ) : (
-                    <NavLink
-                        onClick={() => {
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'lookupUserTxData',
-                                    loadingStatus: true,
-                                }),
-                            );
-                        }}
-                        to={`/${
-                            isOwnerActiveAccount
-                                ? 'account'
-                                : ensName
-                                ? ensName
-                                : ownerId
-                        }`}
-                    >
-                        <p
-                            className={`${usernameStyle} ${styles.hover_style}`}
-                            style={{ textTransform: 'lowercase' }}
-                        >
-                            {userNameToDisplay}
-                        </p>
-                    </NavLink>
-                )}
-            </li>
-        </TextOnlyTooltip>
+        <li>
+            {IDWithTooltip}
+            {walletWithTooltip}
+        </li>
     );
 
     const sideDisplay = (
