@@ -40,29 +40,45 @@ export const useAppChain = (
         validateChainId(defaultChain),
     );
 
+    // This is crude way to handle a chain switch, but without this there is a
+    // a lot of dangling providers pointing to the wrong chain that will error and
+    // time out, slowing down app performance
+    function nukeAndReloadApp() {
+        navigate('/');
+        window.location.reload();
+    }
+
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
-        if (isUserLoggedIn) {
-            if (chainId && chainId !== currentChain) {
-                if (validateChainId(chainId)) {
-                    setCurrentChain(chainId);
+        // If wallet is connected, don't worry about validating chain, should
+        // be correct be default
+        if (!isUserLoggedIn) {
+            return;
+        }
 
-                    if (validateChainId(currentChain)) {
-                        navigate('/');
-                        window.location.reload();
-                    }
-                } else if (!validateChainId(chainId)) {
-                    setIsChainSupported(false);
-                } else {
-                    console.error(
-                        `Issue validating network. Received value <<${chainId}>>. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`,
-                    );
-                }
-            } else if (chainId === currentChain) {
+        // Logic to run if the chain ID has switched
+        if (chainId && chainId !== currentChain) {
+            /* Core of this logic is that currentChain *only* updates when chain
+             * has switched to a supported chain. Three type of user-initiated chain
+             * chain switches are possible:
+             *
+             *    1) Valid -> valid chain switch: Reset entire app (see comments above) */
+            if (validateChainId(chainId) && validateChainId(currentChain)) {
+                nukeAndReloadApp();
+
+                /*    2) Invalid -> valid chain switch: Update currentChain, which cascades app
+                 *                  back to valid state */
+            } else if (validateChainId(chainId)) {
+                setCurrentChain(chainId);
                 setIsChainSupported(true);
+
+                /*    3) Valid/invalid -> invalid chain switch: Turn off isChainSupported, which
+                 *                        triggers blocking downstream */
+            } else {
+                setIsChainSupported(false);
             }
         }
     }, [chainId, currentChain, isUserLoggedIn]);

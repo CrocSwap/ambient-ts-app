@@ -15,6 +15,9 @@ export interface recentPoolsMethodsIF {
     resetPools: () => void;
 }
 
+// Hook for maintaining a list of pools the user has accessed during this session.
+// Pools are sorted in order from most recently to least recently used. Viewing any
+//  pool-related page will bump that pool to the front of the list.
 export const useRecentPools = (
     chainId: string,
     tokenA: TokenIF,
@@ -77,10 +80,12 @@ export const useRecentPools = (
         }
 
         if (recentPools.length == 0) {
+            // Initialize empty list
             setRecentPools([nextPool]);
         } else if (poolMatches(recentPools[0])) {
             // Do nothing because front matches
         } else {
+            // Remove the pool (if previously present) and move to the front of the list
             const removed = recentPools.filter((pool) => !poolMatches(pool));
             setRecentPools([nextPool, ...removed]);
         }

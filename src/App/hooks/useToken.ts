@@ -1,13 +1,24 @@
 import { useTokenMap } from '../../utils/hooks/useTokenMap';
 import { TokenIF } from '../../utils/interfaces/exports';
 
+/* Hook to manage, search, and verify against the user's token universe. */
 export const useToken = (
     chainId: string,
 ): [
+    // Function for verifyng whether a given token exists in the universe
     verifyToken: (addr: string, chn: string) => boolean,
+
+    // Returns all the tokens specifically defined in the Ambient token list
     getAmbientTokens: () => TokenIF[],
+
+    // Returns all tokens in universe on a specific chain
     getTokensOnChain: (chn: string) => TokenIF[],
+
+    // Looks up a specific token in the universe and returns metadata for it
     getToken: (addr: string, chn: string) => TokenIF | undefined,
+
+    // Allows for a search by name or symbol, either with an exact or partial
+    // match
     getTokensByName: (
         searchName: string,
         chn: string,
@@ -113,7 +124,6 @@ export const useToken = (
         return [...exactMatches, ...partialMatches];
     };
 
-    // return functions to verify a token and retrieve token metadata
     return [
         verifyToken,
         getAmbientTokens,
