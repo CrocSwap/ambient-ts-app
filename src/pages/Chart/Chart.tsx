@@ -5615,8 +5615,18 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
                     limitNoGoZone(noGoZoneBoudnaries);
-                    if (ghostLineValuesLimit !== undefined) {
+                    if (
+                        ghostLineValuesLimit !== undefined &&
+                        location.pathname.includes('/limit')
+                    ) {
                         ghostLines(ghostLineValuesLimit);
+                    }
+                    if (
+                        ghostLineValuesRange &&
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition'))
+                    ) {
+                        ghostLines(ghostLineValuesRange);
                     }
                 })
                 .on('measure', () => {
@@ -5624,27 +5634,13 @@ export default function Chart(props: propsIF) {
                     ghostLines.context(ctx);
                 });
         }
-    }, [noGoZoneBoudnaries, limitNoGoZone, ghostLineValuesLimit, ghostLines]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasNoGoZone.current)
-            .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
-
-        if (ghostLines) {
-            d3.select(d3CanvasNoGoZone.current)
-                .on('draw', () => {
-                    if (ghostLineValuesRange !== undefined) {
-                        ghostLines(ghostLineValuesRange);
-                    }
-                })
-                .on('measure', () => {
-                    ghostLines.context(ctx);
-                });
-        }
-    }, [ghostLineValuesRange, ghostLines]);
+    }, [
+        noGoZoneBoudnaries,
+        limitNoGoZone,
+        ghostLineValuesLimit,
+        ghostLines,
+        ghostLineValuesRange,
+    ]);
 
     useEffect(() => {
         if (
@@ -5758,7 +5754,7 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         parsedChartData?.period,
-        parsedChartData?.chartData[0]?.close,
+        JSON.stringify(parsedChartData?.chartData[0]),
     ]);
 
     // Call drawChart()
