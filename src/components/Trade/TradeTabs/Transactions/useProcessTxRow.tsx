@@ -16,19 +16,14 @@ import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 
 interface Props {
-    txHash: string;
     txHashTruncated: string;
     sideTypeStyle: string;
     usdValue: string;
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
-    baseTokenSymbol: string;
-    baseTokenAddress: string;
     baseQuantityDisplayShort: string;
     quoteTokenLogo: string;
-    quoteTokenSymbol: string;
-    quoteTokenAddress: string;
     quoteQuantityDisplayShort: string;
     elapsedTimeString: string;
     sideType: string;
@@ -70,7 +65,6 @@ export const useProcessTxRow = (props: Props) => {
     // const dispatch = useAppDispatch();
 
     const {
-        txHash,
         handleCopyTxHash,
         handleOpenExplorer,
         txHashTruncated,
@@ -82,11 +76,7 @@ export const useProcessTxRow = (props: Props) => {
         usernameStyle,
         userNameToDisplay,
         baseTokenLogo,
-        baseTokenSymbol,
-        baseTokenAddress,
         quoteTokenLogo,
-        quoteTokenSymbol,
-        quoteTokenAddress,
         isOnPortfolioPage,
         tx,
         elapsedTimeString,
@@ -131,7 +121,7 @@ export const useProcessTxRow = (props: Props) => {
             interactive
             title={
                 <div className={styles.id_tooltip_style}>
-                    {txHash + 'ㅤ'}
+                    {tx.tx + 'ㅤ'}
                     <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                     <FiExternalLink
                         size={'12px'}
@@ -246,12 +236,8 @@ export const useProcessTxRow = (props: Props) => {
                 interactive
                 title={
                     <p>
-                        {baseTokenSymbol}
-                        {`${
-                            baseTokenSymbol === 'ETH'
-                                ? ''
-                                : ': ' + baseTokenAddress
-                        }`}
+                        {tx.baseSymbol}
+                        {`${tx.baseSymbol === 'ETH' ? '' : ': ' + tx.base}`}
                     </p>
                 }
                 placement={'left'}
@@ -264,7 +250,7 @@ export const useProcessTxRow = (props: Props) => {
             </DefaultTooltip>
         ) : (
             <IconWithTooltip
-                title={`${baseTokenSymbol}: ${baseTokenAddress}`}
+                title={`${tx.baseSymbol}: ${tx.base}`}
                 placement='bottom'
             >
                 <NoTokenIcon
@@ -280,7 +266,7 @@ export const useProcessTxRow = (props: Props) => {
                 interactive
                 title={
                     <div>
-                        {quoteTokenSymbol}: {quoteTokenAddress}
+                        {tx.quoteSymbol}: {tx.quote}
                     </div>
                 }
                 placement={'left'}
@@ -293,7 +279,7 @@ export const useProcessTxRow = (props: Props) => {
             </DefaultTooltip>
         ) : (
             <IconWithTooltip
-                title={`${quoteTokenSymbol}: ${quoteTokenAddress}`}
+                title={`${tx.quoteSymbol}: ${tx.quote}`}
                 placement='right'
             >
                 <NoTokenIcon
@@ -328,7 +314,7 @@ export const useProcessTxRow = (props: Props) => {
             onMouseLeave={handleRowMouseOut}
         >
             <NavLink to={tradeLinkPath}>
-                {baseTokenSymbol} / {quoteTokenSymbol}
+                {tx.baseSymbol} / {tx.quoteSymbol}
             </NavLink>
         </li>
     );
@@ -370,7 +356,7 @@ export const useProcessTxRow = (props: Props) => {
     const baseQtyDisplayWithTooltip = (
         <li
             onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
+            data-label={tx.baseSymbol}
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
@@ -393,7 +379,7 @@ export const useProcessTxRow = (props: Props) => {
     const quoteQtyDisplayWithTooltip = (
         <li
             onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
+            data-label={tx.quoteSymbol}
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
@@ -439,7 +425,7 @@ export const useProcessTxRow = (props: Props) => {
 
     const baseQuoteQtyDisplayColumn = (
         <li
-            data-label={baseTokenSymbol + quoteTokenSymbol}
+            data-label={tx.baseSymbol + tx.quoteSymbol}
             className='color_white'
             style={{ textAlign: 'right' }}
             onClick={() => {
