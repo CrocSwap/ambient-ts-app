@@ -632,7 +632,31 @@ export default function Transactions(props: propsIF) {
         </div>
     );
 
-    const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
+    const currentRowItemContent = currentTransactions.map((tx, idx) => (
+        <TransactionRow
+            account={account}
+            key={idx}
+            tx={tx}
+            tradeData={tradeData}
+            isTokenABase={isTokenABase}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+            openGlobalModal={openGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            view2={view2}
+            showPair={showPair}
+            showSidebar={showSidebar}
+            blockExplorer={blockExplorer}
+            closeGlobalModal={closeGlobalModal}
+            isOnPortfolioPage={isOnPortfolioPage}
+            handlePulseAnimation={handlePulseAnimation}
+            setSimpleRangeWidth={setSimpleRangeWidth}
+            chainData={chainData}
+        />
+    ));
+    const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
         <TransactionRow
             account={account}
             key={idx}
@@ -697,7 +721,11 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDown}>
-            <ul ref={listRef}>{rowItemContent}</ul>
+            <ul ref={listRef}>
+                {usePaginateDataOrNull
+                    ? currentRowItemContent
+                    : sortedRowItemContent}
+            </ul>
         </div>
     );
 
