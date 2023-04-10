@@ -143,12 +143,11 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
     ) : (
         <div>
             <DividerDark />
-            <Row>
-                <div className={styles.token_price}>
-                    Ambient position rewards are compounded back into the
-                    original position
-                </div>
-            </Row>
+
+            <div className={styles.ambi_info_text}>
+                Ambient position rewards are compounded back into the original
+                position and included in the amounts above.
+            </div>
         </div>
     );
 
