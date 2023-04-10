@@ -2251,7 +2251,9 @@ export default function Chart(props: propsIF) {
                     liqData?.liqPrices >= min && liqData?.liqPrices <= max,
             );
             const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-            liquidityDepthScale.domain([0, maxLiq]);
+            if (maxLiq && parseFloat(maxLiq) !== 1) {
+                liquidityDepthScale.domain([0, maxLiq]);
+            }
         } catch (error) {
             console.error({ error });
         }
@@ -3126,6 +3128,7 @@ export default function Chart(props: propsIF) {
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     newLimitValue = setLimitForNoGoZone(newLimitValue);
+                    const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
                     const limitNonDisplay = denomInBase
                         ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
@@ -3133,7 +3136,6 @@ export default function Chart(props: propsIF) {
 
                     limitNonDisplay?.then((limit) => {
                         limit = limit !== 0 ? limit : 1;
-
                         const pinnedTick: number = isTokenABase
                             ? pinTickLower(limit, chainData.gridSize)
                             : pinTickUpper(limit, chainData.gridSize);
@@ -3171,14 +3173,22 @@ export default function Chart(props: propsIF) {
                                 setghostLineValuesLimit(adjTicks(limitValue));
 
                                 newLimitValue = limitValue;
-
-                                setLimit(() => {
-                                    return [
-                                        { name: 'Limit', value: limitValue },
-                                    ];
-                                });
-
-                                setTriangleLimitValues(limitValue);
+                                if (
+                                    !(
+                                        newLimitValue >= noGoZoneMin &&
+                                        newLimitValue <= noGoZoneMax
+                                    )
+                                ) {
+                                    setLimit(() => {
+                                        return [
+                                            {
+                                                name: 'Limit',
+                                                value: limitValue,
+                                            },
+                                        ];
+                                    });
+                                    setTriangleLimitValues(limitValue);
+                                }
                             });
                         }
                     });
@@ -5566,6 +5576,8 @@ export default function Chart(props: propsIF) {
         ranges,
         reset,
         isDrawAskLiq,
+        liquidityScale,
+        liquidityDepthScale,
     ]);
 
     // NoGoZone
