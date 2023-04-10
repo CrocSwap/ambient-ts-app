@@ -659,6 +659,7 @@ export default function RemoveRange(props: propsIF) {
                     removalPercentage={removalPercentage}
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
+                    isAmbient={props.isAmbient}
                 />
                 <ExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>

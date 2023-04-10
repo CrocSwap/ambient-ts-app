@@ -15,6 +15,7 @@ interface IRemoveRangeInfoProps {
     removalPercentage: number;
     baseRemovalNum: number;
     quoteRemovalNum: number;
+    isAmbient: boolean;
 }
 
 export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
@@ -29,6 +30,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         feeLiqQuoteDecimalCorrected,
         baseRemovalNum,
         quoteRemovalNum,
+        isAmbient,
     } = props;
 
     const liqBaseDisplay =
@@ -117,6 +119,39 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                   })
             : '0';
 
+    const rewardsEarnedSection = !isAmbient ? (
+        <div>
+            <DividerDark />
+            <Row>
+                <span>{baseTokenSymbol} Rewards Earned</span>
+                <div className={styles.token_price}>
+                    {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
+                    <img src={baseTokenLogoURI} alt='' />
+                </div>
+            </Row>
+            {/*  */}
+            <Row>
+                <span>{quoteTokenSymbol} Rewards Earned</span>
+                <div className={styles.token_price}>
+                    {feeLiqQuoteDisplay !== undefined
+                        ? feeLiqQuoteDisplay
+                        : '…'}
+                    <img src={quoteTokenLogoURI} alt='' />
+                </div>
+            </Row>
+        </div>
+    ) : (
+        <div>
+            <DividerDark />
+            <Row>
+                <div className={styles.token_price}>
+                    Ambient position rewards are compounded back into the
+                    original position
+                </div>
+            </Row>
+        </div>
+    );
+
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
@@ -136,26 +171,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     </div>
                 </Row>
                 {/*  */}
-                <DividerDark />
-                <Row>
-                    <span>{baseTokenSymbol} Rewards Earned</span>
-                    <div className={styles.token_price}>
-                        {feeLiqBaseDisplay !== undefined
-                            ? feeLiqBaseDisplay
-                            : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
-                    </div>
-                </Row>
-                {/*  */}
-                <Row>
-                    <span>{quoteTokenSymbol} Rewards Earned</span>
-                    <div className={styles.token_price}>
-                        {feeLiqQuoteDisplay !== undefined
-                            ? feeLiqQuoteDisplay
-                            : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
-                    </div>
-                </Row>
+                {rewardsEarnedSection}
                 <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
