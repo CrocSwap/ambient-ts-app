@@ -511,6 +511,7 @@ export default function TradeTabs2(props: propsIF) {
         setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         simplifyVersion: true,
+        chainData: chainData,
     };
 
     // data for headings of each of the three tabs

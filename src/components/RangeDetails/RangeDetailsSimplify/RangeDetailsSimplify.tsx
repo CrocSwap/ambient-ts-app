@@ -23,11 +23,18 @@ interface RangeDetailsSimplifyPropsIF {
     account: string;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
+    isOnPortfolioPage: boolean;
 }
 export default function RangeDetailsSimplify(
     props: RangeDetailsSimplifyPropsIF,
 ) {
-    const { account, position, baseFeesDisplay, quoteFeesDisplay } = props;
+    const {
+        account,
+        position,
+        baseFeesDisplay,
+        quoteFeesDisplay,
+        isOnPortfolioPage,
+    } = props;
 
     const {
         userNameToDisplay,
@@ -52,7 +59,7 @@ export default function RangeDetailsSimplify(
         tokenBAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-    } = useProcessRange(position, account);
+    } = useProcessRange(position, account, isOnPortfolioPage);
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -254,14 +261,14 @@ export default function RangeDetailsSimplify(
         //     explanation: 'this is explanation',
         // },
         {
-            title: 'Token 1 Unclaimed Fees ',
+            title: 'Token 1 Unclaimed Rewards ',
             content: baseFeesDisplay + ' ' + baseTokenSymbol,
-            explanation: 'Token #1 unclaimed fees',
+            explanation: 'Token #1 unclaimed rewards',
         },
         {
-            title: 'Token 2 Unclaimed Fees ',
+            title: 'Token 2 Unclaimed Rewards ',
             content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
-            explanation: 'Token #2 unclaimed fees',
+            explanation: 'Token #2 unclaimed rewards',
         },
         // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
         {

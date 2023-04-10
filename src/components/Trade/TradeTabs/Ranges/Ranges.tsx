@@ -444,15 +444,7 @@ export default function Ranges(props: propsIF) {
             slug: 'status',
             sortable: true,
         },
-        {
-            name: '',
 
-            show: !isOnPortfolioPage && isShowAllEnabled,
-
-            slug: 'walletLink',
-            sortable: false,
-            alignRight: true,
-        },
         {
             name: '',
             className: '',
