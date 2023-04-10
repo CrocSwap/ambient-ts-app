@@ -42,6 +42,8 @@ interface Props {
     negativeDisplayStyle: string;
     negativeArrow: string;
 
+    type: string;
+
     isOwnerActiveAccount: boolean;
     isOnPortfolioPage: boolean;
     isBuy: boolean;
@@ -97,6 +99,7 @@ export const useProcessTxRow = (props: Props) => {
         positiveDisplayStyle,
         negativeDisplayStyle,
         negativeArrow,
+        type,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -511,6 +514,38 @@ export const useProcessTxRow = (props: Props) => {
         </li>
     );
 
+    const typeDisplay = (
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={openDetailsModal}
+            data-label='type'
+            className={sideTypeStyle}
+            style={{ textAlign: 'center' }}
+            tabIndex={0}
+        >
+            {type}
+        </li>
+    );
+
+    const typeAndSideColumn = (
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            data-label='side-type'
+            className={sideTypeStyle}
+            style={{ textAlign: 'center' }}
+            onClick={openDetailsModal}
+        >
+            <p>{type}</p>
+            <p>
+                {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                    ? `${sideType}`
+                    : `${sideType} ${sideCharacter}`}
+            </p>
+        </li>
+    );
+
     return {
         IDWithTooltip,
         usdValueWithTooltip,
@@ -526,5 +561,7 @@ export const useProcessTxRow = (props: Props) => {
         txIdColumnComponent,
         sideDisplay,
         baseQuoteQtyDisplayColumn,
+        typeDisplay,
+        typeAndSideColumn,
     };
 };

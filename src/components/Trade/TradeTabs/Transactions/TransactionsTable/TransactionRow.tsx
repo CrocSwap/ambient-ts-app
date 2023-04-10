@@ -515,6 +515,7 @@ export default function TransactionRow(props: propsIF) {
         positiveDisplayStyle,
         negativeDisplayStyle,
         negativeArrow,
+        type,
     };
 
     const {
@@ -532,6 +533,8 @@ export default function TransactionRow(props: propsIF) {
         TxTimeWithTooltip,
         sideDisplay,
         baseQuoteQtyDisplayColumn,
+        typeDisplay,
+        typeAndSideColumn,
     } = useProcessTxRow(useProcessTxRowProps);
 
     // const txIdColumnComponent = (
@@ -701,35 +704,28 @@ export default function TransactionRow(props: propsIF) {
                         className={`${styles.align_right}  ${sideTypeStyle}`}
                         tabIndex={0}
                     >
-                        {isOnPortfolioPage
-                            ? (
-                                  <p className={`${styles.align_right} `}>
-                                      <span>
-                                          {truncatedDisplayPriceDenomByMoneyness
-                                              ? priceCharacter
-                                              : '…'}
-                                      </span>
-                                      <span>
-                                          {
-                                              truncatedDisplayPriceDenomByMoneyness
-                                          }
-                                      </span>
-                                  </p>
-                              ) || '…'
-                            : (
-                                  <p className={`${styles.align_right} `}>
-                                      <span>
-                                          {truncatedDisplayPrice
-                                              ? priceCharacter
-                                              : '…'}
-                                      </span>
-                                      <span>{truncatedDisplayPrice}</span>
-                                  </p>
-                              ) || '…'}
+                        {(
+                            <p className={`${styles.align_right} `}>
+                                <span>
+                                    {(
+                                        isOnPortfolioPage
+                                            ? truncatedDisplayPriceDenomByMoneyness
+                                            : truncatedDisplayPrice
+                                    )
+                                        ? priceCharacter
+                                        : '…'}
+                                </span>
+                                <span>
+                                    {isOnPortfolioPage
+                                        ? truncatedDisplayPriceDenomByMoneyness
+                                        : truncatedDisplayPrice}
+                                </span>
+                            </p>
+                        ) || '…'}
                     </li>
                 ))}
-            {!showColumns &&
-                sideDisplay
+            {
+                !showColumns && sideDisplay
                 // <li
                 //     onMouseEnter={handleRowMouseDown}
                 //     onMouseLeave={handleRowMouseOut}
@@ -745,42 +741,45 @@ export default function TransactionRow(props: propsIF) {
                 //         : `${sideType} ${sideCharacter}`}
                 // </li>
             }
-            {!showColumns && (
-                <li
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                    onClick={openDetailsModal}
-                    data-label='type'
-                    className={sideTypeStyle}
-                    style={{ textAlign: 'center' }}
-                    tabIndex={0}
-                >
-                    {type}
-                </li>
-            )}
-            {showColumns && !ipadView && (
-                <li
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                    data-label='side-type'
-                    className={sideTypeStyle}
-                    style={{ textAlign: 'center' }}
-                    onClick={openDetailsModal}
-                >
-                    <p>{type}</p>
-                    <p>
-                        {tx.entityType === 'liqchange' ||
-                        tx.entityType === 'limitOrder'
-                            ? `${sideType}`
-                            : `${sideType} ${sideCharacter}`}
-                    </p>
-                </li>
-            )}
+            {!showColumns &&
+                typeDisplay
+                // <li
+                //     onMouseEnter={handleRowMouseDown}
+                //     onMouseLeave={handleRowMouseOut}
+                //     onClick={openDetailsModal}
+                //     data-label='type'
+                //     className={sideTypeStyle}
+                //     style={{ textAlign: 'center' }}
+                //     tabIndex={0}
+                // >
+                //     {type}
+                // </li>
+            }
+            {showColumns &&
+                !ipadView &&
+                typeAndSideColumn
+                // <li
+                //     onMouseEnter={handleRowMouseDown}
+                //     onMouseLeave={handleRowMouseOut}
+                //     data-label='side-type'
+                //     className={sideTypeStyle}
+                //     style={{ textAlign: 'center' }}
+                //     onClick={openDetailsModal}
+                // >
+                //     <p>{type}</p>
+                //     <p>
+                //         {tx.entityType === 'liqchange' ||
+                //         tx.entityType === 'limitOrder'
+                //             ? `${sideType}`
+                //             : `${sideType} ${sideCharacter}`}
+                //     </p>
+                // </li>
+            }
             {usdValueWithTooltip}
             {!showColumns && baseQtyDisplayWithTooltip}
             {!showColumns && quoteQtyDisplayWithTooltip}
-            {showColumns &&
-                baseQuoteQtyDisplayColumn
+            {
+                showColumns && baseQuoteQtyDisplayColumn
                 // <li
                 //     data-label={baseTokenSymbol + quoteTokenSymbol}
                 //     className='color_white'
