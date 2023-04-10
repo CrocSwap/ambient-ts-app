@@ -114,25 +114,7 @@ export const useProcessOrderRow = (props: Props) => {
         <TextOnlyTooltip
             interactive
             title={
-                <p
-                    style={{
-                        marginLeft: '-60px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
-
-                        fontFamily: 'monospace',
-
-                        whiteSpace: 'nowrap',
-                        width: '440px',
-
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                    }}
-                >
+                <p className={styles.id_tooltip_style}>
                     {posHash}
                     <FiCopy
                         style={{ cursor: 'pointer' }}
@@ -172,29 +154,8 @@ export const useProcessOrderRow = (props: Props) => {
         <TextOnlyTooltip
             interactive
             title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
-
-                        // width: '450px',
-                    }}
-                >
-                    <p
-                        style={{
-                            fontFamily: 'monospace',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            whiteSpace: 'nowrap',
-
-                            gap: '4px',
-                        }}
-                    >
+                <div className={styles.wallet_tooltip_div}>
+                    <p className={styles.wallet_tooltip_p}>
                         {limitOrder.user}
                         <FiCopy
                             style={{ cursor: 'pointer' }}
@@ -279,15 +240,7 @@ export const useProcessOrderRow = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
+            <div className={styles.token_qty_tooltip}>
                 {baseDisplay}
                 {baseTokenLogoComponent}
             </div>
@@ -301,15 +254,7 @@ export const useProcessOrderRow = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
+            <div className={styles.token_qty_tooltip}>
                 {quoteDisplay}
                 {quoteTokenLogoComponent}
             </div>
@@ -320,16 +265,7 @@ export const useProcessOrderRow = (props: Props) => {
         <TextOnlyTooltip
             interactive
             title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
+                <p className={styles.order_tooltip}>
                     {moment(limitOrder.latestUpdateTime * 1000).format(
                         'MM/DD/YYYY HH:mm',
                     )}
