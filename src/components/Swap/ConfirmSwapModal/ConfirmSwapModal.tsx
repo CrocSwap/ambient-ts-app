@@ -124,21 +124,21 @@ export default function ConfirmSwapModal(props: propsIF) {
                 baselineBuyTokenPrice) *
             100;
 
-        if (changePercentage > 0) {
+        if (changePercentage >= 0.01) {
             setIsWaitingForPriceChangeAckt(true);
         } else {
             setIsWaitingForPriceChangeAckt(false);
         }
 
-        const changePercentageString = changePercentage.toLocaleString(
-            undefined,
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            },
-        );
-        return changePercentageString;
+        return changePercentage;
     }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
+
+    const buyTokenPriceChangeString = buyTokenPriceChangePercentage
+        ? buyTokenPriceChangePercentage.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : undefined;
 
     const isPriceInverted =
         (isDenomBaseLocal && !isSellTokenBase) ||
@@ -184,28 +184,23 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const hasBuyTokenPriceIncreasedSinceBaseline =
-        buyTokenPriceChangePercentage &&
-        parseFloat(buyTokenPriceChangePercentage) > 0;
-
-    const priceIncreaseComponentOrNull =
-        hasBuyTokenPriceIncreasedSinceBaseline ? (
-            <div className={` ${styles.warning_box}`}>
-                <AiOutlineWarning color='var(--negative)' />
-                <p>
-                    WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
-                    {buyTokenPriceChangePercentage + '%'}
-                </p>
-                <button
-                    onClick={() => {
-                        setBaselineBlockNumber(lastBlockNumber);
-                        setIsWaitingForPriceChangeAckt(false);
-                    }}
-                >
-                    Acknowledge
-                </button>
-            </div>
-        ) : null;
+    const priceIncreaseComponentOrNull = isWaitingForPriceChangeAckt ? (
+        <div className={` ${styles.warning_box}`}>
+            <AiOutlineWarning color='var(--negative)' />
+            <p>
+                WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
+                {buyTokenPriceChangeString + '%'}
+            </p>
+            <button
+                onClick={() => {
+                    setBaselineBlockNumber(lastBlockNumber);
+                    setIsWaitingForPriceChangeAckt(false);
+                }}
+            >
+                Acknowledge
+            </button>
+        </div>
+    ) : null;
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>

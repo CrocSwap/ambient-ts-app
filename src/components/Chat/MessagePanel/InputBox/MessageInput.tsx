@@ -170,6 +170,9 @@ export default function MessageInput(
                 isInput={true}
                 isPosition={isPosition}
                 setIsPosition={setIsPosition}
+                walletExplorer={
+                    props.ensName === undefined ? address : props.ensName
+                }
             />
 
             <div

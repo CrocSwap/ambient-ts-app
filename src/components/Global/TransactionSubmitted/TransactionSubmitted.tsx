@@ -30,12 +30,13 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         range,
         reposition,
     } = props;
-    const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+
+    const txUrlOnBlockExplorer = `https://goerli.etherscan.io/tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
 
-    const handleAddToMetamask = async () => {
+    const handleAddToMetaMask = async () => {
         await addTokenToWallet(
             tokenBAddress,
             tokenBSymbol,
@@ -44,19 +45,19 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         );
     };
 
-    const addToMetamaskButton = (
+    const addToMetaMaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to Metamask.`}
+            title={`Add ${tokenBSymbol} to MetaMask`}
             // action={props.onClickFn}
-            action={handleAddToMetamask}
+            action={handleAddToMetaMask}
             disabled={false}
         ></Button>
     );
 
     const etherscanButton = (
         <a
-            href={EthersanTx}
+            href={txUrlOnBlockExplorer}
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
@@ -85,22 +86,22 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
 
             <h2 style={{ marginBottom: '15px' }}>
                 {limit
-                    ? 'Limit Transaction Successfully Submitted.'
+                    ? 'Limit Transaction Successfully Submitted'
                     : range
-                    ? 'Range Transaction Successfully Submitted.'
+                    ? 'Range Transaction Successfully Submitted'
                     : reposition
-                    ? 'Respotion Successfully Submitted.'
-                    : 'Swap Transaction Successfully Submitted.'}
+                    ? 'Reposition Successfully Submitted'
+                    : 'Swap Transaction Successfully Submitted'}
             </h2>
             <div
                 className={`${styles.action_buttons} ${
                     noAnimation && styles.bypass_buttons
                 }`}
             >
-                {EthersanTx && etherscanButton}
+                {txUrlOnBlockExplorer && etherscanButton}
                 {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
                     ? null
-                    : addToMetamaskButton}
+                    : addToMetaMaskButton}
             </div>
         </div>
     );
