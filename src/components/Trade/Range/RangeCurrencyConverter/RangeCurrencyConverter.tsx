@@ -33,6 +33,7 @@ import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput'
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
 // interface for component props
 interface propsIF {
@@ -370,12 +371,12 @@ export default function RangeCurrencyConverter(props: propsIF) {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
         navigate(
-            '/trade/range/chain=' +
-                tokenPair.dataTokenA.chainId +
-                '&tokenA=' +
-                tokenPair.dataTokenA.address +
-                '&tokenB=' +
-                tokenPair.dataTokenB.address,
+            '/trade/range/' +
+                formSlugForPairParams(
+                    tokenPair.dataTokenA.chainId,
+                    tokenPair.dataTokenA,
+                    tokenPair.dataTokenB,
+                ),
         );
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
     };

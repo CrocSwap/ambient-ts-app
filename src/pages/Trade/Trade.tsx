@@ -46,6 +46,7 @@ import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../constants';
+import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -447,12 +448,8 @@ export default function Trade(props: propsIF) {
     ]);
 
     const initLinkPath =
-        '/initpool/chain=' +
-        chainId +
-        '&tokenA=' +
-        baseTokenAddress +
-        '&tokenB=' +
-        quoteTokenAddress;
+        '/initpool/' +
+        formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
     const poolNotInitializedContent =
         poolExists === false ? (

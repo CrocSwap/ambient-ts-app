@@ -27,6 +27,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
+import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -238,22 +239,21 @@ export default function CurrencyConverter(props: propsIF) {
     const linkPath = useMemo(() => {
         let locationSlug = '';
         if (pathname.startsWith('/trade/market')) {
-            locationSlug = '/trade/market';
+            locationSlug = '/trade/market/';
         } else if (pathname.startsWith('/trade/limit')) {
-            locationSlug = '/trade/limit';
+            locationSlug = '/trade/limit/';
         } else if (pathname.startsWith('/trade/range')) {
-            locationSlug = '/trade/range';
+            locationSlug = '/trade/range/';
         } else if (pathname.startsWith('/swap')) {
-            locationSlug = '/swap';
+            locationSlug = '/swap/';
         }
         return (
             locationSlug +
-            '/chain=0x' +
-            tokenPair.dataTokenA.chainId.toString(16) +
-            '&tokenA=' +
-            tokenPair.dataTokenB.address +
-            '&tokenB=' +
-            tokenPair.dataTokenA.address
+            formSlugForPairParams(
+                tokenPair.dataTokenA.chainId,
+                tokenPair.dataTokenA,
+                tokenPair.dataTokenB,
+            )
         );
     }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
 

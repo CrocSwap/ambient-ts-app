@@ -8,6 +8,7 @@ import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 
 export default function SidebarFooter() {
     const location = useLocation();
@@ -20,30 +21,28 @@ export default function SidebarFooter() {
             : styles.position_absolute;
 
     const tradeDestination = location.pathname.includes('trade/market')
-        ? '/trade/market'
+        ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit'
+        ? '/trade/limit/'
         : location.pathname.includes('trade/range')
-        ? '/trade/range'
+        ? '/trade/range/'
         : location.pathname.includes('trade/edit')
-        ? '/trade/edit'
-        : '/trade/market';
+        ? '/trade/edit/'
+        : '/trade/market/';
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const paramsSlug =
-        '/chain=0x' +
-        tradeData.tokenA.chainId.toString(16) +
-        '&tokenA=' +
-        tradeData.tokenA.address +
-        '&tokenB=' +
-        tradeData.tokenB.address;
+    const paramsSlug = formSlugForPairParams(
+        tradeData.tokenA.chainId,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    );
 
     const linksData = [
         { title: 'Home', destination: '/', icon: FaHome },
         {
             title: 'Swap',
-            destination: '/swap' + paramsSlug,
+            destination: '/swap/' + paramsSlug,
             icon: RiSwapBoxFill,
         },
         {
@@ -51,8 +50,8 @@ export default function SidebarFooter() {
             destination: tradeDestination + paramsSlug,
             icon: GiTrade,
         },
-        { title: 'Account', destination: '/account', icon: MdAccountBox },
-        { title: 'Chat', destination: '/chat', icon: BsFillChatDotsFill },
+        { title: 'Account', destination: '/account/', icon: MdAccountBox },
+        { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
 
     return (

@@ -177,6 +177,7 @@ import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
+import { formSlugForPairParams } from './functions/urlSlugs';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -405,6 +406,10 @@ export default function App() {
         }
     }, [loginCheckDelayElapsed, isConnected]);
 
+    // Used in Portfolio/Account related pages for defining token universe.
+    // Ideally this is inefficient, because we're also using useToken() hook
+    // in parrallel which internally uses this hook. So there's some duplicated
+    // effort
     const tokensOnActiveLists = useTokenMap();
 
     const [candleData, setCandleData] = useState<
@@ -496,6 +501,9 @@ export default function App() {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
         } else {
+            // If signer and provider are set to different chains (as can happen)
+            // after a network switch, it causes a lot of performance killing timeouts
+            // and errors
             if (
                 (await signer?.getChainId()) ==
                 (await provider.getNetwork()).chainId
@@ -3058,7 +3066,7 @@ export default function App() {
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
         const [tokenA, tokenB] = getDefaultPairForChain(chainId);
-        const pairSlug = `chain=${chainId}&tokenA=${tokenA.address}&tokenB=${tokenB.address}`;
+        const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
         return {
             swap: `/swap/${pairSlug}`,
             market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,

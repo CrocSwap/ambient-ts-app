@@ -37,6 +37,7 @@ import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
 // interface for component props
 interface propsIF {
@@ -228,12 +229,12 @@ export default function LimitCurrencyConverter(props: propsIF) {
             setDisableReverseTokens(true);
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             navigate(
-                '/trade/limit/chain=' +
-                    tokenPair.dataTokenA.chainId +
-                    '&tokenA=' +
-                    tokenPair.dataTokenB.address +
-                    '&tokenB=' +
-                    tokenPair.dataTokenA.address,
+                '/trade/limit/' +
+                    formSlugForPairParams(
+                        tokenPair.dataTokenA.chainId,
+                        tokenPair.dataTokenA,
+                        tokenPair.dataTokenB,
+                    ),
             );
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);

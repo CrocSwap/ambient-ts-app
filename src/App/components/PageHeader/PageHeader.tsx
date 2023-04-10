@@ -16,6 +16,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
+import { formSlugForPairParams } from '../../functions/urlSlugs';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -111,13 +112,11 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const paramsSlug =
-        '/chain=0x' +
-        tradeData.tokenA.chainId.toString(16) +
-        '&tokenA=' +
-        tradeData.tokenA.address +
-        '&tokenB=' +
-        tradeData.tokenB.address;
+    const paramsSlug = formSlugForPairParams(
+        tradeData.tokenA.chainId,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    );
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
@@ -191,18 +190,18 @@ export default function PageHeader(props: HeaderPropsIF) {
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
     const tradeDestination = location.pathname.includes('trade/market')
-        ? '/trade/market'
+        ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit'
+        ? '/trade/limit/'
         : location.pathname.includes('trade/edit')
-        ? '/trade/edit'
-        : '/trade/market';
+        ? '/trade/edit/'
+        : '/trade/market/';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
         {
             title: t('common:swapTitle'),
-            destination: '/swap' + paramsSlug,
+            destination: '/swap/' + paramsSlug,
             shouldDisplay: true,
         },
         {
