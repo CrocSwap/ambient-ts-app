@@ -186,7 +186,11 @@
 }
 
 .grey_logo img {
-    filter: grayscale(100%) brightness(80%);
+    filter: grayscale(100%);
+}
+
+.grey_logo_wallet img {
+    filter: grayscale(100%) brightness(60%);
 }
 
 /* modal */

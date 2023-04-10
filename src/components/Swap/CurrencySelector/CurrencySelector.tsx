@@ -205,25 +205,30 @@ export default function CurrencySelector(props: propsIF) {
         }
     }
 
-    const maxButton = !isSellTokenEth ? (
-        <button
-            className={`${styles.max_button} ${styles.max_button_enable}`}
-            onClick={() => {
-                if (props.sellToken) {
-                    setIsWithdrawFromDexChecked(true);
-                } else {
-                    setIsSaveAsDexSurplusChecked(true);
-                }
-                if (handleChangeClick) {
-                    handleChangeClick(walletAndSurplusBalanceNonLocaleString);
-                }
-            }}
-        >
-            Max
-        </button>
-    ) : (
-        <p className={styles.max_button} />
-    );
+    const maxButton =
+        walletAndSurplusBalanceNonLocaleString !== '0.0' &&
+        isSellTokenSelector &&
+        !isSellTokenEth ? (
+            <button
+                className={`${styles.max_button} ${styles.max_button_enable}`}
+                onClick={() => {
+                    if (props.sellToken) {
+                        setIsWithdrawFromDexChecked(true);
+                    } else {
+                        setIsSaveAsDexSurplusChecked(true);
+                    }
+                    if (handleChangeClick) {
+                        handleChangeClick(
+                            walletAndSurplusBalanceNonLocaleString,
+                        );
+                    }
+                }}
+            >
+                Max
+            </button>
+        ) : (
+            <p className={styles.max_button} />
+        );
 
     const sellTokenSurplusClassname = isSellTokenSelector
         ? isWithdrawFromDexChecked
@@ -242,7 +247,7 @@ export default function CurrencySelector(props: propsIF) {
             tokenASurplusMinusTokenARemainderNum &&
             tokenASurplusMinusTokenARemainderNum < 0)
             ? styles.enabled_logo
-            : styles.grey_logo;
+            : styles.grey_logo_wallet;
 
     const sellTokenLogoClassname =
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
