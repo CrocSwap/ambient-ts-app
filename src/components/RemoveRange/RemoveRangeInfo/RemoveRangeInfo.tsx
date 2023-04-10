@@ -146,7 +146,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
 
             <div className={styles.ambi_info_text}>
                 Ambient position rewards are compounded back into the original
-                position and included in the amounts above.
+                position and are included in the amounts above.
             </div>
         </div>
     );

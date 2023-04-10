@@ -23,10 +23,10 @@
     width: 15px;
 }
 
-
-.ambi_info_text{
+.ambi_info_text {
     text-align: center;
     background: var(--dark2);
     padding: 4px;
     border-radius: 4px;
+    text-transform: none;
 }
