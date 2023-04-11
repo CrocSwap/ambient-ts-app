@@ -369,7 +369,10 @@ export default function Chart(props: propsIF) {
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
         activeLiq: 0,
         liqPrices: 0,
+        deltaAverageUSD: 0,
+        cumAverageUSD: 0,
     });
+    const [selectedLiq, setSelectedLiq] = useState('');
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
 
@@ -5941,19 +5944,28 @@ export default function Chart(props: propsIF) {
                   )
                 : liquidityData?.liqBidData;
 
-        const nearest = filtered.reduce(function (prev: any, curr: any) {
-            return Math.abs(
-                curr.liqPrices - scaleData?.yScale.invert(event.offsetY),
-            ) <
-                Math.abs(
-                    prev.liqPrices - scaleData?.yScale.invert(event.offsetY),
-                )
-                ? curr
-                : prev;
+        const mousePosition = scaleData?.yScale.invert(event.offsetY);
+
+        let closest = filtered.find(
+            (item: any) =>
+                item.liqPrices === d3.min(filtered, (d: any) => d.liqPrices),
+        );
+
+        filtered.map((data: any) => {
+            if (
+                mousePosition > data.liqPrices &&
+                data.liqPrices > closest.liqPrices
+            ) {
+                closest = data;
+            }
         });
 
         setLiqTooltipSelectedLiqBar(() => {
-            return nearest;
+            return closest;
+        });
+
+        setSelectedLiq(() => {
+            return 'bidLiq';
         });
 
         const topPlacement =
@@ -6027,20 +6039,30 @@ export default function Chart(props: propsIF) {
                   )
                 : liquidityData?.liqAskData;
 
-        const nearest = filtered.reduce(function (prev: any, curr: any) {
-            return Math.abs(
-                curr.liqPrices - scaleData?.yScale.invert(event.offsetY),
-            ) <
-                Math.abs(
-                    prev.liqPrices - scaleData?.yScale.invert(event.offsetY),
-                )
-                ? curr
-                : prev;
-        });
+        const mousePosition = scaleData?.yScale.invert(event.offsetY);
 
-        setLiqTooltipSelectedLiqBar(() => {
-            return nearest;
-        });
+        let closest = filtered.find(
+            (item: any) =>
+                item.liqPrices === d3.max(filtered, (d: any) => d.liqPrices),
+        );
+        if (closest !== undefined) {
+            filtered.map((data: any) => {
+                if (
+                    mousePosition < data.liqPrices &&
+                    data.liqPrices < closest.liqPrices
+                ) {
+                    closest = data;
+                }
+            });
+
+            setLiqTooltipSelectedLiqBar(() => {
+                return closest;
+            });
+
+            setSelectedLiq(() => {
+                return 'askLiq';
+            });
+        }
 
         const topPlacement =
             event.y -
@@ -6591,13 +6613,13 @@ export default function Chart(props: propsIF) {
             poolPriceDisplay !== undefined
         ) {
             const liqTextData = { totalValue: 0 };
+
             if (liqTooltipSelectedLiqBar.liqPrices != null) {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                if (selectedLiq === 'askLiq') {
                     liquidityData?.liqAskData.map((liqData: any) => {
                         if (
                             liqData?.liqPrices >=
-                                liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay > liqData?.liqPrices
+                            liqTooltipSelectedLiqBar.liqPrices
                         ) {
                             liqTextData.totalValue =
                                 liqTextData.totalValue +
@@ -6608,8 +6630,7 @@ export default function Chart(props: propsIF) {
                     liquidityData?.liqBidData.map((liqData: any) => {
                         if (
                             liqData?.liqPrices <=
-                                liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay < liqData?.liqPrices
+                            liqTooltipSelectedLiqBar.liqPrices
                         ) {
                             liqTextData.totalValue =
                                 liqTextData.totalValue +
@@ -6619,6 +6640,7 @@ export default function Chart(props: propsIF) {
                 }
                 // }
             }
+
             // const absoluteDifference = Math.abs(difference)
 
             const pinnedTick = getPinnedTickFromDisplayPrice(
@@ -6643,7 +6665,7 @@ export default function Chart(props: propsIF) {
                     ' </p>',
             );
         }
-    }, [liqTooltipSelectedLiqBar]);
+    }, [liqTooltipSelectedLiqBar, liqMode, selectedLiq]);
 
     // Color Picker
     useEffect(() => {
