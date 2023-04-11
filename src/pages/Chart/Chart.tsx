@@ -2213,9 +2213,13 @@ export default function Chart(props: propsIF) {
                 if (!sortLiqaData) return;
 
                 const closestMin = sortLiqaData.reduce(function (prev, curr) {
-                    return Math.abs(
-                        curr.liqPrices - scaleData?.yScale.domain()[0],
-                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[0])
+                    return curr.liqPrices < scaleData?.yScale.domain()[0] &&
+                        Math.abs(
+                            curr.liqPrices - scaleData?.yScale.domain()[0],
+                        ) <
+                            Math.abs(
+                                prev.liqPrices - scaleData?.yScale.domain()[0],
+                            )
                         ? curr
                         : prev;
                 });
@@ -2251,7 +2255,7 @@ export default function Chart(props: propsIF) {
                     liqData?.liqPrices >= min && liqData?.liqPrices <= max,
             );
             const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-            if (maxLiq && parseFloat(maxLiq) !== 1) {
+            if (maxLiq) {
                 liquidityDepthScale.domain([0, maxLiq]);
             }
         } catch (error) {
@@ -3813,7 +3817,7 @@ export default function Chart(props: propsIF) {
             const lineAskSeriesDepth = d3fc
                 .seriesCanvasLine()
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepBefore)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -3846,7 +3850,7 @@ export default function Chart(props: propsIF) {
             const lineBidDepthSeries = d3fc
                 .seriesCanvasLine()
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepAfter)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -5116,7 +5120,7 @@ export default function Chart(props: propsIF) {
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepBefore)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -5197,7 +5201,7 @@ export default function Chart(props: propsIF) {
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepAfter)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -5891,6 +5895,7 @@ export default function Chart(props: propsIF) {
         const allData = liqDataBid.concat(liqDataAsk);
 
         const { min }: any = findLiqNearest(allData);
+
         let filteredAllData = allData.filter(
             (item: any) =>
                 min <= item.liqPrices &&
@@ -5907,17 +5912,29 @@ export default function Chart(props: propsIF) {
             return d.activeLiq;
         });
 
-        const currentDataY = scaleData?.yScale.invert(event.offsetY);
+        const canvas = d3
+            .select(d3CanvasMarketLine.current)
+            .select('canvas')
+            .node() as any;
+
+        const rect = canvas.getBoundingClientRect();
+        console.log('width', rect.width - liquidityDepthScale.range()[1]);
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const currentDataY = scaleData?.yScale.invert(y);
         const currentDataX =
             liqMode === 'depth'
-                ? liquidityDepthScale.invert(event.offsetX)
-                : liquidityScale.invert(event.offsetX);
+                ? liquidityDepthScale.invert(x)
+                : liquidityScale.invert(x);
 
         const bidMinBoudnary = d3.min(liqDataBid, (d: any) => d.liqPrices);
         const bidMaxBoudnary = d3.max(liqDataBid, (d: any) => d.liqPrices);
 
         const askMinBoudnary = d3.min(liqDataAsk, (d: any) => d.liqPrices);
         const askMaxBoudnary = d3.max(liqDataAsk, (d: any) => d.liqPrices);
+
+        // console.log(currentDataX,'dom',liquidityDepthScale.domain(),'ran',liquidityDepthScale.range());
 
         if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
             if (bidMinBoudnary !== undefined && bidMaxBoudnary !== undefined) {
@@ -5963,6 +5980,11 @@ export default function Chart(props: propsIF) {
         minBoudnary: string,
         maxBoudnary: string,
     ) => {
+        const canvas = d3
+            .select(d3CanvasLiqAsk.current)
+            .select('canvas') as any;
+        const ctx = canvas.node().getContext('2d');
+
         indicatorLineData[0] = {
             x: scaleData?.xScale.invert(event.offsetX),
             y: scaleData?.yScale.invert(event.offsetY),
@@ -6010,12 +6032,6 @@ export default function Chart(props: propsIF) {
             .style('left', event.offsetX - 80 + 'px');
 
         liquidityData.liqHighligtedAskSeries = [];
-
-        const canvas = d3
-            .select(d3CanvasLiqAsk.current)
-            .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
 
         const percentageBid =
             (scaleData?.yScale.invert(event.offsetY) -
@@ -6107,11 +6123,19 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale(minBoudnary),
             );
 
-            gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255, 0.6)');
+            if (percentageAsk < 1 && percentageAsk > 0) {
+                gradient.addColorStop(
+                    percentageAsk,
+                    'rgba(205, 193, 255, 0.6)',
+                );
 
-            gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255, 0.3)');
+                gradient.addColorStop(
+                    percentageAsk,
+                    'rgba(205, 193, 255, 0.3)',
+                );
 
-            setGradientForAsk(gradient);
+                setGradientForAsk(gradient);
+            }
         }
 
         renderCanvas();
@@ -6308,13 +6332,12 @@ export default function Chart(props: propsIF) {
                         if (liquidityDepthScale.domain()[1] <= 50) {
                             liquidityDepthScale.range([
                                 event.detail.width,
-                                event.detail.width -
-                                    event.detail.width / (100 * 2.5),
+                                event.detail.width * 0.95,
                             ]);
                         } else {
                             liquidityDepthScale.range([
                                 event.detail.width,
-                                (event.detail.width / 10) * 9,
+                                event.detail.width * 0.9,
                             ]);
                         }
 
@@ -6585,6 +6608,8 @@ export default function Chart(props: propsIF) {
             showFeeRate,
             ghostLineValuesLimit,
             liqMode,
+            liquidityScale,
+            liquidityDepthScale,
         ],
     );
 
