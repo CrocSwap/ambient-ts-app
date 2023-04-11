@@ -74,7 +74,6 @@ import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import {
     LimitOrderIF,
     TokenIF,
-    TokenListIF,
     TransactionIF,
     PositionIF,
 } from '../utils/interfaces/exports';
@@ -558,6 +557,10 @@ export default function App() {
     const [searchableTokens, setSearchableTokens] =
         useState<TokenIF[]>(defaultTokens);
 
+    useEffect(() => {
+        setSearchableTokens(getTokensOnChain(chainData.chainId));
+    }, [chainData.chainId, getTokensOnChain(chainData.chainId).length]);
+
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
     // trigger a useEffect() which needs to run when new token lists are received
@@ -665,35 +668,6 @@ export default function App() {
             ),
         [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
-
-    // update local state with searchable tokens once after initial load of app
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('setting searchable tokens');
-        // pull activeTokenLists from local storage and parse
-        // do we need to add gatekeeping in case there is not a valid value?
-        const { activeTokenLists } = JSON.parse(
-            localStorage.getItem('user') as string,
-        );
-        // update local state with array of all tokens from searchable lists
-        setSearchableTokens(getTokensFromLists(activeTokenLists));
-        // TODO:  this hook runs once after the initial load of the app, we may need to add
-        // TODO:  additional triggers for DOM interactions
-    }, [tokenListsReceived]);
-
-    function getTokensFromLists(tokenListURIs: Array<string>) {
-        // retrieve and parse all token lists held in local storage
-        const tokensFromLists = localStorage.allTokenLists
-            ? JSON.parse(localStorage.getItem('allTokenLists') as string)
-                  // remove all lists with URIs not included in the URIs array passed as argument
-                  .filter((tokenList: TokenListIF) =>
-                      tokenListURIs.includes(tokenList.uri ?? ''),
-                  )
-                  // extract array of tokens from active lists and flatten into single array
-                  .flatMap((tokenList: TokenListIF) => tokenList.tokens)
-            : defaultTokens;
-        // return array of all tokens from lists as specified by token list URI
-        return tokensFromLists;
-    }
 
     const [sidebarManuallySet, setSidebarManuallySet] =
         useState<boolean>(false);
