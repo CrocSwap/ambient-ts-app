@@ -321,7 +321,7 @@ export default function Transactions(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100,
+                n: 80,
             })
                 .then((poolChangesJsonData) => {
                     if (poolChangesJsonData) {

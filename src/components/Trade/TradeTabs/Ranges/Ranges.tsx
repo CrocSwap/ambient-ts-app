@@ -286,11 +286,6 @@ export default function Ranges(props: propsIF) {
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
-    const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage && largeScreenView
-            ? currentRanges
-            : sortedPositions;
-
     const footerDisplay = (
         <div className={styles.footer}>
             {expandTradeTable && sortedPositions.length > 30 && (
@@ -556,7 +551,7 @@ export default function Ranges(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
-        usePaginateDataOrNull ? (
+        expandTradeTable && !isOnPortfolioPage && largeScreenView ? (
             currentRowItemContent
         ) : (
             sortedRowItemContent

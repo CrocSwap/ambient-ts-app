@@ -439,7 +439,6 @@ export default function App() {
         getTokenByAddress,
         getTokensByName,
     ] = useToken(chainData.chainId);
-    false && getTokensOnChain;
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -1187,6 +1186,7 @@ export default function App() {
                                 omitEmpty: 'true',
                                 omitKnockout: 'true',
                                 addValue: 'true',
+                                n: '50',
                             }),
                     )
                         .then((response) => response.json())
@@ -1317,7 +1317,7 @@ export default function App() {
                         simpleCalc: true,
                         annotateMEV: false,
                         ensResolution: true,
-                        n: 100,
+                        n: 80,
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
@@ -1346,6 +1346,7 @@ export default function App() {
                                 chainId: chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
+                                n: '50',
                                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                             }),
@@ -1387,8 +1388,8 @@ export default function App() {
             }
         }
     }, [
+        searchableTokens.length,
         rtkMatchesParams,
-        tokensOnActiveLists,
         // isServerEnabled,
         tokenPairStringified,
         chainData.chainId,
@@ -2340,6 +2341,7 @@ export default function App() {
             }
         }
     }, [
+        searchableTokens.length,
         isServerEnabled,
         tokensOnActiveLists,
         isUserLoggedIn,

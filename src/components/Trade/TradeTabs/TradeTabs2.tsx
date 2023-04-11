@@ -359,7 +359,7 @@ export default function TradeTabs2(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100,
+                n: 80,
                 period: candleTime.time,
                 time: filter?.time,
             })
