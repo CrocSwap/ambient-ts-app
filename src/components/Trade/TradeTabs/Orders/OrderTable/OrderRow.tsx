@@ -1,26 +1,20 @@
 import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
-import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
-import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import moment from 'moment';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { useProcessOrderRow } from '../useProcessOrderRow';
+import { orderRowConstants } from '../orderRowConstants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -262,7 +256,7 @@ export default function OrderRow(props: propsIF) {
         }
     };
 
-    const useProcessOrderRowProps = {
+    const orderRowConstantsProps = {
         posHashTruncated,
         openDetailsModal,
         handleRowMouseDown,
@@ -311,7 +305,7 @@ export default function OrderRow(props: propsIF) {
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
-    } = useProcessOrderRow(useProcessOrderRowProps);
+    } = orderRowConstants(orderRowConstantsProps);
 
     return (
         <>

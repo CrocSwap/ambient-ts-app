@@ -61,7 +61,7 @@ interface Props {
 
     tx: TransactionIF;
 }
-export const useProcessTxRow = (props: Props) => {
+export const txRowConstants = (props: Props) => {
     // const dispatch = useAppDispatch();
 
     const {

@@ -3,7 +3,7 @@ import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { NavLink } from 'react-router-dom';
 import styles from './Orders.module.css';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
@@ -63,7 +63,7 @@ interface Props {
 
     // tx: TransactionIF;
 }
-export const useProcessOrderRow = (props: Props) => {
+export const orderRowConstants = (props: Props) => {
     const {
         posHashTruncated,
         openDetailsModal,
@@ -112,8 +112,8 @@ export const useProcessOrderRow = (props: Props) => {
 
     interface CustomLIPropsIF {
         children: React.ReactNode;
-        className?: any;
-        style?: any;
+        className?: string | undefined;
+        style?: React.CSSProperties | undefined;
         noClick?: boolean;
     }
     function CustomLI(props: CustomLIPropsIF) {
@@ -159,18 +159,6 @@ export const useProcessOrderRow = (props: Props) => {
     );
 
     const ValueWithTooltip = (
-        // <li
-        //     onClick={openDetailsModal}
-        //     data-label='value'
-        //     className={sellOrderStyle}
-        //     style={{ textAlign: 'right' }}
-        //     onMouseEnter={handleRowMouseDown}
-        //     onMouseLeave={handleRowMouseOut}
-        // >
-        //     {' '}
-        //     {'$' + usdValue}
-        // </li>
-
         <CustomLI
             data-label='value'
             className={sellOrderStyle}
@@ -253,16 +241,6 @@ export const useProcessOrderRow = (props: Props) => {
     );
 
     const tokenPair = (
-        // <li
-        //     className='base_color'
-        //     onMouseEnter={handleRowMouseDown}
-        //     onMouseLeave={handleRowMouseOut}
-        // >
-        //     <NavLink to={tradeLinkPath}>
-        //         {baseTokenSymbol} / {quoteTokenSymbol}
-        //     </NavLink>
-        // </li>
-
         <CustomLI data-label='tokens' className='base_color'>
             <NavLink to={tradeLinkPath}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
@@ -270,19 +248,6 @@ export const useProcessOrderRow = (props: Props) => {
         </CustomLI>
     );
     const baseQtyDisplayWithTooltip = (
-        // <li
-        //     onClick={openDetailsModal}
-        //     data-label={baseTokenSymbol}
-        //     className='base_color'
-        //     onMouseEnter={handleRowMouseDown}
-        //     onMouseLeave={handleRowMouseOut}
-        // >
-        //     <div className={styles.token_qty_tooltip}>
-        //         {baseDisplay}
-        //         {baseTokenLogoComponent}
-        //     </div>
-        // </li>
-
         <CustomLI data-label={baseTokenSymbol} className='base_color'>
             <div className={styles.token_qty_tooltip}>
                 {baseDisplay}

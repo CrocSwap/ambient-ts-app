@@ -13,7 +13,7 @@ import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
-import { useProcessTxRow } from '../useProcessTxRow';
+import { txRowConstants } from '../txRowConstants';
 
 interface propsIF {
     account: string;
@@ -223,7 +223,7 @@ export default function TransactionRow(props: propsIF) {
         }
     };
 
-    const useProcessTxRowProps = {
+    const txRowConstantsProps = {
         handleCopyTxHash,
         handleOpenExplorer,
         txHashTruncated,
@@ -282,7 +282,7 @@ export default function TransactionRow(props: propsIF) {
         ambientPriceDisplay,
         lowAndHighPriceDisplay,
         priceDisplay,
-    } = useProcessTxRow(useProcessTxRowProps);
+    } = txRowConstants(txRowConstantsProps);
 
     // end of portfolio page li element ---------------
     return (
