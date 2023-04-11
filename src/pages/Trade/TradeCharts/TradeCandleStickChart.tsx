@@ -451,7 +451,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                         ? depthBidRight
                         : depthAskRight,
                 ])
-                .range([1, 550]);
+                .range([30, 550]);
 
             const liqBoundaryData = props.liquidityData.ranges.find(
                 (liq: any) => {
