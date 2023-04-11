@@ -21,14 +21,13 @@ import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBa
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
@@ -54,8 +53,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
@@ -76,13 +73,13 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 // central react functional component
@@ -91,7 +88,6 @@ export default function LimitCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         tokenPair,
-        setImportedTokens,
         chainId,
         tokenAInputQty,
         tokenBInputQty,
@@ -121,9 +117,9 @@ export default function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const thisToken =
@@ -466,8 +462,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
@@ -485,7 +480,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

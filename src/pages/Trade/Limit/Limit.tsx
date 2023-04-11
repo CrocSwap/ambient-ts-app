@@ -39,7 +39,6 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import {
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
@@ -53,11 +52,10 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-import { useUrlParams } from '../../InitPool/useUrlParams';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
@@ -65,21 +63,20 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
     account: string | undefined;
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    importedTokens: Array<TokenIF>;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    // nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -88,12 +85,9 @@ interface propsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
-    // poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
@@ -116,9 +110,7 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -128,6 +120,7 @@ interface propsIF {
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -139,10 +132,8 @@ export default function Limit(props: propsIF) {
         pool,
         crocEnv,
         isUserLoggedIn,
-        importedTokens,
         mintSlippage,
         isPairStable,
-        setImportedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -155,8 +146,6 @@ export default function Limit(props: propsIF) {
         setRecheckTokenAApproval,
         chainId,
         chainData,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         openModalWallet,
         poolExists,
         lastBlockNumber,
@@ -171,15 +160,16 @@ export default function Limit(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         setResetLimitTick,
         openGlobalPopup,
         bypassConfirm,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
+    useUrlParams(chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -234,20 +224,19 @@ export default function Limit(props: propsIF) {
         }
     }, [limitTickFromParams, limitTick === undefined]);
 
-    const { tokenA, tokenB } = useUrlParams();
     const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(
-        () => pool?.baseToken === tokenA,
-        [pool?.baseToken, tokenA],
+        () => pool?.baseToken === tokenPair.dataTokenA.address,
+        [pool?.baseToken, tokenPair.dataTokenA.address],
     );
 
     useEffect(() => {
         if (!tradeData.shouldLimitDirectionReverse) {
             dispatch(setLimitTick(undefined));
         }
-        dispatch(setShouldLimitDirectionReverse(false));
-    }, [tokenA + tokenB]);
+        dispatch(setLimitTick(undefined));
+    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
 
     useEffect(() => {
         (async () => {
@@ -459,11 +448,13 @@ export default function Limit(props: propsIF) {
         if (!limitTick) return;
 
         const testOrder = isTokenAPrimary
-            ? crocEnv.sell(tokenA, 0)
-            : crocEnv.buy(tokenB, 0);
+            ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
+            : crocEnv.buy(tokenPair.dataTokenA.address, 0);
 
         const ko = testOrder.atLimit(
-            isTokenAPrimary ? tokenB : tokenA,
+            isTokenAPrimary
+                ? tokenPair.dataTokenB.address
+                : tokenPair.dataTokenA.address,
             limitTick,
         );
 
@@ -485,7 +476,13 @@ export default function Limit(props: propsIF) {
                 setIsOrderValid(true);
             }
         })();
-    }, [limitTick, tokenAInputQty, tokenBInputQty]);
+    }, [
+        limitTick,
+        tokenAInputQty,
+        tokenBInputQty,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
+    ]);
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
         useState(false);
@@ -845,8 +842,6 @@ export default function Limit(props: propsIF) {
         tokenPair: tokenPair,
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
-        tokensBank: importedTokens,
-        setImportedTokens: setImportedTokens,
         chainId: chainId,
         setLimitAllowed: setLimitAllowed,
         baseTokenBalance: baseTokenBalance,
@@ -864,8 +859,6 @@ export default function Limit(props: propsIF) {
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
         isDenominationInBase: tradeData.isDenomBase,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         poolExists: poolExists,
         gasPriceInGwei: gasPriceInGwei,
         isOrderCopied: isOrderCopied,
@@ -879,14 +872,63 @@ export default function Limit(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
         setResetLimitTick: setResetLimitTick,
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
+        ackTokens: ackTokens,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
+    // logic to determine if a given token is acknowledged or on a list
+    const isTokenUnknown = (tkn: TokenIF): boolean => {
+        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
+        const isListed: boolean = verifyToken(tkn.address, chainId);
+        return !isAckd && !isListed;
+    };
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+
+    // token acknowledgement needed message (empty string if none needed)
+    const ackTokenMessage = useMemo<string>(() => {
+        // !Important   any changes to verbiage in this code block must be approved
+        // !Important   ... by Doug, get in writing by email or request specific
+        // !Important   ... review for a pull request on GitHub
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } and ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA) {
+            text = `The token ${
+                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenB) {
+            text = `The token ${
+                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+    };
+
     return (
         <FocusTrap
             focusTrapOptions={{
@@ -946,24 +988,73 @@ export default function Limit(props: propsIF) {
                         ) : showBypassConfirmButton ? (
                             <BypassLimitButton {...bypassLimitProps} />
                         ) : (
-                            <LimitButton
-                                onClickFn={
-                                    bypassConfirm.limit.isEnabled
-                                        ? handleLimitButtonClickWithBypass
-                                        : openModal
-                                }
-                                limitAllowed={
-                                    isOrderValid &&
-                                    poolPriceNonDisplay !== 0 &&
-                                    limitAllowed
-                                }
-                                limitButtonErrorMessage={
-                                    limitButtonErrorMessage
-                                }
-                                isBypassConfirmEnabled={
-                                    bypassConfirm.limit.isEnabled
-                                }
-                            />
+                            <>
+                                <LimitButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirm.limit.isEnabled
+                                                ? handleLimitButtonClickWithBypass
+                                                : openModal
+                                            : ackAsNeeded
+                                    }
+                                    limitAllowed={
+                                        isOrderValid &&
+                                        poolPriceNonDisplay !== 0 &&
+                                        limitAllowed
+                                    }
+                                    limitButtonErrorMessage={
+                                        limitButtonErrorMessage
+                                    }
+                                    isBypassConfirmEnabled={
+                                        bypassConfirm.limit.isEnabled
+                                    }
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                chainData.blockExplorer +
+                                                'token/' +
+                                                tokenPair.dataTokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {tokenPair.dataTokenA.symbol ||
+                                                tokenPair.dataTokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                chainData.blockExplorer +
+                                                'token/' +
+                                                tokenPair.dataTokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                        >
+                                            {tokenPair.dataTokenB.symbol ||
+                                                tokenPair.dataTokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
                         )
                     ) : (
                         loginButton

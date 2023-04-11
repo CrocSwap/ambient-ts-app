@@ -110,3 +110,34 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
+
+.warning_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.warning_box p{
+    color: var(--negative);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.warning_box button{
+    cursor: pointer;
+    background: var(--dark3);
+    color: var(--text-grey-light);
+    outline: none;
+    border: none;
+
+    padding: 3px 4px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border)
+
+ 
+}
+.warning_box button:hover{
+    color: var(--text-grey-white)
+}

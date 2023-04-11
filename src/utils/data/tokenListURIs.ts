@@ -14,3 +14,5 @@ export const tokenListURIs = {
     // rollsocialmoney: 'https://app.tryroll.com/tokens.json',
     // baerc20: 'https://raw.githubusercontent.com/The-Blockchain-Association/sec-notice-list/master/ba-sec-list.json',
 };
+
+export type TokenListURITypes = keyof typeof tokenListURIs;

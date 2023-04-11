@@ -6,7 +6,12 @@ import {
     useParams,
     Navigate,
 } from 'react-router-dom';
-import { CrocEnv, CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    CrocEnv,
+    CrocPositionView,
+    CrocReposition,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 // import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
@@ -101,6 +106,8 @@ export default function Reposition(props: propsIF) {
         setTxErrorMessage('');
     };
 
+    const isRepositionSent = newRepositionTransactionHash !== '';
+
     // locationHook object (we need this mainly for position data)
     const locationHook = useLocation();
 
@@ -130,7 +137,25 @@ export default function Reposition(props: propsIF) {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
-    console.log({ position });
+
+    const [concLiq, setConcLiq] = useState<string>('');
+
+    const updateConcLiq = async () => {
+        if (!crocEnv || !position) return;
+        const pool = crocEnv.pool(position.base, position.quote);
+        const pos = new CrocPositionView(pool, position.user);
+
+        const liquidity = (
+            await pos.queryRangePos(position.bidTick, position.askTick)
+        ).liq.toString();
+
+        setConcLiq(liquidity);
+    };
+
+    useEffect(() => {
+        if (!crocEnv || !position) return;
+        updateConcLiq();
+    }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
 
@@ -199,7 +224,6 @@ export default function Reposition(props: propsIF) {
 
     const handleModalClose = () => {
         closeModal();
-        setNewRepositionTransactionHash('');
         resetConfirmation();
     };
 
@@ -215,6 +239,7 @@ export default function Reposition(props: propsIF) {
 
     useEffect(() => {
         setSimpleRangeWidth(10);
+        setNewRepositionTransactionHash('');
     }, [position]);
 
     useEffect(() => {
@@ -248,7 +273,7 @@ export default function Reposition(props: propsIF) {
             position.quoteDecimals,
             lowTick,
             highTick,
-            lookupChain(position?.chainId || '0x5').gridSize,
+            lookupChain(position.chainId).gridSize,
         );
 
         setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
@@ -276,7 +301,7 @@ export default function Reposition(props: propsIF) {
         try {
             const pool = crocEnv.pool(position.base, position.quote);
             const repo = new CrocReposition(pool, {
-                liquidity: position.positionLiq,
+                liquidity: concLiq,
                 burn: [position.bidTick, position.askTick],
                 mint: [pinnedLowTick, pinnedHighTick],
             });
@@ -339,7 +364,7 @@ export default function Reposition(props: propsIF) {
         position?.quoteDecimals || 18,
         lowTick,
         highTick,
-        lookupChain(position?.chainId || '0x5').gridSize,
+        lookupChain(position.chainId).gridSize,
     );
 
     const pinnedMinPriceDisplayTruncated =
@@ -392,7 +417,7 @@ export default function Reposition(props: propsIF) {
 
     const positionStatsCacheEndpoint =
         httpGraphCacheServerDomain + '/position_stats?';
-    const poolIndex = lookupChain(position?.chainId || '0x5').poolIndex;
+    const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {
         fetch(
@@ -404,7 +429,7 @@ export default function Reposition(props: propsIF) {
                     base: position.base,
                     quote: position.quote,
                     poolIdx: poolIndex.toString(),
-                    chainId: position?.chainId || '0x5',
+                    chainId: position.chainId,
                     positionType: position.positionType,
                     addValue: 'true',
                     omitAPY: 'true',
@@ -472,7 +497,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -490,7 +515,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -508,7 +533,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -526,7 +551,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -541,14 +566,17 @@ export default function Reposition(props: propsIF) {
             isPositionInRange ||
             !crocEnv ||
             !debouncedLowTick ||
-            !debouncedHighTick
+            !debouncedHighTick ||
+            !position.base ||
+            !position.quote ||
+            !concLiq
         ) {
             return;
         }
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
-            liquidity: position.positionLiq,
+            liquidity: concLiq,
             burn: [position.bidTick, position.askTick],
             mint: [debouncedLowTick, debouncedHighTick],
         });
@@ -700,6 +728,7 @@ export default function Reposition(props: propsIF) {
                 repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
                 bypassConfirm={bypassConfirm}
+                resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>
                 <RepositionRangeWidth
@@ -741,7 +770,9 @@ export default function Reposition(props: propsIF) {
                     {!showBypassConfirmButton ? (
                         <Button
                             title={
-                                isPositionInRange
+                                isRepositionSent
+                                    ? 'Reposition Sent'
+                                    : isPositionInRange
                                     ? 'Position Currently In Range'
                                     : bypassConfirm.repo.isEnabled
                                     ? 'Reposition'
@@ -752,10 +783,7 @@ export default function Reposition(props: propsIF) {
                                     ? handleRepoButtonClickWithBypass
                                     : openModal
                             }
-                            disabled={
-                                isPositionInRange ||
-                                newRepositionTransactionHash !== ''
-                            }
+                            disabled={isRepositionSent || isPositionInRange}
                             flat
                         />
                     ) : (

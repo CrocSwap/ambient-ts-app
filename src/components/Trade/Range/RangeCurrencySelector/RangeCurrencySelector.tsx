@@ -24,6 +24,7 @@ import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBa
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { IS_LOCAL_ENV } from '../../../../constants';
+import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -33,8 +34,6 @@ interface propsIF {
     fieldId: string;
     chainId: string;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -65,9 +64,7 @@ interface propsIF {
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
     disable?: boolean;
-    activeTokenListsChanged: boolean;
     isRangeCopied: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -86,13 +83,13 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function RangeCurrencySelector(props: propsIF) {
@@ -100,10 +97,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         gasPriceInGwei,
-        // resetTokenQuantities,
         tokenPair,
-        // tokensBank,
-        setImportedTokens,
         chainId,
         isTokenAEth,
         isTokenBEth,
@@ -111,8 +105,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenBWalletMinusTokenBQtyNum,
         fieldId,
         sellToken,
         updateOtherQuantity,
@@ -122,8 +114,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenADexBalance,
         tokenAInputQty,
         tokenBInputQty,
-        // tokenAQtyLocal,
-        // tokenBQtyLocal,
         tokenBDexBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenBQtyCoveredByWalletBalance,
@@ -131,13 +121,9 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenBQtyCoveredBySurplusBalance,
         tokenASurplusMinusTokenARemainderNum,
         tokenBSurplusMinusTokenBRemainderNum,
-        // tokenASurplusMinusTokenAQtyNum,
-        // tokenBSurplusMinusTokenBQtyNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         handleChangeClick,
         isRangeCopied,
         verifyToken,
@@ -151,9 +137,9 @@ export default function RangeCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
         openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -518,12 +504,8 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={styles.swapbox_bottom}
             style={{ color: surplusContainerColorStyle }}
         >
-            {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
             {walletContent}
             {surplusContent}
-            {/* </div> */}
-
-            {/* {DexBalanceContent} */}
         </div>
     );
 
@@ -588,8 +570,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
@@ -607,7 +588,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

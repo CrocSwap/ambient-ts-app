@@ -59,7 +59,6 @@ export default function DepositCurrencySelector(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
-                required
             />
         </div>
     );

@@ -7,6 +7,7 @@ interface propsIF {
     swapAllowed: boolean;
     swapButtonErrorMessage: string;
     bypassConfirmSwap: skipConfirmIF;
+    areBothAckd: boolean;
 }
 
 export default function SwapButton(props: propsIF) {
@@ -15,24 +16,27 @@ export default function SwapButton(props: propsIF) {
         swapAllowed,
         swapButtonErrorMessage,
         onClickFn,
+        areBothAckd,
     } = props;
 
     return (
         <div className={styles.button_container}>
             <Button
                 title={
-                    bypassConfirmSwap.isEnabled
-                        ? swapAllowed
-                            ? 'Send Swap'
-                            : swapButtonErrorMessage
-                        : swapAllowed
+                    areBothAckd
                         ? bypassConfirmSwap.isEnabled
-                            ? 'Send Transaction'
-                            : 'Open Confirmation'
-                        : swapButtonErrorMessage
+                            ? swapAllowed
+                                ? 'Send Swap'
+                                : swapButtonErrorMessage
+                            : swapAllowed
+                            ? bypassConfirmSwap.isEnabled
+                                ? 'Send Transaction'
+                                : 'Open Confirmation'
+                            : swapButtonErrorMessage
+                        : 'Acknowledge'
                 }
                 action={onClickFn}
-                disabled={!swapAllowed}
+                disabled={!swapAllowed && areBothAckd}
                 flat
             />
         </div>

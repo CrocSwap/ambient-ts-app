@@ -19,7 +19,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -49,7 +49,6 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    importedTokens: TokenIF[];
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;

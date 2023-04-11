@@ -3,7 +3,7 @@ import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
 import { TempPoolIF } from '../../../../utils/interfaces/exports';
-import { topPoolsMethodsIF } from '../../../../App/hooks/useTopPools';
+import { topPoolIF } from '../../../../App/hooks/useTopPools';
 
 interface propsIF {
     tradeData: tradeData;
@@ -11,7 +11,7 @@ interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
     poolList: TempPoolIF[];
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 export default function TopPools(props: propsIF) {
@@ -31,7 +31,7 @@ export default function TopPools(props: propsIF) {
                 <div>TVL</div>
             </header>
             <div className={styles.content}>
-                {topPools.onActiveChain.map((pool, idx) => (
+                {topPools.map((pool, idx) => (
                     <TopPoolsCard
                         tradeData={tradeData}
                         pool={pool}

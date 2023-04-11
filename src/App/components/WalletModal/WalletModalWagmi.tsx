@@ -150,7 +150,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 content={
                     !delayForHelpTextElapsed
                         ? ''
-                        : `Please check the ${'Metamask'} extension in your browser for notifications.`
+                        : `Please check the ${'MetaMask'} extension in your browser for notifications.`
                 }
             />
         </div>
@@ -168,7 +168,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div className={styles.metamask_pending_container}>
             <CircleLoaderFailed />
             <p>
-                Check the Metamask extension in your browser for notifications,
+                Check the MetaMask extension in your browser for notifications,
                 or click &quot;Try Again&quot;. You can also click the left
                 arrow above to choose a different wallet.
             </p>
@@ -203,9 +203,9 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             case 'wallets':
                 return 'Choose a Wallet';
             case 'metamaskPending':
-                return 'Waiting for Metamask';
+                return 'Waiting for MetaMask';
             case 'metamaskError':
-                return 'Metamask Error';
+                return 'MetaMask Error';
             case 'magicLogin':
             case 'magicLoginPending':
                 return 'Log In With Email';
