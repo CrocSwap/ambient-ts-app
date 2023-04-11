@@ -66,7 +66,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             rel='noreferrer'
             className={styles.view_etherscan}
         >
-            View on Etherscan.
+            View on Etherscan
             <FiExternalLink size={20} color='var(--text-grey-white)' />
         </a>
     );

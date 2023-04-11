@@ -200,7 +200,7 @@ export default function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, address, props.isChatOpen, isFullScreen, userCurrentPool]);
+    }, [ens, address, props.isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -208,44 +208,6 @@ export default function ChatPanel(props: propsIF) {
         setNotification(0);
         getMsg();
     }, [room]);
-
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            if (result?.status === 'OK') {
-                result.userData.isModerator === true
-                    ? setModerator(true)
-                    : setModerator(false);
-                setCurrentUser(result.userData._id);
-                setUserCurrentPool(result.userData.userCurrentPool);
-                if (result.userData.ensName !== ensName) {
-                    // eslint-disable-next-line
-
-                    updateUser(
-                        currentUser as string,
-                        ensName,
-                        userCurrentPool,
-                    ).then(
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (result: any) => {
-                            if (result.status === 'OK') {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                updateMessageUser(
-                                    currentUser as string,
-                                    ensName,
-                                ).then(
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    (result: any) => {
-                                        return result;
-                                    },
-                                );
-                            }
-                        },
-                    );
-                }
-            }
-        });
-    }, [userCurrentPool]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {

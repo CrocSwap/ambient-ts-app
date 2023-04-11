@@ -5,7 +5,8 @@ import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
 import { getChainExplorer } from '../data/chains';
-
+import moment from 'moment';
+import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 export const useProcessTransaction = (
     tx: TransactionIF,
     account: string,
@@ -462,6 +463,8 @@ export const useProcessTransaction = (
     //         ? 'Remove'
     //         : 'Add';
 
+    const sideTypeStyle = `${sideType}_style`;
+
     const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
     const totalFlowUSD = tx.totalFlowUSD;
@@ -590,6 +593,72 @@ export const useProcessTransaction = (
         ? 'You'
         : ensNameOrOwnerTruncated;
 
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+        tx.time * 1000,
+        'seconds',
+    );
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
+            : 'Pending...';
+
+    // -------------------------------------------
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? quoteTokenCharacter
+            : baseTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    const priceCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    // -----------------------------------------------
+    const valueArrows = tx.entityType !== 'liqchange';
+
+    const positiveArrow = '↑';
+    const negativeArrow = '↓';
+
+    const isSellQtyZero =
+        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+    const isBuyQtyZero =
+        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+    const isOrderRemove =
+        tx.entityType === 'limitOrder' && sideType === 'remove';
+
+    const positiveDisplayStyle =
+        baseQuantityDisplayShort === '0' ||
+        !valueArrows ||
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
+        tx.source === 'manual'
+            ? styles.light_grey
+            : styles.positive_value;
+    const negativeDisplayStyle =
+        quoteQuantityDisplayShort === '0' ||
+        !valueArrows ||
+        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
+            ? styles.light_grey
+            : styles.negative_value;
+
     // if (!tx) return null;
     return {
         // wallet and id data
@@ -611,10 +680,21 @@ export const useProcessTransaction = (
         sideType,
         transactionTypeSide,
         type,
+        sideTypeStyle,
+
+        sideCharacter,
+        priceCharacter,
+        isBuy,
+        positiveDisplayStyle,
+        negativeDisplayStyle,
 
         // Value data
         usdValue,
         txUsdValueLocaleString,
+
+        positiveArrow,
+        negativeArrow,
+        valueArrows,
 
         // Token Qty data
         baseTokenCharacter,
@@ -644,5 +724,8 @@ export const useProcessTransaction = (
         // transaction matches select token data
         transactionMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
+
+        //
+        elapsedTimeString,
     } as const;
 };

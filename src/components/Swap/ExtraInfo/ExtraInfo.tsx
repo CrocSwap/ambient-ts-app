@@ -146,6 +146,9 @@ export default function ExtraInfo(props: propsIF) {
         [
             '0xe09de95d2a8a73aa4bfa6f118cd1dcb3c64910dc',
             '0xa86dabfbb529a4c8186bdd52bd226ac81757e090',
+            '0x36cea6db646059dd90797b7b6c90330e736004c2',
+            '0x3d98ef7dbca0db37b3c83b05c8f8e456cd0fd90d',
+            '0x849c8e8ee487424475d9e8f44244275599790b16',
         ].includes(account?.toLowerCase() ?? '')
     ) {
         extraInfoData.push({
