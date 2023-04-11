@@ -1097,6 +1097,8 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    const maxNumCandlesForZoom = 1000;
+
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && parsedChartData !== undefined) {
@@ -1152,7 +1154,9 @@ export default function Chart(props: propsIF) {
                     if (minX.toString() === 'Invalid Date') {
                         minX = new Date(
                             domainX[0].getTime() -
-                                parsedChartData.period * 1000 * 300,
+                                parsedChartData.period *
+                                    1000 *
+                                    maxNumCandlesForZoom,
                         );
                     }
 
@@ -1320,7 +1324,9 @@ export default function Chart(props: propsIF) {
                             Math.abs(
                                 domainX[1].getTime() - domainX[0].getTime(),
                             ) <=
-                                parsedChartData.period * 1000 * 300) &&
+                                parsedChartData.period *
+                                    1000 *
+                                    maxNumCandlesForZoom) &&
                         (deltaX > 0 ||
                             Math.abs(
                                 domainX[1].getTime() - domainX[0].getTime(),
