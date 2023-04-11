@@ -2213,13 +2213,9 @@ export default function Chart(props: propsIF) {
                 if (!sortLiqaData) return;
 
                 const closestMin = sortLiqaData.reduce(function (prev, curr) {
-                    return curr.liqPrices < scaleData?.yScale.domain()[0] &&
-                        Math.abs(
-                            curr.liqPrices - scaleData?.yScale.domain()[0],
-                        ) <
-                            Math.abs(
-                                prev.liqPrices - scaleData?.yScale.domain()[0],
-                            )
+                    return Math.abs(
+                        curr.liqPrices - scaleData?.yScale.domain()[0],
+                    ) < Math.abs(prev.liqPrices - scaleData?.yScale.domain()[0])
                         ? curr
                         : prev;
                 });
@@ -2255,7 +2251,7 @@ export default function Chart(props: propsIF) {
                     liqData?.liqPrices >= min && liqData?.liqPrices <= max,
             );
             const maxLiq = d3.max(visibleDomain, (d: any) => d.activeLiq);
-            if (maxLiq) {
+            if (maxLiq && parseFloat(maxLiq) !== 1) {
                 liquidityDepthScale.domain([0, maxLiq]);
             }
         } catch (error) {
@@ -5918,7 +5914,6 @@ export default function Chart(props: propsIF) {
             .node() as any;
 
         const rect = canvas.getBoundingClientRect();
-        console.log('width', rect.width - liquidityDepthScale.range()[1]);
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
@@ -5933,8 +5928,6 @@ export default function Chart(props: propsIF) {
 
         const askMinBoudnary = d3.min(liqDataAsk, (d: any) => d.liqPrices);
         const askMaxBoudnary = d3.max(liqDataAsk, (d: any) => d.liqPrices);
-
-        // console.log(currentDataX,'dom',liquidityDepthScale.domain(),'ran',liquidityDepthScale.range());
 
         if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
             if (bidMinBoudnary !== undefined && bidMaxBoudnary !== undefined) {
