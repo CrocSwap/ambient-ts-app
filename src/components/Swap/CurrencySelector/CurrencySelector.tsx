@@ -29,8 +29,6 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     fieldId: string;
     tokenAorB: string | null;
@@ -62,8 +60,6 @@ interface propsIF {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -102,7 +98,6 @@ export default function CurrencySelector(props: propsIF) {
         setBuyQtyString,
         isUserLoggedIn,
         tokenPair,
-        setImportedTokens,
         chainId,
         fieldId,
         tokenAorB,
@@ -574,8 +569,7 @@ export default function CurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

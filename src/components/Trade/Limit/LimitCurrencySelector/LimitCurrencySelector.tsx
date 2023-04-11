@@ -28,8 +28,6 @@ interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
@@ -55,8 +53,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
@@ -92,7 +88,6 @@ export default function LimitCurrencySelector(props: propsIF) {
         provider,
         isUserLoggedIn,
         tokenPair,
-        setImportedTokens,
         chainId,
         tokenAInputQty,
         tokenBInputQty,
@@ -467,8 +462,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

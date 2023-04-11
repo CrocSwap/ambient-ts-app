@@ -255,6 +255,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            chainId={buyTokenData.chainId}
             limit
         />
     );

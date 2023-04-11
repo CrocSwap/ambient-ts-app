@@ -1,1 +1,7 @@
-export const defaultTokenLists = ['ambient', 'coingecko', 'testnet'];
+import { TokenListURITypes } from './tokenListURIs';
+
+export const defaultTokenLists: TokenListURITypes[] = [
+    'ambient',
+    'coingecko',
+    'testnet',
+];

@@ -22,40 +22,8 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 
 interface propsIF {
-    // onClose: () => void;
-    // crocEnv: CrocEnv | undefined;
-    // position: PositionIF;
-
-    // dailyVol: number | undefined;
-    // rangeWidthPercentage: number;
-    // currentPoolPriceTick: number;
-    // currentPoolPriceDisplay: string;
-
-    // setMaxPrice: Dispatch<SetStateAction<number>>;
-    // setMinPrice: Dispatch<SetStateAction<number>>;
-    // showConfirmation: boolean;
-    // setShowConfirmation: Dispatch<SetStateAction<boolean>>;
-
-    // minPriceDisplay: string;
-    // maxPriceDisplay: string;
-    // currentBaseQtyDisplayTruncated: string;
-    // currentQuoteQtyDisplayTruncated: string;
-    // pinnedMinPriceDisplayTruncatedInBase: string;
-    // pinnedMinPriceDisplayTruncatedInQuote: string;
-    // pinnedMaxPriceDisplayTruncatedInBase: string;
-    // pinnedMaxPriceDisplayTruncatedInQuote: string;
-    // poolPriceDisplayNum: number;
-    // newBaseQtyDisplay: string;
-    // newQuoteQtyDisplay: string;
-    // isDenomBase: boolean;
-    // isTokenABase: boolean;
-    // isPositionInRange: boolean;
-    // bypassConfirm: allSkipConfirmMethodsIF;
-
     tokenPair: TokenPairIF;
-    // ambientApy: number | undefined;
     txErrorCode: string;
-    // txErrorMessage: string;
     resetConfirmation: () => void;
     onSend: () => void;
     newRepositionTransactionHash: string;
@@ -97,6 +65,7 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            chainId={buyTokenData.chainId}
             noAnimation
             reposition
         />
