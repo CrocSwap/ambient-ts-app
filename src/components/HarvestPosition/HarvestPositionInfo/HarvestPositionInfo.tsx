@@ -140,7 +140,7 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                 {/*  */}
                 {/* <DividerDark /> */}
                 <Row>
-                    <span>{baseTokenSymbol} Fees Earned</span>
+                    <span>{baseTokenSymbol} Rewards Earned</span>
                     <div className={styles.token_price}>
                         {feeLiqBaseDisplay !== undefined
                             ? feeLiqBaseDisplay
@@ -150,7 +150,7 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
                 </Row>
                 {/*  */}
                 <Row>
-                    <span>{quoteTokenSymbol} Fees Earned</span>
+                    <span>{quoteTokenSymbol} Rewards Earned</span>
                     <div className={styles.token_price}>
                         {feeLiqQuoteDisplay !== undefined
                             ? feeLiqQuoteDisplay
