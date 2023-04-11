@@ -852,14 +852,7 @@ export default function App() {
                 }
             }
         })();
-    }, [
-        crocEnv,
-        isUserLoggedIn,
-        account,
-        chainData.chainId,
-        everyEigthBlock,
-        // JSON.stringify(connectedUserTokens),
-    ]);
+    }, [crocEnv, isUserLoggedIn, account, chainData.chainId, everyEigthBlock]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -897,10 +890,6 @@ export default function App() {
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
     const [poolExists, setPoolExists] = useState<boolean | undefined>();
-    const tokenPairStringified = useMemo(
-        () => JSON.stringify(tokenPair),
-        [tokenPair],
-    );
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
@@ -943,7 +932,7 @@ export default function App() {
         dispatch(setPrimaryQuantityRange(''));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         (async () => {
@@ -977,10 +966,7 @@ export default function App() {
                     });
             }
         })();
-    }, [
-        isServerEnabled,
-        JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress }),
-    ]);
+    }, [isServerEnabled, baseTokenAddress + quoteTokenAddress]);
 
     const resetAdvancedTicksIfNotCopy = () => {
         if (!ticksInParams) {
@@ -1216,11 +1202,10 @@ export default function App() {
                                 )
                                     .then((updatedPositions) => {
                                         if (
-                                            JSON.stringify(
+                                            sum(
                                                 graphData.positionsByUser
                                                     .positions,
-                                            ) !==
-                                            JSON.stringify(updatedPositions)
+                                            ) !== sum(updatedPositions)
                                         ) {
                                             dispatch(
                                                 setPositionsByPool({
@@ -1288,10 +1273,10 @@ export default function App() {
                                             )
                                             .slice(0, 10);
                                         if (
-                                            JSON.stringify(
+                                            sum(
                                                 graphData.leaderboardByPool
                                                     .positions,
-                                            ) !== JSON.stringify(top10Positions)
+                                            ) !== sum(top10Positions)
                                         ) {
                                             dispatch(
                                                 setLeaderboardByPool({
@@ -1391,8 +1376,7 @@ export default function App() {
     }, [
         searchableTokens.length,
         rtkMatchesParams,
-        // isServerEnabled,
-        tokenPairStringified,
+        baseTokenAddress + quoteTokenAddress,
         chainData.chainId,
         crocEnv,
     ]);
@@ -1461,10 +1445,7 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                if (
-                                    JSON.stringify(candleData) !==
-                                    JSON.stringify(candles)
-                                ) {
+                                if (sum(candleData) !== sum(candles)) {
                                     setCandleData({
                                         pool: {
                                             baseAddress:
@@ -1673,9 +1654,8 @@ export default function App() {
                         if (indexOfExistingCandle === -1) {
                             newCandles.push(messageCandle);
                         } else if (
-                            JSON.stringify(
-                                candleData.candles[indexOfExistingCandle],
-                            ) !== JSON.stringify(messageCandle)
+                            sum(candleData.candles[indexOfExistingCandle]) !==
+                            sum(messageCandle)
                         ) {
                             updatedCandles[indexOfExistingCandle] =
                                 messageCandle;
@@ -1719,9 +1699,8 @@ export default function App() {
                             console.debug('pushing new candle from message');
                         newCandles.push(messageCandle);
                     } else if (
-                        JSON.stringify(
-                            candleData.candles[indexOfExistingCandle],
-                        ) !== JSON.stringify(messageCandle)
+                        sum(candleData.candles[indexOfExistingCandle]) !==
+                        sum(messageCandle)
                     ) {
                         updatedCandles[indexOfExistingCandle] = messageCandle;
                     }
@@ -1930,7 +1909,7 @@ export default function App() {
             console.debug('resetting pool price because base/quote changed');
         setPoolPriceDisplay(0);
         // setPoolPriceTick(undefined);
-    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
     const getDisplayPrice = (spotPrice: number) => {
         return toDisplayPrice(spotPrice, baseTokenDecimals, quoteTokenDecimals);
@@ -2194,9 +2173,8 @@ export default function App() {
                                 }),
                             ).then((updatedPositions) => {
                                 if (
-                                    JSON.stringify(
-                                        graphData.positionsByUser.positions,
-                                    ) !== JSON.stringify(updatedPositions)
+                                    sum(graphData.positionsByUser.positions) !==
+                                    sum(updatedPositions)
                                 ) {
                                     dispatch(
                                         setPositionsByUser({
