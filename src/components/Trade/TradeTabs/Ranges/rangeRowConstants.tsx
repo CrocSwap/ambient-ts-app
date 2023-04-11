@@ -8,6 +8,7 @@ import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 interface Props {
     posHashTruncated: string;
     // sideTypeStyle: string;
@@ -22,15 +23,16 @@ interface Props {
     // quoteQuantityDisplayShort: string;
     // elapsedTimeString: string;
     // sideType: string;
-    // sideCharacter: string;
+    sideCharacter: string;
     // ensName: string | null;
     posHash: string;
     elapsedTimeString: string;
 
     ownerId: string;
-    // positiveArrow: string;
-    // positiveDisplayStyle: string;
-    // negativeDisplayStyle: string;
+    ambientOrMin: string;
+    ambientOrMax: string;
+    apyClassname: string | undefined;
+    apyString: string | undefined;
     // negativeArrow: string;
 
     // type: string;
@@ -38,14 +40,15 @@ interface Props {
     // truncatedHighDisplayPrice: string | undefined;
     // priceCharacter: string;
     // truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
-    // truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
-    // truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    minRangeDenomByMoneyness: string | undefined;
+    maxRangeDenomByMoneyness: string | undefined;
     // truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
-    // isOnPortfolioPage: boolean;
-    // isBuy: boolean;
-    // isOrderRemove: boolean;
+    isOnPortfolioPage: boolean;
+    isAmbient: boolean;
+    ipadView: boolean;
+    isPositionInRange: boolean;
     // valueArrows: boolean;
     isLeaderboard: boolean | undefined;
     showColumns: boolean;
@@ -85,6 +88,19 @@ export default function rangeRowConstants(props: Props) {
         showColumns,
         rank,
         elapsedTimeString,
+
+        maxRangeDenomByMoneyness,
+        isOnPortfolioPage,
+        isAmbient,
+
+        minRangeDenomByMoneyness,
+        ambientOrMin,
+        ambientOrMax,
+        sideCharacter,
+        ipadView,
+        apyClassname,
+        apyString,
+        isPositionInRange,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -370,6 +386,191 @@ export default function rangeRowConstants(props: Props) {
         </li>
     );
 
+    const ambientPriceDisplay = (
+        <li
+            onClick={openDetailsModal}
+            data-label='max price'
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <span>{'0.00'}</span>
+        </li>
+    );
+
+    const fullScreenMinDisplay = isAmbient ? (
+        <li
+            onClick={openDetailsModal}
+            data-label='max price'
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <span>{'0.00'}</span>
+        </li>
+    ) : (
+        <li
+            onClick={openDetailsModal}
+            data-label='min price'
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <span>{sideCharacter}</span>
+            <span>
+                {isOnPortfolioPage && !isAmbient
+                    ? minRangeDenomByMoneyness || '…'
+                    : ambientOrMin || '…'}
+            </span>
+        </li>
+    );
+
+    const fullScreenMaxDisplay = isAmbient ? (
+        <li
+            onClick={openDetailsModal}
+            data-label='max price'
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <span
+                style={{
+                    fontSize: '20px',
+                }}
+            >
+                {'∞'}
+            </span>
+        </li>
+    ) : (
+        <li
+            onClick={openDetailsModal}
+            data-label='max price'
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <span>{sideCharacter}</span>
+            <span>
+                {isOnPortfolioPage
+                    ? maxRangeDenomByMoneyness || '…'
+                    : ambientOrMax || '…'}
+            </span>
+        </li>
+    );
+
+    const columnNonAmbientPrice = showColumns && !ipadView && !isAmbient && (
+        <li
+            data-label='side-type'
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onClick={openDetailsModal}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <p>
+                <span>{sideCharacter}</span>
+                <span>
+                    {isOnPortfolioPage && !isAmbient
+                        ? minRangeDenomByMoneyness || '…'
+                        : ambientOrMin || '…'}
+                </span>
+            </p>
+            <p>
+                <span>{sideCharacter}</span>
+                <span>
+                    {isOnPortfolioPage
+                        ? maxRangeDenomByMoneyness || '…'
+                        : ambientOrMax || '…'}
+                </span>
+            </p>
+        </li>
+    );
+    const columnAmbientPrice = showColumns && !ipadView && isAmbient && (
+        <li
+            data-label='side-type'
+            className='base_color'
+            style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
+            onClick={openDetailsModal}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <p>
+                <span
+                    className='gradient_text'
+                    style={{ textTransform: 'lowercase' }}
+                >
+                    {'ambient'}
+                </span>
+            </p>
+        </li>
+    );
+
+    const tokenValues = (
+        <li
+            data-label={baseTokenSymbol + quoteTokenSymbol}
+            className='base_color'
+            style={{ textAlign: 'right' }}
+            onClick={openDetailsModal}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <div
+                className={styles.token_qty}
+                style={{
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {position.positionLiqBaseTruncated || '0'}
+                {baseTokenLogoComponent}
+            </div>
+
+            <div
+                className={styles.token_qty}
+                style={{
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {position.positionLiqQuoteTruncated || '0'}
+                {quoteTokenLogoComponent}
+            </div>
+        </li>
+    );
+
+    const apyDisplay = (
+        <li
+            onClick={openDetailsModal}
+            data-label='apy'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            {' '}
+            <p className={apyClassname}>{apyString}</p>
+        </li>
+    );
+
+    const rangeDisplay = (
+        <li
+            onClick={openDetailsModal}
+            data-label='status'
+            className='gradient_text'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
+            <RangeStatus
+                isInRange={isPositionInRange}
+                isAmbient={isAmbient}
+                isEmpty={position.totalValueUSD === 0}
+                justSymbol
+            />
+        </li>
+    );
+
     return {
         IDWithTooltip,
         valueWithTooltip,
@@ -385,5 +586,12 @@ export default function rangeRowConstants(props: Props) {
         quoteQtyDisplayWithTooltip,
         rangeTimeWithTooltip,
         txIdColumnComponent,
+        fullScreenMinDisplay,
+        fullScreenMaxDisplay,
+        columnNonAmbientPrice,
+        columnAmbientPrice,
+        tokenValues,
+        apyDisplay,
+        rangeDisplay,
     };
 }

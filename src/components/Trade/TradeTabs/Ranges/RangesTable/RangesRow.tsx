@@ -627,6 +627,19 @@ export default function RangesRow(props: propsIF) {
         showColumns,
         rank: props.rank,
         elapsedTimeString,
+
+        maxRangeDenomByMoneyness,
+        isOnPortfolioPage,
+        isAmbient,
+
+        minRangeDenomByMoneyness,
+        ambientOrMin,
+        ambientOrMax,
+        sideCharacter,
+        ipadView,
+        apyString,
+        apyClassname,
+        isPositionInRange,
     };
 
     const {
@@ -644,6 +657,13 @@ export default function RangesRow(props: propsIF) {
         quoteQtyDisplayWithTooltip,
         rangeTimeWithTooltip,
         txIdColumnComponent,
+        fullScreenMinDisplay,
+        fullScreenMaxDisplay,
+        columnNonAmbientPrice,
+        columnAmbientPrice,
+        tokenValues,
+        apyDisplay,
+        rangeDisplay,
     } = rangeRowConstants(rangeRowConstantsProps);
 
     return (
@@ -669,175 +689,16 @@ export default function RangesRow(props: propsIF) {
                     <li>{walletWithTooltip}</li>
                 )}
                 {showColumns && txIdColumnComponent}
-                {!showColumns ? (
-                    isAmbient ? (
-                        <li
-                            onClick={openDetailsModal}
-                            data-label='max price'
-                            className='base_color'
-                            style={{ textAlign: 'right' }}
-                            onMouseEnter={handleRowMouseDown}
-                            onMouseLeave={handleRowMouseOut}
-                        >
-                            <span>{'0.00'}</span>
-                        </li>
-                    ) : (
-                        <li
-                            onClick={openDetailsModal}
-                            data-label='min price'
-                            className='base_color'
-                            style={{ textAlign: 'right' }}
-                            onMouseEnter={handleRowMouseDown}
-                            onMouseLeave={handleRowMouseOut}
-                        >
-                            <span>{sideCharacter}</span>
-                            <span>
-                                {isOnPortfolioPage && !isAmbient
-                                    ? minRangeDenomByMoneyness || '…'
-                                    : ambientOrMin || '…'}
-                            </span>
-                        </li>
-                    )
-                ) : null}
-                {!showColumns ? (
-                    isAmbient ? (
-                        <li
-                            onClick={openDetailsModal}
-                            data-label='max price'
-                            className='base_color'
-                            style={{ textAlign: 'right' }}
-                            onMouseEnter={handleRowMouseDown}
-                            onMouseLeave={handleRowMouseOut}
-                        >
-                            <span
-                                style={{
-                                    fontSize: '20px',
-                                }}
-                            >
-                                {'∞'}
-                            </span>
-                        </li>
-                    ) : (
-                        <li
-                            onClick={openDetailsModal}
-                            data-label='max price'
-                            className='base_color'
-                            style={{ textAlign: 'right' }}
-                            onMouseEnter={handleRowMouseDown}
-                            onMouseLeave={handleRowMouseOut}
-                        >
-                            <span>{sideCharacter}</span>
-                            <span>
-                                {isOnPortfolioPage
-                                    ? maxRangeDenomByMoneyness || '…'
-                                    : ambientOrMax || '…'}
-                            </span>
-                        </li>
-                    )
-                ) : null}
-                {showColumns && !ipadView && !isAmbient && (
-                    <li
-                        data-label='side-type'
-                        className='base_color'
-                        style={{ textAlign: 'right' }}
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <p>
-                            <span>{sideCharacter}</span>
-                            <span>
-                                {isOnPortfolioPage && !isAmbient
-                                    ? minRangeDenomByMoneyness || '…'
-                                    : ambientOrMin || '…'}
-                            </span>
-                        </p>
-                        <p>
-                            <span>{sideCharacter}</span>
-                            <span>
-                                {isOnPortfolioPage
-                                    ? maxRangeDenomByMoneyness || '…'
-                                    : ambientOrMax || '…'}
-                            </span>
-                        </p>
-                    </li>
-                )}
-                {showColumns && !ipadView && isAmbient && (
-                    <li
-                        data-label='side-type'
-                        className='base_color'
-                        style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <p>
-                            <span
-                                className='gradient_text'
-                                style={{ textTransform: 'lowercase' }}
-                            >
-                                {'ambient'}
-                            </span>
-                        </p>
-                    </li>
-                )}
+                {!showColumns ? fullScreenMinDisplay : null}
+                {!showColumns ? fullScreenMaxDisplay : null}
+                {columnNonAmbientPrice}
+                {columnAmbientPrice}
                 {valueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && !phoneScreen && (
-                    <li
-                        data-label={baseTokenSymbol + quoteTokenSymbol}
-                        className='base_color'
-                        style={{ textAlign: 'right' }}
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <div
-                            className={styles.token_qty}
-                            style={{
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {position.positionLiqBaseTruncated || '0'}
-                            {baseTokenLogoComponent}
-                        </div>
-
-                        <div
-                            className={styles.token_qty}
-                            style={{
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {position.positionLiqQuoteTruncated || '0'}
-                            {quoteTokenLogoComponent}
-                        </div>
-                    </li>
-                )}
-                <li
-                    onClick={openDetailsModal}
-                    data-label='value'
-                    style={{ textAlign: 'right' }}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    {' '}
-                    <p className={apyClassname}>{apyString}</p>
-                </li>
-                <li
-                    onClick={openDetailsModal}
-                    data-label='status'
-                    className='gradient_text'
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    <RangeStatus
-                        isInRange={isPositionInRange}
-                        isAmbient={isAmbient}
-                        isEmpty={position.totalValueUSD === 0}
-                        justSymbol
-                    />
-                </li>
+                {showColumns && !phoneScreen && tokenValues}
+                {apyDisplay}
+                {rangeDisplay}
                 <li data-label='menu' className={styles.menu}>
                     <RangesMenu
                         {...rangeMenuProps}
