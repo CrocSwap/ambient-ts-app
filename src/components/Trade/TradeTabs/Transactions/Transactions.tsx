@@ -41,7 +41,6 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface propsIF {
-    importedTokens: TokenIF[];
     isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
@@ -76,7 +75,6 @@ interface propsIF {
 }
 export default function Transactions(props: propsIF) {
     const {
-        // importedTokens,
         isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,
@@ -300,10 +298,6 @@ export default function Transactions(props: propsIF) {
     };
 
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
-    const usePaginateDataOrNull =
-        expandTradeTable && largeScreenView
-            ? currentTransactions
-            : sortedTransactions;
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -327,7 +321,7 @@ export default function Transactions(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100,
+                n: 80,
             })
                 .then((poolChangesJsonData) => {
                     if (poolChangesJsonData) {
@@ -385,35 +379,6 @@ export default function Transactions(props: propsIF) {
             onOpen: () => {
                 IS_LOCAL_ENV &&
                     console.debug('pool recent changes subscription opened');
-
-                // repeat fetch with the interval of 30 seconds
-                // const timerId = setInterval(() => {
-                //     fetchPoolRecentChanges({
-                //         tokensOnActiveLists: tokenMap,
-
-                //         base: baseTokenAddress,
-                //         quote: quoteTokenAddress,
-                //         poolIdx: chainData.poolIndex,
-                //         chainId: chainData.chainId,
-                //         annotate: true,
-                //         addValue: true,
-                //         simpleCalc: true,
-                //         annotateMEV: false,
-                //         ensResolution: true,
-                //         n: 100,
-                //     })
-                //         .then((poolChangesJsonData) => {
-                //             if (poolChangesJsonData) {
-                //                 dispatch(addChangesByPool(poolChangesJsonData));
-                //             }
-                //         })
-                //         .catch(console.error);
-                // }, 30000);
-
-                // // after 90 seconds stop
-                // setTimeout(() => {
-                //     clearInterval(timerId);
-                // }, 90000);
             },
             onClose: (event: CloseEvent) => {
                 IS_LOCAL_ENV && console.debug({ event });
@@ -443,17 +408,8 @@ export default function Transactions(props: propsIF) {
         }
     }, [lastPoolChangeMessage]);
 
-    // const [expanded, setExpanded] = useState<false | number>(false);
-
-    // const sidebarOpen = false;
-
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
-
-    // const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
-    // const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
-
-    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -473,8 +429,7 @@ export default function Transactions(props: propsIF) {
             name: 'Timestamp',
             className: '',
             show: !showColumns,
-            // && !showSidebar
-            //   &&  !isOnPortfolioPage,
+
             slug: 'time',
             sortable: true,
         },
@@ -485,13 +440,7 @@ export default function Transactions(props: propsIF) {
             slug: 'pool',
             sortable: true,
         },
-        // {
-        //     name: 'Pool',
-        //     className: '',
-        //     show: isOnPortfolioPage && !showSidebar,
-        //     slug: 'pool',
-        //     sortable: false,
-        // },
+
         {
             name: 'ID',
 
@@ -590,15 +539,6 @@ export default function Transactions(props: propsIF) {
             sortable: false,
             alignRight: true,
         },
-        // {
-        //     name: '',
-
-        //     show: !isOnPortfolioPage && isShowAllEnabled,
-
-        //     slug: 'walletLink',
-        //     sortable: false,
-        //     alignRight: true,
-        // },
 
         {
             name: '',
@@ -641,7 +581,31 @@ export default function Transactions(props: propsIF) {
         </div>
     );
 
-    const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
+    const currentRowItemContent = currentTransactions.map((tx, idx) => (
+        <TransactionRow
+            account={account}
+            key={idx}
+            tx={tx}
+            tradeData={tradeData}
+            isTokenABase={isTokenABase}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+            openGlobalModal={openGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            view2={view2}
+            showPair={showPair}
+            showSidebar={showSidebar}
+            blockExplorer={blockExplorer}
+            closeGlobalModal={closeGlobalModal}
+            isOnPortfolioPage={isOnPortfolioPage}
+            handlePulseAnimation={handlePulseAnimation}
+            setSimpleRangeWidth={setSimpleRangeWidth}
+            chainData={chainData}
+        />
+    ));
+    const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
         <TransactionRow
             account={account}
             key={idx}
@@ -706,7 +670,11 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDown}>
-            <ul ref={listRef}>{rowItemContent}</ul>
+            <ul ref={listRef}>
+                {expandTradeTable && largeScreenView
+                    ? currentRowItemContent
+                    : sortedRowItemContent}
+            </ul>
         </div>
     );
 

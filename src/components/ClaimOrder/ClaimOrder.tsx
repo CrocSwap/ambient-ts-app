@@ -39,17 +39,13 @@ interface propsIF {
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
-        // lowPriceDisplay,
-        // highPriceDisplay,
         bidTick,
         askTick,
-        // positionLiquidity,
         positionLiqTotalUSD,
-        // userNameToDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
@@ -72,7 +68,6 @@ export default function ClaimOrder(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    // const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -81,7 +76,6 @@ export default function ClaimOrder(props: propsIF) {
         setShowConfirmation(false);
         setNewClaimTransactionHash('');
         setTxErrorCode('');
-        // setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -89,15 +83,8 @@ export default function ClaimOrder(props: propsIF) {
             resetConfirmation();
         }
     }, [txErrorCode]);
-    // eslint-disable-next-line
-    const [claimPercentage, setClaimPercentage] = useState(100);
-    // const [baseQtyToBeClaimed, setBaseQtyToBeClaimed] = useState<string>('…');
-    // const [quoteQtyToBeClaimed, setQuoteQtyToBeClaimed] = useState<string>('…');
 
-    // const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
-    // const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
-
-    // ---------------CLAIM FUNCTION TO BE REFACTORED
+    const claimPercentage = 100;
 
     const claimablePivotTime = limitOrder.claimableLiqPivotTimes
         ? parseInt(limitOrder.claimableLiqPivotTimes)
@@ -141,8 +128,6 @@ export default function ClaimOrder(props: propsIF) {
                                 txType: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
                             }),
                         );
-
-                    // .burnLiq(BigNumber.from(positionLiquidity));
                 }
             } catch (error) {
                 console.error({ error });
@@ -152,28 +137,8 @@ export default function ClaimOrder(props: propsIF) {
                 ) {
                     location.reload();
                 }
-                // setTxErrorMessage(error?.message);
             }
-            //  const newLimitOrderChangeCacheEndpoint =
-            //      'https://809821320828123.de:5000/new_limit_order_change?';
 
-            //  if (tx?.hash) {
-            //      fetch(
-            //          newLimitOrderChangeCacheEndpoint +
-            //              new URLSearchParams({
-            //                  chainId: limitOrder.chainId.toString(),
-            //                  tx: tx.hash,
-            //                  user: account ?? '',
-            //                  base: limitOrder.base,
-            //                  quote: limitOrder.quote,
-            //                  poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
-            //                  positionType: 'knockout',
-            //                  changeType: 'burn',
-            //                  limitTick: limitOrder.askTick.toString(),
-            //                  isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-            //              }),
-            //      );
-            //  }
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
@@ -190,25 +155,6 @@ export default function ClaimOrder(props: propsIF) {
                     setNewClaimTransactionHash(newTransactionHash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
-
-                    //  if (newTransactionHash) {
-                    //      fetch(
-                    //          newLimitOrderChangeCacheEndpoint +
-                    //              new URLSearchParams({
-                    //                  chainId: limitOrder.chainId.toString(),
-                    //                  tx: newTransactionHash,
-                    //                  user: account ?? '',
-                    //                  base: limitOrder.base,
-                    //                  quote: limitOrder.quote,
-                    //                  poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
-                    //                  positionType: 'knockout',
-                    //                  changeType: 'mint',
-                    //                  limitTick: limitOrder.askTick.toString(),
-                    //                  isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                    //                  liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    //              }),
-                    //      );
-                    //  }
                 } else if (isTransactionFailedError(error)) {
                     console.error({ error });
                     receipt = error.receipt;
@@ -222,17 +168,13 @@ export default function ClaimOrder(props: propsIF) {
         }
     };
 
-    // -------------END OF CLAIM FUNCTION TO BE REFACTORED
-
     // ----------------------------CONFIRMATION JSX------------------------------
-
-    // const etherscanLink =
-    //     chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
 
     const claimSuccess = (
         <TxSubmittedSimplify
             hash={newClaimTransactionHash}
-            content='Claim Transaction Successfully Submitted'
+            content='Claim Transaction Successfully Submitted.'
+            chainId={chainData.chainId}
         />
     );
 

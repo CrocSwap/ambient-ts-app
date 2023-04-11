@@ -37,6 +37,7 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
+import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -72,10 +73,8 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     openModalWallet: () => void;
-    importedTokens: TokenIF[];
-    chainData: ChainSpec;
     searchableTokens: TokenIF[];
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
@@ -88,8 +87,6 @@ interface propsIF {
     handlePulseAnimation: (type: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-
-    acknowledgeToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -101,6 +98,7 @@ interface propsIF {
     slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -128,8 +126,6 @@ export default function Portfolio(props: propsIF) {
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        importedTokens,
-        setImportedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -138,9 +134,7 @@ export default function Portfolio(props: propsIF) {
         setCurrentTxActiveInTransactions,
         showSidebar,
         handlePulseAnimation,
-
         openModalWallet,
-        acknowledgeToken,
         outputTokens,
         validatedInput,
         setInput,
@@ -152,6 +146,7 @@ export default function Portfolio(props: propsIF) {
         slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        ackTokens,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -254,7 +249,7 @@ export default function Portfolio(props: propsIF) {
                         .allowance(connectedAccount);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 setRecheckTokenAllowance(false);
             }
@@ -563,7 +558,6 @@ export default function Portfolio(props: propsIF) {
         isTokenABase: isTokenABase,
         provider: provider,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
-        importedTokens: importedTokens,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
@@ -598,29 +592,6 @@ export default function Portfolio(props: propsIF) {
         slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-    };
-
-    const soloTokenSelectProps = {
-        modalCloseCustom: modalCloseCustom,
-        provider: provider,
-        closeModal: closeTokenModal,
-        chainId: chainData.chainId,
-        importedTokens: outputTokens,
-        setImportedTokens: setImportedTokens,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
-        verifyToken: verifyToken,
-        showSoloSelectTokenButtons: showSoloSelectTokenButtons,
-        setShowSoloSelectTokenButtons: setShowSoloSelectTokenButtons,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        addRecentToken: addRecentToken,
-        getRecentTokens: getRecentTokens,
-        isSingleToken: true,
-        tokenAorB: null,
-        acknowledgeToken: acknowledgeToken,
     };
 
     const portfolioBannerProps = {
@@ -706,7 +677,29 @@ export default function Portfolio(props: propsIF) {
                     showBackButton={!showSoloSelectTokenButtons}
                     footer={null}
                 >
-                    <SoloTokenSelect {...soloTokenSelectProps} />
+                    <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
+                        provider={provider}
+                        closeModal={closeTokenModal}
+                        chainId={chainData.chainId}
+                        importedTokensPlus={outputTokens}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        verifyToken={verifyToken}
+                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={
+                            setShowSoloSelectTokenButtons
+                        }
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
+                        isSingleToken={true}
+                        tokenAorB={null}
+                        ackTokens={ackTokens}
+                    />
                 </Modal>
             )}
         </main>

@@ -78,6 +78,9 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
     const { dataTokenA, dataTokenB } = tokenPair;
 
+    const baseToken = isTokenABase ? dataTokenA : dataTokenB;
+    const quoteToken = isTokenABase ? dataTokenB : dataTokenA;
+
     const txApproved = newRepositionTransactionHash !== '';
     const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
 
@@ -90,6 +93,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenBAddress={dataTokenB.address}
             tokenBDecimals={dataTokenB.decimals}
             tokenBImage={dataTokenB.logoURI}
+            chainId={dataTokenB.chainId}
+            reposition
         />
     );
 
@@ -119,18 +124,15 @@ export default function ConfirmRepositionModal(props: propsIF) {
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
+                        {baseToken.logoURI ? (
+                            <img src={baseToken.logoURI} alt={baseToken.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                tokenInitial={baseToken.symbol.charAt(0)}
                                 width='20px'
                             />
                         )}
-                        <span>Current {dataTokenA.symbol} Collateral</span>
+                        <span>Current {baseToken.symbol} Collateral</span>
                     </div>
                     <span>{currentBaseQtyDisplayTruncated}</span>
                 </div>
@@ -138,17 +140,14 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
+                            <img src={baseToken.logoURI} alt={baseToken.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                tokenInitial={baseToken.symbol.charAt(0)}
                                 width='20px'
                             />
                         )}
-                        <span> {dataTokenA.symbol} After Reposition</span>
+                        <span> {baseToken.symbol} After Reposition</span>
                     </div>
                     <span>{newBaseQtyDisplay}</span>
                 </div>
@@ -156,35 +155,35 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenB.logoURI ? (
+                        {quoteToken.logoURI ? (
                             <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
+                                src={quoteToken.logoURI}
+                                alt={quoteToken.name}
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                tokenInitial={quoteToken.symbol.charAt(0)}
                                 width='20px'
                             />
                         )}
-                        <span>Current {dataTokenB.symbol} Collateral</span>
+                        <span>Current {quoteToken.symbol} Collateral</span>
                     </div>
                     <span>{currentQuoteQtyDisplayTruncated}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenB.logoURI ? (
+                        {quoteToken.logoURI ? (
                             <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
+                                src={quoteToken.logoURI}
+                                alt={quoteToken.name}
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                tokenInitial={quoteToken.symbol.charAt(0)}
                                 width='20px'
                             />
                         )}
-                        <span>{dataTokenB.symbol} After Reposition</span>
+                        <span>{quoteToken.symbol} After Reposition</span>
                     </div>
                     <span>{newQuoteQtyDisplay}</span>
                 </div>

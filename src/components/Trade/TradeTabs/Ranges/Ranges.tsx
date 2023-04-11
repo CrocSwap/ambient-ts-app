@@ -27,7 +27,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -64,7 +64,6 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    importedTokens: TokenIF[];
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
@@ -287,11 +286,6 @@ export default function Ranges(props: propsIF) {
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
-    const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage && largeScreenView
-            ? currentRanges
-            : sortedPositions;
-
     const footerDisplay = (
         <div className={styles.footer}>
             {expandTradeTable && sortedPositions.length > 30 && (
@@ -444,15 +438,7 @@ export default function Ranges(props: propsIF) {
             slug: 'status',
             sortable: true,
         },
-        {
-            name: '',
 
-            show: !isOnPortfolioPage && isShowAllEnabled,
-
-            slug: 'walletLink',
-            sortable: false,
-            alignRight: true,
-        },
         {
             name: '',
             className: '',
@@ -480,7 +466,44 @@ export default function Ranges(props: propsIF) {
             ))}
         </ul>
     );
-    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
+    const sortedRowItemContent = sortedPositions.map((position, idx) => (
+        <RangesRow
+            cachedQuerySpotPrice={cachedQuerySpotPrice}
+            account={account}
+            key={idx}
+            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
+            position={position}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+            openGlobalModal={props.openGlobalModal}
+            closeGlobalModal={props.closeGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            showSidebar={showSidebar}
+            isUserLoggedIn={isUserLoggedIn}
+            crocEnv={crocEnv}
+            chainData={chainData}
+            provider={provider}
+            chainId={chainId}
+            baseTokenBalance={baseTokenBalance}
+            quoteTokenBalance={quoteTokenBalance}
+            baseTokenDexBalance={baseTokenDexBalance}
+            quoteTokenDexBalance={quoteTokenDexBalance}
+            lastBlockNumber={lastBlockNumber}
+            isOnPortfolioPage={isOnPortfolioPage}
+            idx={idx}
+            handlePulseAnimation={handlePulseAnimation}
+            showPair={showPair}
+            setSimpleRangeWidth={setSimpleRangeWidth}
+            dexBalancePrefs={dexBalancePrefs}
+            slippage={slippage}
+            gasPriceInGwei={gasPriceInGwei}
+            ethMainnetUsdPrice={ethMainnetUsdPrice}
+        />
+    ));
+
+    const currentRowItemContent = currentRanges.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
@@ -528,7 +551,11 @@ export default function Ranges(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
-        rowItemContent
+        expandTradeTable && !isOnPortfolioPage && largeScreenView ? (
+            currentRowItemContent
+        ) : (
+            sortedRowItemContent
+        )
     ) : (
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}

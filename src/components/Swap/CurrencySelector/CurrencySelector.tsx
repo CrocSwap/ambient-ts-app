@@ -21,13 +21,14 @@ import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSele
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
+import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     fieldId: string;
     tokenAorB: string | null;
@@ -59,8 +60,6 @@ interface propsIF {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -79,7 +78,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
     openGlobalPopup: (
         content: React.ReactNode,
         popupTitle?: string,
@@ -87,6 +85,7 @@ interface propsIF {
     ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
+    ackTokens: ackTokensMethodsIF;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -99,10 +98,7 @@ export default function CurrencySelector(props: propsIF) {
         setBuyQtyString,
         isUserLoggedIn,
         tokenPair,
-        // tokensBank,
-        setImportedTokens,
         chainId,
-        // direction,
         fieldId,
         tokenAorB,
         handleChangeEvent,
@@ -118,11 +114,7 @@ export default function CurrencySelector(props: propsIF) {
         isSwapCopied,
         isSellTokenEth,
         tokenASurplusMinusTokenARemainderNum,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenASurplusMinusTokenAQtyNum,
         reverseTokens,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
         gasPriceInGwei,
         verifyToken,
         getTokensByName,
@@ -134,11 +126,10 @@ export default function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken,
+        openGlobalPopup,
         dexBalancePrefs,
+        ackTokens,
     } = props;
-
-    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector
@@ -271,6 +262,26 @@ export default function CurrencySelector(props: propsIF) {
         }
     }
 
+    const exchangeBalanceTitle = (
+        <p
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
+            onClick={() =>
+                openGlobalPopup(
+                    <ExchangeBalanceExplanation />,
+                    'Exchange Balance',
+                    'right',
+                )
+            }
+        >
+            Wallet & Exchange Balance <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
+
     const walletContent = (
         <section className={styles.wallet_container}>
             <div
@@ -296,13 +307,22 @@ export default function CurrencySelector(props: propsIF) {
                         <img src={ambientLogo} width='20' alt='surplus' />
                     </div>
                 </IconWithTooltip>
-                <div className={styles.balance_column}>
-                    <div>
-                        {isUserLoggedIn
-                            ? walletAndSurplusBalanceLocaleString
-                            : ''}
+                <DefaultTooltip
+                    interactive
+                    title={exchangeBalanceTitle}
+                    placement={'bottom'}
+                    arrow
+                    enterDelay={100}
+                    leaveDelay={200}
+                >
+                    <div className={styles.balance_column}>
+                        <div>
+                            {isUserLoggedIn
+                                ? walletAndSurplusBalanceLocaleString
+                                : ''}
+                        </div>
                     </div>
-                </div>
+                </DefaultTooltip>
             </div>
             {maxButton}
         </section>
@@ -402,8 +422,7 @@ export default function CurrencySelector(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
+                        importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
@@ -421,7 +440,7 @@ export default function CurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
+                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

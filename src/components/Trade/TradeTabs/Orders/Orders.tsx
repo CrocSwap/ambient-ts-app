@@ -39,7 +39,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 // interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
-    importedTokens: TokenIF[];
+    searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
@@ -66,7 +66,7 @@ interface propsIF {
 export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
-        importedTokens,
+        searchableTokens,
         connectedAccountActive,
         crocEnv,
         chainData,
@@ -84,8 +84,12 @@ export default function Orders(props: propsIF) {
         lastBlockNumber,
     } = props;
 
-    const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
-    const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
+    const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
+        (x) => x.chainId === chainData.chainId,
+    );
+    const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders.filter(
+        (x) => x.chainId === chainData.chainId,
+    );
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -202,7 +206,7 @@ export default function Orders(props: propsIF) {
                             orderJsonData.map((limitOrder: LimitOrderIF) => {
                                 return getLimitOrderData(
                                     limitOrder,
-                                    importedTokens,
+                                    searchableTokens,
                                 );
                             }),
                         ).then((updatedLimitOrderStates) => {
@@ -277,7 +281,7 @@ export default function Orders(props: propsIF) {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, importedTokens);
+                        return getLimitOrderData(limitOrder, searchableTokens);
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -439,15 +443,6 @@ export default function Orders(props: propsIF) {
             slug: 'status',
             sortable: false,
             alignCenter: true,
-        },
-        {
-            name: '',
-
-            show: !isOnPortfolioPage && isShowAllEnabled,
-
-            slug: 'walletLink',
-            sortable: false,
-            alignRight: true,
         },
 
         {

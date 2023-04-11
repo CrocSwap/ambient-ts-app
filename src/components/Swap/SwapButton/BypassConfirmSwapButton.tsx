@@ -90,13 +90,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             initiateTx={initiateSwapMethod}
         />
     );
-    // const transactionFailed = (
-    //     <TransactionFailed
-    //         noAnimation
-    //         resetConfirmation={handleReset}
-    //         initiateTx={initiateSwapMethod}
-    //     />
-    // );
+
     const transactionException = (
         <TransactionException
             noAnimation
@@ -123,6 +117,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            chainId={buyTokenData.chainId}
             noAnimation
         />
     );

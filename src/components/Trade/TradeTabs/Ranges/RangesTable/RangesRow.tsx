@@ -21,6 +21,9 @@ import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
+import { FiExternalLink, FiCopy } from 'react-icons/fi';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -215,6 +218,33 @@ export default function RangesRow(props: propsIF) {
             inline: 'nearest',
         });
     }
+    // eslint-disable-next-line
+    const [value, copy] = useCopyToClipboard();
+    const [valueToCopy, setValueToCopy] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {valueToCopy} copied
+        </SnackbarComponent>
+    );
+
+    function handleWalletCopy() {
+        setValueToCopy(ownerId);
+        copy(ownerId);
+
+        setOpenSnackbar(true);
+    }
+
+    function handleCopyPosHash() {
+        setValueToCopy(posHash.toString());
+        copy(posHash.toString());
+
+        setOpenSnackbar(true);
+    }
 
     useEffect(() => {
         position.positionStorageSlot === currentPositionActive
@@ -250,29 +280,42 @@ export default function RangesRow(props: propsIF) {
             title={
                 <p
                     style={{
-                        marginLeft: '-40px',
+                        marginLeft: '-60px',
+
                         background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'pointer',
+                        cursor: 'default',
+
                         fontFamily: 'monospace',
+
+                        whiteSpace: 'nowrap',
+                        width: '440px',
+
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
                     }}
                 >
                     {posHash.toString()}
+                    <FiCopy
+                        style={{ cursor: 'pointer' }}
+                        onClick={handleCopyPosHash}
+                    />
                 </p>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
+            <p
                 onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
                 {posHashTruncated}
-            </li>
+            </p>
         </TextOnlyTooltip>
     );
 
@@ -289,18 +332,95 @@ export default function RangesRow(props: propsIF) {
             {'$' + usdValue}
         </li>
     );
+    function handleWalletLinkClick() {
+        if (!isOnPortfolioPage)
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'lookupUserTxData',
+                    loadingStatus: isOnPortfolioPage ? false : true,
+                }),
+            );
 
-    const walletWithTooltip = (
-        <li
+        window.open(
+            `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`,
+        );
+    }
+
+    const actualWalletWithTooltip = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <div
+                    style={{
+                        marginRight: '-80px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text-grey-white)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'default',
+
+                        // width: '450px',
+                    }}
+                >
+                    <p
+                        style={{
+                            fontFamily: 'monospace',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            whiteSpace: 'nowrap',
+
+                            gap: '4px',
+                        }}
+                    >
+                        {ownerId}
+                        <FiCopy
+                            style={{ cursor: 'pointer' }}
+                            size={'12px'}
+                            onClick={() => handleWalletCopy()}
+                        />
+
+                        <FiExternalLink
+                            style={{ cursor: 'pointer' }}
+                            size={'12px'}
+                            onClick={handleWalletLinkClick}
+                        />
+                    </p>
+                </div>
+            }
+            placement={'right'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <p
+                onClick={openDetailsModal}
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+            >
+                {userNameToDisplay}
+            </p>
+        </TextOnlyTooltip>
+    );
+
+    const walletWithoutTooltip = (
+        <p
+            // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
+            tabIndex={0}
         >
             {userNameToDisplay}
-        </li>
+        </p>
     );
 
+    const walletWithTooltip = isOwnerActiveAccount
+        ? walletWithoutTooltip
+        : actualWalletWithTooltip;
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
             <img src={baseTokenLogo} alt='base token' width={logoSizes} />
@@ -340,14 +460,6 @@ export default function RangesRow(props: propsIF) {
         position.base;
 
     const tokenPair = (
-        // <DefaultTooltip
-        //     interactive
-        //     title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
-        //     placement={'left'}
-        //     arrow
-        //     enterDelay={150}
-        //     leaveDelay={0}
-        // >
         <li
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -359,14 +471,14 @@ export default function RangesRow(props: propsIF) {
                 </p>
             </NavLink>
         </li>
-        // </DefaultTooltip>
     );
 
     // end of portfolio page li element ---------------
 
     // Leaderboard content--------------------------------
 
-    const idOrNull = !isLeaderboard && !showColumns ? IDWithTooltip : null;
+    const idOrNull =
+        !isLeaderboard && !showColumns ? <li> {IDWithTooltip}</li> : null;
 
     const rankingOrNull =
         isLeaderboard && !showColumns ? (
@@ -507,222 +619,220 @@ export default function RangesRow(props: propsIF) {
         }
     };
 
+    const txIdColumnComponent = (
+        <li>
+            {IDWithTooltip}
+            {walletWithTooltip}
+        </li>
+    );
+
     return (
-        <ul
-            onMouseEnter={() => setShowHighlightedButton(true)}
-            onMouseLeave={() => setShowHighlightedButton(false)}
-            className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
-            onClick={() =>
-                position.positionStorageSlot === currentPositionActive
-                    ? null
-                    : setCurrentPositionActive('')
-            }
-            id={positionDomId}
-            ref={currentPositionActive ? activePositionRef : null}
-            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-        >
-            {rankingOrNull}
-            {showPair && RangeTimeWithTooltip}
-            {isOnPortfolioPage && showPair && tokenPair}
-            {idOrNull}
-            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
-            {showColumns && (
-                <li data-label='id' onClick={openDetailsModal}>
-                    <p className={`base_color ${styles.hover_style}`}>
-                        {posHashTruncated}
-                    </p>{' '}
-                    <p
-                        className={`${usernameStyle} ${styles.hover_style}`}
-                        style={{ textTransform: 'lowercase' }}
-                    >
-                        {userNameToDisplay}
-                    </p>
-                </li>
-            )}
-            {!showColumns ? (
-                isAmbient ? (
+        <>
+            <ul
+                onMouseEnter={() => setShowHighlightedButton(true)}
+                onMouseLeave={() => setShowHighlightedButton(false)}
+                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                onClick={() =>
+                    position.positionStorageSlot === currentPositionActive
+                        ? null
+                        : setCurrentPositionActive('')
+                }
+                id={positionDomId}
+                ref={currentPositionActive ? activePositionRef : null}
+                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+            >
+                {rankingOrNull}
+                {showPair && RangeTimeWithTooltip}
+                {isOnPortfolioPage && showPair && tokenPair}
+                {idOrNull}
+                {!showColumns && !isOnPortfolioPage && (
+                    <li>{walletWithTooltip}</li>
+                )}
+                {showColumns && txIdColumnComponent}
+                {!showColumns ? (
+                    isAmbient ? (
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='max price'
+                            className='base_color'
+                            style={{ textAlign: 'right' }}
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
+                        >
+                            <span>{'0.00'}</span>
+                        </li>
+                    ) : (
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='min price'
+                            className='base_color'
+                            style={{ textAlign: 'right' }}
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
+                        >
+                            <span>{sideCharacter}</span>
+                            <span>
+                                {isOnPortfolioPage && !isAmbient
+                                    ? minRangeDenomByMoneyness || '…'
+                                    : ambientOrMin || '…'}
+                            </span>
+                        </li>
+                    )
+                ) : null}
+                {!showColumns ? (
+                    isAmbient ? (
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='max price'
+                            className='base_color'
+                            style={{ textAlign: 'right' }}
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
+                        >
+                            <span
+                                style={{
+                                    fontSize: '20px',
+                                }}
+                            >
+                                {'∞'}
+                            </span>
+                        </li>
+                    ) : (
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='max price'
+                            className='base_color'
+                            style={{ textAlign: 'right' }}
+                            onMouseEnter={handleRowMouseDown}
+                            onMouseLeave={handleRowMouseOut}
+                        >
+                            <span>{sideCharacter}</span>
+                            <span>
+                                {isOnPortfolioPage
+                                    ? maxRangeDenomByMoneyness || '…'
+                                    : ambientOrMax || '…'}
+                            </span>
+                        </li>
+                    )
+                ) : null}
+                {showColumns && !ipadView && !isAmbient && (
                     <li
-                        onClick={openDetailsModal}
-                        data-label='max price'
+                        data-label='side-type'
                         className='base_color'
                         style={{ textAlign: 'right' }}
+                        onClick={openDetailsModal}
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                     >
-                        <span>{'0.00'}</span>
+                        <p>
+                            <span>{sideCharacter}</span>
+                            <span>
+                                {isOnPortfolioPage && !isAmbient
+                                    ? minRangeDenomByMoneyness || '…'
+                                    : ambientOrMin || '…'}
+                            </span>
+                        </p>
+                        <p>
+                            <span>{sideCharacter}</span>
+                            <span>
+                                {isOnPortfolioPage
+                                    ? maxRangeDenomByMoneyness || '…'
+                                    : ambientOrMax || '…'}
+                            </span>
+                        </p>
                     </li>
-                ) : (
+                )}
+                {showColumns && !ipadView && isAmbient && (
                     <li
-                        onClick={openDetailsModal}
-                        data-label='min price'
+                        data-label='side-type'
                         className='base_color'
-                        style={{ textAlign: 'right' }}
+                        style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
+                        onClick={openDetailsModal}
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                     >
-                        <span>{sideCharacter}</span>
-                        <span>
-                            {isOnPortfolioPage && !isAmbient
-                                ? minRangeDenomByMoneyness || '…'
-                                : ambientOrMin || '…'}
-                        </span>
+                        <p>
+                            <span
+                                className='gradient_text'
+                                style={{ textTransform: 'lowercase' }}
+                            >
+                                {'ambient'}
+                            </span>
+                        </p>
                     </li>
-                )
-            ) : null}
-            {!showColumns ? (
-                isAmbient ? (
+                )}
+                {ValueWithTooltip}
+                {!showColumns && baseQtyDisplayWithTooltip}
+                {!showColumns && quoteQtyDisplayWithTooltip}
+                {showColumns && !phoneScreen && (
                     <li
-                        onClick={openDetailsModal}
-                        data-label='max price'
+                        data-label={baseTokenSymbol + quoteTokenSymbol}
                         className='base_color'
                         style={{ textAlign: 'right' }}
+                        onClick={openDetailsModal}
                         onMouseEnter={handleRowMouseDown}
                         onMouseLeave={handleRowMouseOut}
                     >
-                        <span
+                        <div
+                            className={styles.token_qty}
                             style={{
-                                fontSize: '20px',
+                                whiteSpace: 'nowrap',
                             }}
                         >
-                            {'∞'}
-                        </span>
-                    </li>
-                ) : (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='max price'
-                        className='base_color'
-                        style={{ textAlign: 'right' }}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <span>{sideCharacter}</span>
-                        <span>
-                            {isOnPortfolioPage
-                                ? maxRangeDenomByMoneyness || '…'
-                                : ambientOrMax || '…'}
-                        </span>
-                    </li>
-                )
-            ) : null}
-            {showColumns && !ipadView && !isAmbient && (
-                <li
-                    data-label='side-type'
-                    className='base_color'
-                    style={{ textAlign: 'right' }}
-                    onClick={openDetailsModal}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    <p>
-                        <span>{sideCharacter}</span>
-                        <span>
-                            {isOnPortfolioPage && !isAmbient
-                                ? minRangeDenomByMoneyness || '…'
-                                : ambientOrMin || '…'}
-                        </span>
-                    </p>
-                    <p>
-                        <span>{sideCharacter}</span>
-                        <span>
-                            {isOnPortfolioPage
-                                ? maxRangeDenomByMoneyness || '…'
-                                : ambientOrMax || '…'}
-                        </span>
-                    </p>
-                </li>
-            )}
-            {showColumns && !ipadView && isAmbient && (
-                <li
-                    data-label='side-type'
-                    className='base_color'
-                    style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
-                    onClick={openDetailsModal}
-                    onMouseEnter={handleRowMouseDown}
-                    onMouseLeave={handleRowMouseOut}
-                >
-                    <p>
-                        <span
-                            className='gradient_text'
-                            style={{ textTransform: 'lowercase' }}
+                            {position.positionLiqBaseTruncated || '0'}
+                            {baseTokenLogoComponent}
+                        </div>
+
+                        <div
+                            className={styles.token_qty}
+                            style={{
+                                whiteSpace: 'nowrap',
+                            }}
                         >
-                            {'ambient'}
-                        </span>
-                    </p>
-                </li>
-            )}
-            {ValueWithTooltip}
-            {!showColumns && baseQtyDisplayWithTooltip}
-            {!showColumns && quoteQtyDisplayWithTooltip}
-            {showColumns && !phoneScreen && (
+                            {position.positionLiqQuoteTruncated || '0'}
+                            {quoteTokenLogoComponent}
+                        </div>
+                    </li>
+                )}
                 <li
-                    data-label={baseTokenSymbol + quoteTokenSymbol}
-                    className='base_color'
-                    style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
+                    data-label='value'
+                    style={{ textAlign: 'right' }}
                     onMouseEnter={handleRowMouseDown}
                     onMouseLeave={handleRowMouseOut}
                 >
-                    <div
-                        className={styles.token_qty}
-                        style={{
-                            whiteSpace: 'nowrap',
-                        }}
-                    >
-                        {position.positionLiqBaseTruncated || '0'}
-                        {baseTokenLogoComponent}
-                    </div>
-
-                    <div
-                        className={styles.token_qty}
-                        style={{
-                            whiteSpace: 'nowrap',
-                        }}
-                    >
-                        {position.positionLiqQuoteTruncated || '0'}
-                        {quoteTokenLogoComponent}
-                    </div>
+                    {' '}
+                    <p className={apyClassname}>{apyString}</p>
                 </li>
-            )}
-
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                style={{ textAlign: 'right' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                {' '}
-                <p className={apyClassname}>{apyString}</p>
-            </li>
-            <li
-                onClick={openDetailsModal}
-                data-label='status'
-                className='gradient_text'
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <RangeStatus
-                    isInRange={isPositionInRange}
-                    isAmbient={isAmbient}
-                    isEmpty={position.totalValueUSD === 0}
-                    justSymbol
-                />
-            </li>
-
-            <li data-label='menu' className={styles.menu}>
-                <RangesMenu
-                    {...rangeMenuProps}
-                    showSidebar={props.showSidebar}
-                    isEmpty={position.totalValueUSD === 0}
-                    showHighlightedButton={showHighlightedButton}
-                    setSimpleRangeWidth={setSimpleRangeWidth}
-                    dexBalancePrefs={dexBalancePrefs}
-                    slippage={slippage}
-                    handleAccountClick={handleAccountClick}
-                    isShowAllEnabled={isShowAllEnabled}
-                />
-            </li>
-        </ul>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='status'
+                    className='gradient_text'
+                    onMouseEnter={handleRowMouseDown}
+                    onMouseLeave={handleRowMouseOut}
+                >
+                    <RangeStatus
+                        isInRange={isPositionInRange}
+                        isAmbient={isAmbient}
+                        isEmpty={position.totalValueUSD === 0}
+                        justSymbol
+                    />
+                </li>
+                <li data-label='menu' className={styles.menu}>
+                    <RangesMenu
+                        {...rangeMenuProps}
+                        showSidebar={props.showSidebar}
+                        isEmpty={position.totalValueUSD === 0}
+                        showHighlightedButton={showHighlightedButton}
+                        setSimpleRangeWidth={setSimpleRangeWidth}
+                        dexBalancePrefs={dexBalancePrefs}
+                        slippage={slippage}
+                        handleAccountClick={handleAccountClick}
+                        isShowAllEnabled={isShowAllEnabled}
+                    />
+                </li>
+            </ul>
+            {snackbarContent}
+        </>
     );
 }

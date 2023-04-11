@@ -4,6 +4,7 @@ import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import Blockies from 'react-blockies';
+import { getChainExplorer } from '../../../../../utils/data/chains';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -13,6 +14,7 @@ interface WalletDropdownPropsIF {
     clickLogout: () => void;
     walletWrapperStyle: string;
     accountAddressFull: string;
+    chainId: string;
 
     ethAmount: string;
     ethValue: string;
@@ -37,12 +39,14 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickLogout,
         walletWrapperStyle,
         accountAddressFull,
+        chainId,
         ethAmount,
         ethValue,
         // showWalletDropdown, setShowWalletDropdown
     } = props;
 
     const blockiesSeed = accountAddressFull.toLowerCase();
+    const blockExplorer = getChainExplorer(chainId);
 
     const myBlockie = (
         <div className={styles.blockie_container}>
@@ -60,7 +64,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     <a
                         target='_blank'
                         rel='noreferrer'
-                        href={`https://goerli.etherscan.io/address/${accountAddressFull}`}
+                        href={`${blockExplorer}/address/${accountAddressFull}`}
                         aria-label='View address on Etherscan'
                     >
                         <FiExternalLink />

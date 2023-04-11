@@ -464,6 +464,7 @@ export default function HarvestPosition(props: propsIF) {
         <TxSubmittedSimplify
             hash={newHarvestTransactionHash}
             content='Harvest Transaction Successfully Submitted!'
+            chainId={chainData.chainId}
         />
     );
 
