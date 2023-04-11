@@ -24,6 +24,7 @@ import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import { FiExternalLink, FiCopy } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
+import rangeRowConstants from '../rangeRowConstants';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -110,6 +111,7 @@ export default function RangesRow(props: propsIF) {
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
+        elapsedTimeString,
     } = useProcessRange(position, account, isOnPortfolioPage);
 
     const rangeDetailsProps = {
@@ -274,64 +276,64 @@ export default function RangesRow(props: propsIF) {
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
 
-    const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-60px',
+    // const IDWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <p
+    //                 style={{
+    //                     marginLeft: '-60px',
 
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'default',
 
-                        fontFamily: 'monospace',
+    //                     fontFamily: 'monospace',
 
-                        whiteSpace: 'nowrap',
-                        width: '440px',
+    //                     whiteSpace: 'nowrap',
+    //                     width: '440px',
 
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                    }}
-                >
-                    {posHash.toString()}
-                    <FiCopy
-                        style={{ cursor: 'pointer' }}
-                        onClick={handleCopyPosHash}
-                    />
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                onClick={openDetailsModal}
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
-            >
-                {posHashTruncated}
-            </p>
-        </TextOnlyTooltip>
-    );
+    //                     display: 'flex',
+    //                     alignItems: 'center',
+    //                     gap: '4px',
+    //                 }}
+    //             >
+    //                 {posHash.toString()}
+    //                 <FiCopy
+    //                     style={{ cursor: 'pointer' }}
+    //                     onClick={handleCopyPosHash}
+    //                 />
+    //             </p>
+    //         }
+    //         placement={'right'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <p
+    //             onClick={openDetailsModal}
+    //             data-label='id'
+    //             className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+    //         >
+    //             {posHashTruncated}
+    //         </p>
+    //     </TextOnlyTooltip>
+    // );
 
-    const ValueWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label='value'
-            className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            {' '}
-            {'$' + usdValue}
-        </li>
-    );
+    // const ValueWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label='value'
+    //         className='base_color'
+    //         style={{ textAlign: 'right' }}
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         {' '}
+    //         {'$' + usdValue}
+    //     </li>
+    // );
     function handleWalletLinkClick() {
         if (!isOnPortfolioPage)
             dispatch(
@@ -348,98 +350,98 @@ export default function RangesRow(props: propsIF) {
         );
     }
 
-    const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
+    // const actualWalletWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <div
+    //                 style={{
+    //                     marginRight: '-80px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'default',
 
-                        // width: '450px',
-                    }}
-                >
-                    <p
-                        style={{
-                            fontFamily: 'monospace',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            whiteSpace: 'nowrap',
+    //                     // width: '450px',
+    //                 }}
+    //             >
+    //                 <p
+    //                     style={{
+    //                         fontFamily: 'monospace',
+    //                         display: 'flex',
+    //                         flexDirection: 'row',
+    //                         alignItems: 'center',
+    //                         whiteSpace: 'nowrap',
 
-                            gap: '4px',
-                        }}
-                    >
-                        {ownerId}
-                        <FiCopy
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={() => handleWalletCopy()}
-                        />
+    //                         gap: '4px',
+    //                     }}
+    //                 >
+    //                     {ownerId}
+    //                     <FiCopy
+    //                         style={{ cursor: 'pointer' }}
+    //                         size={'12px'}
+    //                         onClick={() => handleWalletCopy()}
+    //                     />
 
-                        <FiExternalLink
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={handleWalletLinkClick}
-                        />
-                    </p>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                onClick={openDetailsModal}
-                data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
-            >
-                {userNameToDisplay}
-            </p>
-        </TextOnlyTooltip>
-    );
+    //                     <FiExternalLink
+    //                         style={{ cursor: 'pointer' }}
+    //                         size={'12px'}
+    //                         onClick={handleWalletLinkClick}
+    //                     />
+    //                 </p>
+    //             </div>
+    //         }
+    //         placement={'right'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <p
+    //             onClick={openDetailsModal}
+    //             data-label='wallet'
+    //             className={usernameStyle}
+    //             style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+    //         >
+    //             {userNameToDisplay}
+    //         </p>
+    //     </TextOnlyTooltip>
+    // );
 
-    const walletWithoutTooltip = (
-        <p
-            // onClick={handleWalletClick}
-            onClick={openDetailsModal}
-            data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase' }}
-            tabIndex={0}
-        >
-            {userNameToDisplay}
-        </p>
-    );
+    // const walletWithoutTooltip = (
+    //     <p
+    //         // onClick={handleWalletClick}
+    //         onClick={openDetailsModal}
+    //         data-label='wallet'
+    //         className={`${usernameStyle} ${styles.hover_style}`}
+    //         style={{ textTransform: 'lowercase' }}
+    //         tabIndex={0}
+    //     >
+    //         {userNameToDisplay}
+    //     </p>
+    // );
 
-    const walletWithTooltip = isOwnerActiveAccount
-        ? walletWithoutTooltip
-        : actualWalletWithTooltip;
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-        ) : (
-            <NoTokenIcon
-                tokenInitial={position.baseSymbol.charAt(0)}
-                width={logoSizes}
-            />
-        );
+    // const walletWithTooltip = isOwnerActiveAccount
+    //     ? walletWithoutTooltip
+    //     : actualWalletWithTooltip;
+    // const baseTokenLogoComponent =
+    //     baseTokenLogo !== '' ? (
+    //         <img src={baseTokenLogo} alt='base token' width={logoSizes} />
+    //     ) : (
+    //         <NoTokenIcon
+    //             tokenInitial={position.baseSymbol.charAt(0)}
+    //             width={logoSizes}
+    //         />
+    //     );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-        ) : (
-            <NoTokenIcon
-                tokenInitial={position.quoteSymbol.charAt(0)}
-                width={logoSizes}
-            />
-        );
+    // const quoteTokenLogoComponent =
+    //     quoteTokenLogo !== '' ? (
+    //         <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
+    //     ) : (
+    //         <NoTokenIcon
+    //             tokenInitial={position.quoteSymbol.charAt(0)}
+    //             width={logoSizes}
+    //         />
+    //     );
 
     const pair =
         position.base !== ZERO_ADDRESS
@@ -459,137 +461,114 @@ export default function RangesRow(props: propsIF) {
         '&tokenB=' +
         position.base;
 
-    const tokenPair = (
-        <li
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <NavLink to={tradeLinkPath}>
-                <p>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
-            </NavLink>
-        </li>
-    );
+    // const tokenPair = (
+    //     <li
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <NavLink to={tradeLinkPath}>
+    //             <p>
+    //                 {baseTokenSymbol} / {quoteTokenSymbol}
+    //             </p>
+    //         </NavLink>
+    //     </li>
+    // );
 
     // end of portfolio page li element ---------------
 
     // Leaderboard content--------------------------------
 
-    const idOrNull =
-        !isLeaderboard && !showColumns ? <li> {IDWithTooltip}</li> : null;
+    // const idOrNull =
+    //     !isLeaderboard && !showColumns ? <li> {IDWithTooltip}</li> : null;
 
-    const rankingOrNull =
-        isLeaderboard && !showColumns ? (
-            <Medal ranking={props.rank ?? 80} />
-        ) : null;
+    // const rankingOrNull =
+    //     isLeaderboard && !showColumns ? (
+    //         <Medal ranking={props.rank ?? 80} />
+    //     ) : null;
 
     // End of Leaderboard content--------------------------------
 
-    const baseQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'end',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                    whiteSpace: 'nowrap',
-                }}
-            >
-                {position.positionLiqBaseTruncated || '0'}
-                {baseTokenLogoComponent}
-            </div>
-        </li>
-    );
-    const quoteQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'end',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                    whiteSpace: 'nowrap',
-                }}
-            >
-                {position.positionLiqQuoteTruncated || '0'}
-                {quoteTokenLogoComponent}
-            </div>
-        </li>
-    );
+    // const baseQtyDisplayWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label={baseTokenSymbol}
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <div
+    //             style={{
+    //                 display: 'flex',
+    //                 alignItems: 'end',
+    //                 justifyContent: 'flex-end',
+    //                 gap: '4px',
+    //                 textAlign: 'right',
+    //                 whiteSpace: 'nowrap',
+    //             }}
+    //         >
+    //             {position.positionLiqBaseTruncated || '0'}
+    //             {baseTokenLogoComponent}
+    //         </div>
+    //     </li>
+    // );
+    // const quoteQtyDisplayWithTooltip = (
+    //     <li
+    //         onClick={openDetailsModal}
+    //         data-label={quoteTokenSymbol}
+    //         className='base_color'
+    //         onMouseEnter={handleRowMouseDown}
+    //         onMouseLeave={handleRowMouseOut}
+    //     >
+    //         <div
+    //             style={{
+    //                 display: 'flex',
+    //                 alignItems: 'end',
+    //                 justifyContent: 'flex-end',
+    //                 gap: '4px',
+    //                 textAlign: 'right',
+    //                 whiteSpace: 'nowrap',
+    //             }}
+    //         >
+    //             {position.positionLiqQuoteTruncated || '0'}
+    //             {quoteTokenLogoComponent}
+    //         </div>
+    //     </li>
+    // );
 
-    const positionTime = position.latestUpdateTime || position.timeFirstMint;
-
-    const elapsedTimeInSecondsNum = positionTime
-        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
-        : 0;
-
-    const elapsedTimeString =
-        elapsedTimeInSecondsNum !== undefined
-            ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. '
-                : elapsedTimeInSecondsNum < 120
-                ? '1 min. '
-                : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
-                : elapsedTimeInSecondsNum < 7200
-                ? '1 hour '
-                : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
-                : elapsedTimeInSecondsNum < 172800
-                ? '1 day '
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
-            : 'Pending...';
-
-    const RangeTimeWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    {moment(position.latestUpdateTime * 1000).format(
-                        'MM/DD/YYYY HH:mm',
-                    )}
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li
-                onClick={openDetailsModal}
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <p className='base_color'>{elapsedTimeString}</p>
-            </li>
-        </TextOnlyTooltip>
-    );
+    // const RangeTimeWithTooltip = (
+    //     <TextOnlyTooltip
+    //         interactive
+    //         title={
+    //             <p
+    //                 style={{
+    //                     marginLeft: '-70px',
+    //                     background: 'var(--dark3)',
+    //                     color: 'var(--text-grey-white)',
+    //                     padding: '12px',
+    //                     borderRadius: '4px',
+    //                     cursor: 'pointer',
+    //                 }}
+    //             >
+    //                 {moment(position.latestUpdateTime * 1000).format(
+    //                     'MM/DD/YYYY HH:mm',
+    //                 )}
+    //             </p>
+    //         }
+    //         placement={'right'}
+    //         enterDelay={750}
+    //         leaveDelay={0}
+    //     >
+    //         <li
+    //             onClick={openDetailsModal}
+    //             style={{ textTransform: 'lowercase' }}
+    //             onMouseEnter={handleRowMouseDown}
+    //             onMouseLeave={handleRowMouseOut}
+    //         >
+    //             <p className='base_color'>{elapsedTimeString}</p>
+    //         </li>
+    //     </TextOnlyTooltip>
+    // );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
@@ -619,12 +598,53 @@ export default function RangesRow(props: propsIF) {
         }
     };
 
-    const txIdColumnComponent = (
-        <li>
-            {IDWithTooltip}
-            {walletWithTooltip}
-        </li>
-    );
+    // const txIdColumnComponent = (
+    //     <li>
+    //         {IDWithTooltip}
+    //         {walletWithTooltip}
+    //     </li>
+    // );
+    const rangeRowConstantsProps = {
+        handleCopyPosHash,
+        posHash: posHash as string,
+        posHashTruncated,
+        usdValue,
+        openDetailsModal,
+        handleRowMouseDown,
+        handleRowMouseOut,
+        handleWalletLinkClick,
+        handleWalletCopy,
+        ownerId,
+        userNameToDisplay,
+        isOwnerActiveAccount,
+        usernameStyle,
+        baseTokenLogo,
+        quoteTokenLogo,
+        position,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isLeaderboard,
+        showColumns,
+        rank: props.rank,
+        elapsedTimeString,
+    };
+
+    const {
+        IDWithTooltip,
+        valueWithTooltip,
+        actualWalletWithTooltip,
+        walletWithoutTooltip,
+        walletWithTooltip,
+        baseTokenLogoComponent,
+        quoteTokenLogoComponent,
+        tokenPair,
+        idOrNull,
+        rankingOrNull,
+        baseQtyDisplayWithTooltip,
+        quoteQtyDisplayWithTooltip,
+        rangeTimeWithTooltip,
+        txIdColumnComponent,
+    } = rangeRowConstants(rangeRowConstantsProps);
 
     return (
         <>
@@ -642,7 +662,7 @@ export default function RangesRow(props: propsIF) {
                 style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
             >
                 {rankingOrNull}
-                {showPair && RangeTimeWithTooltip}
+                {showPair && rangeTimeWithTooltip}
                 {isOnPortfolioPage && showPair && tokenPair}
                 {idOrNull}
                 {!showColumns && !isOnPortfolioPage && (
@@ -761,7 +781,7 @@ export default function RangesRow(props: propsIF) {
                         </p>
                     </li>
                 )}
-                {ValueWithTooltip}
+                {valueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
                 {showColumns && !phoneScreen && (
