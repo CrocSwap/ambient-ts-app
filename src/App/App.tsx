@@ -499,6 +499,10 @@ export default function App() {
         } else if (!signer && !!crocEnv) {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
+        } else if (provider && !crocEnv) {
+            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+
+            setCrocEnv(newCrocEnv);
         } else {
             // If signer and provider are set to different chains (as can happen)
             // after a network switch, it causes a lot of performance killing timeouts
