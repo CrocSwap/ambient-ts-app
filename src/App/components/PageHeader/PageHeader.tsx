@@ -216,7 +216,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         },
         {
             title: t('common:poolTitle'),
-            destination: '/trade/range' + paramsSlug,
+            destination: '/trade/range/' + paramsSlug,
             shouldDisplay: true,
         },
         {
