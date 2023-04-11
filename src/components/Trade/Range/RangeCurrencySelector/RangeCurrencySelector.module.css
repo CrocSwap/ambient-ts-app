@@ -27,6 +27,7 @@
 .main_wallet_container {
     display: flex;
     align-items: center;
+    gap: 0.3rem;
 }
 .main_wallet_container {
     justify-content: flex-start;
@@ -66,6 +67,7 @@
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    filter: grayscale(100%) brightness(60%);
 }
 
 .enabled_logo {
@@ -177,6 +179,10 @@
     filter: grayscale(100%);
 }
 
+.grey_logo_wallet img {
+    filter: grayscale(100%) brightness(60%);
+}
+
 .surplus_toggle {
     display: flex;
     flex-direction: row;
@@ -188,7 +194,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-highlight-dark);
     outline: none;
     border: none;
     /* background: var(--dark3); */
