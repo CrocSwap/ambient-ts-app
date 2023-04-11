@@ -369,7 +369,10 @@ export default function Chart(props: propsIF) {
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
         activeLiq: 0,
         liqPrices: 0,
+        deltaAverageUSD: 0,
+        cumAverageUSD: 0,
     });
+    const [selectedLiq, setSelectedLiq] = useState('');
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
 
@@ -3761,7 +3764,7 @@ export default function Chart(props: propsIF) {
             const lineAskSeriesDepth = d3fc
                 .seriesCanvasLine()
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepBefore)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -3794,7 +3797,7 @@ export default function Chart(props: propsIF) {
             const lineBidDepthSeries = d3fc
                 .seriesCanvasLine()
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepAfter)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -5064,7 +5067,7 @@ export default function Chart(props: propsIF) {
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepBefore)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -5145,7 +5148,7 @@ export default function Chart(props: propsIF) {
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
-                .curve(d3.curveStep)
+                .curve(d3.curveStepAfter)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityDepthScale)
@@ -5839,6 +5842,7 @@ export default function Chart(props: propsIF) {
         const allData = liqDataBid.concat(liqDataAsk);
 
         const { min }: any = findLiqNearest(allData);
+
         let filteredAllData = allData.filter(
             (item: any) =>
                 min <= item.liqPrices &&
@@ -5855,11 +5859,20 @@ export default function Chart(props: propsIF) {
             return d.activeLiq;
         });
 
-        const currentDataY = scaleData?.yScale.invert(event.offsetY);
+        const canvas = d3
+            .select(d3CanvasMarketLine.current)
+            .select('canvas')
+            .node() as any;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const currentDataY = scaleData?.yScale.invert(y);
         const currentDataX =
             liqMode === 'depth'
-                ? liquidityDepthScale.invert(event.offsetX)
-                : liquidityScale.invert(event.offsetX);
+                ? liquidityDepthScale.invert(x)
+                : liquidityScale.invert(x);
 
         const bidMinBoudnary = d3.min(liqDataBid, (d: any) => d.liqPrices);
         const bidMaxBoudnary = d3.max(liqDataBid, (d: any) => d.liqPrices);
@@ -5911,6 +5924,11 @@ export default function Chart(props: propsIF) {
         minBoudnary: string,
         maxBoudnary: string,
     ) => {
+        const canvas = d3
+            .select(d3CanvasLiqAsk.current)
+            .select('canvas') as any;
+        const ctx = canvas.node().getContext('2d');
+
         indicatorLineData[0] = {
             x: scaleData?.xScale.invert(event.offsetX),
             y: scaleData?.yScale.invert(event.offsetY),
@@ -5932,19 +5950,28 @@ export default function Chart(props: propsIF) {
                   )
                 : liquidityData?.liqBidData;
 
-        const nearest = filtered.reduce(function (prev: any, curr: any) {
-            return Math.abs(
-                curr.liqPrices - scaleData?.yScale.invert(event.offsetY),
-            ) <
-                Math.abs(
-                    prev.liqPrices - scaleData?.yScale.invert(event.offsetY),
-                )
-                ? curr
-                : prev;
+        const mousePosition = scaleData?.yScale.invert(event.offsetY);
+
+        let closest = filtered.find(
+            (item: any) =>
+                item.liqPrices === d3.min(filtered, (d: any) => d.liqPrices),
+        );
+
+        filtered.map((data: any) => {
+            if (
+                mousePosition > data.liqPrices &&
+                data.liqPrices > closest.liqPrices
+            ) {
+                closest = data;
+            }
         });
 
         setLiqTooltipSelectedLiqBar(() => {
-            return nearest;
+            return closest;
+        });
+
+        setSelectedLiq(() => {
+            return 'bidLiq';
         });
 
         const topPlacement =
@@ -5959,29 +5986,35 @@ export default function Chart(props: propsIF) {
 
         liquidityData.liqHighligtedAskSeries = [];
 
-        const canvas = d3
-            .select(d3CanvasLiqAsk.current)
-            .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
+        maxBoudnary =
+            maxBoudnary > scaleData.yScale.domain()[1]
+                ? scaleData.yScale.domain()[1]
+                : maxBoudnary;
 
-        const percentageBid =
+        minBoudnary =
+            minBoudnary < scaleData.yScale.domain()[0]
+                ? scaleData.yScale.domain()[0]
+                : minBoudnary;
+
+        const ratioBid =
             (scaleData?.yScale.invert(event.offsetY) -
                 parseFloat(minBoudnary)) /
             (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
-        const gradient = ctx.createLinearGradient(
-            0,
-            scaleData?.yScale(maxBoudnary),
-            0,
-            scaleData?.yScale(minBoudnary),
-        );
+        if (ratioBid >= 0 && ratioBid <= 1) {
+            const gradient = ctx.createLinearGradient(
+                0,
+                scaleData?.yScale(maxBoudnary),
+                0,
+                scaleData?.yScale(minBoudnary),
+            );
 
-        gradient.addColorStop(1 - percentageBid, 'rgba(115, 113, 252, 0.3)');
+            gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.3)');
 
-        gradient.addColorStop(1 - percentageBid, 'rgba(115, 113, 252, 0.6)');
+            gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.6)');
 
-        setGradientForBid(gradient);
+            setGradientForBid(gradient);
+        }
 
         renderCanvas();
     };
@@ -6012,20 +6045,30 @@ export default function Chart(props: propsIF) {
                   )
                 : liquidityData?.liqAskData;
 
-        const nearest = filtered.reduce(function (prev: any, curr: any) {
-            return Math.abs(
-                curr.liqPrices - scaleData?.yScale.invert(event.offsetY),
-            ) <
-                Math.abs(
-                    prev.liqPrices - scaleData?.yScale.invert(event.offsetY),
-                )
-                ? curr
-                : prev;
-        });
+        const mousePosition = scaleData?.yScale.invert(event.offsetY);
 
-        setLiqTooltipSelectedLiqBar(() => {
-            return nearest;
-        });
+        let closest = filtered.find(
+            (item: any) =>
+                item.liqPrices === d3.max(filtered, (d: any) => d.liqPrices),
+        );
+        if (closest !== undefined) {
+            filtered.map((data: any) => {
+                if (
+                    mousePosition < data.liqPrices &&
+                    data.liqPrices < closest.liqPrices
+                ) {
+                    closest = data;
+                }
+            });
+
+            setLiqTooltipSelectedLiqBar(() => {
+                return closest;
+            });
+
+            setSelectedLiq(() => {
+                return 'askLiq';
+            });
+        }
 
         const topPlacement =
             event.y -
@@ -6042,8 +6085,19 @@ export default function Chart(props: propsIF) {
             .select('canvas')
             .node() as any;
         const ctx = canvas.getContext('2d');
+
+        minBoudnary =
+            minBoudnary < scaleData.yScale.domain()[0]
+                ? scaleData.yScale.domain()[0]
+                : minBoudnary;
+
+        maxBoudnary =
+            maxBoudnary > scaleData.yScale.domain()[1]
+                ? scaleData.yScale.domain()[1]
+                : maxBoudnary;
+
         if (maxBoudnary) {
-            const percentageAsk =
+            const ratioAsk =
                 (parseFloat(maxBoudnary) -
                     scaleData?.yScale.invert(event.offsetY)) /
                 (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
@@ -6055,11 +6109,13 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale(minBoudnary),
             );
 
-            gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255, 0.6)');
+            if (ratioAsk >= 0 && ratioAsk <= 1) {
+                gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.6)');
 
-            gradient.addColorStop(percentageAsk, 'rgba(205, 193, 255, 0.3)');
+                gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.3)');
 
-            setGradientForAsk(gradient);
+                setGradientForAsk(gradient);
+            }
         }
 
         renderCanvas();
@@ -6256,13 +6312,12 @@ export default function Chart(props: propsIF) {
                         if (liquidityDepthScale.domain()[1] <= 50) {
                             liquidityDepthScale.range([
                                 event.detail.width,
-                                event.detail.width -
-                                    event.detail.width / (100 * 2.5),
+                                event.detail.width * 0.95,
                             ]);
                         } else {
                             liquidityDepthScale.range([
                                 event.detail.width,
-                                (event.detail.width / 10) * 9,
+                                event.detail.width * 0.9,
                             ]);
                         }
 
@@ -6533,6 +6588,8 @@ export default function Chart(props: propsIF) {
             showFeeRate,
             ghostLineValuesLimit,
             liqMode,
+            liquidityScale,
+            liquidityDepthScale,
         ],
     );
 
@@ -6562,13 +6619,13 @@ export default function Chart(props: propsIF) {
             poolPriceDisplay !== undefined
         ) {
             const liqTextData = { totalValue: 0 };
+
             if (liqTooltipSelectedLiqBar.liqPrices != null) {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                if (selectedLiq === 'askLiq') {
                     liquidityData?.liqAskData.map((liqData: any) => {
                         if (
                             liqData?.liqPrices >=
-                                liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay > liqData?.liqPrices
+                            liqTooltipSelectedLiqBar.liqPrices
                         ) {
                             liqTextData.totalValue =
                                 liqTextData.totalValue +
@@ -6579,8 +6636,7 @@ export default function Chart(props: propsIF) {
                     liquidityData?.liqBidData.map((liqData: any) => {
                         if (
                             liqData?.liqPrices <=
-                                liqTooltipSelectedLiqBar.liqPrices &&
-                            poolPriceDisplay < liqData?.liqPrices
+                            liqTooltipSelectedLiqBar.liqPrices
                         ) {
                             liqTextData.totalValue =
                                 liqTextData.totalValue +
@@ -6590,6 +6646,7 @@ export default function Chart(props: propsIF) {
                 }
                 // }
             }
+
             // const absoluteDifference = Math.abs(difference)
 
             const pinnedTick = getPinnedTickFromDisplayPrice(
@@ -6614,7 +6671,7 @@ export default function Chart(props: propsIF) {
                     ' </p>',
             );
         }
-    }, [liqTooltipSelectedLiqBar]);
+    }, [liqTooltipSelectedLiqBar, liqMode, selectedLiq]);
 
     // Color Picker
     useEffect(() => {
