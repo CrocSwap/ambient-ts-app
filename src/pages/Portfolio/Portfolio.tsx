@@ -4,6 +4,7 @@ import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+import sum from 'hash-sum';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
@@ -442,8 +443,7 @@ export default function Portfolio(props: propsIF) {
                     );
 
                     if (
-                        JSON.stringify(resolvedAddressNativeToken) !==
-                        JSON.stringify(newNativeToken)
+                        sum(resolvedAddressNativeToken) !== sum(newNativeToken)
                     ) {
                         setResolvedAddressNativeToken(newNativeToken);
                     }
@@ -470,11 +470,11 @@ export default function Portfolio(props: propsIF) {
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
                         } else if (
-                            JSON.stringify(
+                            sum(
                                 resolvedAddressErc20Tokens[
                                     indexOfExistingToken
                                 ],
-                            ) !== JSON.stringify(newToken)
+                            ) !== sum(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }

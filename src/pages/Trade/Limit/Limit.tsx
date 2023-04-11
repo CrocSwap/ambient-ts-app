@@ -529,9 +529,7 @@ export default function Limit(props: propsIF) {
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
         setShowBypassConfirmButton(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
