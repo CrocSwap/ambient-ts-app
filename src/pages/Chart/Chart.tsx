@@ -6026,23 +6026,35 @@ export default function Chart(props: propsIF) {
 
         liquidityData.liqHighligtedAskSeries = [];
 
-        const percentageBid =
+        maxBoudnary =
+            maxBoudnary > scaleData.yScale.domain()[1]
+                ? scaleData.yScale.domain()[1]
+                : maxBoudnary;
+
+        minBoudnary =
+            minBoudnary < scaleData.yScale.domain()[0]
+                ? scaleData.yScale.domain()[0]
+                : minBoudnary;
+
+        const ratioBid =
             (scaleData?.yScale.invert(event.offsetY) -
                 parseFloat(minBoudnary)) /
             (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
-        const gradient = ctx.createLinearGradient(
-            0,
-            scaleData?.yScale(maxBoudnary),
-            0,
-            scaleData?.yScale(minBoudnary),
-        );
+        if (ratioBid >= 0 && ratioBid <= 1) {
+            const gradient = ctx.createLinearGradient(
+                0,
+                scaleData?.yScale(maxBoudnary),
+                0,
+                scaleData?.yScale(minBoudnary),
+            );
 
-        gradient.addColorStop(1 - percentageBid, 'rgba(115, 113, 252, 0.3)');
+            gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.3)');
 
-        gradient.addColorStop(1 - percentageBid, 'rgba(115, 113, 252, 0.6)');
+            gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.6)');
 
-        setGradientForBid(gradient);
+            setGradientForBid(gradient);
+        }
 
         renderCanvas();
     };
@@ -6103,8 +6115,19 @@ export default function Chart(props: propsIF) {
             .select('canvas')
             .node() as any;
         const ctx = canvas.getContext('2d');
+
+        minBoudnary =
+            minBoudnary < scaleData.yScale.domain()[0]
+                ? scaleData.yScale.domain()[0]
+                : minBoudnary;
+
+        maxBoudnary =
+            maxBoudnary > scaleData.yScale.domain()[1]
+                ? scaleData.yScale.domain()[1]
+                : maxBoudnary;
+
         if (maxBoudnary) {
-            const percentageAsk =
+            const ratioAsk =
                 (parseFloat(maxBoudnary) -
                     scaleData?.yScale.invert(event.offsetY)) /
                 (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
@@ -6116,16 +6139,10 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale(minBoudnary),
             );
 
-            if (percentageAsk < 1 && percentageAsk > 0) {
-                gradient.addColorStop(
-                    percentageAsk,
-                    'rgba(205, 193, 255, 0.6)',
-                );
+            if (ratioAsk >= 0 && ratioAsk <= 1) {
+                gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.6)');
 
-                gradient.addColorStop(
-                    percentageAsk,
-                    'rgba(205, 193, 255, 0.3)',
-                );
+                gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.3)');
 
                 setGradientForAsk(gradient);
             }
