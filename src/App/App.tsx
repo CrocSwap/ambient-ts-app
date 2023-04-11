@@ -62,6 +62,7 @@ import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import sum from 'hash-sum';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -684,11 +685,7 @@ export default function App() {
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(
-                  receiptData.sessionReceipts[
-                      receiptData.sessionReceipts.length - 1
-                  ],
-              )
+            ? JSON.parse(receiptData.sessionReceipts[0])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -709,12 +706,16 @@ export default function App() {
         </SnackbarComponent>
     );
 
+    const lastReceiptHash = useMemo(
+        () => (lastReceipt ? sum(lastReceipt) : undefined),
+        [lastReceipt],
+    );
     useEffect(() => {
-        if (lastReceipt) {
+        if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
             setOpenSnackbar(true);
         }
-    }, [JSON.stringify(lastReceipt)]);
+    }, [lastReceiptHash]);
 
     const ensName = userData.ensNameCurrent || '';
 
