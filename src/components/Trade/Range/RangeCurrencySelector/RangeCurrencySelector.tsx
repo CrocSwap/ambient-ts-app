@@ -260,7 +260,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                 )
             }
         >
-            Exchange Balance <AiOutlineQuestionCircle size={14} />
+            Wallet & Exchange Balance <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
@@ -289,13 +289,10 @@ export default function RangeCurrencySelector(props: propsIF) {
                     </div>
                 </div>
             </IconWithTooltip>
-            <DefaultTooltip
-                interactive
-                title={exchangeBalanceTitle}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
+            <IconWithTooltip
+                title='Use Exchange Balance'
+                placement='bottom'
+                style={{ display: 'flex', alignItems: 'center' }}
             >
                 <div
                     className={`${styles.wallet_logo} ${
@@ -320,12 +317,23 @@ export default function RangeCurrencySelector(props: propsIF) {
                 >
                     <img src={ambientLogo} width='20' alt='surplus' />
                 </div>
-            </DefaultTooltip>{' '}
-            <div className={styles.balance_column}>
-                <div>
-                    {isUserLoggedIn ? walletAndSurplusBalanceLocaleString : ''}
+            </IconWithTooltip>{' '}
+            <DefaultTooltip
+                interactive
+                title={exchangeBalanceTitle}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div className={styles.balance_column}>
+                    <div>
+                        {isUserLoggedIn
+                            ? walletAndSurplusBalanceLocaleString
+                            : ''}
+                    </div>
                 </div>
-            </div>
+            </DefaultTooltip>
             {maxButton}
         </div>
     );
