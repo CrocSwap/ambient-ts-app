@@ -55,7 +55,6 @@ import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
-import Edit from '../pages/Trade/Edit/Edit';
 import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
@@ -67,18 +66,19 @@ import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import { defaultTokens } from '../utils/data/defaultTokens';
+import {
+    defaultTokens,
+    getDefaultPairForChain,
+} from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import {
     LimitOrderIF,
     TokenIF,
-    TokenListIF,
     TransactionIF,
     PositionIF,
 } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
-    resetTokens,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setDenomInBase,
@@ -113,7 +113,6 @@ import {
     setIsUserIdle,
     setNativeToken,
     setRecentTokens,
-    setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -173,9 +172,11 @@ import {
 } from './hooks/useExchangePrefs';
 import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
-import { topPoolsMethodsIF, useTopPools } from './hooks/useTopPools';
+import { topPoolIF, useTopPools } from './hooks/useTopPools';
+import { formSlugForPairParams } from './functions/urlSlugs';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -360,12 +361,10 @@ export default function App() {
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
-    // `switchChain` is a function to switch to a different chain
-    // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+    const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
     // hook to manage top pools data
-    const topPools: topPoolsMethodsIF = useTopPools(chainData.chainId);
+    const topPools: topPoolIF[] = useTopPools(chainData.chainId);
 
     // hook to manage acknowledged tokens
     const ackTokens: ackTokensMethodsIF = useAckTokens();
@@ -388,7 +387,6 @@ export default function App() {
         IS_LOCAL_ENV && console.debug('setting login check delay');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
-            dispatch(setShouldRecheckLocalStorage(true));
         }, 1000);
         return () => clearTimeout(timer);
     }, []);
@@ -407,15 +405,11 @@ export default function App() {
         }
     }, [loginCheckDelayElapsed, isConnected]);
 
-    // this is another case where true vs false is an arbitrary distinction
-    const [activeTokenListsChanged, indicateActiveTokenListsChanged] =
-        useState(false);
-
-    const tokensOnActiveLists = useTokenMap(
-        activeTokenListsChanged,
-        JSON.parse(localStorage.getItem('user') as string)
-            ?.activeTokenLists ?? ['/ambient-token-list.json'],
-    );
+    // Used in Portfolio/Account related pages for defining token universe.
+    // Ideally this is inefficient, because we're also using useToken() hook
+    // in parrallel which internally uses this hook. So there's some duplicated
+    // effort
+    const tokensOnActiveLists = useTokenMap();
 
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
@@ -439,16 +433,12 @@ export default function App() {
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
     const [
-        localTokens,
         verifyToken,
-        getAllTokens,
         getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
     ] = useToken(chainData.chainId);
-    false && localTokens;
-    false && getAllTokens;
     false && getTokensOnChain;
 
     // hook to manage recent pool data in-session
@@ -491,8 +481,7 @@ export default function App() {
         //  isLoading
     } = useSigner();
 
-    // 1535 - remove console logging
-    const setNewCrocEnv = () => {
+    const setNewCrocEnv = async () => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
             console.debug({ signer });
@@ -511,15 +500,23 @@ export default function App() {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
         } else {
-            const newCrocEnv = new CrocEnv(signer?.provider || provider);
-            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-            setCrocEnv(newCrocEnv);
+            // If signer and provider are set to different chains (as can happen)
+            // after a network switch, it causes a lot of performance killing timeouts
+            // and errors
+            if (
+                (await signer?.getChainId()) ==
+                (await provider.getNetwork()).chainId
+            ) {
+                const newCrocEnv = new CrocEnv(signer?.provider || provider);
+                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
+                setCrocEnv(newCrocEnv);
+            }
         }
     };
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus === 'success', crocEnv === undefined]);
+    }, [signerStatus === 'success', crocEnv === undefined, chainData.chainId]);
 
     useEffect(() => {
         if (provider) {
@@ -535,13 +532,6 @@ export default function App() {
             })();
         }
     }, [provider]);
-
-    useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug('resetting token data because chainId changed');
-        dispatch(resetTokens(chainData.chainId));
-        dispatch(resetTokenData());
-    }, [chainData.chainId]);
 
     const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
@@ -563,12 +553,13 @@ export default function App() {
     // current configurations of trade as specified by the user
     const currentPoolInfo = tradeData;
 
-    // tokens specifically imported by the end user
-    const [importedTokens, setImportedTokens] =
-        useState<TokenIF[]>(defaultTokens);
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] =
         useState<TokenIF[]>(defaultTokens);
+
+    useEffect(() => {
+        setSearchableTokens(getTokensOnChain(chainData.chainId));
+    }, [chainData.chainId, getTokensOnChain(chainData.chainId).length]);
 
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -585,7 +576,6 @@ export default function App() {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('initializing local storage');
         initializeUserLocalStorage();
-        getImportedTokens();
     }, [tokenListsReceived]);
 
     useEffect(() => {
@@ -679,45 +669,6 @@ export default function App() {
         [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
 
-    // update local state with searchable tokens once after initial load of app
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('setting searchable tokens');
-        // pull activeTokenLists from local storage and parse
-        // do we need to add gatekeeping in case there is not a valid value?
-        const { activeTokenLists } = JSON.parse(
-            localStorage.getItem('user') as string,
-        );
-        // update local state with array of all tokens from searchable lists
-        setSearchableTokens(getTokensFromLists(activeTokenLists));
-        // TODO:  this hook runs once after the initial load of the app, we may need to add
-        // TODO:  additional triggers for DOM interactions
-    }, [tokenListsReceived, activeTokenListsChanged]);
-
-    function getTokensFromLists(tokenListURIs: Array<string>) {
-        // retrieve and parse all token lists held in local storage
-        const tokensFromLists = localStorage.allTokenLists
-            ? JSON.parse(localStorage.getItem('allTokenLists') as string)
-                  // remove all lists with URIs not included in the URIs array passed as argument
-                  .filter((tokenList: TokenListIF) =>
-                      tokenListURIs.includes(tokenList.uri ?? ''),
-                  )
-                  // extract array of tokens from active lists and flatten into single array
-                  .flatMap((tokenList: TokenListIF) => tokenList.tokens)
-            : defaultTokens;
-        // return array of all tokens from lists as specified by token list URI
-        return tokensFromLists;
-    }
-
-    // function to return array of all tokens on lists as specified by URI
-    function getImportedTokens() {
-        // see if there's a user object in local storage
-        if (localStorage.user) {
-            // if user object exists, pull it
-            const user = JSON.parse(localStorage.getItem('user') as string);
-            // if imported tokens are listed, hold in local state
-            user.tokens && setImportedTokens(user.tokens);
-        }
-    }
     const [sidebarManuallySet, setSidebarManuallySet] =
         useState<boolean>(false);
     const [showSidebar, setShowSidebar] = useState<boolean>(false);
@@ -950,7 +901,6 @@ export default function App() {
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
         if (crocEnv && baseTokenAddress && quoteTokenAddress) {
-            // setPoolExists(undefined);
             IS_LOCAL_ENV && console.debug('checking if pool exists');
             if (
                 baseTokenAddress.toLowerCase() ===
@@ -970,10 +920,7 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [
-        crocEnv,
-        JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress }),
-    ]);
+    }, [crocEnv, baseTokenAddress, quoteTokenAddress, chainData.chainId]);
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -1488,11 +1435,11 @@ export default function App() {
                                 // time: '1657833300', // optional
                                 n: '200', // positive integer
                                 // page: '0', // nonnegative integer
-                                chainId: '0x1',
+                                chainId: mktDataChainId(chainData.chainId),
                                 dex: 'all',
                                 poolStats: 'true',
                                 concise: 'true',
-                                poolStatsChainIdOverride: '0x5',
+                                poolStatsChainIdOverride: chainData.chainId,
                                 poolStatsBaseOverride:
                                     baseTokenAddress.toLowerCase(),
                                 poolStatsQuoteOverride:
@@ -1611,11 +1558,11 @@ export default function App() {
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: chainData.poolIndex.toString(),
                 period: candleTimeLocal.toString(),
-                chainId: '0x1',
+                chainId: mktDataChainId(chainData.chainId),
                 dex: 'all',
                 poolStats: 'true',
                 concise: 'true',
-                poolStatsChainIdOverride: '0x5',
+                poolStatsChainIdOverride: chainData.chainId,
                 poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                 poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                 poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
@@ -1623,6 +1570,7 @@ export default function App() {
         [
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
+            chainData.chainId,
             chainData.poolIndex,
             candleTimeLocal,
         ],
@@ -1687,11 +1635,11 @@ export default function App() {
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
                     // page: '0', // nonnegative integer
-                    chainId: '0x1',
+                    chainId: mktDataChainId(chainData.chainId),
                     dex: 'all',
                     poolStats: 'true',
                     concise: 'true',
-                    poolStatsChainIdOverride: '0x5',
+                    poolStatsChainIdOverride: chainData.chainId,
                     poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                     poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
@@ -2145,7 +2093,7 @@ export default function App() {
                         setTokenAAllowance(newTokenAllowance);
                     }
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 if (recheckTokenAApproval) setRecheckTokenAApproval(false);
             }
@@ -2176,7 +2124,7 @@ export default function App() {
                         setTokenBAllowance(newTokenAllowance);
                     }
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 if (recheckTokenBApproval) setRecheckTokenBApproval(false);
             }
@@ -2661,9 +2609,9 @@ export default function App() {
         verifyToken,
         getTokenByAddress,
         getTokensByName,
-        getAmbientTokens(),
+        getAmbientTokens,
         connectedUserErc20Tokens ?? [],
-        getRecentTokens(),
+        getRecentTokens,
     );
 
     // props for <Swap/> React element
@@ -2673,8 +2621,6 @@ export default function App() {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
-        importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2691,8 +2637,6 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
@@ -2732,8 +2676,6 @@ export default function App() {
         crocEnv: crocEnv,
         isUserLoggedIn: isConnected,
         account: account,
-        importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2751,8 +2693,6 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
@@ -2794,8 +2734,6 @@ export default function App() {
         crocEnv: crocEnv,
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
-        importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -2813,8 +2751,6 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
@@ -2856,8 +2792,6 @@ export default function App() {
         account: account,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
-        importedTokens: importedTokens,
-        setImportedTokens: setImportedTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -2877,8 +2811,6 @@ export default function App() {
         tokenBAllowance: tokenBAllowance,
         setRecheckTokenBApproval: setRecheckTokenBApproval,
         chainId: chainData.chainId,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
         dailyVol: dailyVol,
@@ -2979,9 +2911,16 @@ export default function App() {
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
-        positionsByUser: graphData.positionsByUser.positions,
-        txsByUser: graphData.changesByUser.changes,
-        limitsByUser: graphData.limitOrdersByUser.limitOrders,
+        // Filter positions from graph cache for this specific chain
+        positionsByUser: graphData.positionsByUser.positions.filter(
+            (x) => x.chainId === chainData.chainId,
+        ),
+        txsByUser: graphData.changesByUser.changes.filter(
+            (x) => x.chainId === chainData.chainId,
+        ),
+        limitsByUser: graphData.limitOrdersByUser.limitOrders.filter(
+            (x) => x.chainId === chainData.chainId,
+        ),
         ackTokens: ackTokens,
         topPools: topPools,
     };
@@ -3093,12 +3032,31 @@ export default function App() {
         ? 'content-container-trade'
         : 'content-container';
 
-    const defaultUrlParams = {
-        swap: `/swap/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}`,
-        market: `/trade/market/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        limit: `/trade/limit/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-        range: `/trade/range/chain=0x5&tokenA=${tradeData.tokenA.address}&tokenB=${tradeData.tokenB.address}&lowTick=0&highTick=0`,
-    };
+    interface UrlRoutesTemplate {
+        swap: string;
+        market: string;
+        limit: string;
+        range: string;
+    }
+
+    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
+        const [tokenA, tokenB] = getDefaultPairForChain(chainId);
+        const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
+        return {
+            swap: `/swap/${pairSlug}`,
+            market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,
+            range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
+            limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
+        };
+    }
+
+    const initUrl = createDefaultUrlParams(chainData.chainId);
+    const [defaultUrlParams, setDefaultUrlParams] =
+        useState<UrlRoutesTemplate>(initUrl);
+
+    useEffect(() => {
+        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
+    }, [chainData.chainId]);
 
     // KEYBOARD SHORTCUTS ROUTES
     const routeShortcuts = {
@@ -3235,7 +3193,7 @@ export default function App() {
                                         );
                                     }}
                                     limitRate={''}
-                                    importedTokens={searchableTokens}
+                                    searchableTokens={searchableTokens}
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
@@ -3328,10 +3286,6 @@ export default function App() {
                             <Route
                                 path='range/:params'
                                 element={<Range {...rangeProps} />}
-                            />
-                            <Route
-                                path='edit/:positionHash'
-                                element={<Edit />}
                             />
                             <Route
                                 path='reposition'
@@ -3599,8 +3553,6 @@ export default function App() {
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    importedTokens={importedTokens}
-                                    setImportedTokens={setImportedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive
@@ -3684,8 +3636,6 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    importedTokens={importedTokens}
-                                    setImportedTokens={setImportedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive
@@ -3800,8 +3750,6 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    importedTokens={importedTokens}
-                                    setImportedTokens={setImportedTokens}
                                     chainData={chainData}
                                     currentPositionActive={
                                         currentPositionActive

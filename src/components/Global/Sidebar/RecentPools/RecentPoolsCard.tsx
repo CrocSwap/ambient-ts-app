@@ -5,6 +5,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface propsIF {
     tradeData: tradeData;
@@ -35,7 +36,7 @@ export default function RecentPoolsCard(props: propsIF) {
         ) {
             slug = '/trade/range';
         } else {
-            console.error(
+            console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',
             );
             slug = '/trade/market';
@@ -52,7 +53,7 @@ export default function RecentPoolsCard(props: propsIF) {
                 chainId,
                 pool.baseToken.address,
                 pool.quoteToken.address,
-                pool.poolId ?? 36000,
+                lookupChain(chainId).poolIndex,
                 Math.floor(lastBlockNumber / 4),
             );
             // display the total volume for all time
@@ -75,7 +76,7 @@ export default function RecentPoolsCard(props: propsIF) {
         pool.baseToken.address.toLowerCase() ===
         tradeData.tokenA.address.toLowerCase()
             ? pool.baseToken.address
-            : pool.baseToken.address;
+            : pool.quoteToken.address;
 
     const tokenBString =
         pool.baseToken.address.toLowerCase() ===

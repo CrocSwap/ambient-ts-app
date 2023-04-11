@@ -41,7 +41,6 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface propsIF {
-    importedTokens: TokenIF[];
     isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
@@ -76,7 +75,6 @@ interface propsIF {
 }
 export default function Transactions(props: propsIF) {
     const {
-        // importedTokens,
         isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,

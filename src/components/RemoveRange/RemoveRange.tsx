@@ -493,7 +493,8 @@ export default function RemoveRange(props: propsIF) {
     const removalSuccess = (
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
-            content='Removal Transaction Successfully Submitted'
+            content='Removal Transaction Successfully Submitted.'
+            chainId={chainId}
         />
     );
 

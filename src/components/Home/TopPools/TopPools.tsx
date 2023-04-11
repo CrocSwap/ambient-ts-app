@@ -7,7 +7,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
-import { topPoolsMethodsIF } from '../../../App/hooks/useTopPools';
+import { topPoolIF } from '../../../App/hooks/useTopPools';
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -18,7 +18,7 @@ interface propsIF {
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 export default function TopPools(props: propsIF) {
@@ -52,7 +52,7 @@ export default function TopPools(props: propsIF) {
                 {t('topPools')}
             </div>
             <div className={styles.content}>
-                {topPools.onActiveChain.map((pool, idx) => (
+                {topPools.map((pool, idx) => (
                     <PoolCard
                         isServerEnabled={isServerEnabled}
                         isUserIdle={isUserIdle}
