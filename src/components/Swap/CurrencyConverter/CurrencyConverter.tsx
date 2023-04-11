@@ -236,7 +236,7 @@ export default function CurrencyConverter(props: propsIF) {
     const tokenBSurplusPlusTokenBQtyNum =
         parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
 
-    const linkPath = useMemo(() => {
+    const linkPathReversed = useMemo(() => {
         let locationSlug = '';
         if (pathname.startsWith('/trade/market')) {
             locationSlug = '/trade/market/';
@@ -251,8 +251,8 @@ export default function CurrencyConverter(props: propsIF) {
             locationSlug +
             formSlugForPairParams(
                 tokenPair.dataTokenA.chainId,
-                tokenPair.dataTokenA,
                 tokenPair.dataTokenB,
+                tokenPair.dataTokenA,
             )
         );
     }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
@@ -283,7 +283,7 @@ export default function CurrencyConverter(props: propsIF) {
             setTokenASymbolLocal(tokenBSymbolLocal);
             setTokenBSymbolLocal(tokenASymbolLocal);
 
-            navigate(linkPath);
+            navigate(linkPathReversed);
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tokenBQtyLocal);
 
