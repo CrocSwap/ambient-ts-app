@@ -108,6 +108,28 @@ export default function rangeRowConstants(props: Props) {
 
     const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
+    interface CustomLIPropsIF {
+        children: React.ReactNode;
+        className?: string | undefined;
+        style?: React.CSSProperties | undefined;
+        noClick?: boolean;
+    }
+    function CustomLI(props: CustomLIPropsIF) {
+        const { children, className, style, noClick } = props;
+
+        return (
+            <li
+                onClick={noClick ? undefined : openDetailsModal}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+                className={className}
+                style={style}
+            >
+                {children}
+            </li>
+        );
+    }
+
     const IDWithTooltip = (
         <TextOnlyTooltip
             interactive
@@ -135,17 +157,14 @@ export default function rangeRowConstants(props: Props) {
     );
 
     const valueWithTooltip = (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='value'
             className='base_color'
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             {' '}
             {'$' + usdValue}
-        </li>
+        </CustomLI>
     );
 
     const actualWalletWithTooltip = (
@@ -239,17 +258,13 @@ export default function rangeRowConstants(props: Props) {
         position.base;
 
     const tokenPair = (
-        <li
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI className='base_color' noClick>
             <NavLink to={tradeLinkPath}>
                 <p>
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </p>
             </NavLink>
-        </li>
+        </CustomLI>
     );
 
     const idOrNull =
@@ -259,32 +274,20 @@ export default function rangeRowConstants(props: Props) {
         isLeaderboard && !showColumns ? <Medal ranking={rank ?? 80} /> : null;
 
     const baseQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI data-label={baseTokenSymbol} className='base_color'>
             <div className={styles.base_display_div}>
                 {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
             </div>
-        </li>
+        </CustomLI>
     );
     const quoteQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI data-label={quoteTokenSymbol} className='base_color'>
             <div className={styles.base_display_div}>
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
-        </li>
+        </CustomLI>
     );
 
     const rangeTimeWithTooltip = (
@@ -301,14 +304,9 @@ export default function rangeRowConstants(props: Props) {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
-                onClick={openDetailsModal}
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
+            <CustomLI style={{ textTransform: 'lowercase' }}>
                 <p className='base_color'>{elapsedTimeString}</p>
-            </li>
+            </CustomLI>
         </TextOnlyTooltip>
     );
 
@@ -319,38 +317,19 @@ export default function rangeRowConstants(props: Props) {
         </li>
     );
 
-    const ambientPriceDisplay = (
-        <li
-            onClick={openDetailsModal}
-            data-label='max price'
-            className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <span>{'0.00'}</span>
-        </li>
-    );
-
     const fullScreenMinDisplay = isAmbient ? (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='max price'
             className='base_color'
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span>{'0.00'}</span>
-        </li>
+        </CustomLI>
     ) : (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='min price'
             className='base_color'
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span>{sideCharacter}</span>
             <span>
@@ -358,17 +337,14 @@ export default function rangeRowConstants(props: Props) {
                     ? minRangeDenomByMoneyness || '…'
                     : ambientOrMin || '…'}
             </span>
-        </li>
+        </CustomLI>
     );
 
     const fullScreenMaxDisplay = isAmbient ? (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='max price'
             className='base_color'
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span
                 style={{
@@ -377,15 +353,12 @@ export default function rangeRowConstants(props: Props) {
             >
                 {'∞'}
             </span>
-        </li>
+        </CustomLI>
     ) : (
-        <li
-            onClick={openDetailsModal}
+        <CustomLI
             data-label='max price'
             className='base_color'
             style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span>{sideCharacter}</span>
             <span>
@@ -393,17 +366,14 @@ export default function rangeRowConstants(props: Props) {
                     ? maxRangeDenomByMoneyness || '…'
                     : ambientOrMax || '…'}
             </span>
-        </li>
+        </CustomLI>
     );
 
     const columnNonAmbientPrice = showColumns && !ipadView && !isAmbient && (
-        <li
+        <CustomLI
             data-label='side-type'
             className='base_color'
             style={{ textAlign: 'right' }}
-            onClick={openDetailsModal}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <p>
                 <span>{sideCharacter}</span>
@@ -421,16 +391,13 @@ export default function rangeRowConstants(props: Props) {
                         : ambientOrMax || '…'}
                 </span>
             </p>
-        </li>
+        </CustomLI>
     );
     const columnAmbientPrice = showColumns && !ipadView && isAmbient && (
-        <li
+        <CustomLI
             data-label='side-type'
             className='base_color'
             style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
-            onClick={openDetailsModal}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <p>
                 <span
@@ -440,17 +407,14 @@ export default function rangeRowConstants(props: Props) {
                     {'ambient'}
                 </span>
             </p>
-        </li>
+        </CustomLI>
     );
 
     const tokenValues = (
-        <li
+        <CustomLI
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
             style={{ textAlign: 'right' }}
-            onClick={openDetailsModal}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <div
                 className={styles.token_qty}
@@ -471,37 +435,25 @@ export default function rangeRowConstants(props: Props) {
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
-        </li>
+        </CustomLI>
     );
 
     const apyDisplay = (
-        <li
-            onClick={openDetailsModal}
-            data-label='apy'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI data-label='apy' style={{ textAlign: 'right' }}>
             {' '}
             <p className={apyClassname}>{apyString}</p>
-        </li>
+        </CustomLI>
     );
 
     const rangeDisplay = (
-        <li
-            onClick={openDetailsModal}
-            data-label='status'
-            className='gradient_text'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <CustomLI data-label='status' className='gradient_text'>
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}
                 isEmpty={position.totalValueUSD === 0}
                 justSymbol
             />
-        </li>
+        </CustomLI>
     );
 
     return {
