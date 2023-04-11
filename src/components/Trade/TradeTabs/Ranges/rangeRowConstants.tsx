@@ -112,26 +112,7 @@ export default function rangeRowConstants(props: Props) {
         <TextOnlyTooltip
             interactive
             title={
-                <p
-                    style={{
-                        marginLeft: '-60px',
-
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
-
-                        fontFamily: 'monospace',
-
-                        whiteSpace: 'nowrap',
-                        width: '440px',
-
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                    }}
-                >
+                <p className={styles.id_tooltip_style}>
                     {posHash.toString()}
                     <FiCopy
                         style={{ cursor: 'pointer' }}
@@ -171,29 +152,8 @@ export default function rangeRowConstants(props: Props) {
         <TextOnlyTooltip
             interactive
             title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
-
-                        // width: '450px',
-                    }}
-                >
-                    <p
-                        style={{
-                            fontFamily: 'monospace',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            whiteSpace: 'nowrap',
-
-                            gap: '4px',
-                        }}
-                    >
+                <div className={styles.wallet_tooltip_div}>
+                    <p className={styles.wallet_tooltip_p}>
                         {ownerId}
                         <FiCopy
                             style={{ cursor: 'pointer' }}
@@ -306,16 +266,7 @@ export default function rangeRowConstants(props: Props) {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'end',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                    whiteSpace: 'nowrap',
-                }}
-            >
+            <div className={styles.base_display_div}>
                 {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
             </div>
@@ -329,16 +280,7 @@ export default function rangeRowConstants(props: Props) {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
         >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'end',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                    whiteSpace: 'nowrap',
-                }}
-            >
+            <div className={styles.base_display_div}>
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
@@ -349,16 +291,7 @@ export default function rangeRowConstants(props: Props) {
         <TextOnlyTooltip
             interactive
             title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
+                <p className={styles.range_time_p}>
                     {moment(position.latestUpdateTime * 1000).format(
                         'MM/DD/YYYY HH:mm',
                     )}
@@ -572,13 +505,9 @@ export default function rangeRowConstants(props: Props) {
     );
 
     return {
-        IDWithTooltip,
         valueWithTooltip,
-        actualWalletWithTooltip,
-        walletWithoutTooltip,
         walletWithTooltip,
-        baseTokenLogoComponent,
-        quoteTokenLogoComponent,
+
         tokenPair,
         idOrNull,
         rankingOrNull,
