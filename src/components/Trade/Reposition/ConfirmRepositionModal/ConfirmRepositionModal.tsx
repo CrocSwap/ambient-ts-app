@@ -37,6 +37,7 @@ interface propsIF {
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
     currentQuoteQtyDisplayTruncated: string;
+    isAmbient: boolean;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
@@ -54,6 +55,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
     const {
         tokenPair,
         poolPriceDisplayNum,
+        isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
@@ -238,27 +240,29 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 />
             </section>
             {tokenAmountDisplay}
-            <SelectedRange
-                minPriceDisplay={minPriceDisplay}
-                maxPriceDisplay={maxPriceDisplay}
-                poolPriceDisplayNum={poolPriceDisplayNum}
-                tokenPair={tokenPair}
-                denominationsInBase={isDenomBase}
-                isTokenABase={isTokenABase}
-                isAmbient={false}
-                pinnedMinPriceDisplayTruncatedInBase={
-                    pinnedMinPriceDisplayTruncatedInBase
-                }
-                pinnedMinPriceDisplayTruncatedInQuote={
-                    pinnedMinPriceDisplayTruncatedInQuote
-                }
-                pinnedMaxPriceDisplayTruncatedInBase={
-                    pinnedMaxPriceDisplayTruncatedInBase
-                }
-                pinnedMaxPriceDisplayTruncatedInQuote={
-                    pinnedMaxPriceDisplayTruncatedInQuote
-                }
-            />
+            {isAmbient || (
+                <SelectedRange
+                    minPriceDisplay={minPriceDisplay}
+                    maxPriceDisplay={maxPriceDisplay}
+                    poolPriceDisplayNum={poolPriceDisplayNum}
+                    tokenPair={tokenPair}
+                    denominationsInBase={isDenomBase}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                />
+            )}
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
