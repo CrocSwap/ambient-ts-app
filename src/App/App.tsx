@@ -2911,6 +2911,7 @@ export default function App() {
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
+        // Filter positions from graph cache for this specific chain
         positionsByUser: graphData.positionsByUser.positions.filter(
             (x) => x.chainId === chainData.chainId,
         ),
