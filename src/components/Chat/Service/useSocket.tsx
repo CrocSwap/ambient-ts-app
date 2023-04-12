@@ -8,7 +8,6 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
-// TODO (#1810): Replace timeout with a health check endpoint / callback that we can run without metamask connected.
 // If we don't get messages within this timeout (ms) we will treat the chat as unreachable and disable it.
 // NOTE: we do this for getMessages because this is always run when the chat is rendered regardless of web3 connection (login)
 const GET_MESSAGES_TIMEOUT_MS = 10000;
@@ -23,8 +22,22 @@ const useSocket = (
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
+    // TODO (#1810): Replace this with a health check endpoint / callback that we can run without metamask connected.
     const [isMsgEmit, setIsMsgEmit] = useState(false);
     const [isMsgRecieve, setIsMessageRecieve] = useState(false);
+
+    useEffect(() => {
+        if (isMsgEmit) {
+            const interval = setInterval(() => {
+                if (isMsgEmit && !isMsgRecieve) {
+                    // TODO (#1800): make it possible to re-enable if we get back a connection, maybe on 'reconnect' ?
+                    // Disable the chat feature on timeout between when we emitted the 'msg-recieve' and got data for it
+                    setIsChatEnabled(false);
+                }
+            }, GET_MESSAGES_TIMEOUT_MS);
+            return () => clearInterval(interval);
+        }
+    }, [isMsgEmit, isMsgRecieve]);
 
     useEffect(() => {
         const roomId = room;
@@ -55,13 +68,6 @@ const useSocket = (
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });
-        setTimeout(() => {
-            if (isMsgEmit && !isMsgRecieve) {
-                // TODO (#1800): make it possible to re-enable if we get back a connection, maybe on 'reconnect' ?
-                // Disable the chat feature on timeout between when we emitted the 'msg-recieve' and got data for it
-                setIsChatEnabled(false);
-            }
-        }, GET_MESSAGES_TIMEOUT_MS);
     }
 
     async function sendMsg(
