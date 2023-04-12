@@ -3579,6 +3579,7 @@ export default function App() {
                                         repoSlippage,
                                     }}
                                     ackTokens={ackTokens}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
@@ -3662,6 +3663,7 @@ export default function App() {
                                         repoSlippage,
                                     }}
                                     ackTokens={ackTokens}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
@@ -3776,6 +3778,7 @@ export default function App() {
                                         repoSlippage,
                                     }}
                                     ackTokens={ackTokens}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
