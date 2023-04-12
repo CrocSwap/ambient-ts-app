@@ -60,11 +60,6 @@ export default function ClaimOrder(props: propsIF) {
         truncatedDisplayPrice,
     } = useProcessOrder(limitOrder, account);
 
-    if (IS_LOCAL_ENV) {
-        useEffect(() => {
-            console.debug({ limitOrder });
-        }, [JSON.stringify(limitOrder)]);
-    }
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');

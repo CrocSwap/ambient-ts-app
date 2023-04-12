@@ -4,6 +4,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+import sum from 'hash-sum';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
@@ -22,7 +23,6 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
@@ -126,7 +126,7 @@ export default function Leaderboard(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        JSON.stringify({
+        sum({
             id0: topThreePositions[0]?.positionId,
             id1: topThreePositions[1]?.positionId,
             id2: topThreePositions[2]?.positionId,
@@ -141,11 +141,7 @@ export default function Leaderboard(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -190,13 +186,6 @@ export default function Leaderboard(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
-
     const walID = (
         <>
             <p>ID</p>
@@ -211,11 +200,18 @@ export default function Leaderboard(props: propsIF) {
     );
     const tokens = (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [
+        {
+            name: 'Last Updated',
+            className: '',
+            show: showColumns,
+            slug: 'time',
+            sortable: false,
+        },
         {
             name: 'Rank',
             className: 'ID',
@@ -230,7 +226,6 @@ export default function Leaderboard(props: propsIF) {
             slug: 'time',
             sortable: false,
         },
-
         {
             name: 'Wallet',
             className: 'wallet',

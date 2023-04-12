@@ -232,8 +232,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 '/trade/limit/' +
                     formSlugForPairParams(
                         tokenPair.dataTokenA.chainId,
-                        tokenPair.dataTokenA,
                         tokenPair.dataTokenB,
+                        tokenPair.dataTokenA,
                     ),
             );
             if (!isTokenAPrimaryLocal) {

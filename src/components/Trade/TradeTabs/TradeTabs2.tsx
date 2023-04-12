@@ -359,7 +359,7 @@ export default function TradeTabs2(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100,
+                n: 80,
                 period: candleTime.time,
                 time: filter?.time,
             })
@@ -452,7 +452,9 @@ export default function TradeTabs2(props: propsIF) {
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
+        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: false,
     };
 
     // Props for <Orders/> React Element

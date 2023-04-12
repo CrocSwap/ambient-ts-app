@@ -4,6 +4,7 @@ import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { VolumeChartData } from '../TradeCharts';
 import { useCallback, useEffect, useRef } from 'react';
+import sum from 'hash-sum';
 
 interface VolumeData {
     volumeData: VolumeChartData[] | undefined;
@@ -60,7 +61,7 @@ export default function VolumeSubChart(props: VolumeData) {
         selectedDate,
         volumeData,
         zoomAndYdragControl,
-        JSON.stringify(candlestick.bandwidth()),
+        sum(candlestick.bandwidth()),
     ]);
 
     const render = useCallback(() => {

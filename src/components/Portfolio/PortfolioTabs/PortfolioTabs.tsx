@@ -1,12 +1,12 @@
-// START: Import React and Dongles
 import {
+    // START: Import React and Dongles
     useEffect,
     useState,
     Dispatch,
     SetStateAction,
     ReactNode,
 } from 'react';
-
+import sum from 'hash-sum';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
@@ -87,6 +87,7 @@ interface propsIF {
     handlePulseAnimation: (type: string) => void;
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
@@ -122,6 +123,7 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenDexBalance,
         handlePulseAnimation,
         account,
+        setExpandTradeTable,
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
@@ -150,7 +152,6 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const userPositionsCacheEndpoint =
@@ -315,7 +316,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive, sum(tokenList)]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -428,7 +429,9 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
         tokenMap: tokenMap,
+        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: true,
     };
 
     // Props for <Orders/> React Element

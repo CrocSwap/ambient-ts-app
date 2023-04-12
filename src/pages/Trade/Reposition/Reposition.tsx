@@ -231,6 +231,7 @@ export default function Reposition(props: propsIF) {
 
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
+    const [isAmbient, setIsAmbient] = useState(false);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
@@ -276,8 +277,18 @@ export default function Reposition(props: propsIF) {
             lookupChain(position.chainId).gridSize,
         );
 
-        setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
-        setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+        const isAmbient: boolean = rangeWidthPercentage === 100;
+
+        if (isAmbient) {
+            setIsAmbient(true);
+            // (0,0) ticks is convention for full-width ambient
+            setPinnedLowTick(0);
+            setPinnedHighTick(0);
+        } else {
+            setIsAmbient(false);
+            setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+        }
     }, [
         rangeWidthPercentage,
         currentPoolPriceTick,
@@ -285,6 +296,17 @@ export default function Reposition(props: propsIF) {
         position?.base,
         position?.quote,
     ]);
+
+    function mintArgsForReposition(
+        lowTick: number,
+        highTick: number,
+    ): 'ambient' | [number, number] {
+        if (lowTick === 0 && highTick === 0) {
+            return 'ambient';
+        } else {
+            return [lowTick, highTick];
+        }
+    }
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
@@ -303,7 +325,7 @@ export default function Reposition(props: propsIF) {
             const repo = new CrocReposition(pool, {
                 liquidity: concLiq,
                 burn: [position.bidTick, position.askTick],
-                mint: [pinnedLowTick, pinnedHighTick],
+                mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
             });
 
             tx = await repo.rebal();
@@ -578,7 +600,7 @@ export default function Reposition(props: propsIF) {
         const repo = new CrocReposition(pool, {
             liquidity: concLiq,
             burn: [position.bidTick, position.askTick],
-            mint: [debouncedLowTick, debouncedHighTick],
+            mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
         repo.postBalance().then(([base, quote]: [number, number]) => {
@@ -680,6 +702,7 @@ export default function Reposition(props: propsIF) {
         currentQuoteQtyDisplayTruncated: currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay: newBaseQtyDisplay,
         newQuoteQtyDisplay: newQuoteQtyDisplay,
+        isAmbient: isAmbient,
         pinnedMinPriceDisplayTruncatedInBase:
             pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote:

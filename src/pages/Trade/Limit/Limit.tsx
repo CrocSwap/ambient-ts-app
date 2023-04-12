@@ -459,7 +459,6 @@ export default function Limit(props: propsIF) {
         );
 
         (async () => {
-            // console.log({ limitTick });
             if (await ko.willMintFail()) {
                 // console.log('Cannot send limit order: Knockout price inside spread');
                 setLimitButtonErrorMessage(
@@ -478,10 +477,10 @@ export default function Limit(props: propsIF) {
         })();
     }, [
         limitTick,
+        poolPriceNonDisplay,
         tokenAInputQty,
         tokenBInputQty,
-        tokenPair.dataTokenA.address,
-        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenA.address + tokenPair.dataTokenB.address,
     ]);
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
@@ -529,9 +528,7 @@ export default function Limit(props: propsIF) {
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
         setShowBypassConfirmButton(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');

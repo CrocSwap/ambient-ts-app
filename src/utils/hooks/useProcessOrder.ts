@@ -11,6 +11,7 @@ import {
     priceHalfBelowTick,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import sum from 'hash-sum';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getChainExplorer } from '../data/chains';
@@ -335,7 +336,7 @@ export const useProcessOrder = (
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
-    }, [JSON.stringify(limitOrder), isDenomBase, isOnPortfolioPage]);
+    }, [sum(limitOrder), isDenomBase, isOnPortfolioPage]);
 
     const isBid = limitOrder.isBid;
 

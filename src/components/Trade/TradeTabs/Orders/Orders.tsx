@@ -1,6 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -23,7 +24,6 @@ import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
@@ -169,9 +169,9 @@ export default function Orders(props: propsIF) {
     }, [
         isShowAllEnabled,
         connectedAccountActive,
-        JSON.stringify(activeAccountLimitOrderData),
-        JSON.stringify(ordersByUserMatchingSelectedTokens),
-        JSON.stringify(limitOrdersByPool),
+        sum(activeAccountLimitOrderData),
+        sum(ordersByUserMatchingSelectedTokens),
+        sum(limitOrdersByPool),
     ]);
 
     // wait 5 seconds to open a subscription to pool changes
@@ -300,13 +300,6 @@ export default function Orders(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
-
     const walID = (
         <>
             <p>ID</p>
@@ -323,8 +316,8 @@ export default function Orders(props: propsIF) {
         <>Tokens</>
     ) : (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [
@@ -476,11 +469,7 @@ export default function Orders(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * ordersPerPage;
