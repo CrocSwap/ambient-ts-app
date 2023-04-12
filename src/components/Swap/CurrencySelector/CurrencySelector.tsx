@@ -113,7 +113,6 @@ export default function CurrencySelector(props: propsIF) {
         tokenBDexBalance,
         isSwapCopied,
         isSellTokenEth,
-        tokenASurplusMinusTokenARemainderNum,
         reverseTokens,
         gasPriceInGwei,
         verifyToken,

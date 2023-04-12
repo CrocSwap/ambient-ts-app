@@ -114,8 +114,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         tokenAInputQty,
         tokenBInputQty,
         tokenBDexBalance,
-        tokenASurplusMinusTokenARemainderNum,
-        tokenBSurplusMinusTokenBRemainderNum,
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
@@ -163,7 +161,9 @@ export default function RangeCurrencySelector(props: propsIF) {
                       parseFloat(tokenABalance) -
                       gasPriceInGwei * 500000 * 1e-9
                   ).toFixed(18)
-                : parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                : (
+                      parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                  ).toString()
             : ''
         : tokenBDexBalance && gasPriceInGwei
         ? isTokenBEth
@@ -172,7 +172,9 @@ export default function RangeCurrencySelector(props: propsIF) {
                   parseFloat(tokenBBalance) -
                   gasPriceInGwei * 500000 * 1e-9
               ).toFixed(18)
-            : parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+            : (
+                  parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+              ).toString()
         : '';
 
     const walletAndSurplusBalanceLocaleString = isTokenASelector
