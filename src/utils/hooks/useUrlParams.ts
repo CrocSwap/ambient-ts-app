@@ -26,6 +26,8 @@ export const useUrlParams = (
     const tokenMetaMap = useTokenMap();
     const { params } = useParams();
 
+    console.log('urlParams', params);
+
     const dispatch = useAppDispatch();
 
     const { switchNetwork } = useSwitchNetwork();
