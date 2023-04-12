@@ -12,7 +12,7 @@ import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
-import { topPoolsMethodsIF } from '../../../App/hooks/useTopPools';
+import { topPoolIF } from '../../../App/hooks/useTopPools';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -29,7 +29,7 @@ interface FullChatPropsIF {
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 interface ChannelDisplayPropsIF {
@@ -40,7 +40,7 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     const { topPools } = props;
-    const rooms = topPools.onActiveChain;
+    const rooms = topPools;
     const { params } = useParams();
     const reconstructedReadableRoom =
         params && !params.includes('global')

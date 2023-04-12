@@ -11,6 +11,7 @@ import {
 } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
+import sum from 'hash-sum';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
 import {
@@ -672,10 +673,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [
-        props.liquidityData && JSON.stringify(props.liquidityData?.ranges),
-        poolPriceDisplay,
-    ]);
+    }, [sum(props.liquidityData?.ranges), poolPriceDisplay]);
 
     useEffect(() => {
         IS_LOCAL_ENV &&

@@ -1,20 +1,8 @@
 import styles from './TransactionException.module.css';
-// import Animation from '../Animation/Animation';
-// import NotFound from '../../../assets/animations/NotFound.json';
-// import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
-// import { Dispatch, SetStateAction } from 'react';
 import Button from '../Button/Button';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../constants';
 import DividerDark from '../DividerDark/DividerDark';
-
-// interface TransactionSubmittedProps {
-//     hash: string;
-//     tokenBAddress: string;
-//     tokenBSymbol: string;
-//     tokenBDecimals: number;
-//     tokenBImage: string;
-// }
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;

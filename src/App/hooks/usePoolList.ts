@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { IS_LOCAL_ENV } from '../../constants';
 import { TempPoolIF } from '../../utils/interfaces/exports';
 import { fetchPoolList } from '../functions/fetchPoolList';
 
@@ -17,12 +16,6 @@ export const usePoolList = (
                 console.error(err);
             });
     }, [chainId]);
-
-    if (IS_LOCAL_ENV) {
-        useEffect(() => {
-            console.debug({ poolList });
-        }, [JSON.stringify(poolList)]);
-    }
 
     return poolList;
 };

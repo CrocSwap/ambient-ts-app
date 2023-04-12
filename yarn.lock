@@ -1131,10 +1131,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@crocswap-libs/sdk@^0.2.61":
-  version "0.2.61"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.61.tgz#d0c730336b669de7a815ebd266cb66bc587ecf19"
-  integrity sha512-Jf5LOhiIKU8Jf1zqU6Ku7y2pbuDgRGLCID0pKS5Mu/PzNEduY7xn3wcapnMH0qnZdReWycLtn8opic23592IDA==
+"@crocswap-libs/sdk@^0.2.64":
+  version "0.2.64"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.64.tgz#1918948baee5edd524a17fdd2e751b20a69f2c64"
+  integrity sha512-OEK5kz0njKj3SLcftpEwWQZ1C2TMjwI4u1cO+b0pvWqtziYqrfdlQaQZXKouK8ZBZ2uqbos9eBghds5jwy/mpQ==
   dependencies:
     ethers "^5.5.3"
 
@@ -3332,6 +3332,11 @@
   integrity sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==
   dependencies:
     "@types/node" "*"
+
+"@types/hash-sum@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/hash-sum/-/hash-sum-1.0.0.tgz#838f4e8627887d42b162d05f3d96ca636c2bc504"
+  integrity sha512-FdLBT93h3kcZ586Aee66HPCVJ6qvxVjBlDWNmxSGSbCZe9hTsjRKdSsl4y1T+3zfujxo9auykQMnFsfyHWD7wg==
 
 "@types/hoist-non-react-statics@^3.3.1":
   version "3.3.1"
@@ -8796,6 +8801,11 @@ hash-base@^3.0.0:
     inherits "^2.0.4"
     readable-stream "^3.6.0"
     safe-buffer "^5.2.0"
+
+hash-sum@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/hash-sum/-/hash-sum-2.0.0.tgz#81d01bb5de8ea4a214ad5d6ead1b523460b0b45a"
+  integrity sha512-WdZTbAByD+pHfl/g9QSsBIIwy8IT+EsPiKDs0KNX+zSHhdDLFKdZu0BQHljvO+0QI/BasbMSUa8wYNCZTvhslg==
 
 hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
   version "1.1.7"

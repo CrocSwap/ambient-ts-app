@@ -4,6 +4,7 @@ import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+import sum from 'hash-sum';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
@@ -73,10 +74,8 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     openModalWallet: () => void;
-    importedTokens: TokenIF[];
-    chainData: ChainSpec;
     searchableTokens: TokenIF[];
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
@@ -128,8 +127,6 @@ export default function Portfolio(props: propsIF) {
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        importedTokens,
-        setImportedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -253,7 +250,7 @@ export default function Portfolio(props: propsIF) {
                         .allowance(connectedAccount);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
-                    console.error(err);
+                    console.warn(err);
                 }
                 setRecheckTokenAllowance(false);
             }
@@ -446,8 +443,7 @@ export default function Portfolio(props: propsIF) {
                     );
 
                     if (
-                        JSON.stringify(resolvedAddressNativeToken) !==
-                        JSON.stringify(newNativeToken)
+                        sum(resolvedAddressNativeToken) !== sum(newNativeToken)
                     ) {
                         setResolvedAddressNativeToken(newNativeToken);
                     }
@@ -474,11 +470,11 @@ export default function Portfolio(props: propsIF) {
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
                         } else if (
-                            JSON.stringify(
+                            sum(
                                 resolvedAddressErc20Tokens[
                                     indexOfExistingToken
                                 ],
-                            ) !== JSON.stringify(newToken)
+                            ) !== sum(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
@@ -562,7 +558,6 @@ export default function Portfolio(props: propsIF) {
         isTokenABase: isTokenABase,
         provider: provider,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
-        importedTokens: importedTokens,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
@@ -687,8 +682,7 @@ export default function Portfolio(props: propsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainData.chainId}
-                        importedTokens={outputTokens}
-                        setImportedTokens={setImportedTokens}
+                        importedTokensPlus={outputTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}

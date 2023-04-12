@@ -219,7 +219,6 @@ export default function TransactionRow(props: propsIF) {
             openDetailsModal();
         } else if (event.ctrlKey && event.key === 'c') {
             // These will be shortcuts for the row menu. I will implement these at another time. -JR
-            console.log('Copy key pressed!');
         }
     };
 

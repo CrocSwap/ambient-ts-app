@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import sum from 'hash-sum';
 
 export const useSortedLimits = (
     defaultSort: string,
@@ -83,10 +84,14 @@ export const useSortedLimits = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
+    // Generates a fingerprint from the positions objects. Used for comparison
+    // in below React hook
+    const ordersHashSum = useMemo(() => sum(limitOrders), [limitOrders]);
+
     // array of positions sorted by the relevant column
     const sortedLimitOrders = useMemo(
         () => sortData(limitOrders),
-        [sortBy, reverseSort, limitOrders],
+        [sortBy, reverseSort, ordersHashSum],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimitOrders];

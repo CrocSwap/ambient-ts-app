@@ -8,7 +8,6 @@ import { memoizeFetchContractDetails } from '../../../App/functions/fetchContrac
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
-import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
@@ -17,10 +16,8 @@ import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 interface propsIF {
     modalCloseCustom: () => void;
     provider: ethers.providers.Provider | undefined;
-    importedTokens: TokenIF[];
+    importedTokensPlus: TokenIF[];
     chainId: string;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    // TODO: rewrite logic to build this Map from all lists not just active ones
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -91,7 +88,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
             ackTokens.acknowledge(tkn);
-            dispatch(setShouldRecheckLocalStorage(true));
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
@@ -120,7 +116,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             }
             goToNewUrlParams(
                 locationSlug,
-                '0x5',
+                chainId,
                 tkn.address,
                 tokenPair.dataTokenB.address.toLowerCase() ===
                     tkn.address.toLowerCase()
@@ -139,7 +135,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             }
             goToNewUrlParams(
                 locationSlug,
-                '0x5',
+                chainId,
                 tokenPair.dataTokenA.address.toLowerCase() ===
                     tkn.address.toLowerCase()
                     ? tokenPair.dataTokenB.address
@@ -226,16 +222,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (
-                    verifyToken(validatedInput, chainId) ||
-                    JSON.parse(
-                        localStorage.getItem('user') as string,
-                    ).tokens.some(
-                        (tkn: TokenIF) =>
-                            tkn.address.toLowerCase() ===
-                            validatedInput.toLowerCase(),
-                    )
-                ) {
+                if (verifyToken(validatedInput, chainId)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {
