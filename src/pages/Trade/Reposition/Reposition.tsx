@@ -49,6 +49,8 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { ethers } from 'ethers';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -56,6 +58,8 @@ interface propsIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     repoSlippage: SlippageMethodsIF;
+    provider: ethers.providers.Provider;
+    chainId: string;
     isPairStable: boolean;
     bypassConfirm: allSkipConfirmMethodsIF;
     setMaxPrice: Dispatch<SetStateAction<number>>;
@@ -77,6 +81,8 @@ export default function Reposition(props: propsIF) {
         ambientApy,
         dailyVol,
         repoSlippage,
+        provider,
+        chainId,
         isPairStable,
         bypassConfirm,
         setMinPrice,
@@ -115,6 +121,7 @@ export default function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
+    useUrlParams(chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise

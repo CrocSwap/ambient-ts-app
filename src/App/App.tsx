@@ -3290,6 +3290,8 @@ export default function App() {
                                         lastBlockNumber={lastBlockNumber}
                                         tokenPair={tokenPair}
                                         crocEnv={crocEnv}
+                                        chainId={chainData.chainId}
+                                        provider={provider}
                                         ambientApy={ambientApy}
                                         dailyVol={dailyVol}
                                         isDenomBase={tradeData.isDenomBase}
