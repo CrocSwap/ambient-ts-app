@@ -756,7 +756,7 @@ export default function Reposition(props: propsIF) {
             className={styles.view_etherscan}
         >
             View on Etherscan
-            <FiExternalLink size={20} color='var(--text-grey-white)' />
+            <FiExternalLink size={12} color='var(--text-grey-white)' />
         </a>
     );
 
