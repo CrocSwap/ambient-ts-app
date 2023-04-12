@@ -168,13 +168,13 @@ export default function ClaimOrder(props: propsIF) {
     const claimSuccess = (
         <TxSubmittedSimplify
             hash={newClaimTransactionHash}
-            content='Claim Transaction Successfully Submitted.'
+            content='Claim Transaction Successfully Submitted'
             chainId={chainData.chainId}
         />
     );
 
     const claimPending = (
-        <WaitingConfirmation content='Please check your wallet for notifications.' />
+        <WaitingConfirmation content='Please check your wallet for notifications' />
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
