@@ -452,7 +452,9 @@ export default function TradeTabs2(props: propsIF) {
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
+        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: false,
     };
 
     // Props for <Orders/> React Element
