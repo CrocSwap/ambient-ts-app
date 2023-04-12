@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { hashFingerprint } from '../../../utils/functions/hashFingerprint';
 import { PositionIF } from '../../../utils/interfaces/exports';
-
+import sum from 'hash-sum';
 export const useSortedPositions = (
     defaultSort: string,
     positions: PositionIF[],
@@ -185,13 +184,13 @@ export const useSortedPositions = (
 
     // Generates a fingerprint from the positions objects. Used for comparison
     // in below React hook
-    const posFingerprint = hashFingerprint(positions);
+    const posHashSum = useMemo(() => sum(positions), [positions]);
 
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
         const poss = sortData(positions);
         return poss;
-    }, [sortBy, reverseSort, posFingerprint]); // fix failure to refresh rows when data changes
+    }, [sortBy, reverseSort, posHashSum]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };
