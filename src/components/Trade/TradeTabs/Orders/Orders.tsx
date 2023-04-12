@@ -1,6 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -169,9 +170,9 @@ export default function Orders(props: propsIF) {
     }, [
         isShowAllEnabled,
         connectedAccountActive,
-        JSON.stringify(activeAccountLimitOrderData),
-        JSON.stringify(ordersByUserMatchingSelectedTokens),
-        JSON.stringify(limitOrdersByPool),
+        sum(activeAccountLimitOrderData),
+        sum(ordersByUserMatchingSelectedTokens),
+        sum(limitOrdersByPool),
     ]);
 
     // wait 5 seconds to open a subscription to pool changes
@@ -476,11 +477,7 @@ export default function Orders(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * ordersPerPage;

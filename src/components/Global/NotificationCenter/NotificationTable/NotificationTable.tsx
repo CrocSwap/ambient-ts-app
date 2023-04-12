@@ -1,5 +1,5 @@
 import styles from './NotificationTable.module.css';
-import { Dispatch, RefObject, SetStateAction, useEffect } from 'react';
+import { Dispatch, RefObject, SetStateAction } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 import FocusTrap from 'focus-trap-react';
 
@@ -8,7 +8,6 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
-import { IS_LOCAL_ENV } from '../../../../constants';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -37,11 +36,6 @@ const NotificationTable = (props: NotificationTableProps) => {
     const parsedReceipts = receiptData.sessionReceipts.map((receipt) =>
         JSON.parse(receipt),
     );
-
-    useEffect(() => {
-        if (parsedReceipts.length && IS_LOCAL_ENV)
-            console.debug({ parsedReceipts });
-    }, [JSON.stringify(parsedReceipts)]);
 
     const successfulTransactions = parsedReceipts.filter(
         (receipt) => receipt?.status === 1,

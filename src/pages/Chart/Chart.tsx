@@ -3,6 +3,8 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
+import sum from 'hash-sum';
+
 import {
     DetailedHTMLProps,
     Dispatch,
@@ -695,7 +697,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        JSON.stringify(props.chartItemStates),
+        sum(props.chartItemStates),
         expandTradeTable,
         parsedChartData?.chartData.length,
         parsedChartData?.chartData[0]?.time,
@@ -2027,16 +2029,16 @@ export default function Chart(props: propsIF) {
         rescale,
         location,
         candlestick,
-        JSON.stringify(scaleData?.xScale.domain()[0]),
-        JSON.stringify(scaleData?.xScale?.domain()[1]),
-        JSON.stringify(showLatest),
+        sum(scaleData?.xScale.domain()[0]),
+        sum(scaleData?.xScale?.domain()[1]),
+        sum(showLatest),
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
         limit,
         dragEvent,
         isLineDrag,
-        JSON.stringify(yAxisLabels),
+        sum(yAxisLabels),
     ]);
 
     useEffect(() => {
@@ -3310,7 +3312,7 @@ export default function Chart(props: propsIF) {
     }, [
         scaleData,
         market,
-        JSON.stringify(crosshairData),
+        sum(crosshairData),
         isMouseMoveCrosshair,
         limit,
         isLineDrag,
@@ -5520,7 +5522,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        JSON.stringify(scaleData),
+        sum(scaleData),
         liquidityData?.liqAskData,
         liquidityData?.depthLiqAskData,
         lineAskSeries,
@@ -5705,7 +5707,7 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         parsedChartData?.period,
-        JSON.stringify(parsedChartData?.chartData[0]),
+        sum(parsedChartData?.chartData[0]),
     ]);
 
     // Call drawChart()
