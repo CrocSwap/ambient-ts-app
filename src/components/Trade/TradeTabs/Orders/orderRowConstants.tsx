@@ -46,6 +46,12 @@ interface Props {
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
 }
+
+// * This file contains constants used in the rendering of order rows in the order table.
+// * The constants define the structure of each order row and are used in the JSX of the parent component.
+// * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
+
+// * To use these constants in a component, simply import them from this file and reference them as needed.
 export const orderRowConstants = (props: Props) => {
     const {
         posHashTruncated,
