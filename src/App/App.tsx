@@ -382,7 +382,6 @@ export default function App() {
             ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
             : true;
     const [isChatEnabled, setIsChatEnabled] = useState(isChatEnabledDefault);
-    console.log('CHAT IS ENABLED?', isChatEnabled, isChatEnabledDefault);
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 

@@ -30,7 +30,6 @@ interface SentMessageProps {
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
-    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -50,7 +49,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
         'https://www.crocswap.com/whitepaper',
     ];
 
-    const { deleteMessage } = useChatApi(props.setIsChatEnabled);
+    const { deleteMessage } = useChatApi();
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();

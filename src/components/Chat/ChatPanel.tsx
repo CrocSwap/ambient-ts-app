@@ -87,10 +87,12 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+        room,
+        setIsChatEnabled,
+    );
 
-    const { getID, updateUser, updateMessageUser, saveUser } =
-        useChatApi(setIsChatEnabled);
+    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
@@ -361,7 +363,6 @@ export default function ChatPanel(props: propsIF) {
                         }
                         nextMessage={i === 0 ? null : messages[i - 1]}
                         key={item._id}
-                        setIsChatEnabled={setIsChatEnabled}
                     />
                 ))}
         </div>
@@ -455,6 +456,7 @@ export default function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
+            setIsChatEnabled={setIsChatEnabled}
         />
     );
 
@@ -514,7 +516,6 @@ export default function ChatPanel(props: propsIF) {
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
                         topPools={topPools}
-                        setIsChatEnabled={setIsChatEnabled}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

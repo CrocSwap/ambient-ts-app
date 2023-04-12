@@ -44,7 +44,6 @@ interface propsIF {
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
     topPools: topPoolIF[];
-    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -59,13 +58,12 @@ export default function RoomDropdown(props: propsIF) {
         favoritePoolsArray,
         setFavoritePoolsArray,
         topPools,
-        setIsChatEnabled,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);
     const [isHovering, setIsHovering] = useState(false);
-    const { updateUser } = useChatApi(setIsChatEnabled);
+    const { updateUser } = useChatApi();
 
     // non-empty space
     const defaultRooms = [

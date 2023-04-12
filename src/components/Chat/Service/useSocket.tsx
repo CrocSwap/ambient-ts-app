@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, Dispatch, SetStateAction } from 'react';
 import io from 'socket.io-client';
 import { Message } from '../Model/MessageModel';
 export const host = 'https://ambichat.link:5000';
@@ -8,23 +8,43 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
-const useSocket = (room: string) => {
+// If we don't get messages within this timeout (ms) we will treat the chat as unreachable and disable it.
+// NOTE: we do this for getMessages because this is always run when the chat is rendered regardless of web3 connection (login)
+const GET_MESSAGES_TIMEOUT_MS = 10000;
+
+const useSocket = (
+    room: string,
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>, // NOTE: we only need to fire timeout setter for ChatPanel
+) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
+    // TODO (#1810): Replace this with a health check endpoint / callback that we can run without metamask connected.
+    const [isMsgEmit, setIsMsgEmit] = useState(false);
+    const [isMsgRecieve, setIsMessageRecieve] = useState(false);
+
+    useEffect(() => {
+        if (isMsgEmit) {
+            const interval = setInterval(() => {
+                if (isMsgEmit && !isMsgRecieve) {
+                    // TODO (#1800): make it possible to re-enable if we get back a connection, maybe on 'reconnect' ?
+                    // Disable the chat feature on timeout between when we emitted the 'msg-recieve' and got data for it
+                    setIsChatEnabled(false);
+                }
+            }, GET_MESSAGES_TIMEOUT_MS);
+            return () => clearInterval(interval);
+        }
+    }, [isMsgEmit, isMsgRecieve]);
 
     useEffect(() => {
         const roomId = room;
         socketRef.current = io(host, { query: { roomId } });
-        socketRef.current.on('connection');
-
         socketRef.current.on('send-msg', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             socketRef.current.on('msg-recieve', (data: any) => {
-                console.log('CHAT SEND MESSAGE HOOK');
                 setMessages(data);
                 setLastMessage(data[0]);
                 setLastMessageText(data[0].text);
@@ -33,7 +53,7 @@ const useSocket = (room: string) => {
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socketRef.current.on('msg-recieve', (data: any) => {
-            console.log('CHAT RECIEVE MESSAGE HOOK');
+            setIsMessageRecieve(true);
             setMessages(data);
         });
 
@@ -43,7 +63,8 @@ const useSocket = (room: string) => {
     }, [room]);
 
     async function getMsg() {
-        console.log('getMsg() CHAT');
+        setIsMessageRecieve(false);
+        setIsMsgEmit(true);
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });
@@ -56,7 +77,6 @@ const useSocket = (room: string) => {
         ensName: string,
         walletID: string | null,
     ) {
-        console.log('sendMsg() CHAT');
         socketRef.current.emit('send-msg', {
             from: currentUser,
             message: msg,
