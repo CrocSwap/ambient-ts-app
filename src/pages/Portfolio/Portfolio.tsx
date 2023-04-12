@@ -366,7 +366,7 @@ export default function Portfolio(props: propsIF) {
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
                 lastBlockNumber={lastBlockNumber}
-                openTokenModal={openTokenModal}g
+                openTokenModal={openTokenModal}
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
                 selectedTokenDecimals={selectedTokenDecimals}
