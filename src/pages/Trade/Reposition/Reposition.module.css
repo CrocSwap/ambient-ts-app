@@ -53,3 +53,18 @@
     color: var(--text-grey-light);
     background-color: transparent;
 }
+
+.view_etherscan{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    color: var(--text-highlight-dark);
+    cursor: pointer;
+    padding: 8px 0;
+}
