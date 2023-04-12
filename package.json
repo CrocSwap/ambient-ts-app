@@ -46,7 +46,7 @@
         "web-vitals": "^2.1.0"
     },
     "scripts": {
-        "start": "yarn && react-scripts start --openssl-legacy-provider",
+        "start": "yarn && react-scripts start",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=4096 build",
         "test": "react-scripts test ",

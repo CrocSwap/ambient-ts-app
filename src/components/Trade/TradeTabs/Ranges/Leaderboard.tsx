@@ -23,7 +23,6 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
@@ -187,13 +186,6 @@ export default function Leaderboard(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
-
     const walID = (
         <>
             <p>ID</p>
@@ -208,11 +200,18 @@ export default function Leaderboard(props: propsIF) {
     );
     const tokens = (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [
+        {
+            name: 'Last Updated',
+            className: '',
+            show: showColumns,
+            slug: 'time',
+            sortable: false,
+        },
         {
             name: 'Rank',
             className: 'ID',
@@ -227,7 +226,6 @@ export default function Leaderboard(props: propsIF) {
             slug: 'time',
             sortable: false,
         },
-
         {
             name: 'Wallet',
             className: 'wallet',

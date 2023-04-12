@@ -206,6 +206,7 @@ export default function MessageInput(
                 <div
                     className={styles.send_message_button}
                     onClick={() => handleSendMessageButton()}
+                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
                 >
                     <svg
                         width='16'
