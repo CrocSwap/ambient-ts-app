@@ -150,7 +150,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 content={
                     !delayForHelpTextElapsed
                         ? ''
-                        : `Please check the ${'MetaMask'} extension in your browser for notifications.`
+                        : 'Please check your wallet for notifications'
                 }
             />
         </div>
@@ -159,7 +159,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const coinbaseWalletPendingPage = (
         <div className={styles.metamask_pending_container}>
             <WaitingConfirmation
-                content={'Please complete authentication via WalletConnect.'}
+                content={'Please complete authentication via WalletConnect'}
             />
         </div>
     );
