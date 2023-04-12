@@ -515,7 +515,7 @@ export default function Chart(props: propsIF) {
                 )[0].value = maxPrice;
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
-                )[0].value = minPrice;
+                )[0].value = simpleRangeWidth === 100 ? 0 : minPrice;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
                 scaleWithButtons(minPrice, maxPrice);
@@ -5032,7 +5032,7 @@ export default function Chart(props: propsIF) {
                     'display',
                     (location.pathname.includes('reposition') ||
                         location.pathname.includes('range')) &&
-                        (isAdvancedModeActive || simpleRangeWidth !== 100)
+                        (isAdvancedModeActive || simpleRangeWidthGra !== 100)
                         ? 'inline'
                         : 'none',
                 );
