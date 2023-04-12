@@ -163,7 +163,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                       parseFloat(tokenABalance) -
                       gasPriceInGwei * 500000 * 1e-9
                   ).toFixed(18)
-                : tokenADexBalance
+                : parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
             : ''
         : tokenBDexBalance && gasPriceInGwei
         ? isTokenBEth
@@ -172,7 +172,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                   parseFloat(tokenBBalance) -
                   gasPriceInGwei * 500000 * 1e-9
               ).toFixed(18)
-            : tokenBDexBalance
+            : parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
         : '';
 
     const walletAndSurplusBalanceLocaleString = isTokenASelector
@@ -246,15 +246,7 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const sellTokenWalletClassname =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
-        (isTokenASelector &&
-            isWithdrawTokenAFromDexChecked &&
-            tokenASurplusMinusTokenARemainderNum &&
-            tokenASurplusMinusTokenARemainderNum < 0) ||
-        (!isTokenASelector &&
-            isWithdrawTokenBFromDexChecked &&
-            tokenBSurplusMinusTokenBRemainderNum &&
-            tokenBSurplusMinusTokenBRemainderNum < 0)
+        (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
             ? styles.enabled_logo
             : styles.grey_logo_wallet;
 
@@ -264,29 +256,13 @@ export default function RangeCurrencySelector(props: propsIF) {
 
     const balanceLocaleString =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
-        (isTokenASelector &&
-            isWithdrawTokenAFromDexChecked &&
-            tokenASurplusMinusTokenARemainderNum &&
-            tokenASurplusMinusTokenARemainderNum < 0) ||
-        (!isTokenASelector &&
-            isWithdrawTokenBFromDexChecked &&
-            tokenBSurplusMinusTokenBRemainderNum &&
-            tokenBSurplusMinusTokenBRemainderNum < 0)
+        (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
             ? walletBalanceLocaleString
             : walletAndSurplusBalanceLocaleString;
 
     const balanceNonLocaleString =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
-        (isTokenASelector &&
-            isWithdrawTokenAFromDexChecked &&
-            tokenASurplusMinusTokenARemainderNum &&
-            tokenASurplusMinusTokenARemainderNum < 0) ||
-        (!isTokenASelector &&
-            isWithdrawTokenBFromDexChecked &&
-            tokenBSurplusMinusTokenBRemainderNum &&
-            tokenBSurplusMinusTokenBRemainderNum < 0)
+        (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
             ? walletBalanceNonLocaleString
             : walletAndSurplusBalanceNonLocaleString;
 
@@ -301,7 +277,11 @@ export default function RangeCurrencySelector(props: propsIF) {
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
                 handleMaxButtonClick();
-                IS_LOCAL_ENV && console.debug('max button clicked');
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'max button clicked with value: ' +
+                            balanceNonLocaleString,
+                    );
             }}
         >
             Max
