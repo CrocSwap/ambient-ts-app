@@ -231,6 +231,7 @@ export default function Reposition(props: propsIF) {
 
     const [pinnedLowTick, setPinnedLowTick] = useState(0);
     const [pinnedHighTick, setPinnedHighTick] = useState(0);
+    const [isAmbient, setIsAmbient] = useState(false);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
@@ -273,11 +274,21 @@ export default function Reposition(props: propsIF) {
             position.quoteDecimals,
             lowTick,
             highTick,
-            lookupChain(position?.chainId || '0x5').gridSize,
+            lookupChain(position.chainId).gridSize,
         );
 
-        setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
-        setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+        const isAmbient: boolean = rangeWidthPercentage === 100;
+
+        if (isAmbient) {
+            setIsAmbient(true);
+            // (0,0) ticks is convention for full-width ambient
+            setPinnedLowTick(0);
+            setPinnedHighTick(0);
+        } else {
+            setIsAmbient(false);
+            setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+        }
     }, [
         rangeWidthPercentage,
         currentPoolPriceTick,
@@ -285,6 +296,17 @@ export default function Reposition(props: propsIF) {
         position?.base,
         position?.quote,
     ]);
+
+    function mintArgsForReposition(
+        lowTick: number,
+        highTick: number,
+    ): 'ambient' | [number, number] {
+        if (lowTick === 0 && highTick === 0) {
+            return 'ambient';
+        } else {
+            return [lowTick, highTick];
+        }
+    }
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) {
@@ -303,7 +325,7 @@ export default function Reposition(props: propsIF) {
             const repo = new CrocReposition(pool, {
                 liquidity: concLiq,
                 burn: [position.bidTick, position.askTick],
-                mint: [pinnedLowTick, pinnedHighTick],
+                mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
             });
 
             tx = await repo.rebal();
@@ -364,7 +386,7 @@ export default function Reposition(props: propsIF) {
         position?.quoteDecimals || 18,
         lowTick,
         highTick,
-        lookupChain(position?.chainId || '0x5').gridSize,
+        lookupChain(position.chainId).gridSize,
     );
 
     const pinnedMinPriceDisplayTruncated =
@@ -417,7 +439,7 @@ export default function Reposition(props: propsIF) {
 
     const positionStatsCacheEndpoint =
         httpGraphCacheServerDomain + '/position_stats?';
-    const poolIndex = lookupChain(position?.chainId || '0x5').poolIndex;
+    const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {
         fetch(
@@ -429,7 +451,7 @@ export default function Reposition(props: propsIF) {
                     base: position.base,
                     quote: position.quote,
                     poolIdx: poolIndex.toString(),
-                    chainId: position?.chainId || '0x5',
+                    chainId: position.chainId,
                     positionType: position.positionType,
                     addValue: 'true',
                     omitAPY: 'true',
@@ -497,7 +519,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -515,7 +537,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -533,7 +555,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -551,7 +573,7 @@ export default function Reposition(props: propsIF) {
                 quoteTokenDecimals,
                 debouncedLowTick,
                 debouncedHighTick,
-                lookupChain(position?.chainId || '0x5').gridSize,
+                lookupChain(position.chainId).gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -578,7 +600,7 @@ export default function Reposition(props: propsIF) {
         const repo = new CrocReposition(pool, {
             liquidity: concLiq,
             burn: [position.bidTick, position.askTick],
-            mint: [debouncedLowTick, debouncedHighTick],
+            mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
         repo.postBalance().then(([base, quote]: [number, number]) => {
@@ -680,6 +702,7 @@ export default function Reposition(props: propsIF) {
         currentQuoteQtyDisplayTruncated: currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay: newBaseQtyDisplay,
         newQuoteQtyDisplay: newQuoteQtyDisplay,
+        isAmbient: isAmbient,
         pinnedMinPriceDisplayTruncatedInBase:
             pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote:

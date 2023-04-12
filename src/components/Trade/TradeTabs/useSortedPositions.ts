@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../utils/interfaces/exports';
-
+import sum from 'hash-sum';
 export const useSortedPositions = (
     defaultSort: string,
     positions: PositionIF[],
@@ -182,13 +182,15 @@ export const useSortedPositions = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // TODO: new user positions reset table sort, new pool positions retains sort
+    // Generates a fingerprint from the positions objects. Used for comparison
+    // in below React hook
+    const posHashSum = useMemo(() => sum(positions), [positions]);
 
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
         const poss = sortData(positions);
         return poss;
-    }, [sortBy, reverseSort, JSON.stringify(positions)]); // fix failure to refresh rows when data changes
+    }, [sortBy, reverseSort, posHashSum]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };

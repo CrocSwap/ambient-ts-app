@@ -33,13 +33,12 @@ import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput'
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
@@ -70,8 +69,6 @@ interface propsIF {
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
 
     isRangeCopied: boolean;
@@ -113,8 +110,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         gasPriceInGwei,
         chainId,
         isLiq,
-        tokensBank,
-        setImportedTokens,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -140,8 +135,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
@@ -378,10 +371,12 @@ export default function RangeCurrencyConverter(props: propsIF) {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
         navigate(
-            '/trade/range/chain=0x5&tokenA=' +
-                tokenPair.dataTokenB.address +
-                '&tokenB=' +
-                tokenPair.dataTokenA.address,
+            '/trade/range/' +
+                formSlugForPairParams(
+                    tokenPair.dataTokenA.chainId,
+                    tokenPair.dataTokenB,
+                    tokenPair.dataTokenA,
+                ),
         );
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
     };
@@ -705,8 +700,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         resetTokenQuantities: resetTokenQuantities,
         chainId: chainId,
         tokenPair: tokenPair,
-        tokensBank: tokensBank,
-        setImportedTokens: setImportedTokens,
         isTokenAEth,
         isTokenBEth,
         tokenAInputQty: tokenAInputQty,
@@ -736,8 +729,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
             tokenBSurplusMinusTokenBRemainderNum,
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         isRangeCopied: isRangeCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,

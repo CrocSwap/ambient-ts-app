@@ -11,7 +11,10 @@ import {
     priceHalfBelowTick,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import sum from 'hash-sum';
+
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { getChainExplorer } from '../data/chains';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -19,7 +22,7 @@ export const useProcessOrder = (
     isOnPortfolioPage = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = 'https://goerli.etherscan.io/';
+    const blockExplorer = getChainExplorer(limitOrder.chainId);
 
     // eslint-disable-next-line
     const lastBlockNumber = useAppSelector(
@@ -333,7 +336,7 @@ export const useProcessOrder = (
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
-    }, [JSON.stringify(limitOrder), isDenomBase, isOnPortfolioPage]);
+    }, [sum(limitOrder), isDenomBase, isOnPortfolioPage]);
 
     const isBid = limitOrder.isBid;
 

@@ -39,7 +39,7 @@ interface propsIF {
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { account, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -60,11 +60,6 @@ export default function ClaimOrder(props: propsIF) {
         truncatedDisplayPrice,
     } = useProcessOrder(limitOrder, account);
 
-    if (IS_LOCAL_ENV) {
-        useEffect(() => {
-            console.debug({ limitOrder });
-        }, [JSON.stringify(limitOrder)]);
-    }
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -173,7 +168,8 @@ export default function ClaimOrder(props: propsIF) {
     const claimSuccess = (
         <TxSubmittedSimplify
             hash={newClaimTransactionHash}
-            content='Claim Transaction Successfully Submitted'
+            content='Claim Transaction Successfully Submitted.'
+            chainId={chainData.chainId}
         />
     );
 

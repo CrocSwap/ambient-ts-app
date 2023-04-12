@@ -8,8 +8,10 @@ import {
     ReactNode,
     useEffect,
     useState,
+    useMemo,
 } from 'react';
 import { ethers } from 'ethers';
+import sum from 'hash-sum';
 
 // START: Import JSX Components
 
@@ -27,7 +29,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -64,7 +66,6 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    importedTokens: TokenIF[];
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
@@ -173,12 +174,28 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
 
-    useEffect(() => {
+    const sumHashActiveAccountPositionData = useMemo(
+        () => sum(activeAccountPositionData),
+        [activeAccountPositionData],
+    );
+
+    const sumHashRangeData = useMemo(() => sum(rangeData), [rangeData]);
+
+    const sumHashUserPositionsToDisplayOnTrade = useMemo(
+        () => sum(userPositionsToDisplayOnTrade),
+        [userPositionsToDisplayOnTrade],
+    );
+
+    const sumHashPositionsByPool = useMemo(
+        () => sum(positionsByPool),
+        [positionsByPool],
+    );
+
+    const updateRangeData = () => {
         if (
             isOnPortfolioPage &&
             activeAccountPositionData &&
-            JSON.stringify(activeAccountPositionData) !==
-                JSON.stringify(rangeData)
+            sumHashActiveAccountPositionData !== sumHashRangeData
         ) {
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
@@ -186,13 +203,18 @@ export default function Ranges(props: propsIF) {
         } else if (positionsByPool && !isOnPortfolioPage) {
             setRangeData(positionsByPool);
         }
+    };
+
+    useEffect(() => {
+        updateRangeData();
     }, [
         isOnPortfolioPage,
         isShowAllEnabled,
         connectedAccountActive,
-        JSON.stringify(activeAccountPositionData),
-        JSON.stringify(userPositionsToDisplayOnTrade),
-        JSON.stringify(positionsByPool),
+        sumHashActiveAccountPositionData,
+        sumHashUserPositionsToDisplayOnTrade,
+        sumHashPositionsByPool,
+        sumHashRangeData,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
@@ -238,7 +260,7 @@ export default function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        JSON.stringify({
+        sum({
             id0: sortedPositions[0]?.positionId,
             id1: sortedPositions[1]?.positionId,
             id2: sortedPositions[2]?.positionId,
@@ -269,11 +291,7 @@ export default function Ranges(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -286,11 +304,6 @@ export default function Ranges(props: propsIF) {
         setCurrentPage(pageNumber);
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
-
-    const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage && largeScreenView
-            ? currentRanges
-            : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
@@ -477,7 +490,6 @@ export default function Ranges(props: propsIF) {
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
-            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
@@ -514,7 +526,6 @@ export default function Ranges(props: propsIF) {
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
-            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
@@ -557,7 +568,7 @@ export default function Ranges(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
-        usePaginateDataOrNull ? (
+        expandTradeTable && !isOnPortfolioPage && largeScreenView ? (
             currentRowItemContent
         ) : (
             sortedRowItemContent

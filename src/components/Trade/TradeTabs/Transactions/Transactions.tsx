@@ -23,6 +23,8 @@ import {
     useMemo,
     useRef,
 } from 'react';
+import sum from 'hash-sum';
+
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -41,7 +43,6 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface propsIF {
-    importedTokens: TokenIF[];
     isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
@@ -76,7 +77,6 @@ interface propsIF {
 }
 export default function Transactions(props: propsIF) {
     const {
-        // importedTokens,
         isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,
@@ -218,7 +218,7 @@ export default function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData);
             // setDataToDisplay(true);
         }
-    }, [isOnPortfolioPage, JSON.stringify(activeAccountTransactionData)]);
+    }, [isOnPortfolioPage, sum(activeAccountTransactionData)]);
 
     // update tx table content when candle selected or underlying data changes
     useEffect(() => {
@@ -245,9 +245,9 @@ export default function Transactions(props: propsIF) {
         isShowAllEnabled,
         isCandleSelected,
         filter,
-        JSON.stringify(changesInSelectedCandle),
-        JSON.stringify(changesByUserMatchingSelectedTokens),
-        JSON.stringify(changesByPoolWithoutFills),
+        sum(changesInSelectedCandle),
+        sum(changesByUserMatchingSelectedTokens),
+        sum(changesByPoolWithoutFills),
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
@@ -279,11 +279,7 @@ export default function Transactions(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -323,7 +319,7 @@ export default function Transactions(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100,
+                n: 80,
             })
                 .then((poolChangesJsonData) => {
                     if (poolChangesJsonData) {

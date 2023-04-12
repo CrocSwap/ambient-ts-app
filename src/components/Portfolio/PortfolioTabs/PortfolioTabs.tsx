@@ -1,12 +1,12 @@
-// START: Import React and Dongles
 import {
+    // START: Import React and Dongles
     useEffect,
     useState,
     Dispatch,
     SetStateAction,
     ReactNode,
 } from 'react';
-
+import sum from 'hash-sum';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
@@ -54,7 +54,6 @@ interface propsIF {
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
-    importedTokens: TokenIF[];
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
@@ -104,7 +103,6 @@ export default function PortfolioTabs(props: propsIF) {
         isTokenABase,
         cachedFetchTokenPrice,
         tokenMap,
-        importedTokens,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
@@ -134,10 +132,16 @@ export default function PortfolioTabs(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const graphData = useAppSelector((state) => state?.graphData);
-    const connectedAccountPositionData = graphData.positionsByUser.positions;
+    const connectedAccountPositionData =
+        graphData.positionsByUser.positions.filter(
+            (x) => x.chainId === chainId,
+        );
     const connectedAccountLimitOrderData =
-        graphData.limitOrdersByUser.limitOrders;
-    const connectedAccountTransactionData = graphData.changesByUser.changes;
+        graphData.limitOrdersByUser.limitOrders.filter(
+            (x) => x.chainId === chainId,
+        );
+    const connectedAccountTransactionData =
+        graphData.changesByUser.changes.filter((x) => x.chainId === chainId);
 
     const [lookupAccountPositionData, setLookupAccountPositionData] = useState<
         PositionIF[]
@@ -146,7 +150,6 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const userPositionsCacheEndpoint =
@@ -311,7 +314,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive, sum(tokenList)]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -387,7 +390,7 @@ export default function PortfolioTabs(props: propsIF) {
         chainId: chainId,
         provider: props.provider,
         isUserLoggedIn: props.isUserLoggedIn,
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
@@ -402,7 +405,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
@@ -429,7 +432,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
         crocEnv: props.crocEnv,
