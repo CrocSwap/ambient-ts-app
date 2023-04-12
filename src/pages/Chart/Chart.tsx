@@ -5654,12 +5654,12 @@ export default function Chart(props: propsIF) {
         if (limitNoGoZone && ghostLines) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
-                    limitNoGoZone(noGoZoneBoudnaries);
                     if (
                         ghostLineValuesLimit !== undefined &&
                         location.pathname.includes('/limit')
                     ) {
                         ghostLines(ghostLineValuesLimit);
+                        limitNoGoZone(noGoZoneBoudnaries);
                     }
                     if (
                         ghostLineValuesRange &&
