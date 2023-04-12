@@ -252,10 +252,6 @@ export default function RangeCurrencySelector(props: propsIF) {
             ? styles.enabled_logo
             : styles.grey_logo_wallet;
 
-    const shouldDisplayMaxButton = isTokenASelector
-        ? !isTokenAEth
-        : !isTokenBEth;
-
     const balanceLocaleString =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
         (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
@@ -267,6 +263,10 @@ export default function RangeCurrencySelector(props: propsIF) {
         (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
             ? walletBalanceNonLocaleString
             : walletAndSurplusBalanceNonLocaleString;
+
+    const shouldDisplayMaxButton =
+        (isTokenASelector ? !isTokenAEth : !isTokenBEth) &&
+        balanceLocaleString !== '0.00';
 
     function handleMaxButtonClick() {
         if (handleChangeClick && isUserLoggedIn && shouldDisplayMaxButton) {
@@ -344,7 +344,7 @@ export default function RangeCurrencySelector(props: propsIF) {
             <IconWithTooltip
                 title={`${
                     tokenAorB === 'A'
-                        ? 'Use exchange and wallet balance only'
+                        ? 'Use exchange and wallet balance'
                         : 'Add to exchange balance'
                 }`}
                 placement='bottom'

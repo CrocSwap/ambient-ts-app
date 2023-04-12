@@ -241,7 +241,7 @@ export default function CurrencySelector(props: propsIF) {
     }
 
     const maxButton =
-        walletAndSurplusBalanceNonLocaleString !== '0.0' &&
+        balanceLocaleString !== '0.00' &&
         isSellTokenSelector &&
         !isSellTokenEth ? (
             <button
@@ -333,7 +333,7 @@ export default function CurrencySelector(props: propsIF) {
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
-                            ? 'Use exchange and wallet balance only'
+                            ? 'Use exchange and wallet balance'
                             : 'Add to exchange balance'
                     }`}
                     placement='bottom'

@@ -229,7 +229,9 @@ export default function LimitCurrencySelector(props: propsIF) {
     }
 
     const maxButton =
-        isSellTokenSelector && !isSellTokenEth ? (
+        isSellTokenSelector &&
+        !isSellTokenEth &&
+        balanceLocaleString !== '0.00' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => handleMaxButtonClick}
@@ -295,7 +297,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
-                            ? 'Use exchange and wallet balance only'
+                            ? 'Use exchange and wallet balance'
                             : 'Add to exchange balance'
                     }`}
                     placement='bottom'
