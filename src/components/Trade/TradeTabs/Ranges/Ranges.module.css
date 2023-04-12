@@ -259,6 +259,57 @@
 .row_container li:focus-visible {
     border: 1px solid var(--text-grey-white);
 }
+
+/* tooltips */
+.id_tooltip_style{
+    margin-left: -60px;
+    background: var(--dark3);
+    color: var(--text-grey-white);
+    padding: 12px;
+    border-radius: 4px;
+    cursor: default;
+    font-family: monospace;
+    white-space: nowrap;
+    width: 440px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+}
+
+.wallet_tooltip_div{
+    margin-right: -80px;
+    background: var(--dark3);
+    color: var(--text-grey-white);
+    padding: 12px;
+    border-radius: 4px;
+    cursor: default;
+}
+.wallet_tooltip_p{
+    font-family: monospace;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.base_display_div{
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.range_time_p{
+    margin-left: -70px;
+    background: var(--dark3);
+    color: var(--text-grey-white);
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
 @media only screen and (max-width: 768px) {
 
     .view_wallet_link p{
