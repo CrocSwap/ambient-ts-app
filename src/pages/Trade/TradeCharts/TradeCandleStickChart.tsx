@@ -471,7 +471,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
                         : liqBoundaryData.upperBoundPriceDecimalCorrected
                     : barThreshold;
-
+            let liqBoundaryDepth = liqBoundary;
             props.liquidityData.ranges.map((data: any) => {
                 const liqUpperPrices = denominationsInBase
                     ? data.upperBoundInvPriceDecimalCorrected
@@ -527,6 +527,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
                         });
+                        liqBoundaryDepth = depthLiqBidData[0].liqPrices;
                     }
 
                     if (
@@ -540,6 +541,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
                         });
+
+                        liqBoundaryDepth = liqLowerPrices;
                     }
                 } else {
                     if (
@@ -555,6 +558,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
                         });
+                        liqBoundaryDepth = liqUpperPrices;
                     }
 
                     if (
@@ -570,6 +574,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
                         });
+                        liqBoundaryDepth = depthLiqAskData[0].liqPrices;
                     }
                 }
 
@@ -667,7 +672,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                 totalLiq: props.liquidityData?.totals?.totalLiq,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
-                liqBoundary: liqBoundary,
+                liqBoundaryCurve: liqBoundary,
+                liqBoundaryDepth: liqBoundaryDepth,
             };
         } else {
             setIsLoading(true);
