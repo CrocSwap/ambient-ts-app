@@ -150,6 +150,33 @@ export default function CurrencySelector(props: propsIF) {
         handleDexBalanceChange();
     }, [tokenADexBalance]);
 
+    const walletBalanceNonLocaleString = props.sellToken
+        ? tokenABalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (
+                      parseFloat(tokenABalance) -
+                      gasPriceInGwei * 400000 * 1e-9
+                  ).toFixed(18)
+                : tokenABalance
+            : ''
+        : tokenBBalance
+        ? tokenBBalance
+        : '';
+
+    const walletBalanceLocaleString = props.sellToken
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance || '...').toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
+
     const walletAndSurplusBalanceNonLocaleString = props.sellToken
         ? tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
@@ -184,6 +211,18 @@ export default function CurrencySelector(props: propsIF) {
           })
         : '...';
 
+    const balanceLocaleString =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+            ? walletBalanceLocaleString
+            : walletAndSurplusBalanceLocaleString;
+
+    const balanceNonLocaleString =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+            ? walletBalanceNonLocaleString
+            : walletAndSurplusBalanceNonLocaleString;
+
     // Wallet balance function and styles-----------------------------
 
     function handleWalletBalanceClick() {
@@ -196,24 +235,19 @@ export default function CurrencySelector(props: propsIF) {
         }
     }
 
+    function handleMaxButtonClick() {
+        if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
+            handleChangeClick(balanceNonLocaleString);
+        }
+    }
+
     const maxButton =
         walletAndSurplusBalanceNonLocaleString !== '0.0' &&
         isSellTokenSelector &&
         !isSellTokenEth ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    if (props.sellToken) {
-                        setIsWithdrawFromDexChecked(true);
-                    } else {
-                        setIsSaveAsDexSurplusChecked(true);
-                    }
-                    if (handleChangeClick) {
-                        handleChangeClick(
-                            walletAndSurplusBalanceNonLocaleString,
-                        );
-                    }
-                }}
+                onClick={() => handleMaxButtonClick()}
             >
                 Max
             </button>
@@ -231,12 +265,7 @@ export default function CurrencySelector(props: propsIF) {
 
     const sellTokenWalletClassname =
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
-        (isSellTokenSelector &&
-            isSellTokenEth === false &&
-            isWithdrawFromDexChecked &&
-            tokenASurplusMinusTokenARemainderNum &&
-            tokenASurplusMinusTokenARemainderNum < 0)
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
             ? styles.enabled_logo
             : styles.grey_logo_wallet;
 
@@ -288,7 +317,11 @@ export default function CurrencySelector(props: propsIF) {
                 className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
             >
                 <IconWithTooltip
-                    title={'Use Wallet Balance'}
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use wallet balance only'
+                            : 'Withdraw to wallet'
+                    }`}
                     placement='bottom'
                 >
                     <div
@@ -298,7 +331,14 @@ export default function CurrencySelector(props: propsIF) {
                         <img src={walletIcon} width='20' />
                     </div>
                 </IconWithTooltip>
-                <IconWithTooltip title={'Use DEX Balance'} placement='bottom'>
+                <IconWithTooltip
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use exchange and wallet balance only'
+                            : 'Add to exchange balance'
+                    }`}
+                    placement='bottom'
+                >
                     <div
                         className={`${styles.ambient_logo} ${sellTokenSurplusClassname}`}
                         style={{ color: surplusColorStyle }}
@@ -315,16 +355,15 @@ export default function CurrencySelector(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div className={styles.balance_column}>
-                        <div>
-                            {isUserLoggedIn
-                                ? walletAndSurplusBalanceLocaleString
-                                : ''}
-                        </div>
+                    <div
+                        className={styles.balance_column}
+                        onClick={() => handleMaxButtonClick()}
+                    >
+                        <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
+                {maxButton}
             </div>
-            {maxButton}
         </section>
     );
     // End of  Wallet balance function and styles-----------------------------

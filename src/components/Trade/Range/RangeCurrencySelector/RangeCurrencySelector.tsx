@@ -193,6 +193,38 @@ export default function RangeCurrencySelector(props: propsIF) {
           })
         : '...';
 
+    const walletBalanceNonLocaleString = isTokenASelector
+        ? tokenABalance && gasPriceInGwei
+            ? isTokenAEth
+                ? (
+                      parseFloat(tokenABalance) -
+                      gasPriceInGwei * 500000 * 1e-9
+                  ).toFixed(18)
+                : tokenABalance
+            : ''
+        : tokenBBalance && gasPriceInGwei
+        ? isTokenBEth
+            ? (
+                  parseFloat(tokenBBalance) -
+                  gasPriceInGwei * 500000 * 1e-9
+              ).toFixed(18)
+            : tokenBBalance
+        : '';
+
+    const walletBalanceLocaleString = isTokenASelector
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
+
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||
         (!isTokenASelector && isTokenBDisabled);
@@ -230,11 +262,45 @@ export default function RangeCurrencySelector(props: propsIF) {
         ? !isTokenAEth
         : !isTokenBEth;
 
+    const balanceLocaleString =
+        (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
+        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+        (isTokenASelector &&
+            isWithdrawTokenAFromDexChecked &&
+            tokenASurplusMinusTokenARemainderNum &&
+            tokenASurplusMinusTokenARemainderNum < 0) ||
+        (!isTokenASelector &&
+            isWithdrawTokenBFromDexChecked &&
+            tokenBSurplusMinusTokenBRemainderNum &&
+            tokenBSurplusMinusTokenBRemainderNum < 0)
+            ? walletBalanceLocaleString
+            : walletAndSurplusBalanceLocaleString;
+
+    const balanceNonLocaleString =
+        (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
+        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+        (isTokenASelector &&
+            isWithdrawTokenAFromDexChecked &&
+            tokenASurplusMinusTokenARemainderNum &&
+            tokenASurplusMinusTokenARemainderNum < 0) ||
+        (!isTokenASelector &&
+            isWithdrawTokenBFromDexChecked &&
+            tokenBSurplusMinusTokenBRemainderNum &&
+            tokenBSurplusMinusTokenBRemainderNum < 0)
+            ? walletBalanceNonLocaleString
+            : walletAndSurplusBalanceNonLocaleString;
+
+    function handleMaxButtonClick() {
+        if (handleChangeClick && isUserLoggedIn && shouldDisplayMaxButton) {
+            handleChangeClick(balanceNonLocaleString);
+        }
+    }
+
     const maxButton = shouldDisplayMaxButton ? (
         <button
             className={`${styles.max_button} ${styles.max_button_enable}`}
             onClick={() => {
-                handleChangeClick(walletAndSurplusBalanceNonLocaleString);
+                handleMaxButtonClick();
                 IS_LOCAL_ENV && console.debug('max button clicked');
             }}
         >
@@ -267,7 +333,11 @@ export default function RangeCurrencySelector(props: propsIF) {
     const walletContent = (
         <div className={styles.main_wallet_container}>
             <IconWithTooltip
-                title='Use Wallet Balance'
+                title={`${
+                    tokenAorB === 'A'
+                        ? 'Use wallet balance only'
+                        : 'Withdraw to wallet'
+                }`}
                 placement='bottom'
                 style={{ display: 'flex', alignItems: 'center' }}
             >
@@ -290,7 +360,11 @@ export default function RangeCurrencySelector(props: propsIF) {
                 </div>
             </IconWithTooltip>
             <IconWithTooltip
-                title='Use Exchange Balance'
+                title={`${
+                    tokenAorB === 'A'
+                        ? 'Use exchange and wallet balance only'
+                        : 'Add to exchange balance'
+                }`}
                 placement='bottom'
                 style={{ display: 'flex', alignItems: 'center' }}
             >
@@ -326,12 +400,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                 enterDelay={100}
                 leaveDelay={200}
             >
-                <div className={styles.balance_column}>
-                    <div>
-                        {isUserLoggedIn
-                            ? walletAndSurplusBalanceLocaleString
-                            : ''}
-                    </div>
+                <div
+                    className={styles.balance_column}
+                    onClick={() => {
+                        handleMaxButtonClick();
+                        IS_LOCAL_ENV && console.debug('max button clicked');
+                    }}
+                >
+                    <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                 </div>
             </DefaultTooltip>
             {maxButton}

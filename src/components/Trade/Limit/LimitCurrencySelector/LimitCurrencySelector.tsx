@@ -173,6 +173,23 @@ export default function LimitCurrencySelector(props: propsIF) {
         </button>
     );
 
+    const walletBalanceNonLocaleString =
+        tokenABalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (
+                      parseFloat(tokenABalance) -
+                      gasPriceInGwei * 400000 * 1e-9
+                  ).toFixed(18)
+                : tokenABalance
+            : '';
+
+    const walletBalanceLocaleString = tokenABalance
+        ? parseFloat(tokenABalance).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
+
     const walletAndSurplusBalanceNonLocaleString =
         tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
@@ -195,22 +212,27 @@ export default function LimitCurrencySelector(props: propsIF) {
           })
         : '...';
 
+    const balanceLocaleString =
+        isSellTokenSelector && !isWithdrawFromDexChecked
+            ? walletBalanceLocaleString
+            : walletAndSurplusBalanceLocaleString;
+
+    const balanceNonLocaleString =
+        isSellTokenSelector && !isWithdrawFromDexChecked
+            ? walletBalanceNonLocaleString
+            : walletAndSurplusBalanceNonLocaleString;
+
+    function handleMaxButtonClick() {
+        if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
+            handleChangeClick(balanceNonLocaleString);
+        }
+    }
+
     const maxButton =
         isSellTokenSelector && !isSellTokenEth ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    if (props.sellToken) {
-                        setIsWithdrawFromDexChecked(true);
-                    } else {
-                        setIsSaveAsDexSurplusChecked(true);
-                    }
-                    if (handleChangeClick) {
-                        handleChangeClick(
-                            walletAndSurplusBalanceNonLocaleString,
-                        );
-                    }
-                }}
+                onClick={() => handleMaxButtonClick}
             >
                 Max
             </button>
@@ -242,7 +264,11 @@ export default function LimitCurrencySelector(props: propsIF) {
         <section className={styles.main_wallet_container}>
             <div className={styles.balance_with_pointer}>
                 <IconWithTooltip
-                    title={'Use Wallet Balance'}
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use wallet balance only'
+                            : 'Withdraw to wallet'
+                    }`}
                     placement='bottom'
                 >
                     <div
@@ -266,7 +292,14 @@ export default function LimitCurrencySelector(props: propsIF) {
                         </div>
                     </div>
                 </IconWithTooltip>
-                <IconWithTooltip title={'Use DEX Balance'} placement='bottom'>
+                <IconWithTooltip
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use exchange and wallet balance only'
+                            : 'Add to exchange balance'
+                    }`}
+                    placement='bottom'
+                >
                     <div
                         className={`${styles.balance_with_pointer} ${
                             isSellTokenSelector && !isWithdrawFromDexChecked
@@ -308,10 +341,11 @@ export default function LimitCurrencySelector(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div className={styles.balance_column}>
-                        {isUserLoggedIn
-                            ? walletAndSurplusBalanceLocaleString
-                            : ''}
+                    <div
+                        className={styles.balance_column}
+                        onClick={() => handleMaxButtonClick}
+                    >
+                        {isUserLoggedIn ? balanceLocaleString : ''}
                     </div>
                 </DefaultTooltip>
                 {maxButton}
