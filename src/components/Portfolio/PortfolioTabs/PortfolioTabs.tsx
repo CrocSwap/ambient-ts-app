@@ -1,12 +1,12 @@
-// START: Import React and Dongles
 import {
+    // START: Import React and Dongles
     useEffect,
     useState,
     Dispatch,
     SetStateAction,
     ReactNode,
 } from 'react';
-
+import sum from 'hash-sum';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
@@ -150,7 +150,6 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const userPositionsCacheEndpoint =
@@ -315,7 +314,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive, sum(tokenList)]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
