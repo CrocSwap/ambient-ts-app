@@ -37,7 +37,6 @@ import {
     CandlesByPoolAndDuration,
 } from '../../utils/state/graphDataSlice';
 import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
-import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
@@ -47,6 +46,7 @@ import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../constants';
+import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -89,7 +89,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
-    importedTokens: TokenIF[];
+    searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
@@ -149,8 +149,7 @@ export default function Trade(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         favePools,
-        isInitialized,
-        importedTokens,
+        searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
         isShowAllEnabled,
@@ -161,7 +160,6 @@ export default function Trade(props: propsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
-        setTokenPairLocal,
         showSidebar,
         handlePulseAnimation,
         setOutsideControl,
@@ -192,14 +190,6 @@ export default function Trade(props: propsIF) {
         ethMainnetUsdPrice,
     } = props;
 
-    const [tokenPairFromParams, limitTickFromParams] = useUrlParams(
-        chainId,
-        isInitialized,
-    );
-
-    useEffect(() => {
-        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
-    }, [tokenPairFromParams]);
     const { params } = useParams();
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -291,7 +281,6 @@ export default function Trade(props: propsIF) {
                 context={{
                     tradeData: tradeData,
                     navigationMenu: navigationMenu,
-                    limitTickFromParams: limitTickFromParams,
                 }}
             />
         </div>
@@ -459,10 +448,8 @@ export default function Trade(props: propsIF) {
     ]);
 
     const initLinkPath =
-        '/initpool/chain=0x5&tokenA=' +
-        baseTokenAddress +
-        '&tokenB=' +
-        quoteTokenAddress;
+        '/initpool/' +
+        formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
     const poolNotInitializedContent =
         poolExists === false ? (
@@ -603,7 +590,7 @@ export default function Trade(props: propsIF) {
         setCurrentPositionActive: props.setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,
         closeGlobalModal: props.closeGlobalModal,
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         showSidebar: showSidebar,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,

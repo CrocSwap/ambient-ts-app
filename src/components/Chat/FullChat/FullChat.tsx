@@ -12,7 +12,7 @@ import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
-import { topPoolsMethodsIF } from '../../../App/hooks/useTopPools';
+import { topPoolIF } from '../../../App/hooks/useTopPools';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -29,7 +29,7 @@ interface FullChatPropsIF {
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 interface ChannelDisplayPropsIF {
@@ -40,7 +40,7 @@ interface ChannelDisplayPropsIF {
 }
 export default function FullChat(props: FullChatPropsIF) {
     const { topPools } = props;
-    const rooms = topPools.onActiveChain;
+    const rooms = topPools;
     const { params } = useParams();
     const reconstructedReadableRoom =
         params && !params.includes('global')
@@ -83,6 +83,8 @@ export default function FullChat(props: FullChatPropsIF) {
         userCurrentPool,
     } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
+
+    const [roomArray] = useState<PoolIF[]>([]);
 
     const [readableRoomName, setReadableName] = useState(
         reconstructedReadableRoom || 'Global',
@@ -175,7 +177,13 @@ export default function FullChat(props: FullChatPropsIF) {
                 return 10;
         }
     }
+
     useEffect(() => {
+        rooms?.map((pool: PoolIF) => {
+            if (!roomArray.some(({ name }) => name === pool.name)) {
+                roomArray.push(pool);
+            }
+        });
         const fave:
             | PoolIF[]
             | {
@@ -201,8 +209,7 @@ export default function FullChat(props: FullChatPropsIF) {
                   speed: number;
                   id: number;
               }[] = [];
-
-        props.favePools.pools.map((pool: PoolIF) => {
+        props.favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + ' / ' + pool.quote.symbol,
                 base: {
@@ -227,21 +234,23 @@ export default function FullChat(props: FullChatPropsIF) {
                 id: findId(pool),
             };
 
-            if (!rooms.some(({ name }) => name === favPool.name)) {
-                rooms.push(favPool);
+            if (!roomArray.some(({ name }) => name === favPool.name)) {
+                roomArray.push(favPool);
             }
 
-            for (let x = 0; x < rooms.length; x++) {
-                if (favPool.name === rooms[x].name) {
-                    rooms.push(rooms.splice(x, 1)[0]);
+            for (let x = 0; x < roomArray.length; x++) {
+                if (favPool.name === roomArray[x].name) {
+                    roomArray.push(roomArray.splice(x, 1)[0]);
                 }
             }
             fave.push(favPool);
-            props.setFavoritePoolsArray(() => {
-                return fave;
-            });
         });
-    }, []);
+        props.setFavoritePoolsArray(() => {
+            return fave;
+        });
+        const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
+        props.favoritePoolsArray.splice(0, middleIndex);
+    }, [props.favePools]);
 
     function handleGlobalClick() {
         props.setRoom('Global');
@@ -409,7 +418,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 <span> Global</span>
             </div>
 
-            {rooms.map((pool, idx) => (
+            {roomArray.map((pool, idx) => (
                 <ChannelDisplay
                     pool={pool}
                     key={idx}
@@ -437,7 +446,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             : styles.channel_dropdown_items_containers
                     }
                 >
-                    {rooms.map((pool, idx) => (
+                    {roomArray.map((pool, idx) => (
                         <ChannelDisplay
                             pool={pool}
                             key={idx}
@@ -446,6 +455,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             favePools={props.favePools}
                         />
                     ))}
+                    {rooms.length}
                 </div>
             )}
         </div>

@@ -7,6 +7,7 @@ import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
 interface Props {
     posHashTruncated: string;
@@ -85,12 +86,11 @@ export const orderRowConstants = (props: Props) => {
 
     const tradeLinkPath =
         '/trade/limit/' +
-        'chain=' +
-        limitOrder.chainId +
-        '&tokenA=' +
-        limitOrder.quote +
-        '&tokenB=' +
-        limitOrder.base;
+        formSlugForPairParams(
+            limitOrder.chainId,
+            limitOrder.quote,
+            limitOrder.base,
+        );
 
     interface CustomLIPropsIF {
         children: React.ReactNode;

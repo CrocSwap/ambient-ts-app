@@ -94,7 +94,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;
 
-    const isDenomBase = useAppSelector((state) => state.tradeData)?.isDenomBase;
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData?.isDenomBase;
+    const liquidityFee = tradeData?.liquidityFee;
 
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
@@ -105,7 +108,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         position?.quoteDecimals || 18,
         lowTick,
         highTick,
-        lookupChain(position?.chainId || '0x5').gridSize,
+        lookupChain(position.chainId).gridSize,
     );
 
     const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
@@ -180,7 +183,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseSymbol} / ${quoteSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
-            data: `${0.3} %`,
+            data: `${liquidityFee * 100} %`,
             placement: 'bottom',
         },
     ];

@@ -39,7 +39,6 @@ import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import {
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
@@ -57,7 +56,6 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-import { useUrlParams } from '../../InitPool/useUrlParams';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
@@ -65,6 +63,7 @@ import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
 interface propsIF {
@@ -72,10 +71,8 @@ interface propsIF {
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    importedTokens: Array<TokenIF>;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
@@ -91,8 +88,6 @@ interface propsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
@@ -137,10 +132,8 @@ export default function Limit(props: propsIF) {
         pool,
         crocEnv,
         isUserLoggedIn,
-        importedTokens,
         mintSlippage,
         isPairStable,
-        setImportedTokens,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -153,8 +146,6 @@ export default function Limit(props: propsIF) {
         setRecheckTokenAApproval,
         chainId,
         chainData,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         openModalWallet,
         poolExists,
         lastBlockNumber,
@@ -178,6 +169,7 @@ export default function Limit(props: propsIF) {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
+    useUrlParams(chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -232,20 +224,19 @@ export default function Limit(props: propsIF) {
         }
     }, [limitTickFromParams, limitTick === undefined]);
 
-    const { tokenA, tokenB } = useUrlParams();
     const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(
-        () => pool?.baseToken === tokenA,
-        [pool?.baseToken, tokenA],
+        () => pool?.baseToken === tokenPair.dataTokenA.address,
+        [pool?.baseToken, tokenPair.dataTokenA.address],
     );
 
     useEffect(() => {
         if (!tradeData.shouldLimitDirectionReverse) {
             dispatch(setLimitTick(undefined));
         }
-        dispatch(setShouldLimitDirectionReverse(false));
-    }, [tokenA + tokenB]);
+        dispatch(setLimitTick(undefined));
+    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
 
     useEffect(() => {
         (async () => {
@@ -457,16 +448,17 @@ export default function Limit(props: propsIF) {
         if (!limitTick) return;
 
         const testOrder = isTokenAPrimary
-            ? crocEnv.sell(tokenA, 0)
-            : crocEnv.buy(tokenB, 0);
+            ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
+            : crocEnv.buy(tokenPair.dataTokenA.address, 0);
 
         const ko = testOrder.atLimit(
-            isTokenAPrimary ? tokenB : tokenA,
+            isTokenAPrimary
+                ? tokenPair.dataTokenB.address
+                : tokenPair.dataTokenA.address,
             limitTick,
         );
 
         (async () => {
-            // console.log({ limitTick });
             if (await ko.willMintFail()) {
                 // console.log('Cannot send limit order: Knockout price inside spread');
                 setLimitButtonErrorMessage(
@@ -483,7 +475,13 @@ export default function Limit(props: propsIF) {
                 setIsOrderValid(true);
             }
         })();
-    }, [limitTick, tokenAInputQty, tokenBInputQty]);
+    }, [
+        limitTick,
+        poolPriceNonDisplay,
+        tokenAInputQty,
+        tokenBInputQty,
+        tokenPair.dataTokenA.address + tokenPair.dataTokenB.address,
+    ]);
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
         useState(false);
@@ -530,9 +528,7 @@ export default function Limit(props: propsIF) {
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
         setShowBypassConfirmButton(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
+    }, [baseToken.address + quoteToken.address]);
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
@@ -843,8 +839,6 @@ export default function Limit(props: propsIF) {
         tokenPair: tokenPair,
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
-        tokensBank: importedTokens,
-        setImportedTokens: setImportedTokens,
         chainId: chainId,
         setLimitAllowed: setLimitAllowed,
         baseTokenBalance: baseTokenBalance,
@@ -862,8 +856,6 @@ export default function Limit(props: propsIF) {
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
         isDenominationInBase: tradeData.isDenomBase,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         poolExists: poolExists,
         gasPriceInGwei: gasPriceInGwei,
         isOrderCopied: isOrderCopied,

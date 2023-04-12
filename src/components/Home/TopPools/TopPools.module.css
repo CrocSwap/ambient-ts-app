@@ -22,28 +22,19 @@ outline: none;
 }
 
 .content {
-    --auto-grid-min-size: 300px;
-    max-width: 1120px;
+    max-width: 1200px;
     margin: 0 auto;
-    display: grid;
-    grid-gap: 1rem;
+
     list-style-type: none;
-    /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
 }
 
 .divider {
     width: 100%;
     height: 1px;
     background: var(--border);
-}
-@media (min-width: 600px) {
-    .content {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 900px) {
-    .content {
-        grid-template-columns: repeat(4, 1fr);
-    }
 }

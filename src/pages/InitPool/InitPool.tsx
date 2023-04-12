@@ -3,8 +3,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import Moralis from 'moralis';
-// import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -13,15 +11,9 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import {
-    TokenIF,
-    TokenListIF,
-    TokenPairIF,
-} from '../../utils/interfaces/exports';
+import { TokenPairIF } from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
     addReceipt,
@@ -56,7 +48,6 @@ export default function InitPool(props: propsIF) {
         openModalWallet,
         isUserLoggedIn,
         crocEnv,
-
         tokenPair,
         tokenAAllowance,
         tokenBAllowance,
@@ -68,9 +59,6 @@ export default function InitPool(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    // URL parameters
-    const { chain, baseAddr, quoteAddr } = useUrlParams();
-
     // function to programmatically navigate the user
     const navigate = useNavigate();
 
@@ -78,12 +66,19 @@ export default function InitPool(props: propsIF) {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
+    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
+        (state) => state.tradeData,
+    );
+
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
             const doesPoolExist = crocEnv
-                .pool(baseAddr as string, quoteAddr as string)
+                .pool(
+                    tokenPair.dataTokenA.address,
+                    tokenPair.dataTokenB.address,
+                )
                 .isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
@@ -97,94 +92,6 @@ export default function InitPool(props: propsIF) {
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
     }, [crocEnv]);
-
-    const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
-    const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(
-        null,
-    );
-    const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(
-        null,
-    );
-    useEffect(() => {
-        tokenALocal && dispatch(setTokenA(tokenALocal));
-        tokenBLocal && dispatch(setTokenB(tokenBLocal));
-    }, [tokenALocal, tokenBLocal]);
-
-    useEffect(() => {
-        // get allTokenLists from local storage
-        function check() {
-            const tokenListsFromStorage = localStorage.getItem('allTokenLists');
-            if (tokenListsFromStorage !== null) {
-                const tokenLists = JSON.parse(tokenListsFromStorage as string);
-                const ambientList = tokenLists.find(
-                    (list: TokenListIF) => list.name === 'Ambient Token List',
-                );
-                const tokens = ambientList.tokens;
-                setTokenList(tokens);
-            } else {
-                setTimeout(check, 100);
-            }
-        }
-        setTimeout(check, 100);
-    }, []);
-
-    useEffect(() => {
-        if (tokenList && baseAddr && quoteAddr) {
-            const findToken = (addr: string) =>
-                tokenList.find(
-                    (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() === addr.toLowerCase(),
-                );
-
-            const dataTokenA = findToken(baseAddr);
-            const dataTokenB = findToken(quoteAddr);
-            setTokenALocal(dataTokenA);
-            setTokenBLocal(dataTokenB);
-        }
-    }, [tokenList, baseAddr, quoteAddr]);
-
-    useEffect(() => {
-        // TODO: find a way to correctly type this return
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        function setTokenFromChain(addr: string, target: string): any {
-            const setTarget = (data: TokenIF, whichToken: string) => {
-                switch (whichToken) {
-                    case 'tokenALocal':
-                        setTokenALocal(data);
-                        break;
-                    case 'tokenBLocal':
-                        setTokenBLocal(data);
-                        break;
-                }
-            };
-            const promise = Moralis.EvmApi.token.getTokenMetadata({
-                addresses: [addr],
-                chain,
-            });
-            // const promise = Moralis.Web3API.token.getTokenMetadata({
-            //     chain: chain as '0x5',
-            //     addresses: [addr],
-            // });
-
-            Promise.resolve(promise)
-                .then((res) => res?.result[0].token)
-                .then((token) => {
-                    return {
-                        name: token.name,
-                        chainId: token.chain.decimal,
-                        address: token.contractAddress.lowercase,
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        logoURI: token.logo ?? '',
-                        fromList: 'urlParam',
-                    };
-                })
-                .then((res) => setTarget(res, target));
-        }
-        tokenALocal === undefined && setTokenFromChain(baseAddr, 'tokenALocal');
-        tokenBLocal === undefined &&
-            setTokenFromChain(quoteAddr, 'tokenBLocal');
-    }, [tokenALocal, tokenBLocal]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -227,10 +134,6 @@ export default function InitPool(props: propsIF) {
         useState<number>(defaultInitialPrice);
 
     const [valueDisplayString, setValueDisplayString] = useState<string>('');
-
-    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
-        (state) => state.tradeData,
-    );
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
@@ -360,10 +263,12 @@ export default function InitPool(props: propsIF) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
-                            '/trade/range/chain=0x5&tokenA=' +
-                                baseAddr +
+                            '/trade/range/chain=' +
+                                tokenPair.dataTokenA.chainId +
+                                '&tokenA=' +
+                                baseToken.address +
                                 '&tokenB=' +
-                                quoteAddr,
+                                quoteToken.address,
                             {
                                 replace: true,
                             },
@@ -419,10 +324,12 @@ export default function InitPool(props: propsIF) {
             {poolExists && (
                 <Navigate
                     to={
-                        '/trade/market/chain=0x5&tokenA=' +
-                        baseAddr +
+                        '/trade/market/chain=' +
+                        tokenPair.dataTokenA.chainId +
+                        '&tokenA=' +
+                        baseToken.address +
                         '&tokenB=' +
-                        quoteAddr
+                        quoteToken.address
                     }
                     replace={true}
                 />
