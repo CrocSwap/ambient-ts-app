@@ -7,6 +7,7 @@ import {
     Navigate,
 } from 'react-router-dom';
 import {
+    ChainSpec,
     CrocEnv,
     CrocPositionView,
     CrocReposition,
@@ -49,6 +50,7 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -68,6 +70,7 @@ interface propsIF {
     simpleRangeWidth: number;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    chainData: ChainSpec;
 }
 
 export default function Reposition(props: propsIF) {
@@ -89,6 +92,7 @@ export default function Reposition(props: propsIF) {
         simpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        chainData,
     } = props;
 
     // current URL parameter string
@@ -742,6 +746,20 @@ export default function Reposition(props: propsIF) {
         sendRepositionTransaction();
     };
 
+    const txUrlOnBlockExplorer = `${chainData.blockExplorer}/tx/${newRepositionTransactionHash}`;
+
+    const etherscanButton = (
+        <a
+            href={txUrlOnBlockExplorer}
+            target='_blank'
+            rel='noreferrer'
+            className={styles.view_etherscan}
+        >
+            View on Etherscan
+            <FiExternalLink size={20} color='var(--text-grey-white)' />
+        </a>
+    );
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -815,6 +833,7 @@ export default function Reposition(props: propsIF) {
                         />
                     )}
                 </div>
+                {isRepositionSent ? etherscanButton : null}
             </div>
             {isModalOpen && (
                 <Modal
