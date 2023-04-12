@@ -585,8 +585,6 @@ export default function Orders(props: propsIF) {
                 orderDataOrNull
             )}
             {footerDisplay}
-
-            {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}
         </section>
     );
 }

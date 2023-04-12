@@ -16,52 +16,34 @@ interface Props {
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
-    // baseQuantityDisplayShort: string;
+
     quoteTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
     priceStyle: string;
-    // quoteQuantityDisplayShort: string;
     elapsedTimeString: string;
     sideType: string;
     sideCharacter: string;
-    // ensName: string | null;
-
-    // ownerId: string;
-    // positiveArrow: string;
-    // positiveDisplayStyle: string;
-    // negativeDisplayStyle: string;
-    // negativeArrow: string;
 
     limitOrder: LimitOrderIF;
 
-    // type: string;
-    // truncatedLowDisplayPrice: string | undefined;
-    // truncatedHighDisplayPrice: string | undefined;
     priceCharacter: string;
-    // truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
-    // truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
+
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
     isOnPortfolioPage: boolean;
     isOrderFilled: boolean;
-    // isBuy: boolean;
-    // isOrderRemove: boolean;
-    // valueArrows: boolean;
 
     handleCopyPosHash: () => void;
-    // handleOpenExplorer: () => void;
     openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
-
-    // tx: TransactionIF;
 }
 export const orderRowConstants = (props: Props) => {
     const {
