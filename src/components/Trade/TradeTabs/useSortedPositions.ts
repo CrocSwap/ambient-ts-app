@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { hashFingerprint } from '../../../utils/functions/hashFingerprint';
 import { PositionIF } from '../../../utils/interfaces/exports';
 
 export const useSortedPositions = (
@@ -184,7 +185,7 @@ export const useSortedPositions = (
 
     // Generates a fingerprint from the positions objects. Used for comparison
     // in below React hook
-    const posFingerprint = positions.map((pos) => pos.positionId).join('|');
+    const posFingerprint = hashFingerprint(positions);
 
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(() => {
