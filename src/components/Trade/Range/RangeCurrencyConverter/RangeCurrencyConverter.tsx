@@ -293,21 +293,18 @@ export default function RangeCurrencyConverter(props: propsIF) {
         // const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
-            // tokenBQtyField.value = truncatedTokenBQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
             dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(parseFloat(truncatedTokenBQty));
-            IS_LOCAL_ENV &&
-                console.debug(`setting tokenBqty to ${truncatedTokenBQty}`);
+
             setTokenBInputQty(truncatedTokenBQty);
         } else {
-            // tokenBQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(true));
 
             setTokenBQtyLocal(0);
-            IS_LOCAL_ENV && console.debug('setting tokenBinputqty to blank');
+
             setTokenBInputQty('');
         }
     };
@@ -475,6 +472,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setTokenAAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
+                setTokenAQtyLocal(0);
                 if (input !== '') return;
             }
             setTokenAQtyValue(!isNaN(parsedInput) ? parsedInput : 0);
@@ -577,6 +575,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setTokenBAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
+                setTokenAQtyLocal(0);
                 if (input !== '') return;
             }
 
@@ -650,6 +649,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenADexBalance,
         tokenBDexBalance,
         isAdvancedMode,
+        isUserLoggedIn,
     ]);
 
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
