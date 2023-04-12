@@ -101,6 +101,7 @@ interface propsIF {
     ethMainnetUsdPrice: number | undefined;
     ackTokens: ackTokensMethodsIF;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -150,6 +151,7 @@ export default function Portfolio(props: propsIF) {
         ethMainnetUsdPrice,
         ackTokens,
         setExpandTradeTable,
+        setIsChatEnabled,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -364,7 +366,7 @@ export default function Portfolio(props: propsIF) {
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
                 lastBlockNumber={lastBlockNumber}
-                openTokenModal={openTokenModal}
+                openTokenModal={openTokenModal}g
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
                 selectedTokenDecimals={selectedTokenDecimals}
@@ -617,6 +619,7 @@ export default function Portfolio(props: propsIF) {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
         imageData: connectedAccountActive ? userImageData : secondaryImageData,
         openGlobalModal: openGlobalModal,
+        setIsChatEnabled: setIsChatEnabled,
     };
 
     const mobilePortfolio = (

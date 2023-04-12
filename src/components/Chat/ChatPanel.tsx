@@ -51,6 +51,7 @@ interface propsIF {
     username?: string | null;
     topPools: topPoolIF[];
     isChatEnabled: boolean;
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChatPanel(props: propsIF) {
@@ -61,6 +62,7 @@ export default function ChatPanel(props: propsIF) {
         currentPool,
         setIsChatOpen,
         topPools,
+        setIsChatEnabled,
     } = props;
 
     if (!isChatEnabled) return <NotFound />;
@@ -87,7 +89,8 @@ export default function ChatPanel(props: propsIF) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser, saveUser } =
+        useChatApi(setIsChatEnabled);
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
@@ -358,6 +361,7 @@ export default function ChatPanel(props: propsIF) {
                         }
                         nextMessage={i === 0 ? null : messages[i - 1]}
                         key={item._id}
+                        setIsChatEnabled={setIsChatEnabled}
                     />
                 ))}
         </div>
@@ -510,6 +514,7 @@ export default function ChatPanel(props: propsIF) {
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
                         topPools={topPools}
+                        setIsChatEnabled={setIsChatEnabled}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

@@ -2,7 +2,7 @@
 import styles from './Room.module.css';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import useChatApi from '../../Service/ChatApi';
@@ -44,6 +44,7 @@ interface propsIF {
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
     topPools: topPoolIF[];
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -58,12 +59,13 @@ export default function RoomDropdown(props: propsIF) {
         favoritePoolsArray,
         setFavoritePoolsArray,
         topPools,
+        setIsChatEnabled,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);
     const [isHovering, setIsHovering] = useState(false);
-    const { updateUser } = useChatApi();
+    const { updateUser } = useChatApi(setIsChatEnabled);
 
     // non-empty space
     const defaultRooms = [

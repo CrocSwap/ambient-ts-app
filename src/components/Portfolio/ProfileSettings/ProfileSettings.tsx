@@ -39,6 +39,7 @@ interface ProfileSettingsPropsIF {
     ensName: string;
     imageData: string[];
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
@@ -138,7 +139,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         </SnackbarComponent>
     );
 
-    const { getID } = useChatApi();
+    const { getID } = useChatApi(props.setIsChatEnabled);
 
     useEffect(() => {
         getID().then((result) => {

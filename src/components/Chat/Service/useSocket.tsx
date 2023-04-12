@@ -24,6 +24,7 @@ const useSocket = (room: string) => {
         socketRef.current.on('send-msg', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             socketRef.current.on('msg-recieve', (data: any) => {
+                console.log('CHAT SEND MESSAGE HOOK');
                 setMessages(data);
                 setLastMessage(data[0]);
                 setLastMessageText(data[0].text);
@@ -32,6 +33,7 @@ const useSocket = (room: string) => {
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socketRef.current.on('msg-recieve', (data: any) => {
+            console.log('CHAT RECIEVE MESSAGE HOOK');
             setMessages(data);
         });
 
@@ -41,6 +43,7 @@ const useSocket = (room: string) => {
     }, [room]);
 
     async function getMsg() {
+        console.log('getMsg() CHAT');
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });
@@ -53,6 +56,7 @@ const useSocket = (room: string) => {
         ensName: string,
         walletID: string | null,
     ) {
+        console.log('sendMsg() CHAT');
         socketRef.current.emit('send-msg', {
             from: currentUser,
             message: msg,

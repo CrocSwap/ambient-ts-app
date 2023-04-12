@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Blockies from 'react-blockies';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -30,6 +30,7 @@ interface SentMessageProps {
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -49,7 +50,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
         'https://www.crocswap.com/whitepaper',
     ];
 
-    const { deleteMessage } = useChatApi();
+    const { deleteMessage } = useChatApi(props.setIsChatEnabled);
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
