@@ -5,7 +5,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';

@@ -295,7 +295,7 @@
 
 .base_display_div{
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     justify-content: flex-end;
     gap: 4px;
     text-align: center;
