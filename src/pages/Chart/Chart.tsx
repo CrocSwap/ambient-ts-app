@@ -5245,18 +5245,21 @@ export default function Chart(props: propsIF) {
             (item: any) => item.liqPrices >= low && item.liqPrices <= high,
         );
 
-        const index = data.findIndex((item: any) => filtered[0] === item);
+        if (filtered.length > 1) {
+            const index = data.findIndex((item: any) => filtered[0] === item);
 
-        const lastData = data[index - 1];
-        const currentData = filtered[0];
-        const slope =
-            (lastData?.liqPrices - currentData?.liqPrices) /
-            (lastData?.activeLiq - currentData?.activeLiq);
+            const lastData = data[index - 1];
+            const currentData = filtered[0];
+            const slope =
+                (lastData?.liqPrices - currentData?.liqPrices) /
+                (lastData?.activeLiq - currentData?.activeLiq);
 
-        const value =
-            (high - currentData?.liqPrices) / slope + currentData?.activeLiq;
+            const value =
+                (high - currentData?.liqPrices) / slope +
+                currentData?.activeLiq;
 
-        filtered.unshift({ activeLiq: value, liqPrices: high });
+            filtered.unshift({ activeLiq: value, liqPrices: high });
+        }
 
         const canvas = d3
             .select(
@@ -5271,8 +5274,7 @@ export default function Chart(props: propsIF) {
 
         const maxX = d3.max(data, (d) => d.activeLiq);
         const minX = d3.min(data, (d) => d.activeLiq);
-
-        for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+        for (let i = liquidityScale(maxX); i <= liquidityScale(minX) + 1; i++) {
             if (ctx.isPointInPath(i, scaleData?.yScale(high))) {
                 if (
                     filtered.find((item: any) => item.liqPrices === high) ===
@@ -5297,7 +5299,11 @@ export default function Chart(props: propsIF) {
         }
 
         if (passValue !== undefined && low > passValue) {
-            for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+            for (
+                let i = liquidityScale(maxX);
+                i <= liquidityScale(minX) + 1;
+                i++
+            ) {
                 if (ctx.isPointInPath(i, scaleData?.yScale(low))) {
                     filtered.push({
                         activeLiq: liquidityScale.invert(i),
@@ -5330,22 +5336,23 @@ export default function Chart(props: propsIF) {
             (item: any) => item.liqPrices >= low && item.liqPrices <= high,
         );
 
-        const index = data.findIndex(
-            (item: any) => filtered[filtered.length - 1] === item,
-        );
+        if (filtered.length > 1) {
+            const index = data.findIndex(
+                (item: any) => filtered[filtered.length - 1] === item,
+            );
 
-        const lastData = data[index + 1];
-        const currentData = filtered[filtered.length - 1];
+            const lastData = data[index + 1];
+            const currentData = filtered[filtered.length - 1];
 
-        const slope =
-            (lastData?.liqPrices - currentData?.liqPrices) /
-            (lastData?.activeLiq - currentData?.activeLiq);
+            const slope =
+                (lastData?.liqPrices - currentData?.liqPrices) /
+                (lastData?.activeLiq - currentData?.activeLiq);
 
-        const value =
-            (low - currentData?.liqPrices) / slope + currentData?.activeLiq;
+            const value =
+                (low - currentData?.liqPrices) / slope + currentData?.activeLiq;
 
-        filtered.push({ activeLiq: value, liqPrices: low });
-
+            filtered.push({ activeLiq: value, liqPrices: low });
+        }
         const canvas = d3
             .select(
                 liqMode === 'curve'
@@ -5360,7 +5367,7 @@ export default function Chart(props: propsIF) {
         const maxX = d3.max(data, (d) => d.activeLiq);
         const minX = d3.min(data, (d) => d.activeLiq);
 
-        for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+        for (let i = liquidityScale(maxX); i <= liquidityScale(minX) + 1; i++) {
             if (ctx.isPointInPath(i, scaleData?.yScale(low))) {
                 if (
                     filtered.find((item: any) => item.liqPrices === low) ===
@@ -5385,7 +5392,11 @@ export default function Chart(props: propsIF) {
         }
 
         if (passValue && high < passValue) {
-            for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+            for (
+                let i = liquidityScale(maxX);
+                i <= liquidityScale(minX) + 1;
+                i++
+            ) {
                 if (ctx.isPointInPath(i, scaleData?.yScale(high))) {
                     filtered.unshift({
                         activeLiq: liquidityScale.invert(i),

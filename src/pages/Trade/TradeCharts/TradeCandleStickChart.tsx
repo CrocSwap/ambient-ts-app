@@ -527,7 +527,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
                         });
-                        liqBoundaryDepth = liqUpperPrices;
+                        liqBoundaryDepth = depthLiqBidData[0].liqPrices;
                     }
 
                     if (
@@ -542,7 +542,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                             cumAverageUSD: data.cumAverageUSD,
                         });
 
-                        liqBoundaryDepth = depthLiqAskData[0].liqPrices;
+                        liqBoundaryDepth = liqLowerPrices;
                     }
                 } else {
                     if (
