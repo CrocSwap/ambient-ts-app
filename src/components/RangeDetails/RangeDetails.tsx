@@ -198,16 +198,17 @@ export default function RangeDetails(props: propsIF) {
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
                     const usdValue = position.totalValueUSD;
-                    // const usdValue = position.positionLiqTotalUSD;
-
-                    if (usdValue) {
+                    if (usdValue !== undefined) {
                         setUsdValue(
-                            // '$' +
-                            usdValue.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }),
+                            usdValue === 0
+                                ? '0'
+                                : usdValue.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }),
                         );
+                    } else {
+                        setUsdValue(undefined);
                     }
 
                     const baseFeeDisplayNum =
@@ -337,7 +338,7 @@ export default function RangeDetails(props: propsIF) {
                 <div className={styles.left_container}>
                     <PriceInfo
                         poolPriceDisplay={poolPriceDisplay}
-                        usdValue={usdValue ?? '…'}
+                        usdValue={usdValue !== undefined ? usdValue : '…'}
                         lowRangeDisplay={lowRangeDisplay}
                         highRangeDisplay={highRangeDisplay}
                         baseCollateralDisplay={baseCollateralDisplay}

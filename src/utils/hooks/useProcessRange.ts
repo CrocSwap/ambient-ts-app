@@ -170,7 +170,7 @@ export const useProcessRange = (
     const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
 
     const usdValueTruncated = !usdValueNum
-        ? undefined
+        ? '0'
         : usdValueNum < 0.001
         ? usdValueNum.toExponential(2) + ' '
         : usdValueNum >= 100000
