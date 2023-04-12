@@ -454,6 +454,7 @@ export default function TradeTabs2(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: false,
     };
 
     // Props for <Orders/> React Element

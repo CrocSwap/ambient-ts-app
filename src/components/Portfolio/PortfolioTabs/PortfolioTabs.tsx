@@ -431,6 +431,7 @@ export default function PortfolioTabs(props: propsIF) {
         tokenMap: tokenMap,
         setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: true,
     };
 
     // Props for <Orders/> React Element

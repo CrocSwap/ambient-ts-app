@@ -55,7 +55,8 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
-    expandTradeTable: boolean;
+    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
+    isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
@@ -99,6 +100,7 @@ export default function Transactions(props: propsIF) {
         setSelectedDate,
         setExpandTradeTable,
         setSimpleRangeWidth,
+        isAccountView,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -641,14 +643,18 @@ export default function Transactions(props: propsIF) {
             <ul ref={listRef}>
                 {expandTradeTable && largeScreenView
                     ? currentRowItemContent
+                    : isAccountView
+                    ? // NOTE: the account view of this content should not be paginated
+                      sortedRowItemContent
                     : sortedRowItemContent.slice(
                           0,
                           NUM_TRANSACTIONS_WHEN_COLLAPSED,
                       )}
             </ul>
             {
-                // Show a 'View More' button at the end of the table when collapsed (half-page)
-                !expandTradeTable && (
+                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
+                // TODO (#1804): we should instead be adding results to RTK
+                !expandTradeTable && !isAccountView && (
                     <div className={styles.view_more_container}>
                         <button
                             className={styles.view_more_button}
