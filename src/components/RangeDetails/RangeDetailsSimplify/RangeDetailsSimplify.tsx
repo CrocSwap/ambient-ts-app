@@ -261,27 +261,28 @@ export default function RangeDetailsSimplify(
         //     explanation: 'this is explanation',
         // },
         {
-            title: 'Token 1 Unclaimed Rewards ',
-            content: baseFeesDisplay + ' ' + baseTokenSymbol,
-            explanation: 'Token #1 unclaimed rewards',
-        },
-        {
-            title: 'Token 2 Unclaimed Rewards ',
-            content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
-            explanation: 'Token #2 unclaimed rewards',
-        },
-        // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
-        {
             title: 'Value ',
             content: '$' + usdValue,
             explanation: 'The appoximate US dollar value of the limit order',
         },
+
+        // { title: 'Time in Pool ', content: 'Time in Pool', explanation: 'this is explanation' },
 
         // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
     if (!isAmbient) {
         infoContent.push(
+            {
+                title: 'Token 1 Unclaimed Rewards ',
+                content: baseFeesDisplay + ' ' + baseTokenSymbol,
+                explanation: 'Token #1 unclaimed rewards',
+            },
+            {
+                title: 'Token 2 Unclaimed Rewards ',
+                content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
+                explanation: 'Token #2 unclaimed rewards',
+            },
             {
                 title: 'Low Tick ',
                 content: position.bidTick.toString(),
