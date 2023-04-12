@@ -374,8 +374,8 @@ export default function RangeCurrencyConverter(props: propsIF) {
             '/trade/range/' +
                 formSlugForPairParams(
                     tokenPair.dataTokenA.chainId,
-                    tokenPair.dataTokenA,
                     tokenPair.dataTokenB,
+                    tokenPair.dataTokenA,
                 ),
         );
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
