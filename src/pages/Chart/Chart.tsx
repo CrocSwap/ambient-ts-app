@@ -3553,15 +3553,18 @@ export default function Chart(props: propsIF) {
                 sameLocationDataMax: sameLocationDataMax,
             } = sameLocationRange();
 
+            const passValue =
+                liqMode === 'curve'
+                    ? liquidityData?.liqBoundaryCurve
+                    : liquidityData?.liqBoundaryDepth;
+
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
                 createRectLabel(
                     context,
                     isSameLocationMin ? sameLocationDataMin : yScale(low),
                     X - tickSize,
-                    low > liquidityData.liqBoundary
-                        ? '#7371fc'
-                        : 'rgba(205, 193, 255)',
-                    low > liquidityData.liqBoundary ? 'white' : 'black',
+                    low > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
+                    low > passValue ? 'white' : 'black',
                     formatAmountChartData(low, undefined),
                     undefined,
                     yAxisCanvasWidth,
@@ -3574,10 +3577,8 @@ export default function Chart(props: propsIF) {
                     context,
                     isSameLocationMax ? sameLocationDataMax : yScale(high),
                     X - tickSize,
-                    high > liquidityData.liqBoundary
-                        ? '#7371fc'
-                        : 'rgba(205, 193, 255)',
-                    high > liquidityData.liqBoundary ? 'white' : 'black',
+                    high > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
+                    high > passValue ? 'white' : 'black',
                     formatAmountChartData(high, undefined),
                     undefined,
                     yAxisCanvasWidth,
@@ -3882,6 +3883,11 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        const passValue =
+            liqMode === 'curve'
+                ? liquidityData?.liqBoundaryCurve
+                : liquidityData?.liqBoundaryDepth;
+
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
 
@@ -3895,7 +3901,7 @@ export default function Chart(props: propsIF) {
                     }
                 } else {
                     color =
-                        datum.value > liquidityData.liqBoundary
+                        datum.value > passValue
                             ? '#7371fc'
                             : 'rgba(205, 193, 255)';
                 }
@@ -3931,9 +3937,7 @@ export default function Chart(props: propsIF) {
                         ? 'visible'
                         : 'hidden';
                 context.strokeStyle =
-                    datum.value > liquidityData.liqBoundary
-                        ? '#7371fc'
-                        : 'rgba(205, 193, 255)';
+                    datum.value > passValue ? '#7371fc' : 'rgba(205, 193, 255)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 3;
             });
@@ -5286,6 +5290,7 @@ export default function Chart(props: propsIF) {
     const addHighValuetoHighlightedLine = (
         data: any[],
         liquidityScale: any,
+        passValue: number,
     ) => {
         const _low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
@@ -5299,18 +5304,21 @@ export default function Chart(props: propsIF) {
             (item: any) => item.liqPrices >= low && item.liqPrices <= high,
         );
 
-        const index = data.findIndex((item: any) => filtered[0] === item);
+        if (filtered.length > 1) {
+            const index = data.findIndex((item: any) => filtered[0] === item);
 
-        const lastData = data[index - 1];
-        const currentData = filtered[0];
-        const slope =
-            (lastData?.liqPrices - currentData?.liqPrices) /
-            (lastData?.activeLiq - currentData?.activeLiq);
+            const lastData = data[index - 1];
+            const currentData = filtered[0];
+            const slope =
+                (lastData?.liqPrices - currentData?.liqPrices) /
+                (lastData?.activeLiq - currentData?.activeLiq);
 
-        const value =
-            (high - currentData?.liqPrices) / slope + currentData?.activeLiq;
+            const value =
+                (high - currentData?.liqPrices) / slope +
+                currentData?.activeLiq;
 
-        filtered.unshift({ activeLiq: value, liqPrices: high });
+            filtered.unshift({ activeLiq: value, liqPrices: high });
+        }
 
         const canvas = d3
             .select(
@@ -5325,8 +5333,7 @@ export default function Chart(props: propsIF) {
 
         const maxX = d3.max(data, (d) => d.activeLiq);
         const minX = d3.min(data, (d) => d.activeLiq);
-
-        for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+        for (let i = liquidityScale(maxX); i <= liquidityScale(minX) + 1; i++) {
             if (ctx.isPointInPath(i, scaleData?.yScale(high))) {
                 if (
                     filtered.find((item: any) => item.liqPrices === high) ===
@@ -5350,10 +5357,12 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        const passValue = liquidityData?.liqBoundary;
-
         if (passValue !== undefined && low > passValue) {
-            for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+            for (
+                let i = liquidityScale(maxX);
+                i <= liquidityScale(minX) + 1;
+                i++
+            ) {
                 if (ctx.isPointInPath(i, scaleData?.yScale(low))) {
                     filtered.push({
                         activeLiq: liquidityScale.invert(i),
@@ -5369,7 +5378,11 @@ export default function Chart(props: propsIF) {
             : filtered.sort((a, b) => b.liqPrices - a.liqPrices);
     };
 
-    const addLowValuetoHighlightedLine = (data: any[], liquidityScale: any) => {
+    const addLowValuetoHighlightedLine = (
+        data: any[],
+        liquidityScale: any,
+        passValue: number,
+    ) => {
         const _low = ranges.filter((target: any) => target.name === 'Min')[0]
             .value;
         const _high = ranges.filter((target: any) => target.name === 'Max')[0]
@@ -5382,22 +5395,23 @@ export default function Chart(props: propsIF) {
             (item: any) => item.liqPrices >= low && item.liqPrices <= high,
         );
 
-        const index = data.findIndex(
-            (item: any) => filtered[filtered.length - 1] === item,
-        );
+        if (filtered.length > 1) {
+            const index = data.findIndex(
+                (item: any) => filtered[filtered.length - 1] === item,
+            );
 
-        const lastData = data[index + 1];
-        const currentData = filtered[filtered.length - 1];
+            const lastData = data[index + 1];
+            const currentData = filtered[filtered.length - 1];
 
-        const slope =
-            (lastData?.liqPrices - currentData?.liqPrices) /
-            (lastData?.activeLiq - currentData?.activeLiq);
+            const slope =
+                (lastData?.liqPrices - currentData?.liqPrices) /
+                (lastData?.activeLiq - currentData?.activeLiq);
 
-        const value =
-            (low - currentData?.liqPrices) / slope + currentData?.activeLiq;
+            const value =
+                (low - currentData?.liqPrices) / slope + currentData?.activeLiq;
 
-        filtered.push({ activeLiq: value, liqPrices: low });
-
+            filtered.push({ activeLiq: value, liqPrices: low });
+        }
         const canvas = d3
             .select(
                 liqMode === 'curve'
@@ -5412,7 +5426,7 @@ export default function Chart(props: propsIF) {
         const maxX = d3.max(data, (d) => d.activeLiq);
         const minX = d3.min(data, (d) => d.activeLiq);
 
-        for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+        for (let i = liquidityScale(maxX); i <= liquidityScale(minX) + 1; i++) {
             if (ctx.isPointInPath(i, scaleData?.yScale(low))) {
                 if (
                     filtered.find((item: any) => item.liqPrices === low) ===
@@ -5436,10 +5450,12 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        const passValue = liquidityData?.liqBoundary;
-
         if (passValue && high < passValue) {
-            for (let i = liquidityScale(maxX); i <= liquidityScale(minX); i++) {
+            for (
+                let i = liquidityScale(maxX);
+                i <= liquidityScale(minX) + 1;
+                i++
+            ) {
                 if (ctx.isPointInPath(i, scaleData?.yScale(high))) {
                     filtered.unshift({
                         activeLiq: liquidityScale.invert(i),
@@ -5458,14 +5474,19 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         const liqDataBid =
             liqMode === 'curve'
-                ? liquidityData.liqBidData
+                ? liquidityData?.liqBidData
                 : isAdvancedModeActive
-                ? liquidityData.depthLiqBidData
-                : liquidityData.depthLiqBidData.filter(
+                ? liquidityData?.depthLiqBidData
+                : liquidityData?.depthLiqBidData.filter(
                       (d: any) => d.liqPrices <= liquidityData.topBoundary,
                   );
 
         if (liquidityData) {
+            const passValue =
+                liqMode === 'curve'
+                    ? liquidityData?.liqBoundaryCurve
+                    : liquidityData?.liqBoundaryDepth;
+
             const data =
                 simpleRangeWidth !== 100
                     ? addHighValuetoHighlightedLine(
@@ -5473,6 +5494,7 @@ export default function Chart(props: propsIF) {
                           liqMode === 'curve'
                               ? liquidityScale
                               : liquidityDepthScale,
+                          passValue,
                       )
                     : liqDataBid;
 
@@ -5535,6 +5557,11 @@ export default function Chart(props: propsIF) {
                 ? liquidityData.depthLiqAskData
                 : liquidityData.liqAskData;
 
+        const passValue =
+            liqMode === 'curve'
+                ? liquidityData?.liqBoundaryCurve
+                : liquidityData?.liqBoundaryDepth;
+
         const data =
             simpleRangeWidth !== 100
                 ? addLowValuetoHighlightedLine(
@@ -5542,6 +5569,7 @@ export default function Chart(props: propsIF) {
                       liqMode === 'curve'
                           ? liquidityScale
                           : liquidityDepthScale,
+                      passValue,
                   )
                 : liqDataAsk;
 
