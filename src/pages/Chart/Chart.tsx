@@ -2664,14 +2664,23 @@ export default function Chart(props: propsIF) {
     }
 
     function adjTicks(linePrice: any) {
-        const result = [
-            { tickValue: 0.995 * linePrice },
-            { tickValue: 0.99 * linePrice },
-            { tickValue: 0.985 * linePrice },
-            { tickValue: 1.005 * linePrice },
-            { tickValue: 1.01 * linePrice },
-            { tickValue: 1.015 * linePrice },
-        ];
+        const boundary =
+            liqMode === 'depth'
+                ? liquidityData.liqBoundaryDepth
+                : liquidityData.liqBoundaryCurve;
+
+        const factors = [0.995, 0.99, 0.985, 1.005, 1.01, 1.015];
+        const result: { tickValue: number }[] = [];
+
+        factors.map((factor) => {
+            const value = factor * linePrice;
+            if (
+                isAdvancedModeActive ||
+                (linePrice < boundary ? value < boundary : value > boundary)
+            ) {
+                result.push({ tickValue: value });
+            }
+        });
 
         return result;
     }
@@ -2916,14 +2925,15 @@ export default function Chart(props: propsIF) {
                                 rangeWidthPercentage,
                             );
 
+                            const lowLineGhostLines = adjTicks(
+                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                            );
+                            const highLineGhostLines = adjTicks(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                            );
+
                             setghostLineValuesRange(
-                                adjTicks(
-                                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                ).concat(
-                                    adjTicks(
-                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                    ),
-                                ),
+                                lowLineGhostLines.concat(highLineGhostLines),
                             );
 
                             if (pinnedDisplayPrices !== undefined) {

@@ -365,7 +365,6 @@ export default function TradeCandleStickChart(props: propsIF) {
             const depthLiqBidData: LiquidityDataLocal[] = [];
             const depthLiqAskData: LiquidityDataLocal[] = [];
 
-            const liqSnapData: LiqSnap[] = [];
             let topBoundary = 0;
             let lowBoundary = 0;
 
@@ -599,24 +598,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                         data.lowerBoundInvPriceDecimalCorrected,
                         lookupChain(chainId).gridSize,
                     );
-
-                if (
-                    !isNaN(
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        ),
-                    )
-                ) {
-                    liqSnapData.push({
-                        activeLiq: data.activeLiq,
-                        pinnedMaxPriceDisplayTruncated: parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        ),
-                        pinnedMinPriceDisplayTruncated: parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        ),
-                    });
-                }
             });
             if (liqBidData.length > 1 && liqAskData.length > 1) {
                 liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
@@ -684,7 +665,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 liqBidData: liqBidData,
                 depthLiqBidData: depthLiqBidData,
                 depthLiqAskData: depthLiqAskData,
-                liqSnapData: liqSnapData,
                 liqHighligtedAskSeries: [],
                 liqHighligtedBidSeries: [],
                 lineBidSeries: [],
@@ -814,12 +794,6 @@ export default function TradeCandleStickChart(props: propsIF) {
             volumeScale.domain(yExtentVolume(volumeData));
 
             // bar chart
-            // const ghostExtent = d3fc
-            //     .extentLinear(liquidityData.liqSnapData)
-            //     .include([0])
-            //     .accessors([(d: any) => parseFloat(d.activeLiq)]);
-
-            // ghostScale.domain(ghostExtent(liquidityData.liqSnapData));
 
             setScaleData(() => {
                 return {
