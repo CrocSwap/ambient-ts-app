@@ -1,7 +1,7 @@
 import { Context } from 'https://edge.netlify.com';
 
 export default async (request: Request, context: Context) => {
-    const GEOFENCED = ['NL']; // Test, don't actually block Holland
+    const GEOFENCED = [];
 
     const geofenceArg = Deno.env.REACT_APP_GEOFENCED_COUNTRY_CODES;
     const geofenced = GEOFENCED.concat(
@@ -20,10 +20,24 @@ export default async (request: Request, context: Context) => {
 
     const path = splitArray[1] || '';
 
-    const url = new URL(
-        'https://ambient-proven.netlify.app' + path,
-        request.url,
-    );
+    const geofencedUrl = Deno.env.REACT_APP_GEOFENCED_REDIRECT;
 
-    return Response.redirect(url);
+    if (geofencedUrl) {
+        const url = new URL(geofencedUrl + path, request.url);
+
+        return Response.redirect(url);
+    } else {
+        const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <body>
+            Sorry, Ambient is not currently available in ${context.geo.country.name}
+          </body>
+        </html>
+      `;
+
+        return new Response(html, {
+            headers: { 'content-type': 'text/html' },
+        });
+    }
 };
