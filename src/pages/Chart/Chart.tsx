@@ -5410,7 +5410,9 @@ export default function Chart(props: propsIF) {
             const value =
                 (low - currentData?.liqPrices) / slope + currentData?.activeLiq;
 
-            filtered.push({ activeLiq: value, liqPrices: low });
+            if (value) {
+                filtered.push({ activeLiq: value, liqPrices: low });
+            }
         }
         const canvas = d3
             .select(
@@ -5463,6 +5465,29 @@ export default function Chart(props: propsIF) {
                     });
                     break;
                 }
+            }
+        }
+
+        if (filtered.length > 0) {
+            const minPriceValue = filtered.reduce((min, obj) => {
+                return obj.liqPrice < min.liqPrice ? obj : min;
+            });
+
+            /*
+                Checked to draw a highlighted line that is not in the plotted area chart
+            */
+            if (
+                !ctx.isPointInPath(
+                    liquidityScale(minPriceValue.activeLiq),
+                    scaleData?.yScale(high),
+                )
+            ) {
+                filtered.map((element) => {
+                    if (element.activeLiq === maxX) {
+                        element.activeLiq = minPriceValue.activeLiq;
+                    }
+                    return element;
+                });
             }
         }
 
