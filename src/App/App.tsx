@@ -3287,6 +3287,7 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        chainData={chainData}
                                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                                         gasPriceInGwei={gasPriceInGwei}
                                         lastBlockNumber={lastBlockNumber}
