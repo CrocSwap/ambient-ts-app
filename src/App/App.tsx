@@ -607,6 +607,8 @@ export default function App() {
             .catch(console.error);
     }, []);
 
+    /* This will not work with RPCs that don't support web socket subscriptions. In
+     * particular Infura does not support websockets on Arbitrum endpoints. */
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         chainData.wsUrl || '',
         {
