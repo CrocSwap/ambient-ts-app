@@ -189,7 +189,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-highlight-dark);
+    color: var(--text-grey-white);
     outline: none;
     border: none;
     /* background: var(--dark3); */
@@ -207,7 +207,7 @@
 }
 
 .max_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text-highlight-dark);
 }
 
 /* modal */
