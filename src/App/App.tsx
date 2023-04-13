@@ -958,7 +958,6 @@ export default function App() {
                 )
                     .then((response) => response?.json())
                     .then((json) => {
-                        IS_LOCAL_ENV && console.debug(json.data);
                         const ambientApy = json?.data?.apy;
                         setAmbientApy(ambientApy);
 
