@@ -1,19 +1,24 @@
 import { Context } from 'https://edge.netlify.com';
 
 export default async (request: Request, context: Context) => {
-    // if user not in blocked country, show website
-    if (!['NL'].includes(context.geo.country.code)) {
+    const GEOFENCED = ['NL']; // Test, don't actually block Holland
+
+    const geofenceArg = process.env.REACT_APP_GEOFENCED_COUNTRY_CODES;
+    const geofenced = GEOFENCED.concat(
+        geofenceArg ? JSON.parse(geofenceArg) : [],
+    );
+
+    // if user not in geofenced country, show website
+    if (!geofenced.includes(context.geo.country.code)) {
         return;
     }
 
     const headers = request?.headers;
     const host = headers.get('host');
 
-    const splitArray = request.url.split(host);
+    const splitArray = host ? request.url.split(host) : [];
 
-    const path = splitArray[1];
-
-    console.log({ path });
+    const path = splitArray[1] || '';
 
     const url = new URL(
         'https://ambient-proven.netlify.app' + path,
@@ -21,13 +26,4 @@ export default async (request: Request, context: Context) => {
     );
 
     return Response.redirect(url);
-
-    // const html = await fetch('https://ambient-proven.netlify.app/', {
-    //     headers: {
-    //         Accept: 'application/json',
-    //     },
-    // });
-
-    // // const jsonData = await joke.json();
-    // return Response.html(html);
 };
