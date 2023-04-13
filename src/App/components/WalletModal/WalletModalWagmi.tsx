@@ -36,7 +36,12 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         });
     const { address, connector, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
-    const [page, setPage] = useState('wallets');
+
+    const defaultState = process.env.REACT_APP_VIEW_ONLY
+        ? 'notAvailable'
+        : 'wallets';
+
+    const [page, setPage] = useState(defaultState);
 
     const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] =
         useState(false);
@@ -182,10 +187,27 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             />
         </div>
     );
+
+    const notAvailablePage = (
+        <div className={styles.metamask_pending_container}>
+            <CircleLoaderFailed />
+            <p>Ambient is not available in the United States.</p>
+            <Button
+                title='Close'
+                flat={true}
+                action={() => {
+                    closeModalWallet();
+                }}
+            />
+        </div>
+    );
+
     const activeContent = useMemo(() => {
         switch (page) {
             case 'wallets':
                 return walletsPage;
+            case 'notAvailable':
+                return notAvailablePage;
             case 'metamaskPending':
                 return metamaskPendingPage;
             case 'coinbaseWalletPending':
