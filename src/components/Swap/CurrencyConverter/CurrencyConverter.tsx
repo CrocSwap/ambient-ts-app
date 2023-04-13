@@ -377,7 +377,7 @@ export default function CurrencyConverter(props: propsIF) {
                 ) {
                     setSwapAllowed(false);
                     setSwapButtonErrorMessage(
-                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setSwapAllowed(true);

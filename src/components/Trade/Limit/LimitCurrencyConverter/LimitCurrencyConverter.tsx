@@ -291,7 +291,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setLimitAllowed(true);

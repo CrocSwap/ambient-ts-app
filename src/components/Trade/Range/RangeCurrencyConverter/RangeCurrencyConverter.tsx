@@ -395,7 +395,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
                 ) {
                     setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setTokenAAllowed(true);
@@ -430,7 +430,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
                 ) {
                     setTokenBAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenB.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenPair.dataTokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setTokenBAllowed(true);
