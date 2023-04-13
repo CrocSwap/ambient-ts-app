@@ -12,8 +12,9 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
@@ -234,7 +235,7 @@ export default function LimitCurrencySelector(props: propsIF) {
         balanceLocaleString !== '0.00' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => handleMaxButtonClick}
+                onClick={() => handleMaxButtonClick()}
             >
                 Max
             </button>
@@ -274,11 +275,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                     placement='bottom'
                 >
                     <div
-                        className={`${styles.balance_with_pointer} ${
-                            isSellTokenSelector && !isWithdrawFromDexChecked
-                                ? styles.enabled_logo
-                                : styles.grey_logo_wallet
-                        }`}
+                        className={`${styles.balance_with_pointer}`}
                         onClick={() => {
                             if (props.sellToken) {
                                 dexBalancePrefs.limit.drawFromDexBal.disable();
@@ -290,7 +287,15 @@ export default function LimitCurrencySelector(props: propsIF) {
                         }}
                     >
                         <div className={styles.wallet_logo}>
-                            <img src={walletIcon} width='20' />
+                            <img
+                                src={
+                                    isSellTokenSelector &&
+                                    !isWithdrawFromDexChecked
+                                        ? walletEnabledIcon
+                                        : walletIcon
+                                }
+                                width='20'
+                            />
                         </div>
                     </div>
                 </IconWithTooltip>
@@ -308,12 +313,6 @@ export default function LimitCurrencySelector(props: propsIF) {
                                 ? styles.grey_logo
                                 : null
                         }`}
-                        style={{
-                            color:
-                                isSellTokenSelector && !isWithdrawFromDexChecked
-                                    ? '#555555'
-                                    : 'var(--text-highlight)',
-                        }}
                         onClick={() => {
                             if (props.sellToken) {
                                 dexBalancePrefs.limit.drawFromDexBal.enable();
@@ -345,7 +344,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                 >
                     <div
                         className={styles.balance_column}
-                        onClick={() => handleMaxButtonClick}
+                        onClick={() => handleMaxButtonClick()}
                     >
                         {isUserLoggedIn ? balanceLocaleString : ''}
                     </div>

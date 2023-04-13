@@ -96,10 +96,6 @@
     padding-right: 5px;
 }
 
-.enabled_logo {
-    filter: brightness(0) invert(1);
-}
-
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);
@@ -186,11 +182,12 @@
 }
 
 .grey_logo img {
-    filter: grayscale(100%);
+    filter: grayscale(100%) contrast(0.3) brightness(0.8);
 }
 
-.grey_logo_wallet img {
-    filter: grayscale(100%) brightness(60%);
+.enabled_logo img {
+    filter: contrast(1.0) brightness(1.0) saturate(1.0); 
+
 }
 
 /* modal */

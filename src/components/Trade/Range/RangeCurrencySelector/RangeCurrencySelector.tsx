@@ -12,10 +12,11 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -246,12 +247,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         soloTokenSelectInput.value = '';
     };
 
-    const sellTokenWalletClassname =
-        (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-        (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
-            ? styles.enabled_logo
-            : styles.grey_logo_wallet;
-
     const balanceLocaleString =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
         (!isTokenASelector && !isWithdrawTokenBFromDexChecked)
@@ -321,7 +316,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                         : 'Withdraw to wallet'
                 }`}
                 placement='bottom'
-                style={{ display: 'flex', alignItems: 'center' }}
             >
                 <div
                     className={styles.balance_with_pointer}
@@ -334,10 +328,18 @@ export default function RangeCurrencySelector(props: propsIF) {
                         }
                     }}
                 >
-                    <div
-                        className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}
-                    >
-                        <img src={walletIcon} width='20' />
+                    <div className={`${styles.wallet_logo}`}>
+                        <img
+                            src={
+                                (isTokenASelector &&
+                                    !isWithdrawTokenAFromDexChecked) ||
+                                (!isTokenASelector &&
+                                    !isWithdrawTokenBFromDexChecked)
+                                    ? walletEnabledIcon
+                                    : walletIcon
+                            }
+                            width='20'
+                        />
                     </div>
                 </div>
             </IconWithTooltip>
@@ -348,19 +350,16 @@ export default function RangeCurrencySelector(props: propsIF) {
                         : 'Add to exchange balance'
                 }`}
                 placement='bottom'
-                style={{ display: 'flex', alignItems: 'center' }}
             >
                 <div
-                    className={`${styles.wallet_logo} ${
-                        styles.balance_with_pointer
-                    }  ${
+                    className={`${styles.balance_with_pointer}  ${
                         isTokenASelector
                             ? isWithdrawTokenAFromDexChecked
                                 ? styles.enabled_logo
-                                : null
+                                : styles.grey_logo
                             : isWithdrawTokenBFromDexChecked
                             ? styles.enabled_logo
-                            : null
+                            : styles.grey_logo
                     }`}
                     onClick={() => {
                         dexBalancePrefs.range.drawFromDexBal.enable();
@@ -371,7 +370,9 @@ export default function RangeCurrencySelector(props: propsIF) {
                         }
                     }}
                 >
-                    <img src={ambientLogo} width='20' alt='surplus' />
+                    <div className={`${styles.wallet_logo}`}>
+                        <img src={ambientLogo} width='20' alt='surplus' />
+                    </div>
                 </div>
             </IconWithTooltip>{' '}
             <DefaultTooltip

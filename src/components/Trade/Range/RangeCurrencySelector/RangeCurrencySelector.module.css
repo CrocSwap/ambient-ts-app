@@ -51,8 +51,8 @@
     flex-direction: row;
 
     align-items: center;
-    margin-right: 5px;
-    gap: 5px;
+    margin-right: 4px;
+    gap: 4px;
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -68,11 +68,10 @@
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    filter: grayscale(100%) brightness(60%);
 }
 
 .enabled_logo {
-    filter: brightness(0) invert(1);
+    filter: contrast(1.0) brightness(1.0) saturate(1.0); 
 }
 
 .swapbox_top {

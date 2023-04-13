@@ -13,8 +13,9 @@ import {
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
@@ -254,31 +255,11 @@ export default function CurrencySelector(props: propsIF) {
             <p className={styles.max_button} />
         );
 
-    const sellTokenSurplusClassname = isSellTokenSelector
-        ? isWithdrawFromDexChecked
-            ? styles.enabled_logo
-            : null
-        : isSaveAsDexSurplusChecked
-        ? styles.enabled_logo
-        : null;
-
-    const sellTokenWalletClassname =
-        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-            ? styles.enabled_logo
-            : styles.grey_logo_wallet;
-
     const sellTokenLogoClassname =
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
             ? styles.grey_logo
-            : null;
-
-    const surplusColorStyle =
-        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-            ? '#555555'
-            : 'var(--text-grey-white)';
+            : styles.enabled_logo;
 
     function handleSurplusClick() {
         if (props.sellToken) {
@@ -312,9 +293,7 @@ export default function CurrencySelector(props: propsIF) {
 
     const walletContent = (
         <section className={styles.wallet_container}>
-            <div
-                className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
-            >
+            <div className={`${styles.balance_with_pointer}`}>
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
@@ -324,10 +303,20 @@ export default function CurrencySelector(props: propsIF) {
                     placement='bottom'
                 >
                     <div
-                        className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}
+                        className={`${styles.wallet_logo}`}
                         onClick={() => handleWalletBalanceClick()}
                     >
-                        <img src={walletIcon} width='20' />
+                        <img
+                            src={
+                                (isSellTokenSelector &&
+                                    !isWithdrawFromDexChecked) ||
+                                (!isSellTokenSelector &&
+                                    !isSaveAsDexSurplusChecked)
+                                    ? walletEnabledIcon
+                                    : walletIcon
+                            }
+                            width='20'
+                        />
                     </div>
                 </IconWithTooltip>
                 <IconWithTooltip
@@ -339,8 +328,7 @@ export default function CurrencySelector(props: propsIF) {
                     placement='bottom'
                 >
                     <div
-                        className={`${styles.ambient_logo} ${sellTokenSurplusClassname}`}
-                        style={{ color: surplusColorStyle }}
+                        className={`${styles.ambient_logo} ${sellTokenLogoClassname}`}
                         onClick={() => handleSurplusClick()}
                     >
                         <img src={ambientLogo} width='20' alt='surplus' />
