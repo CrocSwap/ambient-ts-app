@@ -2,8 +2,6 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
-// import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
-// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 
 import {
     DefaultTooltip,
@@ -14,6 +12,7 @@ import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
 interface Props {
     txHashTruncated: string;
@@ -61,9 +60,13 @@ interface Props {
 
     tx: TransactionIF;
 }
-export const useProcessTxRow = (props: Props) => {
-    // const dispatch = useAppDispatch();
 
+// * This file contains constants used in the rendering of transaction rows in the transaction table.
+// * The constants define the structure of each transaction row and are used in the JSX of the parent component.
+// * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
+
+// * To use these constants in a component, simply import them from this file and reference them as needed.
+export const txRowConstants = (props: Props) => {
     const {
         handleCopyTxHash,
         handleOpenExplorer,
@@ -84,7 +87,6 @@ export const useProcessTxRow = (props: Props) => {
         quoteQuantityDisplayShort,
 
         isOwnerActiveAccount,
-        // ensName,
         ownerId,
 
         sideType,
@@ -215,7 +217,6 @@ export const useProcessTxRow = (props: Props) => {
 
     const walletWithoutTooltip = (
         <p
-            // onClick={handleWalletClick}
             onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
@@ -300,12 +301,7 @@ export const useProcessTxRow = (props: Props) => {
             : tx.entityType.toLowerCase() === 'liqchange'
             ? '/trade/range/'
             : '/trade/market/') +
-        'chain=' +
-        tx.chainId +
-        '&tokenA=' +
-        tx.quote +
-        '&tokenB=' +
-        tx.base;
+        formSlugForPairParams(tx.chainId, tx.quote, tx.base);
 
     const tokenPair = (
         <li

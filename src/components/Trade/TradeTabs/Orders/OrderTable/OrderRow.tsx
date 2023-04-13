@@ -1,25 +1,20 @@
 import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
-import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { TextOnlyTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
-import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import moment from 'moment';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { orderRowConstants } from '../orderRowConstants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -53,7 +48,6 @@ export default function OrderRow(props: propsIF) {
         showColumns,
         ipadView,
         showPair,
-        // view2,
         limitOrder,
         showSidebar,
         openGlobalModal,
@@ -75,24 +69,22 @@ export default function OrderRow(props: propsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
+
         isOrderFilled,
         truncatedDisplayPrice,
         sideType,
         usdValue,
-        // usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-        // orderMatchesSelectedTokens,
 
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
+        elapsedTimeString,
     } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
     const orderMenuProps = {
@@ -125,11 +117,6 @@ export default function OrderRow(props: propsIF) {
     const priceStyle = 'base_color';
 
     const sellOrderStyle = sideType === 'sell' ? 'order_sell' : 'order_buy';
-
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
-
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     const usernameStyle =
         isOwnerActiveAccount && isShowAllEnabled
@@ -230,64 +217,6 @@ export default function OrderRow(props: propsIF) {
         setOpenSnackbar(true);
     }
 
-    const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-60px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
-
-                        fontFamily: 'monospace',
-
-                        whiteSpace: 'nowrap',
-                        width: '440px',
-
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                    }}
-                >
-                    {posHash}
-                    <FiCopy
-                        style={{ cursor: 'pointer' }}
-                        onClick={handleCopyPosHash}
-                    />
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                onClick={openDetailsModal}
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
-            >
-                {posHashTruncated}
-            </p>
-        </TextOnlyTooltip>
-    );
-
-    const ValueWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label='value'
-            className={sellOrderStyle}
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            {' '}
-            {'$' + usdValue}
-        </li>
-    );
-
     function handleWalletLinkClick() {
         if (!isOnPortfolioPage)
             dispatch(
@@ -303,237 +232,6 @@ export default function OrderRow(props: propsIF) {
             }`,
         );
     }
-
-    const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'default',
-
-                        // width: '450px',
-                    }}
-                >
-                    <p
-                        style={{
-                            fontFamily: 'monospace',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            whiteSpace: 'nowrap',
-
-                            gap: '4px',
-                        }}
-                    >
-                        {limitOrder.user}
-                        <FiCopy
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={() => handleWalletCopy()}
-                        />
-
-                        <FiExternalLink
-                            style={{ cursor: 'pointer' }}
-                            size={'12px'}
-                            onClick={handleWalletLinkClick}
-                        />
-                    </p>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                onClick={openDetailsModal}
-                data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
-            >
-                {userNameToDisplay}
-            </p>
-        </TextOnlyTooltip>
-    );
-
-    const walletWithoutTooltip = (
-        <p
-            // onClick={handleWalletClick}
-            onClick={openDetailsModal}
-            data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
-            style={{ textTransform: 'lowercase' }}
-            tabIndex={0}
-        >
-            {userNameToDisplay}
-        </p>
-    );
-
-    const walletWithTooltip = isOwnerActiveAccount
-        ? walletWithoutTooltip
-        : actualWalletWithTooltip;
-
-    const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.baseSymbol.charAt(0)}
-            width={logoSizes}
-        />
-    );
-
-    const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.quoteSymbol.charAt(0)}
-            width={logoSizes}
-        />
-    );
-
-    const tradeLinkPath =
-        '/trade/limit/' +
-        'chain=' +
-        limitOrder.chainId +
-        '&tokenA=' +
-        limitOrder.quote +
-        '&tokenB=' +
-        limitOrder.base;
-
-    const tokenPair = (
-        <li
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <NavLink to={tradeLinkPath}>
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </NavLink>
-        </li>
-    );
-
-    const positionTime =
-        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
-
-    const elapsedTimeInSecondsNum = positionTime
-        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
-        : 0;
-
-    const elapsedTimeString =
-        elapsedTimeInSecondsNum !== undefined
-            ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. '
-                : elapsedTimeInSecondsNum < 120
-                ? '1 min. '
-                : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
-                : elapsedTimeInSecondsNum < 7200
-                ? '1 hour '
-                : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
-                : elapsedTimeInSecondsNum < 172800
-                ? '1 day '
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
-            : 'Pending...';
-
-    const baseQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
-                {baseDisplay}
-                {baseTokenLogoComponent}
-            </div>
-        </li>
-    );
-    const quoteQtyDisplayWithTooltip = (
-        <li
-            onClick={openDetailsModal}
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
-            >
-                {quoteDisplay}
-                {quoteTokenLogoComponent}
-            </div>
-        </li>
-    );
-
-    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    {moment(limitOrder.latestUpdateTime * 1000).format(
-                        'MM/DD/YYYY HH:mm',
-                    )}
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li
-                onClick={openDetailsModal}
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <p className='base_color'>{elapsedTimeString}</p>
-            </li>
-        </TextOnlyTooltip>
-    ) : (
-        <li
-            onClick={openDetailsModal}
-            style={{ textTransform: 'lowercase' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <p className='base_color'>{elapsedTimeString}</p>
-        </li>
-    );
-    const txIdColumnComponent = (
-        <li>
-            {IDWithTooltip}
-            {walletWithTooltip}
-        </li>
-    );
 
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
@@ -553,6 +251,57 @@ export default function OrderRow(props: propsIF) {
             openDetailsModal();
         }
     };
+
+    const orderRowConstantsProps = {
+        posHashTruncated,
+        openDetailsModal,
+        handleRowMouseDown,
+        handleRowMouseOut,
+        posHash,
+        handleCopyPosHash,
+        sellOrderStyle,
+        usdValue,
+        usernameStyle,
+        userNameToDisplay,
+        limitOrder,
+        handleWalletCopy,
+        handleWalletLinkClick,
+        baseTokenLogo,
+        quoteTokenLogo,
+        isOwnerActiveAccount,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseDisplay,
+        quoteDisplay,
+        elapsedTimeString,
+        isOnPortfolioPage,
+        priceCharacter,
+        priceStyle,
+        truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
+        sideType,
+        sideCharacter,
+        isOrderFilled,
+    };
+
+    const {
+        IDWithTooltip,
+        ValueWithTooltip,
+
+        walletWithTooltip,
+
+        tokenPair,
+        baseQtyDisplayWithTooltip,
+        quoteQtyDisplayWithTooltip,
+        OrderTimeWithTooltip,
+        txIdColumnComponent,
+        priceDisplay,
+        typeDisplay,
+        sideDisplay,
+        sideTypeColumn,
+        tokensColumn,
+        statusDisplay,
+    } = orderRowConstants(orderRowConstantsProps);
 
     return (
         <>
@@ -576,123 +325,16 @@ export default function OrderRow(props: propsIF) {
                     <li>{walletWithTooltip}</li>
                 )}
                 {showColumns && txIdColumnComponent}
-                {!ipadView && (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='price'
-                        className={priceStyle + ' ' + sellOrderStyle}
-                        style={{ textAlign: 'right' }}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        {isOnPortfolioPage
-                            ? (
-                                  <p className={`${styles.align_right} `}>
-                                      <span>{priceCharacter}</span>
-                                      <span>
-                                          {
-                                              truncatedDisplayPriceDenomByMoneyness
-                                          }
-                                      </span>
-                                  </p>
-                              ) || '…'
-                            : (
-                                  <p className={`${styles.align_right} `}>
-                                      <span>{priceCharacter}</span>
-                                      <span>{truncatedDisplayPrice}</span>
-                                  </p>
-                              ) || '…'}
-                    </li>
-                )}
-                {!showColumns && (
-                    <li
-                        style={{ textAlign: 'center' }}
-                        onClick={openDetailsModal}
-                        data-label='side'
-                        className={sellOrderStyle}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        {`${sideType} ${sideCharacter}`}
-                    </li>
-                )}
-                {!showColumns && (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='type'
-                        className={sellOrderStyle}
-                        style={{ textAlign: 'center' }}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        Order
-                    </li>
-                )}
-                {showColumns && !ipadView && (
-                    <li
-                        data-label='side-type'
-                        className={sellOrderStyle}
-                        style={{ textAlign: 'center' }}
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <p>Order</p>
-                        <p>{`${sideType} ${sideCharacter}`}</p>
-                    </li>
-                )}
+                {!ipadView && priceDisplay}
+                {!showColumns && sideDisplay}
+                {!showColumns && typeDisplay}
+                {showColumns && !ipadView && sideTypeColumn}
 
                 {ValueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && (
-                    <li
-                        data-label={baseTokenSymbol + quoteTokenSymbol}
-                        className='base_color'
-                        onClick={openDetailsModal}
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <div
-                            className={styles.token_qty}
-                            style={{
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {' '}
-                            {baseDisplay} {baseTokenLogoComponent}
-                        </div>
-
-                        <div
-                            className={styles.token_qty}
-                            style={{
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {' '}
-                            {quoteDisplay}
-                            {quoteTokenLogoComponent}
-                        </div>
-                    </li>
-                )}
-                {!ipadView && (
-                    <li
-                        onClick={openDetailsModal}
-                        data-label='status'
-                        onMouseEnter={handleRowMouseDown}
-                        onMouseLeave={handleRowMouseOut}
-                    >
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <OpenOrderStatus isFilled={isOrderFilled} />
-                        </div>
-                    </li>
-                )}
+                {showColumns && tokensColumn}
+                {!ipadView && statusDisplay}
 
                 <li data-label='menu'>
                     <OrdersMenu

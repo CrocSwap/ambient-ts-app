@@ -271,6 +271,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         tokenABalance,
         isWithdrawFromDexChecked,
         tradeData.shouldLimitConverterUpdate,
+        isUserLoggedIn,
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
@@ -290,7 +291,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -320,6 +321,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setLimitAllowed(false);
                 setLimitButtonErrorMessage('Enter an Amount');
+                setTokenAQtyLocal('');
+                setTokenAInputQty(input);
                 if (input !== '') return;
             }
 
@@ -345,8 +348,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 rawTokenBQty = isSellTokenBase
                     ? (1 / limitTickDisplayPrice) *
                       parseFloat(tradeData.primaryQuantity)
-                    : // ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
-                      limitTickDisplayPrice *
+                    : limitTickDisplayPrice *
                       parseFloat(tradeData.primaryQuantity);
             } else {
                 rawTokenBQty = !isSellTokenBase
@@ -355,7 +357,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     : limitTickDisplayPrice *
                       parseFloat(tradeData.primaryQuantity);
             }
-            handleLimitButtonMessage(parseFloat(tradeData.primaryQuantity));
+            handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
 
         const truncatedTokenBQty = rawTokenBQty
@@ -401,6 +403,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setTokenBInputQty(truncatedTokenBQty);
     };
 
+    const [userSetTokenBToZero, setUserSetTokenBToZero] =
+        useState<boolean>(false);
+
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
         if (evt) {
@@ -412,8 +417,11 @@ export default function LimitCurrencyConverter(props: propsIF) {
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setLimitAllowed(false);
                 setLimitButtonErrorMessage('Enter an Amount');
+                setUserSetTokenBToZero(true);
                 if (input !== '') return;
             }
+            setUserSetTokenBToZero(false);
+
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
@@ -431,6 +439,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(rawTokenAQty);
         } else {
+            console.log({ tokenBInputQty });
+            console.log(tradeData.primaryQuantity);
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice *
@@ -446,7 +456,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                       parseFloat(tradeData.primaryQuantity);
             }
 
-            handleLimitButtonMessage(rawTokenAQty);
+            handleLimitButtonMessage(userSetTokenBToZero ? 0 : rawTokenAQty);
         }
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2

@@ -24,7 +24,6 @@ import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
@@ -301,13 +300,6 @@ export default function Orders(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
-
     const walID = (
         <>
             <p>ID</p>
@@ -324,8 +316,8 @@ export default function Orders(props: propsIF) {
         <>Tokens</>
     ) : (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [
@@ -586,8 +578,6 @@ export default function Orders(props: propsIF) {
                 orderDataOrNull
             )}
             {footerDisplay}
-
-            {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}
         </section>
     );
 }

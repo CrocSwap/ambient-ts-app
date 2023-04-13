@@ -76,6 +76,21 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
+    const localeSellString =
+        parseFloat(sellQtyString) > 999
+            ? parseFloat(sellQtyString).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : sellQtyString;
+    const localeBuyString =
+        parseFloat(buyQtyString) > 999
+            ? parseFloat(buyQtyString).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : buyQtyString;
+
     const [baselineBlockNumber, setBaselineBlockNumber] =
         useState<number>(lastBlockNumber);
 
@@ -167,7 +182,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
-            <h2>{buyQtyString}</h2>
+            <h2>{localeBuyString}</h2>
 
             <div className={styles.logo_display}>
                 {buyTokenData.logoURI ? (
@@ -204,7 +219,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
-            <h2>{sellQtyString}</h2>
+            <h2>{localeSellString}</h2>
             <div className={styles.logo_display}>
                 {sellTokenData.logoURI ? (
                     <img
@@ -240,7 +255,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                 <div className={styles.row}>
                     <p>Expected Output</p>
                     <p>
-                        {buyQtyString} {buyTokenData.symbol}
+                        {localeBuyString} {buyTokenData.symbol}
                     </p>
                 </div>
                 <div className={styles.row}>
@@ -275,7 +290,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}.`}
+            content={`Swapping ${localeSellString} ${sellTokenData.symbol} for ${localeBuyString} ${buyTokenData.symbol}.`}
         />
     );
 

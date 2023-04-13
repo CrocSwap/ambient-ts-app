@@ -87,6 +87,7 @@ interface propsIF {
     handlePulseAnimation: (type: string) => void;
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
@@ -122,6 +123,7 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenDexBalance,
         handlePulseAnimation,
         account,
+        setExpandTradeTable,
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
@@ -427,7 +429,9 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
         tokenMap: tokenMap,
+        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: true,
     };
 
     // Props for <Orders/> React Element

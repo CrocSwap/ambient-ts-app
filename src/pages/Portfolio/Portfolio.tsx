@@ -100,6 +100,7 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     ackTokens: ackTokensMethodsIF;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -148,6 +149,7 @@ export default function Portfolio(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         ackTokens,
+        setExpandTradeTable,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -592,6 +594,7 @@ export default function Portfolio(props: propsIF) {
         slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
+        setExpandTradeTable: setExpandTradeTable,
     };
 
     const portfolioBannerProps = {

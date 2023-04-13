@@ -51,6 +51,7 @@ export default function SnackbarComponent(props: SnackbarPropsIF) {
                 open={openSnackbar}
                 autoHideDuration={8000}
                 onClose={handleClose}
+                style={{ width: '900px' }}
             >
                 <motion.div
                     initial={{ scale: 0.5 }}

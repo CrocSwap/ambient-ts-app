@@ -32,7 +32,6 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
@@ -324,13 +323,6 @@ export default function Ranges(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
-
     const walID = (
         <>
             <p>ID</p>
@@ -347,8 +339,8 @@ export default function Ranges(props: propsIF) {
         <>Tokens</>
     ) : (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [

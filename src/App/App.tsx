@@ -607,6 +607,8 @@ export default function App() {
             .catch(console.error);
     }, []);
 
+    /* This will not work with RPCs that don't support web socket subscriptions. In
+     * particular Infura does not support websockets on Arbitrum endpoints. */
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
         chainData.wsUrl || '',
         {
@@ -3285,11 +3287,14 @@ export default function App() {
                                 path='reposition/:params'
                                 element={
                                     <Reposition
+                                        chainData={chainData}
                                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                                         gasPriceInGwei={gasPriceInGwei}
                                         lastBlockNumber={lastBlockNumber}
                                         tokenPair={tokenPair}
                                         crocEnv={crocEnv}
+                                        chainId={chainData.chainId}
+                                        provider={provider}
                                         ambientApy={ambientApy}
                                         dailyVol={dailyVol}
                                         isDenomBase={tradeData.isDenomBase}
@@ -3577,6 +3582,7 @@ export default function App() {
                                         repoSlippage,
                                     }}
                                     ackTokens={ackTokens}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
@@ -3660,6 +3666,7 @@ export default function App() {
                                         repoSlippage,
                                     }}
                                     ackTokens={ackTokens}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
@@ -3774,6 +3781,7 @@ export default function App() {
                                         repoSlippage,
                                     }}
                                     ackTokens={ackTokens}
+                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />

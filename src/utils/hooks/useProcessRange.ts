@@ -8,6 +8,7 @@ import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
+import moment from 'moment';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -170,7 +171,7 @@ export const useProcessRange = (
     const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
 
     const usdValueTruncated = !usdValueNum
-        ? undefined
+        ? '0'
         : usdValueNum < 0.001
         ? usdValueNum.toExponential(2) + ' '
         : usdValueNum >= 100000
@@ -219,6 +220,29 @@ export const useProcessRange = (
     const isPositionEmpty = position.positionLiq === '0';
 
     // if (!position) return null;
+
+    const positionTime = position.latestUpdateTime || position.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
+            : 'Pending...';
 
     return {
         // wallet and id data
@@ -272,5 +296,6 @@ export const useProcessRange = (
         isBaseTokenMoneynessGreaterOrEqual,
         width,
         blockExplorer,
+        elapsedTimeString,
     };
 };

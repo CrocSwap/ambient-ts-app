@@ -7,6 +7,7 @@ import {
     Navigate,
 } from 'react-router-dom';
 import {
+    ChainSpec,
     CrocEnv,
     CrocPositionView,
     CrocReposition,
@@ -49,6 +50,9 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
+import { FiExternalLink } from 'react-icons/fi';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { ethers } from 'ethers';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -56,6 +60,8 @@ interface propsIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     repoSlippage: SlippageMethodsIF;
+    provider: ethers.providers.Provider;
+    chainId: string;
     isPairStable: boolean;
     bypassConfirm: allSkipConfirmMethodsIF;
     setMaxPrice: Dispatch<SetStateAction<number>>;
@@ -68,6 +74,7 @@ interface propsIF {
     simpleRangeWidth: number;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    chainData: ChainSpec;
 }
 
 export default function Reposition(props: propsIF) {
@@ -77,6 +84,8 @@ export default function Reposition(props: propsIF) {
         ambientApy,
         dailyVol,
         repoSlippage,
+        provider,
+        chainId,
         isPairStable,
         bypassConfirm,
         setMinPrice,
@@ -89,6 +98,7 @@ export default function Reposition(props: propsIF) {
         simpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        chainData,
     } = props;
 
     // current URL parameter string
@@ -115,6 +125,7 @@ export default function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
+    useUrlParams(chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
@@ -742,6 +753,20 @@ export default function Reposition(props: propsIF) {
         sendRepositionTransaction();
     };
 
+    const txUrlOnBlockExplorer = `${chainData.blockExplorer}/tx/${newRepositionTransactionHash}`;
+
+    const etherscanButton = (
+        <a
+            href={txUrlOnBlockExplorer}
+            target='_blank'
+            rel='noreferrer'
+            className={styles.view_etherscan}
+        >
+            View on Etherscan
+            <FiExternalLink size={12} color='var(--text-grey-white)' />
+        </a>
+    );
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader
@@ -815,6 +840,7 @@ export default function Reposition(props: propsIF) {
                         />
                     )}
                 </div>
+                {isRepositionSent ? etherscanButton : null}
             </div>
             {isModalOpen && (
                 <Modal
