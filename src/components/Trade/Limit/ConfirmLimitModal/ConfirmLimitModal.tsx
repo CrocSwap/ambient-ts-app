@@ -236,7 +236,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             </div>
             <div className={styles.confSwap_detail_note}>
                 {`${tokenPair.dataTokenB.symbol} will be available for withdrawal after the limit order is filled. 
-                ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before fill.`}
+                ${tokenPair.dataTokenA.symbol} can be withdrawn at any time before fill completion.`}
             </div>
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
