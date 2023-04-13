@@ -22,6 +22,7 @@ interface TvlData {
     setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     isCrosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    isMouseMoveCrosshair: boolean;
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -39,6 +40,7 @@ export default function TvlSubChart(props: TvlData) {
         setCrossHairLocation,
         setIsCrosshairActive,
         isCrosshairActive,
+        isMouseMoveCrosshair,
         setIsMouseMoveCrosshair,
     } = props;
 
@@ -322,14 +324,16 @@ export default function TvlSubChart(props: TvlData) {
         if (crosshairVerticalCanvas) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
-                    crosshairVerticalCanvas(crosshairForSubChart);
-                    if (isCrosshairActive === 'tvl') {
-                        crosshairHorizontalCanvas([
-                            {
-                                x: crosshairForSubChart[0].x,
-                                y: tvlHorizontalyValue,
-                            },
-                        ]);
+                    if (isMouseMoveCrosshair) {
+                        crosshairVerticalCanvas(crosshairForSubChart);
+                        if (isCrosshairActive === 'tvl') {
+                            crosshairHorizontalCanvas([
+                                {
+                                    x: crosshairForSubChart[0].x,
+                                    y: tvlHorizontalyValue,
+                                },
+                            ]);
+                        }
                     }
                 })
                 .on('measure', () => {
