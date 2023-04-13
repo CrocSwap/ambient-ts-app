@@ -494,6 +494,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                         cumAverageUSD: data.cumAverageUSD
                             ? data.cumAverageUSD
                             : 0,
+                        upperBound: data.upperBound,
+                        lowerBound: data.lowerBound,
                     });
                 } else {
                     if (
@@ -509,6 +511,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                             cumAverageUSD: data.cumAverageUSD
                                 ? data.cumAverageUSD
                                 : 0,
+                            upperBound: data.upperBound,
+                            lowerBound: data.lowerBound,
                         });
                     }
                 }
@@ -526,6 +530,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
+                            upperBound: data.upperBound,
+                            lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqBidData[0].liqPrices;
                     }
@@ -540,6 +546,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
+                            upperBound: data.upperBound,
+                            lowerBound: data.lowerBound,
                         });
 
                         liqBoundaryDepth = liqLowerPrices;
@@ -557,6 +565,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
+                            upperBound: data.upperBound,
+                            lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = liqUpperPrices;
                     }
@@ -573,6 +583,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
+                            upperBound: data.upperBound,
+                            lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqAskData[0].liqPrices;
                     }
@@ -621,6 +633,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                     liqPrices: limitBoundary,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
+                    upperBound: 0,
+                    lowerBound: 0,
                 });
 
                 depthLiqBidData.push({
@@ -630,6 +644,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                     liqPrices: limitBoundary,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
+                    upperBound: 0,
+                    lowerBound: 0,
                 });
 
                 liqAskData.push({
@@ -637,6 +653,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                     liqPrices: 0,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
+                    upperBound: 0,
+                    lowerBound: 0,
                 });
 
                 depthLiqAskData.push({
@@ -649,6 +667,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                     liqPrices: 0,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
+                    upperBound: 0,
+                    lowerBound: 0,
                 });
             }
             topBoundary = limitBoundary;

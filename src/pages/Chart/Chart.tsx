@@ -373,6 +373,8 @@ export default function Chart(props: propsIF) {
         liqPrices: 0,
         deltaAverageUSD: 0,
         cumAverageUSD: 0,
+        upperBound: 0,
+        lowerBound: 0,
     });
     const [selectedLiq, setSelectedLiq] = useState('');
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
@@ -6763,14 +6765,10 @@ export default function Chart(props: propsIF) {
 
             // const absoluteDifference = Math.abs(difference)
 
-            const pinnedTick = getPinnedTickFromDisplayPrice(
-                isDenomBase,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                false, // isMinPrice
-                liqTooltipSelectedLiqBar.liqPrices.toString(),
-                lookupChain(chainId).gridSize,
-            );
+            const pinnedTick =
+                selectedLiq === 'bidLiq'
+                    ? liqTooltipSelectedLiqBar.upperBound
+                    : liqTooltipSelectedLiqBar.lowerBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
