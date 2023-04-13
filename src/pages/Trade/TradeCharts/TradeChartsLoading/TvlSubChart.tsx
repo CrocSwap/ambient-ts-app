@@ -165,33 +165,12 @@ export default function TvlSubChart(props: TvlData) {
                     Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
                 ];
 
-                const roundIndexMax = Math.pow(
-                    10,
-                    (Math.log(maxYBoundary) * Math.LOG10E + 1) | 0,
-                );
-                const roundIndexMin = Math.pow(
-                    10,
-                    (Math.log(minYBoundary) * Math.LOG10E + 1) | 0,
-                );
-
-                const roundedMax =
-                    Math.round(maxYBoundary / (roundIndexMax / 10)) *
-                    (roundIndexMax / 10);
-                const roundedMin =
-                    Math.round(minYBoundary / (roundIndexMin / 10)) *
-                    (roundIndexMin / 10);
-
-                const topTick = maxYBoundary < 10 ? maxYBoundary : roundedMax;
-                const lowTick = minYBoundary < 10 ? minYBoundary : roundedMin;
-
-                const diff = Math.abs(minYBoundary / 2 - maxYBoundary * 2) / 6;
-
-                const ticks =
-                    topTick === lowTick || Math.abs(topTick - lowTick) < diff
-                        ? [topTick, topTick / 2 + topTick / 4]
-                        : [topTick, lowTick];
-
-                yAxis.tickValues(ticks).tickFormat(formatDollarAmountAxis);
+                yAxis
+                    .tickValues([
+                        Math.pow(10, Math.log10(minYBoundary) + buffer),
+                        Math.pow(10, Math.log10(maxYBoundary) - buffer),
+                    ])
+                    .tickFormat(formatDollarAmountAxis);
 
                 tvlyScale.domain(domainLog);
             }
