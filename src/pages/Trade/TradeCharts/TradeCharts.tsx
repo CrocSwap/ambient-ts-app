@@ -147,6 +147,10 @@ export interface LiquidityDataLocal {
     deltaAverageUSD: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cumAverageUSD: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    upperBound: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lowerBound: any;
 }
 
 export interface LiqSnap {
