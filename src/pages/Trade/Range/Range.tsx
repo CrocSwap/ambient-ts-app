@@ -1840,6 +1840,8 @@ export default function Range(props: propsIF) {
                         centeredTitle
                     >
                         <ConfirmRangeModal
+                            tokenAQtyLocal={tokenAQtyLocal}
+                            tokenBQtyLocal={tokenBQtyLocal}
                             tokenPair={tokenPair}
                             spotPriceDisplay={displayPriceString}
                             poolPriceDisplayNum={poolPriceDisplayNum}
