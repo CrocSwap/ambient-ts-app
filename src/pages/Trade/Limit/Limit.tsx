@@ -235,7 +235,6 @@ export default function Limit(props: propsIF) {
         if (!tradeData.shouldLimitDirectionReverse) {
             dispatch(setLimitTick(undefined));
         }
-        dispatch(setLimitTick(undefined));
     }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
 
     useEffect(() => {
