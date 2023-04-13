@@ -17,16 +17,12 @@ import sum from 'hash-sum';
 import {
     CandleChartData,
     FeeChartData,
-    LiqSnap,
     LiquidityDataLocal,
     TvlChartData,
     VolumeChartData,
 } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-} from '../Range/rangeFunctions';
+import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -588,16 +584,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                         liqBoundaryDepth = depthLiqAskData[0].liqPrices;
                     }
                 }
-
-                const pinnedDisplayPrices =
-                    getPinnedPriceValuesFromDisplayPrices(
-                        denominationsInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        data.upperBoundInvPriceDecimalCorrected,
-                        data.lowerBoundInvPriceDecimalCorrected,
-                        lookupChain(chainId).gridSize,
-                    );
             });
             if (liqBidData.length > 1 && liqAskData.length > 1) {
                 liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
