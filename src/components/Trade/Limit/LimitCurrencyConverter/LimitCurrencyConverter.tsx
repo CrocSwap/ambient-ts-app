@@ -439,8 +439,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(rawTokenAQty);
         } else {
-            console.log({ tokenBInputQty });
-            console.log(tradeData.primaryQuantity);
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice *

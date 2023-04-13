@@ -281,7 +281,6 @@ export default function Limit(props: propsIF) {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                               });
-                    IS_LOCAL_ENV && console.debug({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -451,24 +450,24 @@ export default function Limit(props: propsIF) {
             }  Price`,
         );
 
-    useEffect(() => {
-        if (!crocEnv) {
-            return;
-        }
-        if (!limitTick) return;
+    const updateOrderValidityStatus = async () => {
+        try {
+            if (!crocEnv) {
+                return;
+            }
+            if (!limitTick) return;
 
-        const testOrder = isTokenAPrimary
-            ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
-            : crocEnv.buy(tokenPair.dataTokenA.address, 0);
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
+                : crocEnv.buy(tokenPair.dataTokenB.address, 0);
 
-        const ko = testOrder.atLimit(
-            isTokenAPrimary
-                ? tokenPair.dataTokenB.address
-                : tokenPair.dataTokenA.address,
-            limitTick,
-        );
+            const ko = testOrder.atLimit(
+                isTokenAPrimary
+                    ? tokenPair.dataTokenB.address
+                    : tokenPair.dataTokenA.address,
+                limitTick,
+            );
 
-        (async () => {
             if (await ko.willMintFail()) {
                 updateLimitErrorMessage();
                 setIsOrderValid(false);
@@ -476,11 +475,19 @@ export default function Limit(props: propsIF) {
             } else {
                 setIsOrderValid(true);
             }
-        })();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        updateOrderValidityStatus();
     }, [
+        isTokenAPrimary,
         limitTick,
         poolPriceNonDisplay,
         tokenPair.dataTokenA.address + tokenPair.dataTokenB.address,
+        tokenAInputQty === '' && tokenBInputQty === '',
     ]);
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
