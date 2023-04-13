@@ -19,6 +19,7 @@ import {
     // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
+    setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
@@ -100,6 +101,7 @@ interface propsIF {
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    isOrderValid: boolean;
 }
 
 // central react functional component
@@ -151,6 +153,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         openGlobalPopup,
         dexBalancePrefs,
         ackTokens,
+        isOrderValid,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -211,7 +214,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     useEffect(() => {
-        IS_LOCAL_ENV && console.debug({ disableReverseTokens });
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
@@ -256,6 +258,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 reverseTokens();
                 return !state;
             });
+            dispatch(setShouldLimitDirectionReverse(false));
         }
     }, [tradeData.shouldLimitDirectionReverse]);
 
@@ -272,6 +275,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         isWithdrawFromDexChecked,
         tradeData.shouldLimitConverterUpdate,
         isUserLoggedIn,
+        isOrderValid,
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
@@ -280,6 +284,16 @@ export default function LimitCurrencyConverter(props: propsIF) {
             if (poolExists === undefined) setLimitButtonErrorMessage('...');
             if (poolExists === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
+        } else if (!isOrderValid) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage(
+                `Limit ${
+                    (isSellTokenBase && !isDenominationInBase) ||
+                    (!isSellTokenBase && isDenominationInBase)
+                        ? 'Above Maximum'
+                        : 'Below Minimum'
+                }  Price`,
+            );
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
@@ -341,7 +355,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(input)
                     : limitTickDisplayPrice * parseFloat(input);
             }
-
             handleLimitButtonMessage(parseFloat(input));
         } else {
             if (!isDenominationInBase) {
@@ -397,7 +410,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 ? rawTokenBQty.toPrecision(3)
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
-
         handleLimitButtonMessage(parseFloat(input));
 
         setTokenBInputQty(truncatedTokenBQty);
@@ -439,8 +451,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(rawTokenAQty);
         } else {
-            console.log({ tokenBInputQty });
-            console.log(tradeData.primaryQuantity);
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice *
