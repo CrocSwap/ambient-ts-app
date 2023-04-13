@@ -100,6 +100,7 @@ interface propsIF {
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    isOrderValid: boolean;
 }
 
 // central react functional component
@@ -151,6 +152,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         openGlobalPopup,
         dexBalancePrefs,
         ackTokens,
+        isOrderValid,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -280,6 +282,16 @@ export default function LimitCurrencyConverter(props: propsIF) {
             if (poolExists === undefined) setLimitButtonErrorMessage('...');
             if (poolExists === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
+        } else if (!isOrderValid) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage(
+                `Limit ${
+                    (isSellTokenBase && !isDenominationInBase) ||
+                    (!isSellTokenBase && isDenominationInBase)
+                        ? 'Above Maximum'
+                        : 'Below Minimum'
+                }  Price`,
+            );
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
@@ -341,7 +353,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(input)
                     : limitTickDisplayPrice * parseFloat(input);
             }
-
             handleLimitButtonMessage(parseFloat(input));
         } else {
             if (!isDenominationInBase) {
@@ -397,7 +408,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 ? rawTokenBQty.toPrecision(3)
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
-
         handleLimitButtonMessage(parseFloat(input));
 
         setTokenBInputQty(truncatedTokenBQty);

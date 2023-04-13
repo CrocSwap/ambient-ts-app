@@ -880,6 +880,7 @@ export default function Limit(props: propsIF) {
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
         ackTokens: ackTokens,
+        isOrderValid: isOrderValid,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
