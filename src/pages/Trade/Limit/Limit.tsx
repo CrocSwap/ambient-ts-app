@@ -441,6 +441,16 @@ export default function Limit(props: propsIF) {
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
+    const updateLimitErrorMessage = () =>
+        setLimitButtonErrorMessage(
+            `Limit ${
+                (isSellTokenBase && !isDenomBase) ||
+                (!isSellTokenBase && isDenomBase)
+                    ? 'Above Maximum'
+                    : 'Below Minimum'
+            }  Price`,
+        );
+
     useEffect(() => {
         if (!crocEnv) {
             return;
@@ -460,15 +470,7 @@ export default function Limit(props: propsIF) {
 
         (async () => {
             if (await ko.willMintFail()) {
-                // console.log('Cannot send limit order: Knockout price inside spread');
-                setLimitButtonErrorMessage(
-                    `Limit ${
-                        (isSellTokenBase && !isDenomBase) ||
-                        (!isSellTokenBase && isDenomBase)
-                            ? 'Above Maximum'
-                            : 'Below Minimum'
-                    }  Price`,
-                );
+                updateLimitErrorMessage();
                 setIsOrderValid(false);
                 return;
             } else {
@@ -478,8 +480,6 @@ export default function Limit(props: propsIF) {
     }, [
         limitTick,
         poolPriceNonDisplay,
-        tokenAInputQty,
-        tokenBInputQty,
         tokenPair.dataTokenA.address + tokenPair.dataTokenB.address,
     ]);
 
