@@ -16,12 +16,19 @@
     flex-direction: column;
     gap: 1rem;
 }
+.first_section{
+    display: flex;
+    justify-content: center;
+    /* align-items: center;
+    text-align: center; */
+    margin-top: 3rem;
+}
 
 
 
 .main_container p{
     color: var(--text-grey-white);
-    font-size: var(--body-size);
+    font-size: 12;
     line-height: var(--body-lh);
 }
 
