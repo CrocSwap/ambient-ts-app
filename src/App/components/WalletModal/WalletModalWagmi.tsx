@@ -15,6 +15,7 @@ import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/
 import { checkBlacklist } from '../../../utils/data/blacklist';
 import { IS_LOCAL_ENV } from '../../../constants';
 import GateWallet from './GateWallet';
+import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -261,8 +262,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         }
     }, [page]);
 
-    const [showGateWallet, setShowGateWallet] = useState(true);
-    const [isDontShowChecked, setIsDontShowChecked] = useState(false);
+    const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
 
     return (
         <div className={styles.wallet_modal} style={{ width: '500px' }}>
@@ -270,15 +270,13 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 onClose={closeModalWallet}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
-                title={showGateWallet ? 'Launch App' : activeTitle}
+                title={!hasAgreedTerms ? 'Launch App' : activeTitle}
                 centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
             >
-                {showGateWallet ? (
+                {!hasAgreedTerms ? (
                     <GateWallet
-                        isDontShowChecked={isDontShowChecked}
-                        setIsDontShowChecked={setIsDontShowChecked}
-                        showGateWallet={showGateWallet}
-                        setShowGateWallet={setShowGateWallet}
+                        recordAgreed={recordAgreed}
+                        termUrls={termUrls}
                     />
                 ) : (
                     activeContent
