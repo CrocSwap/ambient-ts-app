@@ -373,6 +373,8 @@ export default function Chart(props: propsIF) {
         liqPrices: 0,
         deltaAverageUSD: 0,
         cumAverageUSD: 0,
+        upperBound: 0,
+        lowerBound: 0,
     });
     const [selectedLiq, setSelectedLiq] = useState('');
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
@@ -2662,14 +2664,23 @@ export default function Chart(props: propsIF) {
     }
 
     function adjTicks(linePrice: any) {
-        const result = [
-            { tickValue: 0.995 * linePrice },
-            { tickValue: 0.99 * linePrice },
-            { tickValue: 0.985 * linePrice },
-            { tickValue: 1.005 * linePrice },
-            { tickValue: 1.01 * linePrice },
-            { tickValue: 1.015 * linePrice },
-        ];
+        const boundary =
+            liqMode === 'depth'
+                ? liquidityData.liqBoundaryDepth
+                : liquidityData.liqBoundaryCurve;
+
+        const factors = [0.995, 0.99, 0.985, 1.005, 1.01, 1.015];
+        const result: { tickValue: number }[] = [];
+
+        factors.map((factor) => {
+            const value = factor * linePrice;
+            if (
+                isAdvancedModeActive ||
+                (linePrice < boundary ? value < boundary : value > boundary)
+            ) {
+                result.push({ tickValue: value });
+            }
+        });
 
         return result;
     }
@@ -2914,14 +2925,15 @@ export default function Chart(props: propsIF) {
                                 rangeWidthPercentage,
                             );
 
+                            const lowLineGhostLines = adjTicks(
+                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                            );
+                            const highLineGhostLines = adjTicks(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                            );
+
                             setghostLineValuesRange(
-                                adjTicks(
-                                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                ).concat(
-                                    adjTicks(
-                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                    ),
-                                ),
+                                lowLineGhostLines.concat(highLineGhostLines),
                             );
 
                             if (pinnedDisplayPrices !== undefined) {
@@ -5144,7 +5156,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        scaleData,
+        sum(scaleData),
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5225,7 +5237,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        scaleData,
+        sum(scaleData),
         liqMode,
         gradientForBid,
         liquidityScale,
@@ -5410,7 +5422,9 @@ export default function Chart(props: propsIF) {
             const value =
                 (low - currentData?.liqPrices) / slope + currentData?.activeLiq;
 
-            filtered.push({ activeLiq: value, liqPrices: low });
+            if (value) {
+                filtered.push({ activeLiq: value, liqPrices: low });
+            }
         }
         const canvas = d3
             .select(
@@ -5463,6 +5477,29 @@ export default function Chart(props: propsIF) {
                     });
                     break;
                 }
+            }
+        }
+
+        if (filtered.length > 0) {
+            const minPriceValue = filtered.reduce((min, obj) => {
+                return obj.liqPrice < min.liqPrice ? obj : min;
+            });
+
+            /*
+                Checked to draw a highlighted line that is not in the plotted area chart
+            */
+            if (
+                !ctx.isPointInPath(
+                    liquidityScale(minPriceValue.activeLiq),
+                    scaleData?.yScale(high),
+                )
+            ) {
+                filtered.map((element) => {
+                    if (element.activeLiq === maxX) {
+                        element.activeLiq = minPriceValue.activeLiq;
+                    }
+                    return element;
+                });
             }
         }
 
@@ -6738,14 +6775,10 @@ export default function Chart(props: propsIF) {
 
             // const absoluteDifference = Math.abs(difference)
 
-            const pinnedTick = getPinnedTickFromDisplayPrice(
-                isDenomBase,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                false, // isMinPrice
-                liqTooltipSelectedLiqBar.liqPrices.toString(),
-                lookupChain(chainId).gridSize,
-            );
+            const pinnedTick =
+                selectedLiq === 'bidLiq'
+                    ? liqTooltipSelectedLiqBar.upperBound
+                    : liqTooltipSelectedLiqBar.lowerBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
@@ -7126,6 +7159,7 @@ export default function Chart(props: propsIF) {
                                 setIsCrosshairActive={setIsCrosshairActive}
                                 isCrosshairActive={isCrosshairActive}
                                 setShowTooltip={props.setShowTooltip}
+                                isMouseMoveCrosshair={isMouseMoveCrosshair}
                                 setIsMouseMoveCrosshair={
                                     setIsMouseMoveCrosshair
                                 }
@@ -7153,6 +7187,7 @@ export default function Chart(props: propsIF) {
                                 setIsCrosshairActive={setIsCrosshairActive}
                                 isCrosshairActive={isCrosshairActive}
                                 setShowTooltip={props.setShowTooltip}
+                                isMouseMoveCrosshair={isMouseMoveCrosshair}
                                 setIsMouseMoveCrosshair={
                                     setIsMouseMoveCrosshair
                                 }
