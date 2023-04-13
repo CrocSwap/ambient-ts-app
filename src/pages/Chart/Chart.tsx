@@ -5085,7 +5085,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        scaleData,
+        sum(scaleData),
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5166,7 +5166,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        scaleData,
+        sum(scaleData),
         liqMode,
         gradientForBid,
         liquidityScale,
