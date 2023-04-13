@@ -3,7 +3,7 @@ import { Context } from 'https://edge.netlify.com';
 export default async (request: Request, context: Context) => {
     const GEOFENCED = ['NL']; // Test, don't actually block Holland
 
-    const geofenceArg = process.env.REACT_APP_GEOFENCED_COUNTRY_CODES;
+    const geofenceArg = Deno.env.REACT_APP_GEOFENCED_COUNTRY_CODES;
     const geofenced = GEOFENCED.concat(
         geofenceArg ? JSON.parse(geofenceArg) : [],
     );
