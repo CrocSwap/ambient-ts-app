@@ -1,6 +1,5 @@
 import styles from './GateWallet.module.css';
 import Button from '../../../components/Global/Button/Button';
-import { Dispatch, SetStateAction } from 'react';
 import { TermsOfServiceUrls } from '../../hooks/useTermsAgreed';
 
 interface PropsIF {
