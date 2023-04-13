@@ -9,7 +9,8 @@ export const fetchAddress = async (
 ) => {
     try {
         return provider.lookupAddress(address);
-    } catch {
+    } catch (e) {
+        console.warn(e);
         return null;
     }
 };
