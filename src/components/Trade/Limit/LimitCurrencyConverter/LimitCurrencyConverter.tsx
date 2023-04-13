@@ -214,7 +214,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     useEffect(() => {
-        IS_LOCAL_ENV && console.debug({ disableReverseTokens });
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
@@ -276,6 +275,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         isWithdrawFromDexChecked,
         tradeData.shouldLimitConverterUpdate,
         isUserLoggedIn,
+        isOrderValid,
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
