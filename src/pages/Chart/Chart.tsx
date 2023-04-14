@@ -5463,11 +5463,10 @@ export default function Chart(props: propsIF) {
         if (limitNoGoZone && ghostLines) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
-                    if (
-                        ghostLineValuesLimit !== undefined &&
-                        location.pathname.includes('/limit')
-                    ) {
-                        ghostLines(ghostLineValuesLimit);
+                    if (location.pathname.includes('/limit')) {
+                        if (ghostLineValuesLimit !== undefined) {
+                            ghostLines(ghostLineValuesLimit);
+                        }
                         limitNoGoZone(noGoZoneBoudnaries);
                     }
                     if (
@@ -5489,6 +5488,7 @@ export default function Chart(props: propsIF) {
         ghostLineValuesLimit,
         ghostLines,
         ghostLineValuesRange,
+        location,
     ]);
 
     useEffect(() => {
