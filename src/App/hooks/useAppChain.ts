@@ -6,7 +6,6 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useNavigate } from 'react-router-dom';
-import { current } from '@reduxjs/toolkit';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
