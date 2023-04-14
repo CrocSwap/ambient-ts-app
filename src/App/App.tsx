@@ -2869,6 +2869,7 @@ export default function App() {
         toggleSidebar: toggleSidebar,
         setShowSidebar: setShowSidebar,
         chainId: chainData.chainId,
+        poolId: chainData.poolIndex,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,

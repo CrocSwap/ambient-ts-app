@@ -91,7 +91,9 @@ export default function FullChat(props: FullChatPropsIF) {
     );
 
     // eslint-disable-next-line
-    const [readableRoom, setReadableRoom] = useState<any>();
+    const [readableRoom, setReadableRoom] = useState<PoolIF | undefined>(
+        undefined,
+    );
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
@@ -471,26 +473,30 @@ export default function FullChat(props: FullChatPropsIF) {
         </div>
     );
 
-    const isButtonFavorited = props.favePools.check(
-        readableRoom?.base.address,
-        readableRoom?.quote.address,
-        readableRoom?.chainId,
-        readableRoom?.poolId,
-    );
+    const isButtonFavorited =
+        readableRoom &&
+        props.favePools.check(
+            readableRoom.base.address,
+            readableRoom.quote.address,
+            readableRoom.chainId,
+            readableRoom.poolId,
+        );
     function handleFavButton() {
-        isButtonFavorited
-            ? props.favePools.remove(
-                  readableRoom.quote,
-                  readableRoom.base,
-                  readableRoom?.chainId,
-                  36000,
-              )
-            : props.favePools.add(
-                  readableRoom.quote,
-                  readableRoom.base,
-                  readableRoom?.chainId,
-                  36000,
-              );
+        if (readableRoom) {
+            isButtonFavorited
+                ? props.favePools.remove(
+                      readableRoom.quote,
+                      readableRoom.base,
+                      readableRoom.chainId,
+                      readableRoom.poolId,
+                  )
+                : props.favePools.add(
+                      readableRoom.quote,
+                      readableRoom.base,
+                      readableRoom.chainId,
+                      readableRoom.poolId,
+                  );
+        }
     }
 
     const favButton = !currentRoomIsGlobal ? (
