@@ -41,7 +41,6 @@ import {
     addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
-import { useUrlParams } from './useUrlParams';
 import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
@@ -52,14 +51,13 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { IS_LOCAL_ENV } from '../../constants';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
-    importedTokens: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -77,8 +75,6 @@ interface propsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | undefined;
@@ -124,8 +120,6 @@ export default function Swap(props: propsIF) {
         crocEnv,
         isUserLoggedIn,
         account,
-        importedTokens,
-        setImportedTokens,
         swapSlippage,
         isPairStable,
         provider,
@@ -142,12 +136,8 @@ export default function Swap(props: propsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         openModalWallet,
-        isInitialized,
         poolExists,
-        setTokenPairLocal,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -171,8 +161,7 @@ export default function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
-
-    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useUrlParams(chainId, provider);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
@@ -189,10 +178,6 @@ export default function Swap(props: propsIF) {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
-
-    useEffect(() => {
-        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
-    }, [tokenPairFromParams]);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
@@ -710,9 +695,7 @@ export default function Swap(props: propsIF) {
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
         tokenPair: tokenPair,
-        tokensBank: importedTokens,
         priceImpact: priceImpact,
-        setImportedTokens: setImportedTokens,
         chainId: chainId,
         isLiq: false,
         poolPriceDisplay: poolPriceDisplay,
@@ -732,8 +715,6 @@ export default function Swap(props: propsIF) {
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setSwapAllowed: setSwapAllowed,
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         gasPriceInGwei: gasPriceInGwei,
         isSwapCopied: isSwapCopied,
         verifyToken: verifyToken,

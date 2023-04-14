@@ -295,11 +295,6 @@ label {
     }
 }
 
-#d3fc_group > .y-axis-svg {
-    grid-column: 4;
-    grid-row: 3;
-}
-
 .xAxis {
     height: 5%;
 }

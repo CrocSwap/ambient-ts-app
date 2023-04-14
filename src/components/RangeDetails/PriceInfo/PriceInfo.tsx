@@ -80,51 +80,30 @@ export default function PriceInfo(props: IPriceInfoProps) {
     );
 
     const pooledContent = <div className={styles.pooled_container}></div>;
-    const earnedContent = (
-        <div className={styles.earned_container}>
-            <section>
-                <div>
-                    <p>{`Pooled ${baseTokenSymbol}`}</p>
-                    <p>
-                        {baseCollateralDisplay === undefined
-                            ? '…'
-                            : baseCollateralDisplay}
-                        {baseTokenLogoDisplay}
-                    </p>
-                </div>
 
-                <div>
-                    <p>{`Pooled ${quoteTokenSymbol}`}</p>
-                    <p>
-                        {quoteCollateralDisplay === undefined
-                            ? '…'
-                            : quoteCollateralDisplay}
-                        {quoteTokenLogoDisplay}
-                    </p>
-                </div>
-            </section>
-            <DividerDark />
-
-            <section>
-                <div>
-                    <p>{`Earned ${baseTokenSymbol}`}</p>
-                    <p>
-                        {baseFeesDisplay === undefined ? '…' : baseFeesDisplay}
-                        {baseTokenLogoDisplay}
-                    </p>
-                </div>
-
-                <div>
-                    <p>{`Earned ${quoteTokenSymbol}`}</p>
-                    <p>
-                        {quoteFeesDisplay === undefined
-                            ? '…'
-                            : quoteFeesDisplay}
-                        {quoteTokenLogoDisplay}
-                    </p>
-                </div>
-            </section>
+    const earnedContent = isAmbient ? (
+        <div className={styles.ambi_info_text}>
+            Ambient position rewards are compounded back into the original
+            position and are included in the amounts above.
         </div>
+    ) : (
+        <section>
+            <div>
+                <p>{`Earned ${baseTokenSymbol}`}</p>
+                <p>
+                    {baseFeesDisplay === undefined ? '…' : baseFeesDisplay}
+                    {baseTokenLogoDisplay}
+                </p>
+            </div>
+
+            <div>
+                <p>{`Earned ${quoteTokenSymbol}`}</p>
+                <p>
+                    {quoteFeesDisplay === undefined ? '…' : quoteFeesDisplay}
+                    {quoteTokenLogoDisplay}
+                </p>
+            </div>
+        </section>
     );
 
     const priceStatusContent = (
@@ -173,7 +152,32 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 {tokenPairDetails}
                 {totalValue}
                 {pooledContent}
-                {earnedContent}
+                <div className={styles.earned_container}>
+                    <section>
+                        <div>
+                            <p>{`Pooled ${baseTokenSymbol}`}</p>
+                            <p>
+                                {baseCollateralDisplay === undefined
+                                    ? '…'
+                                    : baseCollateralDisplay}
+                                {baseTokenLogoDisplay}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p>{`Pooled ${quoteTokenSymbol}`}</p>
+                            <p>
+                                {quoteCollateralDisplay === undefined
+                                    ? '…'
+                                    : quoteCollateralDisplay}
+                                {quoteTokenLogoDisplay}
+                            </p>
+                        </div>
+                    </section>
+                    <DividerDark />
+                    {earnedContent}
+                </div>
+
                 {priceStatusContent}
                 <Apy
                     amount={positionApy || undefined}

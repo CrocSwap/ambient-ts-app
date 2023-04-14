@@ -1,6 +1,5 @@
 import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
-import { TokenListIF } from '../../utils/interfaces/exports';
 
 export default function initializeUserLocalStorage() {
     // boolean to control whether local storage for user data needs updating
@@ -37,28 +36,6 @@ export default function initializeUserLocalStorage() {
             const list = listName as tokenListURIsKey;
             return tokenListURIs[list];
         });
-        userUpdated = true;
-    }
-
-    // if there is an array of active token lists in local storage but no array
-    // of tokens on the user object, then create an array of tokens from any
-    // lists which are marked as default in defaultTokenLists.ts
-    if (
-        (!user.tokens || !user.tokens.length) &&
-        user.activeTokenLists &&
-        localStorage.allTokenLists
-    ) {
-        user.tokens = JSON.parse(
-            localStorage.getItem('allTokenLists') as string,
-        ).find(
-            (tokenList: TokenListIF) => tokenList.uri === tokenListURIs.ambient,
-        ).tokens;
-        userUpdated = true;
-    }
-
-    // create a value to track whether the sidebar is open or closed
-    if (!user.sidebar) {
-        user.sidebar = 'open';
         userUpdated = true;
     }
 

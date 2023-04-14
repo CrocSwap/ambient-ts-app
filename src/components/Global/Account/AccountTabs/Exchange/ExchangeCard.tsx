@@ -18,8 +18,6 @@ interface propsIF {
 export default function ExchangeCard(props: propsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
 
-    // const tokenMap = useTokenMap();
-
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 
     const tokenFromMap =

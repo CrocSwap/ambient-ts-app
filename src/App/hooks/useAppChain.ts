@@ -1,11 +1,13 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { validateChainId } from '../../utils/data/chains';
+import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
+import { setChainId } from '../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { useNavigate } from 'react-router-dom';
 
 export const useAppChain = (
-    defaultChain: string,
     isUserLoggedIn: boolean | undefined,
 ): [
     ChainSpec,
@@ -23,55 +25,65 @@ export const useAppChain = (
     const { chain } = useNetwork();
 
     const chainId = chain ? '0x' + chain.id.toString(16) : '';
+    const defaultChain = getDefaultChainId();
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
     // we need this value so the app can be used without a wallet
-    const [currentChain, setCurrentChain] = useState(defaultChain);
+    const [currentChain, setCurrentChain] = useState(chainId);
+
     // boolean representing if the current chain is supported by the app
     // we use this value to populate the SwitchNetwork.tsx modal
     const [isChainSupported, setIsChainSupported] = useState(
         validateChainId(defaultChain),
     );
 
-    // change the network in Moralis after user changes in the app
-    // useEffect(() => {
-    //     console.debug('change chain in Moralis!');
-    //     if (isWeb3Enabled && chainId !== currentChain) switchNetwork(currentChain);
-    // }, [currentChain, isWeb3Enabled]);
+    // This is crude way to handle a chain switch, but without this there is a
+    // a lot of dangling providers pointing to the wrong chain that will error and
+    // time out, slowing down app performance
+    function nukeAndReloadApp() {
+        navigate('/');
+        window.location.reload();
+    }
 
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
-        // if Moralis has a chain ID which does not match the in-app chain ID
-        //      Moralis chain ID is supported => switch app to that ID
-        //      Moralis chain Id is NOT supported => switch app to default chain
-        if (isUserLoggedIn) {
-            if (chainId && chainId !== currentChain) {
-                if (validateChainId(chainId)) {
-                    setCurrentChain(chainId);
-                } else if (!validateChainId(chainId)) {
-                    setIsChainSupported(false);
-                } else {
-                    console.error(
-                        `Issue validating network. Received value <<${chainId}>> from Moralis. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`,
-                    );
-                }
-                // if Moralis and local state are already on the same chain,
-                // ... indicate chain is supported in local state
-            } else if (chainId === currentChain) {
-                setIsChainSupported(true);
-            }
+        // If wallet is connected, don't worry about validating chain, should
+        // be correct be default
+        if (!isUserLoggedIn) {
+            return;
         }
 
-        // }
-    }, [chainId, currentChain, isUserLoggedIn]);
+        // Logic to run if the chain ID has switched
+        if (chainId && chainId !== currentChain) {
+            /* Core of this logic is that currentChain *only* updates when chain
+             * has switched to a supported chain. Three type of user-initiated chain
+             * chain switches are possible:
+             *
+             *    1) Valid -> valid chain switch: Reset entire app (see comments above) */
+            if (validateChainId(chainId) && validateChainId(currentChain)) {
+                nukeAndReloadApp();
 
-    // useEffect(() => {
-    //     if (chainId !== currentChain) setIsChainSupported(false);
-    // }, [chainId, currentChain]);
+                /*    2) Invalid -> valid chain switch: Update currentChain, which cascades app
+                 *                  back to valid state */
+            } else if (validateChainId(chainId)) {
+                setCurrentChain(chainId);
+                setIsChainSupported(true);
+
+                /*    3) Valid/invalid -> invalid chain switch: Turn off isChainSupported, which
+                 *                        triggers blocking downstream */
+            } else {
+                setIsChainSupported(false);
+            }
+        } else if (chainId && chainId === currentChain) {
+            setIsChainSupported(true);
+        }
+    }, [chainId, currentChain, isUserLoggedIn]);
 
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
@@ -79,6 +91,7 @@ export const useAppChain = (
         let chn;
         try {
             chn = lookupChain(currentChain);
+            dispatch(setChainId(chainId));
         } catch (err) {
             console.error(err);
             setCurrentChain(defaultChain);

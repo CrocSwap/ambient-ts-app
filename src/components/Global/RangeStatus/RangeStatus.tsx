@@ -12,7 +12,7 @@ interface RangeStatusProps {
 export default function RangeStatus(props: RangeStatusProps) {
     const { isInRange, isAmbient, fullText, isEmpty } = props;
 
-    const fullTextDisplay = fullText ? 'Out of Range' : 'Out of Rng';
+    const fullTextDisplay = fullText ? 'Out of Range' : 'Out of Range';
 
     const ambientWithTooltip = (
         <DefaultTooltip

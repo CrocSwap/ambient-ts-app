@@ -8,13 +8,17 @@ import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
+import { getChainExplorer } from '../../../../utils/data/chains';
+
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
     txBlockNumber?: number;
     lastBlockNumber: number;
+    chainId: number | string;
     txType: string | undefined;
 }
+
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { status, hash, txBlockNumber, lastBlockNumber, txType } = props;
     const pending = (
@@ -44,7 +48,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         } else return '';
     }
 
-    const EtherscanTx = `https://goerli.etherscan.io/tx/${hash}`;
+    const blockExploer = getChainExplorer(props.chainId);
+    const EtherscanTx = `${blockExploer}/tx/${hash}`;
 
     const dispatch = useAppDispatch();
 

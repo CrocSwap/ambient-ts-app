@@ -17,8 +17,8 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
-import { topPoolsMethodsIF } from '../../App/hooks/useTopPools';
 import NotFound from '../../pages/NotFound/NotFound';
+import { topPoolIF } from '../../App/hooks/useTopPools';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -49,7 +49,7 @@ interface propsIF {
     userImageData: string[];
     appPage?: boolean;
     username?: string | null;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
     isChatEnabled: boolean;
 }
 

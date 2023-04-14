@@ -109,6 +109,7 @@ export default function BypassLimitButton(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            chainId={buyTokenData.chainId}
             noAnimation
         />
     );

@@ -43,6 +43,8 @@ interface propsIF {
     resetConfirmation: () => void;
     bypassConfirm: allSkipConfirmMethodsIF;
     isAdd: boolean;
+    tokenAQtyLocal: number;
+    tokenBQtyLocal: number;
 }
 
 export default function ConfirmRangeModal(props: propsIF) {
@@ -68,6 +70,8 @@ export default function ConfirmRangeModal(props: propsIF) {
         resetConfirmation,
         bypassConfirm,
         isAdd,
+        tokenAQtyLocal,
+        tokenBQtyLocal,
     } = props;
 
     const { dataTokenA, dataTokenB } = tokenPair;
@@ -75,6 +79,22 @@ export default function ConfirmRangeModal(props: propsIF) {
     const txApproved = newRangeTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
+
+    const localeTokenAString =
+        tokenAQtyLocal > 999
+            ? tokenAQtyLocal.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : tokenAQtyLocal.toString();
+
+    const localeTokenBString =
+        tokenBQtyLocal > 999
+            ? tokenBQtyLocal.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : tokenBQtyLocal.toString();
 
     const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
@@ -90,16 +110,10 @@ export default function ConfirmRangeModal(props: propsIF) {
             tokenBAddress={dataTokenB.address}
             tokenBDecimals={dataTokenB.decimals}
             tokenBImage={dataTokenB.logoURI}
+            chainId={dataTokenB.chainId}
             range
         />
     );
-
-    const tokenAQty = (
-        document.getElementById('A-range-quantity') as HTMLInputElement
-    )?.value;
-    const tokenBQty = (
-        document.getElementById('B-range-quantity') as HTMLInputElement
-    )?.value;
 
     const tokenACharacter: string = getUnicodeCharacter(dataTokenA.symbol);
     const tokenBCharacter: string = getUnicodeCharacter(dataTokenB.symbol);
@@ -165,8 +179,8 @@ export default function ConfirmRangeModal(props: propsIF) {
                             <span>{dataTokenA.symbol}</span>
                         </div>
                         <span>
-                            {tokenAQty !== ''
-                                ? tokenACharacter + tokenAQty
+                            {localeTokenAString !== ''
+                                ? tokenACharacter + localeTokenAString
                                 : '0'}
                         </span>
                     </div>
@@ -186,7 +200,9 @@ export default function ConfirmRangeModal(props: propsIF) {
                             <span>{dataTokenB.symbol}</span>
                         </div>
                         <span>
-                            {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
+                            {localeTokenBString
+                                ? tokenBCharacter + localeTokenBString
+                                : '0'}
                         </span>
                     </div>
                 </div>
@@ -225,9 +241,11 @@ export default function ConfirmRangeModal(props: propsIF) {
     // CONFIRMATION LOGIC STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
-                dataTokenA.symbol
-            } and ${tokenBQty ? tokenBQty : '0'} ${dataTokenB.symbol}. `}
+            content={`Minting a Position with ${
+                localeTokenAString ? localeTokenAString : '0'
+            } ${dataTokenA.symbol} and ${
+                localeTokenBString ? localeTokenBString : '0'
+            } ${dataTokenB.symbol}. `}
         />
     );
 

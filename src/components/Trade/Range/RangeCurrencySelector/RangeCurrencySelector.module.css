@@ -27,6 +27,7 @@
 .main_wallet_container {
     display: flex;
     align-items: center;
+    gap: 0.3rem;
 }
 .main_wallet_container {
     justify-content: flex-start;
@@ -50,8 +51,8 @@
     flex-direction: row;
 
     align-items: center;
-    margin-right: 5px;
-    gap: 5px;
+    margin-right: 4px;
+    gap: 4px;
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -61,6 +62,7 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .wallet_logo {
@@ -69,7 +71,7 @@
 }
 
 .enabled_logo {
-    filter: brightness(0) invert(1);
+    filter: contrast(1.0) brightness(1.0) saturate(1.0); 
 }
 
 .swapbox_top {
@@ -177,6 +179,10 @@
     filter: grayscale(100%);
 }
 
+.grey_logo_wallet img {
+    filter: grayscale(100%) brightness(60%);
+}
+
 .surplus_toggle {
     display: flex;
     flex-direction: row;
@@ -188,7 +194,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-white);
     outline: none;
     border: none;
     /* background: var(--dark3); */
@@ -206,7 +212,7 @@
 }
 
 .max_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text-highlight-dark);
 }
 
 /* modal */

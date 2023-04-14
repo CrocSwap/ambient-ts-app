@@ -58,4 +58,5 @@ export interface PositionIF {
     askTickPriceDecimalCorrected: number;
     askTickInvPriceDecimalCorrected: number;
     source: string;
+    tx: string;
 }

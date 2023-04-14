@@ -10,7 +10,7 @@ import reportWebVitals from './reportWebVitals';
 import './i18n/config.ts';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
-import { avalanche, goerli, avalancheFuji } from 'wagmi/chains';
+import { goerli, arbitrumGoerli } from 'wagmi/chains';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 // import { alchemyProvider } from 'wagmi/providers/alchemy';
@@ -25,7 +25,7 @@ import { InjectedConnector } from 'wagmi/connectors/injected';
 // console.log(process.env.REACT_APP_INFURA_KEY);
 
 const { chains, provider, webSocketProvider } = configureChains(
-    [goerli, avalanche, avalancheFuji],
+    [goerli, arbitrumGoerli],
     [
         infuraProvider({
             apiKey:

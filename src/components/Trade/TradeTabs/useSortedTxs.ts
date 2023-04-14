@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { TransactionIF } from '../../../utils/interfaces/exports';
+import sum from 'hash-sum';
 
 export const useSortedTransactions = (
     defaultSort: string,
@@ -84,10 +85,14 @@ export const useSortedTransactions = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
+    // Generates a fingerprint from the positions objects. Used for comparison
+    // in below React hook
+    const ordersHashSum = useMemo(() => sum(transactions), [transactions]);
+
     // array of positions sorted by the relevant column
     const sortedTransactions = useMemo(
         () => sortData(transactions),
-        [sortBy, reverseSort, transactions],
+        [sortBy, reverseSort, ordersHashSum],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];

@@ -3,7 +3,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
@@ -19,7 +19,6 @@ interface propsIF {
     gridSize: number;
     pool: CrocPoolView | undefined;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
     fieldId: string;
     chainId: string;
     sellToken?: boolean;

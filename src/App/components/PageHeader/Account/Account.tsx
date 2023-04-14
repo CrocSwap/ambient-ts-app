@@ -152,6 +152,7 @@ export default function Account(props: AccountPropsIF) {
                     connectorName={connector?.name}
                     clickLogout={clickLogout}
                     walletWrapperStyle={walletWrapperStyle}
+                    chainId={chainId}
                     ethAmount={
                         isUserLoggedIn
                             ? nativeBalance

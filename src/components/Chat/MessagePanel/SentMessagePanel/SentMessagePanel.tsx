@@ -219,24 +219,24 @@ export default function SentMessagePanel(props: SentMessageProps) {
         if (showAvatar === true) {
             if (props.message.isMentionMessage === true) {
                 return (
-                    <p>
+                    <div className={` ${styles.mention_message_block}`}>
                         {messagesArray.map((word, index) => (
                             <span
                                 key={index}
-                                className={` ${
-                                    props.isUserLoggedIn
-                                        ? word.slice(1) === props.ensName ||
-                                          word.slice(1) ===
-                                              props.connectedAccountActive
-                                            ? styles.mention_message
-                                            : styles.message
-                                        : styles.message
-                                }`}
+                                className={` ${styles.mention_message}`}
+                                style={{
+                                    color:
+                                        word.slice(1) === props.ensName ||
+                                        word.slice(1) ===
+                                            props.connectedAccountActive
+                                            ? '#7371FC'
+                                            : 'white',
+                                }}
                             >
-                                {'' + detectLinksFromMessage(word)}
+                                {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
-                    </p>
+                    </div>
                 );
             } else {
                 return (
@@ -248,24 +248,26 @@ export default function SentMessagePanel(props: SentMessageProps) {
         } else {
             if (props.message.isMentionMessage === true) {
                 return (
-                    <p>
+                    <div
+                        className={` ${styles.mention_message_block_without_avatar}`}
+                    >
                         {messagesArray.map((word, index) => (
                             <span
                                 key={index}
-                                className={` ${
-                                    props.isUserLoggedIn
-                                        ? word.slice(1) === props.ensName ||
-                                          word.slice(1) ===
-                                              props.connectedAccountActive
-                                            ? styles.mention_message
-                                            : styles.message
-                                        : styles.message
-                                }`}
+                                className={` ${styles.mention_message}`}
+                                style={{
+                                    color:
+                                        word.slice(1) === props.ensName ||
+                                        word.slice(1) ===
+                                            props.connectedAccountActive
+                                            ? '#7371FC'
+                                            : 'white',
+                                }}
                             >
-                                {'' + detectLinksFromMessage(word)}
+                                {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
-                    </p>
+                    </div>
                 );
             } else {
                 return (

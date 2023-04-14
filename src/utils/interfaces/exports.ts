@@ -8,7 +8,6 @@ import { TokenIF } from './TokenIF';
 import { TokenListIF } from './TokenListIF';
 import { TokenPairIF } from './TokenPairIF';
 import { TransactionIF } from './TransactionIF';
-import { UserIF } from './UserIF';
 
 export type {
     LimitOrderIF,
@@ -21,5 +20,4 @@ export type {
     TokenListIF,
     TokenPairIF,
     TransactionIF,
-    UserIF,
 };

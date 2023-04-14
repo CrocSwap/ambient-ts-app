@@ -75,7 +75,7 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
-    importedTokens: TokenIF[];
+    searchableTokens: TokenIF[];
     showSidebar: boolean;
     handlePulseAnimation: (type: string) => void;
     changeState: (
@@ -137,7 +137,7 @@ export default function TradeTabs2(props: propsIF) {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
-        importedTokens,
+        searchableTokens,
         showSidebar,
         handlePulseAnimation,
         changeState,
@@ -359,7 +359,7 @@ export default function TradeTabs2(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100,
+                n: 80,
                 period: candleTime.time,
                 time: filter?.time,
             })
@@ -400,7 +400,7 @@ export default function TradeTabs2(props: propsIF) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         provider: provider,
         account: account,
         chainId: chainId,
@@ -409,6 +409,7 @@ export default function TradeTabs2(props: propsIF) {
         graphData: graphData,
         lastBlockNumber: lastBlockNumber,
         expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,
@@ -429,7 +430,7 @@ export default function TradeTabs2(props: propsIF) {
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
@@ -452,13 +453,15 @@ export default function TradeTabs2(props: propsIF) {
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
+        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: false,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
         crocEnv: crocEnv,
-        importedTokens: importedTokens,
+        searchableTokens: searchableTokens,
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
@@ -505,6 +508,7 @@ export default function TradeTabs2(props: propsIF) {
 
     const TradeChartsTokenInfoProps = {
         chainId: chainId,
+        poolId: chainData.poolIndex,
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,

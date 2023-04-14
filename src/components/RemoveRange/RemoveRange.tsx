@@ -1,17 +1,18 @@
 import styles from './RemoveRange.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
-import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangInfo';
+import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {
     ambientPosSlot,
     ChainSpec,
     concPosSlot,
     CrocEnv,
+    CrocPositionView,
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -86,6 +87,7 @@ export default function RemoveRange(props: propsIF) {
         handleModalClose,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        isAmbient,
     } = props;
 
     const lastBlockNumber = useAppSelector(
@@ -112,12 +114,6 @@ export default function RemoveRange(props: propsIF) {
         (state) => state.receiptData,
     ).positionsPendingUpdate;
 
-    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
-    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
-    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
-        useState<string>('');
-
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -143,69 +139,41 @@ export default function RemoveRange(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    // useEffect to update selected token balances
+    const [currentLiquidity, setCurrentLiquidity] = useState<
+        BigNumber | undefined
+    >();
+
+    const positionHasLiquidity = useMemo(
+        () => !currentLiquidity?.isZero(),
+        [currentLiquidity],
+    );
+
+    const liquidityToBurn = useMemo(
+        () => currentLiquidity?.mul(removalPercentage).div(100),
+        [currentLiquidity, removalPercentage],
+    );
+
+    const updateLiq = async () => {
+        try {
+            if (!crocEnv || !position) return;
+            const pool = crocEnv.pool(position.base, position.quote);
+            const pos = new CrocPositionView(pool, position.user);
+
+            const liqBigNum = isAmbient
+                ? (await pos.queryAmbient()).seeds
+                : (await pos.queryRangePos(position.bidTick, position.askTick))
+                      .liq;
+            setCurrentLiquidity(liqBigNum);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
-        (async () => {
-            if (crocEnv && position.user && position.base && position.quote) {
-                crocEnv
-                    .token(position.base)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.base)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
-    }, [
-        crocEnv,
-        position.user,
-        position.base,
-        position.quote,
-        lastBlockNumber,
-    ]);
+        if (crocEnv && position) {
+            updateLiq();
+        }
+    }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     useEffect(() => {
         if (
@@ -237,29 +205,34 @@ export default function RemoveRange(props: propsIF) {
                 )
                     .then((response) => response.json())
                     .then((json) => {
-                        IS_LOCAL_ENV && console.debug({ json });
                         setPosLiqBaseDecimalCorrected(
-                            json?.data?.positionLiqBaseDecimalCorrected,
+                            json?.data?.positionLiqBaseDecimalCorrected === null
+                                ? undefined
+                                : json?.data?.positionLiqBaseDecimalCorrected,
                         );
                         setPosLiqQuoteDecimalCorrected(
-                            json?.data?.positionLiqQuoteDecimalCorrected,
+                            json?.data?.positionLiqQuoteDecimalCorrected ===
+                                null
+                                ? undefined
+                                : json?.data?.positionLiqQuoteDecimalCorrected,
                         );
                         setFeeLiqBaseDecimalCorrected(
-                            json?.data?.feesLiqBaseDecimalCorrected,
+                            json?.data?.feesLiqBaseDecimalCorrected === null
+                                ? undefined
+                                : json?.data?.feesLiqBaseDecimalCorrected,
                         );
                         setFeeLiqQuoteDecimalCorrected(
-                            json?.data?.feesLiqQuoteDecimalCorrected,
+                            json?.data?.feesLiqQuoteDecimalCorrected === null
+                                ? undefined
+                                : json?.data?.feesLiqQuoteDecimalCorrected,
                         );
-                    });
+                    })
+                    .catch((error) => console.error({ error }));
             })();
         }
     }, [lastBlockNumber]);
 
     const [showSettings, setShowSettings] = useState(false);
-
-    const positionHasLiquidity =
-        (posLiqBaseDecimalCorrected || 0) + (posLiqQuoteDecimalCorrected || 0) >
-        0;
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
@@ -309,7 +282,8 @@ export default function RemoveRange(props: propsIF) {
         : slippage.mintSlippage.volatile;
 
     const removeFn = async () => {
-        if (!crocEnv) return;
+        if (!crocEnv || !liquidityToBurn) return;
+        console.log('removing');
         IS_LOCAL_ENV && console.debug('removing');
         setShowConfirmation(true);
 
@@ -344,12 +318,6 @@ export default function RemoveRange(props: propsIF) {
                     setTxErrorCode(error?.code);
                 }
             } else {
-                const positionLiq = position.positionLiq;
-
-                const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                    .mul(removalPercentage)
-                    .div(100);
-
                 try {
                     tx = await pool.burnAmbientLiq(liquidityToBurn, [
                         lowLimit,
@@ -414,12 +382,6 @@ export default function RemoveRange(props: propsIF) {
         const newLiqChangeCacheEndpoint =
             'https://809821320828123.de:5000/new_liqchange?';
         if (tx?.hash) {
-            const positionLiq = position.positionLiq;
-
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
-
             if (position.positionType === 'ambient') {
                 fetch(
                     newLiqChangeCacheEndpoint +
@@ -476,12 +438,6 @@ export default function RemoveRange(props: propsIF) {
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
-                    const positionLiq = position.positionLiq;
-
-                    const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                        .mul(removalPercentage)
-                        .div(100);
-
                     if (position.positionType === 'ambient') {
                         fetch(
                             newLiqChangeCacheEndpoint +
@@ -538,6 +494,7 @@ export default function RemoveRange(props: propsIF) {
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
             content='Removal Transaction Successfully Submitted'
+            chainId={chainId}
         />
     );
 
@@ -703,6 +660,7 @@ export default function RemoveRange(props: propsIF) {
                     removalPercentage={removalPercentage}
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
+                    isAmbient={props.isAmbient}
                 />
                 <ExtraControls dexBalancePrefs={dexBalancePrefs} />
             </div>

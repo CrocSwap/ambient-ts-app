@@ -153,7 +153,9 @@ export const fetchErc20TokenBalances = async (
         return;
     }
 
-    const options = { address: address, chain: chain as '0x5' };
+    // Doesn't have to be comprehensive, just to satisfy typescript
+    type MoralisChainIDs = '0x1';
+    const options = { address: address, chain: chain as MoralisChainIDs };
 
     const erc20WalletBalancesFromMoralis =
         await Moralis.EvmApi.token.getWalletTokenBalances(options);

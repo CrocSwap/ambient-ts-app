@@ -8,8 +8,10 @@ import {
     ReactNode,
     useEffect,
     useState,
+    useMemo,
 } from 'react';
 import { ethers } from 'ethers';
+import sum from 'hash-sum';
 
 // START: Import JSX Components
 
@@ -27,10 +29,9 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
@@ -40,6 +41,9 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+
+const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
+// NOTE: this is done to improve rendering speed for this page.
 
 // interface for props
 interface propsIF {
@@ -60,15 +64,15 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    expandTradeTable: boolean;
+    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    importedTokens: TokenIF[];
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
-    isOnPortfolioPage: boolean;
+    isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
@@ -98,6 +102,7 @@ export default function Ranges(props: propsIF) {
         graphData,
         lastBlockNumber,
         expandTradeTable,
+        setExpandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
         account,
@@ -173,12 +178,28 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
 
-    useEffect(() => {
+    const sumHashActiveAccountPositionData = useMemo(
+        () => sum(activeAccountPositionData),
+        [activeAccountPositionData],
+    );
+
+    const sumHashRangeData = useMemo(() => sum(rangeData), [rangeData]);
+
+    const sumHashUserPositionsToDisplayOnTrade = useMemo(
+        () => sum(userPositionsToDisplayOnTrade),
+        [userPositionsToDisplayOnTrade],
+    );
+
+    const sumHashPositionsByPool = useMemo(
+        () => sum(positionsByPool),
+        [positionsByPool],
+    );
+
+    const updateRangeData = () => {
         if (
             isOnPortfolioPage &&
             activeAccountPositionData &&
-            JSON.stringify(activeAccountPositionData) !==
-                JSON.stringify(rangeData)
+            sumHashActiveAccountPositionData !== sumHashRangeData
         ) {
             setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled && !isOnPortfolioPage) {
@@ -186,13 +207,18 @@ export default function Ranges(props: propsIF) {
         } else if (positionsByPool && !isOnPortfolioPage) {
             setRangeData(positionsByPool);
         }
+    };
+
+    useEffect(() => {
+        updateRangeData();
     }, [
         isOnPortfolioPage,
         isShowAllEnabled,
         connectedAccountActive,
-        JSON.stringify(activeAccountPositionData),
-        JSON.stringify(userPositionsToDisplayOnTrade),
-        JSON.stringify(positionsByPool),
+        sumHashActiveAccountPositionData,
+        sumHashUserPositionsToDisplayOnTrade,
+        sumHashPositionsByPool,
+        sumHashRangeData,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
@@ -238,7 +264,7 @@ export default function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        JSON.stringify({
+        sum({
             id0: sortedPositions[0]?.positionId,
             id1: sortedPositions[1]?.positionId,
             id2: sortedPositions[2]?.positionId,
@@ -269,11 +295,7 @@ export default function Ranges(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -286,11 +308,6 @@ export default function Ranges(props: propsIF) {
         setCurrentPage(pageNumber);
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
-
-    const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage && largeScreenView
-            ? currentRanges
-            : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
@@ -311,13 +328,6 @@ export default function Ranges(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
-
     const walID = (
         <>
             <p>ID</p>
@@ -334,8 +344,8 @@ export default function Ranges(props: propsIF) {
         <>Tokens</>
     ) : (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [
@@ -472,12 +482,47 @@ export default function Ranges(props: propsIF) {
             ))}
         </ul>
     );
-    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
+    const sortedRowItemContent = sortedPositions.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
-            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
+            position={position}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+            openGlobalModal={props.openGlobalModal}
+            closeGlobalModal={props.closeGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            showSidebar={showSidebar}
+            isUserLoggedIn={isUserLoggedIn}
+            crocEnv={crocEnv}
+            chainData={chainData}
+            provider={provider}
+            chainId={chainId}
+            baseTokenBalance={baseTokenBalance}
+            quoteTokenBalance={quoteTokenBalance}
+            baseTokenDexBalance={baseTokenDexBalance}
+            quoteTokenDexBalance={quoteTokenDexBalance}
+            lastBlockNumber={lastBlockNumber}
+            isOnPortfolioPage={isOnPortfolioPage}
+            idx={idx}
+            handlePulseAnimation={handlePulseAnimation}
+            showPair={showPair}
+            setSimpleRangeWidth={setSimpleRangeWidth}
+            dexBalancePrefs={dexBalancePrefs}
+            slippage={slippage}
+            gasPriceInGwei={gasPriceInGwei}
+            ethMainnetUsdPrice={ethMainnetUsdPrice}
+        />
+    ));
+
+    const currentRowItemContent = currentRanges.map((position, idx) => (
+        <RangesRow
+            cachedQuerySpotPrice={cachedQuerySpotPrice}
+            account={account}
+            key={idx}
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
@@ -520,7 +565,31 @@ export default function Ranges(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
-        rowItemContent
+        <div>
+            {expandTradeTable && largeScreenView
+                ? currentRowItemContent
+                : props.isOnPortfolioPage
+                ? sortedRowItemContent
+                : sortedRowItemContent.slice(0, NUM_RANGES_WHEN_COLLAPSED)}
+            {
+                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
+                // TODO (#1804): we should instead be adding results to RTK
+                !expandTradeTable &&
+                    !props.isOnPortfolioPage &&
+                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                        <div className={styles.view_more_container}>
+                            <button
+                                className={styles.view_more_button}
+                                onClick={() => {
+                                    setExpandTradeTable(true);
+                                }}
+                            >
+                                View More
+                            </button>
+                        </div>
+                    )
+            }
+        </div>
     ) : (
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}

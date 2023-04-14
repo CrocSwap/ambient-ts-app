@@ -8,7 +8,7 @@ import styles from './Home.module.css';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Home1 from '../../components/Home/Landing/Home1';
-import { topPoolsMethodsIF } from '../../App/hooks/useTopPools';
+import { topPoolIF } from '../../App/hooks/useTopPools';
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -17,7 +17,7 @@ interface propsIF {
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 export default function Home(props: propsIF) {
     const {

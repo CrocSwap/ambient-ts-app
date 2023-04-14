@@ -133,7 +133,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         base: tradeData.baseToken,
         quote: tradeData.quoteToken,
         chainId: chainId,
-        poolId: 36000,
+        poolId: chainData.poolIndex,
     };
 
     const isButtonFavorited = favePools.check(
@@ -149,13 +149,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                   tradeData.baseToken,
                   tradeData.quoteToken,
                   chainId,
-                  36000,
+                  chainData.poolIndex,
               )
             : favePools.add(
                   tradeData.quoteToken,
                   tradeData.baseToken,
                   chainId,
-                  36000,
+                  chainData.poolIndex,
               );
         IS_LOCAL_ENV && console.debug(tradeData);
     }
@@ -266,7 +266,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             <TextOnlyTooltip
                 interactive
                 title={tokenSymbols}
-                placement={'bottom'}
+                placement={'right'}
             >
                 <div className={styles.tokens_images} id='trade_token_pair'>
                     {topTokenLogo ? (
@@ -287,21 +287,16 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                     )}
                 </div>
             </TextOnlyTooltip>
-            <TextOnlyTooltip
-                interactive
-                title={tokenSymbols}
-                placement={'bottom'}
+
+            <div
+                className={styles.tokens_name}
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='all'
+                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
-                <div
-                    className={styles.tokens_name}
-                    aria-live='polite'
-                    aria-atomic='true'
-                    aria-relevant='all'
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
-                >
-                    {topTokenSymbol} / {bottomTokenSymbol}
-                </div>
-            </TextOnlyTooltip>
+                {topTokenSymbol} / {bottomTokenSymbol}
+            </div>
         </button>
     );
 

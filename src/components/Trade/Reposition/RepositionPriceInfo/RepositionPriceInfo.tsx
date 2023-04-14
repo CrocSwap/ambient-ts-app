@@ -16,6 +16,8 @@ import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import AprExplanation from '../../../Global/Informational/AprExplanation';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -63,6 +65,12 @@ interface IRepositionPriceInfoProps {
 
     currentMinPrice: string;
     currentMaxPrice: string;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -88,13 +96,17 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
         currentMinPrice,
         currentMaxPrice,
+        openGlobalPopup,
         // isPairStable
     } = props;
 
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;
 
-    const isDenomBase = useAppSelector((state) => state.tradeData)?.isDenomBase;
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData?.isDenomBase;
+    const liquidityFee = tradeData?.liquidityFee;
 
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
@@ -105,7 +117,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         position?.quoteDecimals || 18,
         lowTick,
         highTick,
-        lookupChain(position?.chainId || '0x5').gridSize,
+        lookupChain(position.chainId).gridSize,
     );
 
     const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
@@ -164,7 +176,20 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const apr = (
         <div className={styles.apr_display}>
-            <p>Est. APR </p>
+            <p>
+                Est. APR{' '}
+                <AiOutlineQuestionCircle
+                    size={14}
+                    onClick={() =>
+                        openGlobalPopup(
+                            <AprExplanation />,
+
+                            'Estimated APR',
+                            'right',
+                        )
+                    }
+                />
+            </p>
             <p>{aprPercentageString}</p>
         </div>
     );
@@ -180,7 +205,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseSymbol} / ${quoteSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
-            data: `${0.3} %`,
+            data: `${liquidityFee * 100} %`,
             placement: 'bottom',
         },
     ];

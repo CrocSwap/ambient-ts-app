@@ -85,13 +85,12 @@ import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    importedTokens: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -111,8 +110,6 @@ interface propsIF {
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
@@ -169,8 +166,6 @@ export default function Range(props: propsIF) {
         account,
         crocEnv,
         isUserLoggedIn,
-        importedTokens,
-        setImportedTokens,
         mintSlippage,
         isPairStable,
         provider,
@@ -189,8 +184,6 @@ export default function Range(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainId,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         openModalWallet,
         ambientApy,
         dailyVol,
@@ -238,6 +231,7 @@ export default function Range(props: propsIF) {
     const [isAmbient, setIsAmbient] = useState(false);
 
     const dispatch = useAppDispatch();
+    useUrlParams(chainId, provider);
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
@@ -555,6 +549,7 @@ export default function Range(props: propsIF) {
         tradeData.advancedMode,
         denominationsInBase,
         currentPoolPriceTick,
+        baseToken.address + quoteToken.address,
     ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
@@ -1257,6 +1252,7 @@ export default function Range(props: propsIF) {
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
         isAmbient: isAmbient,
+        openGlobalPopup,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
@@ -1358,9 +1354,7 @@ export default function Range(props: propsIF) {
         provider: provider,
         isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
-        chainId: chainId ?? '0x2a',
-        tokensBank: importedTokens,
-        setImportedTokens: setImportedTokens,
+        chainId: chainId,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
@@ -1384,8 +1378,6 @@ export default function Range(props: propsIF) {
         isOutOfRange: isOutOfRange,
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         tokenAInputQty: tokenAInputQty,
         tokenBInputQty: tokenBInputQty,
         isRangeCopied: isRangeCopied,
@@ -1850,6 +1842,8 @@ export default function Range(props: propsIF) {
                         centeredTitle
                     >
                         <ConfirmRangeModal
+                            tokenAQtyLocal={tokenAQtyLocal}
+                            tokenBQtyLocal={tokenBQtyLocal}
                             tokenPair={tokenPair}
                             spotPriceDisplay={displayPriceString}
                             poolPriceDisplayNum={poolPriceDisplayNum}

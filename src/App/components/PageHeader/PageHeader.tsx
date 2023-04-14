@@ -8,16 +8,15 @@ import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchN
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
-import { useUrlParams } from './useUrlParams';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
-import { useAccount, useEnsName } from 'wagmi';
+import { useAccount, useEnsName, useSwitchNetwork } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { useUrlParamsNew } from '../../../utils/hooks/useUrlParamsNew';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
+import { formSlugForPairParams } from '../../functions/urlSlugs';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -59,11 +58,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         theme,
         poolPriceDisplay,
         chainData,
-        getTokenByAddress,
         isTutorialMode,
         setIsTutorialMode,
         clickLogout,
-    } = props; // TODO (#1391)
+    } = props;
 
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
@@ -111,10 +109,14 @@ export default function PageHeader(props: HeaderPropsIF) {
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
-    useUrlParamsNew(chainId, getTokenByAddress);
 
-    const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const paramsSlug = formSlugForPairParams(
+        tradeData.tokenA.chainId,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    );
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
@@ -123,20 +125,10 @@ export default function PageHeader(props: HeaderPropsIF) {
     const quoteAddressInRtk = tradeData.quoteToken.address;
 
     useEffect(() => {
-        if (
-            baseAddr &&
-            baseAddressInRtk &&
-            quoteAddr &&
-            quoteAddressInRtk &&
-            baseAddr.toLowerCase() === baseAddressInRtk.toLowerCase() &&
-            quoteAddr.toLowerCase() === quoteAddressInRtk.toLowerCase()
-        ) {
-            recentPools.addPool({
-                baseToken: tradeData.baseToken,
-                quoteToken: tradeData.quoteToken,
-            });
+        if (baseAddressInRtk && quoteAddressInRtk) {
+            recentPools.addPool(tradeData.baseToken, tradeData.quoteToken);
         }
-    }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
+    }, [baseAddressInRtk, quoteAddressInRtk]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -198,18 +190,18 @@ export default function PageHeader(props: HeaderPropsIF) {
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
     const tradeDestination = location.pathname.includes('trade/market')
-        ? '/trade/market'
+        ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit'
+        ? '/trade/limit/'
         : location.pathname.includes('trade/edit')
-        ? '/trade/edit'
-        : '/trade/market';
+        ? '/trade/edit/'
+        : '/trade/market/';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
         {
             title: t('common:swapTitle'),
-            destination: '/swap' + paramsSlug,
+            destination: '/swap/' + paramsSlug,
             shouldDisplay: true,
         },
         {
@@ -224,7 +216,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         },
         {
             title: t('common:poolTitle'),
-            destination: '/trade/range' + paramsSlug,
+            destination: '/trade/range/' + paramsSlug,
             shouldDisplay: true,
         },
         {
@@ -307,6 +299,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         </AnimateSharedLayout>
     );
 
+    const { switchNetwork } = useSwitchNetwork();
+
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [showNotificationTable, setShowNotificationTable] = useState(false);
 
@@ -328,13 +322,17 @@ export default function PageHeader(props: HeaderPropsIF) {
                             </div>
                         ) : null}
                     </div>
-                    <NetworkSelector chainId={chainId} />
+                    <NetworkSelector
+                        chainId={chainId}
+                        switchNetwork={switchNetwork}
+                    />
                     {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}
                         lastBlockNumber={lastBlockNumber}
+                        chainId={chainId}
                     />
                 </div>
             </div>

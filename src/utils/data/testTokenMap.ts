@@ -19,4 +19,12 @@ export const testTokenMap = new Map([
         '0xc04b0d3107736c32e19f1c62b2af67be61d63a05_0x5', // 'WBTC' on Goerli
         '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599_0x1', // 'WBTC' on Mainnet
     ],
+    [
+        '0x0000000000000000000000000000000000000000_0x66eed', // ETH on Arb Goerli
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
+    ],
+    [
+        '0xc944b73fba33a773a4a07340333a3184a70af1ae_0x66eed', // USDC on Arg Goerli
+        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
+    ],
 ]);

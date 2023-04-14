@@ -4,19 +4,19 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { ambientChains } from '../../../../utils/data/chains';
-import { useSwitchNetwork } from 'wagmi';
+import { getSupportedChainIds } from '../../../../utils/data/chains';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
+    switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
 
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
-    const { chainId } = props;
+    const { chainId, switchNetwork } = props;
 
-    const { switchNetwork } = useSwitchNetwork();
-
-    const chains = ambientChains.map((chain: string) => lookupChain(chain));
+    const chains = getSupportedChainIds().map((chain: string) =>
+        lookupChain(chain),
+    );
 
     // TODO (#1435): Clicking the currently-connected network in the network selector reloads the page
 
@@ -41,7 +41,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     tabIndex={0}
                 >
                     <div className={styles.chain_name_status} tabIndex={0}>
-                        {lookupChain(chainId).displayName}
+                        {chain.displayName}
                         {chain.chainId == chainId && (
                             <FaDotCircle color='#CDC1FF' size={10} />
                         )}

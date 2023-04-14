@@ -50,7 +50,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
-import { topPoolsMethodsIF } from '../../hooks/useTopPools';
+import { topPoolIF } from '../../hooks/useTopPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -64,6 +64,7 @@ interface propsIF {
         event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
     chainId: string;
+    poolId: number;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
@@ -92,7 +93,7 @@ interface propsIF {
     txsByUser: TransactionIF[];
     limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
-    topPools: topPoolsMethodsIF;
+    topPools: topPoolIF[];
 }
 
 export default function Sidebar(props: propsIF) {
@@ -102,6 +103,7 @@ export default function Sidebar(props: propsIF) {
         toggleSidebar,
         showSidebar,
         chainId,
+        poolId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         setCurrentPositionActive,
@@ -227,6 +229,7 @@ export default function Sidebar(props: propsIF) {
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
+                    poolId={poolId}
                 />
             ),
         },

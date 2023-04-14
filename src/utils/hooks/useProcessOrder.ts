@@ -5,13 +5,19 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
+
 import {
     concPosSlot,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+import sum from 'hash-sum';
+
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import moment from 'moment';
+import { getChainExplorer } from '../data/chains';
+import { getElapsedTime } from '../../App/functions/getElapsedTime';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -19,7 +25,7 @@ export const useProcessOrder = (
     isOnPortfolioPage = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = 'https://goerli.etherscan.io/';
+    const blockExplorer = getChainExplorer(limitOrder.chainId);
 
     // eslint-disable-next-line
     const lastBlockNumber = useAppSelector(
@@ -61,7 +67,7 @@ export const useProcessOrder = (
                   limitOrder.quote,
                   limitOrder.bidTick,
                   limitOrder.askTick,
-                  36000,
+                  limitOrder.poolIdx,
               ).toString()
             : '…';
 
@@ -333,7 +339,7 @@ export const useProcessOrder = (
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
-    }, [JSON.stringify(limitOrder), isDenomBase, isOnPortfolioPage]);
+    }, [sum(limitOrder), isDenomBase, isOnPortfolioPage]);
 
     const isBid = limitOrder.isBid;
 
@@ -542,6 +548,18 @@ export const useProcessOrder = (
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
     // ------------------------------------------------------------------
     const usdValue = usdValueTruncated ? usdValueTruncated : '…';
+    // ----------------------------------------------------------------------
+
+    const positionTime =
+        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+
+    // ----------------------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 15
@@ -618,5 +636,7 @@ export const useProcessOrder = (
         orderMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
         blockExplorer,
+
+        elapsedTimeString,
     };
 };

@@ -27,6 +27,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
+import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -37,8 +38,6 @@ interface propsIF {
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
@@ -58,8 +57,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -99,8 +96,6 @@ export default function CurrencyConverter(props: propsIF) {
         slippageTolerancePercentage,
         setPriceImpact,
         tokenPair,
-        tokensBank,
-        setImportedTokens,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -118,8 +113,6 @@ export default function CurrencyConverter(props: propsIF) {
         buyQtyString,
         setSellQtyString,
         setBuyQtyString,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
         gasPriceInGwei,
         isSwapCopied,
         verifyToken,
@@ -165,12 +158,20 @@ export default function CurrencyConverter(props: propsIF) {
     useEffect(() => {
         setTokenALocal(tradeData.tokenA.address);
         setTokenASymbolLocal(tradeData.tokenA.symbol);
-    }, [tradeData.tokenA.address + tradeData.tokenA.symbol]);
+    }, [
+        tradeData.tokenA.address,
+        tradeData.tokenA.symbol,
+        tradeData.tokenA.chainId,
+    ]);
 
     useEffect(() => {
         setTokenBLocal(tradeData.tokenB.address);
         setTokenBSymbolLocal(tradeData.tokenB.symbol);
-    }, [tradeData.tokenB.address + tradeData.tokenB.symbol]);
+    }, [
+        tradeData.tokenB.address,
+        tradeData.tokenB.symbol,
+        tradeData.tokenB.chainId,
+    ]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
@@ -243,23 +244,24 @@ export default function CurrencyConverter(props: propsIF) {
     const tokenBSurplusPlusTokenBQtyNum =
         parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
 
-    const linkPath = useMemo(() => {
+    const linkPathReversed = useMemo(() => {
         let locationSlug = '';
         if (pathname.startsWith('/trade/market')) {
-            locationSlug = '/trade/market';
+            locationSlug = '/trade/market/';
         } else if (pathname.startsWith('/trade/limit')) {
-            locationSlug = '/trade/limit';
+            locationSlug = '/trade/limit/';
         } else if (pathname.startsWith('/trade/range')) {
-            locationSlug = '/trade/range';
+            locationSlug = '/trade/range/';
         } else if (pathname.startsWith('/swap')) {
-            locationSlug = '/swap';
+            locationSlug = '/swap/';
         }
         return (
             locationSlug +
-            '/chain=0x5&tokenA=' +
-            tokenPair.dataTokenB.address +
-            '&tokenB=' +
-            tokenPair.dataTokenA.address
+            formSlugForPairParams(
+                tokenPair.dataTokenA.chainId,
+                tokenPair.dataTokenB,
+                tokenPair.dataTokenA,
+            )
         );
     }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
 
@@ -289,7 +291,7 @@ export default function CurrencyConverter(props: propsIF) {
             setTokenASymbolLocal(tokenBSymbolLocal);
             setTokenBSymbolLocal(tokenASymbolLocal);
 
-            navigate(linkPath);
+            navigate(linkPathReversed);
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tokenBQtyLocal);
 
@@ -383,7 +385,7 @@ export default function CurrencyConverter(props: propsIF) {
                 ) {
                     setSwapAllowed(false);
                     setSwapButtonErrorMessage(
-                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setSwapAllowed(true);
@@ -704,8 +706,6 @@ export default function CurrencyConverter(props: propsIF) {
                 setBuyQtyString={setBuyQtyString}
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
@@ -736,10 +736,6 @@ export default function CurrencyConverter(props: propsIF) {
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={
-                    indicateActiveTokenListsChanged
-                }
                 gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
@@ -777,8 +773,6 @@ export default function CurrencyConverter(props: propsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     tokenBQtyLocal={tokenBQtyLocal}
                     tokenPair={tokenPair}
-                    tokensBank={tokensBank}
-                    setImportedTokens={setImportedTokens}
                     chainId={chainId}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
@@ -803,10 +797,6 @@ export default function CurrencyConverter(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     reverseTokens={reverseTokens}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={
-                        indicateActiveTokenListsChanged
-                    }
                     gasPriceInGwei={gasPriceInGwei}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}

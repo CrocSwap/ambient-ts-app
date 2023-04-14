@@ -9,6 +9,8 @@
 .apr {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 4px;
     margin: 10px 0;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);

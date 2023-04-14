@@ -48,6 +48,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         middleDisplayPrice,
         endDisplayPrice,
         bypassConfirm,
+        tokenAInputQty,
+        tokenBInputQty,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -89,19 +91,27 @@ export default function ConfirmLimitModal(props: propsIF) {
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const sellTokenQty = (
-        document.getElementById('sell-limit-quantity') as HTMLInputElement
-    )?.value;
-    const buyTokenQty = (
-        document.getElementById('buy-limit-quantity') as HTMLInputElement
-    )?.value;
+    const localeSellString =
+        parseFloat(tokenAInputQty) > 999
+            ? parseFloat(tokenAInputQty).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : tokenAInputQty;
+    const localeBuyString =
+        parseFloat(tokenBInputQty) > 999
+            ? parseFloat(tokenBInputQty).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : tokenBInputQty;
 
     const sellTokenData = tokenPair.dataTokenA;
     const buyTokenData = tokenPair.dataTokenB;
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
-            <h2>{buyTokenQty}</h2>
+            <h2>{localeBuyString}</h2>
 
             <div className={styles.logo_display}>
                 {buyTokenData.logoURI ? (
@@ -118,7 +128,7 @@ export default function ConfirmLimitModal(props: propsIF) {
     );
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
-            <h2>{sellTokenQty}</h2>
+            <h2>{localeSellString}</h2>
 
             <div className={styles.logo_display}>
                 {sellTokenData.logoURI ? (
@@ -225,7 +235,8 @@ export default function ConfirmLimitModal(props: propsIF) {
                 </div>
             </div>
             <div className={styles.confSwap_detail_note}>
-                {`${tokenPair.dataTokenB.symbol} will be available for withdrawl after the order is filled. ${tokenPair.dataTokenA.symbol} collateral can be withdrawn at any time before the limit order is filled.`}
+                {`${tokenPair.dataTokenB.symbol} will be available for withdrawal after the limit order is filled. 
+                ${tokenPair.dataTokenA.symbol} can be withdrawn at any time before fill completion.`}
             </div>
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
@@ -237,7 +248,7 @@ export default function ConfirmLimitModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}.`}
+            content={` Submitting Limit Order to Swap ${localeSellString} ${sellTokenData.symbol} for ${localeBuyString} ${buyTokenData.symbol}.`}
         />
     );
 
@@ -255,6 +266,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
             tokenBImage={buyTokenData.logoURI}
+            chainId={buyTokenData.chainId}
             limit
         />
     );

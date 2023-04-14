@@ -4,15 +4,17 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
-
+import { getChainExplorer } from '../data/chains';
+import moment from 'moment';
+import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
+import { getElapsedTime } from '../../App/functions/getElapsedTime';
 export const useProcessTransaction = (
     tx: TransactionIF,
     account: string,
     isOnPortfolioPage = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = 'https://goerli.etherscan.io/';
-    // const blockExplorer = chainData?.blockExplorer;
+    const blockExplorer = getChainExplorer(tx.chainId);
 
     const isDenomBase = tradeData.isDenomBase;
 
@@ -462,6 +464,8 @@ export const useProcessTransaction = (
     //         ? 'Remove'
     //         : 'Add';
 
+    const sideTypeStyle = `${sideType}_style`;
+
     const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
     const totalFlowUSD = tx.totalFlowUSD;
@@ -590,6 +594,57 @@ export const useProcessTransaction = (
         ? 'You'
         : ensNameOrOwnerTruncated;
 
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+        tx.time * 1000,
+        'seconds',
+    );
+
+    const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+
+    // -------------------------------------------
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? quoteTokenCharacter
+            : baseTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    const priceCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    // -----------------------------------------------
+    const valueArrows = tx.entityType !== 'liqchange';
+
+    const positiveArrow = '↑';
+    const negativeArrow = '↓';
+
+    const isSellQtyZero =
+        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+    const isBuyQtyZero =
+        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+    const isOrderRemove =
+        tx.entityType === 'limitOrder' && sideType === 'remove';
+
+    const positiveDisplayStyle =
+        baseQuantityDisplayShort === '0' ||
+        !valueArrows ||
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
+        tx.source === 'manual'
+            ? styles.light_grey
+            : styles.positive_value;
+    const negativeDisplayStyle =
+        quoteQuantityDisplayShort === '0' ||
+        !valueArrows ||
+        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
+            ? styles.light_grey
+            : styles.negative_value;
+
     // if (!tx) return null;
     return {
         // wallet and id data
@@ -611,10 +666,21 @@ export const useProcessTransaction = (
         sideType,
         transactionTypeSide,
         type,
+        sideTypeStyle,
+
+        sideCharacter,
+        priceCharacter,
+        isBuy,
+        positiveDisplayStyle,
+        negativeDisplayStyle,
 
         // Value data
         usdValue,
         txUsdValueLocaleString,
+
+        positiveArrow,
+        negativeArrow,
+        valueArrows,
 
         // Token Qty data
         baseTokenCharacter,
@@ -644,5 +710,8 @@ export const useProcessTransaction = (
         // transaction matches select token data
         transactionMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
+
+        //
+        elapsedTimeString,
     } as const;
 };

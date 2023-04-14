@@ -12,17 +12,12 @@ export const useSidebar = (
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
     const [sidebar, setSidebar] = useState<string>(
-        JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open',
+        localStorage.getItem('sidebarOpen') || 'open',
     );
 
     // hook to update local storage when the user toggles the sidebar
     useEffect(() => {
-        // get data object 'user' from local storage
-        const user = JSON.parse(localStorage.getItem('user') as string);
-        // update value 'sidebar' on user object to match local value
-        user.sidebar = sidebar;
-        // send updated data to local storage
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('sidebarOpen', sidebar);
     }, [sidebar]);
 
     // fn to open the sidebar

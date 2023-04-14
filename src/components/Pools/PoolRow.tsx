@@ -65,13 +65,13 @@ export default function PoolRow(props: propsIF) {
                   { address: poolData.token0.address } as TokenIF,
                   { address: poolData.token1.address } as TokenIF,
                   '',
-                  36000,
+                  pool.poolId,
               )
             : favePools.add(
                   { address: poolData.token0.address } as TokenIF,
                   { address: poolData.token1.address } as TokenIF,
                   '',
-                  36000,
+                  pool.poolId,
               );
         event.stopPropagation();
     };
