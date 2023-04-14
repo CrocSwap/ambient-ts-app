@@ -684,10 +684,10 @@ export default function App() {
 
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
+    const sessionReceipts = receiptData?.sessionReceipts;
+
     const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(receiptData.sessionReceipts[0])
-            : null;
+        sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
@@ -914,7 +914,13 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [crocEnv, baseTokenAddress, quoteTokenAddress, chainData.chainId]);
+    }, [
+        crocEnv,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainData.chainId,
+        sessionReceipts.length,
+    ]);
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -3489,7 +3495,6 @@ export default function App() {
                                     gasPriceInGwei={gasPriceInGwei}
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
-                                    tokenPair={tokenPair}
                                     openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
