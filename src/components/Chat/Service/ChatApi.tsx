@@ -19,7 +19,7 @@ const useChatApi = () => {
             const response = await fetch(host + '/status', {
                 method: 'GET',
                 signal: controller.signal,
-            }).then((res) => res.json());
+            });
             return response.status === 200;
         } catch (error) {
             console.error(error);
