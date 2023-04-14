@@ -133,7 +133,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         base: tradeData.baseToken,
         quote: tradeData.quoteToken,
         chainId: chainId,
-        poolId: 36000,
+        poolId: chainData.poolIndex,
     };
 
     const isButtonFavorited = favePools.check(
@@ -149,13 +149,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                   tradeData.baseToken,
                   tradeData.quoteToken,
                   chainId,
-                  36000,
+                  chainData.poolIndex,
               )
             : favePools.add(
                   tradeData.quoteToken,
                   tradeData.baseToken,
                   chainId,
-                  36000,
+                  chainData.poolIndex,
               );
         IS_LOCAL_ENV && console.debug(tradeData);
     }

@@ -67,7 +67,7 @@ export const useProcessOrder = (
                   limitOrder.quote,
                   limitOrder.bidTick,
                   limitOrder.askTick,
-                  36000,
+                  limitOrder.poolIdx,
               ).toString()
             : '…';
 

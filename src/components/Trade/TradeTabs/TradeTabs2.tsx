@@ -507,6 +507,7 @@ export default function TradeTabs2(props: propsIF) {
 
     const TradeChartsTokenInfoProps = {
         chainId: chainId,
+        poolId: chainData.poolIndex,
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,
