@@ -654,18 +654,21 @@ export default function Transactions(props: propsIF) {
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable && !isAccountView && (
-                    <div className={styles.view_more_container}>
-                        <button
-                            className={styles.view_more_button}
-                            onClick={() => {
-                                setExpandTradeTable(true);
-                            }}
-                        >
-                            View More
-                        </button>
-                    </div>
-                )
+                !expandTradeTable &&
+                    !isAccountView &&
+                    sortedRowItemContent.length >
+                        NUM_TRANSACTIONS_WHEN_COLLAPSED && (
+                        <div className={styles.view_more_container}>
+                            <button
+                                className={styles.view_more_button}
+                                onClick={() => {
+                                    setExpandTradeTable(true);
+                                }}
+                            >
+                                View More
+                            </button>
+                        </div>
+                    )
             }
         </div>
     );

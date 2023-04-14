@@ -574,18 +574,20 @@ export default function Ranges(props: propsIF) {
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable && !props.isOnPortfolioPage && (
-                    <div className={styles.view_more_container}>
-                        <button
-                            className={styles.view_more_button}
-                            onClick={() => {
-                                setExpandTradeTable(true);
-                            }}
-                        >
-                            View More
-                        </button>
-                    </div>
-                )
+                !expandTradeTable &&
+                    !props.isOnPortfolioPage &&
+                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                        <div className={styles.view_more_container}>
+                            <button
+                                className={styles.view_more_button}
+                                onClick={() => {
+                                    setExpandTradeTable(true);
+                                }}
+                            >
+                                View More
+                            </button>
+                        </div>
+                    )
             }
         </div>
     ) : (
