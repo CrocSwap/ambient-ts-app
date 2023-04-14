@@ -19,6 +19,7 @@ import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import NotFound from '../../pages/NotFound/NotFound';
 import { topPoolIF } from '../../App/hooks/useTopPools';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -117,16 +118,15 @@ export default function ChatPanel(props: propsIF) {
     }
 
     useEffect(() => {
-        // Check if the chat server is reachable and has a stable db connection.
-        getStatus().then((isChatUp) => {
-            if (isChatUp) {
-                setIsChatEnabled(true);
-            } else {
-                console.warn('Chat health check failed, disabling...');
-                setIsChatEnabled(false);
-            }
-        });
-    }, []);
+        // Check if the chat server is reachable and has a stable db connection every 10 seconds.
+        const interval = setInterval(() => {
+            getStatus().then((isChatUp) => {
+                IS_LOCAL_ENV && console.debug('chat status check:', isChatUp);
+                setIsChatEnabled(isChatUp);
+            });
+        }, 10000);
+        return () => clearInterval(interval);
+    }, [isChatEnabled]);
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
