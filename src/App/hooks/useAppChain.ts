@@ -80,6 +80,8 @@ export const useAppChain = (
             } else {
                 setIsChainSupported(false);
             }
+        } else if (chainId && chainId === currentChain) {
+            setIsChainSupported(true);
         }
     }, [chainId, currentChain, isUserLoggedIn]);
 
