@@ -51,7 +51,6 @@ export const useAcknowledgementSwap = (
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
         console.clear();
-        console.log('fired fn ackAsNeeded');
         needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
         needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
     };
