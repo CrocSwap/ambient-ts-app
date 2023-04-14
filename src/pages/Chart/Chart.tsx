@@ -3394,6 +3394,7 @@ export default function Chart(props: propsIF) {
         reset,
         sellOrderStyle,
         checkLimitOrder,
+        location,
     ]);
 
     function createRectLabel(
