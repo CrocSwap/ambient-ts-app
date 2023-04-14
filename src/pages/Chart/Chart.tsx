@@ -228,13 +228,10 @@ export default function Chart(props: propsIF) {
 
     const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
-    const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } =
-        props;
 
     const parsedChartData = props.candleData;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
-    const d3PlotArea = useRef<HTMLInputElement | null>(null);
     const d3CanvasCandle = useRef<HTMLInputElement | null>(null);
     const d3CanvasBar = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqBid = useRef<HTMLInputElement | null>(null);
@@ -367,7 +364,6 @@ export default function Chart(props: propsIF) {
         { x: 0, y: 0 },
     ]);
     const [currentPriceData] = useState([{ value: -1 }]);
-    const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
         activeLiq: 0,
         liqPrices: 0,
@@ -873,60 +869,13 @@ export default function Chart(props: propsIF) {
             location.pathname.includes('range') ||
             location.pathname.includes('reposition')
         ) {
-            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                d3.select(d3PlotArea.current)
-                    .select('.targets')
-                    .style('visibility', 'visible');
-                d3.select(d3PlotArea.current)
-                    .select('.targets')
-                    .selectAll('.horizontal')
-                    .style('visibility', 'visible');
-
-                d3.select(d3PlotArea.current)
-                    .select('.horizontalBand')
-                    .style('visibility', 'visible');
-            }
-
             showHighlightedLines();
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('.annotation-line')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget)
-                        .select('.detector')
-                        .style('cursor', 'row-resize');
-                });
 
-            d3.select(d3PlotArea.current)
-                .select('.limit')
-                .style('visibility', 'hidden');
             d3.select(d3Container.current)
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'hidden');
         } else if (location.pathname.includes('/limit')) {
-            d3.select(d3PlotArea.current)
-                .select('.limit')
-                .style('visibility', 'visible');
-
-            d3.select(d3PlotArea.current)
-                .select('.limit')
-                .select('.horizontal')
-                .style('visibility', 'visible');
-            d3.select(d3PlotArea.current)
-                .select('.limit')
-                .select('.annotation-line')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget)
-                        .select('.detector')
-                        .style('cursor', 'row-resize');
-                });
-
-            d3.select(d3PlotArea.current)
-                .select('.horizontalBand')
-                .style('visibility', 'hidden');
             hideHighlightedLines();
 
             d3.select(d3CanvasRangeLine.current)
@@ -939,10 +888,6 @@ export default function Chart(props: propsIF) {
             d3.select(d3Container.current)
                 .select('.limit')
                 .select('.horizontal')
-                .style('visibility', 'hidden');
-
-            d3.select(d3PlotArea.current)
-                .select('.horizontalBand')
                 .style('visibility', 'hidden');
 
             hideHighlightedLines();
@@ -1625,11 +1570,6 @@ export default function Chart(props: propsIF) {
                                         ];
 
                                         scaleData?.yScale.domain(domain);
-
-                                        scaleData?.yScaleIndicator.range([
-                                            event.sourceEvent.offsetY,
-                                            scaleData?.yScale(poolPriceDisplay),
-                                        ]);
                                     }
 
                                     const topPlacement =
@@ -3470,9 +3410,9 @@ export default function Chart(props: propsIF) {
 
         context.stroke();
         context.textAlign = 'center';
-        context.textBaseline = 'top';
-        context.fillStyle = '#bdbdbd';
-        context.font = '11.5px Arial';
+        context.textBaseline = 'middle';
+        context.fillStyle = 'rgba(189,189,189,0.8)';
+        context.font = '11.425px Arial';
 
         yAxis.tickValues().forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
@@ -3630,8 +3570,8 @@ export default function Chart(props: propsIF) {
                     let formatValue = undefined;
                     context.textAlign = 'center';
                     context.textBaseline = 'top';
-                    context.fillStyle = '#bdbdbd';
-                    context.font = '50 11.5px Arial';
+                    context.fillStyle = 'rgba(189,189,189,0.8)';
+                    context.font = '50 11.425px Arial';
                     context.filter = ' blur(0px)';
 
                     if (
@@ -4475,28 +4415,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            const indicatorLine = d3fc
-                .annotationSvgLine()
-                .orient('vertical')
-                .value((d: any) => d.x)
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScaleIndicator)
-                .label('');
-
-            indicatorLine.decorate((selection: any) => {
-                selection.enter().select('line').attr('class', 'indicatorLine');
-                selection
-                    .enter()
-                    .append('line')
-                    .attr('stroke-width', 1)
-                    .style('pointer-events', 'all');
-                selection.enter().select('g.top-handle').remove();
-            });
-        }
-    }, [scaleData]);
-
-    useEffect(() => {
-        if (scaleData !== undefined) {
             const crosshairHorizontalCanvas = d3fc
                 .annotationCanvasLine()
                 .orient('vertical')
@@ -4575,7 +4493,34 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     candlestick(parsedChartData?.chartData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.yScale.range([event.detail.height, 0]);
+
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 9,
+                    ]);
+
+                    if (liquidityDepthScale.domain()[1] <= 50) {
+                        liquidityDepthScale.range([
+                            event.detail.width,
+                            event.detail.width * 0.95,
+                        ]);
+                    } else {
+                        liquidityDepthScale.range([
+                            event.detail.width,
+                            event.detail.width * 0.9,
+                        ]);
+                    }
+
+                    scaleData?.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 10,
+                    ]);
+
+                    scaleData?.xScaleCopy.range([0, event.detail.width]);
+
                     candlestick.context(ctx);
                 });
         }
@@ -5817,16 +5762,13 @@ export default function Chart(props: propsIF) {
             parsedChartData !== undefined &&
             scaleData !== undefined &&
             zoomUtils !== undefined &&
-            liqTooltip !== undefined &&
-            liquidityScale !== undefined
+            liqTooltip !== undefined
         ) {
             drawChart(
                 parsedChartData.chartData,
                 scaleData,
                 zoomUtils,
                 selectedDate,
-                liquidityScale,
-                liquidityDepthScale,
             );
         }
     }, [
@@ -5835,8 +5777,6 @@ export default function Chart(props: propsIF) {
         denomInBase,
         liqTooltip,
         selectedDate,
-        liquidityScale,
-        liquidityDepthScale,
         showSidebar,
         liqMode,
     ]);
@@ -6032,19 +5972,9 @@ export default function Chart(props: propsIF) {
             .select('canvas') as any;
         const ctx = canvas.node().getContext('2d');
 
-        indicatorLineData[0] = {
-            x: scaleData?.xScale.invert(event.offsetX),
-            y: scaleData?.yScale.invert(event.offsetY),
-        };
-
         currentPriceData[0] = {
             value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
         };
-
-        scaleData?.yScaleIndicator.range([
-            event.offsetY,
-            scaleData?.yScale(poolPriceDisplay),
-        ]);
 
         const filtered =
             liquidityData?.liqBidData.length > 1
@@ -6127,19 +6057,9 @@ export default function Chart(props: propsIF) {
         minBoudnary: string,
         maxBoudnary: string,
     ) => {
-        indicatorLineData[0] = {
-            x: scaleData?.xScale.invert(event.offsetX),
-            y: scaleData?.yScale.invert(event.offsetY),
-        };
-
         currentPriceData[0] = {
             value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
         };
-
-        scaleData?.yScaleIndicator.range([
-            event.offsetY,
-            scaleData?.yScale(poolPriceDisplay),
-        ]);
 
         const filtered =
             liquidityData?.liqAskData.length > 1
@@ -6327,13 +6247,13 @@ export default function Chart(props: propsIF) {
             newData.filter((target: any) => target.name === 'tvl')[0].value =
                 findTvlNearest(point);
 
-            newData.filter(
-                (target: any) => target.name === 'feeRate',
-            )[0].value = parsedChartData?.feeChartData.find(
-                (item: any) => item.time.getTime() === nearest?.date.getTime(),
-            )?.value;
+            // newData.filter(
+            //     (target: any) => target.name === 'feeRate',
+            // )[0].value = parsedChartData?.feeChartData.find(
+            //     (item: any) => item.time.getTime() === nearest?.date.getTime(),
+            // )?.value;
 
-            return newData;
+            return prevState;
         });
 
         const returnXdata =
@@ -6385,51 +6305,9 @@ export default function Chart(props: propsIF) {
 
     // Draw Chart
     const drawChart = useCallback(
-        (
-            chartData: any,
-            scaleData: any,
-            zoomUtils: any,
-            selectedDate: any,
-            liquidityScale: any,
-            liquidityDepthScale: any,
-        ) => {
+        (chartData: any, scaleData: any, zoomUtils: any, selectedDate: any) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-                d3.select(d3PlotArea.current).on(
-                    'measure',
-                    function (event: any) {
-                        scaleData?.xScale.range([0, event.detail.width]);
-                        scaleData?.yScale.range([event.detail.height, 0]);
-
-                        scaleData?.xScaleIndicator.range([
-                            (event.detail.width / 10) * 8,
-                            event.detail.width,
-                        ]);
-
-                        liquidityScale.range([
-                            event.detail.width,
-                            (event.detail.width / 10) * 9,
-                        ]);
-
-                        if (liquidityDepthScale.domain()[1] <= 50) {
-                            liquidityDepthScale.range([
-                                event.detail.width,
-                                event.detail.width * 0.95,
-                            ]);
-                        } else {
-                            liquidityDepthScale.range([
-                                event.detail.width,
-                                event.detail.width * 0.9,
-                            ]);
-                        }
-
-                        scaleData?.volumeScale.range([
-                            event.detail.height,
-                            event.detail.height - event.detail.height / 10,
-                        ]);
-                    },
-                );
 
                 const onClickCanvas = (event: any) => {
                     const {
@@ -6496,12 +6374,6 @@ export default function Chart(props: propsIF) {
                     'click',
                     (event: any) => {
                         onClickCanvas(event);
-                    },
-                );
-                d3.select(d3PlotArea.current).on(
-                    'measure.range',
-                    function (event: any) {
-                        scaleData?.xScaleCopy.range([0, event.detail.width]);
                     },
                 );
 
@@ -6772,27 +6644,6 @@ export default function Chart(props: propsIF) {
         }
     }, [liqTooltipSelectedLiqBar, liqMode, selectedLiq]);
 
-    // Color Picker
-    useEffect(() => {
-        d3.select(d3PlotArea.current)
-            .select('.candle')
-            .selectAll('.up')
-            .style('fill', upBodyColor);
-        d3.select(d3PlotArea.current)
-            .select('.candle')
-            .selectAll('.down')
-            .style('fill', downBodyColor);
-        d3.select(d3PlotArea.current)
-            .select('.candle')
-            .selectAll('.up')
-            .style('stroke', upBorderColor);
-        d3.select(d3PlotArea.current)
-            .select('.candle')
-            .selectAll('.down')
-            .style('stroke', downBorderColor);
-        render();
-    }, [upBodyColor, downBodyColor, upBorderColor, downBorderColor]);
-
     // // Candle transactions
     useEffect(() => {
         if (selectedDate !== undefined) {
@@ -6978,38 +6829,6 @@ export default function Chart(props: propsIF) {
         });
     };
 
-    useEffect(() => {
-        if (d3PlotArea) {
-            const myDiv = d3.select(d3PlotArea.current) as any;
-
-            const resizeObserver = new ResizeObserver((entries) => {
-                const width = entries[0].contentRect.width;
-                const height = entries[0].contentRect.height;
-                if (height && width) {
-                    scaleData?.xScale.range([0, width]);
-                    scaleData?.yScale.range([height, 0]);
-
-                    scaleData?.xScaleIndicator.range([(width / 10) * 8, width]);
-
-                    liquidityScale.range([width, (width / 10) * 9]);
-
-                    liquidityDepthScale.range([width, (width / 10) * 9]);
-
-                    scaleData?.volumeScale.range([
-                        height,
-                        height - height / 10,
-                    ]);
-                }
-
-                render();
-            });
-
-            resizeObserver.observe(myDiv.node());
-
-            return () => resizeObserver.unobserve(myDiv.node());
-        }
-    }, []);
-
     return (
         <div
             ref={d3Container}
@@ -7084,10 +6903,6 @@ export default function Chart(props: propsIF) {
                             ref={d3CanvasNoGoZone}
                             className='no-go-zone-canvas'
                         ></d3fc-canvas>
-                        <d3fc-svg
-                            ref={d3PlotArea}
-                            className='plot-area'
-                        ></d3fc-svg>
 
                         <d3fc-canvas
                             ref={d3CanvasMarketLine}
@@ -7103,7 +6918,7 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
 
                         <d3fc-canvas
-                            className='y-axis-svg'
+                            className='y-axis-canvas'
                             ref={d3Yaxis}
                             style={{
                                 width: yAxisWidth,
