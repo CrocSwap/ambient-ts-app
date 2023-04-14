@@ -3472,7 +3472,7 @@ export default function Chart(props: propsIF) {
         context.textAlign = 'center';
         context.textBaseline = 'top';
         context.fillStyle = '#bdbdbd';
-        context.font = '11.5px Arial';
+        context.font = '11.50px Arial';
 
         yAxis.tickValues().forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;

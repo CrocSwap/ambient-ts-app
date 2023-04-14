@@ -311,34 +311,12 @@ export default function TradeCandleStickChart(props: propsIF) {
         }
     };
 
-    // const standardDeviation = (arr: any, usePopulation = false) => {
-    //     const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
-    //     return Math.sqrt(
-    //         arr
-    //             .reduce((acc: any, val: any) => acc.concat((val - mean) ** 2), [])
-    //             .reduce((acc: any, val: any) => acc + val, 0) /
-    //             (arr.length - (usePopulation ? 0 : 1)),
-    //     );
-    // };
-
     // volume data
 
     const volumeData = useMemo(() => {
         const volumeData = parsedChartData?.volumeChartData;
         const volumeTempData: any = [];
         if (volumeData) {
-            // const volumeLogScale = d3
-            //     .scaleLog()
-            //     .domain([
-            //         d3.min(volumeData, function (d: any) {
-            //             return d.value;
-            //         }),
-            //         d3.max(parsedChartData?.volumeChartData, function (d: any) {
-            //             return d.value;
-            //         }),
-            //     ])
-            //     .range([30, 1000]);
-
             volumeData.map((data: any) => {
                 volumeTempData.push({
                     time: data.time,
