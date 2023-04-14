@@ -3412,7 +3412,7 @@ export default function Chart(props: propsIF) {
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.fillStyle = 'rgba(189,189,189,0.8)';
-        context.font = '11.425px Arial';
+        context.font = '11.425px Lexend Deca';
 
         yAxis.tickValues().forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
@@ -3571,7 +3571,7 @@ export default function Chart(props: propsIF) {
                     context.textAlign = 'center';
                     context.textBaseline = 'top';
                     context.fillStyle = 'rgba(189,189,189,0.8)';
-                    context.font = '50 11.425px Arial';
+                    context.font = '50 11.425px Lexend Deca';
                     context.filter = ' blur(0px)';
 
                     if (
@@ -3608,7 +3608,7 @@ export default function Chart(props: propsIF) {
                             return item.date?.getTime() === d?.getTime();
                         })?.style
                     ) {
-                        context.font = '900 12px Arial';
+                        context.font = '900 12px Lexend Deca';
                     }
 
                     context.beginPath();
@@ -3621,7 +3621,7 @@ export default function Chart(props: propsIF) {
             });
 
             let dateCrosshair;
-            context.font = '800 13px Arial';
+            context.font = '800 13px Lexend Deca';
             if (parsedChartData?.period === 86400) {
                 dateCrosshair = moment(crosshairData[0].x)
                     .subtract(utcDiffHours, 'hours')

@@ -86,7 +86,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     d3YaxisContext.textAlign = 'left';
                     d3YaxisContext.textBaseline = 'middle';
                     d3YaxisContext.fillStyle = 'rgba(189,189,189,0.8)';
-                    d3YaxisContext.font = '11.425px Arial';
+                    d3YaxisContext.font = '11.425px Lexend Deca';
 
                     yAxis.tickValues().forEach((d: number) => {
                         d3YaxisContext.beginPath();
