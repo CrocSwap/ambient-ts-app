@@ -3062,7 +3062,7 @@ export default function Chart(props: propsIF) {
 
                     setghostLineValuesRange([]);
 
-                    setIsCrosshairActive('chart');
+                    setIsCrosshairActive('none');
                 });
 
             let oldLimitValue: number | undefined = undefined;
@@ -3229,7 +3229,7 @@ export default function Chart(props: propsIF) {
                         'default',
                     );
 
-                    setIsCrosshairActive('chart');
+                    setIsCrosshairActive('none');
                 });
 
             setDragRange(() => {
