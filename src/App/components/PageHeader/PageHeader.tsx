@@ -11,7 +11,7 @@ import headerLogo from '../../../assets/images/logos/header_logo.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
-import { useAccount, useEnsName } from 'wagmi';
+import { useAccount, useEnsName, useSwitchNetwork } from 'wagmi';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
@@ -299,6 +299,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         </AnimateSharedLayout>
     );
 
+    const { switchNetwork } = useSwitchNetwork();
+
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [showNotificationTable, setShowNotificationTable] = useState(false);
 
@@ -320,7 +322,10 @@ export default function PageHeader(props: HeaderPropsIF) {
                             </div>
                         ) : null}
                     </div>
-                    <NetworkSelector chainId={chainId} />
+                    <NetworkSelector
+                        chainId={chainId}
+                        switchNetwork={switchNetwork}
+                    />
                     {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
                     <NotificationCenter
