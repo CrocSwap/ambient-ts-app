@@ -3470,9 +3470,9 @@ export default function Chart(props: propsIF) {
 
         context.stroke();
         context.textAlign = 'center';
-        context.textBaseline = 'top';
-        context.fillStyle = '#bdbdbd';
-        context.font = '11.50px Arial';
+        context.textBaseline = 'middle';
+        context.fillStyle = 'rgba(189,189,189,0.8)';
+        context.font = '11.425px Arial';
 
         yAxis.tickValues().forEach((d: number) => {
             const digit = d.toString().split('.')[1]?.length;
@@ -3630,8 +3630,8 @@ export default function Chart(props: propsIF) {
                     let formatValue = undefined;
                     context.textAlign = 'center';
                     context.textBaseline = 'top';
-                    context.fillStyle = '#bdbdbd';
-                    context.font = '50 11.5px Arial';
+                    context.fillStyle = 'rgba(189,189,189,0.8)';
+                    context.font = '50 11.425px Arial';
                     context.filter = ' blur(0px)';
 
                     if (
@@ -6327,13 +6327,13 @@ export default function Chart(props: propsIF) {
             newData.filter((target: any) => target.name === 'tvl')[0].value =
                 findTvlNearest(point);
 
-            newData.filter(
-                (target: any) => target.name === 'feeRate',
-            )[0].value = parsedChartData?.feeChartData.find(
-                (item: any) => item.time.getTime() === nearest?.date.getTime(),
-            )?.value;
+            // newData.filter(
+            //     (target: any) => target.name === 'feeRate',
+            // )[0].value = parsedChartData?.feeChartData.find(
+            //     (item: any) => item.time.getTime() === nearest?.date.getTime(),
+            // )?.value;
 
-            return newData;
+            return prevState;
         });
 
         const returnXdata =
