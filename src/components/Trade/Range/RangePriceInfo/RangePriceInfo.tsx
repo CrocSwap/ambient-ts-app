@@ -89,37 +89,22 @@ export default function RangePriceInfo(props: propsIF) {
           })}%`
         : '…';
     // JSX frag for estimated APR of position
-    const aprTooltipTitle = (
-        <p
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer',
-            }}
-            onClick={() =>
-                openGlobalPopup(
-                    <AprExplanation />,
 
-                    'Estimated APR',
-                    'right',
-                )
-            }
-        >
-            Estimated APR <AiOutlineQuestionCircle size={14} />
-        </p>
-    );
     const apr = (
-        <DefaultTooltip
-            interactive
-            title={aprTooltipTitle}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            <span className={styles.apr}>{aprPercentageString}</span>
-        </DefaultTooltip>
+        <span className={styles.apr}>
+            {aprPercentageString}{' '}
+            <AiOutlineQuestionCircle
+                size={14}
+                onClick={() =>
+                    openGlobalPopup(
+                        <AprExplanation />,
+
+                        'Estimated APR',
+                        'right',
+                    )
+                }
+            />
+        </span>
     );
 
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<

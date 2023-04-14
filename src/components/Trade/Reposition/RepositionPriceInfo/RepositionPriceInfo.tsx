@@ -18,7 +18,6 @@ import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
-import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -174,40 +173,25 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             </div>
         );
     }
-    const aprTooltipTitle = (
-        <p
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                cursor: 'pointer',
-            }}
-            onClick={() =>
-                openGlobalPopup(
-                    <AprExplanation />,
 
-                    'Estimated APR',
-                    'right',
-                )
-            }
-        >
-            Estimated APR <AiOutlineQuestionCircle size={14} />
-        </p>
-    );
     const apr = (
-        <DefaultTooltip
-            interactive
-            title={aprTooltipTitle}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            <div className={styles.apr_display}>
-                <p>Est. APR </p>
-                <p>{aprPercentageString}</p>
-            </div>
-        </DefaultTooltip>
+        <div className={styles.apr_display}>
+            <p>
+                Est. APR{' '}
+                <AiOutlineQuestionCircle
+                    size={14}
+                    onClick={() =>
+                        openGlobalPopup(
+                            <AprExplanation />,
+
+                            'Estimated APR',
+                            'right',
+                        )
+                    }
+                />
+            </p>
+            <p>{aprPercentageString}</p>
+        </div>
     );
 
     const feesAndSlippageData = [
