@@ -1,6 +1,17 @@
 import { TokenIF } from '../interfaces/TokenIF';
 import { ChainIdType } from './chains';
 
+export const mainnetETH = {
+    address: '0x0000000000000000000000000000000000000000',
+    chainId: 1,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    name: 'Ether',
+    symbol: 'ETH',
+};
+
 export const mainnetDAI = {
     address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     chainId: 1,
@@ -148,6 +159,7 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
 }
 
 const DEFAULT_PAIRS_BY_CHAIN = {
+    '0x1': { A: mainnetUSDC, B: mainnetETH },
     '0x5': { A: goerliUSDC, B: goerliETH },
     '0x66eed': { A: arbGoerliUSDC, B: arbGoerliETH },
 };

@@ -42,7 +42,7 @@ export function getChainExplorer(chainId: string | number): string {
 // Used for testnets, so we can render real-world data in the testnet application
 export function mktDataChainId(chainId: string): string {
     if (chainId in MKT_DATA_CHAIN_MAP) {
-        return MKT_DATA_CHAIN_MAP[chainId as ChainIdType];
+        return MKT_DATA_CHAIN_MAP[chainId as TestnetChainIdTypes];
     } else {
         return chainId;
     }
@@ -61,4 +61,6 @@ const MKT_DATA_CHAIN_MAP = {
     '0x66eed': '0x1', // Arbitrum Testnet -> Mainnet
 };
 
-export type ChainIdType = '0x5' | '0x66eed';
+type TestnetChainIdTypes = '0x5' | '0x66eed';
+type ProdChainIdTypes = '0x1';
+export type ChainIdType = TestnetChainIdTypes | ProdChainIdTypes;
