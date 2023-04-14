@@ -16,6 +16,9 @@ import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import AprExplanation from '../../../Global/Informational/AprExplanation';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -63,6 +66,12 @@ interface IRepositionPriceInfoProps {
 
     currentMinPrice: string;
     currentMaxPrice: string;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -88,6 +97,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
         currentMinPrice,
         currentMaxPrice,
+        openGlobalPopup,
         // isPairStable
     } = props;
 
@@ -164,12 +174,40 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
             </div>
         );
     }
+    const aprTooltipTitle = (
+        <p
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
+            onClick={() =>
+                openGlobalPopup(
+                    <AprExplanation />,
 
+                    'Estimated APR',
+                    'right',
+                )
+            }
+        >
+            Estimated APR <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
     const apr = (
-        <div className={styles.apr_display}>
-            <p>Est. APR </p>
-            <p>{aprPercentageString}</p>
-        </div>
+        <DefaultTooltip
+            interactive
+            title={aprTooltipTitle}
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div className={styles.apr_display}>
+                <p>Est. APR </p>
+                <p>{aprPercentageString}</p>
+            </div>
+        </DefaultTooltip>
     );
 
     const feesAndSlippageData = [

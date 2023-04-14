@@ -1252,6 +1252,7 @@ export default function Range(props: propsIF) {
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
         isAmbient: isAmbient,
+        openGlobalPopup,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(

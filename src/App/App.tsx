@@ -3316,6 +3316,7 @@ export default function App() {
                                             range: bypassConfirmRange,
                                             repo: bypassConfirmRepo,
                                         }}
+                                        openGlobalPopup={openGlobalPopup}
                                     />
                                 }
                             />
