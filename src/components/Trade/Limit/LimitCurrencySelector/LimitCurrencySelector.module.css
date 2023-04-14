@@ -52,6 +52,7 @@
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    padding-top: 1.5px;
 }
 
 .ambient_logo {
@@ -59,10 +60,11 @@
     line-height: var(--body-lh);
     padding-left: 4px;
     padding-right: 5px;
+    padding-top: 2.5px;
 }
 
 .enabled_logo img {
-    filter: contrast(1.0) brightness(1.0) saturate(1.0); 
+    filter: contrast(1) brightness(1) saturate(1);
 }
 
 .swapbox_top {
@@ -98,12 +100,12 @@
     border: none;
 }
 
-.token_select:hover{
-    background: var(--dark3)
+.token_select:hover {
+    background: var(--dark3);
 }
 
-.token_select:focus-visible{
-    border: 1px solid var(--text-grey-white)
+.token_select:focus-visible {
+    border: 1px solid var(--text-grey-white);
 }
 
 .token_select img {
