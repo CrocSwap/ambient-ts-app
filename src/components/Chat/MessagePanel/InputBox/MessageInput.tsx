@@ -200,13 +200,13 @@ export default function MessageInput(
 
                 <BsEmojiSmileFill
                     className={styles.svgButton}
-                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                    style={{ cursor: !isUserLoggedIn ? 'none' : 'pointer' }}
                     onClick={handleEmojiPickerHideShow}
                 />
                 <div
                     className={styles.send_message_button}
                     onClick={() => handleSendMessageButton()}
-                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                    style={{ cursor: !isUserLoggedIn ? 'none' : 'pointer' }}
                 >
                     <svg
                         width='16'
@@ -236,11 +236,13 @@ export default function MessageInput(
                             title='Close Emoji Picker'
                             onClick={() => setShowEmojiPicker(false)}
                             id='close emoji panel button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                     <span
                         className={styles.emoji_close_button}
                         onClick={() => setIsInfoPressed(!isInfoPressed)}
+                        style={{ cursor: 'pointer' }}
                     >
                         <RiInformationLine title='Info' id='info' />
                     </span>
