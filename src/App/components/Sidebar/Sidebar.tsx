@@ -64,6 +64,7 @@ interface propsIF {
         event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
     ) => void;
     chainId: string;
+    poolId: number;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
@@ -102,6 +103,7 @@ export default function Sidebar(props: propsIF) {
         toggleSidebar,
         showSidebar,
         chainId,
+        poolId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         setCurrentPositionActive,
@@ -227,6 +229,7 @@ export default function Sidebar(props: propsIF) {
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
+                    poolId={poolId}
                 />
             ),
         },

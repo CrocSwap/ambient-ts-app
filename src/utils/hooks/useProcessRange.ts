@@ -72,7 +72,12 @@ export const useProcessRange = (
 
     let posHash;
     if (position.positionType == 'ambient') {
-        posHash = ambientPosSlot(ownerId, position.base, position.quote, 36000);
+        posHash = ambientPosSlot(
+            ownerId,
+            position.base,
+            position.quote,
+            position.poolIdx,
+        );
     } else {
         posHash =
             position.user &&
@@ -86,7 +91,7 @@ export const useProcessRange = (
                       position.quote,
                       position.bidTick,
                       position.askTick,
-                      36000,
+                      position.poolIdx,
                   ).toString()
                 : '…';
     }

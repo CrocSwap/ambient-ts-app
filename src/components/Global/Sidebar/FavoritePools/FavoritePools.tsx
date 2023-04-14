@@ -9,10 +9,17 @@ interface propsIF {
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
     chainId: string;
+    poolId: number;
 }
 
 export default function FavoritePools(props: propsIF) {
-    const { favePools, lastBlockNumber, cachedPoolStatsFetch, chainId } = props;
+    const {
+        favePools,
+        lastBlockNumber,
+        cachedPoolStatsFetch,
+        chainId,
+        poolId,
+    } = props;
 
     const { tradeData } = useAppSelector((state) => state);
 
@@ -20,7 +27,7 @@ export default function FavoritePools(props: propsIF) {
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         chainId,
-        36000,
+        poolId,
     );
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
@@ -40,7 +47,7 @@ export default function FavoritePools(props: propsIF) {
                             tradeData.baseToken,
                             tradeData.quoteToken,
                             chainId,
-                            36000,
+                            poolId,
                         )
                     }
                 >
