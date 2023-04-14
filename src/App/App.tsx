@@ -377,10 +377,11 @@ export default function App() {
               'true'
             : true;
 
-    const isChatEnabled =
+    const [isChatEnabled, setIsChatEnabled] = useState(
         process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true;
+            : true,
+    );
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
@@ -3456,6 +3457,7 @@ export default function App() {
                                     username={ensName}
                                     appPage={true}
                                     topPools={topPools}
+                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3479,6 +3481,7 @@ export default function App() {
                                     appPage={true}
                                     username={ensName}
                                     topPools={topPools}
+                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3813,6 +3816,7 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
+                            setIsChatEnabled={setIsChatEnabled}
                         />
                     )}
             </div>
