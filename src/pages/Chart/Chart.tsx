@@ -5292,7 +5292,7 @@ export default function Chart(props: propsIF) {
                         clipBidHighlightedLines(
                             ctxDepth,
                             canvas.width,
-                            liquidityData?.liqBoundaryCurve,
+                            liquidityData?.liqBoundaryDepth,
                         );
 
                         lineBidDepthSeries(liqDataBidDepth);
@@ -5306,6 +5306,7 @@ export default function Chart(props: propsIF) {
             renderCanvas();
         }
     }, [
+        sum(scaleData),
         liquidityData.liqBidData,
         liquidityData.depthLiqBidData,
         lineBidSeries,
@@ -6096,13 +6097,13 @@ export default function Chart(props: propsIF) {
             newData.filter((target: any) => target.name === 'tvl')[0].value =
                 findTvlNearest(point);
 
-            // newData.filter(
-            //     (target: any) => target.name === 'feeRate',
-            // )[0].value = parsedChartData?.feeChartData.find(
-            //     (item: any) => item.time.getTime() === nearest?.date.getTime(),
-            // )?.value;
+            newData.filter(
+                (target: any) => target.name === 'feeRate',
+            )[0].value = parsedChartData?.feeChartData.find(
+                (item: any) => item.time.getTime() === nearest?.date.getTime(),
+            )?.value;
 
-            return prevState;
+            return newData;
         });
 
         const returnXdata =
