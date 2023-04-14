@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './LimitExtraInfo.module.css';
@@ -175,7 +175,8 @@ export default function LimitExtraInfo(props: propsIF) {
 
     const dropDownOrNull = isQtyEntered ? (
         <div style={{ cursor: 'pointer' }}>
-            <RiArrowDownSLine size={20} />
+            {!showExtraDetails && <RiArrowDownSLine size={22} />}
+            {showExtraDetails && <RiArrowUpSLine size={22} />}
         </div>
     ) : null;
 

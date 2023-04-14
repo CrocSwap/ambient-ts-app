@@ -549,6 +549,7 @@ export default function Range(props: propsIF) {
         tradeData.advancedMode,
         denominationsInBase,
         currentPoolPriceTick,
+        baseToken.address + quoteToken.address,
     ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
@@ -1840,6 +1841,8 @@ export default function Range(props: propsIF) {
                         centeredTitle
                     >
                         <ConfirmRangeModal
+                            tokenAQtyLocal={tokenAQtyLocal}
+                            tokenBQtyLocal={tokenBQtyLocal}
                             tokenPair={tokenPair}
                             spotPriceDisplay={displayPriceString}
                             poolPriceDisplayNum={poolPriceDisplayNum}

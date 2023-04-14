@@ -99,6 +99,14 @@
 .high_range {
     color: var(--text-highlight-dark);
 }
+
+.ambi_info_text {
+    text-align: center;
+    background: var(--dark2);
+    padding: 4px;
+    border-radius: 4px;
+    text-transform: none;
+}
 /* .order_type{
     display: flex;
     flex-direction: row;

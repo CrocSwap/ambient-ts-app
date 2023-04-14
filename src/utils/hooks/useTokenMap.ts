@@ -8,11 +8,7 @@ export const useTokenMap = () => {
         (listName) => tokenListURIs[listName],
     );
 
-    // hook to preserve the token map value across renders
-    const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
-
-    // hook to create a new token map and write it to local storage
-    useEffect(() => {
+    function scrapeTokenMap() {
         function parseAllTokens(): TokenListIF[] {
             const entry = localStorage.getItem('allTokenLists');
             if (entry) {
@@ -71,6 +67,15 @@ export const useTokenMap = () => {
             ),
         );
 
+        return newTokensMap;
+    }
+
+    // hook to preserve the token map value across renders
+    const [tokenMap, setTokenMap] = useState(scrapeTokenMap());
+
+    // hook to create a new token map and write it to local storage
+    useEffect(() => {
+        const newTokensMap = scrapeTokenMap();
         setTokenMap(newTokensMap);
     }, [localStorage.allTokenLists, localStorage.acknowledgedTokens]);
 

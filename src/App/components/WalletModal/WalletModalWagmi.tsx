@@ -14,6 +14,8 @@ import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
 import { checkBlacklist } from '../../../utils/data/blacklist';
 import { IS_LOCAL_ENV } from '../../../constants';
+import GateWallet from './GateWallet';
+import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -36,7 +38,12 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         });
     const { address, connector, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
-    const [page, setPage] = useState('wallets');
+
+    const defaultState = process.env.REACT_APP_VIEW_ONLY
+        ? 'notAvailable'
+        : 'wallets';
+
+    const [page, setPage] = useState(defaultState);
 
     const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] =
         useState(false);
@@ -150,7 +157,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 content={
                     !delayForHelpTextElapsed
                         ? ''
-                        : `Please check the ${'MetaMask'} extension in your browser for notifications.`
+                        : 'Please check your wallet for notifications'
                 }
             />
         </div>
@@ -159,7 +166,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const coinbaseWalletPendingPage = (
         <div className={styles.metamask_pending_container}>
             <WaitingConfirmation
-                content={'Please complete authentication via WalletConnect.'}
+                content={'Please complete authentication via WalletConnect'}
             />
         </div>
     );
@@ -182,10 +189,27 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             />
         </div>
     );
+
+    const notAvailablePage = (
+        <div className={styles.metamask_pending_container}>
+            <CircleLoaderFailed />
+            <p>Ambient is not available in the United States.</p>
+            <Button
+                title='Close'
+                flat={true}
+                action={() => {
+                    closeModalWallet();
+                }}
+            />
+        </div>
+    );
+
     const activeContent = useMemo(() => {
         switch (page) {
             case 'wallets':
                 return walletsPage;
+            case 'notAvailable':
+                return notAvailablePage;
             case 'metamaskPending':
                 return metamaskPendingPage;
             case 'coinbaseWalletPending':
@@ -238,16 +262,25 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         }
     }, [page]);
 
+    const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
+
     return (
-        <div className={styles.wallet_modal}>
+        <div className={styles.wallet_modal} style={{ width: '500px' }}>
             <Modal
                 onClose={closeModalWallet}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
-                title={activeTitle}
+                title={!hasAgreedTerms ? 'Launch App' : activeTitle}
                 centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
             >
-                {activeContent}
+                {!hasAgreedTerms ? (
+                    <GateWallet
+                        recordAgreed={recordAgreed}
+                        termUrls={termUrls}
+                    />
+                ) : (
+                    activeContent
+                )}
             </Modal>
         </div>
     );
