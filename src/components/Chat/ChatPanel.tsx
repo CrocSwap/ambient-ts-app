@@ -51,6 +51,7 @@ interface propsIF {
     username?: string | null;
     topPools: topPoolIF[];
     isChatEnabled: boolean;
+    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChatPanel(props: propsIF) {
@@ -61,6 +62,7 @@ export default function ChatPanel(props: propsIF) {
         currentPool,
         setIsChatOpen,
         topPools,
+        setIsChatEnabled,
     } = props;
 
     if (!isChatEnabled) return <NotFound />;
@@ -87,7 +89,8 @@ export default function ChatPanel(props: propsIF) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser, saveUser, getStatus } =
+        useChatApi();
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
@@ -112,6 +115,18 @@ export default function ChatPanel(props: propsIF) {
             setIsChatOpen(!props.isChatOpen);
         }
     }
+
+    useEffect(() => {
+        // Check if the chat server is reachable and has a stable db connection.
+        getStatus().then((isChatUp) => {
+            if (isChatUp) {
+                setIsChatEnabled(true);
+            } else {
+                console.warn('Chat health check failed, disabling...');
+                setIsChatEnabled(false);
+            }
+        });
+    }, []);
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
