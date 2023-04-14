@@ -3683,25 +3683,27 @@ export default function App() {
                             element={<Swap {...swapProps} />}
                         />
                         <Route path='tos' element={<TermsOfService />} />
-                        <Route
-                            path='testpage'
-                            element={
-                                <TestPage
-                                    openGlobalModal={openGlobalModal}
-                                    openSidebar={openSidebar}
-                                    closeSidebar={closeSidebar}
-                                    togggggggleSidebar={togggggggleSidebar}
-                                    walletToS={walletToS}
-                                    chartSettings={chartSettings}
-                                    bypassConf={{
-                                        swap: bypassConfirmSwap,
-                                        limit: bypassConfirmLimit,
-                                        range: bypassConfirmRange,
-                                        repo: bypassConfirmRepo,
-                                    }}
-                                />
-                            }
-                        />
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='testpage'
+                                element={
+                                    <TestPage
+                                        openGlobalModal={openGlobalModal}
+                                        openSidebar={openSidebar}
+                                        closeSidebar={closeSidebar}
+                                        togggggggleSidebar={togggggggleSidebar}
+                                        walletToS={walletToS}
+                                        chartSettings={chartSettings}
+                                        bypassConf={{
+                                            swap: bypassConfirmSwap,
+                                            limit: bypassConfirmLimit,
+                                            range: bypassConfirmRange,
+                                            repo: bypassConfirmRepo,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
                         <Route
                             path='/:address'
                             element={
