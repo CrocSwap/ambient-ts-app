@@ -5,16 +5,14 @@ import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { getSupportedChainIds } from '../../../../utils/data/chains';
-import { useSwitchNetwork } from 'wagmi';
 
 interface NetworkSelectorPropsIF {
     chainId: string;
+    switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
 
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
-    const { chainId } = props;
-
-    const { switchNetwork } = useSwitchNetwork();
+    const { chainId, switchNetwork } = props;
 
     const chains = getSupportedChainIds().map((chain: string) =>
         lookupChain(chain),
