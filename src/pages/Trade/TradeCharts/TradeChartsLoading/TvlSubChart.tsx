@@ -45,14 +45,12 @@ export default function TvlSubChart(props: TvlData) {
     } = props;
 
     const tvlMainDiv = useRef(null);
-    const d3PlotTvl = useRef(null);
-    const d3Yaxis = useRef(null);
+    const d3Yaxis = useRef<HTMLInputElement | null>(null);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);
 
     const [tvlyScale, setTvlyScale] = useState<any>();
-    const [yAxis, setyAxis] = useState<any>();
     const [areaSeries, setAreaSeries] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
     const [tvlGradient, setTvlGradient] = useState<any>();
@@ -88,12 +86,6 @@ export default function TvlSubChart(props: TvlData) {
 
             yScale.domain(domainLog);
         }
-
-        const yAxis = d3fc.axisRight().scale(yScale);
-
-        setyAxis(() => {
-            return yAxis;
-        });
 
         setTvlyScale(() => {
             return yScale;
@@ -145,13 +137,15 @@ export default function TvlSubChart(props: TvlData) {
     ]);
 
     useEffect(() => {
-        if (yAxis !== undefined && tvlyScale !== undefined) {
+        if (tvlyScale !== undefined) {
             const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
             const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
             const filtered = tvlData?.filter(
                 (data: any) => data.time >= xmin && data.time <= xmax,
             );
+
+            const yAxis = d3fc.axisRight().scale(tvlyScale);
 
             if (filtered !== undefined) {
                 const minYBoundary = d3.min(filtered, (d: any) => d.value);
@@ -173,6 +167,32 @@ export default function TvlSubChart(props: TvlData) {
                         Math.pow(10, Math.log10(maxYBoundary) - buffer),
                     ])
                     .tickFormat(formatDollarAmountAxis);
+
+                const d3YaxisCanvas = d3
+                    .select(d3Yaxis.current)
+                    .select('canvas')
+                    .node() as any;
+
+                const d3YaxisContext = d3YaxisCanvas.getContext('2d');
+
+                d3.select(d3Yaxis.current).on('draw', function () {
+                    if (yAxis) {
+                        d3YaxisContext.stroke();
+                        d3YaxisContext.textAlign = 'left';
+                        d3YaxisContext.textBaseline = 'middle';
+                        d3YaxisContext.fillStyle = 'rgba(189,189,189,0.8)';
+                        d3YaxisContext.font = '11.425px Lexend Deca';
+
+                        yAxis.tickValues().forEach((d: number) => {
+                            d3YaxisContext.beginPath();
+                            d3YaxisContext.fillText(
+                                formatDollarAmountAxis(d),
+                                d3YaxisCanvas.width / 6,
+                                tvlyScale(d),
+                            );
+                        });
+                    }
+                });
 
                 tvlyScale.domain(domainLog);
             }
@@ -280,7 +300,8 @@ export default function TvlSubChart(props: TvlData) {
                     areaSeries(tvlData);
                     lineSeries(tvlData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    tvlyScale.range([event.detail.height, 0]);
                     areaSeries.context(ctx);
                     lineSeries.context(ctx);
                 });
@@ -351,37 +372,18 @@ export default function TvlSubChart(props: TvlData) {
         if (
             tvlData !== undefined &&
             scaleData !== undefined &&
-            yAxis !== undefined &&
             tvlyScale !== undefined
         ) {
-            drawChart(tvlData, tvlyScale, yAxis);
+            drawChart(tvlData, tvlyScale);
 
             props.render();
         }
-    }, [scaleData, period, tvlData, zoomAndYdragControl, tvlyScale, yAxis]);
-
-    const render = useCallback(() => {
-        const nd = d3.select('#d3PlotTvl').node() as any;
-        nd.requestRedraw();
-        renderCanvas();
-    }, []);
+    }, [scaleData, period, tvlData, zoomAndYdragControl, tvlyScale]);
 
     const drawChart = useCallback(
-        (tvlData: any, tvlyScale: any, yAxis: any) => {
+        (tvlData: any, tvlyScale: any) => {
             if (tvlData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-                d3.select(d3PlotTvl.current).on(
-                    'measure',
-                    function (event: any) {
-                        scaleData?.xScale.range([0, event.detail.width]);
-                        tvlyScale.range([event.detail.height, 0]);
-                    },
-                );
-
-                d3.select(d3Yaxis.current).on('draw', function (event: any) {
-                    d3.select(event.target).select('svg').call(yAxis);
-                });
 
                 d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
@@ -399,7 +401,7 @@ export default function TvlSubChart(props: TvlData) {
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setIsCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
-                    render();
+                    renderCanvas();
                 });
             }
         },
@@ -408,13 +410,8 @@ export default function TvlSubChart(props: TvlData) {
 
     return (
         <div ref={tvlMainDiv} id='tvl_chart' data-testid={'chart'}>
-            <d3fc-svg
-                id='d3PlotTvl'
-                ref={d3PlotTvl}
-                style={{ overflow: 'hidden' }}
-            ></d3fc-svg>
-
             <d3fc-canvas
+                id='d3PlotTvl'
                 ref={d3CanvasArea}
                 className='tvl-canvas'
             ></d3fc-canvas>
@@ -432,11 +429,15 @@ export default function TvlSubChart(props: TvlData) {
                     )[0].value,
                 )}
             </label>
-            <d3fc-svg
-                className='y-axis'
+            <d3fc-canvas
+                className='y-axis-canvas'
                 ref={d3Yaxis}
-                style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
-            ></d3fc-svg>
+                style={{
+                    width: yAxisWidth,
+                    gridColumn: 4,
+                    gridRow: 3,
+                }}
+            ></d3fc-canvas>
         </div>
     );
 }

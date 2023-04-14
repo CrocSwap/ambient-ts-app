@@ -13,6 +13,8 @@ import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 // import { getMoneynessRank } from '../../../../utils/functions/getMoneynessRank';
 import { isStableToken } from '../../../../utils/data/stablePairs';
+import AprExplanation from '../../../Global/Informational/AprExplanation';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 // interface for component props
 interface propsIF {
@@ -47,6 +49,11 @@ interface propsIF {
           }
         | undefined;
     isAmbient: boolean;
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // central react functional component
@@ -66,6 +73,7 @@ export default function RangePriceInfo(props: propsIF) {
         baseToken,
         quoteToken,
         isAmbient,
+        openGlobalPopup,
     } = props;
 
     const { pathname } = useLocation();
@@ -81,7 +89,23 @@ export default function RangePriceInfo(props: propsIF) {
           })}%`
         : '…';
     // JSX frag for estimated APR of position
-    const apr = <span className={styles.apr}>{aprPercentageString}</span>;
+
+    const apr = (
+        <span className={styles.apr}>
+            {aprPercentageString}{' '}
+            <AiOutlineQuestionCircle
+                size={14}
+                onClick={() =>
+                    openGlobalPopup(
+                        <AprExplanation />,
+
+                        'Estimated APR',
+                        'right',
+                    )
+                }
+            />
+        </span>
+    );
 
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
         number | undefined

@@ -75,6 +75,12 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     chainData: ChainSpec;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 export default function Reposition(props: propsIF) {
@@ -99,6 +105,7 @@ export default function Reposition(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
+        openGlobalPopup,
     } = props;
 
     // current URL parameter string
@@ -813,6 +820,7 @@ export default function Reposition(props: propsIF) {
                     isDenomBase={isDenomBase}
                     currentMinPrice={position?.lowRangeDisplayInBase}
                     currentMaxPrice={position?.highRangeDisplayInBase}
+                    openGlobalPopup={openGlobalPopup}
                 />
                 <div className={styles.button_container}>
                     {!showBypassConfirmButton ? (
