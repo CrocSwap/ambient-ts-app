@@ -158,12 +158,20 @@ export default function CurrencyConverter(props: propsIF) {
     useEffect(() => {
         setTokenALocal(tradeData.tokenA.address);
         setTokenASymbolLocal(tradeData.tokenA.symbol);
-    }, [tradeData.tokenA.address + tradeData.tokenA.symbol]);
+    }, [
+        tradeData.tokenA.address,
+        tradeData.tokenA.symbol,
+        tradeData.tokenA.chainId,
+    ]);
 
     useEffect(() => {
         setTokenBLocal(tradeData.tokenB.address);
         setTokenBSymbolLocal(tradeData.tokenB.symbol);
-    }, [tradeData.tokenB.address + tradeData.tokenB.symbol]);
+    }, [
+        tradeData.tokenB.address,
+        tradeData.tokenB.symbol,
+        tradeData.tokenB.chainId,
+    ]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
