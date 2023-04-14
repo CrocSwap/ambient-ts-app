@@ -158,12 +158,20 @@ export default function CurrencyConverter(props: propsIF) {
     useEffect(() => {
         setTokenALocal(tradeData.tokenA.address);
         setTokenASymbolLocal(tradeData.tokenA.symbol);
-    }, [tradeData.tokenA.address + tradeData.tokenA.symbol]);
+    }, [
+        tradeData.tokenA.address,
+        tradeData.tokenA.symbol,
+        tradeData.tokenA.chainId,
+    ]);
 
     useEffect(() => {
         setTokenBLocal(tradeData.tokenB.address);
         setTokenBSymbolLocal(tradeData.tokenB.symbol);
-    }, [tradeData.tokenB.address + tradeData.tokenB.symbol]);
+    }, [
+        tradeData.tokenB.address,
+        tradeData.tokenB.symbol,
+        tradeData.tokenB.chainId,
+    ]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
@@ -377,7 +385,7 @@ export default function CurrencyConverter(props: propsIF) {
                 ) {
                     setSwapAllowed(false);
                     setSwapButtonErrorMessage(
-                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
+                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setSwapAllowed(true);

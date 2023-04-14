@@ -12,15 +12,16 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import { MdAccountBalanceWallet } from 'react-icons/md';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
+import walletIcon from '../../../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
 // interface for component props
@@ -100,9 +101,6 @@ export default function LimitCurrencySelector(props: propsIF) {
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         setIsSaveAsDexSurplusChecked,
-        tokenAQtyCoveredBySurplusBalance,
-        tokenAQtyCoveredByWalletBalance,
-        tokenASurplusMinusTokenARemainderNum,
         gasPriceInGwei,
         handleChangeClick,
         isOrderCopied,
@@ -176,9 +174,6 @@ export default function LimitCurrencySelector(props: propsIF) {
         </button>
     );
 
-    const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
-    const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
-
     const walletBalanceNonLocaleString =
         tokenABalance && gasPriceInGwei
             ? isSellTokenEth
@@ -196,60 +191,51 @@ export default function LimitCurrencySelector(props: propsIF) {
           })
         : '...';
 
-    const surplusBalanceNonLocaleString =
+    const walletAndSurplusBalanceNonLocaleString =
         tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
                 ? (
-                      parseFloat(tokenADexBalance) -
+                      parseFloat(tokenADexBalance) +
+                      parseFloat(tokenABalance) -
                       gasPriceInGwei * 400000 * 1e-9
                   ).toFixed(18)
-                : tokenADexBalance
+                : (
+                      parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                  ).toString()
             : '';
 
-    const surplusBalanceLocaleString = tokenADexBalance
-        ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
+    const walletAndSurplusBalanceLocaleString = tokenADexBalance
+        ? (
+              parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+          ).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
         : '...';
 
-    const sellTokenSurplusChange =
-        tokenAQtyCoveredBySurplusBalance && tokenAQtyCoveredBySurplusBalance > 0
-            ? '(-' +
-              tokenAQtyCoveredBySurplusBalance.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) +
-              ')'
-            : '';
+    const balanceLocaleString =
+        isSellTokenSelector && !isWithdrawFromDexChecked
+            ? walletBalanceLocaleString
+            : walletAndSurplusBalanceLocaleString;
 
-    const sellTokenWalletBalanceChange =
-        tokenAQtyCoveredByWalletBalance && tokenAQtyCoveredByWalletBalance > 0
-            ? '(-' +
-              tokenAQtyCoveredByWalletBalance.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) +
-              ')'
-            : '';
+    const balanceNonLocaleString =
+        isSellTokenSelector && !isWithdrawFromDexChecked
+            ? walletBalanceNonLocaleString
+            : walletAndSurplusBalanceNonLocaleString;
 
-    const walletBalanceMaxButton =
+    function handleMaxButtonClick() {
+        if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
+            handleChangeClick(balanceNonLocaleString);
+        }
+    }
+
+    const maxButton =
         isSellTokenSelector &&
-        !isWithdrawFromDexChecked &&
         !isSellTokenEth &&
-        walletBalanceNonLocaleString !== '0.0' ? (
+        balanceLocaleString !== '0.00' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    if (props.sellToken) {
-                        setIsWithdrawFromDexChecked(false);
-                    } else {
-                        setIsSaveAsDexSurplusChecked(false);
-                    }
-                    if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                        handleChangeClick(walletBalanceNonLocaleString);
-                    }
-                }}
+                onClick={() => handleMaxButtonClick()}
             >
                 Max
             </button>
@@ -257,86 +243,6 @@ export default function LimitCurrencySelector(props: propsIF) {
             <p className={styles.max_button} />
         );
 
-    const surplusMaxButton =
-        isSellTokenSelector &&
-        isWithdrawFromDexChecked &&
-        !isSellTokenEth &&
-        surplusBalanceNonLocaleString !== '0.0' ? (
-            <button
-                className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    if (props.sellToken) {
-                        setIsWithdrawFromDexChecked(true);
-                    } else {
-                        setIsSaveAsDexSurplusChecked(true);
-                    }
-                    if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                        handleChangeClick(surplusBalanceNonLocaleString);
-                    }
-                }}
-            >
-                Max
-            </button>
-        ) : (
-            <p className={styles.max_button} />
-        );
-
-    const walletContent = (
-        <div className={styles.main_wallet_container}>
-            <IconWithTooltip
-                title={'Wallet Balance'}
-                placement='bottom'
-                style={{ display: 'flex', alignItems: 'center' }}
-            >
-                <div
-                    className={styles.balance_with_pointer}
-                    onClick={() => {
-                        if (props.sellToken) {
-                            dexBalancePrefs.limit.drawFromDexBal.disable();
-                            setIsWithdrawFromDexChecked(false);
-                        } else {
-                            setIsSaveAsDexSurplusChecked(false);
-                            dexBalancePrefs.limit.outputToDexBal.disable();
-                        }
-                    }}
-                >
-                    <div className={styles.wallet_logo}>
-                        <MdAccountBalanceWallet
-                            size={20}
-                            color={
-                                (isSellTokenSelector &&
-                                    !isWithdrawFromDexChecked) ||
-                                (isSellTokenSelector &&
-                                    isWithdrawFromDexChecked &&
-                                    tokenASurplusMinusTokenARemainderNum &&
-                                    tokenASurplusMinusTokenARemainderNum < 0)
-                                    ? 'var(--text-highlight)'
-                                    : '#555555'
-                            }
-                        />
-                    </div>
-                    <div className={styles.balance_column}>
-                        <div>
-                            {isUserLoggedIn ? walletBalanceLocaleString : ''}
-                        </div>
-                        <div
-                            style={{
-                                color: isSellTokenSelector
-                                    ? '#f6385b'
-                                    : '#15be67',
-                            }}
-                        >
-                            <p style={{ fontSize: '9px' }}>
-                                {' '}
-                                {sellTokenWalletBalanceChange}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                {walletBalanceMaxButton}
-            </IconWithTooltip>
-        </div>
-    );
     const exchangeBalanceTitle = (
         <p
             style={{
@@ -353,81 +259,106 @@ export default function LimitCurrencySelector(props: propsIF) {
                 )
             }
         >
-            Exchange Balance <AiOutlineQuestionCircle size={14} />
+            Exchange and Wallet Balance <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
-    const surplusContent = (
-        <div className={styles.main_exchange_container}>
-            <DefaultTooltip
-                interactive
-                title={exchangeBalanceTitle}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div
-                    className={`${styles.balance_with_pointer} ${
-                        isSellTokenSelector && !isWithdrawFromDexChecked
-                            ? styles.grey_logo
-                            : null
+    const walletContent = (
+        <section className={styles.main_wallet_container}>
+            <div className={styles.balance_with_pointer}>
+                <IconWithTooltip
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use wallet balance only'
+                            : 'Withdraw to wallet'
                     }`}
-                    style={{
-                        color:
-                            isSellTokenSelector && !isWithdrawFromDexChecked
-                                ? '#555555'
-                                : 'var(--text-highlight)',
-                    }}
-                    onClick={() => {
-                        if (props.sellToken) {
-                            dexBalancePrefs.limit.drawFromDexBal.enable();
-                            setIsWithdrawFromDexChecked(true);
-                        } else {
-                            dexBalancePrefs.limit.outputToDexBal.enable();
-                            setIsSaveAsDexSurplusChecked(true);
-                        }
-                    }}
+                    placement='bottom'
                 >
-                    {surplusMaxButton}
-                    <div className={styles.balance_column}>
-                        <div>
-                            {' '}
-                            {isUserLoggedIn ? surplusBalanceLocaleString : ''}
-                        </div>
-                        <div
-                            style={{
-                                color: isSellTokenSelector
-                                    ? '#f6385b'
-                                    : '#15be67',
-                            }}
-                        >
-                            <p style={{ fontSize: '9px' }}>
-                                {' '}
-                                {sellTokenSurplusChange}
-                            </p>
-                        </div>
-                    </div>
                     <div
-                        className={`${styles.wallet_logo} ${
-                            isSellTokenSelector ? styles.enabled_logo : null
-                        }`}
+                        className={`${styles.balance_with_pointer}`}
+                        onClick={() => {
+                            if (props.sellToken) {
+                                dexBalancePrefs.limit.drawFromDexBal.disable();
+                                setIsWithdrawFromDexChecked(false);
+                            } else {
+                                setIsSaveAsDexSurplusChecked(false);
+                                dexBalancePrefs.limit.outputToDexBal.disable();
+                            }
+                        }}
                     >
-                        <img src={ambientLogo} width='20' alt='surplus' />
+                        <div className={styles.wallet_logo}>
+                            <img
+                                src={
+                                    isSellTokenSelector &&
+                                    !isWithdrawFromDexChecked
+                                        ? walletEnabledIcon
+                                        : walletIcon
+                                }
+                                width='20'
+                            />
+                        </div>
                     </div>
-                </div>
-            </DefaultTooltip>
-        </div>
+                </IconWithTooltip>
+                <IconWithTooltip
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use exchange and wallet balance'
+                            : 'Add to exchange balance'
+                    }`}
+                    placement='bottom'
+                >
+                    <div
+                        className={`${styles.balance_with_pointer} ${
+                            isSellTokenSelector && !isWithdrawFromDexChecked
+                                ? styles.grey_logo
+                                : null
+                        }`}
+                        onClick={() => {
+                            if (props.sellToken) {
+                                dexBalancePrefs.limit.drawFromDexBal.enable();
+                                setIsWithdrawFromDexChecked(true);
+                            } else {
+                                dexBalancePrefs.limit.outputToDexBal.enable();
+                                setIsSaveAsDexSurplusChecked(true);
+                            }
+                        }}
+                    >
+                        <div
+                            className={`${styles.wallet_logo} ${
+                                isWithdrawFromDexChecked
+                                    ? styles.enabled_logo
+                                    : null
+                            }`}
+                        >
+                            <img src={ambientLogo} width='20' alt='surplus' />
+                        </div>
+                    </div>
+                </IconWithTooltip>
+                <DefaultTooltip
+                    interactive
+                    title={exchangeBalanceTitle}
+                    placement={'bottom'}
+                    arrow
+                    enterDelay={100}
+                    leaveDelay={200}
+                >
+                    <div
+                        className={styles.balance_column}
+                        onClick={() => handleMaxButtonClick()}
+                    >
+                        {isUserLoggedIn ? balanceLocaleString : ''}
+                    </div>
+                </DefaultTooltip>
+                {maxButton}
+            </div>
+        </section>
     );
 
     const balanceDisplayOrNull = isSellTokenSelector ? (
         !isUserLoggedIn ? (
             <div className={styles.swapbox_bottom} />
         ) : (
-            <div className={styles.swapbox_bottom}>
-                {walletContent}
-                {surplusContent}
-            </div>
+            <div className={styles.swapbox_bottom}>{walletContent}</div>
         )
     ) : null;
 

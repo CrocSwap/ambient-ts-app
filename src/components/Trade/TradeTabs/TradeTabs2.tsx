@@ -452,7 +452,9 @@ export default function TradeTabs2(props: propsIF) {
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
+        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: false,
     };
 
     // Props for <Orders/> React Element
@@ -505,6 +507,7 @@ export default function TradeTabs2(props: propsIF) {
 
     const TradeChartsTokenInfoProps = {
         chainId: chainId,
+        poolId: chainData.poolIndex,
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,

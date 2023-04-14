@@ -1,8 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
-
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-
 import {
     addChangesByPool,
     CandleData,
@@ -29,18 +27,18 @@ import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
-// import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-// import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { getTransactionData } from '../../../../App/functions/getTransactionData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { IS_LOCAL_ENV } from '../../../../constants';
-// import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
+
+const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
+// NOTE: this is done to improve rendering speed for this page.
 
 interface propsIF {
     isTokenABase: boolean;
@@ -49,7 +47,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenList: TokenIF[];
-
     changesInSelectedCandle: TransactionIF[] | undefined;
     graphData: graphData;
     chainData: ChainSpec;
@@ -58,7 +55,8 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
-    expandTradeTable: boolean;
+    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
+    isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
@@ -72,7 +70,7 @@ interface propsIF {
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
-    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 export default function Transactions(props: propsIF) {
@@ -98,11 +96,11 @@ export default function Transactions(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
-        // setIsCandleSelected,
         changeState,
         setSelectedDate,
-        // setExpandTradeTable,
+        setExpandTradeTable,
         setSimpleRangeWidth,
+        isAccountView,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -134,14 +132,6 @@ export default function Transactions(props: propsIF) {
             return false;
         }
     });
-
-    // const changesByUserWithoutFills = changesByUser.filter((tx) => {
-    //     if (tx.changeType !== 'fill') {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // });
 
     const changesByPoolWithoutFills = changesByPool.filter((tx) => {
         if (
@@ -204,19 +194,16 @@ export default function Transactions(props: propsIF) {
 
     function handleUserSelected() {
         setTransactionData(changesByUserMatchingSelectedTokens);
-        // setDataToDisplay(changesByUserMatchingSelectedTokens?.length > 0);
     }
     function handlePoolSelected() {
         if (!isOnPortfolioPage) {
             setTransactionData(changesByPoolWithoutFills);
-            // setDataToDisplay(changesByPoolWithoutFills?.length > 0);
         }
     }
 
     useEffect(() => {
         if (isOnPortfolioPage && activeAccountTransactionData) {
             setTransactionData(activeAccountTransactionData);
-            // setDataToDisplay(true);
         }
     }, [isOnPortfolioPage, sum(activeAccountTransactionData)]);
 
@@ -266,12 +253,6 @@ export default function Transactions(props: propsIF) {
 
     const { height } = useWindowDimensions();
 
-    // const transactionsPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    // const regularTransactionItems = Math.round((height - 250) / 30);
     const showColumnTransactionItems = showColumns
         ? Math.round((height - 250) / 50)
         : Math.round((height - 250) / 38);
@@ -354,8 +335,6 @@ export default function Transactions(props: propsIF) {
                 chainId: chainData.chainId,
                 ensResolution: 'true',
                 annotate: 'true',
-                //  addCachedAPY: 'true',
-                //  omitKnockout: 'true',
                 addValue: 'true',
             }),
         [
@@ -366,11 +345,7 @@ export default function Transactions(props: propsIF) {
         ],
     );
 
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolChangeMessage,
-        //  readyState
-    } = useWebSocket(
+    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
         poolRecentChangesCacheSubscriptionEndpoint,
         {
             // share:  true,
@@ -381,7 +356,6 @@ export default function Transactions(props: propsIF) {
             onClose: (event: CloseEvent) => {
                 IS_LOCAL_ENV && console.debug({ event });
             },
-            // onClose: () => console.debug('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
@@ -503,7 +477,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}ㅤㅤ`,
-            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -512,7 +485,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -628,9 +600,10 @@ export default function Transactions(props: propsIF) {
         />
     ));
     const listRef = useRef<HTMLUListElement>(null);
-    const handleKeyDown = (
+    const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
+        // Opens a modal which displays the contents of a transaction and some other information
         const { key } = event;
 
         if (key === 'ArrowDown' || key === 'ArrowUp') {
@@ -661,18 +634,39 @@ export default function Transactions(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             setIsShowAllEnabled={setIsShowAllEnabled}
             setSelectedDate={setSelectedDate}
-            // setIsCandleSelected={setIsCandleSelected}
             changeState={changeState}
             type='transactions'
             isOnPortfolioPage={isOnPortfolioPage}
         />
     ) : (
-        <div onKeyDown={handleKeyDown}>
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul ref={listRef}>
                 {expandTradeTable && largeScreenView
                     ? currentRowItemContent
-                    : sortedRowItemContent}
+                    : isAccountView
+                    ? // NOTE: the account view of this content should not be paginated
+                      sortedRowItemContent
+                    : sortedRowItemContent.slice(
+                          0,
+                          NUM_TRANSACTIONS_WHEN_COLLAPSED,
+                      )}
             </ul>
+            {
+                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
+                // TODO (#1804): we should instead be adding results to RTK
+                !expandTradeTable && !isAccountView && (
+                    <div className={styles.view_more_container}>
+                        <button
+                            className={styles.view_more_button}
+                            onClick={() => {
+                                setExpandTradeTable(true);
+                            }}
+                        >
+                            View More
+                        </button>
+                    </div>
+                )
+            }
         </div>
     );
 

@@ -17,3 +17,8 @@
 [[edge_functions]]
   path = "/*"
   function = "country-block"
+
+[[edge_functions]]
+  path = "/*"
+  function = "country-redirect"
+

@@ -270,13 +270,13 @@ export default function OrderRemoval(props: propsIF) {
     const removalSuccess = (
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
-            content='Removal Transaction Successfully Submitted.'
+            content='Removal Transaction Successfully Submitted'
             chainId={chainData.chainId}
         />
     );
 
     const removalPending = (
-        <WaitingConfirmation content='Please check your wallet for notifications.' />
+        <WaitingConfirmation content='Please check your wallet for notifications' />
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
