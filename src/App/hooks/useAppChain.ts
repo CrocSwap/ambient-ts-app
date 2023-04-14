@@ -4,7 +4,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useNavigate } from 'react-router-dom';
 
 export const useAppChain = (
@@ -24,7 +24,7 @@ export const useAppChain = (
 
     const { chain: chainNetwork } = useNetwork();
 
-    function determineConnected(chainNetwork: any): string {
+    function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
             ? '0x' + chainNetwork.id.toString(16)
             : defaultChain;
