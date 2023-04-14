@@ -7,11 +7,14 @@ import {
     goerliUSDC,
     goerliWBTC,
     goerliDAI,
+    mainnetETH,
+    mainnetUSDC,
 } from './defaultTokens';
 import { topPoolIF } from '../../App/hooks/useTopPools';
 import { TokenIF } from '../interfaces/exports';
 import sortTokens from '../functions/sortTokens';
 import { ChainIdType } from './chains';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 class TopPool implements topPoolIF {
     name: string;
@@ -50,9 +53,11 @@ export function getDefaultTopPools(chainId: string): topPoolIF[] {
     }
 }
 
-const GOERLI_POOL_ID = 36000;
+const MAINNET_POOL_ID = lookupChain('0x1').poolIndex;
+const GOERLI_POOL_ID = lookupChain('0x5').poolIndex;
 
 const defaultTopPools = {
+    '0x1': [new TopPool(mainnetETH, mainnetUSDC, MAINNET_POOL_ID, 0, 1)],
     '0x5': [
         new TopPool(goerliETH, goerliUSDC, GOERLI_POOL_ID, 0, 1),
         new TopPool(goerliETH, goerliWBTC, GOERLI_POOL_ID, 0.5, 3),

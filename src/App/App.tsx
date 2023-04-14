@@ -501,7 +501,6 @@ export default function App() {
             return;
         } else if (provider && !crocEnv) {
             const newCrocEnv = new CrocEnv(signer?.provider || provider);
-
             setCrocEnv(newCrocEnv);
         } else {
             // If signer and provider are set to different chains (as can happen)
@@ -593,7 +592,7 @@ export default function App() {
                 jsonrpc: '2.0',
                 method: 'eth_blockNumber',
                 params: [],
-                id: 5,
+                id: 'app-blockNum-sub', // Arbitary string (see JSON-RPC spec)
             }),
         })
             .then((response) => response?.json())
