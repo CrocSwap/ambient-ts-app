@@ -80,15 +80,21 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    color: var(--text-grey-white);
 }
 
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    padding-top: 1.5px;
 }
 
-.enabled_logo {
-    filter: brightness(0) invert(1);
+.ambient_logo {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding-left: 4px;
+    padding-right: 5px;
+    padding-top: 2.5px;
 }
 
 .swapbox_top {
@@ -124,12 +130,12 @@
     border: none;
 }
 
-.token_select:hover{
-    background: var(--dark3)
+.token_select:hover {
+    background: var(--dark3);
 }
 
-.token_select:focus-visible{
-    border: 1px solid var(--text-grey-white)
+.token_select:focus-visible {
+    border: 1px solid var(--text-grey-white);
 }
 .token_select:hover > .token_select svg {
     color: white;
@@ -153,8 +159,8 @@
 
 .token_list_text::-webkit-scrollbar {
     display: none;
-  }
-  
+}
+
 /* bottom info */
 
 .token_select_button {
@@ -177,7 +183,11 @@
 }
 
 .grey_logo img {
-    filter: grayscale(100%);
+    filter: grayscale(100%) contrast(0.3) brightness(0.8);
+}
+
+.enabled_logo img {
+    filter: contrast(1) brightness(1) saturate(1);
 }
 
 /* modal */
@@ -230,7 +240,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text-grey-white);
     outline: none;
     border: none;
     /* background: var(--dark3); */
@@ -248,7 +258,7 @@
 }
 
 .max_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text-highlight-dark);
 }
 
 @keyframes shadow-pulse {
