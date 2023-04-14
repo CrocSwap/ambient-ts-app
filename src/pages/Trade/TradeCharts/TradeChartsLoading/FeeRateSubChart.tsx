@@ -57,7 +57,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         useState<any>();
 
     useEffect(() => {
-        const domain = [-0.002, 0.012];
+        const domain = [-0.002, 0.0125];
 
         const yScale = d3.scaleSymlog().domain(domain).range([0, 1]);
 
@@ -204,7 +204,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         lineSeries(feeData);
                     })
                     .on('measure', (event: any) => {
-                        xScale.range([0, event.detail.width]);
                         feeRateyScale.range([event.detail.height, 0]);
                         lineSeries.context(ctx);
                     });
@@ -269,18 +268,11 @@ export default function FeeRateSubChart(props: FreeRateData) {
             feeRateyScale !== undefined &&
             lineSeries !== undefined
         ) {
-            drawChart(feeData, xScale, feeRateyScale);
+            drawChart(feeData, feeRateyScale);
 
             props.render();
         }
-    }, [
-        xScale,
-        period,
-        feeData,
-        zoomAndYdragControl,
-        feeRateyScale,
-        lineSeries,
-    ]);
+    }, [period, feeData, zoomAndYdragControl, feeRateyScale, lineSeries]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && feeRateZoom !== undefined) {
@@ -289,17 +281,9 @@ export default function FeeRateSubChart(props: FreeRateData) {
     }, [feeRateZoom, d3CanvasCrosshair]);
 
     const drawChart = useCallback(
-        (feeData: any, xScale: any, feeRateyScale: any) => {
+        (feeData: any, feeRateyScale: any) => {
             if (feeData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-                // d3.select(d3CanvasArea.current).on(
-                //     'measure',
-                //     function (event: any) {
-                //         xScale.range([0, event.detail.width]);
-                //        feeRateyScale.range([event.detail.height, 0]);
-                //     },
-                // );
 
                 d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
