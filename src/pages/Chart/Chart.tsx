@@ -5480,29 +5480,6 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        if (filtered.length > 0) {
-            const minPriceValue = filtered.reduce((min, obj) => {
-                return obj.liqPrice < min.liqPrice ? obj : min;
-            });
-
-            /*
-                Checked to draw a highlighted line that is not in the plotted area chart
-            */
-            if (
-                !ctx.isPointInPath(
-                    liquidityScale(minPriceValue.activeLiq),
-                    scaleData?.yScale(high),
-                )
-            ) {
-                filtered.map((element) => {
-                    if (element.activeLiq === maxX) {
-                        element.activeLiq = minPriceValue.activeLiq;
-                    }
-                    return element;
-                });
-            }
-        }
-
         return low === 0
             ? data
             : filtered.sort((a, b) => b.liqPrices - a.liqPrices);
