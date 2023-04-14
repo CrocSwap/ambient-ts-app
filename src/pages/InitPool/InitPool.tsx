@@ -12,7 +12,6 @@ import Button from '../../components/Global/Button/Button';
 // START: Import Local Files
 import styles from './InitPool.module.css';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import { TokenPairIF } from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
@@ -32,7 +31,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     showSidebar: boolean;
-    tokenPair: TokenPairIF;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
@@ -48,7 +46,6 @@ export default function InitPool(props: propsIF) {
         openModalWallet,
         isUserLoggedIn,
         crocEnv,
-        tokenPair,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
@@ -69,16 +66,14 @@ export default function InitPool(props: propsIF) {
     const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
         (state) => state.tradeData,
     );
+    const { sessionReceipts } = useAppSelector((state) => state.receiptData);
 
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
             const doesPoolExist = crocEnv
-                .pool(
-                    tokenPair.dataTokenA.address,
-                    tokenPair.dataTokenB.address,
-                )
+                .pool(baseToken.address, quoteToken.address)
                 .isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
@@ -91,7 +86,7 @@ export default function InitPool(props: propsIF) {
         }
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
-    }, [crocEnv]);
+    }, [crocEnv, sessionReceipts.length]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -214,7 +209,7 @@ export default function InitPool(props: propsIF) {
 
     const sendInit = () => {
         IS_LOCAL_ENV &&
-            console.debug(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at
+            console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
         an initial price of ${initialPriceInBaseDenom}`);
         if (initialPriceInBaseDenom) {
             (async () => {
@@ -222,10 +217,7 @@ export default function InitPool(props: propsIF) {
                 try {
                     setIsInitPending(true);
                     tx = await crocEnv
-                        ?.pool(
-                            tokenPair.dataTokenA.address,
-                            tokenPair.dataTokenB.address,
-                        )
+                        ?.pool(baseToken.address, quoteToken.address)
                         .initPool(initialPriceInBaseDenom);
 
                     if (tx) dispatch(addPendingTx(tx?.hash));
@@ -264,7 +256,7 @@ export default function InitPool(props: propsIF) {
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
                             '/trade/range/chain=' +
-                                tokenPair.dataTokenA.chainId +
+                                baseToken.chainId +
                                 '&tokenA=' +
                                 baseToken.address +
                                 '&tokenB=' +
@@ -293,12 +285,12 @@ export default function InitPool(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenA.address);
+                await approve(tokenA.address);
             }}
             flat={true}
         />
@@ -308,12 +300,12 @@ export default function InitPool(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenB.symbol}`
-                    : `${tokenPair.dataTokenB.symbol} Approval Pending`
+                    ? `Approve ${tokenB.symbol}`
+                    : `${tokenB.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenB.address);
+                await approve(tokenB.address);
             }}
             flat={true}
         />
@@ -325,7 +317,7 @@ export default function InitPool(props: propsIF) {
                 <Navigate
                     to={
                         '/trade/market/chain=' +
-                        tokenPair.dataTokenA.chainId +
+                        baseToken.chainId +
                         '&tokenA=' +
                         baseToken.address +
                         '&tokenB=' +
@@ -512,7 +504,7 @@ export default function InitPool(props: propsIF) {
                                     )
                                 ) : (
                                     <Button
-                                        title='Login'
+                                        title='Connect Wallet'
                                         action={openModalWallet}
                                         flat={true}
                                     />

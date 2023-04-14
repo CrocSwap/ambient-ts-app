@@ -831,6 +831,13 @@ export default function Swap(props: propsIF) {
         needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
     };
 
+    const liquidityProviderFeeString = (
+        tradeData.liquidityFee * 100
+    ).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
     return (
         <FocusTrap
             focusTrapOptions={{
@@ -882,7 +889,9 @@ export default function Swap(props: propsIF) {
                             }
                             poolPriceDisplay={poolPriceDisplay || 0}
                             slippageTolerance={slippageTolerancePercentage}
-                            liquidityProviderFee={tradeData.liquidityFee}
+                            liquidityProviderFeeString={
+                                liquidityProviderFeeString
+                            }
                             quoteTokenIsBuy={true}
                             swapGasPriceinDollars={swapGasPriceinDollars}
                             didUserFlipDenom={tradeData.didUserFlipDenom}

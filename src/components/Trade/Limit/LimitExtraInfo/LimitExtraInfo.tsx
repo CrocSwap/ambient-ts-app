@@ -18,7 +18,6 @@ import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
-    liquidityProviderFee: number;
     orderGasPriceInDollars: string | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
@@ -28,6 +27,7 @@ interface propsIF {
     middleDisplayPrice: number;
     endDisplayPrice: number;
     isQtyEntered: boolean;
+    liquidityProviderFeeString: string;
 }
 
 // central react functional component
@@ -35,11 +35,11 @@ export default function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         poolPriceDisplay,
-        liquidityProviderFee,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
         isQtyEntered,
+        liquidityProviderFeeString,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
@@ -148,7 +148,7 @@ export default function LimitExtraInfo(props: propsIF) {
             title: 'Current Rebate Rate',
             tooltipTitle:
                 'The current provider fee for market orders. Provider fees are effectively rebated for limit orders.',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFeeString}%`,
         },
     ];
 
