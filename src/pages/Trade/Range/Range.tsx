@@ -549,6 +549,7 @@ export default function Range(props: propsIF) {
         tradeData.advancedMode,
         denominationsInBase,
         currentPoolPriceTick,
+        baseToken.address + quoteToken.address,
     ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
