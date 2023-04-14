@@ -56,6 +56,7 @@ import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
 import TermsOfService from '../pages/TermsOfService/TermsOfService';
+import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
@@ -141,6 +142,7 @@ import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
@@ -221,7 +223,6 @@ export default function App() {
     // it should be removed when the chatToS line is moved
     // please and thank you
     false && chatToS;
-    false && walletToS;
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
@@ -3006,6 +3007,14 @@ export default function App() {
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
+    // hook to track user's sidebar preference open or closed
+    // also functions to toggle sidebar status between open and closed
+    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] =
+        useSidebar(location.pathname);
+    // these lines are just here to make the linter happy
+    // take them out before production, they serve no other purpose
+    false && sidebarStatus;
+
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
@@ -3674,7 +3683,27 @@ export default function App() {
                             element={<Swap {...swapProps} />}
                         />
                         <Route path='tos' element={<TermsOfService />} />
-
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='testpage'
+                                element={
+                                    <TestPage
+                                        openGlobalModal={openGlobalModal}
+                                        openSidebar={openSidebar}
+                                        closeSidebar={closeSidebar}
+                                        togggggggleSidebar={togggggggleSidebar}
+                                        walletToS={walletToS}
+                                        chartSettings={chartSettings}
+                                        bypassConf={{
+                                            swap: bypassConfirmSwap,
+                                            limit: bypassConfirmLimit,
+                                            range: bypassConfirmRange,
+                                            repo: bypassConfirmRepo,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
                         <Route
                             path='/:address'
                             element={
