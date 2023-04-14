@@ -592,7 +592,7 @@ export default function App() {
                 jsonrpc: '2.0',
                 method: 'eth_blockNumber',
                 params: [],
-                id: 'app-blockNum-sub',
+                id: 'app-blockNum-sub', // Arbitary string (see JSON-RPC spec)
             }),
         })
             .then((response) => response?.json())
