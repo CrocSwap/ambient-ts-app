@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './RangeExtraInfo.module.css';
@@ -145,7 +145,13 @@ export default function RangeExtraInfo(props: propsIF) {
             >
                 {conversionRateDisplay}
             </div>
-            {showExtraInfoDropdown && <RiArrowDownSLine size={27} />}
+
+            {showExtraInfoDropdown && !showExtraDetails && (
+                <RiArrowDownSLine size={22} />
+            )}
+            {showExtraInfoDropdown && showExtraDetails && (
+                <RiArrowUpSLine size={22} />
+            )}
         </button>
     );
 

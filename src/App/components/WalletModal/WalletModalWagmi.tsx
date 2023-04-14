@@ -14,6 +14,8 @@ import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
 import { checkBlacklist } from '../../../utils/data/blacklist';
 import { IS_LOCAL_ENV } from '../../../constants';
+import GateWallet from './GateWallet';
+import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -260,16 +262,25 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         }
     }, [page]);
 
+    const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
+
     return (
-        <div className={styles.wallet_modal}>
+        <div className={styles.wallet_modal} style={{ width: '500px' }}>
             <Modal
                 onClose={closeModalWallet}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
-                title={activeTitle}
+                title={!hasAgreedTerms ? 'Launch App' : activeTitle}
                 centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
             >
-                {activeContent}
+                {!hasAgreedTerms ? (
+                    <GateWallet
+                        recordAgreed={recordAgreed}
+                        termUrls={termUrls}
+                    />
+                ) : (
+                    activeContent
+                )}
             </Modal>
         </div>
     );

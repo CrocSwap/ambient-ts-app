@@ -1,0 +1,44 @@
+.main_container{
+    width: 407px;
+ 
+    height: 280px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: space-between;
+    padding: 8px;
+    
+}
+
+.main_container section{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.first_section{
+    display: flex;
+    justify-content: center;
+    /* align-items: center;
+    text-align: center; */
+    margin-top: 3rem;
+}
+
+
+
+.main_container p{
+    color: var(--text-grey-white);
+    font-size: 12;
+    line-height: var(--body-lh);
+}
+
+.checkbox{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.main_container a{
+    color: var(--text-highlight-dark)
+}

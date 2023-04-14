@@ -85,8 +85,7 @@ export default function SelectedRange(props: propsIF) {
                     <p className={styles.price_range_amount}>{value}</p>
                     <p className={styles.price_range_title}>{tokens}</p>
                     <p className={styles.price_range_info}>
-                        Your position will be 100% composed of {currentToken} at
-                        this price.
+                        Your position will be 100% {currentToken} at this price.
                     </p>
                 </div>
             </div>

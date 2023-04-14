@@ -235,13 +235,11 @@ export default function Limit(props: propsIF) {
         if (!tradeData.shouldLimitDirectionReverse) {
             dispatch(setLimitTick(undefined));
         }
-        dispatch(setLimitTick(undefined));
     }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
 
     useEffect(() => {
         (async () => {
             if (limitTick === undefined && crocEnv && !limitTickCopied) {
-                // console.log('resetting limit to default');
                 if (!pool) return;
 
                 const spotPrice = await cachedQuerySpotPrice(
@@ -281,7 +279,6 @@ export default function Limit(props: propsIF) {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                               });
-                    IS_LOCAL_ENV && console.debug({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -301,43 +298,35 @@ export default function Limit(props: propsIF) {
 
                 if (isDenomBase) {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(priceFullTickBelow);
                     });
                 } else {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickBelow);
                     });
@@ -451,24 +440,24 @@ export default function Limit(props: propsIF) {
             }  Price`,
         );
 
-    useEffect(() => {
-        if (!crocEnv) {
-            return;
-        }
-        if (!limitTick) return;
+    const updateOrderValidityStatus = async () => {
+        try {
+            if (!crocEnv) {
+                return;
+            }
+            if (!limitTick) return;
 
-        const testOrder = isTokenAPrimary
-            ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
-            : crocEnv.buy(tokenPair.dataTokenA.address, 0);
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
+                : crocEnv.buy(tokenPair.dataTokenB.address, 0);
 
-        const ko = testOrder.atLimit(
-            isTokenAPrimary
-                ? tokenPair.dataTokenB.address
-                : tokenPair.dataTokenA.address,
-            limitTick,
-        );
+            const ko = testOrder.atLimit(
+                isTokenAPrimary
+                    ? tokenPair.dataTokenB.address
+                    : tokenPair.dataTokenA.address,
+                limitTick,
+            );
 
-        (async () => {
             if (await ko.willMintFail()) {
                 updateLimitErrorMessage();
                 setIsOrderValid(false);
@@ -476,11 +465,19 @@ export default function Limit(props: propsIF) {
             } else {
                 setIsOrderValid(true);
             }
-        })();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        updateOrderValidityStatus();
     }, [
+        isTokenAPrimary,
         limitTick,
         poolPriceNonDisplay,
         tokenPair.dataTokenA.address + tokenPair.dataTokenB.address,
+        tokenAInputQty === '' && tokenBInputQty === '',
     ]);
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
@@ -873,6 +870,7 @@ export default function Limit(props: propsIF) {
         openGlobalPopup: openGlobalPopup,
         dexBalancePrefs: dexBalancePrefs,
         ackTokens: ackTokens,
+        isOrderValid: isOrderValid,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
