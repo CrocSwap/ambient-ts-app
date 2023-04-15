@@ -31,6 +31,7 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
+    setLastBlockPoll,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -582,8 +583,8 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    useEffect(() => {
-        fetch(chainData.nodeUrl, {
+    function pollBlockNum(): Promise<void> {
+        return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -597,23 +598,38 @@ export default function App() {
             }),
         })
             .then((response) => response?.json())
-
-            .then((json) => {
-                if (lastBlockNumber !== parseInt(json?.result)) {
-                    setLastBlockNumber(parseInt(json?.result));
-                    dispatch(setLastBlock(parseInt(json?.result)));
+            .then((json) => json?.result)
+            .then(parseInt)
+            .then((blockNum) => {
+                if (blockNum > lastBlockNumber) {
+                    setLastBlockNumber(blockNum);
+                    dispatch(setLastBlock(blockNum));
                 }
             })
             .catch(console.error);
-    }, []);
+    }
+
+    const BLOCK_NUM_POLL_MS = 2000;
+    useEffect(() => {
+        // Don't use polling, useWebSocket (below)
+        if (chainData.wsUrl) {
+            return;
+        }
+
+        // Grab block right away, then poll on periotic basis
+        pollBlockNum();
+        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
+        dispatch(setLastBlockPoll(timer));
+    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+
+    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
-    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
-        chainData.wsUrl || '',
-        {
+    const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
+        useWebSocket(chainData.wsUrl || null, {
             onOpen: () => {
-                send(
+                sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
                 );
             },
@@ -625,8 +641,24 @@ export default function App() {
                 }
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-    );
+        });
+
+    useEffect(() => {
+        if (lastNewHeadMessage && lastNewHeadMessage.data) {
+            const lastMessageData = JSON.parse(lastNewHeadMessage.data);
+            if (lastMessageData) {
+                const lastBlockNumberHex =
+                    lastMessageData.params?.result?.number;
+                if (lastBlockNumberHex) {
+                    const newBlockNum = parseInt(lastBlockNumberHex);
+                    if (lastBlockNumber !== newBlockNum) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
+                    }
+                }
+            }
+        }
+    }, [lastNewHeadMessage]);
 
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
@@ -643,27 +675,6 @@ export default function App() {
         IS_LOCAL_ENV && console.debug({ mainnetProvider });
         setMainnetProvider(mainnetProvider);
     }, []);
-
-    useEffect(() => {
-        if (lastNewHeadMessage !== null) {
-            if (lastNewHeadMessage?.data) {
-                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
-                if (lastMessageData) {
-                    const lastBlockNumberHex =
-                        lastMessageData.params?.result?.number;
-                    if (lastBlockNumberHex) {
-                        const newBlockNum = parseInt(lastBlockNumberHex);
-                        if (lastBlockNumber !== newBlockNum) {
-                            setLastBlockNumber(parseInt(lastBlockNumberHex));
-                            dispatch(
-                                setLastBlock(parseInt(lastBlockNumberHex)),
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }, [lastNewHeadMessage]);
 
     const isPairStable = useMemo(
         () =>

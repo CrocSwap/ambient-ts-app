@@ -4,6 +4,7 @@ import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
     lastBlock: number;
+    lastBlockPoll?: NodeJS.Timer;
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
@@ -281,6 +282,10 @@ export const graphDataSlice = createSlice({
     reducers: {
         setLastBlock: (state, action: PayloadAction<number>) => {
             state.lastBlock = action.payload;
+        },
+        setLastBlockPoll: (state, action: PayloadAction<NodeJS.Timer>) => {
+            clearInterval(state.lastBlockPoll);
+            state.lastBlockPoll = action.payload;
         },
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
@@ -723,6 +728,7 @@ export const graphDataSlice = createSlice({
 // action creators are generated for each case reducer function
 export const {
     setLastBlock,
+    setLastBlockPoll,
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,
