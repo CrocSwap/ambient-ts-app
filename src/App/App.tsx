@@ -377,10 +377,11 @@ export default function App() {
               'true'
             : true;
 
-    const isChatEnabled =
+    const [isChatEnabled, setIsChatEnabled] = useState(
         process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true;
+            : true,
+    );
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
@@ -684,10 +685,10 @@ export default function App() {
 
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
+    const sessionReceipts = receiptData?.sessionReceipts;
+
     const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(receiptData.sessionReceipts[0])
-            : null;
+        sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
@@ -914,7 +915,13 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [crocEnv, baseTokenAddress, quoteTokenAddress, chainData.chainId]);
+    }, [
+        crocEnv,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainData.chainId,
+        sessionReceipts.length,
+    ]);
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -3450,6 +3457,7 @@ export default function App() {
                                     username={ensName}
                                     appPage={true}
                                     topPools={topPools}
+                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3473,6 +3481,7 @@ export default function App() {
                                     appPage={true}
                                     username={ensName}
                                     topPools={topPools}
+                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3489,7 +3498,6 @@ export default function App() {
                                     gasPriceInGwei={gasPriceInGwei}
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
-                                    tokenPair={tokenPair}
                                     openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
@@ -3682,25 +3690,27 @@ export default function App() {
                             element={<Swap {...swapProps} />}
                         />
                         <Route path='tos' element={<TermsOfService />} />
-                        <Route
-                            path='testpage'
-                            element={
-                                <TestPage
-                                    openGlobalModal={openGlobalModal}
-                                    openSidebar={openSidebar}
-                                    closeSidebar={closeSidebar}
-                                    togggggggleSidebar={togggggggleSidebar}
-                                    walletToS={walletToS}
-                                    chartSettings={chartSettings}
-                                    bypassConf={{
-                                        swap: bypassConfirmSwap,
-                                        limit: bypassConfirmLimit,
-                                        range: bypassConfirmRange,
-                                        repo: bypassConfirmRepo,
-                                    }}
-                                />
-                            }
-                        />
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='testpage'
+                                element={
+                                    <TestPage
+                                        openGlobalModal={openGlobalModal}
+                                        openSidebar={openSidebar}
+                                        closeSidebar={closeSidebar}
+                                        togggggggleSidebar={togggggggleSidebar}
+                                        walletToS={walletToS}
+                                        chartSettings={chartSettings}
+                                        bypassConf={{
+                                            swap: bypassConfirmSwap,
+                                            limit: bypassConfirmLimit,
+                                            range: bypassConfirmRange,
+                                            repo: bypassConfirmRepo,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
                         <Route
                             path='/:address'
                             element={
@@ -3806,6 +3816,7 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
+                            setIsChatEnabled={setIsChatEnabled}
                         />
                     )}
             </div>
