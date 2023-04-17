@@ -570,9 +570,15 @@ export default function Sidebar(props: propsIF) {
         </>
     );
 
+    const handleClosedSidebarClick = () => {
+        showSidebar ? null : setShowSidebar(true);
+    };
     return (
         <div ref={sidebarRef}>
-            <nav className={`${styles.sidebar} ${sidebarStyle}`}>
+            <nav
+                className={`${styles.sidebar} ${sidebarStyle}`}
+                onClick={handleClosedSidebarClick}
+            >
                 <ul className={styles.sidebar_nav}>
                     {searchContainerDisplay}
                     {isInputValid && showSidebar && searchMode ? (
