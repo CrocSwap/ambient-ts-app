@@ -174,6 +174,21 @@ interface propsIF {
     candleTime: candleTimeIF;
 }
 
+export function setCanvasResolution(canvas: HTMLCanvasElement) {
+    const ratio = window.devicePixelRatio;
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    if (canvas !== null) {
+        const width = canvas.width;
+        const height = canvas.height;
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        context.scale(ratio, ratio);
+    }
+}
+
 export default function Chart(props: propsIF) {
     const {
         isUserLoggedIn,
@@ -3260,23 +3275,6 @@ export default function Chart(props: propsIF) {
         setBandwidth(defaultCandleBandwith);
     }, [reset]);
 
-    function setCanvasResolution(canvas: HTMLCanvasElement) {
-        const ratio = window.devicePixelRatio;
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        if (canvas !== null) {
-            const width = canvas.width;
-            const height = canvas.height;
-            canvas.width = width * ratio;
-            canvas.height = height * ratio;
-
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            context.scale(ratio, ratio);
-
-            renderCanvas();
-        }
-    }
-
     // Axis's
     useEffect(() => {
         if (scaleData) {
@@ -4673,10 +4671,12 @@ export default function Chart(props: propsIF) {
             if (limitLine && triangle) {
                 d3.select(d3CanvasLimitLine.current)
                     .on('draw', () => {
-                        setCanvasResolution(canvas);
-                        ctx.setLineDash([16, 16]);
-                        limitLine(limit);
-                        triangle(limitTriangleData);
+                        if (location.pathname.includes('/limit')) {
+                            setCanvasResolution(canvas);
+                            ctx.setLineDash([16, 16]);
+                            limitLine(limit);
+                            triangle(limitTriangleData);
+                        }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([16, 16]);
@@ -4701,10 +4701,15 @@ export default function Chart(props: propsIF) {
             if (horizontalLine && triangle) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
-                        setCanvasResolution(canvas);
-                        ctx.setLineDash([16, 16]);
-                        horizontalLine(ranges);
-                        triangle(rangeTriangleData);
+                        if (
+                            location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                        ) {
+                            setCanvasResolution(canvas);
+                            ctx.setLineDash([16, 16]);
+                            horizontalLine(ranges);
+                            triangle(rangeTriangleData);
+                        }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([16, 16]);
@@ -4713,7 +4718,7 @@ export default function Chart(props: propsIF) {
                     });
             }
         }
-    }, [ranges, horizontalLine, dragEvent, triangle]);
+    }, [ranges, horizontalLine, dragEvent, triangle, location.pathname]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
