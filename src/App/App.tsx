@@ -179,6 +179,7 @@ import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
+import useChatApi from '../components/Chat/Service/ChatApi';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -3005,6 +3006,17 @@ export default function App() {
         !fullScreenChart &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
+    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
+    const { getStatus } = useChatApi();
+    useEffect(() => {
+        const interval = setInterval(() => {
+            getStatus().then((isChatUp) => {
+                setIsChatEnabled(isChatUp);
+            });
+        }, 10000);
+        return () => clearInterval(interval);
+    }, [isChatEnabled]);
+
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
             setFullScreenChart(false);
@@ -3468,7 +3480,6 @@ export default function App() {
                                     username={ensName}
                                     appPage={true}
                                     topPools={topPools}
-                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3492,7 +3503,6 @@ export default function App() {
                                     appPage={true}
                                     username={ensName}
                                     topPools={topPools}
-                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3827,7 +3837,6 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
-                            setIsChatEnabled={setIsChatEnabled}
                         />
                     )}
             </div>
