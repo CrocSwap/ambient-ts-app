@@ -5928,14 +5928,9 @@ export default function Chart(props: propsIF) {
             return 'bidLiq';
         });
 
-        const topPlacement =
-            event.y -
-            80 -
-            (event.offsetY - scaleData?.yScale(poolPriceDisplay)) / 2;
-
         liqTooltip
             .style('visibility', 'visible')
-            .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
+            .style('top', event.pageY - 80 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
         liquidityData.liqHighligtedAskSeries = [];
@@ -6014,14 +6009,9 @@ export default function Chart(props: propsIF) {
             });
         }
 
-        const topPlacement =
-            event.y -
-            80 -
-            (event.offsetY - scaleData?.yScale(poolPriceDisplay)) / 2;
-
         liqTooltip
             .style('visibility', 'visible')
-            .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
+            .style('top', event.pageY - 80 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
         const canvas = d3
