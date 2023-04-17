@@ -2601,8 +2601,8 @@ export default function Chart(props: propsIF) {
     function adjTicks(linePrice: any) {
         const boundary =
             liqMode === 'depth'
-                ? liquidityData.liqBoundaryDepth
-                : liquidityData.liqBoundaryCurve;
+                ? liquidityData?.liqBoundaryDepth
+                : liquidityData?.liqBoundaryCurve;
 
         const factors = [0.995, 0.99, 0.985, 1.005, 1.01, 1.015];
         const result: { tickValue: number }[] = [];
@@ -2768,7 +2768,7 @@ export default function Chart(props: propsIF) {
                                 return newTargets;
                             });
                             setTriangleRangeValues(
-                                liquidityData.topBoundary,
+                                liquidityData?.topBoundary,
                                 minValue,
                             );
                         } else {
@@ -3260,6 +3260,23 @@ export default function Chart(props: propsIF) {
         setBandwidth(defaultCandleBandwith);
     }, [reset]);
 
+    function setCanvasResolution(canvas: HTMLCanvasElement) {
+        const ratio = window.devicePixelRatio;
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        if (canvas !== null) {
+            const width = canvas.width;
+            const height = canvas.height;
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            context.scale(ratio, ratio);
+
+            renderCanvas();
+        }
+    }
+
     // Axis's
     useEffect(() => {
         if (scaleData) {
@@ -3289,12 +3306,15 @@ export default function Chart(props: propsIF) {
             const d3YaxisCanvas = d3
                 .select(d3Yaxis.current)
                 .select('canvas')
-                .node() as any;
+                .node() as HTMLCanvasElement;
 
-            const d3YaxisContext = d3YaxisCanvas.getContext('2d');
+            const d3YaxisContext = d3YaxisCanvas.getContext(
+                '2d',
+            ) as CanvasRenderingContext2D;
 
             d3.select(d3Yaxis.current).on('draw', function () {
                 if (yAxis) {
+                    setCanvasResolution(canvas);
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
@@ -3306,17 +3326,18 @@ export default function Chart(props: propsIF) {
             const canvas = d3
                 .select(d3Xaxis.current)
                 .select('canvas')
-                .node() as any;
-            const context = canvas.getContext('2d');
+                .node() as HTMLCanvasElement;
+            const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
             d3.select(d3Xaxis.current).on('draw', function () {
                 if (xAxis) {
+                    setCanvasResolution(canvas);
                     drawXaxis(context, scaleData?.xScale, 3);
                 }
             });
         }
     }, [
-        scaleData,
+        sum(scaleData),
         market,
         sum(crosshairData),
         isMouseMoveCrosshair,
@@ -4240,7 +4261,7 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                setTriangleRangeValues(liquidityData.topBoundary, 0);
+                setTriangleRangeValues(liquidityData?.topBoundary, 0);
             } else {
                 if (lineToBeSet === 'Max') {
                     tickValue = getPinnedTickFromDisplayPrice(
@@ -4481,12 +4502,13 @@ export default function Chart(props: propsIF) {
         const canvas = d3
             .select(d3CanvasCandle.current)
             .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         if (candlestick) {
             d3.select(d3CanvasCandle.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     candlestick(parsedChartData?.chartData);
                 })
                 .on('measure', (event: any) => {
@@ -4526,12 +4548,13 @@ export default function Chart(props: propsIF) {
         const canvas = d3
             .select(d3CanvasBand.current)
             .select('canvas')
-            .node() as any;
+            .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
         if (horizontalBand) {
             d3.select(d3CanvasBand.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     horizontalBand(horizontalBandData);
                 })
                 .on('measure', () => {
@@ -4544,12 +4567,13 @@ export default function Chart(props: propsIF) {
         const canvas = d3
             .select(d3CanvasCrHorizontal.current)
             .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         if (crosshairHorizontalCanvas) {
             d3.select(d3CanvasCrHorizontal.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
                     crosshairHorizontalCanvas(crosshairData);
                 })
@@ -4564,12 +4588,13 @@ export default function Chart(props: propsIF) {
         const canvas = d3
             .select(d3CanvasCrVertical.current)
             .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         if (crosshairVertical) {
             d3.select(d3CanvasCrVertical.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
                     if (isCrosshairActive === 'chart') {
                         crosshairVertical(crosshairData);
@@ -4588,12 +4613,13 @@ export default function Chart(props: propsIF) {
         const canvas = d3
             .select(d3CanvasMarketLine.current)
             .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         if (marketLine) {
             d3.select(d3CanvasMarketLine.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     ctx.setLineDash([4, 2]);
                     marketLine(market);
                 })
@@ -4609,12 +4635,13 @@ export default function Chart(props: propsIF) {
             const canvas = d3
                 .select(d3CanvasLimitLine.current)
                 .select('canvas')
-                .node() as any;
-            const ctx = canvas.getContext('2d');
+                .node() as HTMLCanvasElement;
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
             if (limitLine && triangle) {
                 d3.select(d3CanvasLimitLine.current)
                     .on('draw', () => {
+                        setCanvasResolution(canvas);
                         ctx.setLineDash([16, 16]);
                         limitLine(limit);
                         triangle(limitTriangleData);
@@ -4636,12 +4663,13 @@ export default function Chart(props: propsIF) {
             const canvas = d3
                 .select(d3CanvasRangeLine.current)
                 .select('canvas')
-                .node() as any;
-            const ctx = canvas.getContext('2d');
+                .node() as HTMLCanvasElement;
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
             if (horizontalLine && triangle) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
+                        setCanvasResolution(canvas);
                         ctx.setLineDash([16, 16]);
                         horizontalLine(ranges);
                         triangle(rangeTriangleData);
@@ -4690,13 +4718,16 @@ export default function Chart(props: propsIF) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
-        const ctx = (
-            d3.select(d3CanvasBar.current).select('canvas').node() as any
-        ).getContext('2d');
+        const canvas = d3
+            .select(d3CanvasBar.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
 
         if (barSeries) {
             d3.select(d3CanvasBar.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     barSeries(volumeData);
                 })
                 .on('measure', () => {
@@ -5105,20 +5136,22 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const ctx = (
-            d3.select(d3CanvasLiqAsk.current).select('canvas').node() as any
-        ).getContext('2d');
+        const canvas = d3
+            .select(d3CanvasLiqAsk.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
 
-        const ctxDepth = (
-            d3
-                .select(d3CanvasLiqAskDepth.current)
-                .select('canvas')
-                .node() as any
-        ).getContext('2d');
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepth.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctxDepth = canvasDepth.getContext('2d');
 
         if (liqAskSeries && liquidityData?.liqAskData) {
             d3.select(d3CanvasLiqAsk.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     liqAskSeries(liquidityData?.liqAskData);
                 })
                 .on('measure', () => {
@@ -5128,6 +5161,7 @@ export default function Chart(props: propsIF) {
         if (liqAskDepthSeries && liquidityData?.liqAskData) {
             d3.select(d3CanvasLiqAskDepth.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvasDepth);
                     liqAskDepthSeries(liquidityData?.depthLiqAskData);
                 })
                 .on('measure', () => {
@@ -5186,20 +5220,22 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const ctx = (
-            d3.select(d3CanvasLiqBid.current).select('canvas').node() as any
-        ).getContext('2d');
+        const canvas = d3
+            .select(d3CanvasLiqBid.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
 
-        const ctxDepth = (
-            d3
-                .select(d3CanvasLiqBidDepth.current)
-                .select('canvas')
-                .node() as any
-        ).getContext('2d');
+        const canvasDepth = d3
+            .select(d3CanvasLiqBidDepth.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctxDepth = canvasDepth.getContext('2d');
 
         if (liqBidSeries && liquidityData?.liqBidData) {
             d3.select(d3CanvasLiqBid.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     liqBidSeries(liquidityData?.liqBidData);
                 })
                 .on('measure', () => {
@@ -5210,6 +5246,7 @@ export default function Chart(props: propsIF) {
         if (liqBidDepthSeries && liquidityData?.depthLiqBidData) {
             d3.select(d3CanvasLiqBidDepth.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvasDepth);
                     liqBidDepthSeries(
                         isAdvancedModeActive
                             ? liquidityData?.depthLiqBidData
@@ -5245,30 +5282,25 @@ export default function Chart(props: propsIF) {
             const liqDataBidDepth = isAdvancedModeActive
                 ? liquidityData?.depthLiqBidData
                 : liquidityData?.depthLiqBidData.filter(
-                      (d: any) => d.liqPrices <= liquidityData.topBoundary,
+                      (d: any) => d.liqPrices <= liquidityData?.topBoundary,
                   );
 
             const canvas = d3
                 .select(d3CanvasLiqBidLine.current)
                 .select('canvas')
-                .node() as any;
-            const ctx = (
-                d3
-                    .select(d3CanvasLiqBidLine.current)
-                    .select('canvas')
-                    .node() as any
-            ).getContext('2d');
+                .node() as HTMLCanvasElement;
+            const ctx = canvas.getContext('2d');
 
-            const ctxDepth = (
-                d3
-                    .select(d3CanvasLiqBidDepthLine.current)
-                    .select('canvas')
-                    .node() as any
-            ).getContext('2d');
+            const canvasDepth = d3
+                .select(d3CanvasLiqBidDepthLine.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+            const ctxDepth = canvasDepth.getContext('2d');
 
-            if (lineBidSeries && liquidityData.liqBidData && liqBidSeries) {
+            if (lineBidSeries && liquidityData?.liqBidData && liqBidSeries) {
                 d3.select(d3CanvasLiqBidLine.current)
                     .on('draw', () => {
+                        setCanvasResolution(canvas);
                         clipBidHighlightedLines(
                             ctx,
                             canvas.width,
@@ -5284,11 +5316,12 @@ export default function Chart(props: propsIF) {
 
             if (
                 lineBidDepthSeries &&
-                liquidityData.liqBidData &&
+                liquidityData?.liqBidData &&
                 liqBidDepthSeries
             ) {
                 d3.select(d3CanvasLiqBidDepthLine.current)
                     .on('draw', () => {
+                        setCanvasResolution(canvasDepth);
                         clipBidHighlightedLines(
                             ctxDepth,
                             canvas.width,
@@ -5307,8 +5340,8 @@ export default function Chart(props: propsIF) {
         }
     }, [
         sum(scaleData),
-        liquidityData.liqBidData,
-        liquidityData.depthLiqBidData,
+        liquidityData?.liqBidData,
+        liquidityData?.depthLiqBidData,
         lineBidSeries,
         liqBidSeries,
         liqBidDepthSeries,
@@ -5369,27 +5402,26 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        const liqDataAskCurve = liquidityData.liqAskData;
+        const liqDataAskCurve = liquidityData?.liqAskData;
 
-        const liqDataAskDepth = liquidityData.depthLiqAskData;
+        const liqDataAskDepth = liquidityData?.depthLiqAskData;
+
         const canvas = d3
             .select(d3CanvasLiqAskLine.current)
             .select('canvas')
-            .node() as any;
-        const ctx = (
-            d3.select(d3CanvasLiqAskLine.current).select('canvas').node() as any
-        ).getContext('2d');
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
 
-        const ctxDepth = (
-            d3
-                .select(d3CanvasLiqAskDepthLine.current)
-                .select('canvas')
-                .node() as any
-        ).getContext('2d');
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepthLine.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctxDepth = canvasDepth.getContext('2d');
 
         if (lineAskSeries && liqAskSeries) {
             d3.select(d3CanvasLiqAskLine.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     clipAskHighlightedLines(
                         ctx,
                         canvas.width,
@@ -5405,6 +5437,7 @@ export default function Chart(props: propsIF) {
         if (lineAskDepthSeries && liqAskDepthSeries) {
             d3.select(d3CanvasLiqAskDepthLine.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvasDepth);
                     clipAskHighlightedLines(
                         ctxDepth,
                         canvas.width,
@@ -5463,6 +5496,7 @@ export default function Chart(props: propsIF) {
         if (limitNoGoZone && ghostLines) {
             d3.select(d3CanvasNoGoZone.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     if (location.pathname.includes('/limit')) {
                         if (ghostLineValuesLimit !== undefined) {
                             ghostLines(ghostLineValuesLimit);
