@@ -174,6 +174,21 @@ interface propsIF {
     candleTime: candleTimeIF;
 }
 
+export function setCanvasResolution(canvas: HTMLCanvasElement) {
+    const ratio = window.devicePixelRatio;
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    if (canvas !== null) {
+        const width = canvas.width;
+        const height = canvas.height;
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        context.scale(ratio, ratio);
+    }
+}
+
 export default function Chart(props: propsIF) {
     const {
         isUserLoggedIn,
@@ -3259,23 +3274,6 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         setBandwidth(defaultCandleBandwith);
     }, [reset]);
-
-    function setCanvasResolution(canvas: HTMLCanvasElement) {
-        const ratio = window.devicePixelRatio;
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        if (canvas !== null) {
-            const width = canvas.width;
-            const height = canvas.height;
-            canvas.width = width * ratio;
-            canvas.height = height * ratio;
-
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            context.scale(ratio, ratio);
-
-            renderCanvas();
-        }
-    }
 
     // Axis's
     useEffect(() => {
