@@ -403,6 +403,7 @@ export default function PortfolioTabs(props: propsIF) {
         slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
+        setExpandTradeTable: setExpandTradeTable,
     };
 
     // props for <Transactions/> React Element

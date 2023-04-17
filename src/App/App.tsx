@@ -31,6 +31,7 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
+    setLastBlockPoll,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -377,10 +378,11 @@ export default function App() {
               'true'
             : true;
 
-    const isChatEnabled =
+    const [isChatEnabled, setIsChatEnabled] = useState(
         process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true;
+            : true,
+    );
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
@@ -501,7 +503,6 @@ export default function App() {
             return;
         } else if (provider && !crocEnv) {
             const newCrocEnv = new CrocEnv(signer?.provider || provider);
-
             setCrocEnv(newCrocEnv);
         } else {
             // If signer and provider are set to different chains (as can happen)
@@ -582,8 +583,8 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    useEffect(() => {
-        fetch(chainData.nodeUrl, {
+    function pollBlockNum(): Promise<void> {
+        return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -593,27 +594,42 @@ export default function App() {
                 jsonrpc: '2.0',
                 method: 'eth_blockNumber',
                 params: [],
-                id: 5,
+                id: 'app-blockNum-sub', // Arbitary string (see JSON-RPC spec)
             }),
         })
             .then((response) => response?.json())
-
-            .then((json) => {
-                if (lastBlockNumber !== parseInt(json?.result)) {
-                    setLastBlockNumber(parseInt(json?.result));
-                    dispatch(setLastBlock(parseInt(json?.result)));
+            .then((json) => json?.result)
+            .then(parseInt)
+            .then((blockNum) => {
+                if (blockNum > lastBlockNumber) {
+                    setLastBlockNumber(blockNum);
+                    dispatch(setLastBlock(blockNum));
                 }
             })
             .catch(console.error);
-    }, []);
+    }
+
+    const BLOCK_NUM_POLL_MS = 2000;
+    useEffect(() => {
+        // Don't use polling, useWebSocket (below)
+        if (chainData.wsUrl) {
+            return;
+        }
+
+        // Grab block right away, then poll on periotic basis
+        pollBlockNum();
+        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
+        dispatch(setLastBlockPoll(timer));
+    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+
+    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
-    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
-        chainData.wsUrl || '',
-        {
+    const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
+        useWebSocket(chainData.wsUrl || null, {
             onOpen: () => {
-                send(
+                sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
                 );
             },
@@ -625,8 +641,24 @@ export default function App() {
                 }
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-    );
+        });
+
+    useEffect(() => {
+        if (lastNewHeadMessage && lastNewHeadMessage.data) {
+            const lastMessageData = JSON.parse(lastNewHeadMessage.data);
+            if (lastMessageData) {
+                const lastBlockNumberHex =
+                    lastMessageData.params?.result?.number;
+                if (lastBlockNumberHex) {
+                    const newBlockNum = parseInt(lastBlockNumberHex);
+                    if (lastBlockNumber !== newBlockNum) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
+                    }
+                }
+            }
+        }
+    }, [lastNewHeadMessage]);
 
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
@@ -643,27 +675,6 @@ export default function App() {
         IS_LOCAL_ENV && console.debug({ mainnetProvider });
         setMainnetProvider(mainnetProvider);
     }, []);
-
-    useEffect(() => {
-        if (lastNewHeadMessage !== null) {
-            if (lastNewHeadMessage?.data) {
-                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
-                if (lastMessageData) {
-                    const lastBlockNumberHex =
-                        lastMessageData.params?.result?.number;
-                    if (lastBlockNumberHex) {
-                        const newBlockNum = parseInt(lastBlockNumberHex);
-                        if (lastBlockNumber !== newBlockNum) {
-                            setLastBlockNumber(parseInt(lastBlockNumberHex));
-                            dispatch(
-                                setLastBlock(parseInt(lastBlockNumberHex)),
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }, [lastNewHeadMessage]);
 
     const isPairStable = useMemo(
         () =>
@@ -685,10 +696,10 @@ export default function App() {
 
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
+    const sessionReceipts = receiptData?.sessionReceipts;
+
     const lastReceipt =
-        receiptData?.sessionReceipts.length > 0
-            ? JSON.parse(receiptData.sessionReceipts[0])
-            : null;
+        sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
@@ -915,7 +926,13 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [crocEnv, baseTokenAddress, quoteTokenAddress, chainData.chainId]);
+    }, [
+        crocEnv,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainData.chainId,
+        sessionReceipts.length,
+    ]);
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -3316,6 +3333,7 @@ export default function App() {
                                             range: bypassConfirmRange,
                                             repo: bypassConfirmRepo,
                                         }}
+                                        openGlobalPopup={openGlobalPopup}
                                     />
                                 }
                             />
@@ -3450,6 +3468,7 @@ export default function App() {
                                     username={ensName}
                                     appPage={true}
                                     topPools={topPools}
+                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3473,6 +3492,7 @@ export default function App() {
                                     appPage={true}
                                     username={ensName}
                                     topPools={topPools}
+                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3489,7 +3509,6 @@ export default function App() {
                                     gasPriceInGwei={gasPriceInGwei}
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
-                                    tokenPair={tokenPair}
                                     openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
@@ -3682,25 +3701,27 @@ export default function App() {
                             element={<Swap {...swapProps} />}
                         />
                         <Route path='tos' element={<TermsOfService />} />
-                        <Route
-                            path='testpage'
-                            element={
-                                <TestPage
-                                    openGlobalModal={openGlobalModal}
-                                    openSidebar={openSidebar}
-                                    closeSidebar={closeSidebar}
-                                    togggggggleSidebar={togggggggleSidebar}
-                                    walletToS={walletToS}
-                                    chartSettings={chartSettings}
-                                    bypassConf={{
-                                        swap: bypassConfirmSwap,
-                                        limit: bypassConfirmLimit,
-                                        range: bypassConfirmRange,
-                                        repo: bypassConfirmRepo,
-                                    }}
-                                />
-                            }
-                        />
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='testpage'
+                                element={
+                                    <TestPage
+                                        openGlobalModal={openGlobalModal}
+                                        openSidebar={openSidebar}
+                                        closeSidebar={closeSidebar}
+                                        togggggggleSidebar={togggggggleSidebar}
+                                        walletToS={walletToS}
+                                        chartSettings={chartSettings}
+                                        bypassConf={{
+                                            swap: bypassConfirmSwap,
+                                            limit: bypassConfirmLimit,
+                                            range: bypassConfirmRange,
+                                            repo: bypassConfirmRepo,
+                                        }}
+                                    />
+                                }
+                            />
+                        )}
                         <Route
                             path='/:address'
                             element={
@@ -3806,6 +3827,7 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
+                            setIsChatEnabled={setIsChatEnabled}
                         />
                     )}
             </div>
