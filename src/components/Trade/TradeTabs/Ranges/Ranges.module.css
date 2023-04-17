@@ -37,7 +37,6 @@
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-
 }
 
 .footer {
@@ -258,6 +257,33 @@
 .row_container:focus-visible,
 .row_container li:focus-visible {
     border: 1px solid var(--text-grey-white);
+}
+
+.view_more_container {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.view_more_button {
+    background: var(--dark3);
+    border: none;
+    outline: none;
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: all var(--animation-speed) ease-in-out;
+    white-space: nowrap;
+    height: 23px;
+    padding: 1px 12px;
+    text-decoration: none;
+    border-radius: 6.25rem;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--text-grey-light);
+}
+
+.view_more_button:hover {
+    color: var(--text-grey-white);
 }
 
 /* tooltips */

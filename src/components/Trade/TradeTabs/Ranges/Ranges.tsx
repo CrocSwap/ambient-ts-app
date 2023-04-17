@@ -42,6 +42,9 @@ import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 
+const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
+// NOTE: this is done to improve rendering speed for this page.
+
 // interface for props
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
@@ -61,14 +64,15 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    expandTradeTable: boolean;
+    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
-    isOnPortfolioPage: boolean;
+    isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
@@ -98,6 +102,7 @@ export default function Ranges(props: propsIF) {
         graphData,
         lastBlockNumber,
         expandTradeTable,
+        setExpandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
         account,
@@ -560,11 +565,31 @@ export default function Ranges(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
-        expandTradeTable && !isOnPortfolioPage && largeScreenView ? (
-            currentRowItemContent
-        ) : (
-            sortedRowItemContent
-        )
+        <div>
+            {expandTradeTable && largeScreenView
+                ? currentRowItemContent
+                : props.isOnPortfolioPage
+                ? sortedRowItemContent
+                : sortedRowItemContent.slice(0, NUM_RANGES_WHEN_COLLAPSED)}
+            {
+                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
+                // TODO (#1804): we should instead be adding results to RTK
+                !expandTradeTable &&
+                    !props.isOnPortfolioPage &&
+                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                        <div className={styles.view_more_container}>
+                            <button
+                                className={styles.view_more_button}
+                                onClick={() => {
+                                    setExpandTradeTable(true);
+                                }}
+                            >
+                                View More
+                            </button>
+                        </div>
+                    )
+            }
+        </div>
     ) : (
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}

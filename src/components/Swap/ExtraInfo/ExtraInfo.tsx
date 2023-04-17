@@ -23,7 +23,7 @@ interface propsIF {
     priceImpact: CrocImpact | undefined;
     poolPriceDisplay: number;
     slippageTolerance: number;
-    liquidityProviderFee: number;
+    liquidityProviderFeeString: string;
     quoteTokenIsBuy: boolean;
     swapGasPriceinDollars: string | undefined;
     didUserFlipDenom: boolean;
@@ -41,7 +41,7 @@ export default function ExtraInfo(props: propsIF) {
         displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
-        liquidityProviderFee,
+        liquidityProviderFeeString,
         swapGasPriceinDollars,
         isOnTradeRoute,
         account,
@@ -118,7 +118,7 @@ export default function ExtraInfo(props: propsIF) {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
-            data: `${liquidityProviderFee * 100} %`,
+            data: `${liquidityProviderFeeString} %`,
             placement: 'bottom',
         },
     ];

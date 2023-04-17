@@ -1,10 +1,10 @@
-import { CHAIN_SPECS } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { mainnet, goerli, arbitrumGoerli } from 'wagmi/chains';
+import { Chain as WagmiChain } from 'wagmi';
 
 // function to validate any given value as a proper id for a supported chain
 export function validateChainId(chainIdToValidate: string): boolean {
-    CHAIN_SPECS;
-    return chainIdToValidate in CHAIN_SPECS;
+    return getSupportedChainIds().includes(chainIdToValidate);
 }
 
 // Lists the chain IDs that app should be supported by network selectors and the like
@@ -42,7 +42,7 @@ export function getChainExplorer(chainId: string | number): string {
 // Used for testnets, so we can render real-world data in the testnet application
 export function mktDataChainId(chainId: string): string {
     if (chainId in MKT_DATA_CHAIN_MAP) {
-        return MKT_DATA_CHAIN_MAP[chainId as ChainIdType];
+        return MKT_DATA_CHAIN_MAP[chainId as TestnetChainIdTypes];
     } else {
         return chainId;
     }
@@ -61,4 +61,20 @@ const MKT_DATA_CHAIN_MAP = {
     '0x66eed': '0x1', // Arbitrum Testnet -> Mainnet
 };
 
-export type ChainIdType = '0x5' | '0x66eed';
+type TestnetChainIdTypes = '0x5' | '0x66eed';
+type ProdChainIdTypes = '0x1';
+export type ChainIdType = TestnetChainIdTypes | ProdChainIdTypes;
+
+/* Returns a list of the Wagmi chains given the application defined supported
+ * chains. Used by wagmi library's configureChain() hook. */
+export function getWagmiChains(): WagmiChain[] {
+    return getSupportedChainIds()
+        .filter((chain) => chain in WAGMI_CHAIN_MAP)
+        .map((chain) => WAGMI_CHAIN_MAP[chain as ChainIdType]);
+}
+
+const WAGMI_CHAIN_MAP = {
+    '0x1': mainnet,
+    '0x5': goerli,
+    '0x66eed': arbitrumGoerli,
+};

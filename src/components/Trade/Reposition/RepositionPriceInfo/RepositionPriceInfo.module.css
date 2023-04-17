@@ -16,6 +16,11 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-white);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
 }
 
 .apr_display p:nth-of-type(2){
