@@ -4545,6 +4545,38 @@ export default function Chart(props: propsIF) {
     }, [parsedChartData, candlestick]);
 
     useEffect(() => {
+        if (d3CanvasCandle) {
+            const canvasDiv = d3.select(d3CanvasCandle.current) as any;
+
+            const resizeObserver = new ResizeObserver((entries) => {
+                const width = entries[0].contentRect.width;
+                const height = entries[0].contentRect.height;
+                if (height && width) {
+                    scaleData?.xScale.range([0, width]);
+                    scaleData?.yScale.range([height, 0]);
+
+                    scaleData?.xScaleIndicator.range([(width / 10) * 8, width]);
+
+                    liquidityScale.range([width, (width / 10) * 9]);
+
+                    liquidityDepthScale.range([width, (width / 10) * 9]);
+
+                    scaleData?.volumeScale.range([
+                        height,
+                        height - height / 10,
+                    ]);
+                }
+
+                render();
+            });
+
+            resizeObserver.observe(canvasDiv.node());
+
+            return () => resizeObserver.unobserve(canvasDiv.node());
+        }
+    }, []);
+
+    useEffect(() => {
         const canvas = d3
             .select(d3CanvasBand.current)
             .select('canvas')
