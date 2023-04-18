@@ -377,10 +377,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                 <div
                     className={styles.balance_column}
                     style={{ cursor: 'default' }}
-                    onClick={() => {
-                        // handleMaxButtonClick();
-                        IS_LOCAL_ENV && console.debug('max button clicked');
-                    }}
                 >
                     <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                 </div>
