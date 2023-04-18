@@ -5832,7 +5832,15 @@ export default function Chart(props: propsIF) {
             .select('canvas')
             .node() as any;
 
-        const rect = canvas.getBoundingClientRect();
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepth.current)
+            .select('canvas')
+            .node() as any;
+
+        const rect =
+            liqMode === 'curve'
+                ? canvas.getBoundingClientRect()
+                : canvasDepth.getBoundingClientRect;
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
