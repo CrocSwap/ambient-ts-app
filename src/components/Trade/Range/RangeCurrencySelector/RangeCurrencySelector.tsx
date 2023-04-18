@@ -1,10 +1,4 @@
-import {
-    ChangeEvent,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState,
-} from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { ethers } from 'ethers';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
@@ -22,7 +16,6 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 
@@ -88,8 +81,8 @@ interface propsIF {
         popupTitle?: string,
         popupPlacement?: string,
     ) => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RangeCurrencySelector(props: propsIF) {
@@ -132,8 +125,8 @@ export default function RangeCurrencySelector(props: propsIF) {
         setInput,
         searchType,
         openGlobalPopup,
-        dexBalancePrefs,
         ackTokens,
+        setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -141,18 +134,6 @@ export default function RangeCurrencySelector(props: propsIF) {
     const thisToken = isTokenASelector
         ? tokenPair.dataTokenA
         : tokenPair.dataTokenB;
-
-    useEffect(() => {
-        if (parseFloat(tokenADexBalance) <= 0) {
-            setIsWithdrawTokenAFromDexChecked(false);
-        }
-    }, [tokenADexBalance]);
-
-    useEffect(() => {
-        if (parseFloat(tokenBDexBalance) <= 0) {
-            setIsWithdrawTokenBFromDexChecked(false);
-        }
-    }, [tokenBDexBalance]);
 
     const walletAndSurplusBalanceNonLocaleString = isTokenASelector
         ? tokenADexBalance && gasPriceInGwei
@@ -320,11 +301,22 @@ export default function RangeCurrencySelector(props: propsIF) {
                 <div
                     className={styles.balance_with_pointer}
                     onClick={() => {
-                        dexBalancePrefs.range.drawFromDexBal.disable();
                         if (isTokenASelector) {
                             setIsWithdrawTokenAFromDexChecked(false);
+                            if (
+                                !!tokenADexBalance &&
+                                parseFloat(tokenADexBalance) > 0
+                            ) {
+                                setUserOverrodeSurplusWithdrawalDefault(true);
+                            }
                         } else {
                             setIsWithdrawTokenBFromDexChecked(false);
+                            if (
+                                !!tokenBDexBalance &&
+                                parseFloat(tokenBDexBalance) > 0
+                            ) {
+                                setUserOverrodeSurplusWithdrawalDefault(true);
+                            }
                         }
                     }}
                 >
@@ -362,7 +354,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                             : styles.grey_logo
                     }`}
                     onClick={() => {
-                        dexBalancePrefs.range.drawFromDexBal.enable();
                         if (isTokenASelector) {
                             setIsWithdrawTokenAFromDexChecked(true);
                         } else {
