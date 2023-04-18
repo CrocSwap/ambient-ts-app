@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
+import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
 import { formatAmountOld } from '../../../utils/numbers';
 import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
@@ -14,6 +14,7 @@ interface StatsProps {
     isServerEnabled: boolean;
     userData: userData;
     lastBlockNumber: number;
+    chainId: string;
 }
 
 function StatCard(props: StatCardProps) {
@@ -32,7 +33,7 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats(props: StatsProps) {
-    const { isServerEnabled, userData, lastBlockNumber } = props;
+    const { isServerEnabled, userData, lastBlockNumber, chainId } = props;
 
     const isUserIdle = userData.isUserIdle;
 
@@ -48,7 +49,7 @@ export default function Stats(props: StatsProps) {
 
     useEffect(() => {
         if (isServerEnabled && !isUserIdle)
-            getDexStatsFresh().then((dexStats) => {
+            getChainStatsFresh(chainId).then((dexStats) => {
                 if (dexStats.tvl)
                     setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
                 if (dexStats.volume)

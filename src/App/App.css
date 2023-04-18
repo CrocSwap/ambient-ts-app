@@ -206,6 +206,7 @@ h3:focus-visible, h2:focus-visible, h1:focus-visible, h4:focus-visible, h5:focus
 }
 
 .menu-secondary-enter {
+    position: absolute;
     transform: translateX(110%);
 }
 .menu-secondary-enter-active {
@@ -213,8 +214,25 @@ h3:focus-visible, h2:focus-visible, h1:focus-visible, h4:focus-visible, h5:focus
     transition: all var(--animation-speed) ease;
 }
 .menu-secondary-exit {
+    position: absolute;
 }
 .menu-secondary-exit-active {
+    transform: translateX(110%);
+    transition: all var(--animation-speed) ease;
+}
+
+.menu-tertiary-enter {
+    position: absolute;
+    transform: translateX(110%);
+}
+.menu-tertiary-enter-active {
+    transform: translateX(0%);
+    transition: all var(--animation-speed) ease;
+}
+.menu-tertiary-exit {
+    position: absolute;
+}
+.menu-tertiary-exit-active {
     transform: translateX(110%);
     transition: all var(--animation-speed) ease;
 }
