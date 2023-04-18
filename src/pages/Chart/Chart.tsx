@@ -5730,7 +5730,7 @@ export default function Chart(props: propsIF) {
             nearest?.date.getTime() < lastDate.getTime();
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
-        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY);
+        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
