@@ -151,7 +151,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         openGlobalPopup,
-        dexBalancePrefs,
         ackTokens,
     } = props;
 
@@ -170,9 +169,11 @@ export default function RangeCurrencyConverter(props: propsIF) {
 
     const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+
     const tokenADexBalance = isTokenABase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
+
     const tokenBDexBalance = isTokenABase
         ? quoteTokenDexBalance
         : baseTokenDexBalance;
@@ -221,6 +222,41 @@ export default function RangeCurrencyConverter(props: propsIF) {
             : isWithdrawTokenBFromDexChecked
             ? parseFloat(tokenBBalance || '0')
             : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0);
+
+    const [
+        userOverrodeSurplusWithdrawalDefault,
+        setUserOverrodeSurplusWithdrawalDefault,
+    ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (
+            !isWithdrawTokenAFromDexChecked &&
+            !userOverrodeSurplusWithdrawalDefault &&
+            !!tokenADexBalance &&
+            parseFloat(tokenADexBalance) > 0
+        ) {
+            setIsWithdrawTokenAFromDexChecked(true);
+        }
+    }, [
+        isWithdrawTokenAFromDexChecked,
+        userOverrodeSurplusWithdrawalDefault,
+        tokenADexBalance,
+    ]);
+
+    useEffect(() => {
+        if (
+            !isWithdrawTokenBFromDexChecked &&
+            !userOverrodeSurplusWithdrawalDefault &&
+            !!tokenBDexBalance &&
+            parseFloat(tokenBDexBalance) > 0
+        ) {
+            setIsWithdrawTokenBFromDexChecked(true);
+        }
+    }, [
+        isWithdrawTokenBFromDexChecked,
+        userOverrodeSurplusWithdrawalDefault,
+        tokenBDexBalance,
+    ]);
 
     useEffect(() => {
         if (tradeData.isTokenAPrimaryRange !== isTokenAPrimaryLocal) {
@@ -725,8 +761,9 @@ export default function RangeCurrencyConverter(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs,
         ackTokens: ackTokens,
+        setUserOverrodeSurplusWithdrawalDefault:
+            setUserOverrodeSurplusWithdrawalDefault,
     };
 
     return (
