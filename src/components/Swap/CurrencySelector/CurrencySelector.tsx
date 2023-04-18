@@ -132,20 +132,6 @@ export default function CurrencySelector(props: propsIF) {
         ? tokenPair.dataTokenA
         : tokenPair.dataTokenB;
 
-    // const handleDexBalanceChange = () => {
-    //     if (parseFloat(tokenADexBalance) < 0) {
-    //         setIsWithdrawFromDexChecked(true);
-    //     } else if (dexBalancePrefs.swap.drawFromDexBal.isEnabled) {
-    //         setIsWithdrawFromDexChecked(
-    //             dexBalancePrefs.swap.drawFromDexBal.isEnabled,
-    //         );
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     handleDexBalanceChange();
-    // }, [tokenADexBalance]);
-
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
             ? isSellTokenEth
@@ -223,7 +209,6 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleWalletBalanceClick() {
         if (props.sellToken) {
-            // dexBalancePrefs.swap.drawFromDexBal.disable();
             setIsWithdrawFromDexChecked(false);
             if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
                 setUserOverrodeSurplusWithdrawalDefault(true);
@@ -262,7 +247,6 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleSurplusClick() {
         if (props.sellToken) {
-            // dexBalancePrefs.swap.drawFromDexBal.enable();
             setIsWithdrawFromDexChecked(true);
             if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
                 setUserOverrodeSurplusWithdrawalDefault(false);
