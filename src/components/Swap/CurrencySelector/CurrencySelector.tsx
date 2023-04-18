@@ -87,6 +87,7 @@ interface propsIF {
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -129,6 +130,7 @@ export default function CurrencySelector(props: propsIF) {
         openGlobalPopup,
         dexBalancePrefs,
         ackTokens,
+        setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
     const isSellTokenSelector = fieldId === 'sell';
@@ -229,6 +231,7 @@ export default function CurrencySelector(props: propsIF) {
         if (props.sellToken) {
             dexBalancePrefs.swap.drawFromDexBal.disable();
             setIsWithdrawFromDexChecked(false);
+            setUserOverrodeSurplusWithdrawalDefault(true);
         } else {
             dexBalancePrefs.swap.outputToDexBal.disable();
             setIsSaveAsDexSurplusChecked(false);
@@ -265,6 +268,7 @@ export default function CurrencySelector(props: propsIF) {
         if (props.sellToken) {
             dexBalancePrefs.swap.drawFromDexBal.enable();
             setIsWithdrawFromDexChecked(true);
+            setUserOverrodeSurplusWithdrawalDefault(false);
         } else {
             dexBalancePrefs.swap.outputToDexBal.enable();
             setIsSaveAsDexSurplusChecked(true);
