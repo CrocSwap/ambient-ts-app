@@ -4530,11 +4530,6 @@ export default function Chart(props: propsIF) {
                         ]);
                     }
 
-                    scaleData?.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height - event.detail.height / 10,
-                    ]);
-
                     scaleData?.xScaleCopy.range([0, event.detail.width]);
 
                     candlestick.context(ctx);
@@ -4767,7 +4762,11 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     barSeries(volumeData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    scaleData?.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 5,
+                    ]);
                     barSeries.context(ctx);
                 });
         }
@@ -6762,6 +6761,11 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasBar}
                             className='volume-canvas'
+                            style={{
+                                position: 'relative',
+                                height: '50%',
+                                top: '50%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBidLine}
