@@ -81,6 +81,7 @@ interface propsIF {
     ) => void;
     dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -118,6 +119,7 @@ export default function LimitCurrencySelector(props: propsIF) {
         openGlobalPopup,
         dexBalancePrefs,
         ackTokens,
+        setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
     const thisToken =
@@ -280,6 +282,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                             if (props.sellToken) {
                                 dexBalancePrefs.limit.drawFromDexBal.disable();
                                 setIsWithdrawFromDexChecked(false);
+                                setUserOverrodeSurplusWithdrawalDefault(true);
                             } else {
                                 setIsSaveAsDexSurplusChecked(false);
                                 dexBalancePrefs.limit.outputToDexBal.disable();
@@ -317,6 +320,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                             if (props.sellToken) {
                                 dexBalancePrefs.limit.drawFromDexBal.enable();
                                 setIsWithdrawFromDexChecked(true);
+                                setUserOverrodeSurplusWithdrawalDefault(false);
                             } else {
                                 dexBalancePrefs.limit.outputToDexBal.enable();
                                 setIsSaveAsDexSurplusChecked(true);
