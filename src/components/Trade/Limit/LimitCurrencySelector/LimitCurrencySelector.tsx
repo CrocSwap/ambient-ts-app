@@ -261,7 +261,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                 )
             }
         >
-            Exchange and Wallet Balance <AiOutlineQuestionCircle size={14} />
+            Wallet + Exchange Balance <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
@@ -271,8 +271,8 @@ export default function LimitCurrencySelector(props: propsIF) {
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
-                            ? 'Use wallet balance only'
-                            : 'Withdraw to wallet'
+                            ? 'Use Wallet Balance Only'
+                            : 'Withdraw to Wallet'
                     }`}
                     placement='bottom'
                 >
@@ -282,7 +282,14 @@ export default function LimitCurrencySelector(props: propsIF) {
                             if (props.sellToken) {
                                 dexBalancePrefs.limit.drawFromDexBal.disable();
                                 setIsWithdrawFromDexChecked(false);
-                                setUserOverrodeSurplusWithdrawalDefault(true);
+                                if (
+                                    !!tokenADexBalance &&
+                                    parseFloat(tokenADexBalance) > 0
+                                ) {
+                                    setUserOverrodeSurplusWithdrawalDefault(
+                                        true,
+                                    );
+                                }
                             } else {
                                 setIsSaveAsDexSurplusChecked(false);
                                 dexBalancePrefs.limit.outputToDexBal.disable();
@@ -305,8 +312,8 @@ export default function LimitCurrencySelector(props: propsIF) {
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
-                            ? 'Use exchange and wallet balance'
-                            : 'Add to exchange balance'
+                            ? 'Use Wallet and Exchange Balance'
+                            : 'Add to Exchange Balance'
                     }`}
                     placement='bottom'
                 >
@@ -320,7 +327,14 @@ export default function LimitCurrencySelector(props: propsIF) {
                             if (props.sellToken) {
                                 dexBalancePrefs.limit.drawFromDexBal.enable();
                                 setIsWithdrawFromDexChecked(true);
-                                setUserOverrodeSurplusWithdrawalDefault(false);
+                                if (
+                                    !!tokenADexBalance &&
+                                    parseFloat(tokenADexBalance) > 0
+                                ) {
+                                    setUserOverrodeSurplusWithdrawalDefault(
+                                        false,
+                                    );
+                                }
                             } else {
                                 dexBalancePrefs.limit.outputToDexBal.enable();
                                 setIsSaveAsDexSurplusChecked(true);
@@ -348,7 +362,8 @@ export default function LimitCurrencySelector(props: propsIF) {
                 >
                     <div
                         className={styles.balance_column}
-                        onClick={() => handleMaxButtonClick()}
+                        style={{ cursor: 'default' }}
+                        // onClick={() => handleMaxButtonClick()}
                     >
                         {isUserLoggedIn ? balanceLocaleString : ''}
                     </div>

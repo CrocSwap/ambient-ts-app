@@ -303,7 +303,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                 )
             }
         >
-            Wallet & Exchange Balance <AiOutlineQuestionCircle size={14} />
+            Wallet + Exchange Balance <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
@@ -312,8 +312,8 @@ export default function RangeCurrencySelector(props: propsIF) {
             <IconWithTooltip
                 title={`${
                     tokenAorB === 'A'
-                        ? 'Use wallet balance only'
-                        : 'Withdraw to wallet'
+                        ? 'Use Wallet Balance Only'
+                        : 'Withdraw to Wallet'
                 }`}
                 placement='bottom'
             >
@@ -346,8 +346,8 @@ export default function RangeCurrencySelector(props: propsIF) {
             <IconWithTooltip
                 title={`${
                     tokenAorB === 'A'
-                        ? 'Use exchange and wallet balance'
-                        : 'Add to exchange balance'
+                        ? 'Use  Wallet and Exchange Balance'
+                        : 'Add to Exchange Balance'
                 }`}
                 placement='bottom'
             >
@@ -385,8 +385,9 @@ export default function RangeCurrencySelector(props: propsIF) {
             >
                 <div
                     className={styles.balance_column}
+                    style={{ cursor: 'default' }}
                     onClick={() => {
-                        handleMaxButtonClick();
+                        // handleMaxButtonClick();
                         IS_LOCAL_ENV && console.debug('max button clicked');
                     }}
                 >
