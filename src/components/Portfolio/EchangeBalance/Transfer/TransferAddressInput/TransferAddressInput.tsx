@@ -50,6 +50,11 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
             </div>
+            <p className={styles.address_display}>
+                {sendToAddress && sendToAddress.length > 30
+                    ? sendToAddress
+                    : undefined}
+            </p>
         </div>
     );
 }
