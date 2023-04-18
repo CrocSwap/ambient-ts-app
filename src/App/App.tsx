@@ -51,7 +51,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
-import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
@@ -134,13 +133,6 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
-import Analytics2 from '../pages/Analytics/Analytics2';
-import AnalyticsOverview from '../components/Analytics/AnalyticsOverview/AnalyticsOverview';
-import TopPools from '../components/Analytics/TopPools/TopPools';
-import TrendingPools from '../components/Analytics/TrendingPools/TrendingPools';
-import TopRanges from '../components/Analytics/TopRanges/TopRanges';
-import TopTokens from '../components/Analytics/TopTokens/TopTokens';
-import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
@@ -2930,12 +2922,6 @@ export default function App() {
         topPools: topPools,
     };
 
-    const analyticsProps = {
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        setOutsideControl: setOutsideControl,
-        favePools: favePools,
-    };
-
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
         () =>
             getMoneynessRank(
@@ -3354,110 +3340,6 @@ export default function App() {
                                 path='edit/'
                                 element={
                                     <Navigate to='/trade/market' replace />
-                                }
-                            />
-                        </Route>
-                        <Route
-                            path='analytics'
-                            element={<Analytics {...analyticsProps} />}
-                        />
-                        <Route
-                            path='analytics2'
-                            element={
-                                <Analytics2
-                                    analyticsSearchInput={analyticsSearchInput}
-                                    setAnalyticsSearchInput={
-                                        setAnalyticsSearchInput
-                                    }
-                                />
-                            }
-                        >
-                            <Route
-                                path=''
-                                element={
-                                    <Navigate
-                                        to='/analytics2/overview'
-                                        replace
-                                    />
-                                }
-                            />
-
-                            <Route
-                                path='overview'
-                                element={
-                                    <AnalyticsOverview
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='pools'
-                                element={
-                                    <TopPools
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='trendingpools'
-                                element={
-                                    <TrendingPools
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='ranges/top'
-                                element={
-                                    <TopRanges
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='tokens'
-                                element={
-                                    <TopTokens
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='transactions'
-                                element={
-                                    <AnalyticsTransactions
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
                                 }
                             />
                         </Route>
