@@ -5730,7 +5730,7 @@ export default function Chart(props: propsIF) {
             nearest?.date.getTime() < lastDate.getTime();
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
-        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY);
+        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
@@ -5840,7 +5840,7 @@ export default function Chart(props: propsIF) {
         const rect =
             liqMode === 'curve'
                 ? canvas.getBoundingClientRect()
-                : canvasDepth.getBoundingClientRect;
+                : canvasDepth.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
