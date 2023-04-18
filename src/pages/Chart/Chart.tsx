@@ -5804,7 +5804,7 @@ export default function Chart(props: propsIF) {
         });
 
         const canvas = d3
-            .select(d3CanvasMarketLine.current)
+            .select(d3CanvasLiqAsk.current)
             .select('canvas')
             .node() as any;
 
