@@ -93,8 +93,6 @@ export const useAppChain = (
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
     const chainData = useMemo(() => {
-        console.log('chain data memo', nextChain, currentChain);
-
         let chn;
         try {
             chn = lookupChain(currentChain);

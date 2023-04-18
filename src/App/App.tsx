@@ -31,6 +31,7 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
+    setLastBlockPoll,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -50,7 +51,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
-import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
@@ -133,13 +133,6 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
-import Analytics2 from '../pages/Analytics/Analytics2';
-import AnalyticsOverview from '../components/Analytics/AnalyticsOverview/AnalyticsOverview';
-import TopPools from '../components/Analytics/TopPools/TopPools';
-import TrendingPools from '../components/Analytics/TrendingPools/TrendingPools';
-import TopRanges from '../components/Analytics/TopRanges/TopRanges';
-import TopTokens from '../components/Analytics/TopTokens/TopTokens';
-import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
@@ -178,6 +171,7 @@ import useKeyPress from './hooks/useKeyPress';
 import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
+import useChatApi from '../components/Chat/Service/ChatApi';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -582,8 +576,8 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    useEffect(() => {
-        fetch(chainData.nodeUrl, {
+    function pollBlockNum(): Promise<void> {
+        return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -597,23 +591,38 @@ export default function App() {
             }),
         })
             .then((response) => response?.json())
-
-            .then((json) => {
-                if (lastBlockNumber !== parseInt(json?.result)) {
-                    setLastBlockNumber(parseInt(json?.result));
-                    dispatch(setLastBlock(parseInt(json?.result)));
+            .then((json) => json?.result)
+            .then(parseInt)
+            .then((blockNum) => {
+                if (blockNum > lastBlockNumber) {
+                    setLastBlockNumber(blockNum);
+                    dispatch(setLastBlock(blockNum));
                 }
             })
             .catch(console.error);
-    }, []);
+    }
+
+    const BLOCK_NUM_POLL_MS = 2000;
+    useEffect(() => {
+        // Don't use polling, useWebSocket (below)
+        if (chainData.wsUrl) {
+            return;
+        }
+
+        // Grab block right away, then poll on periotic basis
+        pollBlockNum();
+        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
+        dispatch(setLastBlockPoll(timer));
+    }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+
+    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
-    const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
-        chainData.wsUrl || '',
-        {
+    const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
+        useWebSocket(chainData.wsUrl || null, {
             onOpen: () => {
-                send(
+                sendBlockHeaderSub(
                     '{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}',
                 );
             },
@@ -625,8 +634,24 @@ export default function App() {
                 }
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-    );
+        });
+
+    useEffect(() => {
+        if (lastNewHeadMessage && lastNewHeadMessage.data) {
+            const lastMessageData = JSON.parse(lastNewHeadMessage.data);
+            if (lastMessageData) {
+                const lastBlockNumberHex =
+                    lastMessageData.params?.result?.number;
+                if (lastBlockNumberHex) {
+                    const newBlockNum = parseInt(lastBlockNumberHex);
+                    if (lastBlockNumber !== newBlockNum) {
+                        setLastBlockNumber(parseInt(lastBlockNumberHex));
+                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
+                    }
+                }
+            }
+        }
+    }, [lastNewHeadMessage]);
 
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
@@ -643,27 +668,6 @@ export default function App() {
         IS_LOCAL_ENV && console.debug({ mainnetProvider });
         setMainnetProvider(mainnetProvider);
     }, []);
-
-    useEffect(() => {
-        if (lastNewHeadMessage !== null) {
-            if (lastNewHeadMessage?.data) {
-                const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
-                if (lastMessageData) {
-                    const lastBlockNumberHex =
-                        lastMessageData.params?.result?.number;
-                    if (lastBlockNumberHex) {
-                        const newBlockNum = parseInt(lastBlockNumberHex);
-                        if (lastBlockNumber !== newBlockNum) {
-                            setLastBlockNumber(parseInt(lastBlockNumberHex));
-                            dispatch(
-                                setLastBlock(parseInt(lastBlockNumberHex)),
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }, [lastNewHeadMessage]);
 
     const isPairStable = useMemo(
         () =>
@@ -2918,12 +2922,6 @@ export default function App() {
         topPools: topPools,
     };
 
-    const analyticsProps = {
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        setOutsideControl: setOutsideControl,
-        favePools: favePools,
-    };
-
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
         () =>
             getMoneynessRank(
@@ -2993,6 +2991,17 @@ export default function App() {
         !currentLocation.includes('/chat') &&
         !fullScreenChart &&
         isChainSupported && <Sidebar {...sidebarProps} />;
+
+    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
+    const { getStatus } = useChatApi();
+    useEffect(() => {
+        const interval = setInterval(() => {
+            getStatus().then((isChatUp) => {
+                setIsChatEnabled(isChatUp);
+            });
+        }, 10000);
+        return () => clearInterval(interval);
+    }, [isChatEnabled]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
@@ -3335,110 +3344,6 @@ export default function App() {
                             />
                         </Route>
                         <Route
-                            path='analytics'
-                            element={<Analytics {...analyticsProps} />}
-                        />
-                        <Route
-                            path='analytics2'
-                            element={
-                                <Analytics2
-                                    analyticsSearchInput={analyticsSearchInput}
-                                    setAnalyticsSearchInput={
-                                        setAnalyticsSearchInput
-                                    }
-                                />
-                            }
-                        >
-                            <Route
-                                path=''
-                                element={
-                                    <Navigate
-                                        to='/analytics2/overview'
-                                        replace
-                                    />
-                                }
-                            />
-
-                            <Route
-                                path='overview'
-                                element={
-                                    <AnalyticsOverview
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='pools'
-                                element={
-                                    <TopPools
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='trendingpools'
-                                element={
-                                    <TrendingPools
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='ranges/top'
-                                element={
-                                    <TopRanges
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='tokens'
-                                element={
-                                    <TopTokens
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='transactions'
-                                element={
-                                    <AnalyticsTransactions
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                        </Route>
-                        <Route
                             path='chat'
                             element={
                                 <ChatPanel
@@ -3457,7 +3362,6 @@ export default function App() {
                                     username={ensName}
                                     appPage={true}
                                     topPools={topPools}
-                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3481,7 +3385,6 @@ export default function App() {
                                     appPage={true}
                                     username={ensName}
                                     topPools={topPools}
-                                    setIsChatEnabled={setIsChatEnabled}
                                 />
                             }
                         />
@@ -3816,7 +3719,6 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
-                            setIsChatEnabled={setIsChatEnabled}
                         />
                     )}
             </div>

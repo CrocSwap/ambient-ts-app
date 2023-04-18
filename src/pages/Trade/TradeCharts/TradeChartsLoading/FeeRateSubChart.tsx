@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { FeeChartData } from '../TradeCharts';
 import './Subcharts.css';
+import { setCanvasResolution } from '../../../Chart/Chart';
 interface FreeRateData {
     feeData: FeeChartData[] | undefined;
     period: number | undefined;
@@ -82,6 +83,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             d3.select(d3Yaxis.current).on('draw', function () {
                 if (yAxis) {
+                    setCanvasResolution(d3YaxisCanvas);
                     d3YaxisContext.stroke();
                     d3YaxisContext.textAlign = 'left';
                     d3YaxisContext.textBaseline = 'middle';
@@ -201,6 +203,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
             if (lineSeries) {
                 d3.select(d3CanvasArea.current)
                     .on('draw', () => {
+                        setCanvasResolution(canvas);
                         lineSeries(feeData);
                     })
                     .on('measure', (event: any) => {
@@ -221,6 +224,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
         if (crosshairVerticalCanvas) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    ctx.setLineDash([0.6, 0.6]);
                     if (isMouseMoveCrosshair) {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (isCrosshairActive === 'feeRate') {

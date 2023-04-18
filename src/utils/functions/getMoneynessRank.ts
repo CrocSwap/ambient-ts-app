@@ -20,12 +20,25 @@ export const getMoneynessRank = (addressWithChain: string): number => {
     const arbGoerliETH = '0x0000000000000000000000000000000000000000_0x66eed';
     const arbGoerliUSDC = '0xc944b73fba33a773a4a07340333a3184a70af1ae_0x66eed';
 
+    const ethUSDC =
+        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48_0x1'.toLowerCase();
+    const ethDAI =
+        '0x6b175474e89094c44da98b954eedeac495271d0f_0x1'.toLowerCase();
+    const ethWBTC =
+        '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599_0x1'.toLowerCase();
+    const ethETH =
+        '0x0000000000000000000000000000000000000000_0x1'.toLowerCase();
+
     const usdcMoneynessRank = 100;
     const daiMoneynessRank = 90;
     const wbtcMoneynessRank = 60;
     const ethMoneynessRank = 50;
 
     const moneynessMap = new Map<string, number>([
+        [ethUSDC, usdcMoneynessRank],
+        [ethDAI, daiMoneynessRank],
+        [ethWBTC, wbtcMoneynessRank],
+        [ethETH, ethMoneynessRank],
         [goerliUSDC, usdcMoneynessRank],
         [arbGoerliUSDC, usdcMoneynessRank],
         [goerliDAI, daiMoneynessRank],
