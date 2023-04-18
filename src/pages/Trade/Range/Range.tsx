@@ -1252,6 +1252,7 @@ export default function Range(props: propsIF) {
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
         isAmbient: isAmbient,
+        openGlobalPopup,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
@@ -1410,13 +1411,20 @@ export default function Range(props: propsIF) {
     };
     // props for <RangeExtraInfo/> React element
 
+    const liquidityProviderFeeString = (
+        tradeData.liquidityFee * 100
+    ).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
         tokenPair: tokenPair,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFee: tradeData.liquidityFee * 100,
+        liquidityProviderFeeString: liquidityProviderFeeString,
         quoteTokenIsBuy: true,
         isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,

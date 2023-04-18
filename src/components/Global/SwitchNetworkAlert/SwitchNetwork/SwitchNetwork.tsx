@@ -20,7 +20,7 @@ export default function SwitchNetwork() {
                     </header>
                     <section className={styles.modal_content}>
                         <span className={styles.content_title}>
-                            Please choose a network below
+                            Please choose a network below:
                         </span>
                         <NetworkButtons />
                     </section>

@@ -283,7 +283,6 @@ export default function RemoveRange(props: propsIF) {
 
     const removeFn = async () => {
         if (!crocEnv || !liquidityToBurn) return;
-        console.log('removing');
         IS_LOCAL_ENV && console.debug('removing');
         setShowConfirmation(true);
 

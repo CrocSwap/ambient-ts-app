@@ -927,6 +927,13 @@ export default function Limit(props: propsIF) {
         needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
     };
 
+    const liquidityProviderFeeString = (
+        tradeData.liquidityFee * 100
+    ).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
     return (
         <FocusTrap
             focusTrapOptions={{
@@ -969,7 +976,7 @@ export default function Limit(props: propsIF) {
                         tokenPair={tokenPair}
                         orderGasPriceInDollars={orderGasPriceInDollars}
                         poolPriceDisplay={poolPriceDisplay || 0}
-                        liquidityProviderFee={tradeData.liquidityFee * 100}
+                        liquidityProviderFeeString={liquidityProviderFeeString}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isTokenABase={isSellTokenBase}
                         isDenomBase={isDenomBase}

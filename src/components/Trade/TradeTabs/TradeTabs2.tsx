@@ -409,6 +409,7 @@ export default function TradeTabs2(props: propsIF) {
         graphData: graphData,
         lastBlockNumber: lastBlockNumber,
         expandTradeTable: expandTradeTable,
+        setExpandTradeTable: setExpandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,

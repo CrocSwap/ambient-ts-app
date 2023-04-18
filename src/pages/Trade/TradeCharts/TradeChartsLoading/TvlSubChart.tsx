@@ -6,6 +6,7 @@ import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { TvlChartData } from '../TradeCharts';
 import './Subcharts.css';
 import sum from 'hash-sum';
+import { setCanvasResolution } from '../../../Chart/Chart';
 
 interface TvlData {
     tvlData: TvlChartData[] | undefined;
@@ -177,6 +178,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 d3.select(d3Yaxis.current).on('draw', function () {
                     if (yAxis) {
+                        setCanvasResolution(d3YaxisCanvas);
                         d3YaxisContext.stroke();
                         d3YaxisContext.textAlign = 'left';
                         d3YaxisContext.textBaseline = 'middle';
@@ -297,6 +299,7 @@ export default function TvlSubChart(props: TvlData) {
         if (areaSeries && lineSeries) {
             d3.select(d3CanvasArea.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
                     areaSeries(tvlData);
                     lineSeries(tvlData);
                 })
@@ -324,6 +327,8 @@ export default function TvlSubChart(props: TvlData) {
         if (crosshairVerticalCanvas) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    ctx.setLineDash([0.6, 0.6]);
                     if (isMouseMoveCrosshair) {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (isCrosshairActive === 'tvl') {
