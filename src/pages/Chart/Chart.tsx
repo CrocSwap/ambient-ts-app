@@ -6775,18 +6775,38 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasLiqBidLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBidDepthLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskDepthLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBid}
