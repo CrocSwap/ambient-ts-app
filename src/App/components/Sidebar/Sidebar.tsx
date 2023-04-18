@@ -578,6 +578,7 @@ export default function Sidebar(props: propsIF) {
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={handleClosedSidebarClick}
+                style={!showSidebar ? { cursor: 'pointer' } : undefined}
             >
                 <ul className={styles.sidebar_nav}>
                     {searchContainerDisplay}
