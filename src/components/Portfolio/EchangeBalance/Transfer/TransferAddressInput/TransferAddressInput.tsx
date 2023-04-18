@@ -23,7 +23,7 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
                     const value = event.target.value;
                     if (
                         value &&
-                        !value.endsWith('.eth') &&
+                        !value.includes('.') &&
                         !value.startsWith('0x')
                     ) {
                         setTransferToAddress('0x' + event.target.value);
