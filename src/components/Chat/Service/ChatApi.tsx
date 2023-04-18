@@ -6,26 +6,19 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
-const HTTP_TIMEOUT = 3000; // NOTE: currently we only timeout for health status.
-
 const useChatApi = () => {
     const { address } = useAccount();
 
     async function getStatus() {
-        // Hit the chat /status endpoint to see if it's online (with a timeout)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), HTTP_TIMEOUT);
+        // Hit the chat /status endpoint to see if it's online
         try {
             const response = await fetch(host + '/status', {
                 method: 'GET',
-                signal: controller.signal,
             });
             return response.status === 200;
         } catch (error) {
             console.error(error);
             return false;
-        } finally {
-            clearTimeout(timeoutId);
         }
     }
 

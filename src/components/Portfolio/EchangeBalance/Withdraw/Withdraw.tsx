@@ -365,6 +365,7 @@ export default function Withdraw(props: propsIF) {
             fieldId='exchange-balance-withdraw-address'
             setTransferToAddress={setSendToAddress}
             sendToAddress={sendToAddress}
+            disable={isWithdrawPending}
         />
     ) : null;
 
@@ -399,6 +400,7 @@ export default function Withdraw(props: propsIF) {
                     }
                     Width={36}
                     id='withdraw_to_different_address'
+                    disabled={isWithdrawPending}
                 />
             </div>
         </span>
