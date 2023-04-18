@@ -3,13 +3,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
-import {
-    useState,
-    ChangeEvent,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-} from 'react';
+import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -138,19 +132,19 @@ export default function CurrencySelector(props: propsIF) {
         ? tokenPair.dataTokenA
         : tokenPair.dataTokenB;
 
-    const handleDexBalanceChange = () => {
-        if (parseFloat(tokenADexBalance) < 0) {
-            setIsWithdrawFromDexChecked(true);
-        } else if (dexBalancePrefs.swap.drawFromDexBal.isEnabled) {
-            setIsWithdrawFromDexChecked(
-                dexBalancePrefs.swap.drawFromDexBal.isEnabled,
-            );
-        }
-    };
+    // const handleDexBalanceChange = () => {
+    //     if (parseFloat(tokenADexBalance) < 0) {
+    //         setIsWithdrawFromDexChecked(true);
+    //     } else if (dexBalancePrefs.swap.drawFromDexBal.isEnabled) {
+    //         setIsWithdrawFromDexChecked(
+    //             dexBalancePrefs.swap.drawFromDexBal.isEnabled,
+    //         );
+    //     }
+    // };
 
-    useEffect(() => {
-        handleDexBalanceChange();
-    }, [tokenADexBalance]);
+    // useEffect(() => {
+    //     handleDexBalanceChange();
+    // }, [tokenADexBalance]);
 
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
@@ -229,7 +223,7 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleWalletBalanceClick() {
         if (props.sellToken) {
-            dexBalancePrefs.swap.drawFromDexBal.disable();
+            // dexBalancePrefs.swap.drawFromDexBal.disable();
             setIsWithdrawFromDexChecked(false);
             if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
                 setUserOverrodeSurplusWithdrawalDefault(true);
@@ -268,7 +262,7 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleSurplusClick() {
         if (props.sellToken) {
-            dexBalancePrefs.swap.drawFromDexBal.enable();
+            // dexBalancePrefs.swap.drawFromDexBal.enable();
             setIsWithdrawFromDexChecked(true);
             if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
                 setUserOverrodeSurplusWithdrawalDefault(false);

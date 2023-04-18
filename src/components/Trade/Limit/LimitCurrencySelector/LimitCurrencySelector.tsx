@@ -280,7 +280,6 @@ export default function LimitCurrencySelector(props: propsIF) {
                         className={`${styles.balance_with_pointer}`}
                         onClick={() => {
                             if (props.sellToken) {
-                                dexBalancePrefs.limit.drawFromDexBal.disable();
                                 setIsWithdrawFromDexChecked(false);
                                 if (
                                     !!tokenADexBalance &&
@@ -325,7 +324,6 @@ export default function LimitCurrencySelector(props: propsIF) {
                         }`}
                         onClick={() => {
                             if (props.sellToken) {
-                                dexBalancePrefs.limit.drawFromDexBal.enable();
                                 setIsWithdrawFromDexChecked(true);
                                 if (
                                     !!tokenADexBalance &&
