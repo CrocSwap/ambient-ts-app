@@ -5940,8 +5940,14 @@ export default function Chart(props: propsIF) {
             return 'bidLiq';
         });
 
+        const pinnedTick = closest.upperBound;
+
+        const percentage = parseFloat(
+            (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
+        ).toFixed(1);
+
         liqTooltip
-            .style('visibility', 'visible')
+            .style('visibility', percentage !== '0.0' ? 'visible' : 'hidden')
             .style('top', event.pageY - 80 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
@@ -6021,8 +6027,14 @@ export default function Chart(props: propsIF) {
             });
         }
 
+        const pinnedTick = closest.lowerBound;
+
+        const percentage = parseFloat(
+            (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
+        ).toFixed(1);
+
         liqTooltip
-            .style('visibility', 'visible')
+            .style('visibility', percentage !== '0.0' ? 'visible' : 'hidden')
             .style('top', event.pageY - 80 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
