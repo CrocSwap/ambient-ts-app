@@ -5840,7 +5840,7 @@ export default function Chart(props: propsIF) {
         const rect =
             liqMode === 'curve'
                 ? canvas.getBoundingClientRect()
-                : canvasDepth.getBoundingClientRect;
+                : canvasDepth.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
