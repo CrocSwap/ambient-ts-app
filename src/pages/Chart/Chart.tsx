@@ -3441,9 +3441,7 @@ export default function Chart(props: propsIF) {
 
                 const yScaleTicks = yScale.ticks(factor);
 
-                yScaleTicks.forEach((d: number, index: number) => {
-                    console.log(index);
-
+                yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
 
                     context.beginPath();
