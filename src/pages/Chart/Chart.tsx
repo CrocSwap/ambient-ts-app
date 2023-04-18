@@ -4512,24 +4512,6 @@ export default function Chart(props: propsIF) {
                 .on('measure', (event: any) => {
                     scaleData?.xScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
-
-                    liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 9,
-                    ]);
-
-                    if (liquidityDepthScale.domain()[1] <= 50) {
-                        liquidityDepthScale.range([
-                            event.detail.width,
-                            event.detail.width * 0.95,
-                        ]);
-                    } else {
-                        liquidityDepthScale.range([
-                            event.detail.width,
-                            event.detail.width * 0.9,
-                        ]);
-                    }
-
                     scaleData?.xScaleCopy.range([0, event.detail.width]);
 
                     candlestick.context(ctx);
@@ -4541,26 +4523,9 @@ export default function Chart(props: propsIF) {
         if (d3CanvasCandle) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
-            const resizeObserver = new ResizeObserver((entries) => {
-                const width = entries[0].contentRect.width;
-                const height = entries[0].contentRect.height;
-                if (height && width) {
-                    scaleData?.xScale.range([0, width]);
-                    scaleData?.yScale.range([height, 0]);
-
-                    scaleData?.xScaleIndicator.range([(width / 10) * 8, width]);
-
-                    liquidityScale.range([width, (width / 10) * 9]);
-
-                    liquidityDepthScale.range([width, (width / 10) * 9]);
-
-                    scaleData?.volumeScale.range([
-                        height,
-                        height - height / 10,
-                    ]);
-                }
-
+            const resizeObserver = new ResizeObserver(() => {
                 render();
+                renderCanvas();
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -5190,8 +5155,12 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     liqAskSeries(liquidityData?.liqAskData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
                     liqAskSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
                 });
         }
         if (liqAskDepthSeries && liquidityData?.liqAskData) {
@@ -5200,7 +5169,11 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvasDepth);
                     liqAskDepthSeries(liquidityData?.depthLiqAskData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
                     liqAskDepthSeries.context(ctxDepth);
                 });
         }
@@ -5274,8 +5247,12 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     liqBidSeries(liquidityData?.liqBidData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
                     liqBidSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
                 });
         }
 
@@ -5292,7 +5269,11 @@ export default function Chart(props: propsIF) {
                               ),
                     );
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
                     liqBidDepthSeries.context(ctxDepth);
                 });
         }
@@ -6786,20 +6767,40 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasLiqBid}
                             className='liq-bid-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
 
                         <d3fc-canvas
                             ref={d3CanvasLiqBidDepth}
                             className='liq-bid-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
 
                         <d3fc-canvas
                             ref={d3CanvasLiqAsk}
                             className='liq-ask-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskDepth}
                             className='liq-ask-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasBand}
