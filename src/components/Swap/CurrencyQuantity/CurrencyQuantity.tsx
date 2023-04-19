@@ -84,7 +84,6 @@ export default function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
-    console.log(thisToken);
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
         const targetValue = event.target.value.replace(',', '.');
         //  I know this seems a bit much here so I will leave a little explanation
