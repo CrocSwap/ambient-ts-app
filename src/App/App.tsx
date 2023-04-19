@@ -128,7 +128,10 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
-import { getPositionData } from './functions/getPositionData';
+import {
+    getPositionData,
+    memoizePositionUpdate,
+} from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
@@ -181,6 +184,7 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
+const cachedPositionUpdateQuery = memoizePositionUpdate();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -3194,6 +3198,7 @@ export default function App() {
         chartSettings,
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         pool,
         isUserLoggedIn,
         crocEnv,
@@ -3280,6 +3285,7 @@ export default function App() {
         ethMainnetUsdPrice,
         searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         crocEnv: crocEnv,
         addRecentToken,
         getRecentTokens,
