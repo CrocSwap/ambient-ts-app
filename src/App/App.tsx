@@ -33,6 +33,7 @@ import {
     resetConnectedUserDataLoadingStatus,
     setLastBlockPoll,
     addChangesByPool,
+    addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -1606,6 +1607,24 @@ export default function App() {
                         dispatch(addChangesByPool(updatedTransactions));
                     })
                     .catch(console.error);
+            }
+        }
+    }, [lastPoolChangeMessage]);
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                IS_LOCAL_ENV && console.debug({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, searchableTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(
+                        addLimitOrderChangesByPool(updatedLimitOrderStates),
+                    );
+                });
             }
         }
     }, [lastPoolChangeMessage]);
