@@ -231,6 +231,9 @@ export default function CurrencyConverter(props: propsIF) {
         setUserOverrodeSurplusWithdrawalDefault,
     ] = useState<boolean>(false);
 
+    const [userClickedCombinedMax, setUserClickedCombinedMax] =
+        useState<boolean>(false);
+
     useEffect(() => {
         if (
             !isWithdrawFromDexChecked &&
@@ -775,6 +778,8 @@ export default function CurrencyConverter(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
+                setUserClickedCombinedMax={setUserClickedCombinedMax}
+                userClickedCombinedMax={userClickedCombinedMax}
             />
             <div
                 className={
@@ -839,6 +844,8 @@ export default function CurrencyConverter(props: propsIF) {
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
+                    setUserClickedCombinedMax={setUserClickedCombinedMax}
+                    userClickedCombinedMax={userClickedCombinedMax}
                 />
             </div>
         </section>

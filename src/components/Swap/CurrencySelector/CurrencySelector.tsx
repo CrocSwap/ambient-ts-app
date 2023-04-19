@@ -3,7 +3,13 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
-import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
+import {
+    useState,
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+} from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -82,6 +88,8 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
+    userClickedCombinedMax: boolean;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -125,6 +133,8 @@ export default function CurrencySelector(props: propsIF) {
         dexBalancePrefs,
         ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
+        setUserClickedCombinedMax,
+        userClickedCombinedMax,
     } = props;
 
     const isSellTokenSelector = fieldId === 'sell';
@@ -221,24 +231,72 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleMaxButtonClick() {
         if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
-            handleChangeClick(balanceNonLocaleString);
+            if (isWithdrawFromDexChecked) {
+                handleChangeClick(tokenADexBalance);
+            } else {
+                handleChangeClick(balanceNonLocaleString);
+            }
         }
     }
 
-    const maxButton =
-        balanceLocaleString !== '0.00' &&
-        isSellTokenSelector &&
-        !isSellTokenEth ? (
-            <button
-                className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => handleMaxButtonClick()}
-            >
-                Max
-            </button>
-        ) : (
-            <p className={styles.max_button} />
-        );
+    useEffect(() => {
+        if (userClickedCombinedMax) {
+            handleChangeClick && handleChangeClick(balanceNonLocaleString);
+        }
+    }, [
+        isWithdrawFromDexChecked,
+        userClickedCombinedMax,
+        handleChangeClick === undefined,
+    ]);
 
+    const maxButton =
+        isWithdrawFromDexChecked &&
+        !!tokenADexBalance &&
+        parseFloat(tokenADexBalance) > 0 ? (
+            <DefaultTooltip
+                interactive
+                title={'Maximum Exchange Balance'}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                {balanceLocaleString !== '0.00' &&
+                isSellTokenSelector &&
+                !isSellTokenEth ? (
+                    <button
+                        className={`${styles.max_dex_button} ${styles.max_button_enable}`}
+                        onClick={() => handleMaxButtonClick()}
+                    >
+                        Max DEX
+                    </button>
+                ) : (
+                    <p className={styles.max_button} />
+                )}
+            </DefaultTooltip>
+        ) : (
+            <DefaultTooltip
+                interactive
+                title={'Maximum Wallet Balance'}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                {balanceLocaleString !== '0.00' &&
+                isSellTokenSelector &&
+                !isSellTokenEth ? (
+                    <button
+                        className={`${styles.max_button} ${styles.max_button_enable}`}
+                        onClick={() => handleMaxButtonClick()}
+                    >
+                        Max
+                    </button>
+                ) : (
+                    <p className={styles.max_button} />
+                )}
+            </DefaultTooltip>
+        );
     const sellTokenLogoClassname =
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
@@ -325,13 +383,26 @@ export default function CurrencySelector(props: propsIF) {
                     title={exchangeBalanceTitle}
                     placement={'bottom'}
                     arrow
-                    enterDelay={100}
+                    enterDelay={500}
                     leaveDelay={200}
                 >
                     <div
                         className={styles.balance_column}
-                        style={{ cursor: 'default' }}
-                        // onClick={() => handleMaxButtonClick()}
+                        style={
+                            isSellTokenSelector
+                                ? { cursor: 'pointer' }
+                                : { cursor: 'default' }
+                        }
+                        onClick={() => {
+                            if (
+                                handleChangeClick &&
+                                isUserLoggedIn &&
+                                !isSellTokenEth
+                            ) {
+                                handleChangeClick(balanceNonLocaleString);
+                                setUserClickedCombinedMax(true);
+                            }
+                        }}
                     >
                         <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                     </div>
