@@ -1,8 +1,9 @@
-export const getDexStatsFresh = async () => {
+export const getChainStatsFresh = async (chainId: string) => {
     return fetch(
-        'https://809821320828123.de:5000/dex_stats_fresh?' +
+        'https://809821320828123.de:5000/chain_stats_fresh?' +
             new URLSearchParams({
                 lookback: '10000000',
+                chainId: chainId,
             }),
     )
         .then((response) => response?.json())

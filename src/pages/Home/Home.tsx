@@ -53,6 +53,7 @@ export default function Home(props: propsIF) {
                     isServerEnabled={isServerEnabled}
                     lastBlockNumber={lastBlockNumber}
                     userData={userData}
+                    chainId={chainId}
                 />
             </div>
             <DividerDark />

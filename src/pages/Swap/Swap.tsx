@@ -217,7 +217,7 @@ export default function Swap(props: propsIF) {
     // ... abstracted away from the central hook because the hook manages preference
     // ... and does not consider whether dex balance is sufficient
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
-        useState<boolean>(dexBalancePrefs.swap.drawFromDexBal.isEnabled);
+        useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
         useState<boolean>(dexBalancePrefs.swap.outputToDexBal.isEnabled);
 

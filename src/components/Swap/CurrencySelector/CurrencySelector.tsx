@@ -3,13 +3,7 @@ import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
-import {
-    useState,
-    ChangeEvent,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-} from 'react';
+import { useState, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -87,6 +81,7 @@ interface propsIF {
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -129,26 +124,13 @@ export default function CurrencySelector(props: propsIF) {
         openGlobalPopup,
         dexBalancePrefs,
         ackTokens,
+        setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector
         ? tokenPair.dataTokenA
         : tokenPair.dataTokenB;
-
-    const handleDexBalanceChange = () => {
-        if (parseFloat(tokenADexBalance) < 0) {
-            setIsWithdrawFromDexChecked(true);
-        } else if (dexBalancePrefs.swap.drawFromDexBal.isEnabled) {
-            setIsWithdrawFromDexChecked(
-                dexBalancePrefs.swap.drawFromDexBal.isEnabled,
-            );
-        }
-    };
-
-    useEffect(() => {
-        handleDexBalanceChange();
-    }, [tokenADexBalance]);
 
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
@@ -227,8 +209,10 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleWalletBalanceClick() {
         if (props.sellToken) {
-            dexBalancePrefs.swap.drawFromDexBal.disable();
             setIsWithdrawFromDexChecked(false);
+            if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
+                setUserOverrodeSurplusWithdrawalDefault(true);
+            }
         } else {
             dexBalancePrefs.swap.outputToDexBal.disable();
             setIsSaveAsDexSurplusChecked(false);
@@ -263,8 +247,10 @@ export default function CurrencySelector(props: propsIF) {
 
     function handleSurplusClick() {
         if (props.sellToken) {
-            dexBalancePrefs.swap.drawFromDexBal.enable();
             setIsWithdrawFromDexChecked(true);
+            if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
+                setUserOverrodeSurplusWithdrawalDefault(false);
+            }
         } else {
             dexBalancePrefs.swap.outputToDexBal.enable();
             setIsSaveAsDexSurplusChecked(true);
@@ -287,7 +273,7 @@ export default function CurrencySelector(props: propsIF) {
                 )
             }
         >
-            Wallet & Exchange Balance <AiOutlineQuestionCircle size={14} />
+            Wallet + Exchange Balance <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
@@ -297,8 +283,8 @@ export default function CurrencySelector(props: propsIF) {
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
-                            ? 'Use wallet balance only'
-                            : 'Withdraw to wallet'
+                            ? 'Use Wallet Balance Only'
+                            : 'Withdraw to Wallet'
                     }`}
                     placement='bottom'
                 >
@@ -322,8 +308,8 @@ export default function CurrencySelector(props: propsIF) {
                 <IconWithTooltip
                     title={`${
                         tokenAorB === 'A'
-                            ? 'Use exchange and wallet balance'
-                            : 'Add to exchange balance'
+                            ? 'Use  Wallet and Exchange Balance'
+                            : 'Add to Exchange Balance'
                     }`}
                     placement='bottom'
                 >
@@ -344,7 +330,8 @@ export default function CurrencySelector(props: propsIF) {
                 >
                     <div
                         className={styles.balance_column}
-                        onClick={() => handleMaxButtonClick()}
+                        style={{ cursor: 'default' }}
+                        // onClick={() => handleMaxButtonClick()}
                     >
                         <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                     </div>
