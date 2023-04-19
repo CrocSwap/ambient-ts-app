@@ -23,7 +23,7 @@ interface propsIF {
 export default function CurrencyQuantity(props: propsIF) {
     const {
         value,
-        // thisToken,
+        thisToken,
         disable,
         fieldId,
         handleChangeEvent,
@@ -76,16 +76,28 @@ export default function CurrencyQuantity(props: propsIF) {
         setLastEvent(event);
     };
 
+    const precisionOfInput = (inputString: string) => {
+        if (inputString.includes('.')) {
+            return inputString.split('.')[1].length;
+        }
+        // String Does Not Contain Decimal
+        return 0;
+    };
+
+    console.log(thisToken);
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
         const targetValue = event.target.value.replace(',', '.');
         //  I know this seems a bit much here so I will leave a little explanation
         //  \d*\.?\d* matches any number with an optional decimal point in the middle
         // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
         // can be tested here => https://regex101.com/
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(targetValue) > thisToken.decimals;
+
         const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
             targetValue,
         );
-        if (isUserInputValid) {
+        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
             let valueWithDecimal = targetValue;
             if (valueWithDecimal.includes(',')) {
                 const parts = valueWithDecimal.split(',');
