@@ -2,6 +2,7 @@ import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
+import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
@@ -219,35 +220,54 @@ export const getPositionData = async (
     return newPosition;
 };
 
-export const updatePositionStats = async (
-    position: PositionIF,
-): Promise<PositionIF> => {
+export const getPositionStatsJsonAsync = async (
+    user: string,
+    askTick: number,
+    bidTick: number,
+    base: string,
+    quote: string,
+    poolIdx: number,
+    chainId: string,
+    positionType: string,
+    addValue: boolean,
+) => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
     const positionStatsCacheEndpoint =
         httpGraphCacheServerDomain + '/position_stats?';
 
-    const updatedPosition = await fetch(
+    const json = await fetch(
         positionStatsCacheEndpoint +
             new URLSearchParams({
-                user:
-                    position.user.length === 40
-                        ? '0x' + position.user
-                        : position.user,
-                askTick: position.askTick.toString(),
-                bidTick: position.bidTick.toString(),
-                base:
-                    position.base.length === 40
-                        ? '0x' + position.base
-                        : position.base,
-                quote:
-                    position.quote.length === 40
-                        ? '0x' + position.quote
-                        : position.quote,
-                poolIdx: position.poolIdx.toString(),
-                chainId: position.chainId,
-                positionType: position.positionType,
-                addValue: 'true',
+                user: user.length === 40 ? '0x' + user : user,
+                askTick: askTick.toString(),
+                bidTick: bidTick.toString(),
+                base: base.length === 40 ? '0x' + base : base,
+                quote: quote.length === 40 ? '0x' + quote : quote,
+                poolIdx: poolIdx.toString(),
+                chainId: chainId,
+                positionType: positionType,
+                addValue: addValue.toString(),
             }),
+    ).then((response) => response?.json());
+
+    return json;
+};
+
+export const updatePositionStats = async (
+    position: PositionIF,
+): Promise<PositionIF> => {
+    const updatedPosition = await getPositionStatsJsonAsync(
+        position.user.length === 40 ? '0x' + position.user : position.user,
+        position.askTick,
+        position.bidTick,
+
+        position.base.length === 40 ? '0x' + position.base : position.base,
+
+        position.quote.length === 40 ? '0x' + position.quote : position.quote,
+        position.poolIdx,
+        position.chainId,
+        position.positionType,
+        true,
     )
         .then((response) => response?.json())
         .then((json) => {
@@ -351,3 +371,31 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
 
     return updatedPosition || position;
 };
+
+type PositionStatsFn = (
+    user: string,
+    askTick: number,
+    bidTick: number,
+    base: string,
+    quote: string,
+    poolIdx: number,
+    chainId: string,
+    positionType: string,
+    addValue: boolean,
+    time: number, // arbitrary number to cache for an amount of time
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => Promise<any>;
+
+export function memoizePoolStats(): PositionStatsFn {
+    return memoizeCacheQueryFn(getPositionStatsJsonAsync) as PositionStatsFn;
+}
+
+type PositionUpdateFn = (
+    position: PositionIF,
+    time: number, // arbitrary number to cache for an amount of time
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => Promise<any>;
+
+export function memoizePositionUpdate(): PositionUpdateFn {
+    return memoizeCacheQueryFn(updatePositionStats) as PositionUpdateFn;
+}
