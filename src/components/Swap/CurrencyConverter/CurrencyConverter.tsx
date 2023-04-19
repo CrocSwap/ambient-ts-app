@@ -434,6 +434,8 @@ export default function CurrencyConverter(props: propsIF) {
         }
         let rawTokenBQty;
         if (evt) {
+            setUserClickedCombinedMax(false);
+
             const targetValue = evt.target.value.replaceAll(',', '');
 
             const input = targetValue.startsWith('.')
@@ -615,6 +617,8 @@ export default function CurrencyConverter(props: propsIF) {
 
         let rawTokenAQty: number | undefined;
         if (evt) {
+            setUserClickedCombinedMax(false);
+
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value.replaceAll(',', '')
                 : evt.target.value.replaceAll(',', '');

@@ -255,7 +255,7 @@ export default function CurrencySelector(props: propsIF) {
         parseFloat(tokenADexBalance) > 0 ? (
             <DefaultTooltip
                 interactive
-                title={'Maximum Exchange Balance'}
+                title={'Use Maximum Exchange Balance'}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
@@ -266,7 +266,10 @@ export default function CurrencySelector(props: propsIF) {
                 !isSellTokenEth ? (
                     <button
                         className={`${styles.max_dex_button} ${styles.max_button_enable}`}
-                        onClick={() => handleMaxButtonClick()}
+                        onClick={() => {
+                            handleMaxButtonClick();
+                            setUserClickedCombinedMax(false);
+                        }}
                     >
                         Max DEX
                     </button>
@@ -277,7 +280,7 @@ export default function CurrencySelector(props: propsIF) {
         ) : (
             <DefaultTooltip
                 interactive
-                title={'Maximum Wallet Balance'}
+                title={'Use Maximum Wallet Balance'}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
@@ -331,7 +334,11 @@ export default function CurrencySelector(props: propsIF) {
                 )
             }
         >
-            Wallet + Exchange Balance <AiOutlineQuestionCircle size={14} />
+            {(isSellTokenSelector && isWithdrawFromDexChecked) ||
+            (!isSellTokenSelector && isSaveAsDexSurplusChecked)
+                ? 'Wallet + Exchange Balance'
+                : 'Wallet Balance'}
+            <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
