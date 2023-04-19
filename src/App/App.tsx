@@ -32,6 +32,7 @@ import {
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
     setLastBlockPoll,
+    addChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -1546,6 +1547,97 @@ export default function App() {
             }
         }
     }, [lastPoolLiqChangeMessage]);
+
+    useEffect(() => {
+        if (isServerEnabled && isShowAllEnabled) {
+            fetchPoolRecentChanges({
+                tokenList: searchableTokens,
+                base: baseTokenAddress,
+                quote: quoteTokenAddress,
+                poolIdx: chainData.poolIndex,
+                chainId: chainData.chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 80,
+            })
+                .then((poolChangesJsonData) => {
+                    if (poolChangesJsonData) {
+                        dispatch(
+                            setChangesByPool({
+                                dataReceived: true,
+                                changes: poolChangesJsonData,
+                            }),
+                        );
+                    }
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'poolTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                })
+                .catch(console.error);
+        }
+    }, [isServerEnabled, isShowAllEnabled]);
+
+    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                quote: quoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
+                ensResolution: 'true',
+                annotate: 'true',
+                addValue: 'true',
+            }),
+        [
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData.chainId,
+            chainData.poolIndex,
+        ],
+    );
+
+    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
+        poolRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug('pool recent changes subscription opened');
+            },
+            onClose: (event: CloseEvent) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if user is viewing pool changes
+        isServerEnabled,
+    );
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: TransactionIF) => {
+                        return getTransactionData(tx, searchableTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByPool(updatedTransactions));
+                    })
+                    .catch(console.error);
+            }
+        }
+    }, [lastPoolChangeMessage]);
 
     const candleSubscriptionEndpoint = useMemo(
         () =>

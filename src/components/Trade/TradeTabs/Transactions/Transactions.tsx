@@ -2,10 +2,8 @@
 import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
-    addChangesByPool,
     CandleData,
     graphData,
-    setChangesByPool,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
@@ -13,29 +11,18 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useEffect,
-    useMemo,
-    useRef,
-} from 'react';
+import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import sum from 'hash-sum';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import useWebSocket from 'react-use-websocket';
-import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { getTransactionData } from '../../../../App/functions/getTransactionData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { IS_LOCAL_ENV } from '../../../../constants';
 
 const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -82,7 +69,6 @@ export default function Transactions(props: propsIF) {
         account,
         changesInSelectedCandle,
         graphData,
-        tokenList,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -104,12 +90,6 @@ export default function Transactions(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
-            : true;
 
     const changesByUser = graphData?.changesByUser?.changes;
     const changesByPool = graphData?.changesByPool?.changes;
@@ -180,9 +160,6 @@ export default function Transactions(props: propsIF) {
         shouldDisplayNoTableData,
         1000,
     ); // debounce 1 second
-
-    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] =
-        useState(false);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
@@ -277,108 +254,6 @@ export default function Transactions(props: propsIF) {
     };
 
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
-
-    // wait 5 seconds to open a subscription to pool changes
-    useEffect(() => {
-        const handler = setTimeout(
-            () => setDebouncedIsShowAllEnabled(isShowAllEnabled),
-            5000,
-        );
-        return () => clearTimeout(handler);
-    }, [isShowAllEnabled]);
-
-    useEffect(() => {
-        if (isServerEnabled && isShowAllEnabled) {
-            fetchPoolRecentChanges({
-                tokenList: tokenList,
-                base: baseTokenAddress,
-                quote: quoteTokenAddress,
-                poolIdx: chainData.poolIndex,
-                chainId: chainData.chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
-                n: 80,
-            })
-                .then((poolChangesJsonData) => {
-                    if (poolChangesJsonData) {
-                        dispatch(
-                            setChangesByPool({
-                                dataReceived: true,
-                                changes: poolChangesJsonData,
-                            }),
-                        );
-                    }
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'poolTxData',
-                            loadingStatus: false,
-                        }),
-                    );
-                })
-                .catch(console.error);
-        }
-    }, [isServerEnabled, isShowAllEnabled]);
-
-    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-
-    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addValue: 'true',
-            }),
-        [
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            chainData.poolIndex,
-        ],
-    );
-
-    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
-        poolRecentChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('pool recent changes subscription opened');
-            },
-            onClose: (event: CloseEvent) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
-        },
-        // only connect if user is viewing pool changes
-        isServerEnabled && debouncedIsShowAllEnabled,
-    );
-
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokenList);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByPool(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastPoolChangeMessage]);
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
