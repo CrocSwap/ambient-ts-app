@@ -1320,6 +1320,12 @@ export default function App() {
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
                                 dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolTxData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+                                dispatch(
                                     setChangesByPool({
                                         dataReceived: true,
                                         changes: poolChangesJsonData,
@@ -1547,41 +1553,6 @@ export default function App() {
             }
         }
     }, [lastPoolLiqChangeMessage]);
-
-    useEffect(() => {
-        if (isServerEnabled && isShowAllEnabled) {
-            fetchPoolRecentChanges({
-                tokenList: searchableTokens,
-                base: baseTokenAddress,
-                quote: quoteTokenAddress,
-                poolIdx: chainData.poolIndex,
-                chainId: chainData.chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
-                n: 80,
-            })
-                .then((poolChangesJsonData) => {
-                    if (poolChangesJsonData) {
-                        dispatch(
-                            setChangesByPool({
-                                dataReceived: true,
-                                changes: poolChangesJsonData,
-                            }),
-                        );
-                    }
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'poolTxData',
-                            loadingStatus: false,
-                        }),
-                    );
-                })
-                .catch(console.error);
-        }
-    }, [isServerEnabled, isShowAllEnabled]);
 
     const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
         () =>
