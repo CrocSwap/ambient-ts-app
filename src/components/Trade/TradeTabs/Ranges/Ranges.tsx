@@ -277,7 +277,7 @@ export default function Ranges(props: propsIF) {
             id1: sortedPositions[1]?.positionId,
             id2: sortedPositions[2]?.positionId,
         }),
-        lastBlockNumber,
+        currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
     ]);

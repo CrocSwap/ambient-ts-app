@@ -139,7 +139,7 @@ export default function Leaderboard(props: propsIF) {
             id1: topThreePositions[1]?.positionId,
             id2: topThreePositions[2]?.positionId,
         }),
-        lastBlockNumber,
+        currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
     ]);
 
