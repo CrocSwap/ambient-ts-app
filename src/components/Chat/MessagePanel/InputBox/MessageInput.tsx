@@ -199,14 +199,21 @@ export default function MessageInput(
                 />
 
                 <BsEmojiSmileFill
-                    className={styles.svgButton}
-                    style={{ cursor: !isUserLoggedIn ? 'none' : 'pointer' }}
+                    className={
+                        isUserLoggedIn
+                            ? styles.svgButton
+                            : styles.not_LoggedIn_svgButton
+                    }
                     onClick={handleEmojiPickerHideShow}
                 />
+                {}
                 <div
-                    className={styles.send_message_button}
+                    className={
+                        isUserLoggedIn
+                            ? styles.send_message_button
+                            : styles.not_LoggedIn_send_message_button
+                    }
                     onClick={() => handleSendMessageButton()}
-                    style={{ cursor: !isUserLoggedIn ? 'none' : 'pointer' }}
                 >
                     <svg
                         width='16'
@@ -221,7 +228,11 @@ export default function MessageInput(
                             strokeOpacity='0.25'
                             strokeLinecap='round'
                             strokeLinejoin='round'
-                            className={styles.svgButton}
+                            className={
+                                isUserLoggedIn
+                                    ? styles.svgButton
+                                    : styles.not_LoggedIn_svgButton
+                            }
                             id='send message button'
                         />
                         <title>Send Message</title>
