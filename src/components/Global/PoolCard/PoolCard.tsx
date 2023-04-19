@@ -220,6 +220,7 @@ export default function PoolCard(props: propsIF) {
 
     useEffect(() => {
         if (isServerEnabled && !isUserIdle) fetchPoolStats();
+        // NOTE: we assume that a block occurs more frequently than once a minute
     }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
 
     const tokenImagesDisplay = (

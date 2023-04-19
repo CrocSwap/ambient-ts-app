@@ -32,7 +32,7 @@ export const usePoolStats = (
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
     }, [lastBlockNumber]);
 
     return [poolVolume ?? '…', poolTvl ?? '…'];

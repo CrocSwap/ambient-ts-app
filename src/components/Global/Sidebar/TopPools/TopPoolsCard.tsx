@@ -62,7 +62,7 @@ export default function TopPoolsCard(props: propsIF) {
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
     }, [lastBlockNumber]);
 
     const tokenAString =
