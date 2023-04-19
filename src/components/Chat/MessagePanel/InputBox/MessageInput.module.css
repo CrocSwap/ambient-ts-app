@@ -137,9 +137,21 @@
     margin-bottom: -3px;
 }
 
+.not_LoggedIn_send_message_button {
+    margin-bottom: -3px;
+    cursor: not-allowed;
+}
+
+.not_LoggedIn_svgButton {
+    transition: fill 0.2s ease-in-out;
+    cursor: not-allowed;
+}
+
 .svgButton {
     transition: fill 0.2s ease-in-out;
+    cursor: pointer;
 }
+
 .svgButton:hover {
     fill: #7371fc;
 }
