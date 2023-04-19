@@ -16,7 +16,7 @@ interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: string;
     slippageTolerance: number;
-    liquidityProviderFee: number;
+    liquidityProviderFeeString: string;
     quoteTokenIsBuy?: boolean;
     rangeGasPriceinDollars: string | undefined;
     isDenomBase: boolean;
@@ -34,7 +34,7 @@ export default function RangeExtraInfo(props: propsIF) {
         // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
-        liquidityProviderFee,
+        liquidityProviderFeeString,
         isDenomBase,
         isTokenABase,
         // isQtyEntered,
@@ -65,7 +65,7 @@ export default function RangeExtraInfo(props: propsIF) {
         {
             title: 'Current Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFeeString}%`,
         },
     ];
 
@@ -85,7 +85,7 @@ export default function RangeExtraInfo(props: propsIF) {
         {
             title: 'Current Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFeeString}%`,
         },
     ];
 

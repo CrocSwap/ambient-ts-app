@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { FeeChartData } from '../TradeCharts';
 import './Subcharts.css';
+import { setCanvasResolution } from '../../../Chart/Chart';
 interface FreeRateData {
     feeData: FeeChartData[] | undefined;
     period: number | undefined;
@@ -41,14 +42,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
         setIsMouseMoveCrosshair,
     } = props;
 
-    const d3PlotFeeRate = useRef(null);
-    const d3Yaxis = useRef(null);
+    const d3Yaxis = useRef<HTMLInputElement | null>(null);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);
 
     const [feeRateyScale, setFeeRateyScale] = useState<any>();
-    const [yAxis, setyAxis] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
     const [feeRateZoom, setFeeRateZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
@@ -59,34 +58,50 @@ export default function FeeRateSubChart(props: FreeRateData) {
         useState<any>();
 
     useEffect(() => {
-        const yScale = d3.scaleLinear();
-        yScale.domain([0.5, 4]);
+        const domain = [-0.002, 0.0125];
 
-        const yAxis = d3fc
-            .axisRight()
-            .scale(yScale)
-            .tickValues([1, 2.2, 3])
-            .tickFormat((d: any) => {
-                switch (d) {
-                    case 1:
-                        return 0.05 + '%';
-                    case 2.2:
-                        return 0.3 + '%';
-                    case 3:
-                        return 1 + '%';
-                    default:
-                        return d + '%';
-                }
-            });
-
-        setyAxis(() => {
-            return yAxis;
-        });
+        const yScale = d3.scaleSymlog().domain(domain).range([0, 1]);
 
         setFeeRateyScale(() => {
             return yScale;
         });
     }, []);
+
+    useEffect(() => {
+        if (feeRateyScale !== undefined) {
+            const yAxis = d3fc
+                .axisRight()
+                .scale(feeRateyScale)
+                .tickValues([0.0005, 0.003, 0.01]);
+
+            const d3YaxisCanvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as any;
+
+            const d3YaxisContext = d3YaxisCanvas.getContext('2d');
+
+            d3.select(d3Yaxis.current).on('draw', function () {
+                if (yAxis) {
+                    setCanvasResolution(d3YaxisCanvas);
+                    d3YaxisContext.stroke();
+                    d3YaxisContext.textAlign = 'left';
+                    d3YaxisContext.textBaseline = 'middle';
+                    d3YaxisContext.fillStyle = 'rgba(189,189,189,0.8)';
+                    d3YaxisContext.font = '11.425px Lexend Deca';
+
+                    yAxis.tickValues().forEach((d: number) => {
+                        d3YaxisContext.beginPath();
+                        d3YaxisContext.fillText(
+                            d * 100 + '%',
+                            d3YaxisCanvas.width / 6,
+                            feeRateyScale(d),
+                        );
+                    });
+                }
+            });
+        }
+    }, [feeRateyScale]);
 
     useEffect(() => {
         if (feeData !== undefined) {
@@ -185,26 +200,14 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .node() as any;
             const ctx = canvas.getContext('2d');
 
-            const feeRateLogScale = d3
-                .scaleLog()
-                .domain([0.0005, 0.01])
-                .range([1, 3]);
-
-            const feeDataTemp: any[] = [];
-
-            feeData.map((data: any) => {
-                feeDataTemp.push({
-                    time: data.time,
-                    value: feeRateLogScale(data.value),
-                });
-            });
-
             if (lineSeries) {
                 d3.select(d3CanvasArea.current)
                     .on('draw', () => {
-                        lineSeries(feeDataTemp);
+                        setCanvasResolution(canvas);
+                        lineSeries(feeData);
                     })
-                    .on('measure', () => {
+                    .on('measure', (event: any) => {
+                        feeRateyScale.range([event.detail.height, 0]);
                         lineSeries.context(ctx);
                     });
             }
@@ -221,6 +224,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
         if (crosshairVerticalCanvas) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    ctx.setLineDash([0.6, 0.6]);
                     if (isMouseMoveCrosshair) {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (isCrosshairActive === 'feeRate') {
@@ -266,22 +271,13 @@ export default function FeeRateSubChart(props: FreeRateData) {
         if (
             feeData !== undefined &&
             feeRateyScale !== undefined &&
-            yAxis !== undefined &&
             lineSeries !== undefined
         ) {
-            drawChart(feeData, xScale, feeRateyScale, yAxis);
+            drawChart(feeData, feeRateyScale);
 
             props.render();
         }
-    }, [
-        xScale,
-        period,
-        feeData,
-        zoomAndYdragControl,
-        feeRateyScale,
-        lineSeries,
-        yAxis,
-    ]);
+    }, [period, feeData, zoomAndYdragControl, feeRateyScale, lineSeries]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && feeRateZoom !== undefined) {
@@ -289,42 +285,10 @@ export default function FeeRateSubChart(props: FreeRateData) {
         }
     }, [feeRateZoom, d3CanvasCrosshair]);
 
-    const render = useCallback(() => {
-        const nd = d3.select('#d3PlotFeeRate').node() as any;
-        nd.requestRedraw();
-        renderCanvas();
-    }, []);
-
     const drawChart = useCallback(
-        (feeData: any, xScale: any, feeRateyScale: any, yAxis: any) => {
+        (feeData: any, feeRateyScale: any) => {
             if (feeData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-                const feeRateLogScale = d3
-                    .scaleLog()
-                    .domain([0.0005, 0.01])
-                    .range([1, 3]);
-
-                const feeDataTemp: any[] = [];
-
-                feeData.map((data: any) => {
-                    feeDataTemp.push({
-                        time: data.time,
-                        value: feeRateLogScale(data.value),
-                    });
-                });
-
-                d3.select(d3PlotFeeRate.current).on(
-                    'measure',
-                    function (event: any) {
-                        xScale.range([0, event.detail.width]);
-                        feeRateyScale.range([event.detail.height, 0]);
-                    },
-                );
-
-                d3.select(d3Yaxis.current).on('draw', function (event: any) {
-                    d3.select(event.target).select('svg').call(yAxis);
-                });
 
                 d3.select(d3CanvasCrosshair.current).on(
                     'mousemove',
@@ -342,7 +306,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setIsCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
-                    render();
+                    renderCanvas();
                 });
             }
         },
@@ -351,13 +315,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
     return (
         <div id='fee_rate_chart' data-testid={'chart'}>
-            <d3fc-svg
-                id='d3PlotFeeRate'
-                ref={d3PlotFeeRate}
-                style={{ overflow: 'hidden' }}
-            ></d3fc-svg>
-
             <d3fc-canvas
+                id='d3PlotFeeRate'
                 ref={d3CanvasArea}
                 className='fee-rate-canvas'
             ></d3fc-canvas>
@@ -379,11 +338,15 @@ export default function FeeRateSubChart(props: FreeRateData) {
                       ).toString() + '%'
                     : '-'}
             </label>
-            <d3fc-svg
-                className='y-axis'
+            <d3fc-canvas
+                className='y-axis-canvas'
                 ref={d3Yaxis}
-                style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
-            ></d3fc-svg>
+                style={{
+                    width: yAxisWidth,
+                    gridColumn: 4,
+                    gridRow: 3,
+                }}
+            ></d3fc-canvas>
         </div>
     );
 }

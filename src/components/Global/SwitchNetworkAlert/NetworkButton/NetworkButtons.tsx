@@ -3,7 +3,7 @@
 
 // import ethereumLogo from '../../../../assets/images/networks/ethereum.png';
 
-import { CHAIN_SPECS } from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSwitchNetwork } from 'wagmi';
 import { getSupportedChainIds } from '../../../../utils/data/chains';
 import NetworkButton from './NetworkButton';
@@ -22,7 +22,7 @@ export default function NetworkButtons() {
 
     const supportedChains = getSupportedChainIds().map((chainId) => {
         return {
-            name: CHAIN_SPECS[chainId].displayName,
+            name: lookupChain(chainId).displayName,
             id: chainId,
             icon: '',
             theme: '#36364a',

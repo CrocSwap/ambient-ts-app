@@ -8,7 +8,6 @@ interface PropsIF {
 }
 export default function GateWallet(props: PropsIF) {
     const { termUrls, recordAgreed } = props;
-    console.log(termUrls.privacy);
 
     return (
         <div className={styles.main_container}>

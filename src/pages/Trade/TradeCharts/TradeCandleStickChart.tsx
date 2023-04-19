@@ -766,9 +766,6 @@ export default function TradeCandleStickChart(props: propsIF) {
 
             const xScaleCopy = xScale.copy();
 
-            const yScaleIndicator = yScale.copy();
-            const xScaleIndicator = xScale.copy();
-
             // const ghostScale = d3.scaleLinear();
 
             const volumeScale = d3.scaleLinear();
@@ -785,8 +782,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 return {
                     xScale: xScale,
                     yScale: yScale,
-                    yScaleIndicator: yScaleIndicator,
-                    xScaleIndicator: xScaleIndicator,
                     xScaleCopy: xScaleCopy,
                     // ghostScale: ghostScale,
                     subChartxScale: subChartxScale,
