@@ -101,6 +101,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
+import { memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -185,6 +186,7 @@ const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
 const cachedPositionUpdateQuery = memoizePositionUpdate();
+const cachedPoolStatsFetch = memoizePoolStats();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -198,6 +200,8 @@ const startMoralis = async () => {
         // ...and any other configuration
     });
 };
+
+const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
 startMoralis();
 
@@ -786,6 +790,7 @@ export default function App() {
     );
     // check for token balances every eight blocks
 
+    // Fetch liquidity every minute
     const fetchLiquidity = async () => {
         if (
             !baseTokenAddress ||
@@ -799,7 +804,7 @@ export default function App() {
             baseTokenAddress.toLowerCase(),
             quoteTokenAddress.toLowerCase(),
             chainData.poolIndex,
-            lastBlockNumber,
+            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
         )
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
@@ -807,9 +812,13 @@ export default function App() {
             .catch(console.error);
     };
 
+    // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
-        fetchLiquidity();
-    }, [lastBlockNumber]);
+        const id = setInterval(() => {
+            fetchLiquidity();
+        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        return () => clearInterval(id);
+    }, []);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
@@ -3417,6 +3426,7 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     isServerEnabled={isServerEnabled}
                                     topPools={topPools}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
                                 />
                             }
                         />
