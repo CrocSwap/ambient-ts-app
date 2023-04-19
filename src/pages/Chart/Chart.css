@@ -164,8 +164,8 @@ div.tooltip {
 }
 
 d3fc-canvas>canvas, d3fc-svg>svg {
-    height: inherit;
-    width: inherit;
+    height: inherit !important;
+    width: inherit !important;
 }
 
 @keyframes hideAnimation {
