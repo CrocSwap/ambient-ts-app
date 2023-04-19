@@ -32,6 +32,8 @@ import {
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
     setLastBlockPoll,
+    addChangesByPool,
+    addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -1323,6 +1325,12 @@ export default function App() {
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
                                 dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolTxData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+                                dispatch(
                                     setChangesByPool({
                                         dataReceived: true,
                                         changes: poolChangesJsonData,
@@ -1550,6 +1558,80 @@ export default function App() {
             }
         }
     }, [lastPoolLiqChangeMessage]);
+
+    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                quote: quoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
+                ensResolution: 'true',
+                annotate: 'true',
+                addValue: 'true',
+            }),
+        [
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData.chainId,
+            chainData.poolIndex,
+        ],
+    );
+
+    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
+        poolRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug('pool recent changes subscription opened');
+            },
+            onClose: (event: CloseEvent) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: TransactionIF) => {
+                        return getTransactionData(tx, searchableTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByPool(updatedTransactions));
+                    })
+                    .catch(console.error);
+            }
+        }
+    }, [lastPoolChangeMessage]);
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                IS_LOCAL_ENV && console.debug({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, searchableTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(
+                        addLimitOrderChangesByPool(updatedLimitOrderStates),
+                    );
+                });
+            }
+        }
+    }, [lastPoolChangeMessage]);
 
     const candleSubscriptionEndpoint = useMemo(
         () =>
