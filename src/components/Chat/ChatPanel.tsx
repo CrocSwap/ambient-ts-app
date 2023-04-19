@@ -19,7 +19,6 @@ import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import NotFound from '../../pages/NotFound/NotFound';
 import { topPoolIF } from '../../App/hooks/useTopPools';
-import { IS_LOCAL_ENV } from '../../constants';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -52,7 +51,6 @@ interface propsIF {
     username?: string | null;
     topPools: topPoolIF[];
     isChatEnabled: boolean;
-    setIsChatEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChatPanel(props: propsIF) {
@@ -63,7 +61,6 @@ export default function ChatPanel(props: propsIF) {
         currentPool,
         setIsChatOpen,
         topPools,
-        setIsChatEnabled,
     } = props;
 
     if (!isChatEnabled) return <NotFound />;
@@ -90,8 +87,7 @@ export default function ChatPanel(props: propsIF) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, updateUser, updateMessageUser, saveUser, getStatus } =
-        useChatApi();
+    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
@@ -116,17 +112,6 @@ export default function ChatPanel(props: propsIF) {
             setIsChatOpen(!props.isChatOpen);
         }
     }
-
-    useEffect(() => {
-        // Check if the chat server is reachable and has a stable db connection every 10 seconds.
-        const interval = setInterval(() => {
-            getStatus().then((isChatUp) => {
-                IS_LOCAL_ENV && console.debug('chat status check:', isChatUp);
-                setIsChatEnabled(isChatUp);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, [isChatEnabled]);
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);

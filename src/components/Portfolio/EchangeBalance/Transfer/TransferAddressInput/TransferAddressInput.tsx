@@ -23,7 +23,7 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
                     const value = event.target.value;
                     if (
                         value &&
-                        !value.endsWith('.eth') &&
+                        !value.includes('.') &&
                         !value.startsWith('0x')
                     ) {
                         setTransferToAddress('0x' + event.target.value);
@@ -50,6 +50,11 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
             </div>
+            <p className={styles.address_display}>
+                {sendToAddress && sendToAddress.length > 30
+                    ? sendToAddress
+                    : undefined}
+            </p>
         </div>
     );
 }
