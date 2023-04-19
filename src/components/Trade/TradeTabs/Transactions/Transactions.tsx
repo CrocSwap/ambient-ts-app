@@ -208,10 +208,7 @@ export default function Transactions(props: propsIF) {
         isOnPortfolioPage,
         isShowAllEnabled,
         isCandleSelected,
-        filter,
         sum(changesInSelectedCandle),
-        sum(changesByUserMatchingSelectedTokens),
-        sum(changesByPoolWithoutFills),
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
