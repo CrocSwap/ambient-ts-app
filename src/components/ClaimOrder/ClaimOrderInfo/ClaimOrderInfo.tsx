@@ -2,25 +2,19 @@ import styles from './ClaimOrderInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import moment from 'moment';
-// import { formatAmountOld } from '../../../utils/numbers';
 
 interface IClaimOrderInfoProps {
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    posLiqBaseDecimalCorrected: number | undefined;
-    posLiqQuoteDecimalCorrected: number | undefined;
     usdValue: string;
-    bidTick: number | undefined;
-    askTick: number | undefined;
+
     baseDisplayFrontend: string;
     baseDisplay: string;
     quoteDisplay: string;
     quoteDisplayFrontend: string;
-    positionLiqTotalUSD: number | undefined;
-    // feeLiqBaseDecimalCorrected: number | undefined;
-    // feeLiqQuoteDecimalCorrected: number | undefined;
+
     claimPercentage: number;
     positionLiquidity: string | undefined;
     baseClaimString: string;
@@ -32,23 +26,12 @@ interface IClaimOrderInfoProps {
 export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
     const {
         pivotTime,
-        // baseTokenSymbol,
-        // quoteTokenSymbol,
         baseTokenLogoURI,
         quoteTokenLogoURI,
         usdValue,
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
-        // bidTick,
-        // askTick,
-
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
-        // baseRemovalString,
-        // quoteRemovalString,
-        // positionLiqTotalUSD,
-        // positionLiquidity,
     } = props;
 
     const claimablePivotTimeString = pivotTime
@@ -108,7 +91,6 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
                         <div className={styles.info_text}>
                             {truncatedDisplayPrice}
                         </div>
-                        {/* <img src={quoteTokenLogoURI} alt='' width='15px' /> */}
                     </div>
                 </Row>
                 <Row>
@@ -117,13 +99,6 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
                         {claimablePivotTimeString}
                     </div>
                 </Row>
-                {/* <Row>
-                    <span> Claimable Amount</span>
-                    <div className={styles.token_price}>
-                        4,200.00
-                        <img src={quoteTokenLogoURI} alt='' />
-                    </div>
-                </Row> */}
             </div>
         </div>
     );

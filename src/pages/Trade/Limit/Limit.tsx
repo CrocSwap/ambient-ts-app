@@ -178,9 +178,8 @@ export default function Limit(props: propsIF) {
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
-    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(
-        dexBalancePrefs.limit.drawFromDexBal.isEnabled,
-    );
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
+        useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(
         dexBalancePrefs.limit.outputToDexBal.isEnabled,
     );

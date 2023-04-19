@@ -19,7 +19,10 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    PositionUpdateFn,
+    getPositionData,
+} from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
     PositionIF,
@@ -54,6 +57,7 @@ interface propsIF {
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
+    cachedPositionUpdateQuery: PositionUpdateFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
@@ -100,6 +104,7 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         crocEnv,
         isTokenABase,
         cachedFetchTokenPrice,
@@ -374,6 +379,7 @@ export default function PortfolioTabs(props: propsIF) {
     // props for <Range/> React Element
     const rangeProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,

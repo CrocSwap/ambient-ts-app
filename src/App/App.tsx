@@ -32,6 +32,8 @@ import {
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
     setLastBlockPoll,
+    addChangesByPool,
+    addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -51,7 +53,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
-import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
@@ -101,6 +102,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
+import { memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -128,20 +130,16 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
-import { getPositionData } from './functions/getPositionData';
+import {
+    getPositionData,
+    memoizePositionUpdate,
+} from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
-import Analytics2 from '../pages/Analytics/Analytics2';
-import AnalyticsOverview from '../components/Analytics/AnalyticsOverview/AnalyticsOverview';
-import TopPools from '../components/Analytics/TopPools/TopPools';
-import TrendingPools from '../components/Analytics/TrendingPools/TrendingPools';
-import TopRanges from '../components/Analytics/TopRanges/TopRanges';
-import TopTokens from '../components/Analytics/TopTokens/TopTokens';
-import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
@@ -188,6 +186,8 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
+const cachedPositionUpdateQuery = memoizePositionUpdate();
+const cachedPoolStatsFetch = memoizePoolStats();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -201,6 +201,8 @@ const startMoralis = async () => {
         // ...and any other configuration
     });
 };
+
+const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
 startMoralis();
 
@@ -789,6 +791,7 @@ export default function App() {
     );
     // check for token balances every eight blocks
 
+    // Fetch liquidity every minute
     const fetchLiquidity = async () => {
         if (
             !baseTokenAddress ||
@@ -802,7 +805,7 @@ export default function App() {
             baseTokenAddress.toLowerCase(),
             quoteTokenAddress.toLowerCase(),
             chainData.poolIndex,
-            lastBlockNumber,
+            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
         )
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
@@ -810,9 +813,13 @@ export default function App() {
             .catch(console.error);
     };
 
+    // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
-        fetchLiquidity();
-    }, [lastBlockNumber]);
+        const id = setInterval(() => {
+            fetchLiquidity();
+        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        return () => clearInterval(id);
+    }, []);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
@@ -1328,6 +1335,12 @@ export default function App() {
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
                                 dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolTxData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+                                dispatch(
                                     setChangesByPool({
                                         dataReceived: true,
                                         changes: poolChangesJsonData,
@@ -1555,6 +1568,80 @@ export default function App() {
             }
         }
     }, [lastPoolLiqChangeMessage]);
+
+    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                quote: quoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
+                ensResolution: 'true',
+                annotate: 'true',
+                addValue: 'true',
+            }),
+        [
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData.chainId,
+            chainData.poolIndex,
+        ],
+    );
+
+    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
+        poolRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug('pool recent changes subscription opened');
+            },
+            onClose: (event: CloseEvent) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: TransactionIF) => {
+                        return getTransactionData(tx, searchableTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByPool(updatedTransactions));
+                    })
+                    .catch(console.error);
+            }
+        }
+    }, [lastPoolChangeMessage]);
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                IS_LOCAL_ENV && console.debug({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, searchableTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(
+                        addLimitOrderChangesByPool(updatedLimitOrderStates),
+                    );
+                });
+            }
+        }
+    }, [lastPoolChangeMessage]);
 
     const candleSubscriptionEndpoint = useMemo(
         () =>
@@ -2931,12 +3018,6 @@ export default function App() {
         topPools: topPools,
     };
 
-    const analyticsProps = {
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        setOutsideControl: setOutsideControl,
-        favePools: favePools,
-    };
-
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
         () =>
             getMoneynessRank(
@@ -3121,6 +3202,206 @@ export default function App() {
         }
     }, [isEscapePressed]);
 
+    const tradeProps = {
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        chartSettings,
+        tokenList: searchableTokens,
+        cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
+        pool,
+        isUserLoggedIn,
+        crocEnv,
+        provider,
+        candleData,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        tokenPair,
+        account: account ?? '',
+        lastBlockNumber,
+        isTokenABase,
+        poolPriceDisplay,
+        chainId: chainData.chainId,
+        chainData,
+        currentTxActiveInTransactions,
+
+        setCurrentTxActiveInTransactions,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        expandTradeTable,
+        setExpandTradeTable,
+        tokenMap: tokensOnActiveLists,
+        favePools,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        outsideControl,
+        setOutsideControl,
+        currentPositionActive,
+        setCurrentPositionActive,
+        openGlobalModal,
+        closeGlobalModal,
+        isInitialized,
+        poolPriceNonDisplay,
+        setLimitRate: function (): void {
+            throw new Error('Function not implemented.');
+        },
+        limitRate: '',
+        searchableTokens: searchableTokens,
+        poolExists,
+        setTokenPairLocal,
+        showSidebar,
+        handlePulseAnimation,
+        isCandleSelected,
+        setIsCandleSelected,
+        fullScreenChart,
+        setFullScreenChart,
+        fetchingCandle,
+        setFetchingCandle,
+        isCandleDataNull,
+        setIsCandleDataNull,
+        minPrice: minRangePrice,
+        maxPrice: maxRangePrice,
+        setMaxPrice: setMaxRangePrice,
+        setMinPrice: setMinRangePrice,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        isTutorialMode,
+        setIsTutorialMode,
+        setCandleDomains,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
+        setRepositionRangeWidth,
+        repositionRangeWidth,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange,
+        },
+        setChartTriggeredBy,
+        chartTriggeredBy,
+        slippage: {
+            swapSlippage,
+            mintSlippage,
+            repoSlippage,
+        },
+    };
+
+    const accountProps = {
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        searchableTokens,
+        cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
+        crocEnv: crocEnv,
+        addRecentToken,
+        getRecentTokens,
+        getAmbientTokens,
+        getTokensByName,
+        verifyToken: verifyToken,
+        getTokenByAddress,
+        isTokenABase,
+        provider,
+        cachedFetchErc20TokenBalances,
+
+        cachedFetchNativeTokenBalance,
+        cachedFetchTokenPrice,
+        ensName,
+        lastBlockNumber,
+        connectedAccount: account ? account : '',
+        userImageData: imageData,
+        chainId: chainData.chainId,
+        tokensOnActiveLists,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        outsideControl,
+        setOutsideControl,
+        // userAccount:true,
+        openGlobalModal,
+        closeGlobalModal,
+        chainData: chainData,
+        currentPositionActive,
+        setCurrentPositionActive,
+        account: account ?? '',
+        showSidebar,
+        isUserLoggedIn,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        handlePulseAnimation,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        openModalWallet: openWagmiModalWallet,
+        mainnetProvider,
+        setSimpleRangeWidth,
+        dexBalancePrefs: {
+            swap: dexBalPrefSwap,
+            limit: dexBalPrefLimit,
+            range: dexBalPrefRange,
+        },
+        slippage: {
+            swapSlippage,
+            mintSlippage,
+            repoSlippage,
+        },
+        ackTokens,
+        setExpandTradeTable,
+    };
+
+    const repositionProps = {
+        chainData,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
+        lastBlockNumber,
+        tokenPair,
+        crocEnv,
+        chainId: chainData.chainId,
+        provider,
+        ambientApy,
+        dailyVol,
+        isDenomBase: tradeData.isDenomBase,
+        repoSlippage,
+        isPairStable,
+        setMaxPrice: setMaxRangePrice,
+        setMinPrice: setMinRangePrice,
+        setRescaleRangeBoundariesWithSlider,
+        poolPriceDisplay,
+        setSimpleRangeWidth: setRepositionRangeWidth,
+        simpleRangeWidth: repositionRangeWidth,
+        bypassConfirm: {
+            swap: bypassConfirmSwap,
+            limit: bypassConfirmLimit,
+            range: bypassConfirmRange,
+            repo: bypassConfirmRepo,
+        },
+        openGlobalPopup,
+    };
+
+    const chatProps = {
+        isChatEnabled: isChatEnabled,
+        isChatOpen: true,
+        onClose: () => {
+            console.error('Function not implemented.');
+        },
+        favePools: favePools,
+        currentPool: currentPoolInfo,
+        setIsChatOpen: setIsChatOpen,
+        isFullScreen: true,
+        userImageData: imageData,
+        username: ensName,
+        appPage: true,
+        topPools: topPools,
+        setIsChatEnabled: setIsChatEnabled,
+    };
+
     return (
         <>
             <div className={containerStyle} data-theme={theme}>
@@ -3146,6 +3427,7 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     isServerEnabled={isServerEnabled}
                                     topPools={topPools}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
                                 />
                             }
                         />
@@ -3153,132 +3435,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <PoolContext.Provider value={pool}>
-                                    <Trade
-                                        gasPriceInGwei={gasPriceInGwei}
-                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                        chartSettings={chartSettings}
-                                        tokenList={searchableTokens}
-                                        cachedQuerySpotPrice={
-                                            cachedQuerySpotPrice
-                                        }
-                                        isUserLoggedIn={isUserLoggedIn}
-                                        crocEnv={crocEnv}
-                                        provider={provider}
-                                        candleData={candleData}
-                                        baseTokenAddress={baseTokenAddress}
-                                        quoteTokenAddress={quoteTokenAddress}
-                                        baseTokenBalance={baseTokenBalance}
-                                        quoteTokenBalance={quoteTokenBalance}
-                                        baseTokenDexBalance={
-                                            baseTokenDexBalance
-                                        }
-                                        quoteTokenDexBalance={
-                                            quoteTokenDexBalance
-                                        }
-                                        tokenPair={tokenPair}
-                                        account={account ?? ''}
-                                        lastBlockNumber={lastBlockNumber}
-                                        isTokenABase={isTokenABase}
-                                        poolPriceDisplay={poolPriceDisplay}
-                                        chainId={chainData.chainId}
-                                        chainData={chainData}
-                                        currentTxActiveInTransactions={
-                                            currentTxActiveInTransactions
-                                        }
-                                        setCurrentTxActiveInTransactions={
-                                            setCurrentTxActiveInTransactions
-                                        }
-                                        isShowAllEnabled={isShowAllEnabled}
-                                        setIsShowAllEnabled={
-                                            setIsShowAllEnabled
-                                        }
-                                        expandTradeTable={expandTradeTable}
-                                        setExpandTradeTable={
-                                            setExpandTradeTable
-                                        }
-                                        tokenMap={tokensOnActiveLists}
-                                        favePools={favePools}
-                                        selectedOutsideTab={selectedOutsideTab}
-                                        setSelectedOutsideTab={
-                                            setSelectedOutsideTab
-                                        }
-                                        outsideControl={outsideControl}
-                                        setOutsideControl={setOutsideControl}
-                                        currentPositionActive={
-                                            currentPositionActive
-                                        }
-                                        setCurrentPositionActive={
-                                            setCurrentPositionActive
-                                        }
-                                        openGlobalModal={openGlobalModal}
-                                        closeGlobalModal={closeGlobalModal}
-                                        isInitialized={isInitialized}
-                                        poolPriceNonDisplay={
-                                            poolPriceNonDisplay
-                                        }
-                                        setLimitRate={function (): void {
-                                            throw new Error(
-                                                'Function not implemented.',
-                                            );
-                                        }}
-                                        limitRate={''}
-                                        searchableTokens={searchableTokens}
-                                        poolExists={poolExists}
-                                        setTokenPairLocal={setTokenPairLocal}
-                                        showSidebar={showSidebar}
-                                        handlePulseAnimation={
-                                            handlePulseAnimation
-                                        }
-                                        isCandleSelected={isCandleSelected}
-                                        setIsCandleSelected={
-                                            setIsCandleSelected
-                                        }
-                                        fullScreenChart={fullScreenChart}
-                                        setFullScreenChart={setFullScreenChart}
-                                        fetchingCandle={fetchingCandle}
-                                        setFetchingCandle={setFetchingCandle}
-                                        isCandleDataNull={isCandleDataNull}
-                                        setIsCandleDataNull={
-                                            setIsCandleDataNull
-                                        }
-                                        minPrice={minRangePrice}
-                                        maxPrice={maxRangePrice}
-                                        setMaxPrice={setMaxRangePrice}
-                                        setMinPrice={setMinRangePrice}
-                                        rescaleRangeBoundariesWithSlider={
-                                            rescaleRangeBoundariesWithSlider
-                                        }
-                                        setRescaleRangeBoundariesWithSlider={
-                                            setRescaleRangeBoundariesWithSlider
-                                        }
-                                        isTutorialMode={isTutorialMode}
-                                        setIsTutorialMode={setIsTutorialMode}
-                                        setCandleDomains={setCandleDomains}
-                                        setSimpleRangeWidth={
-                                            setSimpleRangeWidth
-                                        }
-                                        simpleRangeWidth={simpleRangeWidth}
-                                        setRepositionRangeWidth={
-                                            setRepositionRangeWidth
-                                        }
-                                        repositionRangeWidth={
-                                            repositionRangeWidth
-                                        }
-                                        dexBalancePrefs={{
-                                            swap: dexBalPrefSwap,
-                                            limit: dexBalPrefLimit,
-                                            range: dexBalPrefRange,
-                                        }}
-                                        setChartTriggeredBy={
-                                            setChartTriggeredBy
-                                        }
-                                        chartTriggeredBy={chartTriggeredBy}
-                                        slippage={{
-                                            swapSlippage,
-                                            mintSlippage,
-                                            repoSlippage,
-                                        }}
-                                    />
+                                    <Trade {...tradeProps} />
                                 </PoolContext.Provider>
                             }
                         >
@@ -3340,40 +3497,7 @@ export default function App() {
                             />
                             <Route
                                 path='reposition/:params'
-                                element={
-                                    <Reposition
-                                        chainData={chainData}
-                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                        gasPriceInGwei={gasPriceInGwei}
-                                        lastBlockNumber={lastBlockNumber}
-                                        tokenPair={tokenPair}
-                                        crocEnv={crocEnv}
-                                        chainId={chainData.chainId}
-                                        provider={provider}
-                                        ambientApy={ambientApy}
-                                        dailyVol={dailyVol}
-                                        isDenomBase={tradeData.isDenomBase}
-                                        repoSlippage={repoSlippage}
-                                        isPairStable={isPairStable}
-                                        setMaxPrice={setMaxRangePrice}
-                                        setMinPrice={setMinRangePrice}
-                                        setRescaleRangeBoundariesWithSlider={
-                                            setRescaleRangeBoundariesWithSlider
-                                        }
-                                        poolPriceDisplay={poolPriceDisplay}
-                                        setSimpleRangeWidth={
-                                            setRepositionRangeWidth
-                                        }
-                                        simpleRangeWidth={repositionRangeWidth}
-                                        bypassConfirm={{
-                                            swap: bypassConfirmSwap,
-                                            limit: bypassConfirmLimit,
-                                            range: bypassConfirmRange,
-                                            repo: bypassConfirmRepo,
-                                        }}
-                                        openGlobalPopup={openGlobalPopup}
-                                    />
-                                }
+                                element={<Reposition {...repositionProps} />}
                             />
                             <Route path='add' element={<RangeAdd />} />
                             <Route
@@ -3384,153 +3508,13 @@ export default function App() {
                             />
                         </Route>
                         <Route
-                            path='analytics'
-                            element={<Analytics {...analyticsProps} />}
-                        />
-                        <Route
-                            path='analytics2'
-                            element={
-                                <Analytics2
-                                    analyticsSearchInput={analyticsSearchInput}
-                                    setAnalyticsSearchInput={
-                                        setAnalyticsSearchInput
-                                    }
-                                />
-                            }
-                        >
-                            <Route
-                                path=''
-                                element={
-                                    <Navigate
-                                        to='/analytics2/overview'
-                                        replace
-                                    />
-                                }
-                            />
-
-                            <Route
-                                path='overview'
-                                element={
-                                    <AnalyticsOverview
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='pools'
-                                element={
-                                    <TopPools
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='trendingpools'
-                                element={
-                                    <TrendingPools
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='ranges/top'
-                                element={
-                                    <TopRanges
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='tokens'
-                                element={
-                                    <TopTokens
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='transactions'
-                                element={
-                                    <AnalyticsTransactions
-                                        analyticsSearchInput={
-                                            analyticsSearchInput
-                                        }
-                                        setAnalyticsSearchInput={
-                                            setAnalyticsSearchInput
-                                        }
-                                    />
-                                }
-                            />
-                        </Route>
-                        <Route
                             path='chat'
-                            element={
-                                <ChatPanel
-                                    isChatEnabled={isChatEnabled}
-                                    isChatOpen={true}
-                                    onClose={() => {
-                                        console.error(
-                                            'Function not implemented.',
-                                        );
-                                    }}
-                                    favePools={favePools}
-                                    currentPool={currentPoolInfo}
-                                    setIsChatOpen={setIsChatOpen}
-                                    isFullScreen={true}
-                                    userImageData={imageData}
-                                    username={ensName}
-                                    appPage={true}
-                                    topPools={topPools}
-                                />
-                            }
+                            element={<ChatPanel {...chatProps} />}
                         />
 
                         <Route
                             path='chat/:params'
-                            element={
-                                <ChatPanel
-                                    isChatEnabled={isChatEnabled}
-                                    isChatOpen={true}
-                                    onClose={() => {
-                                        console.error(
-                                            'Function not implemented.',
-                                        );
-                                    }}
-                                    favePools={favePools}
-                                    currentPool={currentPoolInfo}
-                                    setIsChatOpen={setIsChatOpen}
-                                    isFullScreen={true}
-                                    userImageData={imageData}
-                                    appPage={true}
-                                    username={ensName}
-                                    topPools={topPools}
-                                />
-                            }
+                            element={<ChatPanel {...chatProps} />}
                         />
                         <Route
                             path='range2'
@@ -3561,83 +3545,8 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
-                                    gasPriceInGwei={gasPriceInGwei}
-                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    searchableTokens={searchableTokens}
-                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    crocEnv={crocEnv}
-                                    addRecentToken={addRecentToken}
-                                    getRecentTokens={getRecentTokens}
-                                    getAmbientTokens={getAmbientTokens}
-                                    getTokensByName={getTokensByName}
-                                    verifyToken={verifyToken}
-                                    getTokenByAddress={getTokenByAddress}
-                                    isTokenABase={isTokenABase}
-                                    provider={provider}
-                                    cachedFetchErc20TokenBalances={
-                                        cachedFetchErc20TokenBalances
-                                    }
-                                    cachedFetchNativeTokenBalance={
-                                        cachedFetchNativeTokenBalance
-                                    }
-                                    cachedFetchTokenPrice={
-                                        cachedFetchTokenPrice
-                                    }
-                                    ensName={ensName}
-                                    lastBlockNumber={lastBlockNumber}
-                                    connectedAccount={account ? account : ''}
-                                    userImageData={imageData}
-                                    chainId={chainData.chainId}
-                                    tokensOnActiveLists={tokensOnActiveLists}
-                                    selectedOutsideTab={selectedOutsideTab}
-                                    setSelectedOutsideTab={
-                                        setSelectedOutsideTab
-                                    }
-                                    outsideControl={outsideControl}
-                                    setOutsideControl={setOutsideControl}
+                                    {...accountProps}
                                     userAccount={true}
-                                    openGlobalModal={openGlobalModal}
-                                    closeGlobalModal={closeGlobalModal}
-                                    chainData={chainData}
-                                    currentPositionActive={
-                                        currentPositionActive
-                                    }
-                                    setCurrentPositionActive={
-                                        setCurrentPositionActive
-                                    }
-                                    account={account ?? ''}
-                                    showSidebar={showSidebar}
-                                    isUserLoggedIn={isUserLoggedIn}
-                                    baseTokenBalance={baseTokenBalance}
-                                    quoteTokenBalance={quoteTokenBalance}
-                                    baseTokenDexBalance={baseTokenDexBalance}
-                                    quoteTokenDexBalance={quoteTokenDexBalance}
-                                    currentTxActiveInTransactions={
-                                        currentTxActiveInTransactions
-                                    }
-                                    setCurrentTxActiveInTransactions={
-                                        setCurrentTxActiveInTransactions
-                                    }
-                                    handlePulseAnimation={handlePulseAnimation}
-                                    outputTokens={outputTokens}
-                                    validatedInput={validatedInput}
-                                    setInput={setInput}
-                                    searchType={searchType}
-                                    openModalWallet={openWagmiModalWallet}
-                                    mainnetProvider={mainnetProvider}
-                                    setSimpleRangeWidth={setSimpleRangeWidth}
-                                    dexBalancePrefs={{
-                                        swap: dexBalPrefSwap,
-                                        limit: dexBalPrefLimit,
-                                        range: dexBalPrefRange,
-                                    }}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
-                                    ackTokens={ackTokens}
-                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
@@ -3645,83 +3554,8 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
-                                    gasPriceInGwei={gasPriceInGwei}
-                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    searchableTokens={searchableTokens}
-                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    crocEnv={crocEnv}
-                                    addRecentToken={addRecentToken}
-                                    getRecentTokens={getRecentTokens}
-                                    getAmbientTokens={getAmbientTokens}
-                                    getTokensByName={getTokensByName}
-                                    verifyToken={verifyToken}
-                                    getTokenByAddress={getTokenByAddress}
-                                    isTokenABase={isTokenABase}
-                                    provider={provider}
-                                    cachedFetchErc20TokenBalances={
-                                        cachedFetchErc20TokenBalances
-                                    }
-                                    cachedFetchNativeTokenBalance={
-                                        cachedFetchNativeTokenBalance
-                                    }
-                                    cachedFetchTokenPrice={
-                                        cachedFetchTokenPrice
-                                    }
-                                    ensName={ensName}
-                                    lastBlockNumber={lastBlockNumber}
-                                    connectedAccount={account ? account : ''}
-                                    chainId={chainData.chainId}
-                                    userImageData={imageData}
-                                    tokensOnActiveLists={tokensOnActiveLists}
-                                    selectedOutsideTab={selectedOutsideTab}
-                                    setSelectedOutsideTab={
-                                        setSelectedOutsideTab
-                                    }
-                                    outsideControl={outsideControl}
-                                    setOutsideControl={setOutsideControl}
+                                    {...accountProps}
                                     userAccount={false}
-                                    openGlobalModal={openGlobalModal}
-                                    closeGlobalModal={closeGlobalModal}
-                                    chainData={chainData}
-                                    currentPositionActive={
-                                        currentPositionActive
-                                    }
-                                    setCurrentPositionActive={
-                                        setCurrentPositionActive
-                                    }
-                                    account={account ?? ''}
-                                    showSidebar={showSidebar}
-                                    isUserLoggedIn={isUserLoggedIn}
-                                    baseTokenBalance={baseTokenBalance}
-                                    quoteTokenBalance={quoteTokenBalance}
-                                    baseTokenDexBalance={baseTokenDexBalance}
-                                    quoteTokenDexBalance={quoteTokenDexBalance}
-                                    currentTxActiveInTransactions={
-                                        currentTxActiveInTransactions
-                                    }
-                                    setCurrentTxActiveInTransactions={
-                                        setCurrentTxActiveInTransactions
-                                    }
-                                    handlePulseAnimation={handlePulseAnimation}
-                                    outputTokens={outputTokens}
-                                    validatedInput={validatedInput}
-                                    setInput={setInput}
-                                    searchType={searchType}
-                                    openModalWallet={openWagmiModalWallet}
-                                    mainnetProvider={mainnetProvider}
-                                    setSimpleRangeWidth={setSimpleRangeWidth}
-                                    dexBalancePrefs={{
-                                        swap: dexBalPrefSwap,
-                                        limit: dexBalPrefLimit,
-                                        range: dexBalPrefRange,
-                                    }}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
-                                    ackTokens={ackTokens}
-                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />
@@ -3762,83 +3596,8 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
-                                    gasPriceInGwei={gasPriceInGwei}
-                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    searchableTokens={searchableTokens}
-                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    crocEnv={crocEnv}
-                                    addRecentToken={addRecentToken}
-                                    getRecentTokens={getRecentTokens}
-                                    getAmbientTokens={getAmbientTokens}
-                                    getTokensByName={getTokensByName}
-                                    verifyToken={verifyToken}
-                                    getTokenByAddress={getTokenByAddress}
-                                    isTokenABase={isTokenABase}
-                                    provider={provider}
-                                    cachedFetchErc20TokenBalances={
-                                        cachedFetchErc20TokenBalances
-                                    }
-                                    cachedFetchNativeTokenBalance={
-                                        cachedFetchNativeTokenBalance
-                                    }
-                                    cachedFetchTokenPrice={
-                                        cachedFetchTokenPrice
-                                    }
-                                    ensName={ensName}
-                                    lastBlockNumber={lastBlockNumber}
-                                    connectedAccount={account ? account : ''}
-                                    chainId={chainData.chainId}
-                                    userImageData={imageData}
-                                    tokensOnActiveLists={tokensOnActiveLists}
-                                    selectedOutsideTab={selectedOutsideTab}
-                                    setSelectedOutsideTab={
-                                        setSelectedOutsideTab
-                                    }
-                                    outsideControl={outsideControl}
-                                    setOutsideControl={setOutsideControl}
+                                    {...accountProps}
                                     userAccount={false}
-                                    openGlobalModal={openGlobalModal}
-                                    closeGlobalModal={closeGlobalModal}
-                                    chainData={chainData}
-                                    currentPositionActive={
-                                        currentPositionActive
-                                    }
-                                    setCurrentPositionActive={
-                                        setCurrentPositionActive
-                                    }
-                                    account={account ?? ''}
-                                    showSidebar={showSidebar}
-                                    isUserLoggedIn={isUserLoggedIn}
-                                    baseTokenBalance={baseTokenBalance}
-                                    quoteTokenBalance={quoteTokenBalance}
-                                    baseTokenDexBalance={baseTokenDexBalance}
-                                    quoteTokenDexBalance={quoteTokenDexBalance}
-                                    currentTxActiveInTransactions={
-                                        currentTxActiveInTransactions
-                                    }
-                                    setCurrentTxActiveInTransactions={
-                                        setCurrentTxActiveInTransactions
-                                    }
-                                    handlePulseAnimation={handlePulseAnimation}
-                                    outputTokens={outputTokens}
-                                    validatedInput={validatedInput}
-                                    setInput={setInput}
-                                    searchType={searchType}
-                                    openModalWallet={openWagmiModalWallet}
-                                    mainnetProvider={mainnetProvider}
-                                    setSimpleRangeWidth={setSimpleRangeWidth}
-                                    dexBalancePrefs={{
-                                        swap: dexBalPrefSwap,
-                                        limit: dexBalPrefLimit,
-                                        range: dexBalPrefRange,
-                                    }}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
-                                    ackTokens={ackTokens}
-                                    setExpandTradeTable={setExpandTradeTable}
                                 />
                             }
                         />

@@ -47,6 +47,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
+import { PositionUpdateFn } from '../../App/functions/getPositionData';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -123,6 +124,7 @@ interface propsIF {
     slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 // React functional component
@@ -131,6 +133,7 @@ export default function Trade(props: propsIF) {
         chartSettings,
         tokenList,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         isUserLoggedIn,
         crocEnv,
         candleData,
@@ -556,6 +559,7 @@ export default function Trade(props: propsIF) {
     const tradeTabsProps = {
         tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
         isTokenABase: isTokenABase,
         crocEnv: crocEnv,

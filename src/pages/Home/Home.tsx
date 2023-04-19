@@ -9,6 +9,7 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Home1 from '../../components/Home/Landing/Home1';
 import { topPoolIF } from '../../App/hooks/useTopPools';
+import { PoolStatsFn } from '../../App/functions/getPoolStats';
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -18,6 +19,7 @@ interface propsIF {
     lastBlockNumber: number;
     chainId: string;
     topPools: topPoolIF[];
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 export default function Home(props: propsIF) {
     const {
@@ -28,6 +30,7 @@ export default function Home(props: propsIF) {
         chainId,
         cachedQuerySpotPrice,
         topPools,
+        cachedPoolStatsFetch,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -47,12 +50,14 @@ export default function Home(props: propsIF) {
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
                     topPools={topPools}
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
                 />
                 <DividerDark />
                 <Stats
                     isServerEnabled={isServerEnabled}
                     lastBlockNumber={lastBlockNumber}
                     userData={userData}
+                    chainId={chainId}
                 />
             </div>
             <DividerDark />
