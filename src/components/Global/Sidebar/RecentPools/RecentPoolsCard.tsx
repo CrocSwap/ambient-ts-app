@@ -54,7 +54,7 @@ export default function RecentPoolsCard(props: propsIF) {
                 pool.baseToken.address,
                 pool.quoteToken.address,
                 lookupChain(chainId).poolIndex,
-                Math.floor(lastBlockNumber / 4),
+                Math.floor(Date.now() / 60000),
             );
             // display the total volume for all time
             const volume = poolStatsFresh?.volumeTotal;

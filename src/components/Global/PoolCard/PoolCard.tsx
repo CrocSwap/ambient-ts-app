@@ -160,7 +160,7 @@ export default function PoolCard(props: propsIF) {
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
-                    Math.floor(lastBlockNumber / 4),
+                    Math.floor(Date.now() / 60000),
                 );
 
                 const tvlResult = poolStats?.tvl;
