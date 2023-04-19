@@ -46,7 +46,6 @@ interface propsIF {
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
-    filter?: CandleData | undefined;
     changeState?: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -75,7 +74,6 @@ export default function Transactions(props: propsIF) {
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         isCandleSelected,
-        filter,
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
