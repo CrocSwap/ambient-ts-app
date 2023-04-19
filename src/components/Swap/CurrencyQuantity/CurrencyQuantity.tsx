@@ -84,6 +84,27 @@ export default function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
+    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+        let targetValue = event.target.value.replaceAll(',', '');
+
+        if (targetValue.includes(',')) {
+            const commaIndex = targetValue.lastIndexOf(',');
+            targetValue =
+                targetValue.slice(0, commaIndex) +
+                targetValue.slice(commaIndex).replace(',', '');
+        }
+
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(targetValue) > thisToken.decimals;
+        const isValid =
+            !isPrecisionGreaterThanDecimals &&
+            (targetValue === '' || event.target.validity.valid);
+
+        if (isValid) {
+            handleEventLocal(event);
+        }
+    };
+
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
         <div className={styles.token_amount}>
@@ -96,16 +117,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 aria-live={ariaLive}
                 aria-label={`Enter ${fieldId} amount`}
                 onChange={(event) => {
-                    const targetValue = event.target.value.replaceAll(',', '');
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(targetValue) > thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (targetValue === '' || event.target.validity.valid);
-
-                    if (isValid) {
-                        handleEventLocal(event);
-                    }
+                    handleOnChange(event);
                 }}
                 value={displayValue}
                 type='text'
@@ -114,7 +126,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern='^[0-9]*(,[0-9]*)?[.]?[0-9]*$'
                 disabled={disable}
             />
         </div>
