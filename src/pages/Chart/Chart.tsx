@@ -4754,7 +4754,7 @@ export default function Chart(props: propsIF) {
                 .on('measure', (event: any) => {
                     scaleData?.volumeScale.range([
                         event.detail.height,
-                        event.detail.height - event.detail.height / 5,
+                        event.detail.height - event.detail.height / 9,
                     ]);
                     barSeries.context(ctx);
                 });
@@ -5183,7 +5183,7 @@ export default function Chart(props: propsIF) {
                     liqAskSeries.context(ctx);
                     liquidityScale.range([
                         event.detail.width,
-                        (event.detail.width / 10) * 6,
+                        (event.detail.width / 10) * 9,
                     ]);
                 });
         }
@@ -5196,7 +5196,7 @@ export default function Chart(props: propsIF) {
                 .on('measure', (event: any) => {
                     liquidityDepthScale.range([
                         event.detail.width,
-                        event.detail.width * 0.5,
+                        (event.detail.width / 10) * 9,
                     ]);
                     liqAskDepthSeries.context(ctxDepth);
                 });
@@ -5275,7 +5275,7 @@ export default function Chart(props: propsIF) {
                     liqBidSeries.context(ctx);
                     liquidityScale.range([
                         event.detail.width,
-                        (event.detail.width / 10) * 6,
+                        (event.detail.width / 10) * 9,
                     ]);
                 });
         }
@@ -6786,85 +6786,40 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasBar}
                             className='volume-canvas'
-                            style={{
-                                position: 'relative',
-                                height: '50%',
-                                top: '50%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBidLine}
                             className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskLine}
                             className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBidDepthLine}
                             className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskDepthLine}
                             className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBid}
                             className='liq-bid-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
 
                         <d3fc-canvas
                             ref={d3CanvasLiqBidDepth}
                             className='liq-bid-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
 
                         <d3fc-canvas
                             ref={d3CanvasLiqAsk}
                             className='liq-ask-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskDepth}
                             className='liq-ask-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasBand}
