@@ -3406,32 +3406,31 @@ export default function Chart(props: propsIF) {
     }, [yAxis, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
-        yAxisLabels.length = 0;
-        const tickSize = 6;
-        const low = ranges.filter((target: any) => target.name === 'Min')[0]
-            .value;
-        const high = ranges.filter((target: any) => target.name === 'Max')[0]
-            .value;
+        if (parsedChartData !== undefined) {
+            yAxisLabels.length = 0;
+            const tickSize = 6;
+            const low = ranges.filter((target: any) => target.name === 'Min')[0]
+                .value;
+            const high = ranges.filter(
+                (target: any) => target.name === 'Max',
+            )[0].value;
 
-        yAxis.tickValues([...yScale.ticks(), ...[market[0].value]]);
+            const canvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-        if (location.pathname.includes('/limit')) {
-            yAxis.tickValues([
-                ...yScale.ticks(),
-                ...[market[0].value],
-                ...[limit[0].value],
-            ]);
-        }
+            if (canvas !== null) {
+                const height = canvas.height;
 
-        context.stroke();
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.fillStyle = 'rgba(189,189,189,0.8)';
-        context.font = '11.425px Lexend Deca';
+                const factor = height > 400 ? 7 : 4;
 
-        yAxis.tickValues().forEach((d: number) => {
-            const digit = d.toString().split('.')[1]?.length;
-            if (parsedChartData !== undefined) {
+                context.stroke();
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillStyle = 'rgba(189,189,189,0.8)';
+                context.font = '11.425px Lexend Deca';
+
                 const latestCandleIndex = d3.maxIndex(
                     parsedChartData?.chartData,
                     (d) => d.date,
@@ -3440,45 +3439,120 @@ export default function Chart(props: propsIF) {
                 const lastCandle =
                     parsedChartData?.chartData[latestCandleIndex];
 
-                if (d === market[0].value) {
-                    createRectLabel(
-                        context,
-                        yScale(d),
+                const yScaleTicks = yScale.ticks(factor);
+
+                yScaleTicks.forEach((d: number) => {
+                    const digit = d.toString().split('.')[1]?.length;
+
+                    context.beginPath();
+                    context.fillText(
+                        formatAmountChartData(d, digit ? digit : 2),
                         X - tickSize,
-                        lastCandle.close > lastCandle.open
-                            ? '#EAEFF2'
-                            : '#1d1d30',
-                        lastCandle.close > lastCandle.open ? 'black' : 'white',
-                        formatAmountChartData(d, undefined),
-                        '#6c69fc',
-                        yAxisCanvasWidth,
+                        yScale(d),
                     );
-                } else if (
-                    d === limit[0].value &&
-                    location.pathname.includes('/limit')
+                });
+
+                createRectLabel(
+                    context,
+                    yScale(market[0].value),
+                    X - tickSize,
+                    lastCandle.close > lastCandle.open ? '#EAEFF2' : '#1d1d30',
+                    lastCandle.close > lastCandle.open ? 'black' : 'white',
+                    formatAmountChartData(market[0].value, undefined),
+                    '#6c69fc',
+                    yAxisCanvasWidth,
+                );
+
+                if (
+                    location.pathname.includes('range') ||
+                    location.pathname.includes('reposition')
                 ) {
+                    const {
+                        isSameLocationMin: isSameLocationMin,
+                        sameLocationDataMin: sameLocationDataMin,
+                        isSameLocationMax: isSameLocationMax,
+                        sameLocationDataMax: sameLocationDataMax,
+                    } = sameLocationRange();
+
+                    const passValue =
+                        liqMode === 'curve'
+                            ? liquidityData?.liqBoundaryCurve
+                            : liquidityData?.liqBoundaryDepth;
+
+                    if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                        createRectLabel(
+                            context,
+                            isSameLocationMin
+                                ? sameLocationDataMin
+                                : yScale(low),
+                            X - tickSize,
+                            low > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
+                            low > passValue ? 'white' : 'black',
+                            formatAmountChartData(low, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
+                        );
+                        addYaxisLabel(
+                            isSameLocationMin
+                                ? sameLocationDataMin
+                                : yScale(low),
+                        );
+
+                        createRectLabel(
+                            context,
+                            isSameLocationMax
+                                ? sameLocationDataMax
+                                : yScale(high),
+                            X - tickSize,
+                            high > passValue
+                                ? '#7371fc'
+                                : 'rgba(205, 193, 255)',
+                            high > passValue ? 'white' : 'black',
+                            formatAmountChartData(high, undefined),
+                            undefined,
+                            yAxisCanvasWidth,
+                        );
+                        addYaxisLabel(
+                            isSameLocationMax
+                                ? sameLocationDataMax
+                                : yScale(high),
+                        );
+                    }
+                }
+
+                if (location.pathname.includes('/limit')) {
                     const { isSameLocation, sameLocationData } =
                         sameLocationLimit();
                     if (checkLimitOrder) {
                         if (sellOrderStyle === 'order_sell') {
                             createRectLabel(
                                 context,
-                                isSameLocation ? sameLocationData : yScale(d),
+                                isSameLocation
+                                    ? sameLocationData
+                                    : yScale(limit[0].value),
                                 X - tickSize,
                                 '#e480ff',
                                 'black',
-                                formatAmountChartData(d, undefined),
+                                formatAmountChartData(
+                                    limit[0].value,
+                                    undefined,
+                                ),
                                 undefined,
                                 yAxisCanvasWidth,
                             );
                         } else {
                             createRectLabel(
                                 context,
-                                isSameLocation ? sameLocationData : yScale(d),
+                                isSameLocation
+                                    ? sameLocationData
+                                    : yScale(limit[0].value),
                                 X - tickSize,
                                 '#7371fc',
                                 'white',
-                                formatAmountChartData(d, undefined),
+                                formatAmountChartData(
+                                    limit[0].value,
+                                    undefined,
+                                ),
                                 undefined,
                                 yAxisCanvasWidth,
                             );
@@ -3486,90 +3560,40 @@ export default function Chart(props: propsIF) {
                     } else {
                         createRectLabel(
                             context,
-                            isSameLocation ? sameLocationData : yScale(d),
+                            isSameLocation
+                                ? sameLocationData
+                                : yScale(limit[0].value),
                             X - tickSize,
                             '#7772FE',
                             'white',
-                            formatAmountChartData(d, undefined),
+                            formatAmountChartData(limit[0].value, undefined),
                             undefined,
                             yAxisCanvasWidth,
                         );
                     }
                     addYaxisLabel(
-                        isSameLocation ? sameLocationData : yScale(d),
-                    );
-                } else {
-                    context.beginPath();
-                    context.fillText(
-                        formatAmountChartData(d, digit ? digit : 2),
-                        X - tickSize,
-                        yScale(d),
+                        isSameLocation
+                            ? sameLocationData
+                            : yScale(limit[0].value),
                     );
                 }
-            }
-        });
 
-        if (
-            location.pathname.includes('range') ||
-            location.pathname.includes('reposition')
-        ) {
-            const {
-                isSameLocationMin: isSameLocationMin,
-                sameLocationDataMin: sameLocationDataMin,
-                isSameLocationMax: isSameLocationMax,
-                sameLocationDataMax: sameLocationDataMax,
-            } = sameLocationRange();
+                if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
+                    createRectLabel(
+                        context,
+                        yScale(crosshairData[0].y),
+                        X - tickSize,
+                        '#242F3F',
+                        'white',
+                        formatAmountChartData(crosshairData[0].y, undefined),
+                        undefined,
+                        yAxisCanvasWidth,
+                    );
+                }
 
-            const passValue =
-                liqMode === 'curve'
-                    ? liquidityData?.liqBoundaryCurve
-                    : liquidityData?.liqBoundaryDepth;
-
-            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                createRectLabel(
-                    context,
-                    isSameLocationMin ? sameLocationDataMin : yScale(low),
-                    X - tickSize,
-                    low > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
-                    low > passValue ? 'white' : 'black',
-                    formatAmountChartData(low, undefined),
-                    undefined,
-                    yAxisCanvasWidth,
-                );
-                addYaxisLabel(
-                    isSameLocationMin ? sameLocationDataMin : yScale(low),
-                );
-
-                createRectLabel(
-                    context,
-                    isSameLocationMax ? sameLocationDataMax : yScale(high),
-                    X - tickSize,
-                    high > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
-                    high > passValue ? 'white' : 'black',
-                    formatAmountChartData(high, undefined),
-                    undefined,
-                    yAxisCanvasWidth,
-                );
-                addYaxisLabel(
-                    isSameLocationMax ? sameLocationDataMax : yScale(high),
-                );
+                changeyAxisWidth();
             }
         }
-
-        if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
-            createRectLabel(
-                context,
-                yScale(crosshairData[0].y),
-                X - tickSize,
-                '#242F3F',
-                'white',
-                formatAmountChartData(crosshairData[0].y, undefined),
-                undefined,
-                yAxisCanvasWidth,
-            );
-        }
-
-        changeyAxisWidth();
     };
 
     const drawXaxis = (context: any, xScale: any, Y: any) => {
@@ -4512,29 +4536,6 @@ export default function Chart(props: propsIF) {
                 .on('measure', (event: any) => {
                     scaleData?.xScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
-
-                    liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 9,
-                    ]);
-
-                    if (liquidityDepthScale.domain()[1] <= 50) {
-                        liquidityDepthScale.range([
-                            event.detail.width,
-                            event.detail.width * 0.95,
-                        ]);
-                    } else {
-                        liquidityDepthScale.range([
-                            event.detail.width,
-                            event.detail.width * 0.9,
-                        ]);
-                    }
-
-                    scaleData?.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height - event.detail.height / 10,
-                    ]);
-
                     scaleData?.xScaleCopy.range([0, event.detail.width]);
 
                     candlestick.context(ctx);
@@ -4546,26 +4547,9 @@ export default function Chart(props: propsIF) {
         if (d3CanvasCandle) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
-            const resizeObserver = new ResizeObserver((entries) => {
-                const width = entries[0].contentRect.width;
-                const height = entries[0].contentRect.height;
-                if (height && width) {
-                    scaleData?.xScale.range([0, width]);
-                    scaleData?.yScale.range([height, 0]);
-
-                    scaleData?.xScaleIndicator.range([(width / 10) * 8, width]);
-
-                    liquidityScale.range([width, (width / 10) * 9]);
-
-                    liquidityDepthScale.range([width, (width / 10) * 9]);
-
-                    scaleData?.volumeScale.range([
-                        height,
-                        height - height / 10,
-                    ]);
-                }
-
+            const resizeObserver = new ResizeObserver(() => {
                 render();
+                renderCanvas();
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -4767,7 +4751,11 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     barSeries(volumeData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    scaleData?.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 5,
+                    ]);
                     barSeries.context(ctx);
                 });
         }
@@ -5191,8 +5179,12 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     liqAskSeries(liquidityData?.liqAskData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
                     liqAskSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
                 });
         }
         if (liqAskDepthSeries && liquidityData?.liqAskData) {
@@ -5201,7 +5193,11 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvasDepth);
                     liqAskDepthSeries(liquidityData?.depthLiqAskData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
                     liqAskDepthSeries.context(ctxDepth);
                 });
         }
@@ -5275,8 +5271,12 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     liqBidSeries(liquidityData?.liqBidData);
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
                     liqBidSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
                 });
         }
 
@@ -5293,7 +5293,11 @@ export default function Chart(props: propsIF) {
                               ),
                     );
                 })
-                .on('measure', () => {
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
                     liqBidDepthSeries.context(ctxDepth);
                 });
         }
@@ -5726,7 +5730,7 @@ export default function Chart(props: propsIF) {
             nearest?.date.getTime() < lastDate.getTime();
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
-        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY);
+        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
@@ -5824,11 +5828,19 @@ export default function Chart(props: propsIF) {
         });
 
         const canvas = d3
-            .select(d3CanvasMarketLine.current)
+            .select(d3CanvasLiqAsk.current)
             .select('canvas')
             .node() as any;
 
-        const rect = canvas.getBoundingClientRect();
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepth.current)
+            .select('canvas')
+            .node() as any;
+
+        const rect =
+            liqMode === 'curve'
+                ? canvas.getBoundingClientRect()
+                : canvasDepth.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
@@ -5928,14 +5940,15 @@ export default function Chart(props: propsIF) {
             return 'bidLiq';
         });
 
-        const topPlacement =
-            event.y -
-            80 -
-            (event.offsetY - scaleData?.yScale(poolPriceDisplay)) / 2;
+        const pinnedTick = closest.upperBound;
+
+        const percentage = parseFloat(
+            (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
+        ).toFixed(1);
 
         liqTooltip
-            .style('visibility', 'visible')
-            .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
+            .style('visibility', percentage !== '0.0' ? 'visible' : 'hidden')
+            .style('top', event.pageY - 80 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
         liquidityData.liqHighligtedAskSeries = [];
@@ -6014,14 +6027,15 @@ export default function Chart(props: propsIF) {
             });
         }
 
-        const topPlacement =
-            event.y -
-            80 -
-            (event.offsetY - scaleData?.yScale(poolPriceDisplay)) / 2;
+        const pinnedTick = closest.lowerBound;
+
+        const percentage = parseFloat(
+            (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
+        ).toFixed(1);
 
         liqTooltip
-            .style('visibility', 'visible')
-            .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
+            .style('visibility', percentage !== '0.0' ? 'visible' : 'hidden')
+            .style('top', event.pageY - 80 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
         const canvas = d3
@@ -6772,40 +6786,85 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasBar}
                             className='volume-canvas'
+                            style={{
+                                position: 'relative',
+                                height: '50%',
+                                top: '50%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBidLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBidDepthLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskDepthLine}
                             className='plot-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqBid}
                             className='liq-bid-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
 
                         <d3fc-canvas
                             ref={d3CanvasLiqBidDepth}
                             className='liq-bid-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
 
                         <d3fc-canvas
                             ref={d3CanvasLiqAsk}
                             className='liq-ask-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasLiqAskDepth}
                             className='liq-ask-canvas'
+                            style={{
+                                position: 'relative',
+                                width: '20%',
+                                left: '80%',
+                            }}
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasBand}

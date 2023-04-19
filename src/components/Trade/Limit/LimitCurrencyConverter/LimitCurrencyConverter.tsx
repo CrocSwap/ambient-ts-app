@@ -196,8 +196,26 @@ export default function LimitCurrencyConverter(props: propsIF) {
             ? parseFloat(tokenABalance || '0')
             : parseFloat(tokenABalance || '0') -
               parseFloat(tokenAQtyLocal || '0');
-    // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
-    // TODO: ... logo instead of the hardcoded one it contains
+
+    const [
+        userOverrodeSurplusWithdrawalDefault,
+        setUserOverrodeSurplusWithdrawalDefault,
+    ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (
+            !isWithdrawFromDexChecked &&
+            !userOverrodeSurplusWithdrawalDefault &&
+            !!tokenADexBalance &&
+            parseFloat(tokenADexBalance) > 0
+        ) {
+            setIsWithdrawFromDexChecked(true);
+        }
+    }, [
+        isWithdrawFromDexChecked,
+        userOverrodeSurplusWithdrawalDefault,
+        tokenADexBalance,
+    ]);
 
     useEffect(() => {
         if (tradeData) {
@@ -541,6 +559,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 openGlobalPopup={openGlobalPopup}
                 dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
+                setUserOverrodeSurplusWithdrawalDefault={
+                    setUserOverrodeSurplusWithdrawalDefault
+                }
             />
             <div
                 className={
@@ -612,6 +633,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     openGlobalPopup={openGlobalPopup}
                     dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
+                    setUserOverrodeSurplusWithdrawalDefault={
+                        setUserOverrodeSurplusWithdrawalDefault
+                    }
                 />
             </div>
             <LimitRate

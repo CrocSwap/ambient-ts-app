@@ -226,6 +226,26 @@ export default function CurrencyConverter(props: propsIF) {
             : 0
         : parseFloat(tokenAQtyLocal || '0');
 
+    const [
+        userOverrodeSurplusWithdrawalDefault,
+        setUserOverrodeSurplusWithdrawalDefault,
+    ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (
+            !isWithdrawFromDexChecked &&
+            !userOverrodeSurplusWithdrawalDefault &&
+            !!tokenADexBalance &&
+            parseFloat(tokenADexBalance) > 0
+        ) {
+            setIsWithdrawFromDexChecked(true);
+        }
+    }, [
+        isWithdrawFromDexChecked,
+        userOverrodeSurplusWithdrawalDefault,
+        tokenADexBalance,
+    ]);
+
     useEffect(() => {
         setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
     }, [tokenAQtyCoveredByWalletBalance]);
@@ -752,6 +772,9 @@ export default function CurrencyConverter(props: propsIF) {
                 setDisableReverseTokens={setDisableReverseTokens}
                 dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
+                setUserOverrodeSurplusWithdrawalDefault={
+                    setUserOverrodeSurplusWithdrawalDefault
+                }
             />
             <div
                 className={
@@ -813,6 +836,9 @@ export default function CurrencyConverter(props: propsIF) {
                     setDisableReverseTokens={setDisableReverseTokens}
                     dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
+                    setUserOverrodeSurplusWithdrawalDefault={
+                        setUserOverrodeSurplusWithdrawalDefault
+                    }
                 />
             </div>
         </section>
