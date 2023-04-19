@@ -269,7 +269,6 @@ export const updatePositionStats = async (
         position.positionType,
         true,
     )
-        .then((response) => response?.json())
         .then((json) => {
             const apy = json?.data.apy;
             const totalValueUSD = json?.data.totalValueUSD;
@@ -372,7 +371,7 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     return updatedPosition || position;
 };
 
-type PositionStatsFn = (
+export type PositionStatsFn = (
     user: string,
     askTick: number,
     bidTick: number,
@@ -390,7 +389,7 @@ export function memoizePoolStats(): PositionStatsFn {
     return memoizeCacheQueryFn(getPositionStatsJsonAsync) as PositionStatsFn;
 }
 
-type PositionUpdateFn = (
+export type PositionUpdateFn = (
     position: PositionIF,
     time: number, // arbitrary number to cache for an amount of time
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
