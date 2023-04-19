@@ -515,7 +515,12 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (minPrice !== 0 && maxPrice !== 0) {
+        if (
+            minPrice !== 0 &&
+            maxPrice !== 0 &&
+            !isNaN(maxPrice) &&
+            !isNaN(minPrice)
+        ) {
             setRanges((prevState) => {
                 const newTargets = [...prevState];
                 newTargets.filter(
@@ -2261,7 +2266,8 @@ export default function Chart(props: propsIF) {
     const setLimitLineValue = () => {
         if (
             tradeData.limitTick === undefined ||
-            Array.isArray(tradeData.limitTick)
+            Array.isArray(tradeData.limitTick) ||
+            isNaN(tradeData.limitTick)
         )
             return;
         const limitDisplayPrice = pool?.toDisplayPrice(
