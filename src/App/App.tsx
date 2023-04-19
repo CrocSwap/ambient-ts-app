@@ -101,6 +101,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
+import { memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -185,6 +186,7 @@ const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
 const cachedPositionUpdateQuery = memoizePositionUpdate();
+const cachedPoolStatsFetch = memoizePoolStats();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -788,6 +790,7 @@ export default function App() {
     );
     // check for token balances every eight blocks
 
+    // Fetch liquidity every minute
     const fetchLiquidity = async () => {
         if (
             !baseTokenAddress ||
@@ -809,6 +812,7 @@ export default function App() {
             .catch(console.error);
     };
 
+    // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
         const id = setInterval(() => {
             fetchLiquidity();
@@ -3422,6 +3426,7 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     isServerEnabled={isServerEnabled}
                                     topPools={topPools}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
                                 />
                             }
                         />

@@ -9,16 +9,11 @@ import {
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    get24hChange,
-    memoizePoolStats,
-} from '../../../App/functions/getPoolStats';
+import { PoolStatsFn, get24hChange } from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
-
-const cachedPoolStatsFetch = memoizePoolStats();
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -29,6 +24,7 @@ interface propsIF {
     lastBlockNumber: number;
     chainId: string;
     pool: topPoolIF;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolCard(props: propsIF) {
@@ -40,6 +36,7 @@ export default function PoolCard(props: propsIF) {
         chainId,
         cachedQuerySpotPrice,
         pool,
+        cachedPoolStatsFetch,
     } = props;
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
