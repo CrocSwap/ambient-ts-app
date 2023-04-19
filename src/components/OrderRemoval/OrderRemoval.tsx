@@ -44,15 +44,6 @@ interface propsIF {
 export default function OrderRemoval(props: propsIF) {
     const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
     const {
-        posLiqBaseDecimalCorrected,
-        posLiqQuoteDecimalCorrected,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        bidTick,
-        askTick,
-        // positionLiquidity,
-        positionLiqTotalUSD,
-        // userNameToDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
@@ -70,15 +61,12 @@ export default function OrderRemoval(props: propsIF) {
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    // const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewRemovalTransactionHash('');
         setTxErrorCode('');
-
-        // setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -154,7 +142,6 @@ export default function OrderRemoval(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
-                        // .burnLiq(BigNumber.from('1000'));
                         .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
@@ -169,7 +156,6 @@ export default function OrderRemoval(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
-                        // .burnLiq(BigNumber.from('1000'));
                         .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
@@ -421,19 +407,12 @@ export default function OrderRemoval(props: propsIF) {
                         quoteTokenSymbol={quoteTokenSymbol}
                         baseTokenLogoURI={baseTokenLogo}
                         quoteTokenLogoURI={quoteTokenLogo}
-                        posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                        posLiqQuoteDecimalCorrected={
-                            posLiqQuoteDecimalCorrected
-                        }
                         removalPercentage={removalPercentage}
                         usdValue={usdValue}
-                        bidTick={bidTick}
-                        askTick={askTick}
                         baseDisplayFrontend={baseDisplayFrontend}
                         quoteDisplayFrontend={quoteDisplayFrontend}
                         baseDisplay={baseDisplay}
                         quoteDisplay={quoteDisplay}
-                        positionLiqTotalUSD={positionLiqTotalUSD}
                         positionLiquidity={limitOrder.positionLiq.toString()}
                         baseRemovalString={baseQtyToBeRemoved}
                         quoteRemovalString={quoteQtyToBeRemoved}

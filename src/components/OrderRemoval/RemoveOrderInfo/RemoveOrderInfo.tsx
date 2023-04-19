@@ -1,25 +1,18 @@
 import styles from './RemoveOrderInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-// import { formatAmountOld } from '../../../utils/numbers';
 
 interface IRemoveOrderInfoProps {
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    posLiqBaseDecimalCorrected: number | undefined;
-    posLiqQuoteDecimalCorrected: number | undefined;
     usdValue: string;
-    bidTick: number | undefined;
-    askTick: number | undefined;
+
     baseDisplayFrontend: string;
     baseDisplay: string;
     quoteDisplay: string;
     quoteDisplayFrontend: string;
-    positionLiqTotalUSD: number | undefined;
-    // feeLiqBaseDecimalCorrected: number | undefined;
-    // feeLiqQuoteDecimalCorrected: number | undefined;
     removalPercentage: number;
     positionLiquidity: string | undefined;
     baseRemovalString: string;
@@ -28,22 +21,13 @@ interface IRemoveOrderInfoProps {
 
 export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
     const {
-        // baseTokenSymbol,
-        // quoteTokenSymbol,
         baseTokenLogoURI,
         quoteTokenLogoURI,
         usdValue,
         baseDisplay,
         quoteDisplay,
-        // bidTick,
-        // askTick,
-
-        // baseDisplayFrontend,
-        // quoteDisplayFrontend,
         baseRemovalString,
         quoteRemovalString,
-        // positionLiqTotalUSD,
-        // positionLiquidity,
     } = props;
 
     const baseCurrentQtyRow =
@@ -110,13 +94,6 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                 {/* ---------------------------REMOVAL SUMMARY--------------------------------- */}
                 {baseReturnQtyRow}
                 {quoteReturnQtyRow}
-                {/* <Row>
-                    <span> Return Quantity</span>
-                    <div className={styles.token_price}>
-                        4,200.00
-                        <img src={quoteTokenLogoURI} alt='' />
-                    </div>
-                </Row> */}
             </div>
         </div>
     );
