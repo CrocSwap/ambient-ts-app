@@ -1618,8 +1618,8 @@ export default function App() {
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
         },
-        // only connect if user is viewing pool changes
-        isServerEnabled,
+        // only connect if base/quote token addresses are available
+        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
     );
 
     useEffect(() => {
