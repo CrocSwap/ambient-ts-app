@@ -199,6 +199,8 @@ const startMoralis = async () => {
     });
 };
 
+const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
+
 startMoralis();
 
 /** ***** React Function *******/
@@ -799,7 +801,7 @@ export default function App() {
             baseTokenAddress.toLowerCase(),
             quoteTokenAddress.toLowerCase(),
             chainData.poolIndex,
-            lastBlockNumber,
+            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
         )
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
@@ -808,7 +810,10 @@ export default function App() {
     };
 
     useEffect(() => {
-        fetchLiquidity();
+        const id = setInterval(() => {
+            fetchLiquidity();
+        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        return () => clearInterval(id);
     }, [lastBlockNumber]);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
