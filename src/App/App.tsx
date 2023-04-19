@@ -814,7 +814,7 @@ export default function App() {
             fetchLiquidity();
         }, LIQUIDITY_FETCH_PERIOD_MS / 2);
         return () => clearInterval(id);
-    }, [lastBlockNumber]);
+    }, []);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
