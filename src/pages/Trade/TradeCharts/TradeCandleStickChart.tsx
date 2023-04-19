@@ -53,7 +53,6 @@ declare global {
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -136,7 +135,6 @@ type chartItemStates = {
 export default function TradeCandleStickChart(props: propsIF) {
     const {
         isUserLoggedIn,
-        pool,
         chainData,
         baseTokenAddress,
         chainId,
@@ -824,7 +822,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
-                        pool={pool}
                         chainData={chainData}
                         isTokenABase={isTokenABase}
                         candleData={parsedChartData}

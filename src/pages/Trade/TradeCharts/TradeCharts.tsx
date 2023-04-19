@@ -43,7 +43,6 @@ import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 // interface for React functional component props
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
     chainData: ChainSpec;
     chainId: string;
@@ -166,7 +165,6 @@ export interface LiqSnap {
 export default function TradeCharts(props: propsIF) {
     const {
         isUserLoggedIn,
-        pool,
         chainData,
         isTokenABase,
         poolPriceDisplay,
@@ -603,7 +601,6 @@ export default function TradeCharts(props: propsIF) {
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
                         isUserLoggedIn={isUserLoggedIn}
-                        pool={pool}
                         chainData={chainData}
                         expandTradeTable={expandTradeTable}
                         candleData={props.candleData}

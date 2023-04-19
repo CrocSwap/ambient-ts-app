@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, createContext } from 'react';
 import {
     Routes,
     Route,
@@ -63,6 +63,7 @@ import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import { PoolContext } from '../contexts/PoolContext';
 import sum from 'hash-sum';
 
 /** * **** Import Local Files *******/
@@ -3151,109 +3152,134 @@ export default function App() {
                         <Route
                             path='trade'
                             element={
-                                <Trade
-                                    gasPriceInGwei={gasPriceInGwei}
-                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    chartSettings={chartSettings}
-                                    tokenList={searchableTokens}
-                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    pool={pool}
-                                    isUserLoggedIn={isUserLoggedIn}
-                                    crocEnv={crocEnv}
-                                    provider={provider}
-                                    candleData={candleData}
-                                    baseTokenAddress={baseTokenAddress}
-                                    quoteTokenAddress={quoteTokenAddress}
-                                    baseTokenBalance={baseTokenBalance}
-                                    quoteTokenBalance={quoteTokenBalance}
-                                    baseTokenDexBalance={baseTokenDexBalance}
-                                    quoteTokenDexBalance={quoteTokenDexBalance}
-                                    tokenPair={tokenPair}
-                                    account={account ?? ''}
-                                    lastBlockNumber={lastBlockNumber}
-                                    isTokenABase={isTokenABase}
-                                    poolPriceDisplay={poolPriceDisplay}
-                                    chainId={chainData.chainId}
-                                    chainData={chainData}
-                                    currentTxActiveInTransactions={
-                                        currentTxActiveInTransactions
-                                    }
-                                    setCurrentTxActiveInTransactions={
-                                        setCurrentTxActiveInTransactions
-                                    }
-                                    isShowAllEnabled={isShowAllEnabled}
-                                    setIsShowAllEnabled={setIsShowAllEnabled}
-                                    expandTradeTable={expandTradeTable}
-                                    setExpandTradeTable={setExpandTradeTable}
-                                    tokenMap={tokensOnActiveLists}
-                                    favePools={favePools}
-                                    selectedOutsideTab={selectedOutsideTab}
-                                    setSelectedOutsideTab={
-                                        setSelectedOutsideTab
-                                    }
-                                    outsideControl={outsideControl}
-                                    setOutsideControl={setOutsideControl}
-                                    currentPositionActive={
-                                        currentPositionActive
-                                    }
-                                    setCurrentPositionActive={
-                                        setCurrentPositionActive
-                                    }
-                                    openGlobalModal={openGlobalModal}
-                                    closeGlobalModal={closeGlobalModal}
-                                    isInitialized={isInitialized}
-                                    poolPriceNonDisplay={poolPriceNonDisplay}
-                                    setLimitRate={function (): void {
-                                        throw new Error(
-                                            'Function not implemented.',
-                                        );
-                                    }}
-                                    limitRate={''}
-                                    searchableTokens={searchableTokens}
-                                    poolExists={poolExists}
-                                    setTokenPairLocal={setTokenPairLocal}
-                                    showSidebar={showSidebar}
-                                    handlePulseAnimation={handlePulseAnimation}
-                                    isCandleSelected={isCandleSelected}
-                                    setIsCandleSelected={setIsCandleSelected}
-                                    fullScreenChart={fullScreenChart}
-                                    setFullScreenChart={setFullScreenChart}
-                                    fetchingCandle={fetchingCandle}
-                                    setFetchingCandle={setFetchingCandle}
-                                    isCandleDataNull={isCandleDataNull}
-                                    setIsCandleDataNull={setIsCandleDataNull}
-                                    minPrice={minRangePrice}
-                                    maxPrice={maxRangePrice}
-                                    setMaxPrice={setMaxRangePrice}
-                                    setMinPrice={setMinRangePrice}
-                                    rescaleRangeBoundariesWithSlider={
-                                        rescaleRangeBoundariesWithSlider
-                                    }
-                                    setRescaleRangeBoundariesWithSlider={
-                                        setRescaleRangeBoundariesWithSlider
-                                    }
-                                    isTutorialMode={isTutorialMode}
-                                    setIsTutorialMode={setIsTutorialMode}
-                                    setCandleDomains={setCandleDomains}
-                                    setSimpleRangeWidth={setSimpleRangeWidth}
-                                    simpleRangeWidth={simpleRangeWidth}
-                                    setRepositionRangeWidth={
-                                        setRepositionRangeWidth
-                                    }
-                                    repositionRangeWidth={repositionRangeWidth}
-                                    dexBalancePrefs={{
-                                        swap: dexBalPrefSwap,
-                                        limit: dexBalPrefLimit,
-                                        range: dexBalPrefRange,
-                                    }}
-                                    setChartTriggeredBy={setChartTriggeredBy}
-                                    chartTriggeredBy={chartTriggeredBy}
-                                    slippage={{
-                                        swapSlippage,
-                                        mintSlippage,
-                                        repoSlippage,
-                                    }}
-                                />
+                                <PoolContext.Provider value={pool}>
+                                    <Trade
+                                        gasPriceInGwei={gasPriceInGwei}
+                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
+                                        chartSettings={chartSettings}
+                                        tokenList={searchableTokens}
+                                        cachedQuerySpotPrice={
+                                            cachedQuerySpotPrice
+                                        }
+                                        isUserLoggedIn={isUserLoggedIn}
+                                        crocEnv={crocEnv}
+                                        provider={provider}
+                                        candleData={candleData}
+                                        baseTokenAddress={baseTokenAddress}
+                                        quoteTokenAddress={quoteTokenAddress}
+                                        baseTokenBalance={baseTokenBalance}
+                                        quoteTokenBalance={quoteTokenBalance}
+                                        baseTokenDexBalance={
+                                            baseTokenDexBalance
+                                        }
+                                        quoteTokenDexBalance={
+                                            quoteTokenDexBalance
+                                        }
+                                        tokenPair={tokenPair}
+                                        account={account ?? ''}
+                                        lastBlockNumber={lastBlockNumber}
+                                        isTokenABase={isTokenABase}
+                                        poolPriceDisplay={poolPriceDisplay}
+                                        chainId={chainData.chainId}
+                                        chainData={chainData}
+                                        currentTxActiveInTransactions={
+                                            currentTxActiveInTransactions
+                                        }
+                                        setCurrentTxActiveInTransactions={
+                                            setCurrentTxActiveInTransactions
+                                        }
+                                        isShowAllEnabled={isShowAllEnabled}
+                                        setIsShowAllEnabled={
+                                            setIsShowAllEnabled
+                                        }
+                                        expandTradeTable={expandTradeTable}
+                                        setExpandTradeTable={
+                                            setExpandTradeTable
+                                        }
+                                        tokenMap={tokensOnActiveLists}
+                                        favePools={favePools}
+                                        selectedOutsideTab={selectedOutsideTab}
+                                        setSelectedOutsideTab={
+                                            setSelectedOutsideTab
+                                        }
+                                        outsideControl={outsideControl}
+                                        setOutsideControl={setOutsideControl}
+                                        currentPositionActive={
+                                            currentPositionActive
+                                        }
+                                        setCurrentPositionActive={
+                                            setCurrentPositionActive
+                                        }
+                                        openGlobalModal={openGlobalModal}
+                                        closeGlobalModal={closeGlobalModal}
+                                        isInitialized={isInitialized}
+                                        poolPriceNonDisplay={
+                                            poolPriceNonDisplay
+                                        }
+                                        setLimitRate={function (): void {
+                                            throw new Error(
+                                                'Function not implemented.',
+                                            );
+                                        }}
+                                        limitRate={''}
+                                        searchableTokens={searchableTokens}
+                                        poolExists={poolExists}
+                                        setTokenPairLocal={setTokenPairLocal}
+                                        showSidebar={showSidebar}
+                                        handlePulseAnimation={
+                                            handlePulseAnimation
+                                        }
+                                        isCandleSelected={isCandleSelected}
+                                        setIsCandleSelected={
+                                            setIsCandleSelected
+                                        }
+                                        fullScreenChart={fullScreenChart}
+                                        setFullScreenChart={setFullScreenChart}
+                                        fetchingCandle={fetchingCandle}
+                                        setFetchingCandle={setFetchingCandle}
+                                        isCandleDataNull={isCandleDataNull}
+                                        setIsCandleDataNull={
+                                            setIsCandleDataNull
+                                        }
+                                        minPrice={minRangePrice}
+                                        maxPrice={maxRangePrice}
+                                        setMaxPrice={setMaxRangePrice}
+                                        setMinPrice={setMinRangePrice}
+                                        rescaleRangeBoundariesWithSlider={
+                                            rescaleRangeBoundariesWithSlider
+                                        }
+                                        setRescaleRangeBoundariesWithSlider={
+                                            setRescaleRangeBoundariesWithSlider
+                                        }
+                                        isTutorialMode={isTutorialMode}
+                                        setIsTutorialMode={setIsTutorialMode}
+                                        setCandleDomains={setCandleDomains}
+                                        setSimpleRangeWidth={
+                                            setSimpleRangeWidth
+                                        }
+                                        simpleRangeWidth={simpleRangeWidth}
+                                        setRepositionRangeWidth={
+                                            setRepositionRangeWidth
+                                        }
+                                        repositionRangeWidth={
+                                            repositionRangeWidth
+                                        }
+                                        dexBalancePrefs={{
+                                            swap: dexBalPrefSwap,
+                                            limit: dexBalPrefLimit,
+                                            range: dexBalPrefRange,
+                                        }}
+                                        setChartTriggeredBy={
+                                            setChartTriggeredBy
+                                        }
+                                        chartTriggeredBy={chartTriggeredBy}
+                                        slippage={{
+                                            swapSlippage,
+                                            mintSlippage,
+                                            repoSlippage,
+                                        }}
+                                    />
+                                </PoolContext.Provider>
                             }
                         >
                             <Route

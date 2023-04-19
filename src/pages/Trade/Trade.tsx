@@ -18,7 +18,7 @@ import {
 } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -51,7 +51,6 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 
 // interface for React functional component props
 interface propsIF {
-    pool: CrocPoolView | undefined;
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -130,7 +129,6 @@ interface propsIF {
 export default function Trade(props: propsIF) {
     const {
         chartSettings,
-        pool,
         tokenList,
         cachedQuerySpotPrice,
         isUserLoggedIn,
@@ -503,7 +501,6 @@ export default function Trade(props: propsIF) {
     const tradeChartsProps = {
         chartSettings: chartSettings,
         isUserLoggedIn: isUserLoggedIn,
-        pool: pool,
         chainData: chainData,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         expandTradeTable: expandTradeTable,

@@ -11,6 +11,7 @@ import {
     HTMLAttributes,
     SetStateAction,
     useCallback,
+    useContext,
     useEffect,
     useRef,
     useState,
@@ -37,6 +38,7 @@ import {
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
+import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import {
     ChainSpec,
@@ -107,7 +109,6 @@ type lineValue = {
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     isTokenABase: boolean;
     expandTradeTable: boolean;
@@ -192,7 +193,6 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 export default function Chart(props: propsIF) {
     const {
         isUserLoggedIn,
-        pool,
         chainData,
         isTokenABase,
         denomInBase,
@@ -232,6 +232,8 @@ export default function Chart(props: propsIF) {
         chartTriggeredBy,
         // candleTime,
     } = props;
+
+    const pool = useContext(PoolContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
