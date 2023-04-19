@@ -30,7 +30,7 @@ import {
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { updatePositionStats } from '../../../../App/functions/getPositionData';
+import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
@@ -82,6 +82,7 @@ interface propsIF {
     slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 // react functional component
@@ -116,6 +117,7 @@ export default function Ranges(props: propsIF) {
         slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        cachedPositionUpdateQuery,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -226,13 +228,19 @@ export default function Ranges(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    // prevent query from running multiple times for the same position more than once per minute
+    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
+
     useEffect(() => {
         const topThreePositions = sortedPositions.slice(0, 3);
 
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updatePositionStats(position);
+                    return cachedPositionUpdateQuery(
+                        position,
+                        currentTimeForPositionUpdateCaching,
+                    );
                 }),
             )
                 .then((updatedPositions) => {

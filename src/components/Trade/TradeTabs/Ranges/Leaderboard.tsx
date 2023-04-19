@@ -21,13 +21,13 @@ import {
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 
 // interface for props
 interface propsIF {
@@ -56,6 +56,7 @@ interface propsIF {
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
@@ -84,6 +85,7 @@ export default function Leaderboard(props: propsIF) {
         account,
         handlePulseAnimation,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         showSidebar,
         setSimpleRangeWidth,
         dexBalancePrefs,
@@ -109,11 +111,17 @@ export default function Leaderboard(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    // prevent query from running multiple times for the same position more than once per minute
+    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
+
     useEffect(() => {
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updatePositionStats(position);
+                    return cachedPositionUpdateQuery(
+                        position,
+                        currentTimeForPositionUpdateCaching,
+                    );
                 }),
             )
                 .then((updatedPositions) => {
