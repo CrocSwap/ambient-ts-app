@@ -8,6 +8,7 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
+import createOnChangeHandler from '../../../utils/functions/createOnChangeHandler';
 
 interface propsIF {
     disable?: boolean;
@@ -76,40 +77,45 @@ export default function CurrencyQuantity(props: propsIF) {
         setLastEvent(event);
     };
 
-    const precisionOfInput = (inputString: string) => {
-        if (inputString.includes('.')) {
-            return inputString.split('.')[1].length;
-        }
-        // String Does Not Contain Decimal
-        return 0;
-    };
+    // const precisionOfInput = (inputString: string) => {
+    //     if (inputString.includes('.')) {
+    //         return inputString.split('.')[1].length;
+    //     }
+    //     // String Does Not Contain Decimal
+    //     return 0;
+    // };
 
-    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const targetValue = event.target.value.replace(',', '.');
-        //  I know this seems a bit much here so I will leave a little explanation
-        //  \d*\.?\d* matches any number with an optional decimal point in the middle
-        // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
-        // can be tested here => https://regex101.com/
-        const isPrecisionGreaterThanDecimals =
-            precisionOfInput(targetValue) > thisToken.decimals;
+    // const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    //     const targetValue = event.target.value.replace(',', '.');
+    //     //  I know this seems a bit much here so I will leave a little explanation
+    //     //  \d*\.?\d* matches any number with an optional decimal point in the middle
+    //     // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
+    //     // can be tested here => https://regex101.com/
+    //     const isPrecisionGreaterThanDecimals =
+    //         precisionOfInput(targetValue) > thisToken.decimals;
 
-        const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
-            targetValue,
-        );
-        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
-            let valueWithDecimal = targetValue;
-            if (valueWithDecimal.includes(',')) {
-                const parts = valueWithDecimal.split(',');
-                const lastPart = parts.pop();
-                const firstPart = parts.join('');
-                valueWithDecimal = `${firstPart}.${lastPart}`;
-            }
-            handleEventLocal({
-                ...event,
-                target: { ...event.target, value: valueWithDecimal },
-            });
-        }
-    };
+    //     const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
+    //         targetValue,
+    //     );
+    //     if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+    //         let valueWithDecimal = targetValue;
+    //         if (valueWithDecimal.includes(',')) {
+    //             const parts = valueWithDecimal.split(',');
+    //             const lastPart = parts.pop();
+    //             const firstPart = parts.join('');
+    //             valueWithDecimal = `${firstPart}.${lastPart}`;
+    //         }
+    //         handleEventLocal({
+    //             ...event,
+    //             target: { ...event.target, value: valueWithDecimal },
+    //         });
+    //     }
+    // };
+    const handleChange = createOnChangeHandler(handleEventLocal, {
+        replaceCommas: true,
+        regexPattern: /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/,
+        maxPrecision: thisToken.decimals,
+    });
 
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
@@ -122,9 +128,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 tabIndex={0}
                 aria-live={ariaLive}
                 aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
+                onChange={handleChange}
                 value={displayValue}
                 type='text'
                 inputMode='decimal'
