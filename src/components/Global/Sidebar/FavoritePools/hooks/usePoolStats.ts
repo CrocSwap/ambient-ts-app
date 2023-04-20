@@ -18,7 +18,7 @@ export const usePoolStats = (
                 pool.base.address,
                 pool.quote.address,
                 pool.poolId,
-                Math.floor(lastBlockNumber / 4),
+                Math.floor(Date.now() / 60000),
             );
             const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
             const volumeString = volume
@@ -32,7 +32,7 @@ export const usePoolStats = (
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
     }, [lastBlockNumber]);
 
     return [poolVolume ?? '…', poolTvl ?? '…'];

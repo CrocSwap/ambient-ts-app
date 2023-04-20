@@ -27,11 +27,6 @@ export const useProcessOrder = (
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
-    // eslint-disable-next-line
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData,
-    ).lastBlock;
-
     const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
 
@@ -51,9 +46,6 @@ export const useProcessOrder = (
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
     const isOrderFilled = limitOrder.claimableLiq !== '0';
-    // const isOrderFilled = !!limitOrder.latestCrossPivotTime;
-
-    // const posHash = limitOrder.limitOrderIdentifier?.slice(42);
 
     const posHash =
         limitOrder.user &&
@@ -120,7 +112,6 @@ export const useProcessOrder = (
     >();
 
     useEffect(() => {
-        // console.log({ limitOrder });
         if (
             limitOrder.limitPriceDecimalCorrected &&
             limitOrder.invLimitPriceDecimalCorrected
@@ -419,8 +410,6 @@ export const useProcessOrder = (
           });
 
     const usdValueNum = limitOrder.totalValueUSD;
-    // const usdValueNum =
-    //     limitOrder.totalValueUSD !== 0 ? limitOrder.totalValueUSD : limitOrder.claimableLiqTotalUSD;
 
     const usdValueTruncated =
         usdValueNum === undefined
@@ -451,88 +440,6 @@ export const useProcessOrder = (
               });
 
     // -----------------------------------------------------------------------------------------
-    // eslint-disable-next-line
-    const [positionLiqTotalUSD, setTotalValueUSD] = useState<
-        number | undefined
-    >();
-
-    // eslint-disable-next-line
-    const [bidTick, setBidTick] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [askTick, setAskTick] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [positionLiquidity, setPositionLiquidity] = useState<
-        string | undefined
-    >();
-    // eslint-disable-next-line
-    const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
-        useState<number | undefined>();
-    // eslint-disable-next-line
-    const [posLiqQuoteDecimalCorrected, setPosLiqQuoteDecimalCorrected] =
-        useState<number | undefined>();
-    // eslint-disable-next-line
-    const positionStatsCacheEndpoint =
-        'https://809821320828123.de:5000/position_stats?';
-
-    // useEffect(() => {
-    //     if (
-    //         limitOrder.chainId &&
-    //         limitOrder.poolIdx &&
-    //         limitOrder.user &&
-    //         limitOrder.base &&
-    //         limitOrder.quote &&
-    //         limitOrder.bidTick &&
-    //         limitOrder.askTick
-    //     ) {
-    //         (async () => {
-    //             // console.log('fetching details');
-    //             fetch(
-    //                 positionStatsCacheEndpoint +
-    //                     new URLSearchParams({
-    //                         chainId: limitOrder.chainId,
-    //                         user: limitOrder.user,
-    //                         base: limitOrder.base,
-    //                         quote: limitOrder.quote,
-    //                         poolIdx: limitOrder.poolIdx.toString(),
-    //                         bidTick: limitOrder.bidTick.toString(),
-    //                         askTick: limitOrder.askTick.toString(),
-    //                         addValue: 'true',
-    //                         positionType: 'knockout',
-    //                         isBid: limitOrder.isBid.toString(),
-    //                         omitAPY: 'true',
-    //                         ensResolution: 'true',
-    //                     }),
-    //             )
-    //                 .then((response) => response.json())
-    //                 .then((json) => {
-    //                     const orderData = json?.data;
-    //                     setPosLiqBaseDecimalCorrected(
-    //                         orderData?.positionLiqBaseDecimalCorrected ?? 0,
-    //                     );
-    //                     setPosLiqQuoteDecimalCorrected(
-    //                         orderData?.positionLiqQuoteDecimalCorrected ?? 0,
-    //                     );
-
-    //                     setTotalValueUSD(orderData?.totalValueUSD);
-
-    //                     isDenomBase
-    //                         ? setLowPriceDisplay(orderData.askTickInvPriceDecimalCorrected)
-    //                         : setLowPriceDisplay(orderData.askTickPriceDecimalCorrected);
-    //                     isDenomBase
-    //                         ? setHighPriceDisplay(orderData.bidTickInvPriceDecimalCorrected)
-    //                         : setHighPriceDisplay(orderData.bidTickPriceDecimalCorrected);
-    //                     setPositionLiquidity(orderData.positionLiq);
-    //                     setBidTick(orderData.bidTick);
-    //                     setAskTick(orderData.askTick);
-
-    //                 });
-    //         })();
-    //     }
-    // }, [limitOrder, lastBlockNumber, isDenomBase]);
-
-    // -----------------------------------------------------------------------------------------
-
-    // ------------------------------------------------------------------
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
@@ -621,16 +528,6 @@ export const useProcessOrder = (
         middlePriceDisplay,
         middlePriceDisplayDenomByMoneyness,
         finishPriceDisplay,
-
-        // tik
-        bidTick,
-        askTick,
-
-        // liquidity
-        posLiqBaseDecimalCorrected,
-        posLiqQuoteDecimalCorrected,
-        positionLiquidity,
-        positionLiqTotalUSD,
 
         // transaction matches selected token
         orderMatchesSelectedTokens,
