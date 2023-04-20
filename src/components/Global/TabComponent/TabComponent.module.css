@@ -78,7 +78,8 @@
 
 .tab_ul li:hover,
 .tab_ul_left li:hover,
-.menu_content li:hover, .selected {
+.menu_content li:hover,
+.selected {
     color: #7371fc;
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -114,7 +115,7 @@
     display: none;
 }
 
-.item_label:focus-visible{
+.item_label:focus-visible {
     border-bottom: 1px solid var(--text-grey-white);
 }
 
@@ -126,11 +127,11 @@
         outline: none;
         border: none;
 
-        color: #a8a5a5;
+        color: var(--text-grey-dark);
         cursor: pointer;
     }
 
-    .selected{
+    .selected {
         color: #7371fc;
     }
 

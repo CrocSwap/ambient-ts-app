@@ -17,7 +17,7 @@
 }
 
 .options_toggle p {
-    color: var(--text-grey-light);
+    color: var(--text-grey-dark);
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -87,7 +87,7 @@
     cursor: pointer;
     font-size: 10px;
     /* line-height: var(--body-lh); */
-    color: var(--text-grey-light);
+    color: var(--text-grey-dark);
 }
 
 .graph_indicaor {

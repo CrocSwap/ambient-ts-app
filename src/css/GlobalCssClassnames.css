@@ -13,7 +13,7 @@
 }
 
 .base_color {
-    color: var(--text-grey-light);
+    color: var(--text-grey-dark);
 }
 
 .username_base_color {
