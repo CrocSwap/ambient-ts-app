@@ -48,7 +48,7 @@ export default function TopPoolsCard(props: propsIF) {
                 pool.base.address,
                 pool.quote.address,
                 pool.poolId,
-                Math.floor(lastBlockNumber / 4),
+                Math.floor(Date.now() / 60000),
             );
             const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
             const volumeString = volume
@@ -62,7 +62,7 @@ export default function TopPoolsCard(props: propsIF) {
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
     }, [lastBlockNumber]);
 
     const tokenAString =
