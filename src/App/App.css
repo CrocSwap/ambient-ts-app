@@ -19,7 +19,7 @@
 }
 
 body::-webkit-scrollbar {
-    width: 5px;
+    display: none;
 }
 
 body::-webkit-scrollbar-track {
@@ -113,13 +113,17 @@ footer {
     height: calc(100vh - (var(--footer-height) + 2rem));
 }
 
-
-h3:focus-visible, h2:focus-visible, h1:focus-visible, h4:focus-visible, h5:focus-visible, h6:focus-visible, p:focus-visible{
+h3:focus-visible,
+h2:focus-visible,
+h1:focus-visible,
+h4:focus-visible,
+h5:focus-visible,
+h6:focus-visible,
+p:focus-visible {
     text-decoration: underline;
     border: none;
     outline: none;
-    text-decoration-color:var(--text-grey-white) ;
-
+    text-decoration-color: var(--text-grey-white);
 }
 .footer_container {
     color: white;
