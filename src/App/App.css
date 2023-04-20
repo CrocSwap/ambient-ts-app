@@ -14,8 +14,7 @@
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {
-    scrollbar-width: auto;
-    scrollbar-color: #8f54a0 #ffffff;
+    scrollbar-width: none;
 }
 
 body::-webkit-scrollbar {
@@ -36,7 +35,7 @@ body {
 
 html {
     background: var(--body-bg);
-
+    scrollbar-width: none;
     color: var(--text-grey-white);
     height: 100%;
 }
