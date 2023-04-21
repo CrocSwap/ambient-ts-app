@@ -586,7 +586,7 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    function pollBlockNum(): Promise<void> {
+    async function pollBlockNum(): Promise<void> {
         return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
@@ -614,18 +614,25 @@ export default function App() {
 
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
-        // Don't use polling, useWebSocket (below)
-        if (chainData.wsUrl) {
-            return;
-        }
+        (async () => {
+            // Don't use polling, useWebSocket (below)
+            if (chainData.wsUrl) {
+                return;
+            }
 
-        // Grab block right away, then poll on periotic basis
-        pollBlockNum();
-        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
-        dispatch(setLastBlockPoll(timer));
+            // Grab block right away, then poll on periotic basis
+            console.log('polling block num');
+            await pollBlockNum();
+            const timer = setInterval(async () => {
+                console.log('polling block num');
+
+                await pollBlockNum();
+            }, BLOCK_NUM_POLL_MS);
+
+            dispatch(setLastBlockPoll(timer));
+            clearInterval(timer);
+        })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
-
-    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -998,6 +1005,7 @@ export default function App() {
         if (!ticksInParams) {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
+            console.log('setting advanced mode to false');
             dispatch(setAdvancedMode(false));
             IS_LOCAL_ENV && console.debug('resetting to 10');
             setSimpleRangeWidth(10);
