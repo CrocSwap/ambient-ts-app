@@ -614,12 +614,12 @@ export default function App() {
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
         (async () => {
+            await pollBlockNum();
             // Don't use polling, useWebSocket (below)
             if (chainData.wsUrl) {
                 return;
             }
             // Grab block right away, then poll on periotic basis
-            await pollBlockNum();
 
             const interval = setInterval(async () => {
                 await pollBlockNum();
