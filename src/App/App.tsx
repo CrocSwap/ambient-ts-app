@@ -179,6 +179,7 @@ import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
+import { GasPriceContext } from '../contexts/GasPriceContext';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -3203,7 +3204,6 @@ export default function App() {
     }, [isEscapePressed]);
 
     const tradeProps = {
-        gasPriceInGwei,
         ethMainnetUsdPrice,
         chartSettings,
         tokenList: searchableTokens,
@@ -3435,7 +3435,11 @@ export default function App() {
                             path='trade'
                             element={
                                 <PoolContext.Provider value={pool}>
-                                    <Trade {...tradeProps} />
+                                    <GasPriceContext.Provider
+                                        value={gasPriceInGwei}
+                                    >
+                                        <Trade {...tradeProps} />
+                                    </GasPriceContext.Provider>
                                 </PoolContext.Provider>
                             }
                         >
