@@ -625,8 +625,6 @@ export default function App() {
         dispatch(setLastBlockPoll(timer));
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
 
-    pollBlockNum();
-
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
