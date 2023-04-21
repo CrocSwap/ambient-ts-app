@@ -50,7 +50,6 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -90,7 +89,6 @@ export default function Ranges(props: propsIF) {
         activeAccountPositionData,
         connectedAccountActive,
         isUserLoggedIn,
-        crocEnv,
         chainData,
         provider,
         chainId,
@@ -503,7 +501,6 @@ export default function Ranges(props: propsIF) {
             showColumns={showColumns}
             showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}
@@ -538,7 +535,6 @@ export default function Ranges(props: propsIF) {
             showColumns={showColumns}
             showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

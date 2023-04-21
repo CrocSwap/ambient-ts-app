@@ -29,7 +29,7 @@ import {
     CandleData,
     setChangesByUser,
 } from '../../../utils/state/graphDataSlice';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
@@ -46,7 +46,6 @@ import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
-    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
     tokenList: TokenIF[];
@@ -112,7 +111,6 @@ export default function TradeTabs2(props: propsIF) {
         cachedPositionUpdateQuery,
         isUserLoggedIn,
         isTokenABase,
-        crocEnv,
         chainId,
         chainData,
         account,
@@ -396,7 +394,6 @@ export default function TradeTabs2(props: propsIF) {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
-        crocEnv: crocEnv,
         chainData: chainData,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -461,7 +458,6 @@ export default function TradeTabs2(props: propsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        crocEnv: crocEnv,
         searchableTokens: searchableTokens,
         expandTradeTable: expandTradeTable,
         chainData: chainData,

@@ -17,7 +17,6 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     tradeData: tradeData;
     expandTradeTable: boolean;
@@ -42,7 +41,6 @@ interface propsIF {
 export default function OrderRow(props: propsIF) {
     const {
         account,
-        crocEnv,
         chainData,
         tradeData,
         showColumns,
@@ -88,7 +86,6 @@ export default function OrderRow(props: propsIF) {
     } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
     const orderMenuProps = {
-        crocEnv: crocEnv,
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,

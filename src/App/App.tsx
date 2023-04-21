@@ -180,6 +180,7 @@ import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { GasPriceContext } from '../contexts/GasPriceContext';
+import { CrocEnvContext } from '../contexts/CrocEnvContext';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -3419,28 +3420,35 @@ export default function App() {
                         <Route
                             index
                             element={
-                                <Home
-                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    tokenMap={tokensOnActiveLists}
-                                    lastBlockNumber={lastBlockNumber}
-                                    crocEnv={crocEnv}
-                                    chainId={chainData.chainId}
-                                    isServerEnabled={isServerEnabled}
-                                    topPools={topPools}
-                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                />
+                                <CrocEnvContext.Provider value={crocEnv}>
+                                    <Home
+                                        cachedQuerySpotPrice={
+                                            cachedQuerySpotPrice
+                                        }
+                                        tokenMap={tokensOnActiveLists}
+                                        lastBlockNumber={lastBlockNumber}
+                                        chainId={chainData.chainId}
+                                        isServerEnabled={isServerEnabled}
+                                        topPools={topPools}
+                                        cachedPoolStatsFetch={
+                                            cachedPoolStatsFetch
+                                        }
+                                    />
+                                </CrocEnvContext.Provider>
                             }
                         />
                         <Route
                             path='trade'
                             element={
-                                <PoolContext.Provider value={pool}>
-                                    <GasPriceContext.Provider
-                                        value={gasPriceInGwei}
-                                    >
-                                        <Trade {...tradeProps} />
-                                    </GasPriceContext.Provider>
-                                </PoolContext.Provider>
+                                <CrocEnvContext.Provider value={crocEnv}>
+                                    <PoolContext.Provider value={pool}>
+                                        <GasPriceContext.Provider
+                                            value={gasPriceInGwei}
+                                        >
+                                            <Trade {...tradeProps} />
+                                        </GasPriceContext.Provider>
+                                    </PoolContext.Provider>
+                                </CrocEnvContext.Provider>
                             }
                         >
                             <Route

@@ -19,7 +19,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -32,7 +32,6 @@ import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 // interface for props
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -67,7 +66,6 @@ interface propsIF {
 export default function Leaderboard(props: propsIF) {
     const {
         isUserLoggedIn,
-        crocEnv,
         chainData,
         provider,
         chainId,
@@ -360,7 +358,6 @@ export default function Leaderboard(props: propsIF) {
             showColumns={showColumns}
             showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

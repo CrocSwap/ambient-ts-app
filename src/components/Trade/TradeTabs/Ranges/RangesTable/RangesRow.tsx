@@ -1,6 +1,6 @@
 import { useEffect, Dispatch, SetStateAction, useRef, useState } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
@@ -22,7 +22,6 @@ import rangeRowConstants from '../rangeRowConstants';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     chainId: string;
@@ -108,7 +107,6 @@ export default function RangesRow(props: propsIF) {
 
     const rangeDetailsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
-        crocEnv: props.crocEnv,
         provider: props.provider,
         chainData: props.chainData,
         chainId: chainId,
@@ -143,7 +141,6 @@ export default function RangesRow(props: propsIF) {
     };
 
     const rangeMenuProps = {
-        crocEnv: props.crocEnv,
         chainData: props.chainData,
         posHash: posHash as string,
         rangeDetailsProps: rangeDetailsProps,

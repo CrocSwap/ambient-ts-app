@@ -794,7 +794,6 @@ export default function Reposition(props: propsIF) {
                     }
                 />
                 <RepositionPriceInfo
-                    crocEnv={crocEnv}
                     position={position}
                     ambientApy={ambientApy}
                     dailyVol={dailyVol}

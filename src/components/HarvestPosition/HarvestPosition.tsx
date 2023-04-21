@@ -10,12 +10,7 @@ import { ethers } from 'ethers';
 import Button from '../Global/Button/Button';
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 
-import {
-    ambientPosSlot,
-    ChainSpec,
-    concPosSlot,
-    CrocEnv,
-} from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot } from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 import {
@@ -42,9 +37,9 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV } from '../../constants';
 import { GasPriceContext } from '../../contexts/GasPriceContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider;
     chainId: string;
@@ -76,7 +71,6 @@ interface propsIF {
 
 export default function HarvestPosition(props: propsIF) {
     const {
-        crocEnv,
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
@@ -90,6 +84,7 @@ export default function HarvestPosition(props: propsIF) {
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
+    const crocEnv = useContext(CrocEnvContext);
     const gasPriceInGwei = useContext(GasPriceContext);
 
     const isPairStable: boolean = isStablePair(

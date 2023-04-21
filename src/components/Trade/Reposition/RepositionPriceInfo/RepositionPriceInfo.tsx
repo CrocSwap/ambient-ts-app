@@ -35,7 +35,6 @@ import AprExplanation from '../../../Global/Informational/AprExplanation';
 // }
 
 interface IRepositionPriceInfoProps {
-    crocEnv: CrocEnv | undefined;
     position: PositionIF;
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
