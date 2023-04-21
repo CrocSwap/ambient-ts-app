@@ -51,7 +51,6 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
 
@@ -74,7 +73,6 @@ export default function RangesRow(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
-        gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
 
@@ -160,7 +158,6 @@ export default function RangesRow(props: propsIF) {
         isOnPortfolioPage: props.isOnPortfolioPage,
         handlePulseAnimation: handlePulseAnimation,
         isPositionInRange: isPositionInRange,
-        gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 

@@ -60,7 +60,6 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
 
@@ -90,7 +89,6 @@ export default function Leaderboard(props: propsIF) {
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
-        gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
 
@@ -379,7 +377,6 @@ export default function Leaderboard(props: propsIF) {
             setSimpleRangeWidth={setSimpleRangeWidth}
             dexBalancePrefs={dexBalancePrefs}
             slippage={slippage}
-            gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));

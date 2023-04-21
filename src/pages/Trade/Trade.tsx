@@ -187,7 +187,6 @@ export default function Trade(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         slippage,
-        gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
 
@@ -612,7 +611,6 @@ export default function Trade(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         dexBalancePrefs: dexBalancePrefs,
         slippage: slippage,
-        gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market

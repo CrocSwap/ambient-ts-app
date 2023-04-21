@@ -42,7 +42,6 @@ import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import {
     ChainSpec,
-    CrocPoolView,
     pinTickLower,
     pinTickUpper,
     tickToPrice,
