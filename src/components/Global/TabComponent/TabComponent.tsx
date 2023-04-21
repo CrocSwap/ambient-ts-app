@@ -146,7 +146,7 @@ export default function TabComponent(props: TabPropsIF) {
                         className={
                             item.label === selectedTab.label
                                 ? styles.selected
-                                : ''
+                                : styles.non_selected
                         }
                         onClick={() => handleSelectedTab(item)}
                         aria-describedby={
@@ -162,7 +162,7 @@ export default function TabComponent(props: TabPropsIF) {
 
                         <button
                             onClick={() => handleSelectedTab(item)}
-                            className={styles.item_label}
+                            className={styles.label_button}
                             role='tab'
                             aria-selected={item.label === selectedTab.label}
                             tabIndex={0}
@@ -202,7 +202,7 @@ export default function TabComponent(props: TabPropsIF) {
                         className={
                             item.label === selectedTab.label
                                 ? styles.selected
-                                : ''
+                                : styles.non_selected
                         }
                         onClick={() => handleSelectedTab(item)}
                         role='tablist'

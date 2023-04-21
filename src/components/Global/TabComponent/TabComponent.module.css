@@ -38,6 +38,7 @@
     width: 100%;
 }
 
+
 .tab_ul li,
 .menu_content li,
 .tab_ul_left li {
@@ -62,6 +63,12 @@
     line-height: var(--body-lh);
 }
 
+.label_button{
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
 .tab_ul li.selected,
 .menu_content li.selected,
 .tab_ul_left li.selected {
@@ -81,6 +88,22 @@
 .menu_content li:hover, .selected {
     color: #7371fc;
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.selected button, .non_selected button{
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 16.25px;
+}
+
+
+.selected button{
+    color: var(--text-highlight-dark)
+}
+
+.non_selected button{
+    color: var(--text-grey-light);
+    opacity: 0.5;
 }
 
 .underline {
@@ -126,7 +149,7 @@
         outline: none;
         border: none;
 
-        color: #a8a5a5;
+ 
         cursor: pointer;
     }
 
