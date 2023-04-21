@@ -15,6 +15,11 @@ interface argsIF {
     n?: number;
     page?: number;
 }
+/**
+ * Fetches the recent changes of the user's transactions from the cache endpoint on the specified chain.
+ * @param args - An object containing the required and optional parameters.
+ * @returns A Promise that resolves to an array of user's transaction data with updated balances of tokens involved in the transactions.
+ */
 
 export const fetchUserRecentChanges = (args: argsIF) => {
     const {
@@ -65,3 +70,5 @@ export const fetchUserRecentChanges = (args: argsIF) => {
 
     return poolChanges;
 };
+
+// This function fetches recent changes of a user's transactions from a cache endpoint on a specific chain. It takes an object argsIF as an argument containing the required and optional parameters. The function returns a Promise that resolves to an array of transaction data with updated balances of tokens involved in the transactions.
