@@ -80,7 +80,6 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
