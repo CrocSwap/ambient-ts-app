@@ -18,7 +18,27 @@ interface argsIF {
     period?: number;
     time?: number;
 }
+/**
 
+Fetches recent changes to a liquidity pool from a cache endpoint.
+@param args - An object containing various parameters for fetching pool changes.
+@returns A Promise that resolves to an array of updated transaction data, or an error if the request fails.
+@interface argsIF - An interface containing properties for the args parameter.
+@property {TokenIF[]} tokenList - A list of tokens involved in the pool.
+@property {string} base - The base token symbol in the pool.
+@property {string} quote - The quote token symbol in the pool.
+@property {number} poolIdx - The index of the pool to fetch changes for.
+@property {string} chainId - The ID of the chain to fetch changes for.
+@property {boolean} annotate - Flag to annotate transaction data with additional information.
+@property {boolean} addValue - Flag to add a value property to the transaction data.
+@property {boolean} simpleCalc - Flag to use simple calculations for token prices.
+@property {boolean} annotateMEV - Flag to annotate transaction data with MEV information.
+@property {boolean} ensResolution - Flag to resolve addresses using ENS.
+@property {number} [n] - Optional parameter for specifying a limit on the number of results.
+@property {number} [page] - Optional parameter for specifying a page number of results.
+@property {number} [period] - Optional parameter for specifying a time period for the query.
+@property {number} [time] - Optional parameter for specifying a time range for the query.
+*/
 export const fetchPoolRecentChanges = (args: argsIF) => {
     const {
         tokenList,
