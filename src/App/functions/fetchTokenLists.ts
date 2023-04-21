@@ -7,6 +7,13 @@ import { defaultTokenLists } from '../../utils/data/defaultTokenLists';
 import { TokenIF } from '../../utils/interfaces/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
 
+/**
+
+Fetches token lists from URIs and stores them in local storage with additional data.
+@param tokenListsReceived - A boolean indicating if token lists have been fetched.
+@param indicateTokenListsReceived - A state hook used to indicate if token lists have been fetched.
+*/
+
 export function fetchTokenLists(
     tokenListsReceived: boolean,
     indicateTokenListsReceived: Dispatch<SetStateAction<boolean>>,
