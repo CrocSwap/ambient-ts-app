@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
+import createOnChangeHandler from '../../../../utils/functions/createOnChangeHandler';
 // import { GoCircleSlash } from 'react-icons/go';
 
 interface propsIF {
@@ -49,13 +50,11 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         </div>
     );
 
-    const precisionOfInput = (inputString: string) => {
-        if (inputString.includes('.')) {
-            return inputString.split('.')[1].length;
-        }
-        // String Does Not Contain Decimal
-        return 0;
-    };
+    const handleChange = createOnChangeHandler(handleEventLocal, {
+        replaceCommas: true,
+        regexPattern: /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/,
+        maxPrecision: thisToken.decimals,
+    });
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
@@ -64,16 +63,7 @@ export default function RangeCurrencyQuantity(props: propsIF) {
                 id={`${fieldId}-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                onChange={(event) => {
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
-                }}
+                onChange={handleChange}
                 value={displayValue}
                 type='string'
                 inputMode='decimal'

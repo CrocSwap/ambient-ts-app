@@ -1,12 +1,13 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, KeyboardEvent } from 'react';
 
 interface priceInputProps {
     disable?: boolean;
     fieldId: string | number;
     title: string;
     percentageDifference: number;
+    value: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     // onFocus: () => void;
     onBlur: () => void;
@@ -26,23 +27,38 @@ export default function PriceInput(props: priceInputProps) {
         increaseTick,
         decreaseTick,
         isRangeCopied,
+        // value
     } = props;
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        const allowedChars = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/;
+        if (
+            !allowedChars.test(e.key) &&
+            e.key !== '.' &&
+            e.key !== ',' &&
+            e.key !== 'Backspace'
+        ) {
+            e.preventDefault();
+        }
+    };
 
     const priceInput = (
         <input
             id={`${fieldId}-price-input-quantity`}
             className={styles.price_quantity}
             type='text'
-            onChange={(event) => handleChangeEvent(event)}
+            onChange={handleChangeEvent}
             onBlur={() => onBlur()}
             inputMode='decimal'
             autoComplete='off'
             autoCorrect='off'
             min='0'
             minLength={1}
-            pattern='^[0-9,]*[.]?[0-9]*$'
+            // pattern='^\d{0,3}(,\d{3})*(\.\d+)?$'
             placeholder='0.0'
             disabled={disable}
+            onKeyDown={handleKeyDown}
+            // value={value}
             aria-label={`${fieldId} price input quantity.`}
         />
     );

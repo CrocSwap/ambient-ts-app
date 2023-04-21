@@ -13,7 +13,7 @@ const createOnChangeHandler = (
     options: {
         replaceCommas?: boolean;
         regexPattern: RegExp;
-        maxPrecision: number;
+        maxPrecision?: number;
     },
 ) => {
     /**
@@ -36,17 +36,27 @@ const createOnChangeHandler = (
         let targetValue = event.target.value;
         if (options.replaceCommas) {
             targetValue = targetValue.replace(',', '.');
-        }
+        } else targetValue = targetValue.replace(',', '');
+        if (options.maxPrecision) {
+            const isPrecisionGreaterThanDecimals =
+                precisionOfInput(targetValue) > options.maxPrecision;
 
-        const isPrecisionGreaterThanDecimals =
-            precisionOfInput(targetValue) > options.maxPrecision;
+            const isUserInputValid = options.regexPattern.test(targetValue);
 
-        const isUserInputValid = options.regexPattern.test(targetValue);
-        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
-            handleEventLocal({
-                ...event,
-                target: { ...event.target, value: targetValue },
-            });
+            if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+                handleEventLocal({
+                    ...event,
+                    target: { ...event.target, value: targetValue },
+                });
+            }
+        } else {
+            const isUserInputValid = options.regexPattern.test(targetValue);
+            if (isUserInputValid) {
+                handleEventLocal({
+                    ...event,
+                    target: { ...event.target, value: targetValue },
+                });
+            }
         }
     };
 };

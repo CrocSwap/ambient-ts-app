@@ -2,6 +2,7 @@
 import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
+import createOnChangeHandler from '../../../../utils/functions/createOnChangeHandler';
 
 interface propsIF {
     disable?: boolean;
@@ -21,12 +22,6 @@ export default function LimitCurrencyQuantity(props: propsIF) {
     }, [value]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // if (event && fieldId === 'sell') {
-        //     setTokenBInputQty('');
-        // } else if (event && fieldId === 'buy') {
-        //     setTokenAInputQty('');
-        // }
-
         handleChangeEvent(event);
 
         const input = event.target.value.startsWith('.')
@@ -36,13 +31,11 @@ export default function LimitCurrencyQuantity(props: propsIF) {
         setDisplayValue(input);
     };
 
-    const precisionOfInput = (inputString: string) => {
-        if (inputString.includes('.')) {
-            return inputString.split('.')[1].length;
-        }
-        // String Does Not Contain Decimal
-        return 0;
-    };
+    const handleChange = createOnChangeHandler(handleEventLocal, {
+        replaceCommas: true,
+        regexPattern: /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/,
+        maxPrecision: thisToken.decimals,
+    });
 
     return (
         <div className={styles.token_amount}>
@@ -51,16 +44,7 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 aria-label={`Enter ${fieldId} amount`}
                 placeholder='0.0'
-                onChange={(event) => {
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
-                }}
+                onChange={handleChange}
                 value={displayValue}
                 type='string'
                 inputMode='decimal'

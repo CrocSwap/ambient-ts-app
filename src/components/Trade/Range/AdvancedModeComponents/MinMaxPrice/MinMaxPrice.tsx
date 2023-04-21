@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
@@ -8,7 +8,7 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
 } from '../../../../../utils/state/tradeDataSlice';
-import { IS_LOCAL_ENV } from '../../../../../constants';
+import createOnChangeHandler from '../../../../../utils/functions/createOnChangeHandler';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -76,31 +76,44 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         }
     };
 
-    const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (evt) {
-            // const maxPriceInput = evt.target.value;
-            const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
-            if (isValid) {
-                handleSetMinTarget(targetValue);
-            }
-        } else {
-            IS_LOCAL_ENV && console.debug('no event');
-        }
+    // const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    //     if (evt) {
+    //         // const maxPriceInput = evt.target.value;
+    //         const targetValue = evt.target.value.replaceAll(',', '');
+    //         const isValid = evt.target.validity.valid;
+    //         if (isValid) {
+    //             handleSetMinTarget(targetValue);
+    //         }
+    //     } else {
+    //         IS_LOCAL_ENV && console.debug('no event');
+    //     }
+    // };
+    const options = {
+        replaceCommas: false,
+        regexPattern: /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?(?<!,),(?!,)?$/,
+        maxPrecision: 2,
     };
+    const handleMinPriceChangeEvent = createOnChangeHandler((event) => {
+        const targetValue = event.target.value;
+        handleSetMinTarget(targetValue);
+    }, options);
+    const handleMaxPriceChangeEvent = createOnChangeHandler((event) => {
+        const targetValue = event.target.value;
+        handleSetMaxTarget(targetValue);
+    }, options);
 
-    const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (evt) {
-            // const maxPriceInput = evt.target.value;
-            const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
-            if (isValid) {
-                handleSetMaxTarget(targetValue);
-            }
-        } else {
-            IS_LOCAL_ENV && console.debug('no event');
-        }
-    };
+    // const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    //     if (evt) {
+    //         // const maxPriceInput = evt.target.value;
+    //         const targetValue = evt.target.value.replaceAll(',', '');
+    //         const isValid = evt.target.validity.valid;
+    //         if (isValid) {
+    //             handleSetMaxTarget(targetValue);
+    //         }
+    //     } else {
+    //         IS_LOCAL_ENV && console.debug('no event');
+    //     }
+    // };
 
     const disableInputContent = (
         <div className={styles.disable_text}>
@@ -160,6 +173,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                     increaseTick={
                         !isDenomBase ? increaseLowTick : decreaseHighTick
                     }
+                    value={!isDenomBase ? minPrice : maxPrice}
                     decreaseTick={
                         !isDenomBase ? decreaseLowTick : increaseHighTick
                     }
@@ -182,6 +196,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                         !isDenomBase ? decreaseHighTick : increaseLowTick
                     }
                     isRangeCopied={isRangeCopied}
+                    value={maxPrice}
                 />
             </div>
             {disable && disableInputContent}
