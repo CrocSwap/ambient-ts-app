@@ -619,13 +619,9 @@ export default function App() {
             if (chainData.wsUrl) {
                 return;
             }
-
             // Grab block right away, then poll on periotic basis
-            console.log('polling block num');
             await pollBlockNum();
             const timer = setInterval(async () => {
-                console.log('polling block num');
-
                 await pollBlockNum();
             }, BLOCK_NUM_POLL_MS);
 
