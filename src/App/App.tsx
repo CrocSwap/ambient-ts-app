@@ -1005,9 +1005,7 @@ export default function App() {
         if (!ticksInParams) {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
-            console.log('setting advanced mode to false');
             dispatch(setAdvancedMode(false));
-            IS_LOCAL_ENV && console.debug('resetting to 10');
             setSimpleRangeWidth(10);
             const sliderInput = document.getElementById(
                 'input-slider-range',
