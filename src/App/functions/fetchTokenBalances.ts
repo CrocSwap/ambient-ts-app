@@ -16,6 +16,12 @@ export interface IDepositedTokenBalance {
     balanceDecimalCorrected: number;
     balanceStorageSlot: string;
 }
+/**
+
+Fetches deposit balances of the given user on the given chain from a cache endpoint.
+@param props - An object containing chainId and user address to fetch deposit balances for.
+@returns A Promise that resolves to an object containing chainId, network name, user address, block number and an array of token balances, or undefined if the request fails.
+*/
 
 export const fetchNativeTokenBalance = async (
     address: string,
@@ -27,6 +33,7 @@ export const fetchNativeTokenBalance = async (
     if (!crocEnv) {
         return;
     }
+    // Define two async functions that return the balance of the native token in the user's wallet and in the DEX
 
     const getDexBalanceNonDisplay = async (
         tokenAddress: string,
@@ -47,6 +54,7 @@ export const fetchNativeTokenBalance = async (
         ).toString();
         return walletBalance;
     };
+    // Fetch the balance of the native token in the user's wallet and in the DEX
 
     const nativeDexBalanceNonDisplay = await getDexBalanceNonDisplay(
         ZERO_ADDRESS,
@@ -56,10 +64,12 @@ export const fetchNativeTokenBalance = async (
         ZERO_ADDRESS,
         address,
     );
+    // Calculate the combined balance of the native token
 
     const combinedBalanceNonDisplay = BigNumber.from(nativeDexBalanceNonDisplay)
         .add(BigNumber.from(nativeWalletBalanceNonDisplay))
         .toString();
+    // Display the balance of the native token in the user's wallet and in the DEX
 
     const nativeDexBalanceDisplay = toDisplayQty(
         nativeDexBalanceNonDisplay,
