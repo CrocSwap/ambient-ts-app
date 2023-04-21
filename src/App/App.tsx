@@ -31,7 +31,6 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    setLastBlockPoll,
     addChangesByPool,
     addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
@@ -621,12 +620,11 @@ export default function App() {
             }
             // Grab block right away, then poll on periotic basis
             await pollBlockNum();
-            const timer = setInterval(async () => {
+
+            const interval = setInterval(async () => {
                 await pollBlockNum();
             }, BLOCK_NUM_POLL_MS);
-
-            dispatch(setLastBlockPoll(timer));
-            clearInterval(timer);
+            return () => clearInterval(interval);
         })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
 
