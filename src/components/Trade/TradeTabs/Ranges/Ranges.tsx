@@ -28,7 +28,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';

@@ -4,7 +4,7 @@ import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/Or
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';

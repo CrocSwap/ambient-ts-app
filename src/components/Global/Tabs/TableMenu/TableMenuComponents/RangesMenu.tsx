@@ -12,7 +12,7 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {

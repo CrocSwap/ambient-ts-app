@@ -14,7 +14,7 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';

@@ -1,5 +1,5 @@
 // START: Import Local Files
-import { capitalConcFactor, CrocEnv, tickToPrice } from '@crocswap-libs/sdk';
+import { capitalConcFactor, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';

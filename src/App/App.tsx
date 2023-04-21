@@ -3212,7 +3212,6 @@ export default function App() {
         cachedPositionUpdateQuery,
         pool,
         isUserLoggedIn,
-        crocEnv,
         provider,
         candleData,
         baseTokenAddress,
