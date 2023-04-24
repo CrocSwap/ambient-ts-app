@@ -416,10 +416,7 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='close sidebar'
-                            onClick={() => {
-                                sidebar.close('persist');
-                                console.log('bam a lam');
-                            }}
+                            onClick={() => sidebar.close('persist')}
                         />
                     </div>
                 </DefaultTooltip>
@@ -436,10 +433,7 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='open sidebar'
-                            onClick={() => {
-                                sidebar.open('persist');
-                                console.log('can I get a what what');
-                            }}
+                            onClick={() => sidebar.open('persist')}
                         />
                     </div>
                 </DefaultTooltip>

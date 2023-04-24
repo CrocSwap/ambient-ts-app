@@ -22,16 +22,6 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
 
     // reusable logic to update state and optionally persist data in local storage
     const changeSidebar = (newStatus: string, persist: string): void => {
-        if (newStatus === 'open') {
-            console.log('opening the sidebar!');
-        } else if (newStatus === 'closed') {
-            console.log('closing the sidebar!');
-        }
-        if (persist) {
-            console.log(`sending value ${newStatus} to local storage!`);
-        } else {
-            console.log('not updating local storage!');
-        }
         setSidebar(newStatus);
         persist && localStorage.setItem(localStorageKey, newStatus);
     };
@@ -40,9 +30,8 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     const openSidebar = (persist = ''): void => changeSidebar('open', persist);
 
     // fn to close the sidebar
-    const closeSidebar = (persist = ''): void => {
+    const closeSidebar = (persist = ''): void =>
         changeSidebar('closed', persist);
-    };
 
     // fn to toggle the sidebar
     const toggleSidebar = (persist = ''): void => {
