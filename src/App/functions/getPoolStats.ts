@@ -3,7 +3,14 @@ import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const poolStatsFreshEndpoint =
     'https://809821320828123.de:5000/pool_stats_fresh?';
-
+/**
+ * getPoolStatsFresh() is an async function that takes chainId, base, quote, and poolIdx as arguments, and fetches the fresh pool stats from a specific endpoint.
+ *getPoolVolume() is an async function that takes tokenA, tokenB, poolIdx, and chainId as arguments, and fetches the total volume of the pool in USD from a specific endpoint.
+ *getPoolTVL() is an async function that takes tokenA, tokenB, poolIdx, and chainId as arguments, and fetches the TVL (total value locked) of the pool from a specific endpoint.
+ *getPoolPriceChange() is an async function that takes chainId, baseToken, quoteToken, and poolIdx as arguments, and fetches the price change of the pool from a specific endpoint.
+ *get24hChange() is an async function that takes chainId, baseToken, quoteToken, poolIdx, and denomInBase as arguments, and fetches the 24-hour price change percentage of the pool from a specific endpoint.
+ *memoizePoolStats() is a function that returns a memoized version of getPoolStatsFresh().
+ */
 const getPoolStatsFresh = async (
     chainId: string,
     base: string,

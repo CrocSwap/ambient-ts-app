@@ -7,7 +7,11 @@ interface metadata {
     description: string;
     image: string;
 }
-
+/**
+ * Fetches the user's ERC1155 NFTs from the Ethereum blockchain via the Moralis EvmApi.
+ * @param account The address of the user's wallet.
+ * @returns A Promise that resolves to an array of local URLs for the images associated with the user's ERC1155 NFTs.
+ */
 export async function getNFTs(account: string) {
     try {
         const address = account;

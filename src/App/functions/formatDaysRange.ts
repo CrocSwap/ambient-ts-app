@@ -1,3 +1,9 @@
+/**
+ * Formats a number of days into a human-readable string representation of a time range.
+ * @param days - Number of days to format.
+ * @returns A string representing the formatted time range.
+ */
+
 export function formatDaysRange(days: number) {
     // TODO (#1570): consider using Moment() here vs implementing this calculation
     if (!isFinite(days)) {
@@ -14,7 +20,11 @@ export function formatDaysRange(days: number) {
         return formatNumString(days * 24) + ' hours';
     }
 }
-
+/**
+ * Formats a number into a locale string representation with no fractional digits.
+ * @param x - Number to format.
+ * @returns A string representing the formatted number.
+ */
 function formatNumString(x: number): string {
     return x.toLocaleString(undefined, {
         minimumFractionDigits: 0,

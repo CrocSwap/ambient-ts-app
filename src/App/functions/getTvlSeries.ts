@@ -1,5 +1,13 @@
 import { TvlSeriesByPoolTimeAndResolution } from '../../utils/state/graphDataSlice';
-
+/**
+ * Retrieve the TVL (Total Value Locked) series for a given pool.
+ * @param base - The base asset symbol (e.g. ETH)
+ * @param quote - The quote asset symbol (e.g. USDC)
+ * @param poolIdx - The pool index
+ * @param chainId - The chain ID (e.g. 1 for Ethereum mainnet)
+ * @param resolution - The time resolution in seconds (e.g. 86400 for daily)
+ * @returns A promise that resolves to the TVL series or undefined if the request fails
+ */
 export const getTvlSeries = async (
     base: string,
     quote: string,

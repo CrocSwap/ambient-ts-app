@@ -13,7 +13,6 @@ Fetches pool limit order states from a cache endpoint for a given pool on a give
 @param props - An object containing chainId, base currency, quote currency, pool index, and a boolean flag for ENS resolution.
 @returns A Promise that resolves to an object containing pool limit order states, or undefined if the request fails.
 */
-
 export const fetchPoolLimitOrderStates = (
     props: IFetchPoolLimitOrderStatesProps,
 ) => {
@@ -23,7 +22,6 @@ export const fetchPoolLimitOrderStates = (
         'https://809821320828123.de:5000' + '/pool_limit_order_states?';
 
     IS_LOCAL_ENV && console.debug('fetching pool recent changes');
-    // Fetch pool limit order states from the cache endpoint
 
     const poolLimitOrderStates = fetch(
         poolLimitOrderStatesCacheEndpoint +
@@ -38,8 +36,6 @@ export const fetchPoolLimitOrderStates = (
     )
         .then((response) => response?.json())
         .then((json) => {
-            // Extract pool limit order states from the response data
-
             const poolLimitOrderJsonData = json?.data;
             return poolLimitOrderJsonData;
         })

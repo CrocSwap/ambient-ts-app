@@ -1,4 +1,5 @@
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
+// The function expects a `TransactionIF` object and an array of `TokenIF` objects as arguments, and returns a `Promise` that resolves to a `TransactionIF` object.
 
 export const getTransactionData = async (
     tx: TransactionIF,

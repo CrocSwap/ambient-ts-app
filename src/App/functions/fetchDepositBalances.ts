@@ -23,14 +23,11 @@ export const fetchDepositBalances = (
     | undefined
 > => {
     const { chainId, user } = props;
-    // Construct the endpoint URL for deposit balance cache
 
     const depositBalancesCacheEndpoint =
         'https://809821320828123.de:5000' + '/user_balances?';
-    // Debug message for local environments
 
     IS_LOCAL_ENV && console.debug('fetching deposit balances');
-    // Fetch deposit balances from the cache endpoint
 
     const depositBalances = fetch(
         depositBalancesCacheEndpoint +

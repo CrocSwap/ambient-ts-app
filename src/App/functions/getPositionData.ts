@@ -3,9 +3,20 @@ import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
+// memoize the `querySpotPrice` function for caching and optimizing repeated calls to the same spot price query
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-
+/**
+ * Get position data for a given position
+ *
+ * @param {PositionIF} position - The position for which to get data
+ * @param {TokenIF[]} searchableTokens - The list of searchable tokens
+ * @param {CrocEnv} crocEnv - The CrocSwap environment
+ * @param {string} chainId - The blockchain's chain ID
+ * @param {number} lastBlockNumber - The last block number
+ *
+ * @returns {Promise<PositionIF>} The position data, after it has been updated with new information
+ */
 export const getPositionData = async (
     position: PositionIF,
     searchableTokens: TokenIF[],
