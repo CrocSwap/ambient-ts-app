@@ -26,6 +26,8 @@ export default function TimeFrame(props: propsIF) {
 
     useOnClickOutside(dropdownItemRef, clickOutsideHandler);
 
+    console.log(candleTime);
+
     const timeFrameMobile = (
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
@@ -34,7 +36,7 @@ export default function TimeFrame(props: propsIF) {
                 tabIndex={0}
                 aria-label='Open time frame dropdown.'
             >
-                {candleTime.readableTime}
+                Time frame
             </button>
 
             <div className={wrapperStyle}>
