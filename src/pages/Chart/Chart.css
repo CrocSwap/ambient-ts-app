@@ -300,6 +300,18 @@ label {
     }
 }
 
+@media (max-height: 900px) {
+    .chart_grid {
+        height: 95%;
+    }
+}
+
+@media (max-height: 900px) and (min-width: 1200px) {
+    .chart_grid {
+        height: 80%;
+    }
+}
+
 @media (max-width: 1500px) and (min-width: 1270px) {
     .xAxis {
         height: 10% !important;
