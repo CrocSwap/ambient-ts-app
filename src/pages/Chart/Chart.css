@@ -163,10 +163,7 @@ div.tooltip {
     transition: 0.8s all ease-in-out;
 }
 
-d3fc-canvas>canvas, d3fc-svg>svg {
-    height: inherit !important;
-    width: inherit !important;
-}
+
 
 @keyframes hideAnimation {
     to {
