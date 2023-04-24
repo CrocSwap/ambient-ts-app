@@ -14,3 +14,4 @@ Please follow these items as close to as possible for your PR. Please add a desc
 - [ ] Is a minimum level of logging in place? Is the logging level is the right one?
 - [ ] Are unit tests used where possible? In most cases, tests should be present for APIs, interfaces with data access, transformation, backend elements and models, with the Arrange/Act/Assert pattern and documentation.
 - [ ] Checked against an interface via the implements keyword?
+- [ ] Are component properties passed via useContext if the child component is deeply nested? (more than 2 levels)
