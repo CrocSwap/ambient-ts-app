@@ -202,8 +202,6 @@ const startMoralis = async () => {
 
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
-startMoralis();
-
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
@@ -212,6 +210,10 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
+
+    useEffect(() => {
+        startMoralis();
+    }, []);
 
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(
@@ -379,6 +381,13 @@ export default function App() {
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
+    const areSubscriptionsEnabled =
+        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
               'true'
             : true;
 
@@ -1532,7 +1541,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            baseTokenAddress !== '' &&
+            quoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -1597,7 +1609,10 @@ export default function App() {
             shouldReconnect: () => true,
         },
         // only connect if base/quote token addresses are available
-        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            baseTokenAddress !== '' &&
+            quoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -1674,6 +1689,7 @@ export default function App() {
         },
         // only connect if base/quote token addresses are available
         isServerEnabled &&
+            areSubscriptionsEnabled &&
             mainnetBaseTokenAddress !== '' &&
             mainnetQuoteTokenAddress !== '',
     );
@@ -1854,7 +1870,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     function isJsonString(str: string) {
@@ -1927,7 +1946,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     useEffect(() => {
@@ -1983,7 +2005,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     useEffect(() => {
@@ -3082,13 +3107,19 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        const interval = setInterval(() => {
-            getStatus().then((isChatUp) => {
-                setIsChatEnabled(isChatUp);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, [isChatEnabled]);
+        if (
+            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+                : true
+        ) {
+            const interval = setInterval(() => {
+                getStatus().then((isChatUp) => {
+                    setIsChatEnabled(isChatUp);
+                });
+            }, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
@@ -3367,6 +3398,7 @@ export default function App() {
 
     const chatProps = {
         isChatEnabled: isChatEnabled,
+        areSubscriptionsEnabled: areSubscriptionsEnabled,
         isChatOpen: true,
         onClose: () => {
             console.error('Function not implemented.');
@@ -3591,6 +3623,7 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
+                            areSubscriptionsEnabled={areSubscriptionsEnabled}
                         />
                     )}
             </div>
