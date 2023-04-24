@@ -31,7 +31,6 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    setLastBlockPoll,
     addChangesByPool,
     addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
@@ -586,7 +585,7 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    function pollBlockNum(): Promise<void> {
+    async function pollBlockNum(): Promise<void> {
         return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
@@ -614,18 +613,20 @@ export default function App() {
 
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
-        // Don't use polling, useWebSocket (below)
-        if (chainData.wsUrl) {
-            return;
-        }
+        (async () => {
+            await pollBlockNum();
+            // Don't use polling, useWebSocket (below)
+            if (chainData.wsUrl) {
+                return;
+            }
+            // Grab block right away, then poll on periotic basis
 
-        // Grab block right away, then poll on periotic basis
-        pollBlockNum();
-        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
-        dispatch(setLastBlockPoll(timer));
+            const interval = setInterval(async () => {
+                await pollBlockNum();
+            }, BLOCK_NUM_POLL_MS);
+            return () => clearInterval(interval);
+        })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
-
-    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -999,7 +1000,6 @@ export default function App() {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
             dispatch(setAdvancedMode(false));
-            IS_LOCAL_ENV && console.debug('resetting to 10');
             setSimpleRangeWidth(10);
             const sliderInput = document.getElementById(
                 'input-slider-range',
@@ -1547,6 +1547,7 @@ export default function App() {
         if (lastPoolLiqChangeMessage !== null) {
             IS_LOCAL_ENV &&
                 console.debug('new pool liq change message received');
+            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastPoolLiqChangeMessage.data,
             ).data;
@@ -1609,6 +1610,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             if (lastMessageData) {
                 Promise.all(
@@ -1626,6 +1628,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             if (lastMessageData) {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
@@ -1788,6 +1791,7 @@ export default function App() {
 
     useEffect(() => {
         if (candlesMessage) {
+            if (!isJsonString(candlesMessage.data)) return;
             const lastMessageData = JSON.parse(candlesMessage.data).data;
             if (lastMessageData && candleData) {
                 const newCandles: CandleData[] = [];
@@ -1861,28 +1865,43 @@ export default function App() {
         isServerEnabled && account !== null && account !== undefined,
     );
 
+    function isJsonString(str: string) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     useEffect(() => {
-        if (lastUserPositionsMessage !== null) {
-            const lastMessageData = JSON.parse(
-                lastUserPositionsMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                IS_LOCAL_ENV &&
-                    console.debug('new user position message received');
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            searchableTokens,
-                            crocEnv,
-                            chainData.chainId,
-                            lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByUser(updatedPositions));
-                });
+        try {
+            if (lastUserPositionsMessage !== null) {
+                console.log({ lastUserPositionsMessage });
+                if (!isJsonString(lastUserPositionsMessage.data)) return;
+                const lastMessageData = JSON.parse(
+                    lastUserPositionsMessage.data,
+                ).data;
+                if (lastMessageData && crocEnv) {
+                    IS_LOCAL_ENV &&
+                        console.debug('new user position message received');
+                    Promise.all(
+                        lastMessageData.map((position: PositionIF) => {
+                            return getPositionData(
+                                position,
+                                searchableTokens,
+                                crocEnv,
+                                chainData.chainId,
+                                lastBlockNumber,
+                            );
+                        }),
+                    ).then((updatedPositions) => {
+                        dispatch(addPositionsByUser(updatedPositions));
+                    });
+                }
             }
+        } catch (error) {
+            console.error(error);
         }
     }, [lastUserPositionsMessage]);
 
@@ -1922,6 +1941,7 @@ export default function App() {
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
             IS_LOCAL_ENV && console.debug('received new user recent change');
+            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserRecentChangesMessage.data,
             ).data;
@@ -1976,6 +1996,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
+            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserLimitOrderChangesMessage.data,
             ).data;
