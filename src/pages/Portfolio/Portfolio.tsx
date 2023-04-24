@@ -81,7 +81,7 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -137,7 +137,7 @@ export default function Portfolio(props: propsIF) {
         quoteTokenDexBalance,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         openModalWallet,
         outputTokens,
@@ -579,7 +579,7 @@ export default function Portfolio(props: propsIF) {
         openTokenModal: openTokenModal,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         account: props.account,
         chainData: chainData,
         currentPositionActive: props.currentPositionActive,

@@ -23,8 +23,8 @@ interface propsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
+    closeSidebar: () => void;
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
@@ -36,7 +36,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         isUserLoggedIn,
-        setShowSidebar,
+        closeSidebar,
     } = props;
 
     const location = useLocation();
@@ -71,7 +71,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         redirectBasedOnRoute();
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setShowSidebar(false);
+        closeSidebar();
     };
 
     return (
