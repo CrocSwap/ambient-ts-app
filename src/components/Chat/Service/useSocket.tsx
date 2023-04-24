@@ -42,6 +42,7 @@ const useSocket = (room: string, areSubscriptionsEnabled = true) => {
     }, [room, areSubscriptionsEnabled]);
 
     async function getMsg() {
+        if (!socketRef.current) return;
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });
