@@ -51,11 +51,13 @@ interface propsIF {
     username?: string | null;
     topPools: topPoolIF[];
     isChatEnabled: boolean;
+    areSubscriptionsEnabled: boolean;
 }
 
 export default function ChatPanel(props: propsIF) {
     const {
         isChatEnabled,
+        areSubscriptionsEnabled,
         isFullScreen,
         favePools,
         currentPool,
@@ -85,7 +87,10 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+        room,
+        areSubscriptionsEnabled,
+    );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
@@ -374,7 +379,11 @@ export default function ChatPanel(props: propsIF) {
                             style={{ marginTop: '-18px', cursor: 'pointer' }}
                             onClick={() => scrollToBottomButton()}
                         >
-                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <BsChatLeftFill
+                                size={25}
+                                color='#7371fc'
+                                style={{ cursor: 'pointer' }}
+                            />
                             <span className={styles.text}>{notification}</span>
                         </span>
                         <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
@@ -385,13 +394,18 @@ export default function ChatPanel(props: propsIF) {
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
+                                style={{ cursor: 'pointer' }}
                             />
                         </span>
                     </div>
                 ) : (
                     <div className={styles.chat_notification}>
                         <span onClick={() => scrollToBottomButton()}>
-                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <BsChatLeftFill
+                                size={25}
+                                color='#7371fc'
+                                style={{ cursor: 'pointer' }}
+                            />
                             <span className={styles.text}>{notification}</span>
                         </span>
                         <span>
@@ -402,6 +416,7 @@ export default function ChatPanel(props: propsIF) {
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
+                                style={{ cursor: 'pointer' }}
                             />
                         </span>
                     </div>
@@ -418,6 +433,7 @@ export default function ChatPanel(props: propsIF) {
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                 ) : (
@@ -429,6 +445,7 @@ export default function ChatPanel(props: propsIF) {
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                 )

@@ -114,9 +114,11 @@
     height: 20px;
     width: 20px;
     color: rgba(235, 235, 255, 0.4);
-    pointer-events: none;
+    cursor: pointer;
     opacity: 0.5;
 }
+
+
 
 .dropdown_btn_isActive {
     padding: 4px 16px;
@@ -149,6 +151,10 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
+}
+
+.dropdown_item:hover {
+    background: #242f3f;
 }
 
 .dropdown_item_no_fav_pools {

@@ -9,7 +9,7 @@
     flex-direction: column-reverse;
     border: solid 1px transparent;
     background: var(--dark3);
-    cursor: pointer;
+    cursor: default;
 
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
@@ -48,6 +48,7 @@
     text-transform: uppercase;
     color: white;
     background: var(--dark3);
+    cursor: pointer;
 }
 
 .chat_header section {
@@ -69,6 +70,7 @@
     justify-content: right;
     width: 95%;
     height: 1%;
+    cursor: default;
 }
 
 .text {
@@ -90,6 +92,7 @@
     max-height: unset;
     order: 0;
     align-self: stretch;
+    cursor:default;
 }
 
 /* width */
