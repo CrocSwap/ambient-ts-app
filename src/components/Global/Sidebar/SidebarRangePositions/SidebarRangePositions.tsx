@@ -13,7 +13,7 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
+    closeSidebar: () => void;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
@@ -23,7 +23,7 @@ export default function SidebarRangePositions(props: propsIF) {
         userPositions,
         setCurrentPositionActive,
         isUserLoggedIn,
-        setShowSidebar,
+        closeSidebar,
         setOutsideControl,
         setSelectedOutsideTab,
         setIsShowAllEnabled,
@@ -61,7 +61,7 @@ export default function SidebarRangePositions(props: propsIF) {
         redirectBasedOnRoute();
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setShowSidebar(false);
+        closeSidebar();
     };
 
     return (

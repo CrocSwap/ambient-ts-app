@@ -207,7 +207,7 @@ startMoralis();
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
-
+    const location = useLocation();
     // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
@@ -256,6 +256,9 @@ export default function App() {
     const skin = useSkin('purple_dark');
     false && skin;
 
+    // hook to track user's sidebar preference open or closed
+    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
+
     const { address: account, isConnected } = useAccount();
 
     useEffect(() => {
@@ -269,7 +272,6 @@ export default function App() {
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const location = useLocation();
 
     const ticksInParams =
         location.pathname.includes('lowTick') &&
@@ -690,10 +692,6 @@ export default function App() {
         [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
 
-    const [sidebarManuallySet, setSidebarManuallySet] =
-        useState<boolean>(false);
-    const [showSidebar, setShowSidebar] = useState<boolean>(false);
-
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -826,15 +824,10 @@ export default function App() {
         const tokenAddress = token.address;
         const key =
             tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-
         const tokenName = tokensOnActiveLists.get(key)?.name;
-
         const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-
         newToken.name = tokenName ?? '';
-
         newToken.logoURI = tokenLogoURI ?? '';
-
         return newToken;
     };
 
@@ -892,7 +885,6 @@ export default function App() {
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol, setDailyVol] = useState<number | undefined>();
 
-    // TODO:  @Emily useMemo() this value
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
@@ -2271,7 +2263,6 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
-                            // omitEmpty: 'true',
                             omitKnockout: 'true',
                             addValue: 'true',
                         }),
@@ -2438,7 +2429,6 @@ export default function App() {
                                 }
                             }
                         }
-                        // const transactedTokensMinusAmbientTokens = result.filter((token) => )
                         dispatch(setRecentTokens(result));
                     })
                     .catch(console.error);
@@ -2456,32 +2446,21 @@ export default function App() {
         crocEnv,
     ]);
 
-    // run function to initialize local storage
-    // internal controls will only initialize values that don't exist
-    // existing values will not be overwritten
-
-    // determine whether the user is connected to a supported chain
-    // the user being connected to a non-supported chain or not being
-    // ... connected at all are both reflected as `false`
-    // later we can make this available to the rest of the app through
-    // ... the React Router context provider API
-    // const isChainValid = chainData.chainId ? validateChain(chainData.chainId as string) : false;
-
     const currentLocation = location.pathname;
 
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
 
     function toggleSidebarBasedOnRoute() {
-        if (sidebarManuallySet || !showSidebarByDefault) {
+        if (!showSidebarByDefault) {
             return;
         } else {
-            setShowSidebar(true);
+            sidebar.open();
             if (
                 currentLocation === '/' ||
                 currentLocation === '/swap' ||
                 currentLocation.includes('/account')
             ) {
-                setShowSidebar(false);
+                sidebar.close();
             }
         }
     }
@@ -2518,7 +2497,6 @@ export default function App() {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        // dispatch(resetTradeData());
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
@@ -2974,11 +2952,6 @@ export default function App() {
         chainData: chainData,
     };
 
-    function toggleSidebar() {
-        setShowSidebar(!showSidebar);
-        setSidebarManuallySet(true);
-    }
-
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
@@ -2989,11 +2962,9 @@ export default function App() {
 
     // props for <Sidebar/> React element
     const sidebarProps = {
+        sidebar: sidebar,
         tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
-        showSidebar: showSidebar,
-        toggleSidebar: toggleSidebar,
-        setShowSidebar: setShowSidebar,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
 
@@ -3125,7 +3096,7 @@ export default function App() {
         }
     }, [currentLocation]);
 
-    const sidebarDislayStyle = showSidebar
+    const sidebarDislayStyle = sidebar.isOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
@@ -3137,11 +3108,6 @@ export default function App() {
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
-
-    // hook to track user's sidebar preference open or closed
-    // also functions to toggle sidebar status between open and closed
-    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
-    false && sidebar;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -3195,7 +3161,7 @@ export default function App() {
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: ' ' },
         () => {
-            setShowSidebar(!showSidebar);
+            sidebar.toggle('persist');
         },
     );
     useKeyboardShortcuts(
@@ -3245,7 +3211,6 @@ export default function App() {
         chainId: chainData.chainId,
         chainData,
         currentTxActiveInTransactions,
-
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -3270,7 +3235,6 @@ export default function App() {
         searchableTokens: searchableTokens,
         poolExists,
         setTokenPairLocal,
-        showSidebar,
         handlePulseAnimation,
         isCandleSelected,
         setIsCandleSelected,
@@ -3305,6 +3269,7 @@ export default function App() {
             mintSlippage,
             repoSlippage,
         },
+        isSidebarOpen: sidebar.isOpen,
     };
 
     const accountProps = {
@@ -3323,7 +3288,6 @@ export default function App() {
         isTokenABase,
         provider,
         cachedFetchErc20TokenBalances,
-
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
         ensName,
@@ -3336,14 +3300,12 @@ export default function App() {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
-        // userAccount:true,
         openGlobalModal,
         closeGlobalModal,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
         account: account ?? '',
-        showSidebar,
         isUserLoggedIn,
         baseTokenBalance,
         quoteTokenBalance,
@@ -3371,6 +3333,7 @@ export default function App() {
         },
         ackTokens,
         setExpandTradeTable,
+        isSidebarOpen: sidebar.isOpen,
     };
 
     const repositionProps = {
@@ -3538,7 +3501,6 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     gasPriceInGwei={gasPriceInGwei}
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    showSidebar={showSidebar}
                                     openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
