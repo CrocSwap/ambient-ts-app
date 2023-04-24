@@ -1791,6 +1791,7 @@ export default function App() {
 
     useEffect(() => {
         if (candlesMessage) {
+            if (!isJsonString(candlesMessage.data)) return;
             const lastMessageData = JSON.parse(candlesMessage.data).data;
             if (lastMessageData && candleData) {
                 const newCandles: CandleData[] = [];
