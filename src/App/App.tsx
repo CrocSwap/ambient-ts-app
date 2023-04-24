@@ -3136,13 +3136,19 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        const interval = setInterval(() => {
-            getStatus().then((isChatUp) => {
-                setIsChatEnabled(isChatUp);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, [isChatEnabled]);
+        if (
+            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+                : true
+        ) {
+            const interval = setInterval(() => {
+                getStatus().then((isChatUp) => {
+                    setIsChatEnabled(isChatUp);
+                });
+            }, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
