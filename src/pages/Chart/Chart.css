@@ -300,15 +300,9 @@ label {
     }
 }
 
-@media (max-height: 900px) {
+@media (max-height: 900px) and (max-width: 1280px) {
     .chart_grid {
-        height: 95%;
-    }
-}
-
-@media (max-height: 900px) and (min-width: 1200px) {
-    .chart_grid {
-        height: 80%;
+        height: 85%;
     }
 }
 
