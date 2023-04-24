@@ -3367,9 +3367,10 @@ export default function Chart(props: propsIF) {
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
     ) {
+        const rectPadding = text.length > 8 ? 15 : 0;
         context.beginPath();
         context.fillStyle = color;
-        context.fillRect(0, y - 10, yAxisWidth, 20);
+        context.fillRect(0, y - 10, yAxisWidth + rectPadding, 20);
         context.fillStyle = textColor;
         context.fontSize = '13';
         context.textAlign = 'left';
@@ -3378,7 +3379,7 @@ export default function Chart(props: propsIF) {
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, yAxisWidth, 20);
+            context.strokeRect(1, y - 10, yAxisWidth + rectPadding, 20);
         }
     }
 
