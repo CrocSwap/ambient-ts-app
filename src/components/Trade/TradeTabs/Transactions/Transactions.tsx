@@ -53,7 +53,7 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -74,7 +74,7 @@ export default function Transactions(props: propsIF) {
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         isCandleSelected,
-        showSidebar,
+        isSidebarOpen,
         openGlobalModal,
         closeGlobalModal,
         isOnPortfolioPage,
@@ -213,12 +213,12 @@ export default function Transactions(props: propsIF) {
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
     const max1400px = useMediaQuery('(max-width: 1400px)');
     const max1700px = useMediaQuery('(max-width: 1700px)');
 
     const showColumns =
-        (max1400px && !showSidebar) || (max1700px && showSidebar);
+        (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -439,7 +439,7 @@ export default function Transactions(props: propsIF) {
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
@@ -463,7 +463,7 @@ export default function Transactions(props: propsIF) {
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}

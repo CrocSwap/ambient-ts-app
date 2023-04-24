@@ -30,7 +30,6 @@ import { IS_LOCAL_ENV } from '../../constants';
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
-    showSidebar: boolean;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;

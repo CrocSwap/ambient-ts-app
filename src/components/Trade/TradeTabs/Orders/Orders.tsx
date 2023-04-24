@@ -51,7 +51,7 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     lastBlockNumber: number;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     handlePulseAnimation?: (type: string) => void;
 }
 
@@ -68,7 +68,7 @@ export default function Orders(props: propsIF) {
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
-        showSidebar,
+        isSidebarOpen,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
@@ -163,7 +163,7 @@ export default function Orders(props: propsIF) {
         useSortedLimits('time', nonEmptyOrders);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
     const view2 = useMediaQuery('(max-width: 1568px)');
     const showColumns = useMediaQuery('(max-width: 1800px)');
 
@@ -198,13 +198,6 @@ export default function Orders(props: propsIF) {
             slug: 'time',
             sortable: true,
         },
-        // {
-        //     name: '',
-        //     className: '',
-        //     show: isOnPortfolioPage,
-        //     slug: 'token_images',
-        //     sortable: false,
-        // },
         {
             name: 'Pair',
             className: '',
@@ -393,7 +386,7 @@ export default function Orders(props: propsIF) {
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             showColumns={showColumns}
             ipadView={ipadView}
             view2={view2}
@@ -420,7 +413,6 @@ export default function Orders(props: propsIF) {
             setIsShowAllEnabled={setIsShowAllEnabled}
             changeState={changeState}
             isOnPortfolioPage={isOnPortfolioPage}
-            // setIsCandleSelected={setIsCandleSelected}
         />
     );
 
