@@ -1547,6 +1547,7 @@ export default function App() {
         if (lastPoolLiqChangeMessage !== null) {
             IS_LOCAL_ENV &&
                 console.debug('new pool liq change message received');
+            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastPoolLiqChangeMessage.data,
             ).data;
@@ -1609,6 +1610,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             if (lastMessageData) {
                 Promise.all(
@@ -1626,6 +1628,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             if (lastMessageData) {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
@@ -1861,28 +1864,43 @@ export default function App() {
         isServerEnabled && account !== null && account !== undefined,
     );
 
+    function isJsonString(str: string) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     useEffect(() => {
-        if (lastUserPositionsMessage !== null) {
-            const lastMessageData = JSON.parse(
-                lastUserPositionsMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                IS_LOCAL_ENV &&
-                    console.debug('new user position message received');
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            searchableTokens,
-                            crocEnv,
-                            chainData.chainId,
-                            lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByUser(updatedPositions));
-                });
+        try {
+            if (lastUserPositionsMessage !== null) {
+                console.log({ lastUserPositionsMessage });
+                if (!isJsonString(lastUserPositionsMessage.data)) return;
+                const lastMessageData = JSON.parse(
+                    lastUserPositionsMessage.data,
+                ).data;
+                if (lastMessageData && crocEnv) {
+                    IS_LOCAL_ENV &&
+                        console.debug('new user position message received');
+                    Promise.all(
+                        lastMessageData.map((position: PositionIF) => {
+                            return getPositionData(
+                                position,
+                                searchableTokens,
+                                crocEnv,
+                                chainData.chainId,
+                                lastBlockNumber,
+                            );
+                        }),
+                    ).then((updatedPositions) => {
+                        dispatch(addPositionsByUser(updatedPositions));
+                    });
+                }
             }
+        } catch (error) {
+            console.error(error);
         }
     }, [lastUserPositionsMessage]);
 
@@ -1922,6 +1940,7 @@ export default function App() {
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
             IS_LOCAL_ENV && console.debug('received new user recent change');
+            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserRecentChangesMessage.data,
             ).data;
@@ -1976,6 +1995,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
+            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserLimitOrderChangesMessage.data,
             ).data;
