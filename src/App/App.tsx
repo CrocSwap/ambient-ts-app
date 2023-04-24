@@ -140,7 +140,7 @@ import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
-import { useSidebar } from './hooks/useSidebar';
+import { sidebarMethodsIF, useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
@@ -3140,11 +3140,8 @@ export default function App() {
 
     // hook to track user's sidebar preference open or closed
     // also functions to toggle sidebar status between open and closed
-    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] =
-        useSidebar(location.pathname);
-    // these lines are just here to make the linter happy
-    // take them out before production, they serve no other purpose
-    false && sidebarStatus;
+    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
+    false && sidebar;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -3590,9 +3587,6 @@ export default function App() {
                                 element={
                                     <TestPage
                                         openGlobalModal={openGlobalModal}
-                                        openSidebar={openSidebar}
-                                        closeSidebar={closeSidebar}
-                                        togggggggleSidebar={togggggggleSidebar}
                                         walletToS={walletToS}
                                         chartSettings={chartSettings}
                                         bypassConf={{

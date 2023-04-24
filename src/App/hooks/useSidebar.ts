@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 
-export const useSidebar = (
-    pathname: string,
-): [
-    sidebar: string,
-    openSidebar: () => void,
-    closeSidebar: () => void,
-    toggleSidebar: () => void,
-] => {
+export interface sidebarMethodsIF {
+    status: string;
+    isHidden: boolean;
+    open: () => void;
+    close: () => void;
+    toggle: () => void;
+}
+
+export const useSidebar = (pathname: string): sidebarMethodsIF => {
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
@@ -54,5 +55,12 @@ export const useSidebar = (
     false && hidden;
 
     // return sidebar status and functions to update value
-    return [sidebar, openSidebar, closeSidebar, toggleSidebar];
+    // return [sidebar, openSidebar, closeSidebar, toggleSidebar];
+    return {
+        status: sidebar,
+        isHidden: hidden,
+        open: openSidebar,
+        close: closeSidebar,
+        toggle: toggleSidebar,
+    };
 };
