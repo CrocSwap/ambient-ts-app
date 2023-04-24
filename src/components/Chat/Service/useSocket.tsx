@@ -8,7 +8,7 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
-const useSocket = (room: string) => {
+const useSocket = (room: string, areSubscriptionsEnabled = true) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -17,6 +17,7 @@ const useSocket = (room: string) => {
     const [messageUser, setMessageUser] = useState<string>();
 
     useEffect(() => {
+        if (!areSubscriptionsEnabled) return;
         const roomId = room;
         socketRef.current = io(host, { query: { roomId } });
         socketRef.current.on('connection');
@@ -38,9 +39,10 @@ const useSocket = (room: string) => {
         return () => {
             socketRef.current.disconnect();
         };
-    }, [room]);
+    }, [room, areSubscriptionsEnabled]);
 
     async function getMsg() {
+        if (!socketRef.current) return;
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });

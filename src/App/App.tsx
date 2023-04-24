@@ -31,7 +31,6 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    setLastBlockPoll,
     addChangesByPool,
     addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
@@ -206,8 +205,6 @@ const startMoralis = async () => {
 
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
-startMoralis();
-
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
@@ -216,6 +213,10 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
+
+    useEffect(() => {
+        startMoralis();
+    }, []);
 
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(
@@ -381,6 +382,13 @@ export default function App() {
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
+    const areSubscriptionsEnabled =
+        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
               'true'
             : true;
 
@@ -589,7 +597,7 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    function pollBlockNum(): Promise<void> {
+    async function pollBlockNum(): Promise<void> {
         return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
@@ -617,18 +625,20 @@ export default function App() {
 
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
-        // Don't use polling, useWebSocket (below)
-        if (chainData.wsUrl) {
-            return;
-        }
+        (async () => {
+            await pollBlockNum();
+            // Don't use polling, useWebSocket (below)
+            if (chainData.wsUrl) {
+                return;
+            }
+            // Grab block right away, then poll on periotic basis
 
-        // Grab block right away, then poll on periotic basis
-        pollBlockNum();
-        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
-        dispatch(setLastBlockPoll(timer));
+            const interval = setInterval(async () => {
+                await pollBlockNum();
+            }, BLOCK_NUM_POLL_MS);
+            return () => clearInterval(interval);
+        })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
-
-    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -1002,7 +1012,6 @@ export default function App() {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
             dispatch(setAdvancedMode(false));
-            IS_LOCAL_ENV && console.debug('resetting to 10');
             setSimpleRangeWidth(10);
             const sliderInput = document.getElementById(
                 'input-slider-range',
@@ -1543,13 +1552,17 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            baseTokenAddress !== '' &&
+            quoteTokenAddress !== '',
     );
 
     useEffect(() => {
         if (lastPoolLiqChangeMessage !== null) {
             IS_LOCAL_ENV &&
                 console.debug('new pool liq change message received');
+            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastPoolLiqChangeMessage.data,
             ).data;
@@ -1607,11 +1620,15 @@ export default function App() {
             shouldReconnect: () => true,
         },
         // only connect if base/quote token addresses are available
-        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            baseTokenAddress !== '' &&
+            quoteTokenAddress !== '',
     );
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             if (lastMessageData) {
                 Promise.all(
@@ -1629,6 +1646,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
             const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
             if (lastMessageData) {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
@@ -1682,6 +1700,7 @@ export default function App() {
         },
         // only connect if base/quote token addresses are available
         isServerEnabled &&
+            areSubscriptionsEnabled &&
             mainnetBaseTokenAddress !== '' &&
             mainnetQuoteTokenAddress !== '',
     );
@@ -1791,6 +1810,7 @@ export default function App() {
 
     useEffect(() => {
         if (candlesMessage) {
+            if (!isJsonString(candlesMessage.data)) return;
             const lastMessageData = JSON.parse(candlesMessage.data).data;
             if (lastMessageData && candleData) {
                 const newCandles: CandleData[] = [];
@@ -1861,31 +1881,49 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
+    function isJsonString(str: string) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     useEffect(() => {
-        if (lastUserPositionsMessage !== null) {
-            const lastMessageData = JSON.parse(
-                lastUserPositionsMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                IS_LOCAL_ENV &&
-                    console.debug('new user position message received');
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            searchableTokens,
-                            crocEnv,
-                            chainData.chainId,
-                            lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByUser(updatedPositions));
-                });
+        try {
+            if (lastUserPositionsMessage !== null) {
+                console.log({ lastUserPositionsMessage });
+                if (!isJsonString(lastUserPositionsMessage.data)) return;
+                const lastMessageData = JSON.parse(
+                    lastUserPositionsMessage.data,
+                ).data;
+                if (lastMessageData && crocEnv) {
+                    IS_LOCAL_ENV &&
+                        console.debug('new user position message received');
+                    Promise.all(
+                        lastMessageData.map((position: PositionIF) => {
+                            return getPositionData(
+                                position,
+                                searchableTokens,
+                                crocEnv,
+                                chainData.chainId,
+                                lastBlockNumber,
+                            );
+                        }),
+                    ).then((updatedPositions) => {
+                        dispatch(addPositionsByUser(updatedPositions));
+                    });
+                }
             }
+        } catch (error) {
+            console.error(error);
         }
     }, [lastUserPositionsMessage]);
 
@@ -1919,12 +1957,16 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
             IS_LOCAL_ENV && console.debug('received new user recent change');
+            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserRecentChangesMessage.data,
             ).data;
@@ -1974,11 +2016,15 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
+            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserLimitOrderChangesMessage.data,
             ).data;
@@ -3093,13 +3139,19 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        const interval = setInterval(() => {
-            getStatus().then((isChatUp) => {
-                setIsChatEnabled(isChatUp);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, [isChatEnabled]);
+        if (
+            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+                : true
+        ) {
+            const interval = setInterval(() => {
+                getStatus().then((isChatUp) => {
+                    setIsChatEnabled(isChatUp);
+                });
+            }, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
@@ -3387,6 +3439,7 @@ export default function App() {
 
     const chatProps = {
         isChatEnabled: isChatEnabled,
+        areSubscriptionsEnabled: areSubscriptionsEnabled,
         isChatOpen: true,
         onClose: () => {
             console.error('Function not implemented.');
@@ -3633,6 +3686,7 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
+                            areSubscriptionsEnabled={areSubscriptionsEnabled}
                         />
                     )}
             </div>
