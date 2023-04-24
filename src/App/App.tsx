@@ -31,7 +31,8 @@ import {
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    setLastBlockPoll,
+    addChangesByPool,
+    addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
@@ -99,6 +100,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
+import { memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -126,7 +128,10 @@ import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
-import { getPositionData } from './functions/getPositionData';
+import {
+    getPositionData,
+    memoizePositionUpdate,
+} from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
@@ -179,6 +184,8 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedLiquidityQuery = memoizePoolLiquidity();
+const cachedPositionUpdateQuery = memoizePositionUpdate();
+const cachedPoolStatsFetch = memoizePoolStats();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -192,6 +199,8 @@ const startMoralis = async () => {
         // ...and any other configuration
     });
 };
+
+const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
 startMoralis();
 
@@ -576,7 +585,7 @@ export default function App() {
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
-    function pollBlockNum(): Promise<void> {
+    async function pollBlockNum(): Promise<void> {
         return fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
@@ -604,18 +613,20 @@ export default function App() {
 
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
-        // Don't use polling, useWebSocket (below)
-        if (chainData.wsUrl) {
-            return;
-        }
+        (async () => {
+            await pollBlockNum();
+            // Don't use polling, useWebSocket (below)
+            if (chainData.wsUrl) {
+                return;
+            }
+            // Grab block right away, then poll on periotic basis
 
-        // Grab block right away, then poll on periotic basis
-        pollBlockNum();
-        const timer = setInterval(pollBlockNum, BLOCK_NUM_POLL_MS);
-        dispatch(setLastBlockPoll(timer));
+            const interval = setInterval(async () => {
+                await pollBlockNum();
+            }, BLOCK_NUM_POLL_MS);
+            return () => clearInterval(interval);
+        })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
-
-    pollBlockNum();
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -780,6 +791,7 @@ export default function App() {
     );
     // check for token balances every eight blocks
 
+    // Fetch liquidity every minute
     const fetchLiquidity = async () => {
         if (
             !baseTokenAddress ||
@@ -793,7 +805,7 @@ export default function App() {
             baseTokenAddress.toLowerCase(),
             quoteTokenAddress.toLowerCase(),
             chainData.poolIndex,
-            lastBlockNumber,
+            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
         )
             .then((jsonData) => {
                 dispatch(setLiquidity(jsonData));
@@ -801,9 +813,13 @@ export default function App() {
             .catch(console.error);
     };
 
+    // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
-        fetchLiquidity();
-    }, [lastBlockNumber]);
+        const id = setInterval(() => {
+            fetchLiquidity();
+        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        return () => clearInterval(id);
+    }, []);
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
@@ -984,7 +1000,6 @@ export default function App() {
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
             dispatch(setAdvancedMode(false));
-            IS_LOCAL_ENV && console.debug('resetting to 10');
             setSimpleRangeWidth(10);
             const sliderInput = document.getElementById(
                 'input-slider-range',
@@ -1319,6 +1334,12 @@ export default function App() {
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
                                 dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolTxData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+                                dispatch(
                                     setChangesByPool({
                                         dataReceived: true,
                                         changes: poolChangesJsonData,
@@ -1526,6 +1547,7 @@ export default function App() {
         if (lastPoolLiqChangeMessage !== null) {
             IS_LOCAL_ENV &&
                 console.debug('new pool liq change message received');
+            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastPoolLiqChangeMessage.data,
             ).data;
@@ -1546,6 +1568,82 @@ export default function App() {
             }
         }
     }, [lastPoolLiqChangeMessage]);
+
+    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                quote: quoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
+                ensResolution: 'true',
+                annotate: 'true',
+                addValue: 'true',
+            }),
+        [
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData.chainId,
+            chainData.poolIndex,
+        ],
+    );
+
+    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
+        poolRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => {
+                IS_LOCAL_ENV &&
+                    console.debug('pool recent changes subscription opened');
+            },
+            onClose: (event: CloseEvent) => {
+                IS_LOCAL_ENV && console.debug({ event });
+            },
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: TransactionIF) => {
+                        return getTransactionData(tx, searchableTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByPool(updatedTransactions));
+                    })
+                    .catch(console.error);
+            }
+        }
+    }, [lastPoolChangeMessage]);
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            if (!isJsonString(lastPoolChangeMessage.data)) return;
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            if (lastMessageData) {
+                IS_LOCAL_ENV && console.debug({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, searchableTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(
+                        addLimitOrderChangesByPool(updatedLimitOrderStates),
+                    );
+                });
+            }
+        }
+    }, [lastPoolChangeMessage]);
 
     const candleSubscriptionEndpoint = useMemo(
         () =>
@@ -1766,28 +1864,43 @@ export default function App() {
         isServerEnabled && account !== null && account !== undefined,
     );
 
+    function isJsonString(str: string) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     useEffect(() => {
-        if (lastUserPositionsMessage !== null) {
-            const lastMessageData = JSON.parse(
-                lastUserPositionsMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                IS_LOCAL_ENV &&
-                    console.debug('new user position message received');
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            searchableTokens,
-                            crocEnv,
-                            chainData.chainId,
-                            lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByUser(updatedPositions));
-                });
+        try {
+            if (lastUserPositionsMessage !== null) {
+                console.log({ lastUserPositionsMessage });
+                if (!isJsonString(lastUserPositionsMessage.data)) return;
+                const lastMessageData = JSON.parse(
+                    lastUserPositionsMessage.data,
+                ).data;
+                if (lastMessageData && crocEnv) {
+                    IS_LOCAL_ENV &&
+                        console.debug('new user position message received');
+                    Promise.all(
+                        lastMessageData.map((position: PositionIF) => {
+                            return getPositionData(
+                                position,
+                                searchableTokens,
+                                crocEnv,
+                                chainData.chainId,
+                                lastBlockNumber,
+                            );
+                        }),
+                    ).then((updatedPositions) => {
+                        dispatch(addPositionsByUser(updatedPositions));
+                    });
+                }
             }
+        } catch (error) {
+            console.error(error);
         }
     }, [lastUserPositionsMessage]);
 
@@ -1827,6 +1940,7 @@ export default function App() {
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
             IS_LOCAL_ENV && console.debug('received new user recent change');
+            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserRecentChangesMessage.data,
             ).data;
@@ -1881,6 +1995,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
+            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
             const lastMessageData = JSON.parse(
                 lastUserLimitOrderChangesMessage.data,
             ).data;
@@ -3112,6 +3227,7 @@ export default function App() {
         chartSettings,
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         pool,
         isUserLoggedIn,
         crocEnv,
@@ -3198,6 +3314,7 @@ export default function App() {
         ethMainnetUsdPrice,
         searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         crocEnv: crocEnv,
         addRecentToken,
         getRecentTokens,
@@ -3329,6 +3446,7 @@ export default function App() {
                                     chainId={chainData.chainId}
                                     isServerEnabled={isServerEnabled}
                                     topPools={topPools}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
                                 />
                             }
                         />

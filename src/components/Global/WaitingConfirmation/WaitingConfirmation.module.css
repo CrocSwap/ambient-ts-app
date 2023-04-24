@@ -8,7 +8,7 @@
     /* padding: 20px */
 }
 .wallet_confirm h2,
-.wallet_confirm p {
+.wallet_confirm div {
     padding: 10px 0;
 }
 
@@ -17,7 +17,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
-.wallet_confirm p {
+.wallet_confirm div {
     color: var(--text-grey-light);
     font-size: var(--body-size);
     line-height: var(--body-lh);

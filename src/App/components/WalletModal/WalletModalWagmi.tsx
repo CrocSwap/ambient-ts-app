@@ -58,7 +58,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             }, 500);
             const timer2 = setTimeout(() => {
                 setDelayForHelpTextElapsed(true);
-            }, 12000);
+            }, 7000);
             return () => {
                 clearTimeout(timer1);
                 clearTimeout(timer2);
@@ -155,9 +155,16 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div className={styles.metamask_pending_container}>
             <WaitingConfirmation
                 content={
-                    !delayForHelpTextElapsed
-                        ? ''
-                        : 'Please check your wallet for notifications'
+                    !delayForHelpTextElapsed ? (
+                        ''
+                    ) : (
+                        <div>
+                            Please check your wallet for notifications.
+                            <br />
+                            <br />
+                            You may need to refresh the page and try again.
+                        </div>
+                    )
                 }
             />
         </div>

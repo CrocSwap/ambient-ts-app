@@ -41,11 +41,6 @@ interface propsIF {
 export default function ClaimOrder(props: propsIF) {
     const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
     const {
-        posLiqBaseDecimalCorrected,
-        posLiqQuoteDecimalCorrected,
-        bidTick,
-        askTick,
-        positionLiqTotalUSD,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
@@ -304,17 +299,12 @@ export default function ClaimOrder(props: propsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
-                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
                     claimPercentage={claimPercentage}
                     usdValue={usdValue}
-                    bidTick={bidTick}
-                    askTick={askTick}
                     baseDisplayFrontend={baseDisplayFrontend}
                     quoteDisplayFrontend={quoteDisplayFrontend}
                     baseDisplay={baseDisplay}
                     quoteDisplay={quoteDisplay}
-                    positionLiqTotalUSD={positionLiqTotalUSD}
                     positionLiquidity={limitOrder.positionLiq.toString()}
                     baseClaimString={'2344'}
                     quoteClaimString={'4543'}

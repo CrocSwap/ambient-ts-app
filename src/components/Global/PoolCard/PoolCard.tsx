@@ -9,16 +9,11 @@ import {
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    get24hChange,
-    memoizePoolStats,
-} from '../../../App/functions/getPoolStats';
+import { PoolStatsFn, get24hChange } from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
-
-const cachedPoolStatsFetch = memoizePoolStats();
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -29,6 +24,7 @@ interface propsIF {
     lastBlockNumber: number;
     chainId: string;
     pool: topPoolIF;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolCard(props: propsIF) {
@@ -40,6 +36,7 @@ export default function PoolCard(props: propsIF) {
         chainId,
         cachedQuerySpotPrice,
         pool,
+        cachedPoolStatsFetch,
     } = props;
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
@@ -160,7 +157,7 @@ export default function PoolCard(props: propsIF) {
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
-                    Math.floor(lastBlockNumber / 4),
+                    Math.floor(Date.now() / 60000),
                 );
 
                 const tvlResult = poolStats?.tvl;
@@ -223,6 +220,7 @@ export default function PoolCard(props: propsIF) {
 
     useEffect(() => {
         if (isServerEnabled && !isUserIdle) fetchPoolStats();
+        // NOTE: we assume that a block occurs more frequently than once a minute
     }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
 
     const tokenImagesDisplay = (

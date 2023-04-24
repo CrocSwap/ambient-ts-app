@@ -41,6 +41,7 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -103,11 +104,13 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     candleTime: candleTimeIF;
+    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 export default function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         isUserLoggedIn,
         isTokenABase,
         crocEnv,
@@ -393,6 +396,7 @@ export default function TradeTabs2(props: propsIF) {
     // Props for <Ranges/> React Element
     const rangesProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
         crocEnv: crocEnv,
         chainData: chainData,

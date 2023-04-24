@@ -39,6 +39,7 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
+import { PositionUpdateFn } from '../../App/functions/getPositionData';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -59,6 +60,7 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
+    cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
     ensName: string;
     lastBlockNumber: number;
@@ -107,6 +109,7 @@ export default function Portfolio(props: propsIF) {
     const {
         searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         crocEnv,
         addRecentToken,
         getRecentTokens,
@@ -556,6 +559,7 @@ export default function Portfolio(props: propsIF) {
         tokenList: searchableTokens,
         searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         crocEnv: crocEnv,
         isTokenABase: isTokenABase,
         provider: provider,

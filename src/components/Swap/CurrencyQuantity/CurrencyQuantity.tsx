@@ -84,6 +84,33 @@ export default function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
+    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const targetValue = event.target.value.replace(',', '.');
+        //  I know this seems a bit much here so I will leave a little explanation
+        //  \d*\.?\d* matches any number with an optional decimal point in the middle
+        // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
+        // can be tested here => https://regex101.com/
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(targetValue) > thisToken.decimals;
+
+        const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
+            targetValue,
+        );
+        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+            let valueWithDecimal = targetValue;
+            if (valueWithDecimal.includes(',')) {
+                const parts = valueWithDecimal.split(',');
+                const lastPart = parts.pop();
+                const firstPart = parts.join('');
+                valueWithDecimal = `${firstPart}.${lastPart}`;
+            }
+            handleEventLocal({
+                ...event,
+                target: { ...event.target, value: valueWithDecimal },
+            });
+        }
+    };
+
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
         <div className={styles.token_amount}>
@@ -96,16 +123,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 aria-live={ariaLive}
                 aria-label={`Enter ${fieldId} amount`}
                 onChange={(event) => {
-                    const targetValue = event.target.value.replaceAll(',', '');
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(targetValue) > thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (targetValue === '' || event.target.validity.valid);
-
-                    if (isValid) {
-                        handleEventLocal(event);
-                    }
+                    handleOnChange(event);
                 }}
                 value={displayValue}
                 type='text'
@@ -114,7 +132,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern='^[0-9]*\.?[0-9]*$'
                 disabled={disable}
             />
         </div>
