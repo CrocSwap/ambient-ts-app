@@ -43,7 +43,6 @@ interface propsIF {
     rangeDetailsProps: any;
     position: PositionIF;
     posHash: string;
-    showSidebar: boolean;
     isOnPortfolioPage: boolean;
     isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;

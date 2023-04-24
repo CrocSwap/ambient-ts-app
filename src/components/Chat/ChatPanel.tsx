@@ -379,7 +379,11 @@ export default function ChatPanel(props: propsIF) {
                             style={{ marginTop: '-18px', cursor: 'pointer' }}
                             onClick={() => scrollToBottomButton()}
                         >
-                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <BsChatLeftFill
+                                size={25}
+                                color='#7371fc'
+                                style={{ cursor: 'pointer' }}
+                            />
                             <span className={styles.text}>{notification}</span>
                         </span>
                         <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
@@ -390,13 +394,18 @@ export default function ChatPanel(props: propsIF) {
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
+                                style={{ cursor: 'pointer' }}
                             />
                         </span>
                     </div>
                 ) : (
                     <div className={styles.chat_notification}>
                         <span onClick={() => scrollToBottomButton()}>
-                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <BsChatLeftFill
+                                size={25}
+                                color='#7371fc'
+                                style={{ cursor: 'pointer' }}
+                            />
                             <span className={styles.text}>{notification}</span>
                         </span>
                         <span>
@@ -407,6 +416,7 @@ export default function ChatPanel(props: propsIF) {
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
+                                style={{ cursor: 'pointer' }}
                             />
                         </span>
                     </div>
@@ -423,6 +433,7 @@ export default function ChatPanel(props: propsIF) {
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                 ) : (
@@ -434,6 +445,7 @@ export default function ChatPanel(props: propsIF) {
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                 )

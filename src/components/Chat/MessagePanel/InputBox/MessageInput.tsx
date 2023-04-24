@@ -199,14 +199,21 @@ export default function MessageInput(
                 />
 
                 <BsEmojiSmileFill
-                    className={styles.svgButton}
-                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                    className={
+                        isUserLoggedIn
+                            ? styles.svgButton
+                            : styles.not_LoggedIn_svgButton
+                    }
                     onClick={handleEmojiPickerHideShow}
                 />
+                {}
                 <div
-                    className={styles.send_message_button}
+                    className={
+                        isUserLoggedIn
+                            ? styles.send_message_button
+                            : styles.not_LoggedIn_send_message_button
+                    }
                     onClick={() => handleSendMessageButton()}
-                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
                 >
                     <svg
                         width='16'
@@ -221,7 +228,11 @@ export default function MessageInput(
                             strokeOpacity='0.25'
                             strokeLinecap='round'
                             strokeLinejoin='round'
-                            className={styles.svgButton}
+                            className={
+                                isUserLoggedIn
+                                    ? styles.svgButton
+                                    : styles.not_LoggedIn_svgButton
+                            }
                             id='send message button'
                         />
                         <title>Send Message</title>
@@ -236,11 +247,13 @@ export default function MessageInput(
                             title='Close Emoji Picker'
                             onClick={() => setShowEmojiPicker(false)}
                             id='close emoji panel button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                     <span
                         className={styles.emoji_close_button}
                         onClick={() => setIsInfoPressed(!isInfoPressed)}
+                        style={{ cursor: 'pointer' }}
                     >
                         <RiInformationLine title='Info' id='info' />
                     </span>
