@@ -3318,7 +3318,7 @@ export default function Chart(props: propsIF) {
 
             d3.select(d3Yaxis.current).on('draw', function () {
                 if (yAxis) {
-                    setCanvasResolution(canvas);
+                    setCanvasResolution(d3YaxisCanvas);
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
