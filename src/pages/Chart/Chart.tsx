@@ -2694,6 +2694,9 @@ export default function Chart(props: propsIF) {
             const dragRange = d3
                 .drag()
                 .on('start', (event) => {
+                    setIsCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
+
                     d3.select(d3CanvasRangeLine.current).style(
                         'cursor',
                         'none',
@@ -2724,6 +2727,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
+                    setIsCrosshairActive('none');
                     let dragedValue =
                         scaleData?.yScale.invert(
                             event.sourceEvent.clientY - rectRange.top,
@@ -3084,19 +3088,22 @@ export default function Chart(props: propsIF) {
                     setghostLineValuesRange([]);
 
                     setIsCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
                 });
 
             let oldLimitValue: number | undefined = undefined;
             const dragLimit = d3
                 .drag()
                 .on('start', () => {
+                    setIsMouseMoveCrosshair(false);
+                    setIsCrosshairActive('none');
+
                     d3.select(d3CanvasLimitLine.current).style(
                         'cursor',
                         'none',
                     );
 
                     oldLimitValue = limit[0].value;
-                    setIsCrosshairActive('none');
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
@@ -3250,6 +3257,7 @@ export default function Chart(props: propsIF) {
                         'default',
                     );
 
+                    setIsMouseMoveCrosshair(false);
                     setIsCrosshairActive('none');
                 });
 
@@ -6215,7 +6223,9 @@ export default function Chart(props: propsIF) {
     const setCrossHairLocation = (event: any, showHr = true) => {
         if (snap(parsedChartData?.chartData, event)[0] !== undefined) {
             crosshairData[0] = snap(parsedChartData?.chartData, event)[0];
-            setIsMouseMoveCrosshair(showHr);
+            if (isCrosshairActive !== 'none') {
+                setIsMouseMoveCrosshair(showHr);
+            }
             setCrosshairData([
                 {
                     x: crosshairData[0].x,
@@ -6507,6 +6517,7 @@ export default function Chart(props: propsIF) {
             liqMode,
             liquidityScale,
             liquidityDepthScale,
+            isCrosshairActive,
         ],
     );
 
