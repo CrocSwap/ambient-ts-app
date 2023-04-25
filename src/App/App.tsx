@@ -1892,14 +1892,13 @@ export default function App() {
     useEffect(() => {
         try {
             if (lastUserPositionsMessage !== null) {
-                console.log({ lastUserPositionsMessage });
                 if (!isJsonString(lastUserPositionsMessage.data)) return;
+
                 const lastMessageData = JSON.parse(
                     lastUserPositionsMessage.data,
                 ).data;
+
                 if (lastMessageData && crocEnv) {
-                    IS_LOCAL_ENV &&
-                        console.debug('new user position message received');
                     Promise.all(
                         lastMessageData.map((position: PositionIF) => {
                             return getPositionData(
