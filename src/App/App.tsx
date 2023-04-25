@@ -597,7 +597,15 @@ export default function App() {
     }, [tokenListsReceived]);
 
     async function pollBlockNum(): Promise<void> {
-        return fetch(chainData.nodeUrl, {
+        // if default RPC is Infura, use key from env variable
+        const nodeUrl =
+            chainData.nodeUrl.toLowerCase().includes('infura') &&
+            process.env.REACT_APP_INFURA_KEY
+                ? chainData.nodeUrl.slice(0, -32) +
+                  process.env.REACT_APP_INFURA_KEY
+                : chainData.nodeUrl;
+
+        return fetch(nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -1888,14 +1896,13 @@ export default function App() {
     useEffect(() => {
         try {
             if (lastUserPositionsMessage !== null) {
-                console.log({ lastUserPositionsMessage });
                 if (!isJsonString(lastUserPositionsMessage.data)) return;
+
                 const lastMessageData = JSON.parse(
                     lastUserPositionsMessage.data,
                 ).data;
+
                 if (lastMessageData && crocEnv) {
-                    IS_LOCAL_ENV &&
-                        console.debug('new user position message received');
                     Promise.all(
                         lastMessageData.map((position: PositionIF) => {
                             return getPositionData(
