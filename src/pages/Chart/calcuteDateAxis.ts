@@ -72,6 +72,12 @@ const filteredMinute = (
     );
 };
 
+function isLastOrSecondDayOfMonth(date: Date) {
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
+    return nextDay.getMonth() !== date.getMonth() || date.getDate() === 2;
+}
+
 const correctStyleForData = (startDate: Date, endDate: Date, data: any) => {
     if (!filterYears(startDate, endDate, data)) {
         data = data.map((item: any) => {
@@ -178,7 +184,8 @@ export const getHourAxisTicks = (
                 if (
                     tempArray.find(
                         (item: any) => item.date.getTime() === res.getTime(),
-                    ) === undefined
+                    ) === undefined &&
+                    !isLastOrSecondDayOfMonth(res)
                 ) {
                     tempArray.push({
                         date: res,
@@ -192,7 +199,8 @@ export const getHourAxisTicks = (
                 if (
                     tempArray.find(
                         (item: any) => item.date.getTime() === res.getTime(),
-                    ) === undefined
+                    ) === undefined &&
+                    !(hour === 4 && isLastOrSecondDayOfMonth(res))
                 ) {
                     tempArray.push({
                         date: res,
@@ -204,7 +212,8 @@ export const getHourAxisTicks = (
             if (
                 tempArray.find(
                     (item: any) => item.date.getTime() === element.getTime(),
-                ) === undefined
+                ) === undefined &&
+                !(hour === 4 && isLastOrSecondDayOfMonth(element))
             ) {
                 tempArray.push({ date: element, style: false });
             }
@@ -293,19 +302,21 @@ export const getOneDayAxisTicks = (
                     tempArray.find(
                         (item: any) =>
                             item.date.getTime() === tempData.getTime(),
-                    ) === undefined
+                    ) === undefined &&
+                    !isLastOrSecondDayOfMonth(tempData)
                 ) {
                     tempArray.push({ date: tempData, style: false });
                 }
             }
         }
 
-        if (bandwidth <= 10) {
+        if (bandwidth >= 5 && bandwidth <= 10) {
             const tempData = new Date(element.setDate(15));
             if (
                 tempArray.find(
                     (item: any) => item.date.getTime() === tempData.getTime(),
-                ) === undefined
+                ) === undefined &&
+                !isLastOrSecondDayOfMonth(tempData)
             ) {
                 tempArray.push({ date: tempData, style: false });
             }
