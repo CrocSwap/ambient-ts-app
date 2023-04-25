@@ -597,9 +597,13 @@ export default function App() {
     }, [tokenListsReceived]);
 
     async function pollBlockNum(): Promise<void> {
-        const nodeUrl = process.env.REACT_APP_INFURA_KEY
-            ? chainData.nodeUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
-            : chainData.nodeUrl;
+        // if default RPC is Infura, use key from env variable
+        const nodeUrl =
+            chainData.nodeUrl.toLowerCase().includes('infura') &&
+            process.env.REACT_APP_INFURA_KEY
+                ? chainData.nodeUrl.slice(0, -32) +
+                  process.env.REACT_APP_INFURA_KEY
+                : chainData.nodeUrl;
 
         return fetch(nodeUrl, {
             method: 'POST',
