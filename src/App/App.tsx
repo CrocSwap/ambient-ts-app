@@ -597,7 +597,11 @@ export default function App() {
     }, [tokenListsReceived]);
 
     async function pollBlockNum(): Promise<void> {
-        return fetch(chainData.nodeUrl, {
+        const nodeUrl = process.env.REACT_APP_INFURA_KEY
+            ? chainData.nodeUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : chainData.nodeUrl;
+
+        return fetch(nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
