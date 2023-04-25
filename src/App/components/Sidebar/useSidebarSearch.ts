@@ -7,6 +7,15 @@ import {
 } from '../../../utils/interfaces/exports';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 
+export interface sidebarSearchIF {
+    setInput: Dispatch<SetStateAction<string>>;
+    isInputValid: boolean;
+    pools: TempPoolIF[];
+    positions: PositionIF[];
+    txs: TransactionIF[];
+    limits: LimitOrderIF[];
+}
+
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
     positionList: PositionIF[],
@@ -14,14 +23,7 @@ export const useSidebarSearch = (
     limitOrderList: LimitOrderIF[],
     verifyToken: (addr: string, chn: string) => boolean,
     ackTokens: ackTokensMethodsIF,
-): [
-    Dispatch<SetStateAction<string>>,
-    boolean,
-    TempPoolIF[],
-    PositionIF[],
-    TransactionIF[],
-    LimitOrderIF[],
-] => {
+): sidebarSearchIF => {
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -291,12 +293,12 @@ export const useSidebarSearch = (
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
 
-    return [
-        setRawInput,
-        !!searchAs,
-        outputPools,
-        outputPositions,
-        outputTxs,
-        outputLimits,
-    ];
+    return {
+        setInput: setRawInput,
+        isInputValid: !!searchAs,
+        pools: outputPools,
+        positions: outputPositions,
+        txs: outputTxs,
+        limits: outputLimits,
+    };
 };
