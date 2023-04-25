@@ -19,6 +19,7 @@ export default function GateWallet(props: PropsIF) {
                         href={termUrls.openSource}
                         target='_blank'
                         rel='noreferrer'
+                        aria-label='terms of service'
                     >
                         the front end
                     </a>{' '}
@@ -26,14 +27,24 @@ export default function GateWallet(props: PropsIF) {
                 </p>
                 <p>
                     By clicking Agree, you accept the{' '}
-                    <a href={termUrls.tos} target='_blank' rel='noreferrer'>
+                    <a
+                        href={termUrls.tos}
+                        target='_blank'
+                        rel='noreferrer'
+                        aria-label='terms of service'
+                    >
                         Terms of Service
                     </a>
                     .
                 </p>
                 <p>
                     Site Privacy Policy can be{' '}
-                    <a href={termUrls.privacy} target='_blank' rel='noreferrer'>
+                    <a
+                        href={termUrls.privacy}
+                        target='_blank'
+                        rel='noreferrer'
+                        aria-label='site policy'
+                    >
                         found here
                     </a>
                     .
