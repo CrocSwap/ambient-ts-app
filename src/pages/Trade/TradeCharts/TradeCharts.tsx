@@ -365,7 +365,14 @@ export default function TradeCharts(props: propsIF) {
         <div className={styles.graph_settings_container}>
             <DefaultTooltip
                 interactive
-                title={'Toggle Full Screen Chart'}
+                title={
+                    <div
+                        className={styles.save_image_content}
+                        onClick={() => setFullScreenChart(!fullScreenChart)}
+                    >
+                        Toggle Full Screen Chart
+                    </div>
+                }
                 enterDelay={500}
             >
                 <button
