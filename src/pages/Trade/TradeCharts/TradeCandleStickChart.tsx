@@ -213,16 +213,6 @@ export default function TradeCandleStickChart(props: propsIF) {
         setIsCandleAdded(true);
     }, [sum(props.candleData)]);
 
-    // useEffect(() => {
-    //     if (parsedChartData === undefined) {
-    //         IS_LOCAL_ENV &&
-    //             console.debug(
-    //                 'parsing chart data because parsedChartData === undefined',
-    //             );
-    //         parseData();
-    //     }
-    // }, [parsedChartData === undefined]);
-
     // Parse price data
     const parseData = () => {
         IS_LOCAL_ENV && console.debug('parsing candle data');

@@ -3,7 +3,6 @@ import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     CandleData,
-    graphData,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
@@ -35,7 +34,6 @@ interface propsIF {
     portfolio?: boolean;
     tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
-    graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
     currentTxActiveInTransactions: string;
@@ -67,7 +65,6 @@ export default function Transactions(props: propsIF) {
         isShowAllEnabled,
         account,
         changesInSelectedCandle,
-        graphData,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -89,11 +86,12 @@ export default function Transactions(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const graphData = useAppSelector((state) => state?.graphData);
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     const changesByUser = graphData?.changesByUser?.changes;
     const changesByPool = graphData?.changesByPool?.changes;
     const dataLoadingStatus = graphData?.dataLoadingStatus;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase =
