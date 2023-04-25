@@ -668,6 +668,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastNewHeadMessage && lastNewHeadMessage.data) {
+            if (!isJsonString(lastNewHeadMessage.data)) return;
             const lastMessageData = JSON.parse(lastNewHeadMessage.data);
             if (lastMessageData) {
                 const lastBlockNumberHex =
@@ -718,7 +719,9 @@ export default function App() {
     const sessionReceipts = receiptData?.sessionReceipts;
 
     const lastReceipt =
-        sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
+        sessionReceipts.length > 0 && isJsonString(sessionReceipts[0])
+            ? JSON.parse(sessionReceipts[0])
+            : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
@@ -1411,15 +1414,20 @@ export default function App() {
 
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
-    let candleTimeLocal: number;
-    if (
-        location.pathname.startsWith('/trade/range') ||
-        location.pathname.startsWith('/trade/reposition')
-    ) {
-        candleTimeLocal = chartSettings.candleTime.range.time;
-    } else {
-        candleTimeLocal = chartSettings.candleTime.market.time;
-    }
+    const candleTimeLocal = useMemo(() => {
+        if (
+            location.pathname.startsWith('/trade/range') ||
+            location.pathname.startsWith('/trade/reposition')
+        ) {
+            return chartSettings.candleTime.range.time;
+        } else {
+            return chartSettings.candleTime.market.time;
+        }
+    }, [
+        chartSettings.candleTime.range.time,
+        chartSettings.candleTime.market.time,
+        location.pathname,
+    ]);
 
     useEffect(() => {
         setCandleData(undefined);
