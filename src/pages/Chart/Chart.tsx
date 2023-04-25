@@ -3463,10 +3463,10 @@ export default function Chart(props: propsIF) {
                     context,
                     yScale(market[0].value),
                     X - tickSize,
-                    lastCandle.close > lastCandle.open ? '#EAEFF2' : '#1d1d30',
-                    lastCandle.close > lastCandle.open ? 'black' : 'white',
+                    'white',
+                    'black',
                     formatAmountChartData(market[0].value, undefined),
-                    '#6c69fc',
+                    undefined,
                     yAxisCanvasWidth,
                 );
 
@@ -6252,6 +6252,7 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
+                    setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
                         _selectedDate,
