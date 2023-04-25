@@ -45,6 +45,7 @@ import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -79,9 +80,6 @@ interface propsIF {
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
-    positionsByUser: PositionIF[];
-    txsByUser: TransactionIF[];
-    limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
 }
@@ -111,18 +109,27 @@ export default function Sidebar(props: propsIF) {
         tokenPair,
         recentPools,
         isConnected,
-        positionsByUser,
         outsideControl,
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        txsByUser,
-        limitsByUser,
         ackTokens,
         topPools,
     } = props;
 
     const location = useLocation();
+
+    const positionsByUser = useAppSelector(
+        (state) => state.graphData,
+    ).positionsByUser.positions.filter((x) => x.chainId === chainId);
+
+    const txsByUser = useAppSelector(
+        (state) => state.graphData,
+    ).changesByUser.changes.filter((x) => x.chainId === chainId);
+
+    const limitsByUser = useAppSelector(
+        (state) => state.graphData,
+    ).limitOrdersByUser.limitOrders.filter((x) => x.chainId === chainId);
 
     const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);

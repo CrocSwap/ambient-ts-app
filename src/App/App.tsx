@@ -1236,19 +1236,12 @@ export default function App() {
                                     ),
                                 )
                                     .then((updatedPositions) => {
-                                        if (
-                                            sum(
-                                                graphData.positionsByUser
-                                                    .positions,
-                                            ) !== sum(updatedPositions)
-                                        ) {
-                                            dispatch(
-                                                setPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
-                                        }
+                                        dispatch(
+                                            setPositionsByPool({
+                                                dataReceived: true,
+                                                positions: updatedPositions,
+                                            }),
+                                        );
                                     })
                                     .catch(console.error);
                             }
@@ -1307,19 +1300,13 @@ export default function App() {
                                                 },
                                             )
                                             .slice(0, 10);
-                                        if (
-                                            sum(
-                                                graphData.leaderboardByPool
-                                                    .positions,
-                                            ) !== sum(top10Positions)
-                                        ) {
-                                            dispatch(
-                                                setLeaderboardByPool({
-                                                    dataReceived: true,
-                                                    positions: top10Positions,
-                                                }),
-                                            );
-                                        }
+
+                                        dispatch(
+                                            setLeaderboardByPool({
+                                                dataReceived: true,
+                                                positions: top10Positions,
+                                            }),
+                                        );
                                     })
                                     .catch(console.error);
                             }
@@ -2273,8 +2260,6 @@ export default function App() {
         recheckTokenBApproval,
     ]);
 
-    const graphData = useAppSelector((state) => state.graphData);
-
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
 
@@ -2322,17 +2307,12 @@ export default function App() {
                                     );
                                 }),
                             ).then((updatedPositions) => {
-                                if (
-                                    sum(graphData.positionsByUser.positions) !==
-                                    sum(updatedPositions)
-                                ) {
-                                    dispatch(
-                                        setPositionsByUser({
-                                            dataReceived: true,
-                                            positions: updatedPositions,
-                                        }),
-                                    );
-                                }
+                                dispatch(
+                                    setPositionsByUser({
+                                        dataReceived: true,
+                                        positions: updatedPositions,
+                                    }),
+                                );
                             });
                         }
                     })
@@ -2936,7 +2916,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
         dailyVol: dailyVol,
-        graphData: graphData,
         openGlobalModal: openGlobalModal,
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
@@ -3027,16 +3006,9 @@ export default function App() {
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
+
         // Filter positions from graph cache for this specific chain
-        positionsByUser: graphData.positionsByUser.positions.filter(
-            (x) => x.chainId === chainData.chainId,
-        ),
-        txsByUser: graphData.changesByUser.changes.filter(
-            (x) => x.chainId === chainData.chainId,
-        ),
-        limitsByUser: graphData.limitOrdersByUser.limitOrders.filter(
-            (x) => x.chainId === chainData.chainId,
-        ),
+
         ackTokens: ackTokens,
         topPools: topPools,
     };

@@ -115,7 +115,6 @@ interface propsIF {
     dailyVol: number | undefined;
     openGlobalModal: (content: ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
-    graphData: graphData;
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -189,7 +188,6 @@ export default function Range(props: propsIF) {
         dailyVol,
         openGlobalModal,
         poolExists,
-        graphData,
         isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
@@ -248,8 +246,10 @@ export default function Range(props: propsIF) {
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
+    const userPositions = useAppSelector(
+        (state) => state.graphData,
+    ).positionsByUser.positions.filter((x) => x.chainId === chainData.chainId);
 
-    const userPositions = graphData.positionsByUser.positions;
     const [isAdd, setIsAdd] = useState<boolean>(false);
 
     const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
