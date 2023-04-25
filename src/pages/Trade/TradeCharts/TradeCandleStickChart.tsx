@@ -124,6 +124,7 @@ export interface ChartUtils {
     feeChartData: FeeChartData[];
     volumeChartData: VolumeChartData[];
     poolAdressComb: string;
+    lastCrDate: Date;
 }
 
 type chartItemStates = {
@@ -299,6 +300,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                 poolAdressComb: props.candleData?.pool.baseAddress
                     ? props.candleData?.pool.baseAddress
                     : '' + props.candleData?.pool.quoteAddress,
+                lastCrDate: new Date(1682341200 * 1000),
             };
 
             setParsedChartData(() => {

@@ -263,6 +263,7 @@ export default function Chart(props: propsIF) {
     const d3CanvasBand = useRef<HTMLInputElement | null>(null);
     const d3CanvasCrHorizontal = useRef<HTMLInputElement | null>(null);
     const d3CanvasCrVertical = useRef<HTMLInputElement | null>(null);
+    const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasRangeLine = useRef<HTMLInputElement | null>(null);
@@ -397,10 +398,12 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [isCrosshairActive, setIsCrosshairActive] = useState<string>('chart');
+    const [isCrDataIndActive, setIsCrDataIndActive] = useState<boolean>(false);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
+    const [crDataIndicator, setCrDataIndicator] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -416,6 +419,8 @@ export default function Chart(props: propsIF) {
     const [limitLine, setLimitLine] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [triangle, setTriangle] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lastCrData, setLastCrData] = useState<any>();
 
     // Line Joins
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3606,6 +3611,9 @@ export default function Chart(props: propsIF) {
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
+
+        const LastCrDate = xScale(parsedChartData?.lastCrDate);
+
         getXAxisTick().then((res) => {
             const _res = res.map((item: any) => item.date);
 
@@ -3649,6 +3657,16 @@ export default function Chart(props: propsIF) {
                     ) {
                         context.filter = ' blur(7px)';
                     }
+
+                    if (
+                        isMouseMoveCrosshair &&
+                        xScale(d) > LastCrDate - _width / 2 &&
+                        xScale(d) < LastCrDate + _width / 2 &&
+                        d !== new Date(1682341200 * 1000)
+                    ) {
+                        context.filter = ' blur(7px)';
+                    }
+
                     if (
                         res.find((item: any) => {
                             return item.date?.getTime() === d?.getTime();
@@ -3690,6 +3708,8 @@ export default function Chart(props: propsIF) {
                     Y + tickSize,
                 );
             }
+
+            context.fillText('🐊', LastCrDate, Y + tickSize);
 
             context.restore();
         });
@@ -3783,6 +3803,25 @@ export default function Chart(props: propsIF) {
                     context.strokeStyle = 'rgba(235, 235, 255)';
                     context.fillStyle = 'rgba(235, 235, 255)';
                 });
+
+            const lastCrData = d3fc
+                .seriesCanvasPoint()
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
+                .crossValue((d: any) => {
+                    return new Date(d.time * 1000);
+                })
+                .mainValue(scaleData?.yScale.domain()[0])
+                .size(150)
+                .type(d3.symbolCircle)
+                .decorate((context: any) => {
+                    context.strokeStyle = 'rgba(235, 235, 255)';
+                    context.fillStyle = 'rgba(235, 235, 255)';
+                });
+
+            setLastCrData(() => {
+                return lastCrData;
+            });
 
             setTriangle(() => {
                 return triangle;
@@ -4496,6 +4535,25 @@ export default function Chart(props: propsIF) {
             setCrosshairVertical(() => {
                 return crosshairVertical;
             });
+
+            const crDataIndicator = d3fc
+                .annotationCanvasLine()
+                .orient('vertical')
+                .value((d: any) => d)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
+                .label('');
+
+            crDataIndicator.decorate((context: any) => {
+                context.visibility = 'hidden';
+                context.strokeStyle = '#E480FF';
+                context.pointerEvents = 'none';
+                context.lineWidth = 0.5;
+            });
+
+            setCrDataIndicator(() => {
+                return crDataIndicator;
+            });
         }
     }, [scaleData]);
 
@@ -4629,6 +4687,28 @@ export default function Chart(props: propsIF) {
                 });
         }
     }, [crosshairData, crosshairVertical, isCrosshairActive]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasCrIndicator.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+        if (crDataIndicator) {
+            d3.select(d3CanvasCrIndicator.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    ctx.setLineDash([0.6, 0.6]);
+
+                    crDataIndicator([parsedChartData?.lastCrDate]);
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([0.6, 0.6]);
+                    crDataIndicator.context(ctx);
+                });
+        }
+    }, [crDataIndicator]);
 
     useEffect(() => {
         const canvas = d3
@@ -4967,6 +5047,13 @@ export default function Chart(props: propsIF) {
         if (d3CanvasCrVertical) {
             const container = d3
                 .select(d3CanvasCrVertical.current)
+                .node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (d3CanvasCrIndicator) {
+            const container = d3
+                .select(d3CanvasCrIndicator.current)
                 .node() as any;
             if (container) container.requestRedraw();
         }
@@ -6245,6 +6332,15 @@ export default function Chart(props: propsIF) {
         );
     }, [isCrosshairActive]);
 
+    useEffect(() => {
+        if (crDataIndicator) {
+            d3.select(d3CanvasCrIndicator.current).style(
+                'visibility',
+                isCrDataIndActive ? 'visible' : 'hidden',
+            );
+        }
+    }, [isCrDataIndActive, crDataIndicator]);
+
     // Draw Chart
     const drawChart = useCallback(
         (chartData: any, scaleData: any, zoomUtils: any, selectedDate: any) => {
@@ -6405,11 +6501,35 @@ export default function Chart(props: propsIF) {
                     mouseLeaveCanvas();
                 });
 
-                d3.select(d3Xaxis.current).on('mouseover', (event: any) => {
+                d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
                     d3.select(event.currentTarget).style(
                         'cursor',
                         'col-resize',
                     );
+
+                    if (
+                        parsedChartData &&
+                        scaleData &&
+                        scaleData.xScale(
+                            scaleData.xScale.invert(event.layerX),
+                        ) >
+                            scaleData.xScale(parsedChartData.lastCrDate) - 15 &&
+                        scaleData.xScale(
+                            scaleData.xScale.invert(event.layerX),
+                        ) <
+                            scaleData.xScale(parsedChartData.lastCrDate) + 15 &&
+                        scaleData.xScale.invert(event.layerX) !==
+                            parsedChartData.lastCrDate
+                    ) {
+                        d3.select(event.currentTarget).style(
+                            'cursor',
+                            'pointer',
+                        );
+
+                        setIsCrDataIndActive(true);
+                    } else {
+                        setIsCrDataIndActive(false);
+                    }
                     setIsCrosshairActive('none');
                 });
 
@@ -6459,6 +6579,8 @@ export default function Chart(props: propsIF) {
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
 
+                    setIsCrDataIndActive(false);
+
                     render();
                 };
 
@@ -6469,6 +6591,9 @@ export default function Chart(props: propsIF) {
                     mouseLeaveCanvas();
                 });
                 d3.select(d3CanvasRangeLine.current).on('mouseleave', () => {
+                    mouseLeaveCanvas();
+                });
+                d3.select(d3Xaxis.current).on('mouseleave', () => {
                     mouseLeaveCanvas();
                 });
 
@@ -6883,6 +7008,10 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasCrVertical}
+                            className='cr-vertical-canvas'
+                        ></d3fc-canvas>
+                        <d3fc-canvas
+                            ref={d3CanvasCrIndicator}
                             className='cr-vertical-canvas'
                         ></d3fc-canvas>
 
