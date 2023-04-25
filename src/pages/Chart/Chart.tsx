@@ -3438,14 +3438,6 @@ export default function Chart(props: propsIF) {
                 context.fillStyle = 'rgba(189,189,189,0.8)';
                 context.font = '11.425px Lexend Deca';
 
-                const latestCandleIndex = d3.maxIndex(
-                    parsedChartData?.chartData,
-                    (d) => d.date,
-                );
-
-                const lastCandle =
-                    parsedChartData?.chartData[latestCandleIndex];
-
                 const yScaleTicks = yScale.ticks(factor);
 
                 yScaleTicks.forEach((d: number) => {
