@@ -22,12 +22,9 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import {
-    LimitOrderIF,
-    PositionIF,
     TokenIF,
     TokenPairIF,
     TempPoolIF,
-    TransactionIF,
 } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
@@ -119,17 +116,19 @@ export default function Sidebar(props: propsIF) {
 
     const location = useLocation();
 
-    const positionsByUser = useAppSelector(
-        (state) => state.graphData,
-    ).positionsByUser.positions.filter((x) => x.chainId === chainId);
+    const graphData = useAppSelector((state) => state.graphData);
 
-    const txsByUser = useAppSelector(
-        (state) => state.graphData,
-    ).changesByUser.changes.filter((x) => x.chainId === chainId);
+    const positionsByUser = graphData.positionsByUser.positions.filter(
+        (x) => x.chainId === chainId,
+    );
 
-    const limitsByUser = useAppSelector(
-        (state) => state.graphData,
-    ).limitOrdersByUser.limitOrders.filter((x) => x.chainId === chainId);
+    const txsByUser = graphData.changesByUser.changes.filter(
+        (x) => x.chainId === chainId,
+    );
+
+    const limitsByUser = graphData.limitOrdersByUser.limitOrders.filter(
+        (x) => x.chainId === chainId,
+    );
 
     const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
