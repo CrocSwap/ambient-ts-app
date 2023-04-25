@@ -88,7 +88,7 @@
     0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
     0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2); */
 }
-.fullscreen_button{
+.fullscreen_button {
     outline: none;
     border: none;
     background: transparent;
@@ -157,7 +157,7 @@
     color: var(--text-grey-light);
 }
 
-.save_image_container div {
+.save_image_content div {
     cursor: pointer;
 }
 
@@ -398,7 +398,7 @@
         gap: 1rem;
     }
 
-    .graph_settings_container div {
+    .graph_settings_container svg {
         cursor: pointer;
     }
 }
