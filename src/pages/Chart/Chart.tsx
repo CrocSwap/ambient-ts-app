@@ -3367,7 +3367,7 @@ export default function Chart(props: propsIF) {
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
     ) {
-        const rectPadding = text.length > 8 ? 15 : 0;
+        const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
         context.fillStyle = color;
         context.fillRect(0, y - 10, yAxisWidth + rectPadding, 20);
@@ -3438,14 +3438,6 @@ export default function Chart(props: propsIF) {
                 context.fillStyle = 'rgba(189,189,189,0.8)';
                 context.font = '11.425px Lexend Deca';
 
-                const latestCandleIndex = d3.maxIndex(
-                    parsedChartData?.chartData,
-                    (d) => d.date,
-                );
-
-                const lastCandle =
-                    parsedChartData?.chartData[latestCandleIndex];
-
                 const yScaleTicks = yScale.ticks(factor);
 
                 yScaleTicks.forEach((d: number) => {
@@ -3463,10 +3455,10 @@ export default function Chart(props: propsIF) {
                     context,
                     yScale(market[0].value),
                     X - tickSize,
-                    lastCandle.close > lastCandle.open ? '#EAEFF2' : '#1d1d30',
-                    lastCandle.close > lastCandle.open ? 'black' : 'white',
+                    'white',
+                    'black',
                     formatAmountChartData(market[0].value, undefined),
-                    '#6c69fc',
+                    undefined,
                     yAxisCanvasWidth,
                 );
 
@@ -6252,6 +6244,7 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
+                    setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
                         _selectedDate,
