@@ -54,7 +54,6 @@ export default function Investors() {
             <img src={afk} alt='afkbyte ' />
             <img src={jai} alt='jai prasad ' />
             <img src={Don} alt='don sun ' />
-            {/* <img src={PreSeed} alt="preseed" /> */}
         </div>
     );
     const row6 = (
