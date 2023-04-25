@@ -9,6 +9,7 @@ import {
     ReactNode,
 } from 'react';
 import { ethers } from 'ethers';
+import sum from 'hash-sum';
 import { motion } from 'framer-motion';
 import {
     concDepositSkew,
@@ -249,22 +250,6 @@ export default function Range(props: propsIF) {
         (state) => state.graphData,
     ).positionsByUser.positions.filter((x) => x.chainId === chainData.chainId);
 
-    const [isAdd, setIsAdd] = useState<boolean>(false);
-
-    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
-        if (isAmbient && position.positionType === 'ambient') {
-            return true;
-        } else if (
-            !isAmbient &&
-            defaultLowTick === position.bidTick &&
-            defaultHighTick === position.askTick
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-
     const { tradeData, receiptData } = useAppSelector((state) => state);
 
     const { navigationMenu } = useTradeData();
@@ -415,14 +400,24 @@ export default function Range(props: propsIF) {
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
-    useEffect(() => {
-        const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
-        if (isAdd) {
-            setIsAdd(true);
+    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
+        if (isAmbient && position.positionType === 'ambient') {
+            return true;
+        } else if (
+            !isAmbient &&
+            defaultLowTick === position.bidTick &&
+            defaultHighTick === position.askTick
+        ) {
+            return true;
         } else {
-            setIsAdd(false);
+            return false;
         }
-    }, [userPositions.length, isAmbient, defaultLowTick, defaultHighTick]);
+    };
+
+    const isAdd = useMemo(
+        () => userPositions.some(selectedRangeMatchesOpenPosition),
+        [sum(userPositions), isAmbient, defaultLowTick, defaultHighTick],
+    );
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(defaultMinPriceDifferencePercentage);
